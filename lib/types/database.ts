@@ -314,6 +314,8 @@ export interface Database {
           is_player: boolean;
           monster_id: string | null;
           player_character_id: string | null;
+          /** Linked session_token ID — survives name changes for reconnection. */
+          session_token_id: string | null;
           dm_notes: string;
           player_notes: string;
           created_at: string;
@@ -337,6 +339,7 @@ export interface Database {
           is_player?: boolean;
           monster_id?: string | null;
           player_character_id?: string | null;
+          session_token_id?: string | null;
           dm_notes?: string;
           player_notes?: string;
           created_at?: string;
@@ -359,6 +362,7 @@ export interface Database {
           is_player?: boolean;
           monster_id?: string | null;
           player_character_id?: string | null;
+          session_token_id?: string | null;
           dm_notes?: string;
           player_notes?: string;
           updated_at?: string;

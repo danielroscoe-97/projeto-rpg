@@ -1,0 +1,156 @@
+{
+  "id": "ranger",
+  "name": "Ranger",
+  "name_pt": "Patrulheiro",
+  "hit_die": "d10",
+  "primary_ability": "DEX & WIS",
+  "saving_throws": ["STR", "DEX"],
+  "armor_proficiencies": "Light armor, Medium armor, Shields",
+  "weapon_proficiencies": "Simple weapons, Martial weapons",
+  "srd_subclass": "Hunter",
+  "srd_subclass_pt": "Caçador",
+  "description_en": "Warriors of the wilderness who track and hunt foes.",
+  "description_pt": "Guerreiros da natureza que rastreiam e caçam inimigos.",
+  "spellcaster": true,
+  "spellcasting_ability": "WIS",
+  "icon": "bow",
+  "role": "half-caster",
+  "description_full_en": "Rough and wild looking, a human stalks alone through the shadows of trees, tracking the quarry he knows is planning a raid on a nearby farm. Clutching a shortsword in each hand, he becomes a whirlwind of steel, cutting down one enemy after another.\n\nAfter tumbling away from a cone of freezing air, an elf finds her feet and draws back her bow to loose an arrow at the white dragon. Shrugging off the wave of fear that emanates from the dragon like the cold of its breath, she sends one arrow after another to find the gaps between the dragon's thick scales.\n\nHolding his hand high, a half-elf whistles to the hawk that circles high above him, calling the bird back to his side. Whispering instructions in Elvish, he points to the owlbear he's been tracking and sends the hawk to distract the creature while he readies his bow.\n\nFar from the bustle of cities and towns, past the hedges that shelter the most distant farms from the terrors of the wild, amid the dense-packed trees of trackless forests and across wide and empty plains, rangers keep their unending watch.",
+  "description_full_pt": "Com aparência rude e selvagem, um humano caminha sozinho pelas sombras das árvores, rastreando a presa que ele sabe estar planejando um ataque a uma fazenda próxima. Empunhando uma espada curta em cada mão, ele se torna um redemoinho de aço, derrubando um inimigo após o outro.\n\nApós rolar para longe de um cone de ar congelante, uma elfa se firma e puxa seu arco para disparar uma flecha no dragão branco. Ignorando a onda de medo que emana do dragão como o frio de seu sopro, ela envia uma flecha após outra para encontrar as brechas entre as escamas grossas do dragão.\n\nErguendo a mão, um meio-elfo assobia para o falcão que circula alto acima dele, chamando o pássaro de volta ao seu lado. Sussurrando instruções em Élfico, ele aponta para o urso-coruja que está rastreando e envia o falcão para distrair a criatura enquanto prepara seu arco.\n\nLonge da agitação das cidades e vilas, além das cercas que protegem as fazendas mais distantes dos terrores da natureza selvagem, em meio às árvores densas de florestas sem trilhas e através de planícies amplas e vazias, os patrulheiros mantêm sua vigília interminável.",
+  "quick_build_en": "You can make a ranger quickly by following these suggestions. First, make Dexterity your highest ability score, followed by Wisdom. (Some rangers who focus on two-weapon fighting make Strength higher than Dexterity.) Second, choose the outlander background.",
+  "quick_build_pt": "Você pode criar um patrulheiro rapidamente seguindo estas sugestões. Primeiro, faça Destreza sua maior pontuação de habilidade, seguida de Sabedoria. (Alguns patrulheiros que focam em luta com duas armas fazem Força maior que Destreza.) Segundo, escolha o antecedente forasteiro.",
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) scale mail or (b) leather armor\n- (a) two shortswords or (b) two simple melee weapons\n- (a) a dungeoneer's pack or (b) an explorer's pack\n- A longbow and a quiver of 20 arrows",
+  "starting_equipment_pt": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n- (a) cota de malha ou (b) armadura de couro\n- (a) duas espadas curtas ou (b) duas armas simples corpo a corpo\n- (a) um pacote de explorador de masmorras ou (b) um pacote de explorador\n- Um arco longo e uma aljava com 20 flechas",
+  "class_table": [
+    { "level": 1, "proficiency_bonus": "+2", "features": "Favored Enemy, Natural Explorer", "features_pt": "Inimigo Favorito, Explorador Natural", "extras": { "spells_known": "—" }, "extras_pt": { "spells_known": "—" } },
+    { "level": 2, "proficiency_bonus": "+2", "features": "Fighting Style, Spellcasting", "features_pt": "Estilo de Luta, Conjuração", "spell_slots": { "1st": 2 }, "extras": { "spells_known": "2" }, "extras_pt": { "spells_known": "2" } },
+    { "level": 3, "proficiency_bonus": "+2", "features": "Ranger Archetype, Primeval Awareness", "features_pt": "Arquétipo de Patrulheiro, Consciência Primitiva", "spell_slots": { "1st": 3 }, "extras": { "spells_known": "3" }, "extras_pt": { "spells_known": "3" } },
+    { "level": 4, "proficiency_bonus": "+2", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "spell_slots": { "1st": 3 }, "extras": { "spells_known": "3" }, "extras_pt": { "spells_known": "3" } },
+    { "level": 5, "proficiency_bonus": "+3", "features": "Extra Attack", "features_pt": "Ataque Extra", "spell_slots": { "1st": 4, "2nd": 2 }, "extras": { "spells_known": "4" }, "extras_pt": { "spells_known": "4" } },
+    { "level": 6, "proficiency_bonus": "+3", "features": "Favored Enemy improvement, Natural Explorer improvement", "features_pt": "Melhoria de Inimigo Favorito, Melhoria de Explorador Natural", "spell_slots": { "1st": 4, "2nd": 2 }, "extras": { "spells_known": "4" }, "extras_pt": { "spells_known": "4" } },
+    { "level": 7, "proficiency_bonus": "+3", "features": "Ranger Archetype feature", "features_pt": "Característica de Arquétipo de Patrulheiro", "spell_slots": { "1st": 4, "2nd": 3 }, "extras": { "spells_known": "5" }, "extras_pt": { "spells_known": "5" } },
+    { "level": 8, "proficiency_bonus": "+3", "features": "Ability Score Improvement, Land's Stride", "features_pt": "Melhoria de Atributo, Passo Largo", "spell_slots": { "1st": 4, "2nd": 3 }, "extras": { "spells_known": "5" }, "extras_pt": { "spells_known": "5" } },
+    { "level": 9, "proficiency_bonus": "+4", "features": "—", "features_pt": "—", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }, "extras": { "spells_known": "6" }, "extras_pt": { "spells_known": "6" } },
+    { "level": 10, "proficiency_bonus": "+4", "features": "Natural Explorer improvement, Hide in Plain Sight", "features_pt": "Melhoria de Explorador Natural, Esconder-se à Vista", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }, "extras": { "spells_known": "6" }, "extras_pt": { "spells_known": "6" } },
+    { "level": 11, "proficiency_bonus": "+4", "features": "Ranger Archetype feature", "features_pt": "Característica de Arquétipo de Patrulheiro", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3 }, "extras": { "spells_known": "7" }, "extras_pt": { "spells_known": "7" } },
+    { "level": 12, "proficiency_bonus": "+4", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3 }, "extras": { "spells_known": "7" }, "extras_pt": { "spells_known": "7" } },
+    { "level": 13, "proficiency_bonus": "+5", "features": "—", "features_pt": "—", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 }, "extras": { "spells_known": "8" }, "extras_pt": { "spells_known": "8" } },
+    { "level": 14, "proficiency_bonus": "+5", "features": "Favored Enemy improvement, Vanish", "features_pt": "Melhoria de Inimigo Favorito, Desaparecer", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 }, "extras": { "spells_known": "8" }, "extras_pt": { "spells_known": "8" } },
+    { "level": 15, "proficiency_bonus": "+5", "features": "Ranger Archetype feature", "features_pt": "Característica de Arquétipo de Patrulheiro", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 2 }, "extras": { "spells_known": "9" }, "extras_pt": { "spells_known": "9" } },
+    { "level": 16, "proficiency_bonus": "+5", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 2 }, "extras": { "spells_known": "9" }, "extras_pt": { "spells_known": "9" } },
+    { "level": 17, "proficiency_bonus": "+6", "features": "—", "features_pt": "—", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 }, "extras": { "spells_known": "10" }, "extras_pt": { "spells_known": "10" } },
+    { "level": 18, "proficiency_bonus": "+6", "features": "Feral Senses", "features_pt": "Sentidos Selvagens", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 }, "extras": { "spells_known": "10" }, "extras_pt": { "spells_known": "10" } },
+    { "level": 19, "proficiency_bonus": "+6", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 }, "extras": { "spells_known": "11" }, "extras_pt": { "spells_known": "11" } },
+    { "level": 20, "proficiency_bonus": "+6", "features": "Foe Slayer", "features_pt": "Matador de Inimigos", "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 }, "extras": { "spells_known": "11" }, "extras_pt": { "spells_known": "11" } }
+  ],
+  "class_features": [
+    {
+      "name": "Favored Enemy",
+      "name_pt": "Inimigo Favorito",
+      "level": 1,
+      "description_en": "Beginning at 1st level, you have significant experience studying, tracking, and even talking to a certain type of enemy commonly encountered in the wilds.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+      "description_pt": "A partir do 1º nível, você tem experiência significativa estudando, rastreando e até conversando com um certo tipo de inimigo comumente encontrado nas terras selvagens.\n\nEscolha um tipo de inimigo favorito: aberrações, bestas, celestiais, constructos, dragões, elementais, feéricos, corruptores, gigantes, monstrosidades, gosmas, plantas ou mortos-vivos. Alternativamente, você pode selecionar duas raças de humanoides (como gnolls e orcs) como inimigos favoritos.\n\nVocê tem vantagem em testes de Sabedoria (Sobrevivência) para rastrear seus inimigos favoritos, assim como em testes de Inteligência para lembrar informações sobre eles.\n\nQuando você ganha esta característica, você também aprende um idioma de sua escolha que é falado por seus inimigos favoritos, se eles falarem algum.\n\nVocê escolhe um inimigo favorito adicional, assim como um idioma associado, no 6º e 14º nível. Conforme você ganha níveis, suas escolhas devem refletir os tipos de monstros que você encontrou em suas aventuras."
+    },
+    {
+      "name": "Natural Explorer",
+      "name_pt": "Explorador Natural",
+      "level": 1,
+      "description_en": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, swamp, or the Underdark. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n\nWhile traveling for an hour or more in your favored terrain, you gain the following benefits:\n- Difficult terrain doesn't slow your group's travel.\n- Your group can't become lost except by magical means.\n- Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n- If you are traveling alone, you can move stealthily at a normal pace.\n- When you forage, you find twice as much food as you normally would.\n- While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.\n\nYou choose additional favored terrain types at 6th and 10th level.",
+      "description_pt": "Você é particularmente familiarizado com um tipo de ambiente natural e é habilidoso em viajar e sobreviver em tais regiões. Escolha um tipo de terreno favorito: ártico, litoral, deserto, floresta, planície, montanha, pântano ou Subterrâneo. Quando você faz um teste de Inteligência ou Sabedoria relacionado ao seu terreno favorito, seu bônus de proficiência é dobrado se você estiver usando uma perícia na qual é proficiente.\n\nEnquanto viaja por uma hora ou mais no seu terreno favorito, você ganha os seguintes benefícios:\n- Terreno difícil não diminui a velocidade de viagem do seu grupo.\n- Seu grupo não pode se perder, exceto por meios mágicos.\n- Mesmo quando você está engajado em outra atividade enquanto viaja (como forragear, navegar ou rastrear), você permanece alerta ao perigo.\n- Se você está viajando sozinho, pode se mover furtivamente em ritmo normal.\n- Quando você forrageia, encontra o dobro de comida que normalmente encontraria.\n- Enquanto rastreia outras criaturas, você também descobre seu número exato, seus tamanhos e há quanto tempo passaram pela área.\n\nVocê escolhe tipos de terreno favorito adicionais no 6º e 10º nível."
+    },
+    {
+      "name": "Fighting Style",
+      "name_pt": "Estilo de Luta",
+      "level": 2,
+      "description_en": "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.\n\nArchery: You gain a +2 bonus to attack rolls you make with ranged weapons.\n\nDefense: While you are wearing armor, you gain a +1 bonus to AC.\n\nDueling: When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.\n\nTwo-Weapon Fighting: When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.",
+      "description_pt": "No 2º nível, você adota um estilo particular de luta como sua especialidade. Escolha uma das seguintes opções. Você não pode escolher a mesma opção de Estilo de Luta mais de uma vez, mesmo que possa escolher novamente depois.\n\nArqueirismo: Você ganha +2 de bônus nas jogadas de ataque que faz com armas à distância.\n\nDefesa: Enquanto estiver usando armadura, você ganha +1 de bônus na CA.\n\nDuelismo: Quando estiver empunhando uma arma corpo a corpo em uma mão e nenhuma outra arma, você ganha +2 de bônus nas jogadas de dano com essa arma.\n\nLuta com Duas Armas: Quando você se engaja em luta com duas armas, pode adicionar seu modificador de habilidade ao dano do segundo ataque."
+    },
+    {
+      "name": "Spellcasting",
+      "name_pt": "Conjuração",
+      "level": 2,
+      "description_en": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does. See the Player's Handbook for the general rules of spellcasting and the ranger spell list.\n\nSpell Slots: The Ranger table shows how many spell slots you have to cast your ranger spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\n\nSpells Known of 1st Level and Higher: You know two 1st-level spells of your choice from the ranger spell list. The Spells Known column of the Ranger table shows when you learn more ranger spells of your choice. Each of these spells must be of a level for which you have spell slots.\n\nAdditionally, when you gain a level in this class, you can choose one of the ranger spells you know and replace it with another spell from the ranger spell list, which also must be of a level for which you have spell slots.\n\nSpellcasting Ability: Wisdom is your spellcasting ability for your ranger spells, since your magic draws on your attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a ranger spell you cast and when making an attack roll with one.\n\nSpell save DC = 8 + your proficiency bonus + your Wisdom modifier\nSpell attack modifier = your proficiency bonus + your Wisdom modifier",
+      "description_pt": "Quando você alcança o 2º nível, você aprendeu a usar a essência mágica da natureza para conjurar magias, assim como um druida faz.\n\nEspaços de Magia: A tabela do Patrulheiro mostra quantos espaços de magia você tem para conjurar suas magias de patrulheiro de 1º nível e superiores. Para conjurar uma dessas magias, você deve gastar um espaço do nível da magia ou superior. Você recupera todos os espaços gastos quando termina um descanso longo.\n\nMagias Conhecidas de 1º Nível e Superiores: Você conhece duas magias de 1º nível de sua escolha da lista de magias de patrulheiro. A coluna Magias Conhecidas da tabela do Patrulheiro mostra quando você aprende mais magias de patrulheiro de sua escolha. Cada uma dessas magias deve ser de um nível para o qual você tenha espaços de magia.\n\nAlém disso, quando você ganha um nível nesta classe, pode escolher uma das magias de patrulheiro que conhece e substituí-la por outra magia da lista de magias de patrulheiro, que também deve ser de um nível para o qual você tenha espaços de magia.\n\nHabilidade de Conjuração: Sabedoria é sua habilidade de conjuração para suas magias de patrulheiro, pois sua magia se baseia em sua sintonia com a natureza. Você usa sua Sabedoria sempre que uma magia se referir à sua habilidade de conjuração. Além disso, você usa seu modificador de Sabedoria ao definir a CD de salvaguarda para uma magia de patrulheiro que conjura e ao fazer uma jogada de ataque com uma.\n\nCD de salvaguarda de magia = 8 + seu bônus de proficiência + seu modificador de Sabedoria\nModificador de ataque de magia = seu bônus de proficiência + seu modificador de Sabedoria"
+    },
+    {
+      "name": "Ranger Archetype",
+      "name_pt": "Arquétipo de Patrulheiro",
+      "level": 3,
+      "description_en": "At 3rd level, you choose an archetype that you strive to emulate: the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level.",
+      "description_pt": "No 3º nível, você escolhe um arquétipo que se esforça para emular: o Caçador. Sua escolha lhe concede características no 3º nível e novamente no 7º, 11º e 15º nível."
+    },
+    {
+      "name": "Primeval Awareness",
+      "name_pt": "Consciência Primitiva",
+      "level": 3,
+      "description_en": "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you (or within 6 miles if you are in your favored terrain): aberrations, celestials, dragons, elementals, fey, fiends, and undead. This feature doesn't reveal the creatures' location or number.",
+      "description_pt": "A partir do 3º nível, você pode usar sua ação e gastar um espaço de magia de patrulheiro para focar sua consciência na região ao seu redor. Por 1 minuto por nível do espaço de magia que você gasta, você pode sentir se os seguintes tipos de criaturas estão presentes dentro de 1,5 km de você (ou dentro de 10 km se estiver em seu terreno favorito): aberrações, celestiais, dragões, elementais, feéricos, corruptores e mortos-vivos. Esta característica não revela a localização ou número das criaturas."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando você alcança o 4º nível, e novamente no 8º, 12º, 16º e 19º nível, você pode aumentar um valor de habilidade de sua escolha em 2, ou pode aumentar dois valores de habilidade de sua escolha em 1. Como normal, você não pode aumentar um valor de habilidade acima de 20 usando esta característica."
+    },
+    {
+      "name": "Extra Attack",
+      "name_pt": "Ataque Extra",
+      "level": 5,
+      "description_en": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "description_pt": "A partir do 5º nível, você pode atacar duas vezes, em vez de uma, sempre que usar a ação de Ataque no seu turno."
+    },
+    {
+      "name": "Land's Stride",
+      "name_pt": "Passo Largo",
+      "level": 8,
+      "description_en": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.\n\nIn addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such as those created by the entangle spell.",
+      "description_pt": "A partir do 8º nível, mover-se através de terreno difícil não mágico não custa movimento extra. Você também pode passar por plantas não mágicas sem ser desacelerado por elas e sem receber dano delas se tiverem espinhos ou perigo similar.\n\nAlém disso, você tem vantagem em salvaguardas contra plantas que são magicamente criadas ou manipuladas para impedir movimento, como aquelas criadas pela magia emaranhar."
+    },
+    {
+      "name": "Hide in Plain Sight",
+      "name_pt": "Esconder-se à Vista",
+      "level": 10,
+      "description_en": "Starting at 10th level, you can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage.\n\nOnce you are camouflaged in this way, you can try to hide by pressing yourself up against a solid surface, such as a tree or wall, that is at least as tall and wide as you are. You gain a +10 bonus to Dexterity (Stealth) checks as long as you remain there without moving or taking actions. Once you move or take an action or a reaction, you must camouflage yourself again to gain this benefit.",
+      "description_pt": "A partir do 10º nível, você pode gastar 1 minuto criando camuflagem para si mesmo. Você deve ter acesso a lama fresca, terra, plantas, fuligem e outros materiais naturais com os quais criar sua camuflagem.\n\nUma vez camuflado desta forma, você pode tentar se esconder pressionando-se contra uma superfície sólida, como uma árvore ou parede, que seja pelo menos tão alta e larga quanto você. Você ganha +10 de bônus nos testes de Destreza (Furtividade) enquanto permanecer lá sem se mover ou realizar ações. Uma vez que você se mova ou realize uma ação ou reação, deve se camuflar novamente para ganhar este benefício."
+    },
+    {
+      "name": "Vanish",
+      "name_pt": "Desaparecer",
+      "level": 14,
+      "description_en": "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail.",
+      "description_pt": "A partir do 14º nível, você pode usar a ação de Esconder como uma ação bônus no seu turno. Além disso, você não pode ser rastreado por meios não mágicos, a menos que escolha deixar um rastro."
+    },
+    {
+      "name": "Feral Senses",
+      "name_pt": "Sentidos Selvagens",
+      "level": 18,
+      "description_en": "At 18th level, you gain preternatural senses that help you deal with creatures you can't see. When you attack a creature you can't see, your inability to see it doesn't impose disadvantage on your attack rolls against it.\n\nYou are also aware of the location of any invisible creature within 30 feet of you, provided that the creature isn't hidden from you and you aren't blinded or deafened.",
+      "description_pt": "No 18º nível, você ganha sentidos sobrenaturais que o ajudam a lidar com criaturas que não pode ver. Quando você ataca uma criatura que não pode ver, sua incapacidade de vê-la não impõe desvantagem em suas jogadas de ataque contra ela.\n\nVocê também está ciente da localização de qualquer criatura invisível dentro de 9 metros de você, desde que a criatura não esteja escondida de você e você não esteja cego ou surdo."
+    },
+    {
+      "name": "Foe Slayer",
+      "name_pt": "Matador de Inimigos",
+      "level": 20,
+      "description_en": "At 20th level, you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied.",
+      "description_pt": "No 20º nível, você se torna um caçador incomparável de seus inimigos. Uma vez em cada um de seus turnos, você pode adicionar seu modificador de Sabedoria à jogada de ataque ou à jogada de dano de um ataque que você faz contra um de seus inimigos favoritos. Você pode escolher usar esta característica antes ou depois da rolagem, mas antes que quaisquer efeitos da rolagem sejam aplicados."
+    }
+  ],
+  "spellcasting": {
+    "description_en": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does.",
+    "description_pt": "Quando você alcança o 2º nível, você aprendeu a usar a essência mágica da natureza para conjurar magias, assim como um druida faz.",
+    "ability": "WIS",
+    "cantrips": false,
+    "ritual_casting": false,
+    "spellcasting_focus": "None (material components only)",
+    "spellcasting_focus_pt": "Nenhum (apenas componentes materiais)"
+  },
+  "multiclass_prerequisites": "Dexterity 13 and Wisdom 13",
+  "multiclass_prerequisites_pt": "Destreza 13 e Sabedoria 13",
+  "multiclass_proficiencies": "Light armor, medium armor, shields, simple weapons, martial weapons, one skill from the class's skill list",
+  "multiclass_proficiencies_pt": "Armaduras leves, armaduras médias, escudos, armas simples, armas marciais, uma perícia da lista de perícias da classe",
+  "subclass_level": 3,
+  "subclass_name": "Ranger Archetype",
+  "subclass_name_pt": "Arquétipo de Patrulheiro",
+  "subclass_ids": ["hunter"]
+}

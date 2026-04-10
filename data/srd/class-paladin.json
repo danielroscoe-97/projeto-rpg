@@ -1,0 +1,275 @@
+{
+  "id": "paladin",
+  "name": "Paladin",
+  "name_pt": "Paladino",
+  "hit_die": "d10",
+  "primary_ability": "STR & CHA",
+  "saving_throws": ["WIS", "CHA"],
+  "armor_proficiencies": "All armor, Shields",
+  "weapon_proficiencies": "Simple weapons, Martial weapons",
+  "srd_subclass": "Oath of Devotion",
+  "srd_subclass_pt": "Juramento de Devoção",
+  "description_en": "Holy warriors bound by sacred oaths, wielding divine magic and martial prowess to smite evil.",
+  "description_pt": "Guerreiros sagrados ligados por juramentos sagrados, empunhando magia divina e proeza marcial para destruir o mal.",
+  "spellcaster": true,
+  "spellcasting_ability": "CHA",
+  "icon": "fleur-de-lis",
+  "role": "half-caster",
+  "description_full_en": "Whether sworn before a god's altar and the witness of a priest, in a sacred glade before nature spirits and fey beings, or in a moment of desperation and grief with the dead as the only witness, a paladin's oath is a powerful bond. It is a source of power that turns a devout warrior into a blessed champion.\n\nA paladin swears to uphold justice and righteousness, to stand with the good things of the world against the encroaching darkness, and to hunt the forces of evil wherever they lurk. Different paladins focus on various aspects of the cause of righteousness, but all are bound by the oaths that grant them power to do their sacred work. Although many paladins are devoted to gods of good, a paladin's power comes as much from a commitment to justice itself as it does from a god.\n\nPaladins train for years to learn the skills of combat, mastering a variety of weapons and armor. Even so, their martial skills are secondary to the magical power they wield: power to heal the sick and injured, to smite the wicked and the undead, and to protect the innocent and those who join them in the fight for justice.\n\nThe paladin's oath defines the character's destiny. Taking the oath commits a paladin to the ideals of righteousness, an active path of fighting wickedness. The final sword blow against a demon, the extra, impossible effort against exhaustion, and the moment of truth when the last ally falls and only the paladin stands between evil and the innocents — these are the moments that define the paladin.",
+  "description_full_pt": "Seja jurando diante do altar de um deus e na presença de um sacerdote, em uma clareira sagrada perante espíritos da natureza e seres feéricos, ou em um momento de desespero e luto com os mortos como única testemunha, o juramento de um paladino é um vínculo poderoso. É uma fonte de poder que transforma um guerreiro devoto em um campeão abençoado.\n\nUm paladino jura defender a justiça e a retidão, ficar ao lado das coisas boas do mundo contra a escuridão invasora e caçar as forças do mal onde quer que se escondam. Diferentes paladinos focam em vários aspectos da causa da retidão, mas todos são vinculados pelos juramentos que lhes concedem poder para realizar seu trabalho sagrado. Embora muitos paladinos sejam devotos de deuses do bem, o poder de um paladino vem tanto de um compromisso com a própria justiça quanto de um deus.\n\nPaladinos treinam por anos para aprender as habilidades de combate, dominando uma variedade de armas e armaduras. Mesmo assim, suas habilidades marciais são secundárias ao poder mágico que empunham: poder para curar os doentes e feridos, destruir os perversos e os mortos-vivos, e proteger os inocentes e aqueles que se juntam a eles na luta pela justiça.\n\nO juramento do paladino define o destino do personagem. Fazer o juramento compromete um paladino com os ideais de retidão, um caminho ativo de combate à maldade. O golpe final de espada contra um demônio, o esforço extra e impossível contra a exaustão, e o momento da verdade quando o último aliado cai e apenas o paladino fica entre o mal e os inocentes — esses são os momentos que definem o paladino.",
+  "quick_build_en": "You can make a paladin quickly by following these suggestions. First, Strength should be your highest ability score, followed by Charisma. Second, choose the noble background.",
+  "quick_build_pt": "Você pode criar um paladino rapidamente seguindo estas sugestões. Primeiro, Força deve ser seu maior valor de habilidade, seguido por Carisma. Segundo, escolha o antecedente nobre.",
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) a martial weapon and a shield or (b) two martial weapons\n- (a) five javelins or (b) any simple melee weapon\n- (a) a priest's pack or (b) an explorer's pack\n- Chain mail and a holy symbol",
+  "starting_equipment_pt": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n- (a) uma arma marcial e um escudo ou (b) duas armas marciais\n- (a) cinco azagaias ou (b) qualquer arma simples corpo a corpo\n- (a) um kit de sacerdote ou (b) um kit de explorador\n- Cota de malha e um símbolo sagrado",
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Divine Sense, Lay on Hands",
+      "features_pt": "Sentido Divino, Cura pelas Mãos"
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Fighting Style, Spellcasting, Divine Smite",
+      "features_pt": "Estilo de Luta, Conjuração, Destruição Divina",
+      "spell_slots": { "1st": 2 }
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "Divine Health, Sacred Oath",
+      "features_pt": "Saúde Divina, Juramento Sagrado",
+      "spell_slots": { "1st": 3 }
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "spell_slots": { "1st": 3 }
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "Extra Attack",
+      "features_pt": "Ataque Extra",
+      "spell_slots": { "1st": 4, "2nd": 2 }
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Aura of Protection",
+      "features_pt": "Aura de Proteção",
+      "spell_slots": { "1st": 4, "2nd": 2 }
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "Sacred Oath feature",
+      "features_pt": "Característica do Juramento Sagrado",
+      "spell_slots": { "1st": 4, "2nd": 3 }
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "spell_slots": { "1st": 4, "2nd": 3 }
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "—",
+      "features_pt": "—",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Aura of Courage",
+      "features_pt": "Aura de Coragem",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "Improved Divine Smite",
+      "features_pt": "Destruição Divina Aprimorada",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "—",
+      "features_pt": "—",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 }
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Cleansing Touch",
+      "features_pt": "Toque Purificador",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 }
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "Sacred Oath feature",
+      "features_pt": "Característica do Juramento Sagrado",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 2 }
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 2 }
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "—",
+      "features_pt": "—",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 }
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Aura improvements",
+      "features_pt": "Melhorias de Aura",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 }
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 }
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Sacred Oath feature",
+      "features_pt": "Característica do Juramento Sagrado",
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 }
+    }
+  ],
+  "class_features": [
+    {
+      "name": "Divine Sense",
+      "name_pt": "Sentido Divino",
+      "level": 1,
+      "description_en": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell.\n\nYou can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses.",
+      "description_pt": "A presença de mal intenso se registra em seus sentidos como um odor nocivo, e o bem poderoso soa como música celestial em seus ouvidos. Como uma ação, você pode abrir sua percepção para detectar tais forças. Até o final do seu próximo turno, você sabe a localização de qualquer celestial, corruptor ou morto-vivo a até 18 metros de você que não esteja atrás de cobertura total. Você sabe o tipo (celestial, corruptor ou morto-vivo) de qualquer ser cuja presença você detecta, mas não sua identidade. Dentro do mesmo raio, você também detecta a presença de qualquer lugar ou objeto que tenha sido consagrado ou profanado, como com a magia consagrar.\n\nVocê pode usar esta característica um número de vezes igual a 1 + seu modificador de Carisma. Quando termina um descanso longo, você recupera todos os usos gastos."
+    },
+    {
+      "name": "Lay on Hands",
+      "name_pt": "Cura pelas Mãos",
+      "level": 1,
+      "description_en": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level x 5.\n\nAs an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.\n\nAlternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.\n\nThis feature has no effect on undead and constructs.",
+      "description_pt": "Seu toque abençoado pode curar ferimentos. Você tem uma reserva de poder de cura que se recarrega quando faz um descanso longo. Com essa reserva, você pode restaurar um número total de pontos de vida igual ao seu nível de paladino x 5.\n\nComo uma ação, você pode tocar uma criatura e usar poder da reserva para restaurar um número de pontos de vida para aquela criatura, até o máximo restante em sua reserva.\n\nAlternativamente, você pode gastar 5 pontos de vida de sua reserva de cura para curar o alvo de uma doença ou neutralizar um veneno que o afeta. Você pode curar múltiplas doenças e neutralizar múltiplos venenos com um único uso de Cura pelas Mãos, gastando pontos de vida separadamente para cada um.\n\nEsta característica não tem efeito sobre mortos-vivos e construtos."
+    },
+    {
+      "name": "Fighting Style",
+      "name_pt": "Estilo de Luta",
+      "level": 2,
+      "description_en": "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.\n\nDefense. While you are wearing armor, you gain a +1 bonus to AC.\n\nDueling. When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.\n\nGreat Weapon Fighting. When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll. The weapon must have the two-handed or versatile property for you to gain this benefit.\n\nProtection. When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield.",
+      "description_pt": "No 2° nível, você adota um estilo particular de luta como sua especialidade. Escolha uma das opções a seguir. Você não pode escolher a mesma opção de Estilo de Luta mais de uma vez, mesmo que possa escolher novamente depois.\n\nDefesa. Enquanto estiver vestindo armadura, você ganha +1 de bônus na CA.\n\nDuelismo. Quando empunha uma arma corpo a corpo em uma mão e nenhuma outra arma, você ganha +2 de bônus nas jogadas de dano com aquela arma.\n\nLuta com Armas Grandes. Quando você rola 1 ou 2 em um dado de dano para um ataque que faz com uma arma corpo a corpo que está empunhando com duas mãos, você pode rolar o dado novamente e deve usar a nova rolagem. A arma deve ter a propriedade duas mãos ou versátil para você obter este benefício.\n\nProteção. Quando uma criatura que você pode ver ataca um alvo diferente de você que está a até 1,5 metro de você, você pode usar sua reação para impor desvantagem na jogada de ataque. Você deve estar empunhando um escudo."
+    },
+    {
+      "name": "Spellcasting",
+      "name_pt": "Conjuração",
+      "level": 2,
+      "description_en": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does.\n\nPreparing and Casting Spells. The Paladin table shows how many spell slots you have to cast your paladin spells. To cast one of your paladin spells of 1st level or higher, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\n\nYou prepare the list of paladin spells that are available for you to cast, choosing from the paladin spell list. When you do so, choose a number of paladin spells equal to your Charisma modifier + half your paladin level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots.\n\nYou can change your list of prepared spells when you finish a long rest. Preparing a new list of paladin spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list.\n\nSpellcasting Ability. Charisma is your spellcasting ability for your paladin spells, since their power derives from the strength of your convictions. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a paladin spell you cast and when making an attack roll with one.\n\nSpell save DC = 8 + your proficiency bonus + your Charisma modifier\nSpell attack modifier = your proficiency bonus + your Charisma modifier\n\nSpellcasting Focus. You can use a holy symbol as a spellcasting focus for your paladin spells.",
+      "description_pt": "No 2° nível, você aprendeu a utilizar magia divina através de meditação e oração para conjurar magias como um clérigo faz.\n\nPreparando e Conjurando Magias. A tabela do Paladino mostra quantos espaços de magia você tem para conjurar suas magias de paladino. Para conjurar uma de suas magias de paladino de 1° nível ou superior, você deve gastar um espaço do nível da magia ou superior. Você recupera todos os espaços de magia gastos quando termina um descanso longo.\n\nVocê prepara a lista de magias de paladino que estão disponíveis para você conjurar, escolhendo da lista de magias de paladino. Ao fazer isso, escolha um número de magias de paladino igual ao seu modificador de Carisma + metade do seu nível de paladino, arredondado para baixo (mínimo de uma magia). As magias devem ser de um nível para o qual você tem espaços de magia.\n\nVocê pode mudar sua lista de magias preparadas quando termina um descanso longo. Preparar uma nova lista de magias de paladino requer tempo gasto em oração e meditação: pelo menos 1 minuto por nível de magia para cada magia em sua lista.\n\nHabilidade de Conjuração. Carisma é sua habilidade de conjuração para suas magias de paladino, pois seu poder deriva da força de suas convicções. Você usa seu Carisma sempre que uma magia se refere à sua habilidade de conjuração. Além disso, você usa seu modificador de Carisma ao definir a CD de resistência para uma magia de paladino que conjura e ao fazer uma jogada de ataque com uma.\n\nCD de resistência = 8 + seu bônus de proficiência + seu modificador de Carisma\nModificador de ataque de magia = seu bônus de proficiência + seu modificador de Carisma\n\nFoco de Conjuração. Você pode usar um símbolo sagrado como foco de conjuração para suas magias de paladino."
+    },
+    {
+      "name": "Divine Smite",
+      "name_pt": "Destruição Divina",
+      "level": 2,
+      "description_en": "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend, to a maximum of 6d8.",
+      "description_pt": "A partir do 2° nível, quando você acerta uma criatura com um ataque de arma corpo a corpo, pode gastar um espaço de magia para causar dano radiante ao alvo, além do dano da arma. O dano extra é 2d8 para um espaço de magia de 1° nível, mais 1d8 para cada nível de magia acima do 1°, até um máximo de 5d8. O dano aumenta em 1d8 se o alvo for um morto-vivo ou um corruptor, até um máximo de 6d8."
+    },
+    {
+      "name": "Divine Health",
+      "name_pt": "Saúde Divina",
+      "level": 3,
+      "description_en": "By 3rd level, the divine magic flowing through you makes you immune to disease.",
+      "description_pt": "No 3° nível, a magia divina fluindo através de você o torna imune a doenças."
+    },
+    {
+      "name": "Sacred Oath",
+      "name_pt": "Juramento Sagrado",
+      "level": 3,
+      "description_en": "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose the Oath of Devotion.\n\nYour oath grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature.\n\nOath Spells. Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.\n\nChannel Divinity. Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it. When you use your Channel Divinity, you choose which option to use. You must then finish a short or long rest to use your Channel Divinity again.\n\nSome Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your paladin spell save DC.\n\nBreaking Your Oath. A paladin who has broken a vow typically seeks absolution from a cleric who shares his or her faith, or from another paladin of the same order. The paladin might spend an all-night vigil in prayer as a sign of penitence, or undertake a fast or similar act of self-denial. After a rite of confession and forgiveness, the paladin starts fresh.\n\nIf a paladin willfully violates his or her oath and shows no sign of repentance, the consequences can be more serious. At the GM's discretion, an impenitent paladin might be forced to abandon this class and adopt another.",
+      "description_pt": "Quando alcança o 3° nível, você faz o juramento que o vincula como paladino para sempre. Até este momento você esteve em um estágio preparatório, comprometido com o caminho mas ainda não jurado a ele. Agora você escolhe o Juramento de Devoção.\n\nSeu juramento concede características no 3° nível e novamente no 7°, 15° e 20° nível. Essas características incluem magias do juramento e a característica Canalizar Divindade.\n\nMagias do Juramento. Cada juramento tem uma lista de magias associadas. Você ganha acesso a essas magias nos níveis especificados na descrição do juramento. Uma vez que ganha acesso a uma magia do juramento, você sempre a tem preparada. Magias do juramento não contam contra o número de magias que pode preparar por dia.\n\nCanalizar Divindade. Seu juramento permite canalizar energia divina para alimentar efeitos mágicos. Cada opção de Canalizar Divindade fornecida pelo seu juramento explica como usá-la. Quando usa seu Canalizar Divindade, você escolhe qual opção usar. Você deve então terminar um descanso curto ou longo para usar seu Canalizar Divindade novamente.\n\nAlguns efeitos de Canalizar Divindade requerem testes de resistência. Quando usa tal efeito desta classe, a CD é igual à CD de resistência de magia do paladino.\n\nQuebrando Seu Juramento. Um paladino que quebrou um voto tipicamente busca absolvição de um clérigo que compartilha sua fé, ou de outro paladino da mesma ordem. O paladino pode passar uma vigília noturna inteira em oração como sinal de penitência, ou realizar um jejum ou ato similar de autonegação. Após um rito de confissão e perdão, o paladino recomeça do zero.\n\nSe um paladino voluntariamente viola seu juramento e não mostra sinais de arrependimento, as consequências podem ser mais graves. A critério do Mestre, um paladino impenitente pode ser forçado a abandonar esta classe e adotar outra."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando alcança o 4° nível, e novamente no 8°, 12°, 16° e 19° nível, você pode aumentar um valor de habilidade de sua escolha em 2, ou pode aumentar dois valores de habilidade de sua escolha em 1. Como normal, você não pode aumentar um valor de habilidade acima de 20 usando esta característica."
+    },
+    {
+      "name": "Extra Attack",
+      "name_pt": "Ataque Extra",
+      "level": 5,
+      "description_en": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "description_pt": "A partir do 5° nível, você pode atacar duas vezes, em vez de uma, sempre que realizar a ação de Ataque no seu turno."
+    },
+    {
+      "name": "Aura of Protection",
+      "name_pt": "Aura de Proteção",
+      "level": 6,
+      "description_en": "Starting at 6th level, whenever you or a friendly creature within 10 feet of you must make a saving throw, the creature gains a bonus to the saving throw equal to your Charisma modifier (with a minimum bonus of +1). You must be conscious to grant this bonus.\n\nAt 18th level, the range of this aura increases to 30 feet.",
+      "description_pt": "A partir do 6° nível, sempre que você ou uma criatura amigável a até 3 metros de você precisar fazer um teste de resistência, a criatura ganha um bônus no teste de resistência igual ao seu modificador de Carisma (com um bônus mínimo de +1). Você deve estar consciente para conceder este bônus.\n\nNo 18° nível, o alcance desta aura aumenta para 9 metros."
+    },
+    {
+      "name": "Aura of Courage",
+      "name_pt": "Aura de Coragem",
+      "level": 10,
+      "description_en": "Starting at 10th level, you and friendly creatures within 10 feet of you can't be frightened while you are conscious.\n\nAt 18th level, the range of this aura increases to 30 feet.",
+      "description_pt": "A partir do 10° nível, você e criaturas amigáveis a até 3 metros de você não podem ficar amedrontados enquanto você estiver consciente.\n\nNo 18° nível, o alcance desta aura aumenta para 9 metros."
+    },
+    {
+      "name": "Improved Divine Smite",
+      "name_pt": "Destruição Divina Aprimorada",
+      "level": 11,
+      "description_en": "By 11th level, you are so suffused with righteous might that all your melee weapon strikes carry divine power with them. Whenever you hit a creature with a melee weapon, the creature takes an extra 1d8 radiant damage.",
+      "description_pt": "No 11° nível, você está tão imbuído de poder sagrado que todos os seus golpes de arma corpo a corpo carregam poder divino. Sempre que acertar uma criatura com uma arma corpo a corpo, a criatura sofre 1d8 de dano radiante extra."
+    },
+    {
+      "name": "Cleansing Touch",
+      "name_pt": "Toque Purificador",
+      "level": 14,
+      "description_en": "Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch.\n\nYou can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain expended uses when you finish a long rest.",
+      "description_pt": "A partir do 14° nível, você pode usar sua ação para encerrar uma magia em si mesmo ou em uma criatura voluntária que você tocar.\n\nVocê pode usar esta característica um número de vezes igual ao seu modificador de Carisma (mínimo de uma vez). Você recupera os usos gastos quando termina um descanso longo."
+    }
+  ],
+  "spellcasting": {
+    "description_en": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does. See the paladin spell list for details on preparing and casting spells.",
+    "description_pt": "No 2° nível, você aprendeu a utilizar magia divina através de meditação e oração para conjurar magias como um clérigo faz. Veja a lista de magias do paladino para detalhes sobre preparar e conjurar magias.",
+    "ability": "CHA",
+    "cantrips": false,
+    "ritual_casting": false,
+    "spellcasting_focus": "A holy symbol",
+    "spellcasting_focus_pt": "Um símbolo sagrado"
+  },
+  "multiclass_prerequisites": "Strength 13 and Charisma 13",
+  "multiclass_prerequisites_pt": "Força 13 e Carisma 13",
+  "multiclass_proficiencies": "Light armor, Medium armor, Shields, Simple weapons, Martial weapons",
+  "multiclass_proficiencies_pt": "Armaduras leves, Armaduras médias, Escudos, Armas simples, Armas marciais",
+  "subclass_level": 3,
+  "subclass_name": "Sacred Oath",
+  "subclass_name_pt": "Juramento Sagrado",
+  "subclass_ids": ["oath-of-devotion"]
+}

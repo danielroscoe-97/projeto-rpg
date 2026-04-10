@@ -423,6 +423,24 @@ export function CombatSessionClient({
     };
   }, [is_active]);
 
+  // BT2-01/A5: Periodic full state sync — safety net against accumulated drift.
+  // Every 30s while combat is active, DM broadcasts the full truth to all players.
+  useEffect(() => {
+    if (!is_active || !sessionId) return;
+    const timer = setInterval(() => {
+      const store = useCombatStore.getState();
+      if (!store.encounter_id || !store.is_active) return;
+      broadcastEvent(sessionId, {
+        type: "session:state_sync",
+        combatants: store.combatants,
+        current_turn_index: store.current_turn_index,
+        round_number: store.round_number,
+        encounter_id: store.encounter_id,
+      });
+    }, 30_000);
+    return () => clearInterval(timer);
+  }, [is_active, sessionId]);
+
   // Register hidden lookup so broadcast.ts can filter events for hidden combatants
   useEffect(() => {
     registerHiddenLookup(
@@ -850,6 +868,26 @@ export function CombatSessionClient({
           revoked_token_id: req.senderTokenId,
         } as import("@/lib/types/realtime").RealtimeEvent);
       }
+      // B2: For rejoin with senderTokenId, link existing combatant to token in DB
+      if (req.senderTokenId) {
+        const matchingCombatant = useCombatStore.getState().combatants.find(
+          (c) => c.is_player && c.name === req.player_name
+        );
+        if (matchingCombatant) {
+          useCombatStore.getState().hydrateCombatants(
+            useCombatStore.getState().combatants.map((c) =>
+              c.id === matchingCombatant.id ? { ...c, session_token_id: req.senderTokenId } : c
+            )
+          );
+          import("@/lib/supabase/client").then(({ createClient }) => {
+            createClient()
+              .from("combatants")
+              .update({ session_token_id: req.senderTokenId })
+              .eq("id", matchingCombatant.id)
+              .then(() => {});
+          });
+        }
+      }
     } else {
       // Late-join request — create new combatant
       handleAddCombatant({
@@ -879,6 +917,8 @@ export function CombatSessionClient({
         legendary_actions_total: null,
         legendary_actions_used: 0,
         reaction_used: false,
+        // B2: Link combatant to session_token by ID for reconnection
+        session_token_id: req.senderTokenId ?? null,
       } as Omit<Combatant, "id">);
       broadcastEvent(sid, {
         type: "combat:late_join_response",
@@ -920,12 +960,13 @@ export function CombatSessionClient({
 
     const handleLateJoin = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
-      const { player_name, hp: pHp, ac: pAc, initiative: pInit, request_id } = payload as {
-        player_name: string; hp: number | null; ac: number | null; initiative: number; request_id: string;
+      const { player_name, hp: pHp, ac: pAc, initiative: pInit, request_id, sender_token_id } = payload as {
+        player_name: string; hp: number | null; ac: number | null; initiative: number; request_id: string; sender_token_id?: string;
       };
       setJoinRequests((prev) => {
         if (prev.some((r) => r.request_id === request_id)) return prev;
-        return [...prev, { request_id, player_name, hp: pHp, ac: pAc, initiative: pInit }];
+        // B2: Capture sender_token_id for ID-based combatant linking
+        return [...prev, { request_id, player_name, hp: pHp, ac: pAc, initiative: pInit, senderTokenId: sender_token_id }];
       });
     };
 

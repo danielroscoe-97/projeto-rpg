@@ -1,0 +1,280 @@
+{
+  "id": "rogue",
+  "name": "Rogue",
+  "name_pt": "Ladino",
+  "hit_die": "d8",
+  "primary_ability": "DEX",
+  "saving_throws": ["DEX", "INT"],
+  "armor_proficiencies": "Light armor",
+  "weapon_proficiencies": "Simple weapons, Hand crossbows, Longswords, Rapiers, Shortswords",
+  "srd_subclass": "Thief",
+  "srd_subclass_pt": "Ladrão",
+  "description_en": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
+  "description_pt": "Um patife que usa furtividade e truques para superar obstáculos e inimigos.",
+  "spellcaster": false,
+  "spellcasting_ability": null,
+  "icon": "dagger",
+  "role": "martial",
+  "description_full_en": "Rogues rely on skill, stealth, and their foes' vulnerabilities to get the upper hand in any situation. They have a knack for finding the solution to just about any problem, demonstrating a resourcefulness and versatility that is the cornerstone of any successful adventuring party.\n\nSignaling for her companions to wait, a halfling creeps forward through the dungeon hall. She presses an ear to the door, then pulls out a set of tools and picks the lock in the blink of an eye. Then she disappears into the shadows as her fighter friend moves forward to kick the door open.\n\nA human lurks in the shadows of an alley while his accomplice prepares for her part of the ambush. When their target — a notorious slaver — passes the alleyway, the accomplice cries out, the slaver comes to investigate, and the assassin's blade cuts his throat before he can make a sound.\n\nSuppressing a giggle, a gnome waggles her fingers and magically lifts the key ring from the guard's belt. In a moment, the keys are in her hand, the cell door is open, and she and her companions are free to make their escape.\n\nRogues devote as much effort to mastering the use of a variety of skills as they do to perfecting their combat abilities, giving them a broad expertise that few other characters can match. Many rogues focus on stealth and deception, while others refine the skills that help them in a dungeon environment, such as climbing, finding and disarming traps, and opening locks.\n\nWhen it comes to combat, rogues prioritize cunning over brute strength. A rogue would rather make one precise strike, placing it exactly where the attack will hurt the target most, than wear an opponent down with a barrage of attacks. Rogues have an almost supernatural knack for avoiding danger, and a few learn magical tricks to supplement their other abilities.",
+  "description_full_pt": "Ladinos dependem de habilidade, furtividade e das vulnerabilidades de seus inimigos para obter vantagem em qualquer situação. Eles têm um talento especial para encontrar a solução de praticamente qualquer problema, demonstrando desenvoltura e versatilidade que são a base de qualquer grupo de aventureiros bem-sucedido.\n\nSinalizando para seus companheiros esperarem, uma halfling se esgueira pelo corredor da masmorra. Ela encosta o ouvido na porta, então puxa um conjunto de ferramentas e abre a fechadura num piscar de olhos. Depois desaparece nas sombras enquanto seu amigo guerreiro avança para chutar a porta.\n\nUm humano espreita nas sombras de um beco enquanto sua cúmplice prepara sua parte da emboscada. Quando o alvo — um notório escravagista — passa pelo beco, a cúmplice grita, o escravagista vem investigar, e a lâmina do assassino corta sua garganta antes que ele possa emitir um som.\n\nSuprimindo uma risadinha, uma gnoma mexe os dedos e magicamente levanta o molho de chaves do cinto do guarda. Em um instante, as chaves estão em sua mão, a porta da cela está aberta, e ela e seus companheiros estão livres para escapar.\n\nLadinos dedicam tanto esforço para dominar o uso de diversas perícias quanto para aperfeiçoar suas habilidades de combate, conferindo-lhes uma expertise ampla que poucos outros personagens conseguem igualar. Muitos ladinos focam em furtividade e enganação, enquanto outros refinam as perícias que os ajudam em ambientes de masmorra, como escalar, encontrar e desarmar armadilhas, e abrir fechaduras.\n\nQuando se trata de combate, ladinos priorizam astúcia sobre força bruta. Um ladino prefere desferir um golpe preciso, posicionando-o exatamente onde o ataque mais machucará o alvo, do que desgastar um oponente com uma saraivada de ataques. Ladinos têm um talento quase sobrenatural para evitar perigo, e alguns aprendem truques mágicos para complementar suas outras habilidades.",
+  "quick_build_en": "You can make a rogue quickly by following these suggestions. First, Dexterity should be your highest ability score. Make Intelligence your next-highest if you want to excel at Investigation or plan to take the Arcane Trickster archetype. Choose Charisma instead if you plan to emphasize deception and social interaction. Second, choose the charlatan background.",
+  "quick_build_pt": "Você pode criar um ladino rapidamente seguindo estas sugestões. Primeiro, Destreza deve ser seu valor de habilidade mais alto. Faça Inteligência seu segundo maior valor se quiser se destacar em Investigação ou planeja seguir o arquétipo Trapaceiro Arcano. Escolha Carisma se planeja enfatizar enganação e interação social. Segundo, escolha o antecedente charlatão.",
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n• (a) a rapier or (b) a shortsword\n• (a) a shortbow and quiver of 20 arrows or (b) a shortsword\n• (a) a burglar's pack, (b) a dungeoneer's pack, or (c) an explorer's pack\n• Leather armor, two daggers, and thieves' tools",
+  "starting_equipment_pt": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n• (a) uma rapieira ou (b) uma espada curta\n• (a) um arco curto e aljava com 20 flechas ou (b) uma espada curta\n• (a) um kit de assaltante, (b) um kit de aventureiro de masmorras, ou (c) um kit de explorador\n• Armadura de couro, duas adagas e ferramentas de ladrão",
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Expertise, Sneak Attack, Thieves' Cant",
+      "features_pt": "Expertise, Ataque Furtivo, Gíria de Ladrão",
+      "extras": { "sneak_attack": "1d6" },
+      "extras_pt": { "ataque_furtivo": "1d6" }
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Cunning Action",
+      "features_pt": "Ação Ardilosa",
+      "extras": { "sneak_attack": "1d6" },
+      "extras_pt": { "ataque_furtivo": "1d6" }
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "Roguish Archetype",
+      "features_pt": "Arquétipo de Ladino",
+      "extras": { "sneak_attack": "2d6" },
+      "extras_pt": { "ataque_furtivo": "2d6" }
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "sneak_attack": "2d6" },
+      "extras_pt": { "ataque_furtivo": "2d6" }
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "Uncanny Dodge",
+      "features_pt": "Esquiva Sobrenatural",
+      "extras": { "sneak_attack": "3d6" },
+      "extras_pt": { "ataque_furtivo": "3d6" }
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Expertise",
+      "features_pt": "Expertise",
+      "extras": { "sneak_attack": "3d6" },
+      "extras_pt": { "ataque_furtivo": "3d6" }
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "Evasion",
+      "features_pt": "Evasão",
+      "extras": { "sneak_attack": "4d6" },
+      "extras_pt": { "ataque_furtivo": "4d6" }
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "sneak_attack": "4d6" },
+      "extras_pt": { "ataque_furtivo": "4d6" }
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "Roguish Archetype feature",
+      "features_pt": "Característica do Arquétipo de Ladino",
+      "extras": { "sneak_attack": "5d6" },
+      "extras_pt": { "ataque_furtivo": "5d6" }
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "sneak_attack": "5d6" },
+      "extras_pt": { "ataque_furtivo": "5d6" }
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "Reliable Talent",
+      "features_pt": "Talento Confiável",
+      "extras": { "sneak_attack": "6d6" },
+      "extras_pt": { "ataque_furtivo": "6d6" }
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "sneak_attack": "6d6" },
+      "extras_pt": { "ataque_furtivo": "6d6" }
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "Roguish Archetype feature",
+      "features_pt": "Característica do Arquétipo de Ladino",
+      "extras": { "sneak_attack": "7d6" },
+      "extras_pt": { "ataque_furtivo": "7d6" }
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Blindsense",
+      "features_pt": "Sentido Cego",
+      "extras": { "sneak_attack": "7d6" },
+      "extras_pt": { "ataque_furtivo": "7d6" }
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "Slippery Mind",
+      "features_pt": "Mente Escorregadia",
+      "extras": { "sneak_attack": "8d6" },
+      "extras_pt": { "ataque_furtivo": "8d6" }
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "sneak_attack": "8d6" },
+      "extras_pt": { "ataque_furtivo": "8d6" }
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "Roguish Archetype feature",
+      "features_pt": "Característica do Arquétipo de Ladino",
+      "extras": { "sneak_attack": "9d6" },
+      "extras_pt": { "ataque_furtivo": "9d6" }
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Elusive",
+      "features_pt": "Elusivo",
+      "extras": { "sneak_attack": "9d6" },
+      "extras_pt": { "ataque_furtivo": "9d6" }
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "sneak_attack": "10d6" },
+      "extras_pt": { "ataque_furtivo": "10d6" }
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Stroke of Luck",
+      "features_pt": "Golpe de Sorte",
+      "extras": { "sneak_attack": "10d6" },
+      "extras_pt": { "ataque_furtivo": "10d6" }
+    }
+  ],
+  "class_features": [
+    {
+      "name": "Expertise",
+      "name_pt": "Expertise",
+      "level": 1,
+      "description_en": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit.",
+      "description_pt": "No 1º nível, escolha duas de suas proficiências em perícias, ou uma de suas proficiências em perícias e sua proficiência com ferramentas de ladrão. Seu bônus de proficiência é dobrado para qualquer teste de habilidade que você fizer usando qualquer uma das proficiências escolhidas.\n\nNo 6º nível, você pode escolher mais duas de suas proficiências (em perícias ou com ferramentas de ladrão) para obter este benefício."
+    },
+    {
+      "name": "Sneak Attack",
+      "name_pt": "Ataque Furtivo",
+      "level": 1,
+      "description_en": "Beginning at 1st level, you know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.\n\nYou don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll.\n\nThe amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table.",
+      "description_pt": "A partir do 1º nível, você sabe como golpear sutilmente e explorar a distração de um inimigo. Uma vez por turno, você pode causar 1d6 de dano extra a uma criatura que você atingir com um ataque se tiver vantagem na jogada de ataque. O ataque deve usar uma arma com propriedade acuidade ou uma arma de ataque à distância.\n\nVocê não precisa de vantagem na jogada de ataque se outro inimigo do alvo estiver a 1,5 metro dele, esse inimigo não estiver incapacitado, e você não tiver desvantagem na jogada de ataque.\n\nA quantidade de dano extra aumenta conforme você ganha níveis nesta classe, como mostrado na coluna Ataque Furtivo da tabela do Ladino."
+    },
+    {
+      "name": "Thieves' Cant",
+      "name_pt": "Gíria de Ladrão",
+      "level": 1,
+      "description_en": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. Only another creature that knows thieves' cant understands such messages. It takes four times longer to convey such a message than it does to speak the same idea plainly.\n\nIn addition, you understand a set of secret signs and symbols used to convey short, simple messages, such as whether an area is dangerous or the territory of a thieves' guild, whether loot is nearby, or whether the people in an area are easy marks or will provide a safe house for thieves on the run.",
+      "description_pt": "Durante seu treinamento de ladino, você aprendeu a gíria de ladrão, uma mistura secreta de dialeto, jargão e código que permite esconder mensagens em conversas aparentemente normais. Apenas outra criatura que conheça a gíria de ladrão entende tais mensagens. Leva quatro vezes mais tempo para transmitir uma mensagem assim do que para falar a mesma ideia claramente.\n\nAlém disso, você entende um conjunto de sinais e símbolos secretos usados para transmitir mensagens curtas e simples, como se uma área é perigosa ou território de uma guilda de ladrões, se há saque por perto, ou se as pessoas na área são alvos fáceis ou fornecerão um esconderijo seguro para ladrões em fuga."
+    },
+    {
+      "name": "Cunning Action",
+      "name_pt": "Ação Ardilosa",
+      "level": 2,
+      "description_en": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action.",
+      "description_pt": "A partir do 2º nível, seu raciocínio rápido e agilidade permitem que você se mova e aja rapidamente. Você pode realizar uma ação bônus em cada um de seus turnos em combate. Essa ação só pode ser usada para realizar a ação Disparada, Desengajar ou Esconder."
+    },
+    {
+      "name": "Uncanny Dodge",
+      "name_pt": "Esquiva Sobrenatural",
+      "level": 5,
+      "description_en": "Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack's damage against you.",
+      "description_pt": "A partir do 5º nível, quando um atacante que você pode ver atinge você com um ataque, você pode usar sua reação para reduzir pela metade o dano do ataque contra você."
+    },
+    {
+      "name": "Evasion",
+      "name_pt": "Evasão",
+      "level": 7,
+      "description_en": "Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as a red dragon's fiery breath or an ice storm spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+      "description_pt": "A partir do 7º nível, você pode esquivar-se agilmente de certos efeitos de área, como o sopro flamejante de um dragão vermelho ou a magia tempestade de gelo. Quando você é submetido a um efeito que permite fazer um teste de resistência de Destreza para sofrer apenas metade do dano, você não sofre dano algum se passar no teste, e sofre apenas metade do dano se falhar."
+    },
+    {
+      "name": "Reliable Talent",
+      "name_pt": "Talento Confiável",
+      "level": 11,
+      "description_en": "By 11th level, you have refined your chosen skills until they approach perfection. Whenever you make an ability check that lets you add your proficiency bonus, you can treat a d20 roll of 9 or lower as a 10.",
+      "description_pt": "No 11º nível, você refinou suas perícias escolhidas até que se aproximem da perfeição. Sempre que você fizer um teste de habilidade que permita adicionar seu bônus de proficiência, você pode tratar uma rolagem de d20 de 9 ou menos como 10."
+    },
+    {
+      "name": "Blindsense",
+      "name_pt": "Sentido Cego",
+      "level": 14,
+      "description_en": "Starting at 14th level, if you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you.",
+      "description_pt": "A partir do 14º nível, se você puder ouvir, você está ciente da localização de qualquer criatura oculta ou invisível a até 3 metros de você."
+    },
+    {
+      "name": "Slippery Mind",
+      "name_pt": "Mente Escorregadia",
+      "level": 15,
+      "description_en": "By 15th level, you have acquired greater mental strength. You gain proficiency in Wisdom saving throws.",
+      "description_pt": "No 15º nível, você adquiriu maior força mental. Você ganha proficiência em testes de resistência de Sabedoria."
+    },
+    {
+      "name": "Elusive",
+      "name_pt": "Elusivo",
+      "level": 18,
+      "description_en": "Beginning at 18th level, you are so evasive that attackers rarely gain the upper hand against you. No attack roll has advantage against you while you aren't incapacitated.",
+      "description_pt": "A partir do 18º nível, você é tão evasivo que atacantes raramente obtêm vantagem contra você. Nenhuma jogada de ataque tem vantagem contra você enquanto você não estiver incapacitado."
+    },
+    {
+      "name": "Stroke of Luck",
+      "name_pt": "Golpe de Sorte",
+      "level": 20,
+      "description_en": "At 20th level, you have an uncanny knack for succeeding when you need to. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20.\n\nOnce you use this feature, you can't use it again until you finish a short or long rest.",
+      "description_pt": "No 20º nível, você tem um talento sobrenatural para ter sucesso quando precisa. Se seu ataque errar um alvo ao alcance, você pode transformar o erro em um acerto. Alternativamente, se você falhar em um teste de habilidade, pode tratar a rolagem do d20 como 20.\n\nUma vez que usar esta característica, você não poderá usá-la novamente até terminar um descanso curto ou longo."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando você alcança o 4º nível, e novamente no 8º, 10º, 12º, 16º e 19º nível, você pode aumentar um valor de habilidade à sua escolha em 2, ou pode aumentar dois valores de habilidade à sua escolha em 1. Como normal, você não pode aumentar um valor de habilidade acima de 20 usando esta característica."
+    }
+  ],
+  "multiclass_prerequisites": "Dexterity 13",
+  "multiclass_prerequisites_pt": "Destreza 13",
+  "multiclass_proficiencies": "Light armor, one skill from the class's skill list",
+  "multiclass_proficiencies_pt": "Armaduras leves, uma perícia da lista de perícias da classe",
+  "subclass_level": 3,
+  "subclass_name": "Roguish Archetype",
+  "subclass_name_pt": "Arquétipo de Ladino",
+  "subclass_ids": ["thief"]
+}

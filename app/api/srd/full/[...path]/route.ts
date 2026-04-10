@@ -24,6 +24,7 @@ const ALLOWED_FILES = new Set([
   "items.json",
   "conditions.json",
   "feats.json",
+  "classes-srd.json",
 ]);
 
 const DATA_DIR = join(process.cwd(), "data", "srd");

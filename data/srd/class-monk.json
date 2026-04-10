@@ -1,0 +1,189 @@
+{
+  "id": "monk",
+  "name": "Monk",
+  "name_pt": "Monge",
+  "hit_die": "d8",
+  "primary_ability": "DEX & WIS",
+  "saving_throws": ["STR", "DEX"],
+  "armor_proficiencies": "None",
+  "weapon_proficiencies": "Simple weapons, Shortswords",
+  "srd_subclass": "Way of the Open Hand",
+  "srd_subclass_pt": "Caminho da Mão Aberta",
+  "description_en": "Martial artists who harness the body's inner energy as ki.",
+  "description_pt": "Artistas marciais que dominam a energia interior do corpo como ki.",
+  "spellcaster": false,
+  "spellcasting_ability": null,
+  "icon": "fist",
+  "role": "martial",
+  "description_full_en": "Her fists a blur as they deflect an incoming hail of arrows, a half-elf springs over a barricade and throws herself into the massed ranks of hobgoblins on the other side. She whirls among them, knocking their blows aside and sending them reeling, until at last she stands alone.\n\nTaking a deep breath, a human covered in tattoos settles into a battle stance. As the first charging orcs reach him, he exhales and a blast of fire roars from his mouth, engulfing his foes.\n\nMoving with the silence of the night, a black-clad halfling steps into a shadow beneath an arch and emerges from another inky shadow on a balcony a stone's throw away. She slides her blade free of its cloth-wrapped scabbard and peers through the open window at the tyrant prince, so vulnerable in the grip of sleep.\n\nWhatever their discipline, monks are united in their ability to magically harness the energy that flows in their bodies. Whether channeled as a striking display of combat prowess or a subtler focus of defensive ability and speed, this energy infuses all that a monk does.",
+  "description_full_pt": "Seus punhos um borrão enquanto desviam de uma saraivada de flechas, uma meio-elfa salta sobre uma barricada e se lança contra as fileiras cerradas de hobgoblins do outro lado. Ela gira entre eles, desviando seus golpes e os fazendo cambalear, até que finalmente fica sozinha.\n\nRespirando fundo, um humano coberto de tatuagens assume uma postura de luta. Quando os primeiros orcs chegam correndo, ele expira e um jato de fogo ruge de sua boca, engolfando seus inimigos.\n\nMovendo-se com o silêncio da noite, uma halfling vestida de negro entra em uma sombra sob um arco e emerge de outra sombra escura em uma varanda a poucos metros de distância. Ela desliza sua lâmina para fora da bainha envolta em tecido e espreita pela janela aberta o príncipe tirano, tão vulnerável nas garras do sono.\n\nQualquer que seja sua disciplina, monges são unidos em sua habilidade de magicamente aproveitar a energia que flui em seus corpos. Seja canalizada como uma impressionante demonstração de proeza em combate ou um foco mais sutil de habilidade defensiva e velocidade, essa energia permeia tudo o que um monge faz.",
+  "quick_build_en": "You can make a monk quickly by following these suggestions. First, make Dexterity your highest ability score, followed by Wisdom. Second, choose the hermit background.",
+  "quick_build_pt": "Você pode criar um monge rapidamente seguindo estas sugestões. Primeiro, faça Destreza sua maior pontuação de habilidade, seguida de Sabedoria. Segundo, escolha o antecedente eremita.",
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) a shortsword or (b) any simple weapon\n- (a) a dungeoneer's pack or (b) an explorer's pack\n- 10 darts",
+  "starting_equipment_pt": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n- (a) uma espada curta ou (b) qualquer arma simples\n- (a) um pacote de explorador de masmorras ou (b) um pacote de explorador\n- 10 dardos",
+  "class_table": [
+    { "level": 1, "proficiency_bonus": "+2", "features": "Unarmored Defense, Martial Arts", "features_pt": "Defesa sem Armadura, Artes Marciais", "extras": { "martial_arts": "1d4", "ki_points": "—", "unarmored_movement": "—" }, "extras_pt": { "martial_arts": "1d4", "ki_points": "—", "unarmored_movement": "—" } },
+    { "level": 2, "proficiency_bonus": "+2", "features": "Ki, Unarmored Movement", "features_pt": "Ki, Movimento sem Armadura", "extras": { "martial_arts": "1d4", "ki_points": "2", "unarmored_movement": "+10 ft." }, "extras_pt": { "martial_arts": "1d4", "ki_points": "2", "unarmored_movement": "+3 m" } },
+    { "level": 3, "proficiency_bonus": "+2", "features": "Monastic Tradition, Deflect Missiles", "features_pt": "Tradição Monástica, Desviar Projéteis", "extras": { "martial_arts": "1d4", "ki_points": "3", "unarmored_movement": "+10 ft." }, "extras_pt": { "martial_arts": "1d4", "ki_points": "3", "unarmored_movement": "+3 m" } },
+    { "level": 4, "proficiency_bonus": "+2", "features": "Ability Score Improvement, Slow Fall", "features_pt": "Melhoria de Atributo, Queda Lenta", "extras": { "martial_arts": "1d4", "ki_points": "4", "unarmored_movement": "+10 ft." }, "extras_pt": { "martial_arts": "1d4", "ki_points": "4", "unarmored_movement": "+3 m" } },
+    { "level": 5, "proficiency_bonus": "+3", "features": "Extra Attack, Stunning Strike", "features_pt": "Ataque Extra, Golpe Atordoante", "extras": { "martial_arts": "1d6", "ki_points": "5", "unarmored_movement": "+10 ft." }, "extras_pt": { "martial_arts": "1d6", "ki_points": "5", "unarmored_movement": "+3 m" } },
+    { "level": 6, "proficiency_bonus": "+3", "features": "Ki-Empowered Strikes, Monastic Tradition feature", "features_pt": "Golpes Imbuídos de Ki, Característica de Tradição Monástica", "extras": { "martial_arts": "1d6", "ki_points": "6", "unarmored_movement": "+15 ft." }, "extras_pt": { "martial_arts": "1d6", "ki_points": "6", "unarmored_movement": "+4,5 m" } },
+    { "level": 7, "proficiency_bonus": "+3", "features": "Evasion, Stillness of Mind", "features_pt": "Evasão, Serenidade Mental", "extras": { "martial_arts": "1d6", "ki_points": "7", "unarmored_movement": "+15 ft." }, "extras_pt": { "martial_arts": "1d6", "ki_points": "7", "unarmored_movement": "+4,5 m" } },
+    { "level": 8, "proficiency_bonus": "+3", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "extras": { "martial_arts": "1d6", "ki_points": "8", "unarmored_movement": "+15 ft." }, "extras_pt": { "martial_arts": "1d6", "ki_points": "8", "unarmored_movement": "+4,5 m" } },
+    { "level": 9, "proficiency_bonus": "+4", "features": "Unarmored Movement improvement", "features_pt": "Melhoria de Movimento sem Armadura", "extras": { "martial_arts": "1d6", "ki_points": "9", "unarmored_movement": "+15 ft." }, "extras_pt": { "martial_arts": "1d6", "ki_points": "9", "unarmored_movement": "+4,5 m" } },
+    { "level": 10, "proficiency_bonus": "+4", "features": "Purity of Body", "features_pt": "Pureza do Corpo", "extras": { "martial_arts": "1d6", "ki_points": "10", "unarmored_movement": "+20 ft." }, "extras_pt": { "martial_arts": "1d6", "ki_points": "10", "unarmored_movement": "+6 m" } },
+    { "level": 11, "proficiency_bonus": "+4", "features": "Monastic Tradition feature", "features_pt": "Característica de Tradição Monástica", "extras": { "martial_arts": "1d8", "ki_points": "11", "unarmored_movement": "+20 ft." }, "extras_pt": { "martial_arts": "1d8", "ki_points": "11", "unarmored_movement": "+6 m" } },
+    { "level": 12, "proficiency_bonus": "+4", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "extras": { "martial_arts": "1d8", "ki_points": "12", "unarmored_movement": "+20 ft." }, "extras_pt": { "martial_arts": "1d8", "ki_points": "12", "unarmored_movement": "+6 m" } },
+    { "level": 13, "proficiency_bonus": "+5", "features": "Tongue of the Sun and Moon", "features_pt": "Língua do Sol e da Lua", "extras": { "martial_arts": "1d8", "ki_points": "13", "unarmored_movement": "+20 ft." }, "extras_pt": { "martial_arts": "1d8", "ki_points": "13", "unarmored_movement": "+6 m" } },
+    { "level": 14, "proficiency_bonus": "+5", "features": "Diamond Soul", "features_pt": "Alma Diamantina", "extras": { "martial_arts": "1d8", "ki_points": "14", "unarmored_movement": "+25 ft." }, "extras_pt": { "martial_arts": "1d8", "ki_points": "14", "unarmored_movement": "+7,5 m" } },
+    { "level": 15, "proficiency_bonus": "+5", "features": "Timeless Body", "features_pt": "Corpo Atemporal", "extras": { "martial_arts": "1d8", "ki_points": "15", "unarmored_movement": "+25 ft." }, "extras_pt": { "martial_arts": "1d8", "ki_points": "15", "unarmored_movement": "+7,5 m" } },
+    { "level": 16, "proficiency_bonus": "+5", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "extras": { "martial_arts": "1d8", "ki_points": "16", "unarmored_movement": "+25 ft." }, "extras_pt": { "martial_arts": "1d8", "ki_points": "16", "unarmored_movement": "+7,5 m" } },
+    { "level": 17, "proficiency_bonus": "+6", "features": "Monastic Tradition feature", "features_pt": "Característica de Tradição Monástica", "extras": { "martial_arts": "1d10", "ki_points": "17", "unarmored_movement": "+25 ft." }, "extras_pt": { "martial_arts": "1d10", "ki_points": "17", "unarmored_movement": "+7,5 m" } },
+    { "level": 18, "proficiency_bonus": "+6", "features": "Empty Body", "features_pt": "Corpo Vazio", "extras": { "martial_arts": "1d10", "ki_points": "18", "unarmored_movement": "+30 ft." }, "extras_pt": { "martial_arts": "1d10", "ki_points": "18", "unarmored_movement": "+9 m" } },
+    { "level": 19, "proficiency_bonus": "+6", "features": "Ability Score Improvement", "features_pt": "Melhoria de Atributo", "extras": { "martial_arts": "1d10", "ki_points": "19", "unarmored_movement": "+30 ft." }, "extras_pt": { "martial_arts": "1d10", "ki_points": "19", "unarmored_movement": "+9 m" } },
+    { "level": 20, "proficiency_bonus": "+6", "features": "Perfect Self", "features_pt": "Eu Perfeito", "extras": { "martial_arts": "1d10", "ki_points": "20", "unarmored_movement": "+30 ft." }, "extras_pt": { "martial_arts": "1d10", "ki_points": "20", "unarmored_movement": "+9 m" } }
+  ],
+  "class_features": [
+    {
+      "name": "Unarmored Defense",
+      "name_pt": "Defesa sem Armadura",
+      "level": 1,
+      "description_en": "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier.",
+      "description_pt": "A partir do 1º nível, enquanto você não estiver usando armadura nem empunhando um escudo, sua CA é igual a 10 + seu modificador de Destreza + seu modificador de Sabedoria."
+    },
+    {
+      "name": "Martial Arts",
+      "name_pt": "Artes Marciais",
+      "level": 1,
+      "description_en": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two-handed or heavy property.\n\nYou gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield:\n\n- You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n- You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of the Monk table.\n- When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.",
+      "description_pt": "No 1º nível, sua prática de artes marciais lhe concede maestria em estilos de combate que usam ataques desarmados e armas de monge, que são espadas curtas e qualquer arma simples corpo a corpo que não tenha a propriedade duas mãos ou pesada.\n\nVocê ganha os seguintes benefícios enquanto estiver desarmado ou empunhando apenas armas de monge e não estiver usando armadura nem empunhando um escudo:\n\n- Você pode usar Destreza em vez de Força para as jogadas de ataque e dano de seus ataques desarmados e armas de monge.\n- Você pode rolar um d4 no lugar do dano normal de seu ataque desarmado ou arma de monge. Esse dado muda conforme você ganha níveis de monge, como mostrado na coluna Artes Marciais da tabela do Monge.\n- Quando você usa a ação de Ataque com um ataque desarmado ou uma arma de monge no seu turno, você pode fazer um ataque desarmado como uma ação bônus. Por exemplo, se você usar a ação de Ataque e atacar com um bordão, você também pode fazer um ataque desarmado como uma ação bônus, assumindo que você ainda não usou uma ação bônus neste turno."
+    },
+    {
+      "name": "Ki",
+      "name_pt": "Ki",
+      "level": 2,
+      "description_en": "Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of the Monk table.\n\nYou can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class.\n\nWhen you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points.\n\nSome of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows:\n\nKi save DC = 8 + your proficiency bonus + your Wisdom modifier\n\nFlurry of Blows: Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action.\n\nPatient Defense: You can spend 1 ki point to take the Dodge action as a bonus action on your turn.\n\nStep of the Wind: You can spend 1 ki point to take the Disengage or Dash action as a bonus action on your turn, and your jump distance is doubled for the turn.",
+      "description_pt": "A partir do 2º nível, seu treinamento permite que você aproveite a energia mística do ki. Seu acesso a essa energia é representado por um número de pontos de ki. Seu nível de monge determina o número de pontos que você tem, como mostrado na coluna Pontos de Ki da tabela do Monge.\n\nVocê pode gastar esses pontos para alimentar diversas características de ki. Você começa conhecendo três dessas características: Rajada de Golpes, Defesa Paciente e Passo do Vento. Você aprende mais características de ki conforme ganha níveis nesta classe.\n\nQuando você gasta um ponto de ki, ele fica indisponível até você terminar um descanso curto ou longo, ao final do qual você puxa todo o ki gasto de volta para si. Você deve gastar pelo menos 30 minutos do descanso meditando para recuperar seus pontos de ki.\n\nAlgumas de suas características de ki exigem que seu alvo faça uma salvaguarda para resistir aos efeitos. A CD da salvaguarda é calculada da seguinte forma:\n\nCD de Ki = 8 + seu bônus de proficiência + seu modificador de Sabedoria\n\nRajada de Golpes: Imediatamente após você usar a ação de Ataque no seu turno, você pode gastar 1 ponto de ki para fazer dois ataques desarmados como uma ação bônus.\n\nDefesa Paciente: Você pode gastar 1 ponto de ki para usar a ação de Esquiva como uma ação bônus no seu turno.\n\nPasso do Vento: Você pode gastar 1 ponto de ki para usar a ação de Desengajar ou Disparada como uma ação bônus no seu turno, e sua distância de salto é dobrada para o turno."
+    },
+    {
+      "name": "Unarmored Movement",
+      "name_pt": "Movimento sem Armadura",
+      "level": 2,
+      "description_en": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in the Monk table.\n\nAt 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move.",
+      "description_pt": "A partir do 2º nível, seu deslocamento aumenta em 3 metros enquanto você não estiver usando armadura nem empunhando um escudo. Esse bônus aumenta quando você alcança certos níveis de monge, como mostrado na tabela do Monge.\n\nNo 9º nível, você ganha a habilidade de se mover ao longo de superfícies verticais e sobre líquidos no seu turno sem cair durante o movimento."
+    },
+    {
+      "name": "Monastic Tradition",
+      "name_pt": "Tradição Monástica",
+      "level": 3,
+      "description_en": "When you reach 3rd level, you commit yourself to a monastic tradition: the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.",
+      "description_pt": "Quando você alcança o 3º nível, você se compromete com uma tradição monástica: o Caminho da Mão Aberta. Sua tradição lhe concede características no 3º nível e novamente no 6º, 11º e 17º nível."
+    },
+    {
+      "name": "Deflect Missiles",
+      "name_pt": "Desviar Projéteis",
+      "level": 3,
+      "description_en": "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level.\n\nIf you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in one hand and you have at least one hand free. If you catch a missile in this way, you can spend 1 ki point to make a ranged attack with the weapon or piece of ammunition you just caught, as part of the same reaction. You make this attack with proficiency, regardless of your weapon proficiencies, and the missile counts as a monk weapon for the attack, which has a normal range of 20 feet and a long range of 60 feet.",
+      "description_pt": "A partir do 3º nível, você pode usar sua reação para desviar ou pegar o projétil quando você é atingido por um ataque de arma à distância. Quando você o faz, o dano que você recebe do ataque é reduzido em 1d10 + seu modificador de Destreza + seu nível de monge.\n\nSe você reduzir o dano a 0, você pode pegar o projétil se ele for pequeno o suficiente para segurar em uma mão e você tiver pelo menos uma mão livre. Se você pegar um projétil dessa forma, você pode gastar 1 ponto de ki para fazer um ataque à distância com a arma ou munição que acabou de pegar, como parte da mesma reação. Você faz esse ataque com proficiência, independentemente de suas proficiências com armas, e o projétil conta como uma arma de monge para o ataque, que tem um alcance normal de 6 metros e um alcance longo de 18 metros."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando você alcança o 4º nível, e novamente no 8º, 12º, 16º e 19º nível, você pode aumentar um valor de habilidade de sua escolha em 2, ou pode aumentar dois valores de habilidade de sua escolha em 1. Como normal, você não pode aumentar um valor de habilidade acima de 20 usando esta característica."
+    },
+    {
+      "name": "Slow Fall",
+      "name_pt": "Queda Lenta",
+      "level": 4,
+      "description_en": "Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level.",
+      "description_pt": "A partir do 4º nível, você pode usar sua reação quando cai para reduzir qualquer dano de queda que você receba por uma quantidade igual a cinco vezes seu nível de monge."
+    },
+    {
+      "name": "Extra Attack",
+      "name_pt": "Ataque Extra",
+      "level": 5,
+      "description_en": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "description_pt": "A partir do 5º nível, você pode atacar duas vezes, em vez de uma, sempre que usar a ação de Ataque no seu turno."
+    },
+    {
+      "name": "Stunning Strike",
+      "name_pt": "Golpe Atordoante",
+      "level": 5,
+      "description_en": "Starting at 5th level, you can interfere with the flow of ki in an opponent's body. When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn.",
+      "description_pt": "A partir do 5º nível, você pode interferir no fluxo de ki no corpo de um oponente. Quando você acerta outra criatura com um ataque corpo a corpo com arma, você pode gastar 1 ponto de ki para tentar um golpe atordoante. O alvo deve ter sucesso em uma salvaguarda de Constituição ou ficará atordoado até o final do seu próximo turno."
+    },
+    {
+      "name": "Ki-Empowered Strikes",
+      "name_pt": "Golpes Imbuídos de Ki",
+      "level": 6,
+      "description_en": "Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+      "description_pt": "A partir do 6º nível, seus ataques desarmados contam como mágicos para fins de superar resistência e imunidade a ataques e dano não-mágicos."
+    },
+    {
+      "name": "Evasion",
+      "name_pt": "Evasão",
+      "level": 7,
+      "description_en": "At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, such as a blue dragon's lightning breath or a fireball spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+      "description_pt": "No 7º nível, sua agilidade instintiva permite que você desvie de certos efeitos de área, como o sopro relampejante de um dragão azul ou uma magia bola de fogo. Quando você é submetido a um efeito que permite que você faça uma salvaguarda de Destreza para receber apenas metade do dano, você não recebe dano se for bem-sucedido na salvaguarda, e apenas metade do dano se falhar."
+    },
+    {
+      "name": "Stillness of Mind",
+      "name_pt": "Serenidade Mental",
+      "level": 7,
+      "description_en": "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened.",
+      "description_pt": "A partir do 7º nível, você pode usar sua ação para encerrar um efeito sobre si mesmo que esteja causando a condição amedrontado ou enfeitiçado."
+    },
+    {
+      "name": "Purity of Body",
+      "name_pt": "Pureza do Corpo",
+      "level": 10,
+      "description_en": "At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison.",
+      "description_pt": "No 10º nível, sua maestria do ki que flui através de você o torna imune a doenças e veneno."
+    },
+    {
+      "name": "Tongue of the Sun and Moon",
+      "name_pt": "Língua do Sol e da Lua",
+      "level": 13,
+      "description_en": "Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say.",
+      "description_pt": "A partir do 13º nível, você aprende a tocar o ki de outras mentes para que compreenda todas as línguas faladas. Além disso, qualquer criatura que possa entender um idioma pode entender o que você diz."
+    },
+    {
+      "name": "Diamond Soul",
+      "name_pt": "Alma Diamantina",
+      "level": 14,
+      "description_en": "Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws.\n\nAdditionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result.",
+      "description_pt": "A partir do 14º nível, sua maestria de ki lhe concede proficiência em todas as salvaguardas.\n\nAlém disso, sempre que você fizer uma salvaguarda e falhar, você pode gastar 1 ponto de ki para rolar novamente e usar o segundo resultado."
+    },
+    {
+      "name": "Timeless Body",
+      "name_pt": "Corpo Atemporal",
+      "level": 15,
+      "description_en": "At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can't be aged magically. You can still die of old age, however. In addition, you no longer need food or water.",
+      "description_pt": "No 15º nível, seu ki o sustenta de modo que você não sofre nenhuma das fragilidades da velhice, e você não pode ser envelhecido magicamente. Você ainda pode morrer de velhice, no entanto. Além disso, você não precisa mais de comida ou água."
+    },
+    {
+      "name": "Empty Body",
+      "name_pt": "Corpo Vazio",
+      "level": 18,
+      "description_en": "Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage.\n\nAdditionally, you can spend 8 ki points to cast the astral projection spell, without needing material components. When you do so, you can't take any other creatures with you.",
+      "description_pt": "A partir do 18º nível, você pode usar sua ação para gastar 4 pontos de ki e se tornar invisível por 1 minuto. Durante esse tempo, você também tem resistência a todos os tipos de dano, exceto dano de força.\n\nAlém disso, você pode gastar 8 pontos de ki para conjurar a magia projeção astral, sem precisar de componentes materiais. Quando o faz, você não pode levar nenhuma outra criatura consigo."
+    },
+    {
+      "name": "Perfect Self",
+      "name_pt": "Eu Perfeito",
+      "level": 20,
+      "description_en": "At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points.",
+      "description_pt": "No 20º nível, quando você rola iniciativa e não tem pontos de ki restantes, você recupera 4 pontos de ki."
+    }
+  ],
+  "multiclass_prerequisites": "Dexterity 13 and Wisdom 13",
+  "multiclass_prerequisites_pt": "Destreza 13 e Sabedoria 13",
+  "multiclass_proficiencies": "Simple weapons, shortswords",
+  "multiclass_proficiencies_pt": "Armas simples, espadas curtas",
+  "subclass_level": 3,
+  "subclass_name": "Monastic Tradition",
+  "subclass_name_pt": "Tradição Monástica",
+  "subclass_ids": ["way-of-the-open-hand"]
+}

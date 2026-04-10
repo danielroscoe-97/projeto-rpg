@@ -1,0 +1,205 @@
+{
+  "id": "fighter",
+  "name": "Fighter",
+  "name_pt": "Guerreiro",
+  "hit_die": "d10",
+  "primary_ability": "STR or DEX",
+  "saving_throws": ["STR", "CON"],
+  "armor_proficiencies": "All armor, Shields",
+  "weapon_proficiencies": "Simple weapons, Martial weapons",
+  "srd_subclass": "Champion",
+  "srd_subclass_pt": "Campeão",
+  "description_en": "A master of martial combat, skilled with a variety of weapons and armor.",
+  "description_pt": "Um mestre do combate marcial, habilidoso com uma variedade de armas e armaduras.",
+  "spellcaster": false,
+  "spellcasting_ability": null,
+  "icon": "shield",
+  "role": "martial",
+  "description_full_en": "Some fight for glory, wealth, or revenge. Others fight simply because it is all they know. Fighters are the most diverse class of characters in the worlds of D&D. Questing knights, conquering overlords, royal champions, elite foot soldiers, hardened mercenaries, and bandit kings — as fighters, they all share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat. And they are well acquainted with death, both meting it out and staring it defiantly in the face.\n\nFighters learn the basics of all combat styles. Every fighter can swing an axe, fence with a rapier, wield a longsword or a greatsword, use a bow, and even trap foes in a net with some degree of skill. Likewise, a fighter is adept with shields and every form of armor. Beyond that basic degree of familiarity, each fighter specializes in a certain style of combat. Some concentrate on archery, some on fighting with two weapons at once, and some on augmenting their martial skills with magic. This combination of broad general ability and extensive specialization makes fighters superior combatants on battlefields and in dungeons alike.",
+  "description_full_pt": "Alguns lutam por glória, riqueza ou vingança. Outros lutam simplesmente porque é tudo o que conhecem. Guerreiros são a classe mais diversa de personagens nos mundos de D&D. Cavaleiros em missão, senhores conquistadores, campeões reais, soldados de elite, mercenários experientes e reis bandidos — como guerreiros, todos compartilham uma maestria incomparável com armas e armaduras, e um conhecimento completo das habilidades de combate. E são bem familiarizados com a morte, tanto causando-a quanto encarando-a desafiadoramente.\n\nGuerreiros aprendem o básico de todos os estilos de combate. Todo guerreiro pode brandir um machado, esgrimir com uma rapieira, empunhar uma espada longa ou montante, usar um arco e até prender inimigos em uma rede com algum grau de habilidade. Da mesma forma, um guerreiro é adepto com escudos e toda forma de armadura. Além desse grau básico de familiaridade, cada guerreiro se especializa em um certo estilo de combate. Alguns se concentram em arquearia, alguns em lutar com duas armas ao mesmo tempo, e alguns em aumentar suas habilidades marciais com magia. Essa combinação de ampla habilidade geral e extensa especialização torna os guerreiros combatentes superiores tanto em campos de batalha quanto em masmorras.",
+  "quick_build_en": "You can make a fighter quickly by following these suggestions. First, make Strength or Dexterity your highest ability score, depending on whether you want to focus on melee weapons or on archery (or finesse weapons). Your next-highest score should be Constitution. Second, choose the soldier background.",
+  "quick_build_pt": "Você pode criar um guerreiro rapidamente seguindo estas sugestões. Primeiro, faça Força ou Destreza seu maior valor de habilidade, dependendo de querer focar em armas corpo a corpo ou em arquearia (ou armas de acuidade). Seu próximo maior valor deve ser Constituição. Segundo, escolha o antecedente soldado.",
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) chain mail or (b) leather armor, longbow, and 20 arrows\n- (a) a martial weapon and a shield or (b) two martial weapons\n- (a) a light crossbow and 20 bolts or (b) two handaxes\n- A dungeoneer's pack or an explorer's pack",
+  "starting_equipment_pt": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n- (a) cota de malha ou (b) armadura de couro, arco longo e 20 flechas\n- (a) uma arma marcial e um escudo ou (b) duas armas marciais\n- (a) uma besta leve e 20 virotes ou (b) duas machadinhas\n- Um pacote de explorador de masmorras ou um pacote de explorador",
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Fighting Style, Second Wind",
+      "features_pt": "Estilo de Luta, Retomar Fôlego"
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Action Surge (one use)",
+      "features_pt": "Surto de Ação (um uso)"
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "Martial Archetype",
+      "features_pt": "Arquétipo Marcial"
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo"
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "Extra Attack",
+      "features_pt": "Ataque Extra"
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo"
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "Martial Archetype feature",
+      "features_pt": "Característica do Arquétipo Marcial"
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo"
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "Indomitable (one use)",
+      "features_pt": "Indomável (um uso)"
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Martial Archetype feature",
+      "features_pt": "Característica do Arquétipo Marcial"
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "Extra Attack (2)",
+      "features_pt": "Ataque Extra (2)"
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo"
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "Indomitable (two uses)",
+      "features_pt": "Indomável (dois usos)"
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo"
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "Martial Archetype feature",
+      "features_pt": "Característica do Arquétipo Marcial"
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo"
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "Action Surge (two uses), Indomitable (three uses)",
+      "features_pt": "Surto de Ação (dois usos), Indomável (três usos)"
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Martial Archetype feature",
+      "features_pt": "Característica do Arquétipo Marcial"
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo"
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Extra Attack (3)",
+      "features_pt": "Ataque Extra (3)"
+    }
+  ],
+  "class_features": [
+    {
+      "name": "Fighting Style",
+      "name_pt": "Estilo de Luta",
+      "level": 1,
+      "description_en": "You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.\n\n**Archery.** You gain a +2 bonus to attack rolls you make with ranged weapons.\n\n**Defense.** While you are wearing armor, you gain a +1 bonus to AC.\n\n**Dueling.** When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.\n\n**Great Weapon Fighting.** When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll, even if the new roll is a 1 or a 2. The weapon must have the two-handed or versatile property for you to gain this benefit.\n\n**Protection.** When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield.\n\n**Two-Weapon Fighting.** When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.",
+      "description_pt": "Você adota um estilo particular de luta como sua especialidade. Escolha uma das opções a seguir. Você não pode escolher a mesma opção de Estilo de Luta mais de uma vez, mesmo que possa escolher novamente depois.\n\n**Arquearia.** Você ganha +2 de bônus nas jogadas de ataque que faz com armas de ataque à distância.\n\n**Defesa.** Enquanto estiver usando armadura, você ganha +1 de bônus na CA.\n\n**Duelismo.** Quando estiver empunhando uma arma corpo a corpo em uma mão e nenhuma outra arma, você ganha +2 de bônus nas jogadas de dano com essa arma.\n\n**Luta com Armas Grandes.** Quando você rolar 1 ou 2 em um dado de dano para um ataque que fizer com uma arma corpo a corpo que esteja empunhando com duas mãos, você pode rolar o dado novamente e deve usar a nova rolagem, mesmo que seja 1 ou 2. A arma deve ter a propriedade duas mãos ou versátil para você ganhar esse benefício.\n\n**Proteção.** Quando uma criatura que você pode ver ataca um alvo diferente de você que esteja a até 1,5 metro de você, você pode usar sua reação para impor desvantagem na jogada de ataque. Você deve estar empunhando um escudo.\n\n**Luta com Duas Armas.** Quando você se engajar em luta com duas armas, pode adicionar seu modificador de habilidade ao dano do segundo ataque."
+    },
+    {
+      "name": "Second Wind",
+      "name_pt": "Retomar Fôlego",
+      "level": 1,
+      "description_en": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again.",
+      "description_pt": "Você possui uma reserva limitada de vigor que pode usar para se proteger de dano. No seu turno, você pode usar uma ação bônus para recuperar pontos de vida iguais a 1d10 + seu nível de guerreiro. Uma vez que use essa característica, você deve completar um descanso curto ou longo antes de usá-la novamente."
+    },
+    {
+      "name": "Action Surge",
+      "name_pt": "Surto de Ação",
+      "level": 2,
+      "description_en": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action.\n\nOnce you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn.",
+      "description_pt": "A partir do 2º nível, você pode se forçar além dos seus limites normais por um momento. No seu turno, você pode realizar uma ação adicional.\n\nUma vez que use essa característica, você deve completar um descanso curto ou longo antes de usá-la novamente. A partir do 17º nível, você pode usá-la duas vezes antes de um descanso, mas apenas uma vez no mesmo turno."
+    },
+    {
+      "name": "Martial Archetype",
+      "name_pt": "Arquétipo Marcial",
+      "level": 3,
+      "description_en": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. The Champion archetype is detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.",
+      "description_pt": "No 3º nível, você escolhe um arquétipo que se esforça para emular em seus estilos e técnicas de combate. O arquétipo Campeão é detalhado no final da descrição da classe. O arquétipo que você escolher concede características no 3º nível e novamente no 7º, 10º, 15º e 18º nível."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando você atinge o 4º nível, e novamente no 6º, 8º, 12º, 14º, 16º e 19º nível, você pode aumentar um valor de habilidade à sua escolha em 2, ou pode aumentar dois valores de habilidade à sua escolha em 1. Como normal, você não pode aumentar um valor de habilidade acima de 20 usando essa característica."
+    },
+    {
+      "name": "Extra Attack",
+      "name_pt": "Ataque Extra",
+      "level": 5,
+      "description_en": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.\n\nThe number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class.",
+      "description_pt": "A partir do 5º nível, você pode atacar duas vezes, em vez de uma, sempre que realizar a ação de Ataque no seu turno.\n\nO número de ataques aumenta para três quando você atinge o 11º nível nesta classe e para quatro quando atinge o 20º nível nesta classe."
+    },
+    {
+      "name": "Indomitable",
+      "name_pt": "Indomável",
+      "level": 9,
+      "description_en": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can't use this feature again until you finish a long rest.\n\nYou can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level.",
+      "description_pt": "A partir do 9º nível, você pode refazer um teste de resistência que falhou. Se fizer isso, deve usar a nova rolagem, e não pode usar essa característica novamente até completar um descanso longo.\n\nVocê pode usar essa característica duas vezes entre descansos longos a partir do 13º nível e três vezes entre descansos longos a partir do 17º nível."
+    }
+  ],
+  "multiclass_prerequisites": "Strength 13 or Dexterity 13",
+  "multiclass_prerequisites_pt": "Força 13 ou Destreza 13",
+  "multiclass_proficiencies": "Light armor, Medium armor, Shields, Simple weapons, Martial weapons",
+  "multiclass_proficiencies_pt": "Armaduras leves, Armaduras médias, Escudos, Armas simples, Armas marciais",
+  "subclass_level": 3,
+  "subclass_name": "Martial Archetype",
+  "subclass_name_pt": "Arquétipo Marcial",
+  "subclass_ids": ["champion"]
+}

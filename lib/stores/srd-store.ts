@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat } from "@/lib/srd/srd-loader";
+import type { SrdClass } from "@/lib/types/srd-class";
 import {
   loadMonsters,
   loadSpells,
@@ -7,6 +8,7 @@ import {
   loadItems,
   loadMadMonsters,
   loadFeats,
+  loadClasses,
   clearAllLoaderCaches,
 } from "@/lib/srd/srd-loader";
 import {
@@ -20,6 +22,8 @@ import {
   setCachedItems,
   getCachedFeats,
   setCachedFeats,
+  getCachedClasses,
+  setCachedClasses,
 } from "@/lib/srd/srd-cache";
 import { srdSearchProvider } from "@/lib/srd/fuse-search-provider";
 import { getImportedMonsters } from "@/lib/import/import-cache";
@@ -34,6 +38,7 @@ interface SrdState {
   conditions: SrdCondition[];
   items: SrdItem[];
   feats: SrdFeat[];
+  classes: SrdClass[];
   is_loading: boolean;
   /** Tracks whether the in-memory store was loaded from public or full SRD data. */
   loadedMode: SrdDataMode | null;
@@ -56,6 +61,7 @@ const initialState: SrdState = {
   conditions: [],
   items: [],
   feats: [],
+  classes: [],
   is_loading: false,
   loadedMode: null,
   loadedVersions: new Set(),
@@ -98,6 +104,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         conditions: [],
         items: [],
         feats: [],
+        classes: [],
         loadedVersions: new Set(),
         error: null,
       });
@@ -105,8 +112,8 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
 
     set({ is_loading: true, error: null });
     try {
-      // Phase 1: Load primary version + conditions + items (critical path)
-      const [monstersPrimary, spellsPrimary, conditions, items] =
+      // Phase 1: Load primary version + conditions + items + classes (critical path)
+      const [monstersPrimary, spellsPrimary, conditions, items, classes] =
         await Promise.all([
           loadWithCache(
             () => getCachedMonsters(PRIMARY_VERSION),
@@ -127,6 +134,11 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
             () => getCachedItems(),
             (d) => setCachedItems(d),
             () => loadItems()
+          ),
+          loadWithCache(
+            () => getCachedClasses(),
+            (d) => setCachedClasses(d),
+            () => loadClasses()
           ),
         ]);
 
@@ -154,6 +166,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         spells: spellsPrimary,
         conditions,
         items,
+        classes,
         is_loading: false,
         loadedMode: requestedMode,
         loadedVersions: new Set([PRIMARY_VERSION]),

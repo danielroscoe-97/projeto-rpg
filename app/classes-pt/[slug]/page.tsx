@@ -26,37 +26,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const cls = getClassFull(slug);
-  if (!cls) return { title: "Class Not Found" };
+  if (!cls) return { title: "Classe Não Encontrada" };
 
-  const subclasses = getSubclassesForClass(cls.id);
-  const subclassNames = subclasses.map((s) => s.name).join(", ");
-
-  const title = `${cls.name} — D&D 5e Class Guide`;
-  const description = `${cls.name}: ${cls.description_en} Hit Die: ${cls.hit_die}. Primary Ability: ${cls.primary_ability}. Subclasses: ${subclassNames || cls.srd_subclass}. Full class features, progression table, and starting equipment.`;
+  const title = `${cls.name_pt} — Classe D&D 5e`;
+  const description = `${cls.name_pt}: ${cls.description_pt} Dado de Vida: ${cls.hit_die}. Habilidade Primária: ${cls.primary_ability}. Subclasse SRD: ${cls.srd_subclass_pt}. Guia completo com habilidades, tabela de progressão e equipamento.`;
 
   return {
     title,
     description,
     keywords: [
-      `${cls.name} 5e`,
-      `D&D ${cls.name}`,
-      `${cls.name} class`,
-      `${cls.name} guide`,
-      `${cls.name} hit die`,
-      `${cls.name} subclasses`,
-      `${cls.name} class features`,
-      `${cls.name} build`,
-      cls.srd_subclass,
-      ...subclasses.map((s) => `${s.name} 5e`),
-      "D&D 5e classes",
-      "SRD class",
-      "D&D class guide",
+      `${cls.name_pt} 5e`,
+      `D&D ${cls.name_pt}`,
+      `classe ${cls.name_pt}`,
+      `guia ${cls.name_pt}`,
+      cls.srd_subclass_pt,
+      "classes D&D 5e",
+      "classe SRD",
     ],
     openGraph: {
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://pocketdm.com.br/classes/${slug}`,
+      url: `https://pocketdm.com.br/classes-pt/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
@@ -64,7 +55,11 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://pocketdm.com.br/classes/${slug}`,
+      canonical: `https://pocketdm.com.br/classes-pt/${slug}`,
+      languages: {
+        en: `https://pocketdm.com.br/classes/${slug}`,
+        "pt-BR": `https://pocketdm.com.br/classes-pt/${slug}`,
+      },
     },
   };
 }
@@ -77,65 +72,31 @@ function ClassJsonLd({
   cls: NonNullable<ReturnType<typeof getClassFull>>;
   slug: string;
 }) {
-  const jsonLdArticle = {
+  const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    name: `${cls.name} — D&D 5e Class Guide`,
-    headline: `${cls.name} — D&D 5e Class Guide`,
-    description: `${cls.name}: ${cls.description_en} Hit Die: ${cls.hit_die}. Primary Ability: ${cls.primary_ability}.`,
+    name: `${cls.name_pt} — Classe D&D 5e`,
+    headline: `${cls.name_pt} — Classe D&D 5e`,
+    description: `${cls.name_pt}: ${cls.description_pt}`,
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
       url: "https://pocketdm.com.br",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://pocketdm.com.br/icons/icon-512.png",
-      },
     },
-  };
-
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://pocketdm.com.br",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Classes",
-        item: "https://pocketdm.com.br/classes",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: cls.name,
-        item: `https://pocketdm.com.br/classes/${slug}`,
-      },
-    ],
+    inLanguage: "pt-BR",
   };
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
-    </>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }
 
 // ── Page ───────────────────────────────────────────────────────────
-export default async function ClassDetailPage({
+export default async function ClassDetailPtPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -152,9 +113,10 @@ export default async function ClassDetailPage({
 
       <div className="min-h-screen bg-background">
         <PublicNav
+          locale="pt-BR"
           breadcrumbs={[
-            { label: "Classes", href: "/classes" },
-            { label: cls.name },
+            { label: "Classes", href: "/classes-pt" },
+            { label: cls.name_pt },
           ]}
         />
 
@@ -162,22 +124,22 @@ export default async function ClassDetailPage({
           <PublicClassFullDetail
             cls={cls}
             subclasses={subclasses}
-            locale="en"
+            locale="pt-BR"
           />
 
           <p className="text-xs text-gray-500 mt-8 text-center">
-            Also available in{" "}
-            <Link href={`/classes-pt/${slug}`} className="text-[#D4A853] hover:underline">
-              Português
+            Página disponível em{" "}
+            <Link href={`/classes/${slug}`} className="text-[#D4A853] hover:underline">
+              English
             </Link>
           </p>
 
           <div className="mt-8">
-            <PublicCTA entityName={cls.name} locale="en" />
+            <PublicCTA entityName={cls.name_pt} locale="pt-BR" />
           </div>
         </main>
 
-        <PublicFooter />
+        <PublicFooter locale="pt-BR" />
       </div>
     </>
   );

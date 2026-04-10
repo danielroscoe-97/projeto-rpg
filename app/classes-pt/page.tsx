@@ -8,32 +8,36 @@ import { getAllClassesFull } from "@/lib/srd/class-data-server";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "D&D 5e Classes — SRD Class Reference",
+  title: "Classes D&D 5e — Guia Completo de Classes SRD",
   description:
-    "Complete reference for all 12 D&D 5e SRD classes: Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, and Wizard. Hit dice, proficiencies, saving throws, and subclasses.",
+    "Todas as 12 classes SRD do D&D 5e: Bárbaro, Bardo, Clérigo, Druida, Guerreiro, Monge, Paladino, Patrulheiro, Ladino, Feiticeiro, Bruxo e Mago. Tabelas de progressão, habilidades e subclasses.",
   keywords: [
-    "D&D 5e classes",
-    "dnd classes",
-    "SRD classes",
-    "D&D class list",
-    "5e class reference",
-    "D&D combat tracker",
+    "classes D&D 5e",
+    "classes de personagem D&D",
+    "classes SRD 5e",
+    "bárbaro guerreiro mago",
+    "classes jogáveis D&D",
+    "guia de classes D&D",
   ],
   openGraph: {
-    title: "D&D 5e Classes — SRD Class Reference",
+    title: "Classes D&D 5e — Guia Completo de Classes SRD",
     description:
-      "All 12 SRD classes with hit dice, proficiencies, and subclasses. Free reference.",
+      "Referência completa das 12 classes SRD do D&D 5ª Edição com habilidades e subclasses.",
     type: "website",
-    url: "https://pocketdm.com.br/classes",
+    url: "https://pocketdm.com.br/classes-pt",
   },
   twitter: {
     card: "summary_large_image",
-    title: "D&D 5e Classes — SRD Class Reference",
+    title: "Classes D&D 5e — Guia Completo de Classes SRD",
     description:
-      "All 12 SRD classes with hit dice, proficiencies, and subclasses.",
+      "Referência completa das 12 classes SRD do D&D 5ª Edição.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/classes",
+    canonical: "https://pocketdm.com.br/classes-pt",
+    languages: {
+      en: "https://pocketdm.com.br/classes",
+      "pt-BR": "https://pocketdm.com.br/classes-pt",
+    },
   },
 };
 
@@ -42,19 +46,18 @@ export const revalidate = 86400;
 // ── JSON-LD ────────────────────────────────────────────────────────
 function ClassesJsonLd() {
   const classes = getAllClassesFull();
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "D&D 5e Classes",
+    name: "Classes D&D 5e",
     description:
-      "All 12 classes in the Dungeons & Dragons 5th Edition Systems Reference Document",
+      "Todas as classes de personagem jogável no SRD do D&D 5ª Edição",
     numberOfItems: classes.length,
-    itemListElement: classes.map((c, i) => ({
+    itemListElement: classes.map((cls, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      name: c.name,
-      url: `https://pocketdm.com.br/classes/${c.id}`,
+      name: cls.name_pt,
+      url: `https://pocketdm.com.br/classes-pt/${cls.id}`,
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
@@ -62,6 +65,7 @@ function ClassesJsonLd() {
       name: "Pocket DM",
       url: "https://pocketdm.com.br",
     },
+    inLanguage: "pt-BR",
   };
 
   return (
@@ -73,7 +77,7 @@ function ClassesJsonLd() {
 }
 
 // ── Page ───────────────────────────────────────────────────────────
-export default function ClassesIndexPage() {
+export default function ClassesPtPage() {
   const classes = getAllClassesFull();
 
   return (
@@ -81,24 +85,24 @@ export default function ClassesIndexPage() {
       <ClassesJsonLd />
 
       <div className="min-h-screen bg-background">
-        <PublicNav breadcrumbs={[{ label: "Classes" }]} />
+        <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Classes" }]} />
 
         <main className="mx-auto max-w-6xl px-4 py-8">
-          <PublicClassesIndex classes={classes} locale="en" />
+          <PublicClassesIndex classes={classes} locale="pt-BR" linkPrefix="/classes-pt" />
+
+          <div className="mt-12">
+            <PublicCTA entityName="Classes D&D 5e" locale="pt-BR" />
+          </div>
 
           <p className="text-xs text-gray-500 mt-12 text-center">
-            Also available in{" "}
-            <Link href="/classes-pt" className="text-[#D4A853] hover:underline">
-              Português
+            Página disponível em{" "}
+            <Link href="/classes" className="text-[#D4A853] hover:underline">
+              English
             </Link>
           </p>
-
-          <div className="mt-8">
-            <PublicCTA entityName="D&D 5e Classes" locale="en" />
-          </div>
         </main>
 
-        <PublicFooter />
+        <PublicFooter locale="pt-BR" />
       </div>
     </>
   );

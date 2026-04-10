@@ -70,9 +70,11 @@ function HpStatusBadge({ status, percentage }: { status: string; percentage?: nu
   const style = (HP_STATUS_STYLES as Record<string, (typeof HP_STATUS_STYLES)[keyof typeof HP_STATUS_STYLES]>)[status] ?? HP_STATUS_STYLES.LIGHT;
   const label = t(`hp_status_${status.toLowerCase()}` as Parameters<typeof t>[0]);
 
+  const isCriticalStatus = status === "CRITICAL";
+
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm lg:text-xs font-medium ${style.colorClass} ${style.bgClass}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm lg:text-xs font-medium ${style.colorClass} ${style.bgClass}${isCriticalStatus ? " [text-shadow:_0_0_6px_rgba(0,0,0,0.9),_0_0_2px_rgba(0,0,0,0.8)]" : ""}`}
       aria-label={`${label}${percentage != null ? ` ${percentage}%` : ""}`}
     >
       {style.icon === "heartpulse" ? (
@@ -787,14 +789,15 @@ export function PlayerInitiativeBoard({
           if (combatant.monster_group_id && groupMap.has(combatant.monster_group_id)) {
             const gid = combatant.monster_group_id;
             const isFirstMember = groupFirstMemberIds.has(combatant.id);
+            const isGroupExpanded = expandedPlayerGroups[gid] ?? false;
             if (!isFirstMember) {
               // Not the first member — skip if group is collapsed, otherwise render normally below
-              if (!expandedPlayerGroups[gid]) return null;
+              if (!isGroupExpanded) return null;
+              // Fall through to render individual row when expanded
             } else {
               // First member of the group — render group header
               const group = groupMap.get(gid)!;
               const activeMembers = group.members.filter((m) => !m.is_defeated);
-              const isGroupExpanded = expandedPlayerGroups[gid] ?? false;
               const hasGroupTurn = group.indices.includes(currentTurnIndex);
 
               // Aggregate HP status — worst-case badge + average label
@@ -812,40 +815,48 @@ export function PlayerInitiativeBoard({
               // Extract group name (remove trailing number/letter suffix)
               const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
 
-              return (
-                <motion.li key={`group-${gid}`} layout>
-                  {/* Group header */}
-                  <div
-                    className={`flex items-center gap-2 px-4 py-2.5 bg-card border rounded-lg cursor-pointer transition-all duration-300 ${
-                      hasGroupTurn ? "border-gold ring-1 ring-gold/30 bg-amber-400/5" : "border-border"
-                    } border-l-4 border-l-red-500/40`}
-                    onClick={() => togglePlayerGroup(gid)}
-                    role="button"
-                    aria-expanded={isGroupExpanded}
-                    data-testid={`player-group-header-${gid}`}
-                  >
-                    {isGroupExpanded
-                      ? <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                      : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                    }
-                    <span className="text-foreground font-medium text-base lg:text-sm truncate">{baseName}</span>
-                    <span className="text-muted-foreground text-xs shrink-0">
-                      ({activeMembers.length}/{group.members.length})
-                    </span>
-                    <div className="ml-auto flex items-center gap-1.5">
-                      <HpStatusBadge status={aggStatus} />
-                      {avgStatus !== aggStatus && (
-                        <span className="text-muted-foreground text-[10px] hidden sm:inline">
-                          média {avgStatus}
-                        </span>
-                      )}
+              // When collapsed: render header only (return early)
+              // When expanded: render header + fall through to render first member as individual row
+              if (!isGroupExpanded) {
+                return (
+                  <motion.li key={`group-${gid}`} layout>
+                    <div
+                      className={`flex items-center gap-2 px-4 py-2.5 bg-card border rounded-lg cursor-pointer transition-all duration-300 ${
+                        hasGroupTurn ? "border-gold ring-1 ring-gold/30 bg-amber-400/5" : "border-border"
+                      } border-l-4 border-l-red-500/40`}
+                      onClick={() => togglePlayerGroup(gid)}
+                      role="button"
+                      aria-expanded={false}
+                      data-testid={`player-group-header-${gid}`}
+                    >
+                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <span className="text-foreground font-medium text-base lg:text-sm truncate">{baseName}</span>
+                      <span className="text-muted-foreground text-xs shrink-0">
+                        ({activeMembers.length}/{group.members.length})
+                      </span>
+                      <div className="ml-auto flex items-center gap-1.5">
+                        <HpStatusBadge status={aggStatus} />
+                        {avgStatus !== aggStatus && (
+                          <span className="text-muted-foreground text-[10px] hidden sm:inline">
+                            média {avgStatus}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {/* Expanded members rendered below via the normal loop */}
-                </motion.li>
-              );
+                  </motion.li>
+                );
+              }
+
+              // Expanded: render header + first member falls through to individual rendering below
+              // Use a Fragment to render the header, then let the code below render the first member
+              // We use a separate key for the header to avoid React key conflicts
+              // The header needs to be injected before the first member's individual row
             }
           }
+          // For expanded group members (including first member), render as individual rows
+          // The group header for expanded groups is rendered via a separate element
+          const isGroupMember = combatant.monster_group_id && groupMap.has(combatant.monster_group_id);
+          const isFirstOfExpandedGroup = isGroupMember && groupFirstMemberIds.has(combatant.id) && (expandedPlayerGroups[combatant.monster_group_id!] ?? false);
           const isCurrentTurn = index === currentTurnIndex;
           const isPlayer = combatant.is_player;
           const isOwnChar = ownChar !== null && combatant.id === ownChar.id;
@@ -877,7 +888,53 @@ export function PlayerInitiativeBoard({
             ? "border-l-4 border-l-blue-500/60"
             : "border-l-4 border-l-red-500/40";
 
-          return (
+          // Build the expanded group header if this is the first member of an expanded group
+          const expandedGroupHeader = isFirstOfExpandedGroup ? (() => {
+            const gid = combatant.monster_group_id!;
+            const group = groupMap.get(gid)!;
+            const activeMembers = group.members.filter((m) => !m.is_defeated);
+            const hasGroupTurn = group.indices.includes(currentTurnIndex);
+            const tierSeverity: Record<string, number> = { FULL: 0, LIGHT: 1, MODERATE: 2, HEAVY: 3, CRITICAL: 4 };
+            const tierLabel: Record<number, string> = { 0: "FULL", 1: "LIGHT", 2: "MODERATE", 3: "HEAVY", 4: "CRITICAL" };
+            const worstSeverity = activeMembers.length > 0
+              ? Math.max(...activeMembers.map((m) => tierSeverity[m.hp_status ?? "LIGHT"] ?? 1))
+              : 4;
+            const aggStatus = worstSeverity >= 4 ? "CRITICAL" : worstSeverity >= 3 ? "HEAVY" : worstSeverity >= 2 ? "MODERATE" : worstSeverity >= 1 ? "LIGHT" : "FULL";
+            const avgSeverity = activeMembers.length > 0
+              ? activeMembers.reduce((sum, m) => sum + (tierSeverity[m.hp_status ?? "LIGHT"] ?? 1), 0) / activeMembers.length
+              : 4;
+            const avgStatus = tierLabel[Math.round(avgSeverity)] ?? "MODERATE";
+            const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
+            return (
+              <motion.li key={`group-${gid}`} layout>
+                <div
+                  className={`flex items-center gap-2 px-4 py-2.5 bg-card border rounded-lg cursor-pointer transition-all duration-300 ${
+                    hasGroupTurn ? "border-gold ring-1 ring-gold/30 bg-amber-400/5" : "border-border"
+                  } border-l-4 border-l-red-500/40`}
+                  onClick={() => togglePlayerGroup(gid)}
+                  role="button"
+                  aria-expanded={true}
+                  data-testid={`player-group-header-${gid}`}
+                >
+                  <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-foreground font-medium text-base lg:text-sm truncate">{baseName}</span>
+                  <span className="text-muted-foreground text-xs shrink-0">
+                    ({activeMembers.length}/{group.members.length})
+                  </span>
+                  <div className="ml-auto flex items-center gap-1.5">
+                    <HpStatusBadge status={aggStatus} />
+                    {avgStatus !== aggStatus && (
+                      <span className="text-muted-foreground text-[10px] hidden sm:inline">
+                        média {avgStatus}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </motion.li>
+            );
+          })() : null;
+
+          const individualRow = (
             <motion.li
               key={combatant.id}
               ref={isCurrentTurn ? turnRef : undefined}
@@ -892,7 +949,7 @@ export function PlayerInitiativeBoard({
                   : isOwnChar
                     ? "border-t border-r border-b border-border bg-card px-4 py-3"
                     : "border-t border-r border-b border-border px-4 py-3"
-              } ${combatant.is_defeated ? "opacity-40 grayscale-[80%]" : isCritical ? "opacity-50 grayscale-[50%] border-2 border-red-500 animate-pulse" : ""} ${
+              } ${combatant.is_defeated ? "opacity-40 grayscale-[80%]" : isCritical ? "opacity-70 grayscale-[30%] border-2 border-red-500 animate-critical-glow" : ""} ${
                 roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""
               } ${
                 isNewlyRevealed ? "ring-2 ring-gold/60 shadow-[0_0_16px_rgba(212,168,83,0.4)]" : ""
@@ -1079,6 +1136,12 @@ export function PlayerInitiativeBoard({
               })()}
             </motion.li>
           );
+
+          // If first of expanded group, render both header and individual row
+          if (expandedGroupHeader) {
+            return <>{expandedGroupHeader}{individualRow}</>;
+          }
+          return individualRow;
         })}
         </AnimatePresence>
       </ul>

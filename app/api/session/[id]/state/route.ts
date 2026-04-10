@@ -100,7 +100,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
       ? serviceClient
           .from("combatants")
           .select(
-            "id, name, display_name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, monster_group_id, group_order, condition_durations, death_saves"
+            "id, name, display_name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, monster_group_id, group_order, condition_durations, death_saves, session_token_id"
           )
           .eq("encounter_id", encounter.id)
           .order("initiative_order", { ascending: true })
@@ -111,7 +111,16 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
     const [tokenOwner, combatants] = await Promise.all([tokenOwnerPromise, combatantsPromise]);
 
     if (!encounter) {
-      return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null, dm_last_seen_at: sessionRow?.dm_last_seen_at ?? null, token_owner: tokenOwner } });
+      // BT2-04: Include active session tokens so the lobby can show waiting players
+      const { data: tokens } = await serviceClient
+        .from("session_tokens")
+        .select("id, player_name")
+        .eq("session_id", sessionId)
+        .eq("is_active", true)
+        .order("created_at", { ascending: true })
+        .limit(50);
+
+      return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null, dm_last_seen_at: sessionRow?.dm_last_seen_at ?? null, token_owner: tokenOwner, lobby_players: tokens ?? [] } });
     }
 
     // Strip sensitive data from monsters — players see only HP status label.

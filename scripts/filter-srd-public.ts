@@ -124,14 +124,22 @@ const COPY_AS_IS = [
   "conditions.json",
   "feats.json",
   "classes-srd.json",
+  "classes-full.json",
+  "subclasses-srd.json",
   "monsters-mad.json",
 ];
 
 for (const file of COPY_AS_IS) {
-  const content = readFileSync(join(DATA_DIR, file), "utf-8");
-  writeFileSync(join(PUBLIC_DIR, file), content);
-  const parsed = JSON.parse(content);
-  console.log(`${file}: copied as-is (${Array.isArray(parsed) ? parsed.length : "object"} entries)`);
+  const src = join(DATA_DIR, file);
+  try {
+    const content = readFileSync(src, "utf-8");
+    writeFileSync(join(PUBLIC_DIR, file), content);
+    const parsed = JSON.parse(content);
+    const count = Array.isArray(parsed) ? parsed.length : "object";
+    console.log(`${file}: copied as-is (${count} entries)`);
+  } catch {
+    console.log(`${file}: skipped (not found in data/srd/)`);
+  }
 }
 
 // ── Summary ─────────────────────────────────────────────────────────

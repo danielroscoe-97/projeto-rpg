@@ -57,6 +57,8 @@ interface PlayerCombatant {
   condition_durations?: Record<string, number>;
   /** Whether this combatant has used their reaction this round */
   reaction_used?: boolean;
+  /** Linked session_token ID — for ID-based reconnection. */
+  session_token_id?: string | null;
 }
 
 interface PrefilledCharacter {
@@ -790,8 +792,10 @@ export function PlayerJoinClient({
         !autoJoinInProgressRef.current
       ) {
         const regName = pendingRegistrationRef.current.name;
+        const tokenId = effectiveTokenIdRef.current;
+        // B3: Match by session_token_id first (ID-based), then fallback to name
         const alreadyIn = (data.combatants as PlayerCombatant[]).some(
-          (c) => c.is_player && c.name === regName
+          (c) => c.is_player && (c.session_token_id === tokenId || c.name === regName)
         );
         if (!alreadyIn) {
           autoJoinInProgressRef.current = true;
@@ -848,8 +852,10 @@ export function PlayerJoinClient({
             !autoJoinInProgressRef.current
           ) {
             const regName = pendingRegistrationRef.current.name;
+            const tokenId = effectiveTokenIdRef.current;
+            // B3: Match by session_token_id first (ID-based), then fallback to name
             const alreadyInCombatants = payload.combatants.some(
-              (c: PlayerCombatant) => c.is_player && c.name === regName
+              (c: PlayerCombatant) => c.is_player && (c.session_token_id === tokenId || c.name === regName)
             );
             if (!alreadyInCombatants) {
               autoJoinInProgressRef.current = true;
@@ -1331,9 +1337,11 @@ export function PlayerJoinClient({
         if (!data?.combatants || !lateJoinDataRef.current || cancelled) return;
 
         const playerName = lateJoinDataRef.current.name;
+        const tokenId = effectiveTokenIdRef.current;
+        // B3: Match by session_token_id first (ID-based), then fallback to name
         const found = data.combatants.find(
-          (c: { is_player?: boolean; name?: string }) =>
-            c.is_player && c.name === playerName
+          (c: { is_player?: boolean; name?: string; session_token_id?: string | null }) =>
+            c.is_player && (c.session_token_id === tokenId || c.name === playerName)
         );
 
         if (found && !lateJoinRegisteredRef.current && !cancelled) {
@@ -1446,6 +1454,16 @@ export function PlayerJoinClient({
           if (data.combatants) updateCombatants(data.combatants);
           if (data.encounter.round_number) setRound(data.encounter.round_number);
           if (data.encounter.current_turn_index !== undefined) updateTurnIndex(data.encounter.current_turn_index);
+        }
+        // BT2-04: Update lobby player list from session tokens (source of truth)
+        if (data?.lobby_players && Array.isArray(data.lobby_players)) {
+          const serverPlayers = (data.lobby_players as Array<{ id: string; player_name: string }>)
+            .filter((t) => !!t.player_name)
+            .map((t) => ({ id: t.id, name: t.player_name }));
+          setJoinedPlayers((prev) => {
+            if (prev.length === serverPlayers.length && prev.every((p, i) => p.id === serverPlayers[i]?.id)) return prev;
+            return serverPlayers;
+          });
         }
       } catch { delay = Math.min(delay * 2, 30000); }
     };
@@ -1837,6 +1855,8 @@ export function PlayerJoinClient({
           ac: data.ac,
           initiative: data.initiative,
           request_id: requestId,
+          // B2: Send token ID so DM can link combatant for ID-based reconnection
+          sender_token_id: effectiveTokenIdRef.current,
         },
       });
     } else {

@@ -657,6 +657,9 @@ export function PlayerLobby({
                 <li key={p.id} className="text-foreground text-sm flex items-center gap-2">
                   <Swords className="w-3 h-3 text-gold/60" aria-hidden="true" />
                   {p.name}
+                  {p.name === registeredName && (
+                    <span className="text-gold/60 text-xs">({t("you_label")})</span>
+                  )}
                 </li>
               ))}
             </ul>

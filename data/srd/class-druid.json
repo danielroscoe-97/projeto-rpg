@@ -1,0 +1,254 @@
+{
+  "id": "druid",
+  "name": "Druid",
+  "name_pt": "Druida",
+  "hit_die": "d8",
+  "primary_ability": "WIS",
+  "saving_throws": ["INT", "WIS"],
+  "armor_proficiencies": "Light armor, Medium armor, Shields (druids will not wear armor or use shields made of metal)",
+  "weapon_proficiencies": "Clubs, Daggers, Darts, Javelins, Maces, Quarterstaffs, Scimitars, Sickles, Slings, Spears",
+  "srd_subclass": "Circle of the Land",
+  "srd_subclass_pt": "Circulo da Terra",
+  "description_en": "A priest of the Old Faith, wielding the powers of nature and adopting animal forms.",
+  "description_pt": "Um sacerdote da Fe Antiga, empunhando os poderes da natureza e adotando formas animais.",
+  "spellcaster": true,
+  "spellcasting_ability": "WIS",
+  "icon": "leaf",
+  "role": "caster",
+  "description_full_en": "Whether calling on the elemental forces of nature or emulating the creatures of the animal world, druids are an embodiment of nature's resilience, cunning, and fury. They claim no mastery over nature. Instead, they see themselves as extensions of nature's indomitable will.\n\nThe druids' reverence for nature goes beyond simple respect. Druids gain their spells and other magical powers either from the force of nature itself or from a nature deity. Many druids pursue a mystic spirituality of transcendent union with nature rather than devotion to a divine entity, while others serve gods of wild nature, animals, or elemental forces. The ancient druidic traditions are sometimes called the Old Faith, in contrast to the worship of gods in temples and shrines.\n\nDruid spells are oriented toward nature and animals — the power of tooth and claw, of sun and moon, of fire and storm. Druids also gain the ability to take on animal forms, and some druids make a particular study of this practice, even to the point where they prefer animal form to their own.",
+  "description_full_pt": "Seja invocando as forcas elementais da natureza ou emulando as criaturas do mundo animal, os druidas sao uma personificacao da resiliencia, asticia e furia da natureza. Eles nao reivindicam dominio sobre a natureza. Em vez disso, veem a si mesmos como extensoes da vontade indomavel da natureza.\n\nA reverencia dos druidas pela natureza vai alem do simples respeito. Os druidas obtem suas magias e outros poderes magicos da propria forca da natureza ou de uma divindade da natureza. Muitos druidas buscam uma espiritualidade mistica de uniao transcendente com a natureza em vez de devocao a uma entidade divina, enquanto outros servem deuses da natureza selvagem, animais ou forcas elementais. As antigas tradicoes druidicas sao as vezes chamadas de Fe Antiga, em contraste com a adoracao de deuses em templos e santuarios.\n\nAs magias dos druidas sao orientadas para a natureza e os animais — o poder de presas e garras, do sol e da lua, do fogo e da tempestade. Os druidas tambem ganham a habilidade de assumir formas animais, e alguns druidas fazem um estudo particular dessa pratica, a ponto de preferirem a forma animal a sua propria.",
+  "quick_build_en": "You can make a druid quickly by following these suggestions. First, Wisdom should be your highest ability score, followed by Constitution. Second, choose the hermit background.",
+  "quick_build_pt": "Voce pode criar um druida rapidamente seguindo estas sugestoes. Primeiro, Sabedoria deve ser seu valor de habilidade mais alto, seguido de Constituicao. Segundo, escolha o antecedente eremita.",
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) a wooden shield or (b) any simple weapon\n- (a) a scimitar or (b) any simple melee weapon\n- Leather armor, an explorer's pack, and a druidic focus",
+  "starting_equipment_pt": "Voce comeca com o seguinte equipamento, alem do equipamento concedido pelo seu antecedente:\n- (a) um escudo de madeira ou (b) qualquer arma simples\n- (a) uma cimitarra ou (b) qualquer arma simples corpo a corpo\n- Armadura de couro, um kit de explorador e um foco druidico",
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Druidic, Spellcasting",
+      "features_pt": "Druidico, Conjuracao",
+      "cantrips_known": 2,
+      "spell_slots": { "1st": 2 }
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Wild Shape, Druid Circle",
+      "features_pt": "Forma Selvagem, Circulo Druidico",
+      "cantrips_known": 2,
+      "spell_slots": { "1st": 3 }
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 2,
+      "spell_slots": { "1st": 4, "2nd": 2 }
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Wild Shape Improvement, Ability Score Improvement",
+      "features_pt": "Melhoria da Forma Selvagem, Melhoria de Valor de Habilidade",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 4, "2nd": 3 }
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Druid Circle Feature",
+      "features_pt": "Caracteristica do Circulo Druidico",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3 }
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 }
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Wild Shape Improvement, Ability Score Improvement",
+      "features_pt": "Melhoria da Forma Selvagem, Melhoria de Valor de Habilidade",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 2 }
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 }
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Druid Circle Feature",
+      "features_pt": "Caracteristica do Circulo Druidico",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 }
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 }
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Valor de Habilidade",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 }
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 }
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Druid Circle Feature",
+      "features_pt": "Caracteristica do Circulo Druidico",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 }
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 }
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Valor de Habilidade",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 }
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "-",
+      "features_pt": "-",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Timeless Body, Beast Spells",
+      "features_pt": "Corpo Atemporal, Magias Bestiais",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 1, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Valor de Habilidade",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Archdruid",
+      "features_pt": "Arquidruida",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 2, "8th": 1, "9th": 1 }
+    }
+  ],
+  "class_features": [
+    {
+      "name": "Druidic",
+      "name_pt": "Druidico",
+      "level": 1,
+      "description_en": "You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message's presence with a successful DC 15 Wisdom (Perception) check but can't decipher it without magic.",
+      "description_pt": "Voce conhece o Druidico, a linguagem secreta dos druidas. Voce pode falar a linguagem e usa-la para deixar mensagens ocultas. Voce e outros que conhecem esta linguagem automaticamente percebem tal mensagem. Outros percebem a presenca da mensagem com um teste de Sabedoria (Percepcao) CD 15 bem-sucedido, mas nao podem decifra-la sem magia."
+    },
+    {
+      "name": "Spellcasting",
+      "name_pt": "Conjuracao",
+      "level": 1,
+      "description_en": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will.\n\nCantrips: At 1st level, you know two cantrips of your choice from the druid spell list. You learn additional druid cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Druid table.\n\nPreparing and Casting Spells: The Druid table shows how many spell slots you have to cast your druid spells of 1st level and higher. To cast one of these druid spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\n\nYou prepare the list of druid spells that are available for you to cast, choosing from the druid spell list. When you do so, choose a number of druid spells equal to your Wisdom modifier + your druid level (minimum of one spell). The spells must be of a level for which you have spell slots.\n\nFor example, if you are a 3rd-level druid, you have four 1st-level and two 2nd-level spell slots. With a Wisdom of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or 2nd-level slot. Casting the spell doesn't remove it from your list of prepared spells.\n\nYou can also change your list of prepared spells when you finish a long rest. Preparing a new list of druid spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list.\n\nSpellcasting Ability: Wisdom is your spellcasting ability for your druid spells, since your magic draws upon your devotion and attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a druid spell you cast and when making an attack roll with one.\n\nSpell save DC = 8 + your proficiency bonus + your Wisdom modifier\nSpell attack modifier = your proficiency bonus + your Wisdom modifier\n\nRitual Casting: You can cast a druid spell as a ritual if that spell has the ritual tag and you have the spell prepared.\n\nSpellcasting Focus: You can use a druidic focus as a spellcasting focus for your druid spells.",
+      "description_pt": "Usando a essencia divina da propria natureza, voce pode conjurar magias para moldar essa essencia a sua vontade.\n\nTruques: No 1o nivel, voce conhece dois truques a sua escolha da lista de magias de druida. Voce aprende truques de druida adicionais a sua escolha em niveis mais altos, conforme mostrado na coluna Truques Conhecidos da tabela do Druida.\n\nPreparando e Conjurando Magias: A tabela do Druida mostra quantos espacos de magia voce tem para conjurar suas magias de druida de 1o nivel e superiores. Para conjurar uma dessas magias de druida, voce deve gastar um espaco do nivel da magia ou superior. Voce recupera todos os espacos de magia gastos quando termina um descanso longo.\n\nVoce prepara a lista de magias de druida que estao disponiveis para voce conjurar, escolhendo da lista de magias de druida. Ao fazer isso, escolha um numero de magias de druida igual ao seu modificador de Sabedoria + seu nivel de druida (minimo de uma magia). As magias devem ser de um nivel para o qual voce tenha espacos de magia.\n\nPor exemplo, se voce e um druida de 3o nivel, voce tem quatro espacos de magia de 1o nivel e dois de 2o nivel. Com Sabedoria 16, sua lista de magias preparadas pode incluir seis magias de 1o ou 2o nivel, em qualquer combinacao. Se voce preparar a magia de 1o nivel curar ferimentos, voce pode conjura-la usando um espaco de 1o ou 2o nivel. Conjurar a magia nao a remove de sua lista de magias preparadas.\n\nVoce tambem pode alterar sua lista de magias preparadas quando termina um descanso longo. Preparar uma nova lista de magias de druida requer tempo gasto em prece e meditacao: pelo menos 1 minuto por nivel de magia para cada magia em sua lista.\n\nHabilidade de Conjuracao: Sabedoria e sua habilidade de conjuracao para suas magias de druida, pois sua magia se baseia em sua devocao e sintonia com a natureza. Voce usa sua Sabedoria sempre que uma magia se referir a sua habilidade de conjuracao. Alem disso, voce usa seu modificador de Sabedoria ao definir a CD do teste de resistencia para uma magia de druida que voce conjura e ao fazer uma jogada de ataque com uma.\n\nCD do teste de resistencia = 8 + seu bonus de proficiencia + seu modificador de Sabedoria\nModificador de ataque de magia = seu bonus de proficiencia + seu modificador de Sabedoria\n\nConjuracao de Ritual: Voce pode conjurar uma magia de druida como um ritual se essa magia tiver a tag ritual e voce tiver a magia preparada.\n\nFoco de Conjuracao: Voce pode usar um foco druidico como foco de conjuracao para suas magias de druida."
+    },
+    {
+      "name": "Wild Shape",
+      "name_pt": "Forma Selvagem",
+      "level": 2,
+      "description_en": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.\n\nYour druid level determines the beasts you can transform into, as shown in the Beast Shapes table.\n\nBeast Shapes:\n| Level | Max. CR | Limitations | Example |\n|-------|---------|-------------|---------|\n| 2nd | 1/4 | No flying or swimming speed | Wolf |\n| 4th | 1/2 | No flying speed | Crocodile |\n| 8th | 1 | — | Giant Eagle |\n\nYou can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die.\n\nWhile you are transformed, the following rules apply:\n\n- Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\n\n- When you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\n\n- You can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you've already cast.\n\n- You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense.\n\n- You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the DM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form.",
+      "description_pt": "A partir do 2o nivel, voce pode usar sua acao para assumir magicamente a forma de uma besta que voce ja viu antes. Voce pode usar esta caracteristica duas vezes. Voce recupera usos gastos quando termina um descanso curto ou longo.\n\nSeu nivel de druida determina as bestas nas quais voce pode se transformar, conforme mostrado na tabela Formas Bestiais.\n\nFormas Bestiais:\n| Nivel | CR Max. | Limitacoes | Exemplo |\n|-------|---------|------------|---------|\n| 2o | 1/4 | Sem velocidade de voo ou natacao | Lobo |\n| 4o | 1/2 | Sem velocidade de voo | Crocodilo |\n| 8o | 1 | — | Aguia Gigante |\n\nVoce pode permanecer em uma forma bestial por um numero de horas igual a metade do seu nivel de druida (arredondado para baixo). Voce entao reverte para sua forma normal a menos que gaste outro uso desta caracteristica. Voce pode reverter para sua forma normal mais cedo usando uma acao bonus no seu turno. Voce reverte automaticamente se ficar inconsciente, cair a 0 pontos de vida ou morrer.\n\nEnquanto voce esta transformado, as seguintes regras se aplicam:\n\n- Suas estatisticas de jogo sao substituidas pelas estatisticas da besta, mas voce mantem seu alinhamento, personalidade e valores de Inteligencia, Sabedoria e Carisma. Voce tambem mantem todas as suas proficiencias em pericias e testes de resistencia, alem de ganhar as da criatura. Se a criatura tiver a mesma proficiencia que voce e o bonus em seu bloco de estatisticas for maior que o seu, use o bonus da criatura em vez do seu. Se a criatura tiver acoes lendarias ou acoes de covil, voce nao pode usa-las.\n\n- Quando voce se transforma, voce assume os pontos de vida e Dados de Vida da besta. Quando voce reverte para sua forma normal, voce retorna ao numero de pontos de vida que tinha antes de se transformar. No entanto, se voce reverter como resultado de cair a 0 pontos de vida, qualquer dano excedente e transferido para sua forma normal. Por exemplo, se voce receber 10 de dano na forma animal e tiver apenas 1 ponto de vida restante, voce reverte e recebe 9 de dano. Desde que o dano excedente nao reduza sua forma normal a 0 pontos de vida, voce nao fica inconsciente.\n\n- Voce nao pode conjurar magias, e sua capacidade de falar ou realizar qualquer acao que exija maos e limitada as capacidades da sua forma bestial. A transformacao nao quebra sua concentracao em uma magia que voce ja conjurou, no entanto, ou impede voce de realizar acoes que fazem parte de uma magia, como relampago, que voce ja conjurou.\n\n- Voce mantem o beneficio de quaisquer caracteristicas de sua classe, raca ou outra fonte e pode usa-las se a nova forma for fisicamente capaz de faze-lo. No entanto, voce nao pode usar nenhum de seus sentidos especiais, como visao no escuro, a menos que sua nova forma tambem tenha esse sentido.\n\n- Voce escolhe se seu equipamento cai no chao em seu espaco, se funde com sua nova forma ou e vestido por ela. Equipamento vestido funciona normalmente, mas o Mestre decide se e pratico para a nova forma vestir uma peca de equipamento, com base na forma e tamanho da criatura. Seu equipamento nao muda de tamanho ou forma para combinar com a nova forma, e qualquer equipamento que a nova forma nao possa vestir deve cair no chao ou se fundir com ela. Equipamento que se funde com a forma nao tem efeito ate voce deixar a forma."
+    },
+    {
+      "name": "Timeless Body",
+      "name_pt": "Corpo Atemporal",
+      "level": 18,
+      "description_en": "Starting at 18th level, the primal magic that you wield causes you to age more slowly. For every 10 years that pass, your body ages only 1 year.",
+      "description_pt": "A partir do 18o nivel, a magia primordial que voce empunha faz com que voce envelheca mais lentamente. Para cada 10 anos que passam, seu corpo envelhece apenas 1 ano."
+    },
+    {
+      "name": "Beast Spells",
+      "name_pt": "Magias Bestiais",
+      "level": 18,
+      "description_en": "Beginning at 18th level, you can cast many of your druid spells in any shape you assume using Wild Shape. You can perform the somatic and verbal components of a druid spell while in a beast shape, but you aren't able to provide material components.",
+      "description_pt": "A partir do 18o nivel, voce pode conjurar muitas de suas magias de druida em qualquer forma que assumir usando Forma Selvagem. Voce pode realizar os componentes somaticos e verbais de uma magia de druida enquanto estiver em uma forma bestial, mas nao e capaz de fornecer componentes materiais."
+    },
+    {
+      "name": "Archdruid",
+      "name_pt": "Arquidruida",
+      "level": 20,
+      "description_en": "At 20th level, you can use your Wild Shape an unlimited number of times.\n\nAdditionally, you can ignore the verbal and somatic components of your druid spells, as well as any material components that lack a cost and aren't consumed by a spell. You gain this benefit in both your normal shape and your beast shape from Wild Shape.",
+      "description_pt": "No 20o nivel, voce pode usar sua Forma Selvagem um numero ilimitado de vezes.\n\nAlem disso, voce pode ignorar os componentes verbais e somaticos de suas magias de druida, bem como quaisquer componentes materiais que nao tenham custo e nao sejam consumidos por uma magia. Voce ganha este beneficio tanto em sua forma normal quanto em sua forma bestial da Forma Selvagem."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Valor de Habilidade",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando voce alcanca o 4o nivel, e novamente no 8o, 12o, 16o e 19o nivel, voce pode aumentar um valor de habilidade a sua escolha em 2, ou pode aumentar dois valores de habilidade a sua escolha em 1. Como normal, voce nao pode aumentar um valor de habilidade acima de 20 usando esta caracteristica."
+    }
+  ],
+  "spellcasting": {
+    "description_en": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will. Wisdom is your spellcasting ability for your druid spells. You prepare spells from the entire druid spell list each day, choosing a number equal to your Wisdom modifier + your druid level (minimum of one spell).",
+    "description_pt": "Usando a essencia divina da propria natureza, voce pode conjurar magias para moldar essa essencia a sua vontade. Sabedoria e sua habilidade de conjuracao para suas magias de druida. Voce prepara magias de toda a lista de magias de druida a cada dia, escolhendo um numero igual ao seu modificador de Sabedoria + seu nivel de druida (minimo de uma magia).",
+    "ability": "WIS",
+    "cantrips": true,
+    "ritual_casting": true,
+    "spellcasting_focus": "A druidic focus (a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object)",
+    "spellcasting_focus_pt": "Um foco druidico (um ramo de visco ou azevinho, uma varinha ou cetro feito de teixo ou outra madeira especial, um cajado retirado inteiro de uma arvore viva, ou um objeto totemico)"
+  },
+  "multiclass_prerequisites": "Wisdom 13",
+  "multiclass_prerequisites_pt": "Sabedoria 13",
+  "multiclass_proficiencies": "Light armor, Medium armor, Shields (nonmetal)",
+  "multiclass_proficiencies_pt": "Armaduras leves, Armaduras medias, Escudos (nao metalicos)",
+  "subclass_level": 2,
+  "subclass_name": "Druid Circle",
+  "subclass_name_pt": "Circulo Druidico",
+  "subclass_ids": ["circle-of-the-land"]
+}

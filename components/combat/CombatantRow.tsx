@@ -16,7 +16,7 @@ import { DeathSaveTracker } from "./DeathSaveTracker";
 import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Shield } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -504,6 +504,18 @@ export const CombatantRow = memo(function CombatantRow({
               </span>
             )}
           </div>
+
+          {/* AC badge — always visible for DM (BT2-09) */}
+          {combatant.ac > 0 && (
+            <span
+              className="inline-flex items-center gap-0.5 text-[10px] font-mono text-muted-foreground shrink-0 bg-white/[0.06] rounded px-1.5 py-0.5"
+              title={t("ac_label")}
+              data-testid={`ac-badge-${combatant.id}`}
+            >
+              <Shield className="w-3 h-3" aria-hidden="true" />
+              {combatant.ac}
+            </span>
+          )}
 
           {/* Inline expand toggle (separate from name) */}
           {canExpand && (

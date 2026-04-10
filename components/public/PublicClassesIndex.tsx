@@ -51,9 +51,10 @@ const LABELS = {
 interface PublicClassesIndexProps {
   classes: SrdClass[];
   locale?: "en" | "pt-BR";
+  linkPrefix?: string;
 }
 
-export function PublicClassesIndex({ classes, locale = "en" }: PublicClassesIndexProps) {
+export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/classes" }: PublicClassesIndexProps) {
   const [filter, setFilter] = useState<RoleFilter>("all");
   const L = LABELS[locale];
 
@@ -106,7 +107,7 @@ export function PublicClassesIndex({ classes, locale = "en" }: PublicClassesInde
           return (
             <Link
               key={cls.id}
-              href={`/classes/${cls.id}`}
+              href={`${linkPrefix}/${cls.id}`}
               className={`group block rounded-xl border ${roleStyle.border} bg-gray-900/50 hover:bg-gray-900/80 transition-all p-5 hover:ring-1 hover:ring-[#D4A853]/20`}
             >
               {/* Icon + Name row */}

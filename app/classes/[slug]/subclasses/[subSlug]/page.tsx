@@ -1,19 +1,24 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PublicNav } from "@/components/public/PublicNav";
-import { PublicClassFullDetail } from "@/components/public/PublicClassFullDetail";
+import { PublicSubclassDetail } from "@/components/public/PublicSubclassDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import {
   getClassFull,
   getAllClassesFull,
-  getSubclassesForClass,
+  getSubclass,
 } from "@/lib/srd/class-data-server";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
-  return getAllClassesFull().map((c) => ({ slug: c.id }));
+  const params: { slug: string; subSlug: string }[] = [];
+  for (const cls of getAllClassesFull()) {
+    for (const subId of cls.subclass_ids ?? []) {
+      params.push({ slug: cls.id, subSlug: subId });
+    }
+  }
+  return params;
 }
 
 export const revalidate = 86400;
@@ -22,41 +27,36 @@ export const revalidate = 86400;
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; subSlug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, subSlug } = await params;
   const cls = getClassFull(slug);
-  if (!cls) return { title: "Class Not Found" };
+  const sub = getSubclass(subSlug);
+  if (!cls || !sub) return { title: "Subclass Not Found" };
 
-  const subclasses = getSubclassesForClass(cls.id);
-  const subclassNames = subclasses.map((s) => s.name).join(", ");
-
-  const title = `${cls.name} — D&D 5e Class Guide`;
-  const description = `${cls.name}: ${cls.description_en} Hit Die: ${cls.hit_die}. Primary Ability: ${cls.primary_ability}. Subclasses: ${subclassNames || cls.srd_subclass}. Full class features, progression table, and starting equipment.`;
+  const title = `${sub.name} — ${cls.name} Subclass | D&D 5e`;
+  const featureNames = sub.features.map((f) => f.name).join(", ");
+  const description = `${sub.name} subclass for the ${cls.name} class in D&D 5e. ${sub.description_en} Features: ${featureNames}.`;
 
   return {
     title,
     description,
     keywords: [
-      `${cls.name} 5e`,
-      `D&D ${cls.name}`,
-      `${cls.name} class`,
-      `${cls.name} guide`,
-      `${cls.name} hit die`,
-      `${cls.name} subclasses`,
-      `${cls.name} class features`,
-      `${cls.name} build`,
-      cls.srd_subclass,
-      ...subclasses.map((s) => `${s.name} 5e`),
-      "D&D 5e classes",
-      "SRD class",
-      "D&D class guide",
+      `${sub.name} 5e`,
+      `${sub.name} ${cls.name}`,
+      `${cls.name} subclass`,
+      `D&D ${sub.name}`,
+      `${sub.name} features`,
+      `${sub.name} guide`,
+      `${cls.subclass_name} 5e`,
+      "D&D 5e subclasses",
+      "SRD subclass",
     ],
     openGraph: {
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://pocketdm.com.br/classes/${slug}`,
+      url: `https://pocketdm.com.br/classes/${slug}/subclasses/${subSlug}`,
     },
     twitter: {
       card: "summary_large_image",
@@ -64,25 +64,29 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://pocketdm.com.br/classes/${slug}`,
+      canonical: `https://pocketdm.com.br/classes/${slug}/subclasses/${subSlug}`,
     },
   };
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
-function ClassJsonLd({
+function SubclassJsonLd({
   cls,
+  sub,
   slug,
+  subSlug,
 }: {
   cls: NonNullable<ReturnType<typeof getClassFull>>;
+  sub: NonNullable<ReturnType<typeof getSubclass>>;
   slug: string;
+  subSlug: string;
 }) {
   const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
-    name: `${cls.name} — D&D 5e Class Guide`,
-    headline: `${cls.name} — D&D 5e Class Guide`,
-    description: `${cls.name}: ${cls.description_en} Hit Die: ${cls.hit_die}. Primary Ability: ${cls.primary_ability}.`,
+    name: `${sub.name} — ${cls.name} Subclass`,
+    headline: `${sub.name} — ${cls.name} Subclass | D&D 5e`,
+    description: `${sub.name}: ${sub.description_en}`,
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
@@ -117,6 +121,12 @@ function ClassJsonLd({
         name: cls.name,
         item: `https://pocketdm.com.br/classes/${slug}`,
       },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: sub.name,
+        item: `https://pocketdm.com.br/classes/${slug}/subclasses/${subSlug}`,
+      },
     ],
   };
 
@@ -135,45 +145,48 @@ function ClassJsonLd({
 }
 
 // ── Page ───────────────────────────────────────────────────────────
-export default async function ClassDetailPage({
+export default async function SubclassDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; subSlug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, subSlug } = await params;
   const cls = getClassFull(slug);
   if (!cls) notFound();
 
-  const subclasses = getSubclassesForClass(cls.id);
+  const sub = getSubclass(subSlug);
+  if (!sub) notFound();
 
   return (
     <>
-      <ClassJsonLd cls={cls} slug={slug} />
+      <SubclassJsonLd cls={cls} sub={sub} slug={slug} subSlug={subSlug} />
 
       <div className="min-h-screen bg-background">
         <PublicNav
           breadcrumbs={[
             { label: "Classes", href: "/classes" },
-            { label: cls.name },
+            { label: cls.name, href: `/classes/${slug}` },
+            { label: sub.name },
           ]}
         />
 
         <main className="mx-auto max-w-5xl px-4 py-8">
-          <PublicClassFullDetail
-            cls={cls}
-            subclasses={subclasses}
+          <PublicSubclassDetail
+            subclass={sub}
+            parentClass={{
+              id: cls.id,
+              name: cls.name,
+              name_pt: cls.name_pt,
+              icon: cls.icon,
+              subclass_name: cls.subclass_name,
+              subclass_name_pt: cls.subclass_name_pt,
+              subclass_level: cls.subclass_level,
+            }}
             locale="en"
           />
 
-          <p className="text-xs text-gray-500 mt-8 text-center">
-            Also available in{" "}
-            <Link href={`/classes-pt/${slug}`} className="text-[#D4A853] hover:underline">
-              Português
-            </Link>
-          </p>
-
           <div className="mt-8">
-            <PublicCTA entityName={cls.name} locale="en" />
+            <PublicCTA entityName={sub.name} locale="en" />
           </div>
         </main>
 

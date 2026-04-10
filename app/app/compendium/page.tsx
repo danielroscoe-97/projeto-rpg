@@ -9,9 +9,10 @@ import { SpellBrowser } from "@/components/compendium/SpellBrowser";
 import { ConditionReference } from "@/components/compendium/ConditionReference";
 import { ItemBrowser } from "@/components/compendium/ItemBrowser";
 import { FeatBrowser } from "@/components/compendium/FeatBrowser";
+import { ClassBrowser } from "@/components/compendium/ClassBrowser";
 import { CompendiumSkeleton } from "@/components/ui/skeletons/CompendiumSkeleton";
 
-type Tab = "monsters" | "spells" | "conditions" | "items" | "feats";
+type Tab = "monsters" | "spells" | "classes" | "items" | "feats" | "conditions";
 
 function CompendiumContent() {
   const t = useTranslations("compendium");
@@ -20,7 +21,7 @@ function CompendiumContent() {
   const isLoading = useSrdStore((s) => s.is_loading);
 
   const tabParam = searchParams.get("tab") as Tab | null;
-  const activeTab: Tab = (tabParam && ["monsters", "spells", "conditions", "items", "feats"].includes(tabParam)) ? tabParam : "monsters";
+  const activeTab: Tab = (tabParam && ["monsters", "spells", "classes", "items", "feats", "conditions"].includes(tabParam)) ? tabParam : "monsters";
 
   function handleTabChange(tab: Tab) {
     router.replace(`/app/compendium?tab=${tab}`, { scroll: false });
@@ -29,6 +30,7 @@ function CompendiumContent() {
   const tabs: { key: Tab; label: string }[] = [
     { key: "monsters", label: t("tab_monsters") },
     { key: "spells", label: t("tab_spells") },
+    { key: "classes", label: t("tab_classes") },
     { key: "items", label: t("tab_items") },
     { key: "feats", label: t("tab_feats") },
     { key: "conditions", label: t("tab_conditions") },
@@ -69,6 +71,7 @@ function CompendiumContent() {
         <>
           {activeTab === "monsters" && <MonsterBrowser />}
           {activeTab === "spells" && <SpellBrowser />}
+          {activeTab === "classes" && <ClassBrowser />}
           {activeTab === "items" && <ItemBrowser />}
           {activeTab === "feats" && <FeatBrowser />}
           {activeTab === "conditions" && <ConditionReference />}

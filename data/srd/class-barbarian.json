@@ -1,0 +1,267 @@
+{
+  "id": "barbarian",
+  "name": "Barbarian",
+  "name_pt": "Bárbaro",
+  "hit_die": "d12",
+  "primary_ability": "STR",
+  "saving_throws": ["STR", "CON"],
+  "armor_proficiencies": "Light armor, Medium armor, Shields",
+  "weapon_proficiencies": "Simple weapons, Martial weapons",
+  "srd_subclass": "Path of the Berserker",
+  "srd_subclass_pt": "Caminho do Berserker",
+  "description_en": "A fierce warrior who can enter a battle rage.",
+  "description_pt": "Um guerreiro feroz capaz de entrar em fúria de batalha.",
+  "spellcaster": false,
+  "spellcasting_ability": null,
+  "icon": "crossed-swords",
+  "role": "martial",
+  "description_full_en": "For some, their rage springs from a communion with fierce animal spirits. Others draw from a roiling reservoir of anger at a world full of pain. For every barbarian, rage is a power that fuels not just a battle frenzy but also uncanny reflexes, resilience, and feats of strength.\nPeople of towns and cities take pride in how their civilized ways set them apart from animals, as if denying one's own nature was a mark of superiority. To a barbarian, though, civilization is no virtue. These fierce warriors rely on their bodies and the primal energies of the natural world. They possess an extraordinary vitality that lets them shrug off effects that would fell a lesser person.\nBarbarians come alive in the chaos of combat. They can enter a berserk state where rage takes over, giving them superhuman strength and resilience. A barbarian can draw on this reservoir of fury only a few times without resting, but those few rages are usually sufficient to defeat whatever threats arise.",
+  "description_full_pt": "Para alguns, sua fúria nasce de uma comunhão com espíritos animais ferozes. Outros extraem de um reservatório turbulento de raiva contra um mundo cheio de dor. Para todo bárbaro, a fúria é um poder que alimenta não apenas um frenesi de batalha, mas também reflexos sobrenaturais, resiliência e feitos de força.\nOs habitantes de vilas e cidades se orgulham de como seus modos civilizados os distinguem dos animais, como se negar a própria natureza fosse um sinal de superioridade. Para um bárbaro, porém, civilização não é virtude. Esses guerreiros ferozes confiam em seus corpos e nas energias primais do mundo natural. Possuem uma vitalidade extraordinária que lhes permite ignorar efeitos que derrubariam uma pessoa comum.\nBárbaros ganham vida no caos do combate. Podem entrar em um estado de frenesi onde a fúria assume o controle, concedendo-lhes força e resiliência sobre-humanas. Um bárbaro pode recorrer a esse reservatório de fúria apenas algumas vezes sem descansar, mas essas poucas fúrias geralmente são suficientes para derrotar quaisquer ameaças que surjam.",
+  "quick_build_en": "You can make a barbarian quickly by following these suggestions. First, put your highest ability score in Strength, followed by Constitution. Second, choose the outlander background.",
+  "quick_build_pt": "Você pode criar um bárbaro rapidamente seguindo estas sugestões. Primeiro, coloque seu maior valor de habilidade em Força, seguido de Constituição. Segundo, escolha o antecedente forasteiro.",
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n(a) a greataxe or (b) any martial melee weapon\n(a) two handaxes or (b) any simple weapon\nAn explorer's pack, and four javelins",
+  "starting_equipment_pt": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n(a) um machado grande ou (b) qualquer arma marcial corpo a corpo\n(a) duas machadinhas ou (b) qualquer arma simples\nUm pacote de explorador e quatro azagaias",
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Rage, Unarmored Defense",
+      "features_pt": "Fúria, Defesa sem Armadura",
+      "extras": { "rages": "2", "rage_damage": "+2" }
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Reckless Attack, Danger Sense",
+      "features_pt": "Ataque Imprudente, Sentido de Perigo",
+      "extras": { "rages": "2", "rage_damage": "+2" }
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "Primal Path",
+      "features_pt": "Caminho Primal",
+      "extras": { "rages": "3", "rage_damage": "+2" }
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "rages": "3", "rage_damage": "+2" }
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "Extra Attack, Fast Movement",
+      "features_pt": "Ataque Extra, Movimento Rápido",
+      "extras": { "rages": "3", "rage_damage": "+2" }
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Path feature",
+      "features_pt": "Característica do Caminho",
+      "extras": { "rages": "4", "rage_damage": "+2" }
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "Feral Instinct",
+      "features_pt": "Instinto Selvagem",
+      "extras": { "rages": "4", "rage_damage": "+2" }
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "rages": "4", "rage_damage": "+2" }
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "Brutal Critical (1 die)",
+      "features_pt": "Crítico Brutal (1 dado)",
+      "extras": { "rages": "4", "rage_damage": "+3" }
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Path feature",
+      "features_pt": "Característica do Caminho",
+      "extras": { "rages": "4", "rage_damage": "+3" }
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "Relentless Rage",
+      "features_pt": "Fúria Implacável",
+      "extras": { "rages": "4", "rage_damage": "+3" }
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "rages": "5", "rage_damage": "+3" }
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "Brutal Critical (2 dice)",
+      "features_pt": "Crítico Brutal (2 dados)",
+      "extras": { "rages": "5", "rage_damage": "+3" }
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Path feature",
+      "features_pt": "Característica do Caminho",
+      "extras": { "rages": "5", "rage_damage": "+3" }
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "Persistent Rage",
+      "features_pt": "Fúria Persistente",
+      "extras": { "rages": "5", "rage_damage": "+3" }
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "rages": "5", "rage_damage": "+4" }
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "Brutal Critical (3 dice)",
+      "features_pt": "Crítico Brutal (3 dados)",
+      "extras": { "rages": "6", "rage_damage": "+4" }
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Indomitable Might",
+      "features_pt": "Poder Indomável",
+      "extras": { "rages": "6", "rage_damage": "+4" }
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "extras": { "rages": "6", "rage_damage": "+4" }
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Primal Champion",
+      "features_pt": "Campeão Primal",
+      "extras": { "rages": "Unlimited", "rage_damage": "+4" }
+    }
+  ],
+  "class_features": [
+    {
+      "name": "Rage",
+      "name_pt": "Fúria",
+      "level": 1,
+      "description_en": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action.\nWhile raging, you gain the following benefits if you aren't wearing heavy armor:\n- You have advantage on Strength checks and Strength saving throws.\n- When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table.\n- You have resistance to bludgeoning, piercing, and slashing damage.\nIf you are able to cast spells, you can't cast them or concentrate on them while raging.\nYour rage lasts for 1 minute. It ends early if you are knocked unconscious or if your turn ends and you haven't attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action.\nOnce you have raged the number of times shown for your barbarian level in the Rages column of the Barbarian table, you must finish a long rest before you can rage again.",
+      "description_pt": "Em batalha, você luta com ferocidade primal. No seu turno, você pode entrar em fúria como uma ação bônus.\nEnquanto estiver em fúria, você ganha os seguintes benefícios se não estiver usando armadura pesada:\n- Você tem vantagem em testes de Força e salvaguardas de Força.\n- Quando você realiza um ataque corpo a corpo usando Força, você ganha um bônus na rolagem de dano que aumenta conforme você ganha níveis como bárbaro, como mostrado na coluna Dano de Fúria da tabela do Bárbaro.\n- Você tem resistência a dano de concussão, perfuração e corte.\nSe você for capaz de conjurar magias, não pode conjurá-las nem se concentrar nelas enquanto estiver em fúria.\nSua fúria dura 1 minuto. Ela termina prematuramente se você ficar inconsciente ou se seu turno terminar e você não tiver atacado uma criatura hostil desde seu último turno ou recebido dano desde então. Você também pode encerrar sua fúria no seu turno como uma ação bônus.\nApós ter entrado em fúria o número de vezes mostrado para seu nível de bárbaro na coluna Fúrias da tabela do Bárbaro, você deve completar um descanso longo antes de poder entrar em fúria novamente."
+    },
+    {
+      "name": "Unarmored Defense",
+      "name_pt": "Defesa sem Armadura",
+      "level": 1,
+      "description_en": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit.",
+      "description_pt": "Enquanto você não estiver usando nenhuma armadura, sua Classe de Armadura é igual a 10 + seu modificador de Destreza + seu modificador de Constituição. Você pode usar um escudo e ainda obter esse benefício."
+    },
+    {
+      "name": "Reckless Attack",
+      "name_pt": "Ataque Imprudente",
+      "level": 2,
+      "description_en": "Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation. When you make your first attack on your turn, you can decide to attack recklessly. Doing so gives you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn.",
+      "description_pt": "A partir do 2° nível, você pode ignorar toda preocupação com defesa para atacar com desespero feroz. Quando você faz seu primeiro ataque no seu turno, pode decidir atacar imprudentemente. Ao fazer isso, você ganha vantagem nas jogadas de ataque corpo a corpo usando Força durante este turno, mas as jogadas de ataque contra você têm vantagem até o seu próximo turno."
+    },
+    {
+      "name": "Danger Sense",
+      "name_pt": "Sentido de Perigo",
+      "level": 2,
+      "description_en": "At 2nd level, you gain an uncanny sense of when things nearby aren't as they should be, giving you an edge when you dodge away from danger.\nYou have advantage on Dexterity saving throws against effects that you can see, such as traps and spells. To gain this benefit, you can't be blinded, deafened, or incapacitated.",
+      "description_pt": "No 2° nível, você ganha um sentido sobrenatural de quando as coisas ao seu redor não estão como deveriam, dando-lhe uma vantagem ao se esquivar do perigo.\nVocê tem vantagem em salvaguardas de Destreza contra efeitos que você pode ver, como armadilhas e magias. Para obter esse benefício, você não pode estar cego, surdo ou incapacitado."
+    },
+    {
+      "name": "Extra Attack",
+      "name_pt": "Ataque Extra",
+      "level": 5,
+      "description_en": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "description_pt": "A partir do 5° nível, você pode atacar duas vezes, em vez de uma, sempre que realizar a ação de Ataque no seu turno."
+    },
+    {
+      "name": "Fast Movement",
+      "name_pt": "Movimento Rápido",
+      "level": 5,
+      "description_en": "Starting at 5th level, your speed increases by 10 feet while you aren't wearing heavy armor.",
+      "description_pt": "A partir do 5° nível, seu deslocamento aumenta em 3 metros enquanto você não estiver usando armadura pesada."
+    },
+    {
+      "name": "Feral Instinct",
+      "name_pt": "Instinto Selvagem",
+      "level": 7,
+      "description_en": "By 7th level, your instincts are so honed that you have advantage on initiative rolls.\nAdditionally, if you are surprised at the beginning of combat and aren't incapacitated, you can act normally on your first turn, but only if you enter your rage before doing anything else on that turn.",
+      "description_pt": "No 7° nível, seus instintos são tão aguçados que você tem vantagem nas rolagens de iniciativa.\nAlém disso, se você for surpreendido no início do combate e não estiver incapacitado, pode agir normalmente no seu primeiro turno, mas apenas se entrar em fúria antes de fazer qualquer outra coisa naquele turno."
+    },
+    {
+      "name": "Brutal Critical",
+      "name_pt": "Crítico Brutal",
+      "level": 9,
+      "description_en": "Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack.\nThis increases to two additional dice at 13th level and three additional dice at 17th level.",
+      "description_pt": "A partir do 9° nível, você pode rolar um dado de dano de arma adicional ao determinar o dano extra de um acerto crítico com um ataque corpo a corpo.\nIsso aumenta para dois dados adicionais no 13° nível e três dados adicionais no 17° nível."
+    },
+    {
+      "name": "Relentless Rage",
+      "name_pt": "Fúria Implacável",
+      "level": 11,
+      "description_en": "Starting at 11th level, your rage can keep you fighting despite grievous wounds. If you drop to 0 hit points while you're raging and don't die outright, you can make a DC 10 Constitution saving throw. If you succeed, you drop to 1 hit point instead.\nEach time you use this feature after the first, the DC increases by 5. When you finish a short or long rest, the DC resets to 10.",
+      "description_pt": "A partir do 11° nível, sua fúria pode mantê-lo lutando apesar de ferimentos graves. Se você cair para 0 pontos de vida enquanto estiver em fúria e não morrer instantaneamente, pode fazer uma salvaguarda de Constituição CD 10. Se tiver sucesso, você cai para 1 ponto de vida em vez disso.\nCada vez que usar esta característica após a primeira, a CD aumenta em 5. Quando você termina um descanso curto ou longo, a CD volta para 10."
+    },
+    {
+      "name": "Persistent Rage",
+      "name_pt": "Fúria Persistente",
+      "level": 15,
+      "description_en": "Beginning at 15th level, your rage is so fierce that it ends early only if you fall unconscious or if you choose to end it.",
+      "description_pt": "A partir do 15° nível, sua fúria é tão intensa que só termina prematuramente se você ficar inconsciente ou se escolher encerrá-la."
+    },
+    {
+      "name": "Indomitable Might",
+      "name_pt": "Poder Indomável",
+      "level": 18,
+      "description_en": "Beginning at 18th level, if your total for a Strength check is less than your Strength score, you can use that score in place of the total.",
+      "description_pt": "A partir do 18° nível, se o total de um teste de Força for menor que seu valor de Força, você pode usar esse valor no lugar do total."
+    },
+    {
+      "name": "Primal Champion",
+      "name_pt": "Campeão Primal",
+      "level": 20,
+      "description_en": "At 20th level, you embody the power of the wilds. Your Strength and Constitution scores increase by 4. Your maximum for those scores is now 24.",
+      "description_pt": "No 20° nível, você personifica o poder das terras selvagens. Seus valores de Força e Constituição aumentam em 4. Seu máximo para esses valores agora é 24."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando você atinge o 4° nível, e novamente no 8°, 12°, 16° e 19° nível, você pode aumentar um valor de habilidade à sua escolha em 2, ou pode aumentar dois valores de habilidade à sua escolha em 1. Como normal, você não pode aumentar um valor de habilidade acima de 20 usando esta característica."
+    }
+  ],
+  "multiclass_prerequisites": "Strength 13",
+  "multiclass_prerequisites_pt": "Força 13",
+  "multiclass_proficiencies": "Shields, simple weapons, martial weapons",
+  "multiclass_proficiencies_pt": "Escudos, armas simples, armas marciais",
+  "subclass_level": 3,
+  "subclass_name": "Primal Path",
+  "subclass_name_pt": "Caminho Primal",
+  "subclass_ids": ["path-of-the-berserker"]
+}

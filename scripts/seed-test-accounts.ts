@@ -132,6 +132,23 @@ const TEST_ACCOUNTS: TestAccount[] = [
     language: "pt-BR" as const,
     description: "Player primeiro acesso — sem campanhas, sem personagens, testa onboarding player completo",
   },
+  {
+    email: "dm.fresh2@test-pocketdm.com",
+    password: "TestDM_Fresh2!5",
+    display_name: "DM Novato 2",
+    role: "dm" as const,
+    language: "pt-BR" as const,
+    plan: "free" as const,
+    description: "DM primeiro acesso #2 — onboarding retest",
+  },
+  {
+    email: "player.newbie2@test-pocketdm.com",
+    password: "TestPlayer_New2!9",
+    display_name: "Player Novato 2",
+    role: "player" as const,
+    language: "pt-BR" as const,
+    description: "Player primeiro acesso #2 — onboarding retest",
+  },
 
   // ── Edge Case Accounts ──
   {

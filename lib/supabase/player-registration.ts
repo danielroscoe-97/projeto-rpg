@@ -200,6 +200,8 @@ export async function registerPlayerCombatant(
         dm_notes: "",
         player_notes: "",
         player_character_id: null,
+        // B2: Link combatant to session_token by ID — survives name changes for reconnection
+        session_token_id: tokenId,
       })
       .select("id")
       .single();

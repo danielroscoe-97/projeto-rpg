@@ -23,6 +23,8 @@ export interface RawCombatantRow {
   condition_durations?: Record<string, number> | null;
   /** Death saves — only meaningful for player characters at 0 HP. */
   death_saves?: { successes: number; failures: number } | null;
+  /** Linked session_token ID — for ID-based reconnection. */
+  session_token_id?: string | null;
 }
 
 /**
@@ -41,7 +43,7 @@ export function sanitizeCombatantsForPlayer(combatants: RawCombatantRow[]) {
         const { display_name: _dn, is_hidden: _h, ...rest } = c;
         return rest;
       }
-      const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _dc, display_name, is_hidden: _h, condition_durations: _cd, ...rest } = c;
+      const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _dc, display_name, is_hidden: _h, condition_durations: _cd, session_token_id: _st, ...rest } = c;
       return {
         ...rest,
         // Anti-metagaming: replace real name with display_name if set

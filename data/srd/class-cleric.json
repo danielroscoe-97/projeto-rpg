@@ -1,0 +1,262 @@
+{
+  "id": "cleric",
+  "name": "Cleric",
+  "name_pt": "Cl\u00e9rigo",
+  "hit_die": "d8",
+  "primary_ability": "WIS",
+  "saving_throws": ["WIS", "CHA"],
+  "armor_proficiencies": "Light armor, Medium armor, Shields",
+  "weapon_proficiencies": "Simple weapons",
+  "srd_subclass": "Life Domain",
+  "srd_subclass_pt": "Dom\u00ednio da Vida",
+  "description_en": "Divine agents who channel the power of their deity.",
+  "description_pt": "Agentes divinos que canalizam o poder de sua divindade.",
+  "spellcaster": true,
+  "spellcasting_ability": "WIS",
+  "icon": "cross",
+  "role": "support",
+
+  "description_full_en": "Arms and eyes upraised toward the sun and a prayer on his lips, an elf begins to glow with an inner light that spills out to heal his battle-worn companions.\n\nChanting a song of glory, a dwarf swings his axe in wide swaths to cut through the ranks of orcs arrayed against him, shouting praise to the gods with every foe's fall.\n\nClerics are intermediaries between the mortal world and the distant planes of the gods. As varied as the gods they serve, clerics strive to embody the handiwork of their deities. No ordinary priest, a cleric is imbued with divine magic. Healers and warriors alike, clerics combine the helpful magic of healing and inspiring their allies with spells that harm and hinder foes. They can provoke awe and dread, lay curses of plague or poison, and even call down flames from heaven to consume their enemies. For those evildoers who will benefit most from a mace to the head, clerics depend on their combat training to let them wade into melee with the power of the gods on their side.",
+  "description_full_pt": "Bra\u00e7os e olhos erguidos em dire\u00e7\u00e3o ao sol e uma prece em seus l\u00e1bios, um elfo come\u00e7a a brilhar com uma luz interior que se espalha para curar seus companheiros desgastados pela batalha.\n\nEntoando um c\u00e2ntico de gl\u00f3ria, um an\u00e3o balan\u00e7a seu machado em amplos arcos para cortar as fileiras de orcs posicionados contra ele, gritando louvores aos deuses a cada inimigo ca\u00eddo.\n\nCl\u00e9rigos s\u00e3o intermedi\u00e1rios entre o mundo mortal e os planos distantes dos deuses. T\u00e3o variados quanto os deuses que servem, cl\u00e9rigos se esfor\u00e7am para personificar a obra de suas divindades. Nenhum sacerdote comum, um cl\u00e9rigo \u00e9 imbu\u00eddo de magia divina. Tanto curandeiros quanto guerreiros, cl\u00e9rigos combinam a magia ben\u00e9fica de cura e inspira\u00e7\u00e3o de seus aliados com magias que prejudicam e dificultam os inimigos. Eles podem provocar admira\u00e7\u00e3o e pavor, lan\u00e7ar maldi\u00e7\u00f5es de praga ou veneno, e at\u00e9 invocar chamas dos c\u00e9us para consumir seus inimigos. Para aqueles malfeitores que mais se beneficiariam de uma ma\u00e7a na cabe\u00e7a, cl\u00e9rigos dependem de seu treinamento de combate para avan\u00e7ar no corpo a corpo com o poder dos deuses ao seu lado.",
+
+  "quick_build_en": "You can make a cleric quickly by following these suggestions. First, Wisdom should be your highest ability score, followed by Strength or Constitution. Second, choose the acolyte background.",
+  "quick_build_pt": "Voc\u00ea pode criar um cl\u00e9rigo rapidamente seguindo estas sugest\u00f5es. Primeiro, Sabedoria deve ser seu valor de habilidade mais alto, seguido por For\u00e7a ou Constitui\u00e7\u00e3o. Segundo, escolha o antecedente ac\u00f3lito.",
+
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) a mace or (b) a warhammer (if proficient)\n- (a) scale mail, (b) leather armor, or (c) chain mail (if proficient)\n- (a) a light crossbow and 20 bolts or (b) any simple weapon\n- (a) a priest's pack or (b) an explorer's pack\n- A shield and a holy symbol",
+  "starting_equipment_pt": "Voc\u00ea come\u00e7a com o seguinte equipamento, al\u00e9m do equipamento concedido pelo seu antecedente:\n- (a) uma ma\u00e7a ou (b) um martelo de guerra (se proficiente)\n- (a) cota de malha de escamas, (b) armadura de couro ou (c) cota de malha (se proficiente)\n- (a) uma besta leve e 20 virotes ou (b) qualquer arma simples\n- (a) um kit de sacerdote ou (b) um kit de explorador\n- Um escudo e um s\u00edmbolo sagrado",
+
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Spellcasting, Divine Domain",
+      "features_pt": "Conjura\u00e7\u00e3o, Dom\u00ednio Divino",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 2 }
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Channel Divinity (1/rest), Divine Domain feature, Turn Undead",
+      "features_pt": "Canalizar Divindade (1/descanso), Caracter\u00edstica de Dom\u00ednio Divino, Expulsar Mortos-Vivos",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 3 }
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "\u2014",
+      "features_pt": "\u2014",
+      "cantrips_known": 3,
+      "spell_slots": { "1st": 4, "2nd": 2 }
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Valor de Habilidade",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3 }
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "Destroy Undead (CR 1/2)",
+      "features_pt": "Destruir Mortos-Vivos (ND 1/2)",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Channel Divinity (2/rest), Divine Domain feature",
+      "features_pt": "Canalizar Divindade (2/descanso), Caracter\u00edstica de Dom\u00ednio Divino",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3 }
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "\u2014",
+      "features_pt": "\u2014",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 }
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement, Divine Domain feature, Destroy Undead (CR 1)",
+      "features_pt": "Melhoria de Valor de Habilidade, Caracter\u00edstica de Dom\u00ednio Divino, Destruir Mortos-Vivos (ND 1)",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 2 }
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "\u2014",
+      "features_pt": "\u2014",
+      "cantrips_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 }
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Divine Intervention",
+      "features_pt": "Interven\u00e7\u00e3o Divina",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 }
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "Destroy Undead (CR 2)",
+      "features_pt": "Destruir Mortos-Vivos (ND 2)",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 }
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Valor de Habilidade",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 }
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "\u2014",
+      "features_pt": "\u2014",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 }
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Destroy Undead (CR 3)",
+      "features_pt": "Destruir Mortos-Vivos (ND 3)",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 }
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "\u2014",
+      "features_pt": "\u2014",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 }
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Valor de Habilidade",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 }
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "Destroy Undead (CR 4), Divine Domain feature",
+      "features_pt": "Destruir Mortos-Vivos (ND 4), Caracter\u00edstica de Dom\u00ednio Divino",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Channel Divinity (3/rest)",
+      "features_pt": "Canalizar Divindade (3/descanso)",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 1, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Valor de Habilidade",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Divine Intervention improvement",
+      "features_pt": "Melhoria de Interven\u00e7\u00e3o Divina",
+      "cantrips_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 2, "8th": 1, "9th": 1 }
+    }
+  ],
+
+  "class_features": [
+    {
+      "name": "Spellcasting",
+      "name_pt": "Conjura\u00e7\u00e3o",
+      "level": 1,
+      "description_en": "As a conduit for divine power, you can cast cleric spells.\n\nCantrips: At 1st level, you know three cantrips of your choice from the cleric spell list. You learn additional cleric cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Cleric table.\n\nPreparing and Casting Spells: The Cleric table shows how many spell slots you have to cast your cleric spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\n\nYou prepare the list of cleric spells that are available for you to cast, choosing from the cleric spell list. When you do so, choose a number of cleric spells equal to your Wisdom modifier + your cleric level (minimum of one spell). The spells must be of a level for which you have spell slots.\n\nYou can change your list of prepared spells when you finish a long rest. Preparing a new list of cleric spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list.\n\nSpellcasting Ability: Wisdom is your spellcasting ability for your cleric spells. The power of your spells comes from your devotion to your deity. You use your Wisdom whenever a cleric spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a cleric spell you cast and when making an attack roll with one.\n\nSpell save DC = 8 + your proficiency bonus + your Wisdom modifier\nSpell attack modifier = your proficiency bonus + your Wisdom modifier\n\nRitual Casting: You can cast a cleric spell as a ritual if that spell has the ritual tag and you have the spell prepared.\n\nSpellcasting Focus: You can use a holy symbol as a spellcasting focus for your cleric spells.",
+      "description_pt": "Como um canal para o poder divino, voc\u00ea pode conjurar magias de cl\u00e9rigo.\n\nTruques: No 1\u00ba n\u00edvel, voc\u00ea conhece tr\u00eas truques \u00e0 sua escolha da lista de magias de cl\u00e9rigo. Voc\u00ea aprende truques de cl\u00e9rigo adicionais \u00e0 sua escolha em n\u00edveis mais altos, conforme mostrado na coluna Truques Conhecidos da tabela do Cl\u00e9rigo.\n\nPreparando e Conjurando Magias: A tabela do Cl\u00e9rigo mostra quantos espa\u00e7os de magia voc\u00ea tem para conjurar suas magias de cl\u00e9rigo de 1\u00ba n\u00edvel e superiores. Para conjurar uma dessas magias, voc\u00ea deve gastar um espa\u00e7o do n\u00edvel da magia ou superior. Voc\u00ea recupera todos os espa\u00e7os de magia gastos quando termina um descanso longo.\n\nVoc\u00ea prepara a lista de magias de cl\u00e9rigo dispon\u00edveis para conjurar, escolhendo da lista de magias de cl\u00e9rigo. Ao fazer isso, escolha um n\u00famero de magias de cl\u00e9rigo igual ao seu modificador de Sabedoria + seu n\u00edvel de cl\u00e9rigo (m\u00ednimo de uma magia). As magias devem ser de um n\u00edvel para o qual voc\u00ea tenha espa\u00e7os de magia.\n\nVoc\u00ea pode alterar sua lista de magias preparadas quando termina um descanso longo. Preparar uma nova lista de magias de cl\u00e9rigo requer tempo gasto em ora\u00e7\u00e3o e medita\u00e7\u00e3o: pelo menos 1 minuto por n\u00edvel de magia para cada magia em sua lista.\n\nHabilidade de Conjura\u00e7\u00e3o: Sabedoria \u00e9 sua habilidade de conjura\u00e7\u00e3o para suas magias de cl\u00e9rigo. O poder de suas magias vem de sua devo\u00e7\u00e3o \u00e0 sua divindade. Voc\u00ea usa sua Sabedoria sempre que uma magia de cl\u00e9rigo se referir \u00e0 sua habilidade de conjura\u00e7\u00e3o. Al\u00e9m disso, voc\u00ea usa seu modificador de Sabedoria ao definir a CD de resist\u00eancia para uma magia de cl\u00e9rigo que conjurar e ao fazer uma jogada de ataque com uma.\n\nCD de resist\u00eancia = 8 + seu b\u00f4nus de profici\u00eancia + seu modificador de Sabedoria\nModificador de ataque de magia = seu b\u00f4nus de profici\u00eancia + seu modificador de Sabedoria\n\nConjura\u00e7\u00e3o Ritual: Voc\u00ea pode conjurar uma magia de cl\u00e9rigo como um ritual se essa magia tiver a marca de ritual e voc\u00ea a tiver preparada.\n\nFoco de Conjura\u00e7\u00e3o: Voc\u00ea pode usar um s\u00edmbolo sagrado como foco de conjura\u00e7\u00e3o para suas magias de cl\u00e9rigo."
+    },
+    {
+      "name": "Divine Domain",
+      "name_pt": "Dom\u00ednio Divino",
+      "level": 1,
+      "description_en": "Choose one domain related to your deity. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th levels.\n\nDomain Spells: Each domain has a list of spells \u2014 its domain spells \u2014 that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day. If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+      "description_pt": "Escolha um dom\u00ednio relacionado \u00e0 sua divindade. Sua escolha lhe concede magias de dom\u00ednio e outras caracter\u00edsticas quando voc\u00ea o escolhe no 1\u00ba n\u00edvel. Tamb\u00e9m lhe concede formas adicionais de usar Canalizar Divindade quando voc\u00ea ganha essa caracter\u00edstica no 2\u00ba n\u00edvel, e benef\u00edcios adicionais no 6\u00ba, 8\u00ba e 17\u00ba n\u00edveis.\n\nMagias de Dom\u00ednio: Cada dom\u00ednio tem uma lista de magias \u2014 suas magias de dom\u00ednio \u2014 que voc\u00ea ganha nos n\u00edveis de cl\u00e9rigo indicados na descri\u00e7\u00e3o do dom\u00ednio. Uma vez que voc\u00ea ganha uma magia de dom\u00ednio, ela est\u00e1 sempre preparada e n\u00e3o conta contra o n\u00famero de magias que voc\u00ea pode preparar a cada dia. Se voc\u00ea tiver uma magia de dom\u00ednio que n\u00e3o aparece na lista de magias de cl\u00e9rigo, a magia ainda assim \u00e9 uma magia de cl\u00e9rigo para voc\u00ea."
+    },
+    {
+      "name": "Channel Divinity",
+      "name_pt": "Canalizar Divindade",
+      "level": 2,
+      "description_en": "At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with two such effects: Turn Undead and an effect determined by your domain. Some domains grant you additional effects as you advance in levels, as noted in the domain description.\n\nWhen you use your Channel Divinity, you choose which effect to create. You must then finish a short or long rest to use your Channel Divinity again.\n\nSome Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your cleric spell save DC.\n\nBeginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses.",
+      "description_pt": "No 2\u00ba n\u00edvel, voc\u00ea ganha a habilidade de canalizar energia divina diretamente de sua divindade, usando essa energia para alimentar efeitos m\u00e1gicos. Voc\u00ea come\u00e7a com dois desses efeitos: Expulsar Mortos-Vivos e um efeito determinado pelo seu dom\u00ednio. Alguns dom\u00ednios concedem efeitos adicionais conforme voc\u00ea avan\u00e7a em n\u00edveis, conforme indicado na descri\u00e7\u00e3o do dom\u00ednio.\n\nQuando voc\u00ea usa seu Canalizar Divindade, voc\u00ea escolhe qual efeito criar. Voc\u00ea deve ent\u00e3o terminar um descanso curto ou longo para usar seu Canalizar Divindade novamente.\n\nAlguns efeitos de Canalizar Divindade exigem testes de resist\u00eancia. Quando voc\u00ea usa tal efeito desta classe, a CD \u00e9 igual \u00e0 CD de resist\u00eancia de magia do seu cl\u00e9rigo.\n\nCome\u00e7ando no 6\u00ba n\u00edvel, voc\u00ea pode usar seu Canalizar Divindade duas vezes entre descansos, e come\u00e7ando no 18\u00ba n\u00edvel, voc\u00ea pode us\u00e1-lo tr\u00eas vezes entre descansos. Quando voc\u00ea termina um descanso curto ou longo, voc\u00ea recupera seus usos gastos."
+    },
+    {
+      "name": "Turn Undead",
+      "name_pt": "Expulsar Mortos-Vivos",
+      "level": 2,
+      "description_en": "As an action, you present your holy symbol and speak a prayer censuring the undead. Each undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.\n\nA turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can use the Dodge action.",
+      "description_pt": "Como uma a\u00e7\u00e3o, voc\u00ea apresenta seu s\u00edmbolo sagrado e fala uma ora\u00e7\u00e3o censurando os mortos-vivos. Cada morto-vivo que pode ver ou ouvir voc\u00ea dentro de 9 metros de voc\u00ea deve fazer um teste de resist\u00eancia de Sabedoria. Se a criatura falhar em seu teste de resist\u00eancia, ela \u00e9 expulsa por 1 minuto ou at\u00e9 sofrer qualquer dano.\n\nUma criatura expulsa deve gastar seus turnos tentando se mover o mais longe poss\u00edvel de voc\u00ea, e n\u00e3o pode voluntariamente se mover para um espa\u00e7o dentro de 9 metros de voc\u00ea. Ela tamb\u00e9m n\u00e3o pode realizar rea\u00e7\u00f5es. Para sua a\u00e7\u00e3o, ela pode usar apenas a a\u00e7\u00e3o Disparar ou tentar escapar de um efeito que a impede de se mover. Se n\u00e3o houver para onde se mover, a criatura pode usar a a\u00e7\u00e3o Esquivar."
+    },
+    {
+      "name": "Destroy Undead",
+      "name_pt": "Destruir Mortos-Vivos",
+      "level": 5,
+      "description_en": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold, as shown in the Destroy Undead table.\n\nCleric Level \u2014 Destroys Undead of CR:\n5th \u2014 1/2 or lower\n8th \u2014 1 or lower\n11th \u2014 2 or lower\n14th \u2014 3 or lower\n17th \u2014 4 or lower",
+      "description_pt": "Come\u00e7ando no 5\u00ba n\u00edvel, quando um morto-vivo falha em seu teste de resist\u00eancia contra sua caracter\u00edstica Expulsar Mortos-Vivos, a criatura \u00e9 instantaneamente destru\u00edda se seu n\u00edvel de desafio estiver igual ou abaixo de um certo limite, conforme mostrado na tabela Destruir Mortos-Vivos.\n\nN\u00edvel de Cl\u00e9rigo \u2014 Destr\u00f3i Mortos-Vivos de ND:\n5\u00ba \u2014 1/2 ou menor\n8\u00ba \u2014 1 ou menor\n11\u00ba \u2014 2 ou menor\n14\u00ba \u2014 3 ou menor\n17\u00ba \u2014 4 ou menor"
+    },
+    {
+      "name": "Divine Intervention",
+      "name_pt": "Interven\u00e7\u00e3o Divina",
+      "level": 10,
+      "description_en": "Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great.\n\nImploring your deity's aid requires you to use your action. Describe the assistance you seek, and roll a percentile die. If you roll a number equal to or lower than your cleric level, your deity intervenes. The DM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate.\n\nIf your deity intervenes, you can't use this feature again for 7 days. Otherwise, you can try to use it again after you finish a long rest.\n\nAt 20th level, your call for divine intervention succeeds automatically, no roll required.",
+      "description_pt": "Come\u00e7ando no 10\u00ba n\u00edvel, voc\u00ea pode clamar \u00e0 sua divindade para intervir em seu nome quando sua necessidade \u00e9 grande.\n\nImplorar a ajuda de sua divindade requer que voc\u00ea use sua a\u00e7\u00e3o. Descreva a assist\u00eancia que busca e role um dado percentual. Se voc\u00ea rolar um n\u00famero igual ou menor que seu n\u00edvel de cl\u00e9rigo, sua divindade intervem. O Mestre escolhe a natureza da interven\u00e7\u00e3o; o efeito de qualquer magia de cl\u00e9rigo ou magia de dom\u00ednio de cl\u00e9rigo seria apropriado.\n\nSe sua divindade intervier, voc\u00ea n\u00e3o pode usar esta caracter\u00edstica novamente por 7 dias. Caso contr\u00e1rio, voc\u00ea pode tentar us\u00e1-la novamente ap\u00f3s terminar um descanso longo.\n\nNo 20\u00ba n\u00edvel, seu chamado por interven\u00e7\u00e3o divina \u00e9 bem-sucedido automaticamente, sem rolagem necess\u00e1ria."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Valor de Habilidade",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando voc\u00ea atinge o 4\u00ba n\u00edvel, e novamente no 8\u00ba, 12\u00ba, 16\u00ba e 19\u00ba n\u00edvel, voc\u00ea pode aumentar um valor de habilidade \u00e0 sua escolha em 2, ou pode aumentar dois valores de habilidade \u00e0 sua escolha em 1. Como normal, voc\u00ea n\u00e3o pode aumentar um valor de habilidade acima de 20 usando esta caracter\u00edstica."
+    }
+  ],
+
+  "spellcasting": {
+    "description_en": "As a conduit for divine power, you can cast cleric spells. Wisdom is your spellcasting ability. You prepare spells from the entire cleric spell list each day. You can cast prepared spells as rituals if they have the ritual tag. You use a holy symbol as a spellcasting focus.",
+    "description_pt": "Como um canal para o poder divino, voc\u00ea pode conjurar magias de cl\u00e9rigo. Sabedoria \u00e9 sua habilidade de conjura\u00e7\u00e3o. Voc\u00ea prepara magias da lista completa de magias de cl\u00e9rigo a cada dia. Voc\u00ea pode conjurar magias preparadas como rituais se tiverem a marca de ritual. Voc\u00ea usa um s\u00edmbolo sagrado como foco de conjura\u00e7\u00e3o.",
+    "ability": "WIS",
+    "cantrips": true,
+    "ritual_casting": true,
+    "spellcasting_focus": "A holy symbol",
+    "spellcasting_focus_pt": "Um s\u00edmbolo sagrado"
+  },
+
+  "multiclass_prerequisites": "Wisdom 13",
+  "multiclass_prerequisites_pt": "Sabedoria 13",
+  "multiclass_proficiencies": "Light armor, Medium armor, Shields",
+  "multiclass_proficiencies_pt": "Armaduras leves, Armaduras m\u00e9dias, Escudos",
+
+  "subclass_level": 1,
+  "subclass_name": "Divine Domain",
+  "subclass_name_pt": "Dom\u00ednio Divino",
+  "subclass_ids": ["life-domain"]
+}

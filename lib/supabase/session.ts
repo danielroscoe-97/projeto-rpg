@@ -136,6 +136,7 @@ export async function persistNewCombatant(
     legendary_actions_used?: number;
     condition_durations?: Record<string, number>;
     death_saves?: { successes: number; failures: number } | null;
+    session_token_id?: string | null;
   }
 ): Promise<void> {
   const supabase = createClient();
@@ -167,6 +168,8 @@ export async function persistNewCombatant(
       legendary_actions_used: combatant.legendary_actions_used ?? 0,
       condition_durations: combatant.condition_durations ?? {},
       death_saves: combatant.death_saves ?? null,
+      // B2: Persist token link for ID-based reconnection
+      ...(combatant.session_token_id != null ? { session_token_id: combatant.session_token_id } : {}),
     });
   if (error) throw new Error(error.message);
 }

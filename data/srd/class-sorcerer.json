@@ -1,0 +1,315 @@
+{
+  "id": "sorcerer",
+  "name": "Sorcerer",
+  "name_pt": "Feiticeiro",
+  "hit_die": "d6",
+  "primary_ability": "CHA",
+  "saving_throws": ["CON", "CHA"],
+  "armor_proficiencies": "None",
+  "weapon_proficiencies": "Daggers, Darts, Slings, Quarterstaffs, Light crossbows",
+  "srd_subclass": "Draconic Bloodline",
+  "srd_subclass_pt": "Linhagem Draconica",
+  "description_en": "Spellcasters who draw on inherent magic from a gift or bloodline.",
+  "description_pt": "Conjuradores que utilizam magia inata proveniente de um dom ou linhagem.",
+  "spellcaster": true,
+  "spellcasting_ability": "CHA",
+  "icon": "crystal",
+  "role": "caster",
+
+  "description_full_en": "Sorcerers carry a magical birthright conferred upon them by an exotic bloodline, some otherworldly influence, or exposure to unknown cosmic forces. One can't study sorcery as one learns a language, any more than one can learn to live a legendary life. No one chooses sorcery; the power chooses the sorcerer.\n\nMagic is a part of every sorcerer, suffusing body, mind, and spirit with a latent power that waits to be tapped. Some sorcerers wield magic that springs from an ancient bloodline infused with the magic of dragons. Others carry a raw, uncontrolled magic within them, a chaotic storm that manifests in unexpected ways.\n\nThe appearance of sorcerous powers is wildly unpredictable. Some draconic bloodlines produce exactly one sorcerer in every generation, but in other lines of descent every individual is a sorcerer. Most of the time, the talents of sorcery appear as apparent flukes. Some sorcerers can't name the origin of their power, while others trace it to strange events in their own lives.\n\nThe touch of a demon, the blessing of a dryad at a baby's birth, or a taste of the water from a mysterious spring might spark the gift of sorcery. So too might the gift of a deity of magic, exposure to the elemental forces of the Inner Planes or the maddening chaos of Limbo, or a glimpse into the inner workings of reality. Whatever the origin, sorcery lives within and manifests in wondrous ways.",
+  "description_full_pt": "Feiticeiros carregam um direito magico de nascenca conferido por uma linhagem exotica, alguma influencia sobrenatural ou exposicao a forcas cosmicas desconhecidas. Nao se pode estudar feiticaria como se aprende um idioma, assim como nao se pode aprender a viver uma vida lendaria. Ninguem escolhe a feiticaria; o poder escolhe o feiticeiro.\n\nA magia e parte de cada feiticeiro, impregnando corpo, mente e espirito com um poder latente que aguarda para ser utilizado. Alguns feiticeiros empunham magia que brota de uma linhagem ancestral infundida com a magia dos dragoes. Outros carregam uma magia bruta e descontrolada dentro de si, uma tempestade caotica que se manifesta de maneiras inesperadas.\n\nO surgimento dos poderes de feiticaria e extremamente imprevisivel. Algumas linhagens draconicas produzem exatamente um feiticeiro a cada geracao, mas em outras linhas de descendencia cada individuo e um feiticeiro. Na maioria das vezes, os talentos da feiticaria aparecem como acasos aparentes. Alguns feiticeiros nao conseguem nomear a origem de seu poder, enquanto outros o tracam a eventos estranhos em suas proprias vidas.\n\nO toque de um demonio, a bencao de uma driade no nascimento de um bebe ou um gole da agua de uma fonte misteriosa podem despertar o dom da feiticaria. Assim tambem pode o dom de uma divindade da magia, a exposicao as forcas elementais dos Planos Interiores ou ao caos enlouquecedor do Limbo, ou um vislumbre do funcionamento interno da realidade. Qualquer que seja a origem, a feiticaria vive dentro do feiticeiro e se manifesta de maneiras maravilhosas.",
+
+  "quick_build_en": "You can make a sorcerer quickly by following these suggestions. First, Charisma should be your highest ability score, followed by Constitution. Second, choose the hermit background. Third, choose the light, prestidigitation, ray of frost, and shocking grasp cantrips, along with the 1st-level spells shield and magic missile.",
+  "quick_build_pt": "Voce pode criar um feiticeiro rapidamente seguindo estas sugestoes. Primeiro, Carisma deve ser seu maior valor de habilidade, seguido de Constituicao. Segundo, escolha o antecedente eremita. Terceiro, escolha os truques luz, prestidigitacao, raio de gelo e choque eletrico, junto com as magias de 1o nivel escudo e misseis magicos.",
+
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) a light crossbow and 20 bolts or (b) any simple weapon\n- (a) a component pouch or (b) an arcane focus\n- (a) a dungeoneer's pack or (b) an explorer's pack\n- Two daggers",
+  "starting_equipment_pt": "Voce comeca com o seguinte equipamento, alem do equipamento concedido pelo seu antecedente:\n- (a) uma besta leve e 20 virotes ou (b) qualquer arma simples\n- (a) uma bolsa de componentes ou (b) um foco arcano\n- (a) um pacote de aventureiro ou (b) um pacote de explorador\n- Duas adagas",
+
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Spellcasting, Sorcerous Origin",
+      "features_pt": "Conjuracao, Origem Arcana",
+      "cantrips_known": 4,
+      "spells_known": 2,
+      "spell_slots": { "1st": 2 },
+      "extras": { "sorcery_points": "—" },
+      "extras_pt": { "pontos_de_feiticaria": "—" }
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Font of Magic",
+      "features_pt": "Fonte de Magia",
+      "cantrips_known": 4,
+      "spells_known": 3,
+      "spell_slots": { "1st": 3 },
+      "extras": { "sorcery_points": "2" },
+      "extras_pt": { "pontos_de_feiticaria": "2" }
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "Metamagic",
+      "features_pt": "Metamagia",
+      "cantrips_known": 4,
+      "spells_known": 4,
+      "spell_slots": { "1st": 4, "2nd": 2 },
+      "extras": { "sorcery_points": "3" },
+      "extras_pt": { "pontos_de_feiticaria": "3" }
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 5,
+      "spells_known": 5,
+      "spell_slots": { "1st": 4, "2nd": 3 },
+      "extras": { "sorcery_points": "4" },
+      "extras_pt": { "pontos_de_feiticaria": "4" }
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 5,
+      "spells_known": 6,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 },
+      "extras": { "sorcery_points": "5" },
+      "extras_pt": { "pontos_de_feiticaria": "5" }
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Sorcerous Origin feature",
+      "features_pt": "Caracteristica da Origem Arcana",
+      "cantrips_known": 5,
+      "spells_known": 7,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3 },
+      "extras": { "sorcery_points": "6" },
+      "extras_pt": { "pontos_de_feiticaria": "6" }
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 5,
+      "spells_known": 8,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3 },
+      "extras": { "sorcery_points": "7" },
+      "extras_pt": { "pontos_de_feiticaria": "7" }
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 5,
+      "spells_known": 9,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 },
+      "extras": { "sorcery_points": "8" },
+      "extras_pt": { "pontos_de_feiticaria": "8" }
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 5,
+      "spells_known": 10,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 },
+      "extras": { "sorcery_points": "9" },
+      "extras_pt": { "pontos_de_feiticaria": "9" }
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Metamagic",
+      "features_pt": "Metamagia",
+      "cantrips_known": 6,
+      "spells_known": 11,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 },
+      "extras": { "sorcery_points": "10" },
+      "extras_pt": { "pontos_de_feiticaria": "10" }
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 6,
+      "spells_known": 12,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 },
+      "extras": { "sorcery_points": "11" },
+      "extras_pt": { "pontos_de_feiticaria": "11" }
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 6,
+      "spells_known": 12,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 },
+      "extras": { "sorcery_points": "12" },
+      "extras_pt": { "pontos_de_feiticaria": "12" }
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 6,
+      "spells_known": 13,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 },
+      "extras": { "sorcery_points": "13" },
+      "extras_pt": { "pontos_de_feiticaria": "13" }
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Sorcerous Origin feature",
+      "features_pt": "Caracteristica da Origem Arcana",
+      "cantrips_known": 6,
+      "spells_known": 13,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 },
+      "extras": { "sorcery_points": "14" },
+      "extras_pt": { "pontos_de_feiticaria": "14" }
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 6,
+      "spells_known": 14,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 },
+      "extras": { "sorcery_points": "15" },
+      "extras_pt": { "pontos_de_feiticaria": "15" }
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 6,
+      "spells_known": 14,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 },
+      "extras": { "sorcery_points": "16" },
+      "extras_pt": { "pontos_de_feiticaria": "16" }
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "Metamagic",
+      "features_pt": "Metamagia",
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1, "9th": 1 },
+      "extras": { "sorcery_points": "17" },
+      "extras_pt": { "pontos_de_feiticaria": "17" }
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Sorcerous Origin feature",
+      "features_pt": "Caracteristica da Origem Arcana",
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 1, "7th": 1, "8th": 1, "9th": 1 },
+      "extras": { "sorcery_points": "18" },
+      "extras_pt": { "pontos_de_feiticaria": "18" }
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 1, "8th": 1, "9th": 1 },
+      "extras": { "sorcery_points": "19" },
+      "extras_pt": { "pontos_de_feiticaria": "19" }
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Sorcerous Restoration",
+      "features_pt": "Restauracao Arcana",
+      "cantrips_known": 6,
+      "spells_known": 15,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 2, "8th": 1, "9th": 1 },
+      "extras": { "sorcery_points": "20" },
+      "extras_pt": { "pontos_de_feiticaria": "20" }
+    }
+  ],
+
+  "class_features": [
+    {
+      "name": "Spellcasting",
+      "name_pt": "Conjuracao",
+      "level": 1,
+      "description_en": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells.\n\nCantrips\nAt 1st level, you know four cantrips of your choice from the sorcerer spell list. You learn additional sorcerer cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Sorcerer table.\n\nSpell Slots\nThe Sorcerer table shows how many spell slots you have to cast your sorcerer spells of 1st level and higher. To cast one of these sorcerer spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st-level spell burning hands and have a 1st-level and a 2nd-level spell slot available, you can cast burning hands using either slot.\n\nSpells Known of 1st Level and Higher\nYou know two 1st-level spells of your choice from the sorcerer spell list. The Spells Known column of the Sorcerer table shows when you learn more sorcerer spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 3rd level in this class, you can learn one new spell of 1st or 2nd level.\n\nAdditionally, when you gain a level in this class, you can choose one of the sorcerer spells you know and replace it with another spell from the sorcerer spell list, which also must be of a level for which you have spell slots.\n\nSpellcasting Ability\nCharisma is your spellcasting ability for your sorcerer spells, since the power of your magic relies on your ability to project your will into the world. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a sorcerer spell you cast and when making an attack roll with one.\n\nSpell save DC = 8 + your proficiency bonus + your Charisma modifier\nSpell attack modifier = your proficiency bonus + your Charisma modifier\n\nSpellcasting Focus\nYou can use an arcane focus as a spellcasting focus for your sorcerer spells.",
+      "description_pt": "Um evento em seu passado, ou na vida de um pai ou ancestral, deixou uma marca indelevel em voce, infundindo-o com magia arcana. Esta fonte de magia, qualquer que seja sua origem, alimenta suas magias.\n\nTruques\nNo 1o nivel, voce conhece quatro truques a sua escolha da lista de magias do feiticeiro. Voce aprende truques de feiticeiro adicionais a sua escolha em niveis mais altos, conforme mostrado na coluna Truques Conhecidos da tabela do Feiticeiro.\n\nEspacos de Magia\nA tabela do Feiticeiro mostra quantos espacos de magia voce tem para conjurar suas magias de feiticeiro de 1o nivel e superiores. Para conjurar uma dessas magias, voce deve gastar um espaco do nivel da magia ou superior. Voce recupera todos os espacos de magia gastos quando termina um descanso longo. Por exemplo, se voce conhece a magia de 1o nivel maos flamejantes e tem um espaco de 1o nivel e um de 2o nivel disponiveis, voce pode conjurar maos flamejantes usando qualquer um dos espacos.\n\nMagias Conhecidas de 1o Nivel e Superiores\nVoce conhece duas magias de 1o nivel a sua escolha da lista de magias do feiticeiro. A coluna Magias Conhecidas da tabela do Feiticeiro mostra quando voce aprende mais magias de feiticeiro a sua escolha. Cada uma dessas magias deve ser de um nivel para o qual voce tem espacos de magia. Por exemplo, quando voce alcanca o 3o nivel nesta classe, voce pode aprender uma nova magia de 1o ou 2o nivel.\n\nAlem disso, quando voce ganha um nivel nesta classe, voce pode escolher uma das magias de feiticeiro que conhece e substitui-la por outra magia da lista de magias do feiticeiro, que tambem deve ser de um nivel para o qual voce tem espacos de magia.\n\nHabilidade de Conjuracao\nCarisma e sua habilidade de conjuracao para suas magias de feiticeiro, pois o poder de sua magia depende de sua capacidade de projetar sua vontade no mundo. Voce usa seu Carisma sempre que uma magia se referir a sua habilidade de conjuracao. Alem disso, voce usa seu modificador de Carisma ao definir a CD de resistencia para uma magia de feiticeiro que conjura e ao fazer uma jogada de ataque com uma.\n\nCD de resistencia = 8 + seu bonus de proficiencia + seu modificador de Carisma\nModificador de ataque magico = seu bonus de proficiencia + seu modificador de Carisma\n\nFoco de Conjuracao\nVoce pode usar um foco arcano como foco de conjuracao para suas magias de feiticeiro."
+    },
+    {
+      "name": "Sorcerous Origin",
+      "name_pt": "Origem Arcana",
+      "level": 1,
+      "description_en": "Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or one of your choice. Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level.",
+      "description_pt": "Escolha uma origem arcana, que descreve a fonte de seu poder magico inato: Linhagem Draconica ou uma de sua escolha. Sua escolha concede caracteristicas quando voce a escolhe no 1o nivel e novamente no 6o, 14o e 18o nivel."
+    },
+    {
+      "name": "Font of Magic",
+      "name_pt": "Fonte de Magia",
+      "level": 2,
+      "description_en": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.\n\nSorcery Points\nYou have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest.\n\nFlexible Casting\nYou can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points. You learn other ways to use your sorcery points as you reach higher levels.\n\nCreating Spell Slots. You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th. Any spell slot you create with this feature vanishes when you finish a long rest.\n\nCreating Spell Slots:\nSpell Slot Level — Sorcery Point Cost\n1st — 2\n2nd — 3\n3rd — 5\n4th — 6\n5th — 7\n\nConverting a Spell Slot to Sorcery Points. As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot's level.",
+      "description_pt": "No 2o nivel, voce acessa um profundo manancial de magia dentro de si. Este manancial e representado por pontos de feiticaria, que permitem criar uma variedade de efeitos magicos.\n\nPontos de Feiticaria\nVoce tem 2 pontos de feiticaria e ganha mais conforme alcanca niveis mais altos, conforme mostrado na coluna Pontos de Feiticaria da tabela do Feiticeiro. Voce nunca pode ter mais pontos de feiticaria do que o mostrado na tabela para seu nivel. Voce recupera todos os pontos de feiticaria gastos quando termina um descanso longo.\n\nConjuracao Flexivel\nVoce pode usar seus pontos de feiticaria para ganhar espacos de magia adicionais, ou sacrificar espacos de magia para ganhar pontos de feiticaria adicionais. Voce aprende outras formas de usar seus pontos de feiticaria conforme alcanca niveis mais altos.\n\nCriando Espacos de Magia. Voce pode transformar pontos de feiticaria nao gastos em um espaco de magia como uma acao bonus em seu turno. A tabela Criando Espacos de Magia mostra o custo de criar um espaco de magia de um determinado nivel. Voce pode criar espacos de magia de no maximo 5o nivel. Qualquer espaco de magia criado com esta caracteristica desaparece quando voce termina um descanso longo.\n\nCriando Espacos de Magia:\nNivel do Espaco — Custo em Pontos de Feiticaria\n1o — 2\n2o — 3\n3o — 5\n4o — 6\n5o — 7\n\nConvertendo um Espaco de Magia em Pontos de Feiticaria. Como uma acao bonus em seu turno, voce pode gastar um espaco de magia e ganhar um numero de pontos de feiticaria igual ao nivel do espaco."
+    },
+    {
+      "name": "Metamagic",
+      "name_pt": "Metamagia",
+      "level": 3,
+      "description_en": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.\n\nYou can use only one Metamagic option on a spell when you cast it, unless otherwise noted.\n\nCareful Spell\nWhen you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell's full force. To do so, you spend 1 sorcery point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell.\n\nDistant Spell\nWhen you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell. When you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet.\n\nEmpowered Spell\nWhen you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls. You can use Empowered Spell even if you have already used a different Metamagic option during the casting of the spell.\n\nExtended Spell\nWhen you cast a spell that has a duration of 1 minute or longer, you can spend 1 sorcery point to double its duration, to a maximum duration of 24 hours.\n\nHeightened Spell\nWhen you cast a spell that forces a creature to make a saving throw to resist its effects, you can spend 3 sorcery points to give one target of the spell disadvantage on its first saving throw made against the spell.\n\nQuickened Spell\nWhen you cast a spell that has a casting time of 1 action, you can spend 2 sorcery points to change the casting time to 1 bonus action for this casting.\n\nSubtle Spell\nWhen you cast a spell, you can spend 1 sorcery point to cast it without any somatic or verbal components.\n\nTwinned Spell\nWhen you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip). To be eligible, a spell must be incapable of targeting more than one creature at the spell's current level.",
+      "description_pt": "No 3o nivel, voce ganha a habilidade de moldar suas magias para atender suas necessidades. Voce ganha duas das seguintes opcoes de Metamagia a sua escolha. Voce ganha outra no 10o e 17o nivel.\n\nVoce pode usar apenas uma opcao de Metamagia em uma magia quando a conjura, a menos que indicado de outra forma.\n\nMagia Cuidadosa\nQuando voce conjura uma magia que forca outras criaturas a fazerem um teste de resistencia, voce pode proteger algumas dessas criaturas da forca total da magia. Para isso, voce gasta 1 ponto de feiticaria e escolhe um numero dessas criaturas ate seu modificador de Carisma (minimo de uma criatura). Uma criatura escolhida automaticamente obtem sucesso em seu teste de resistencia contra a magia.\n\nMagia Distante\nQuando voce conjura uma magia que tem um alcance de 1,5 metro ou maior, voce pode gastar 1 ponto de feiticaria para dobrar o alcance da magia. Quando voce conjura uma magia que tem alcance de toque, voce pode gastar 1 ponto de feiticaria para tornar o alcance da magia 9 metros.\n\nMagia Potencializada\nQuando voce rola dano para uma magia, voce pode gastar 1 ponto de feiticaria para rolar novamente um numero de dados de dano ate seu modificador de Carisma (minimo de um). Voce deve usar as novas rolagens. Voce pode usar Magia Potencializada mesmo se ja tiver usado uma opcao de Metamagia diferente durante a conjuracao da magia.\n\nMagia Estendida\nQuando voce conjura uma magia que tem duracao de 1 minuto ou mais, voce pode gastar 1 ponto de feiticaria para dobrar sua duracao, ate uma duracao maxima de 24 horas.\n\nMagia Elevada\nQuando voce conjura uma magia que forca uma criatura a fazer um teste de resistencia para resistir aos seus efeitos, voce pode gastar 3 pontos de feiticaria para dar a um alvo da magia desvantagem em seu primeiro teste de resistencia feito contra a magia.\n\nMagia Acelerada\nQuando voce conjura uma magia que tem tempo de conjuracao de 1 acao, voce pode gastar 2 pontos de feiticaria para mudar o tempo de conjuracao para 1 acao bonus para esta conjuracao.\n\nMagia Sutil\nQuando voce conjura uma magia, voce pode gastar 1 ponto de feiticaria para conjura-la sem quaisquer componentes somaticos ou verbais.\n\nMagia Gemea\nQuando voce conjura uma magia que tem como alvo apenas uma criatura e nao tem alcance pessoal, voce pode gastar um numero de pontos de feiticaria igual ao nivel da magia para ter como alvo uma segunda criatura no alcance com a mesma magia (1 ponto de feiticaria se a magia for um truque). Para ser elegivel, a magia deve ser incapaz de ter como alvo mais de uma criatura no nivel atual da magia."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando voce alcanca o 4o nivel, e novamente no 8o, 12o, 16o e 19o nivel, voce pode aumentar um valor de habilidade a sua escolha em 2, ou pode aumentar dois valores de habilidade a sua escolha em 1. Como normal, voce nao pode aumentar um valor de habilidade acima de 20 usando esta caracteristica."
+    },
+    {
+      "name": "Sorcerous Restoration",
+      "name_pt": "Restauracao Arcana",
+      "level": 20,
+      "description_en": "At 20th level, you regain 4 expended sorcery points whenever you finish a short rest.",
+      "description_pt": "No 20o nivel, voce recupera 4 pontos de feiticaria gastos sempre que termina um descanso curto."
+    }
+  ],
+
+  "spellcasting": {
+    "description_en": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells.",
+    "description_pt": "Um evento em seu passado, ou na vida de um pai ou ancestral, deixou uma marca indelevel em voce, infundindo-o com magia arcana. Esta fonte de magia, qualquer que seja sua origem, alimenta suas magias.",
+    "ability": "CHA",
+    "cantrips": true,
+    "ritual_casting": false,
+    "spellcasting_focus": "An arcane focus",
+    "spellcasting_focus_pt": "Um foco arcano"
+  },
+
+  "multiclass_prerequisites": "Charisma 13",
+  "multiclass_prerequisites_pt": "Carisma 13",
+  "multiclass_proficiencies": "—",
+  "multiclass_proficiencies_pt": "—",
+
+  "subclass_level": 1,
+  "subclass_name": "Sorcerous Origin",
+  "subclass_name_pt": "Origem Arcana",
+  "subclass_ids": ["draconic-bloodline"]
+}

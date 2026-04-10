@@ -43,6 +43,8 @@ export interface Combatant {
   player_notes: string;
   /** Linked player_character ID (DM links temp player to campaign character). Null = unlinked. */
   player_character_id: string | null;
+  /** Linked session_token ID — ID-based reconnection that survives name changes. Null = unlinked. */
+  session_token_id?: string | null;
   /** Visual role for manually-added combatants. Null = from compendium (has monster_id). */
   combatant_role: CombatantRole | null;
   /** Death saving throws for player-type creatures at 0 HP. */

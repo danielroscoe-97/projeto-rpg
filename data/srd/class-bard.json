@@ -1,0 +1,310 @@
+{
+  "id": "bard",
+  "name": "Bard",
+  "name_pt": "Bardo",
+  "hit_die": "d8",
+  "primary_ability": "CHA",
+  "saving_throws": ["DEX", "CHA"],
+  "armor_proficiencies": "Light armor",
+  "weapon_proficiencies": "Simple weapons, Hand crossbows, Longswords, Rapiers, Shortswords",
+  "srd_subclass": "College of Lore",
+  "srd_subclass_pt": "Colégio do Conhecimento",
+  "description_en": "A bard is an inspiring magician whose power echoes the music of creation.",
+  "description_pt": "Um bardo é um mago inspirador cujo poder ecoa a música da criação.",
+  "spellcaster": true,
+  "spellcasting_ability": "CHA",
+  "icon": "music",
+  "role": "support",
+
+  "description_full_en": "Humming as she traces her fingers over an ancient monument in a long-forgotten ruin, a half-elf in rugged leathers finds knowledge springing to mind, conjured forth by the magic of her song — knowledge of the people who constructed the monument and the mythic saga it depicts.\n\nWhether scholar, skald, or scoundrel, a bard weaves magic through words and music to inspire allies, demoralize foes, manipulate minds, create illusions, and even heal wounds. The bard is a master of song, speech, and the magic they contain. Bards say that the multiverse was spoken into existence, that the words of the gods gave it shape, and that echoes of these primordial Words of Creation still resound throughout the cosmos. The music of bards is an attempt to snatch and harness those echoes, subtly woven into their spells and powers.\n\nThe greatest strength of bards is their sheer versatility. Many bards prefer to stick to the sidelines in combat, using their magic to inspire their allies and hinder their foes from a distance. But bards are capable of defending themselves in melee if necessary, using their magic to bolster their swords and armor. Their spells lean toward charms and illusions rather than blatantly destructive spells. They have a wide-ranging knowledge of many subjects and a natural aptitude that lets them do almost anything well. Bards become masters of the talents they set their minds to perfecting, from musical performance to esoteric knowledge.",
+  "description_full_pt": "Cantarolando enquanto traça seus dedos sobre um monumento antigo em uma ruína há muito esquecida, uma meio-elfa em couro rústico encontra conhecimento surgindo em sua mente, conjurado pela magia de sua canção — conhecimento sobre o povo que construiu o monumento e a saga mítica que ele retrata.\n\nSeja erudito, escaldo ou trapaceiro, um bardo tece magia através de palavras e música para inspirar aliados, desmoralizar inimigos, manipular mentes, criar ilusões e até curar feridas. O bardo é um mestre da canção, da fala e da magia que elas contêm. Os bardos dizem que o multiverso foi falado à existência, que as palavras dos deuses lhe deram forma, e que ecos dessas Palavras Primordiais da Criação ainda ressoam por todo o cosmos. A música dos bardos é uma tentativa de capturar e controlar esses ecos, sutilmente entrelaçados em seus feitiços e poderes.\n\nA maior força dos bardos é sua versatilidade absoluta. Muitos bardos preferem ficar nas laterais do combate, usando sua magia para inspirar seus aliados e atrapalhar seus inimigos à distância. Mas bardos são capazes de se defender em combate corpo a corpo se necessário, usando sua magia para reforçar suas espadas e armaduras. Seus feitiços tendem a encantos e ilusões em vez de feitiços abertamente destrutivos. Eles possuem um conhecimento amplo de muitos assuntos e uma aptidão natural que lhes permite fazer quase tudo bem. Bardos se tornam mestres dos talentos aos quais dedicam suas mentes, desde performance musical até conhecimento esotérico.",
+
+  "quick_build_en": "You can make a bard quickly by following these suggestions. First, Charisma should be your highest ability score, followed by Dexterity. Second, choose the entertainer background. Third, choose the dancing lights and vicious mockery cantrips, along with the following 1st-level spells: charm person, detect magic, healing word, and thunderwave.",
+  "quick_build_pt": "Você pode criar um bardo rapidamente seguindo estas sugestões. Primeiro, Carisma deve ser seu valor de habilidade mais alto, seguido por Destreza. Segundo, escolha o antecedente artista. Terceiro, escolha os truques luzes dançantes e zombaria viciosa, junto com as seguintes magias de 1º nível: enfeitiçar pessoa, detectar magia, palavra curativa e onda trovejante.",
+
+  "starting_equipment_en": "You start with the following equipment, in addition to the equipment granted by your background:\n- (a) a rapier, (b) a longsword, or (c) any simple weapon\n- (a) a diplomat's pack or (b) an entertainer's pack\n- (a) a lute or (b) any other musical instrument\n- Leather armor and a dagger",
+  "starting_equipment_pt": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n- (a) uma rapieira, (b) uma espada longa ou (c) qualquer arma simples\n- (a) um pacote de diplomata ou (b) um pacote de artista\n- (a) um alaúde ou (b) qualquer outro instrumento musical\n- Armadura de couro e uma adaga",
+
+  "class_table": [
+    {
+      "level": 1,
+      "proficiency_bonus": "+2",
+      "features": "Spellcasting, Bardic Inspiration (d6)",
+      "features_pt": "Conjuração, Inspiração Bárdica (d6)",
+      "cantrips_known": 2,
+      "spells_known": 4,
+      "spell_slots": { "1st": 2 }
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": "+2",
+      "features": "Jack of All Trades, Song of Rest (d6)",
+      "features_pt": "Pau pra Toda Obra, Canção de Descanso (d6)",
+      "cantrips_known": 2,
+      "spells_known": 5,
+      "spell_slots": { "1st": 3 }
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": "+2",
+      "features": "Bard College, Expertise",
+      "features_pt": "Colégio de Bardo, Expertise",
+      "cantrips_known": 2,
+      "spells_known": 6,
+      "spell_slots": { "1st": 4, "2nd": 2 }
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": "+2",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 3,
+      "spells_known": 7,
+      "spell_slots": { "1st": 4, "2nd": 3 }
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": "+3",
+      "features": "Bardic Inspiration (d8), Font of Inspiration",
+      "features_pt": "Inspiração Bárdica (d8), Fonte de Inspiração",
+      "cantrips_known": 3,
+      "spells_known": 8,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 2 }
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": "+3",
+      "features": "Countercharm, Bard College feature",
+      "features_pt": "Contraencanto, Característica do Colégio de Bardo",
+      "cantrips_known": 3,
+      "spells_known": 9,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3 }
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": "+3",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 3,
+      "spells_known": 10,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 1 }
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": "+3",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 3,
+      "spells_known": 11,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 2 }
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": "+4",
+      "features": "Song of Rest (d8)",
+      "features_pt": "Canção de Descanso (d8)",
+      "cantrips_known": 3,
+      "spells_known": 12,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1 }
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": "+4",
+      "features": "Bardic Inspiration (d10), Expertise, Magical Secrets",
+      "features_pt": "Inspiração Bárdica (d10), Expertise, Segredos Mágicos",
+      "cantrips_known": 4,
+      "spells_known": 14,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2 }
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": "+4",
+      "features": "—",
+      "features_pt": "—",
+      "cantrips_known": 4,
+      "spells_known": 15,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 }
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": "+4",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 4,
+      "spells_known": 15,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1 }
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": "+5",
+      "features": "Song of Rest (d10)",
+      "features_pt": "Canção de Descanso (d10)",
+      "cantrips_known": 4,
+      "spells_known": 16,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 }
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": "+5",
+      "features": "Magical Secrets, Bard College feature",
+      "features_pt": "Segredos Mágicos, Característica do Colégio de Bardo",
+      "cantrips_known": 4,
+      "spells_known": 18,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1 }
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": "+5",
+      "features": "Bardic Inspiration (d12)",
+      "features_pt": "Inspiração Bárdica (d12)",
+      "cantrips_known": 4,
+      "spells_known": 19,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 }
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": "+5",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 4,
+      "spells_known": 19,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1 }
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": "+6",
+      "features": "Song of Rest (d12)",
+      "features_pt": "Canção de Descanso (d12)",
+      "cantrips_known": 4,
+      "spells_known": 20,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": "+6",
+      "features": "Magical Secrets",
+      "features_pt": "Segredos Mágicos",
+      "cantrips_known": 4,
+      "spells_known": 22,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 1, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": "+6",
+      "features": "Ability Score Improvement",
+      "features_pt": "Melhoria de Atributo",
+      "cantrips_known": 4,
+      "spells_known": 22,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 1, "8th": 1, "9th": 1 }
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": "+6",
+      "features": "Superior Inspiration",
+      "features_pt": "Inspiração Superior",
+      "cantrips_known": 4,
+      "spells_known": 22,
+      "spell_slots": { "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 2, "8th": 1, "9th": 1 }
+    }
+  ],
+
+  "class_features": [
+    {
+      "name": "Spellcasting",
+      "name_pt": "Conjuração",
+      "level": 1,
+      "description_en": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations.\n\nCantrips. You know two cantrips of your choice from the bard spell list. You learn additional bard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Bard table.\n\nSpell Slots. The Bard table shows how many spell slots you have to cast your bard spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\n\nSpells Known of 1st Level and Higher. You know four 1st-level spells of your choice from the bard spell list. The Spells Known column of the Bard table shows when you learn more bard spells of your choice. Each of these spells must be of a level for which you have spell slots. Additionally, when you gain a level in this class, you can choose one of the bard spells you know and replace it with another spell from the bard spell list, which also must be of a level for which you have spell slots.\n\nSpellcasting Ability. Charisma is your spellcasting ability for your bard spells. Your magic comes from the heart and soul you pour into the performance of your music or oration. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a bard spell you cast and when making an attack roll with one.\n\nSpell save DC = 8 + your proficiency bonus + your Charisma modifier\nSpell attack modifier = your proficiency bonus + your Charisma modifier\n\nRitual Casting. You can cast any bard spell you know as a ritual if that spell has the ritual tag.\n\nSpellcasting Focus. You can use a musical instrument as a spellcasting focus for your bard spells.",
+      "description_pt": "Você aprendeu a desemaranhar e remodelar o tecido da realidade em harmonia com seus desejos e música. Seus feitiços fazem parte de seu vasto repertório, magia que você pode ajustar para diferentes situações.\n\nTruques. Você conhece dois truques à sua escolha da lista de magias de bardo. Você aprende truques de bardo adicionais à sua escolha em níveis mais altos, conforme mostrado na coluna Truques Conhecidos da tabela do Bardo.\n\nEspaços de Magia. A tabela do Bardo mostra quantos espaços de magia você tem para conjurar suas magias de bardo de 1º nível e superiores. Para conjurar uma dessas magias, você deve gastar um espaço do nível da magia ou superior. Você recupera todos os espaços de magia gastos quando termina um descanso longo.\n\nMagias Conhecidas de 1º Nível e Superiores. Você conhece quatro magias de 1º nível à sua escolha da lista de magias de bardo. A coluna Magias Conhecidas da tabela do Bardo mostra quando você aprende mais magias de bardo à sua escolha. Cada uma dessas magias deve ser de um nível para o qual você tem espaços de magia. Além disso, quando você ganha um nível nesta classe, pode escolher uma das magias de bardo que conhece e substituí-la por outra magia da lista de magias de bardo, que também deve ser de um nível para o qual você tem espaços de magia.\n\nHabilidade de Conjuração. Carisma é sua habilidade de conjuração para suas magias de bardo. Sua magia vem do coração e da alma que você derrama na performance de sua música ou oratória. Você usa seu Carisma sempre que uma magia se referir à sua habilidade de conjuração. Além disso, você usa seu modificador de Carisma ao definir a CD de resistência para uma magia de bardo que conjurar e ao fazer uma jogada de ataque com uma.\n\nCD de resistência = 8 + seu bônus de proficiência + seu modificador de Carisma\nModificador de ataque de magia = seu bônus de proficiência + seu modificador de Carisma\n\nConjuração Ritual. Você pode conjurar qualquer magia de bardo que conhece como um ritual se essa magia tiver a tag ritual.\n\nFoco de Conjuração. Você pode usar um instrumento musical como foco de conjuração para suas magias de bardo."
+    },
+    {
+      "name": "Bardic Inspiration",
+      "name_pt": "Inspiração Bárdica",
+      "level": 1,
+      "description_en": "You can inspire others through stirring words or music. To do so, you use a bonus action on your turn to choose one creature other than yourself within 60 feet of you who can hear you. That creature gains one Bardic Inspiration die, a d6.\n\nOnce within the next 10 minutes, the creature can roll the die and add the number rolled to one ability check, attack roll, or saving throw it makes. The creature can wait until after it rolls the d20 before deciding to use the Bardic Inspiration die, but must decide before the DM says whether the roll succeeds or fails. Once the Bardic Inspiration die is rolled, it is lost. A creature can have only one Bardic Inspiration die at a time.\n\nYou can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain any expended uses when you finish a long rest.\n\nYour Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level.",
+      "description_pt": "Você pode inspirar outros através de palavras ou música comoventes. Para fazer isso, você usa uma ação bônus no seu turno para escolher uma criatura diferente de você a até 18 metros que possa ouvi-lo. Essa criatura ganha um dado de Inspiração Bárdica, um d6.\n\nUma vez nos próximos 10 minutos, a criatura pode rolar o dado e adicionar o número rolado a um teste de habilidade, jogada de ataque ou teste de resistência que fizer. A criatura pode esperar até depois de rolar o d20 antes de decidir usar o dado de Inspiração Bárdica, mas deve decidir antes do Mestre dizer se a jogada é bem-sucedida ou falha. Uma vez que o dado de Inspiração Bárdica é rolado, ele é perdido. Uma criatura pode ter apenas um dado de Inspiração Bárdica por vez.\n\nVocê pode usar esta característica um número de vezes igual ao seu modificador de Carisma (mínimo de uma vez). Você recupera todos os usos gastos quando termina um descanso longo.\n\nSeu dado de Inspiração Bárdica muda quando você atinge certos níveis nesta classe. O dado se torna um d8 no 5º nível, um d10 no 10º nível e um d12 no 15º nível."
+    },
+    {
+      "name": "Jack of All Trades",
+      "name_pt": "Pau pra Toda Obra",
+      "level": 2,
+      "description_en": "Starting at 2nd level, you can add half your proficiency bonus, rounded down, to any ability check you make that doesn't already include your proficiency bonus.",
+      "description_pt": "A partir do 2º nível, você pode adicionar metade do seu bônus de proficiência, arredondado para baixo, a qualquer teste de habilidade que fizer que ainda não inclua seu bônus de proficiência."
+    },
+    {
+      "name": "Song of Rest",
+      "name_pt": "Canção de Descanso",
+      "level": 2,
+      "description_en": "Beginning at 2nd level, you can use soothing music or oration to help revitalize your wounded allies during a short rest. If you or any friendly creatures who can hear your performance regain hit points at the end of the short rest by spending one or more Hit Dice, each of those creatures regains an extra 1d6 hit points.\n\nThe extra hit points increase when you reach certain levels in this class: to 1d8 at 9th level, to 1d10 at 13th level, and to 1d12 at 17th level.",
+      "description_pt": "A partir do 2º nível, você pode usar música suave ou oratória para ajudar a revitalizar seus aliados feridos durante um descanso curto. Se você ou quaisquer criaturas amigáveis que possam ouvir sua performance recuperarem pontos de vida ao final do descanso curto gastando um ou mais Dados de Vida, cada uma dessas criaturas recupera 1d6 pontos de vida extras.\n\nOs pontos de vida extras aumentam quando você atinge certos níveis nesta classe: para 1d8 no 9º nível, para 1d10 no 13º nível e para 1d12 no 17º nível."
+    },
+    {
+      "name": "Bard College",
+      "name_pt": "Colégio de Bardo",
+      "level": 3,
+      "description_en": "At 3rd level, you delve into the advanced techniques of a bard college of your choice. Your choice grants you features at 3rd level and again at 6th and 14th level.",
+      "description_pt": "No 3º nível, você se aprofunda nas técnicas avançadas de um colégio de bardo à sua escolha. Sua escolha concede características no 3º nível e novamente no 6º e 14º nível."
+    },
+    {
+      "name": "Expertise",
+      "name_pt": "Expertise",
+      "level": 3,
+      "description_en": "At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\n\nAt 10th level, you can choose another two skill proficiencies to gain this benefit.",
+      "description_pt": "No 3º nível, escolha duas de suas proficiências em perícias. Seu bônus de proficiência é dobrado para qualquer teste de habilidade que você fizer que use uma das proficiências escolhidas.\n\nNo 10º nível, você pode escolher outras duas proficiências em perícias para ganhar este benefício."
+    },
+    {
+      "name": "Ability Score Improvement",
+      "name_pt": "Melhoria de Atributo",
+      "level": 4,
+      "description_en": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+      "description_pt": "Quando você atinge o 4º nível, e novamente no 8º, 12º, 16º e 19º nível, você pode aumentar um valor de habilidade à sua escolha em 2, ou pode aumentar dois valores de habilidade à sua escolha em 1. Como normal, você não pode aumentar um valor de habilidade acima de 20 usando esta característica."
+    },
+    {
+      "name": "Font of Inspiration",
+      "name_pt": "Fonte de Inspiração",
+      "level": 5,
+      "description_en": "Beginning when you reach 5th level, you regain all of your expended uses of Bardic Inspiration when you finish a short or long rest.",
+      "description_pt": "A partir do 5º nível, você recupera todos os usos gastos de Inspiração Bárdica quando termina um descanso curto ou longo."
+    },
+    {
+      "name": "Countercharm",
+      "name_pt": "Contraencanto",
+      "level": 6,
+      "description_en": "At 6th level, you gain the ability to use musical notes or words of power to disrupt mind-influencing effects. As an action, you can start a performance that lasts until the end of your next turn. During that time, you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed. A creature must be able to hear you to gain this benefit. The performance ends early if you are incapacitated or silenced or if you voluntarily end it (no action required).",
+      "description_pt": "No 6º nível, você ganha a habilidade de usar notas musicais ou palavras de poder para interromper efeitos que influenciam a mente. Como uma ação, você pode iniciar uma performance que dura até o final do seu próximo turno. Durante esse tempo, você e quaisquer criaturas amigáveis a até 9 metros de você têm vantagem em testes de resistência contra ser amedrontado ou enfeitiçado. Uma criatura deve ser capaz de ouvi-lo para ganhar este benefício. A performance termina prematuramente se você ficar incapacitado ou silenciado ou se voluntariamente encerrá-la (nenhuma ação necessária)."
+    },
+    {
+      "name": "Magical Secrets",
+      "name_pt": "Segredos Mágicos",
+      "level": 10,
+      "description_en": "By 10th level, you have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any class, including this one. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip.\n\nThe chosen spells count as bard spells for you and are included in the number in the Spells Known column of the Bard table.\n\nYou learn two additional spells from any class at 14th level and again at 18th level.",
+      "description_pt": "No 10º nível, você saqueou conhecimento mágico de um amplo espectro de disciplinas. Escolha duas magias de qualquer classe, incluindo esta. Uma magia que você escolher deve ser de um nível que você pode conjurar, conforme mostrado na tabela do Bardo, ou um truque.\n\nAs magias escolhidas contam como magias de bardo para você e estão incluídas no número na coluna Magias Conhecidas da tabela do Bardo.\n\nVocê aprende duas magias adicionais de qualquer classe no 14º nível e novamente no 18º nível."
+    },
+    {
+      "name": "Superior Inspiration",
+      "name_pt": "Inspiração Superior",
+      "level": 20,
+      "description_en": "At 20th level, when you roll initiative and have no uses of Bardic Inspiration left, you regain one use.",
+      "description_pt": "No 20º nível, quando você rola iniciativa e não tem usos de Inspiração Bárdica restantes, você recupera um uso."
+    }
+  ],
+
+  "spellcasting": {
+    "description_en": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations.",
+    "description_pt": "Você aprendeu a desemaranhar e remodelar o tecido da realidade em harmonia com seus desejos e música. Seus feitiços fazem parte de seu vasto repertório, magia que você pode ajustar para diferentes situações.",
+    "ability": "CHA",
+    "cantrips": true,
+    "ritual_casting": true,
+    "spellcasting_focus": "A musical instrument",
+    "spellcasting_focus_pt": "Um instrumento musical"
+  },
+
+  "multiclass_prerequisites": "Charisma 13",
+  "multiclass_prerequisites_pt": "Carisma 13",
+  "multiclass_proficiencies": "Light armor, one skill of your choice",
+  "multiclass_proficiencies_pt": "Armaduras leves, uma perícia à sua escolha",
+
+  "subclass_level": 3,
+  "subclass_name": "Bard College",
+  "subclass_name_pt": "Colégio de Bardo",
+  "subclass_ids": ["college-of-lore"]
+}

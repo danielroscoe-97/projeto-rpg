@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, Shield } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { getHpBarColor } from "@/lib/utils/hp-status";
 import type { Combatant } from "@/lib/types/combat";
@@ -150,6 +150,17 @@ export function MonsterGroupHeader({
             ({activeMembers.length}/{totalMembers} {t("group_active")})
           </span>
         </span>
+
+        {/* AC badge — shared AC from first member (BT2-09) */}
+        {members[0]?.ac > 0 && (
+          <span
+            className="inline-flex items-center gap-0.5 text-[10px] font-mono text-muted-foreground shrink-0 bg-white/[0.06] rounded px-1.5 py-0.5"
+            title={t("ac_label")}
+          >
+            <Shield className="w-3 h-3" aria-hidden="true" />
+            {members[0].ac}
+          </span>
+        )}
 
         {/* Aggregated HP bar (collapsed only) */}
         {!isExpanded && (

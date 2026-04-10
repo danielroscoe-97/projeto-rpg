@@ -375,6 +375,20 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     postState.hydrateCombatants(reordered);
 
     broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
+
+    // BT2-02: Broadcast full state sync after removal so players get correct
+    // initiative order and adjusted turn index (player-side can't adjust these locally)
+    const syncState = useCombatStore.getState();
+    if (syncState.encounter_id) {
+      broadcastEvent(getSessionId(), {
+        type: "session:state_sync",
+        combatants: syncState.combatants,
+        current_turn_index: syncState.current_turn_index,
+        round_number: syncState.round_number,
+        encounter_id: syncState.encounter_id,
+      });
+    }
+
     persistRemoveCombatant(id).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
     if (reordered.length > 0) {
       persistInitiativeOrder(reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
@@ -403,6 +417,18 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     const added = sorted.find((c) => !existingIds.has(c.id));
     if (added && snap.encounter_id) {
       broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
+
+      // BT2-03: Broadcast full state sync after add so players get correct
+      // initiative order (player-side just appends to end without sorting)
+      const syncState = useCombatStore.getState();
+      broadcastEvent(getSessionId(), {
+        type: "session:state_sync",
+        combatants: syncState.combatants,
+        current_turn_index: syncState.current_turn_index,
+        round_number: syncState.round_number,
+        encounter_id: syncState.encounter_id!,
+      });
+
       persistNewCombatant(snap.encounter_id, added).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
       persistInitiativeOrder(
         sorted.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))

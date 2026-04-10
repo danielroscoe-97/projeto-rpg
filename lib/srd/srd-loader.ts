@@ -1,4 +1,5 @@
 import type { RulesetVersion } from "@/lib/types/database";
+import type { SrdClass } from "@/lib/types/srd-class";
 import { srdDataUrl, isFullDataMode } from "./srd-mode";
 
 export interface MonsterAction {
@@ -199,6 +200,7 @@ export function clearAllLoaderCaches() {
   madMonsterCache.clear();
   featCache.clear();
   itemCache.clear();
+  classCache.clear();
 }
 
 /** Fetches the SRD monster bundle for a given ruleset version.
@@ -283,6 +285,8 @@ export function loadFeats(): Promise<SrdFeat[]> {
   return promise;
 }
 
+const classCache = new Map<string, Promise<SrdClass[]>>();
+
 const itemCache = new Map<string, Promise<SrdItem[]>>();
 
 /** Fetches the SRD items bundle (consolidated mundane + magic).
@@ -302,5 +306,22 @@ export function loadItems(): Promise<SrdItem[]> {
     );
   });
   itemCache.set(key, promise);
+  return promise;
+}
+
+/** Fetches the SRD classes bundle (12 classes, version-agnostic).
+ *  Promise is cached so multiple callers share one fetch+parse. */
+export function loadClasses(): Promise<SrdClass[]> {
+  const key = loaderCacheKey("all");
+  const cached = classCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(srdDataUrl("classes-srd.json")).then((res) => {
+    if (!res.ok) {
+      classCache.delete(key);
+      throw new Error(`Failed to load SRD classes: ${res.status}`);
+    }
+    return res.json() as Promise<SrdClass[]>;
+  });
+  classCache.set(key, promise);
   return promise;
 }
