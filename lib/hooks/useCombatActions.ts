@@ -33,6 +33,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { applyGroupRename } from "@/lib/utils/group-rename";
 import { playTurnSfx } from "@/lib/utils/turn-sfx";
 import { trackEvent } from "@/lib/analytics/track";
+import { persistCombatLog } from "@/lib/supabase/combat-log-persist";
 
 /** Get the name of the combatant whose turn is currently active. */
 function getCurrentActorName(): string {
@@ -143,6 +144,11 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     try {
       await persistTurnAdvance(encounter_id, nextIdx, nextRound);
+      // Flush combat log to DB at each new round (fire-and-forget)
+      if (nextRound > prevRound) {
+        const logEntries = useCombatLogStore.getState().entries;
+        persistCombatLog(encounter_id, logEntries).catch(() => { /* non-fatal */ });
+      }
     } catch (err) {
       useCombatStore.getState().hydrateActiveState(prevIdx, prevRound);
       setError(err instanceof Error ? err.message : t("error_save_turn"));

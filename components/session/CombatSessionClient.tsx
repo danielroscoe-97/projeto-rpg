@@ -38,6 +38,7 @@ const DmAtmospherePanel = dynamic(() => import("@/components/audio/DmAtmosphereP
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
+import { persistCombatLog, loadCombatLog, clearCombatLog } from "@/lib/supabase/combat-log-persist";
 import { computeCombatStats, getMaxRound, buildCombatReport } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import type { CombatReport } from "@/lib/types/combat-report";
@@ -316,6 +317,11 @@ export function CombatSessionClient({
     const logEntries = useCombatLogStore.getState().entries;
     const state = useCombatStore.getState();
 
+    // CR-2: Final flush of combat log to DB before computing stats
+    if (state.encounter_id && logEntries.length > 0) {
+      persistCombatLog(state.encounter_id, logEntries).catch(() => { /* non-fatal */ });
+    }
+
     // Accumulate the final (active) turn's elapsed time before computing stats
     // CTA-12 fix: if paused, use pausedAt to exclude break time
     const finalAccumulated = { ...state.turnTimeAccumulated };
@@ -379,6 +385,9 @@ export function CombatSessionClient({
     setReportShareUrl(null);
     setLeaderboardData(null);
     useCombatLogStore.getState().clear();
+    // Clear DB combat log — report is already saved, log no longer needed
+    const clearEncId = useCombatStore.getState().encounter_id;
+    if (clearEncId) clearCombatLog(clearEncId).catch(() => { /* non-fatal */ });
 
     // P1.06: Snapshot Map before await — prevents race condition with late-arriving votes
     const snapshotVotes = new Map(pollVotes);
@@ -496,6 +505,20 @@ export function CombatSessionClient({
               backup.round_number
             );
           }
+        }
+      }
+      // Hydrate combat log: localStorage (Zustand persist) is auto-restored.
+      // If localStorage log is empty but encounter is active, try DB fallback.
+      if (isActive && encounterId) {
+        const localLog = useCombatLogStore.getState().entries;
+        if (localLog.length === 0) {
+          const capturedEncounterId = encounterId;
+          loadCombatLog(capturedEncounterId).then((dbEntries) => {
+            // CR-1: Guard against stale async — only hydrate if encounter hasn't changed
+            if (dbEntries.length > 0 && useCombatStore.getState().encounter_id === capturedEncounterId) {
+              useCombatLogStore.getState().hydrateEntries(dbEntries);
+            }
+          }).catch(() => { /* non-fatal */ });
         }
       }
     } else {
@@ -1089,7 +1112,10 @@ export function CombatSessionClient({
       const snap = useCombatStore.getState();
       const current = snap.combatants[snap.current_turn_index];
       if (!current?.is_player) return;
-      if (!payload.player_name || current.name !== payload.player_name) return;
+      // B3: Match by session_token_id first (ID-based, survives renames), then fallback to name
+      const tokenMatch = payload.sender_token_id && current.session_token_id && current.session_token_id === payload.sender_token_id;
+      const nameMatch = payload.player_name && current.name === payload.player_name;
+      if (!tokenMatch && !nameMatch) return;
       handleAdvanceTurnRef.current();
     };
 
@@ -1171,8 +1197,11 @@ export function CombatSessionClient({
       // Security: only allow self-modification of player combatants
       const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
       if (!combatant || !combatant.is_player) return;
-      // B1: Verify player_name matches the combatant (prevents Player A acting on Player B's HP)
-      if (combatant.name.toLowerCase() !== String(player_name).toLowerCase()) return;
+      // B3: Verify ownership — token ID first (survives renames), then name fallback
+      const senderTokenId = payload.sender_token_id as string | undefined;
+      const tokenMatch = senderTokenId && combatant.session_token_id && combatant.session_token_id === senderTokenId;
+      const nameMatch = combatant.name.toLowerCase() === String(player_name).toLowerCase();
+      if (!tokenMatch && !nameMatch) return;
       // P1.04: Ignore damage on already-dead player — prevents spurious death save toasts
       if (action === "damage" && (combatant.current_hp ?? 0) <= 0) return;
 
@@ -1214,11 +1243,14 @@ export function CombatSessionClient({
       if (!combatant_id || !condition || typeof condition !== "string") return;
       // Security: only allow beneficial conditions
       if (!(BENEFICIAL_CONDITIONS as readonly string[]).includes(condition)) return;
-      // Security: combatant must exist and be a player — use ID as primary key, name as confirmation
+      // Security: combatant must exist and be a player — use ID as primary key, token/name as confirmation
       const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
       if (!combatant || !combatant.is_player) return;
-      // Name confirmation prevents another client from sending another player's combatant_id
-      if (combatant.name.toLowerCase() !== String(player_name ?? "").toLowerCase()) return;
+      // B3: Verify ownership — token ID first (survives renames), then name fallback
+      const senderTokenId = (payload as Record<string, unknown>).sender_token_id as string | undefined;
+      const tokenMatch = senderTokenId && combatant.session_token_id && combatant.session_token_id === senderTokenId;
+      const nameMatch = combatant.name.toLowerCase() === String(player_name ?? "").toLowerCase();
+      if (!tokenMatch && !nameMatch) return;
       // Apply the toggle via the store
       useCombatStore.getState().toggleCondition(combatant_id, condition);
       // Broadcast updated conditions to all players
@@ -1243,8 +1275,11 @@ export function CombatSessionClient({
       // Security: combatant must exist and be a player
       const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
       if (!combatant || !combatant.is_player) return;
-      // Security: name confirmation prevents toggling another player's reaction (W1: Unicode-safe)
-      if (combatant.name.normalize("NFC").trim().toLocaleLowerCase() !== String(player_name ?? "").normalize("NFC").trim().toLocaleLowerCase()) return;
+      // B3: Verify ownership — token ID first (survives renames), then name fallback (W1: Unicode-safe)
+      const senderTokenId = (payload as Record<string, unknown>).sender_token_id as string | undefined;
+      const tokenMatch = senderTokenId && combatant.session_token_id && combatant.session_token_id === senderTokenId;
+      const nameMatch = combatant.name.normalize("NFC").trim().toLocaleLowerCase() === String(player_name ?? "").normalize("NFC").trim().toLocaleLowerCase();
+      if (!tokenMatch && !nameMatch) return;
       useCombatStore.getState().setReactionUsed(combatant_id, reaction_used);
       // Re-broadcast to all players so everyone sees the update
       broadcastEvent(getSessionId()!, { type: "combat:reaction_toggle", combatant_id, reaction_used });
