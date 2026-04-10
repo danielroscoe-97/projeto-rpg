@@ -176,14 +176,14 @@ test.describe.serial("Multi-player combat — full session simulation", () => {
     expect(new Set([orcWarriorId, wolfId, banditId, skeletonId]).size).toBe(4);
   });
 
-  test("Setup: DM hides Skeleton", async () => {
-    await toggleHidden(dmPage, skeletonId);
-    await expect(dmPage.locator(`[data-testid="hp-btn-${skeletonId}"]`)).toBeVisible({ timeout: 3_000 });
-  });
-
   test("Setup: Dismiss onboarding tour", async () => {
     await dismissTourIfVisible(dmPage);
     await expect(dmPage.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 10_000 });
+  });
+
+  test("Setup: DM hides Skeleton", async () => {
+    await toggleHidden(dmPage, skeletonId);
+    await expect(dmPage.locator(`[data-testid="hp-btn-${skeletonId}"]`)).toBeVisible({ timeout: 3_000 });
   });
 
   // ════════════════════════════════════════════════════════════

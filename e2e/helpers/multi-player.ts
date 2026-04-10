@@ -218,12 +218,22 @@ export async function dmAcceptPlayer(
  * After clicking, the combatant is either hidden from or revealed to players.
  */
 export async function toggleHidden(page: Page, combatantId: string) {
-  const btn = page.locator(`[data-testid="hidden-btn-${combatantId}"]`);
-  await expect(btn).toBeVisible({ timeout: 5_000 });
-  // Wait for DOM to stabilize (combat page re-renders on mount)
-  await page.waitForTimeout(1_000);
-  await btn.click({ timeout: 15_000 });
-  await page.waitForTimeout(500);
+  // Wait for DOM to stabilize (combat page re-renders heavily on mount)
+  await page.waitForTimeout(3_000);
+
+  // Retry click — button can detach during re-renders
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const btn = page.locator(`[data-testid="hidden-btn-${combatantId}"]`);
+      await expect(btn).toBeVisible({ timeout: 5_000 });
+      await btn.click({ timeout: 10_000 });
+      await page.waitForTimeout(500);
+      return;
+    } catch {
+      if (attempt < 2) await page.waitForTimeout(2_000);
+    }
+  }
+  throw new Error(`Failed to click hidden-btn-${combatantId} after 3 attempts`);
 }
 
 /**
