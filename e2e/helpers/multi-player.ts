@@ -135,9 +135,11 @@ export async function playerSubmitJoin(
 ) {
   await playerPage.goto(`/join/${token}`);
   await playerPage.waitForLoadState("domcontentloaded");
+  // Wait for anonymous auth + token validation (can be slow on production)
+  await playerPage.waitForLoadState("networkidle").catch(() => {});
 
   const nameInput = playerPage.locator('[data-testid="lobby-name"]');
-  await expect(nameInput).toBeVisible({ timeout: 30_000 });
+  await expect(nameInput).toBeVisible({ timeout: 45_000 });
 
   // Wait for realtime channel to subscribe
   await playerPage.waitForTimeout(3_000);
