@@ -452,9 +452,12 @@ export function CombatSessionClient({
 
   // BT2-01/A5: Periodic full state sync — safety net against accumulated drift.
   // Every 30s while combat is active, DM broadcasts the full truth to all players.
+  // DESYNC-FIX-1: Also sync immediately when DM returns to tab (browser throttles
+  // setInterval to 60s+ when tab is hidden, causing prolonged desync).
   useEffect(() => {
     if (!is_active || !sessionId) return;
-    const timer = setInterval(() => {
+
+    const sendSync = () => {
       const store = useCombatStore.getState();
       if (!store.encounter_id || !store.is_active) return;
       broadcastEvent(sessionId, {
@@ -464,8 +467,20 @@ export function CombatSessionClient({
         round_number: store.round_number,
         encounter_id: store.encounter_id,
       });
-    }, 30_000);
-    return () => clearInterval(timer);
+    };
+
+    const timer = setInterval(sendSync, 30_000);
+
+    // Immediate sync when DM tab becomes visible again
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") sendSync();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [is_active, sessionId]);
 
   // Register hidden lookup so broadcast.ts can filter events for hidden combatants
@@ -944,7 +959,9 @@ export function CombatSessionClient({
               .from("combatants")
               .update({ session_token_id: req.senderTokenId })
               .eq("id", matchingCombatant.id)
-              .then(() => {});
+              .then(({ error }) => {
+                if (error) console.error("[CombatSession] Failed to persist token link:", error.message);
+              });
           });
         }
       }

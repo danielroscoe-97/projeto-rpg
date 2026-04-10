@@ -872,10 +872,12 @@ export function PlayerJoinClient({
 
       channel
         .on("broadcast", { event: "session:state_sync" }, ({ payload }) => {
-          // state_sync is a full snapshot — reset sequence counter to handle DM page refresh
-          // (DM's _broadcastSeq resets to 0 on refresh; this prevents stale high-water mark)
+          // DESYNC-FIX-2: state_sync is the full truth — ALWAYS reset sequence counter.
+          // After DM refresh, _broadcastSeq resets to 0. If we only update lastSeqRef when
+          // seq > 0, the player keeps the old high-water mark (e.g. 50) and drops all new
+          // events (seq 1, 2, 3...) as "stale" for up to 30s until the next state_sync.
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
-          if (seq > 0) lastSeqRef.current = seq;
+          lastSeqRef.current = seq;
 
           if (payload.combatants) updateCombatants(payload.combatants);
           if (payload.round_number !== undefined) setRound(payload.round_number);
@@ -1010,6 +1012,9 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:condition_change" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant_id) {
             conditionOptimisticRef.current = Date.now();
             updateCombatants((prev) =>
@@ -1026,6 +1031,9 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:reaction_toggle" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant_id && typeof payload.reaction_used === "boolean") {
             updateCombatants((prev) =>
               prev.map((c) =>
@@ -1037,6 +1045,9 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:defeated_change" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant_id) {
             updateCombatants((prev) =>
               prev.map((c) =>
@@ -1048,6 +1059,9 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:combatant_add" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant) {
             updateCombatants((prev) => {
               const existingIndex = prev.findIndex((c) => c.id === payload.combatant.id);
@@ -1092,11 +1106,17 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant_id) {
             updateCombatants((prev) => prev.filter((c) => c.id !== payload.combatant_id));
           }
         })
         .on("broadcast", { event: "combat:version_switch" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant_id) {
             updateCombatants((prev) =>
               prev.map((c) =>
@@ -1108,6 +1128,9 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:stats_update" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant_id) {
             updateCombatants((prev) =>
               prev.map((c) => {
@@ -1121,6 +1144,9 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatants) {
             updateCombatants(payload.combatants);
           }
@@ -1303,7 +1329,16 @@ export function PlayerJoinClient({
             reconnectBackoffRef.current = 1000;
             // A.1: Transition to CONNECTED — stops all polling, fetches reconciliation state
             transitionTo("CONNECTED", "SUBSCRIBED");
-            if (encounterIdRef.current) fetchFullState(encounterIdRef.current);
+            if (encounterIdRef.current) {
+              fetchFullState(encounterIdRef.current);
+              // DESYNC-FIX-3: Second fetch after 1s to catch broadcasts lost during
+              // the subscribe handshake (50-200ms window where events can be missed).
+              setTimeout(() => {
+                if (encounterIdRef.current && connStateRef.current === "CONNECTED") {
+                  fetchFullState(encounterIdRef.current);
+                }
+              }, 1000);
+            }
           } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
             setDebouncedConnectionStatus("disconnected");
             if (!disconnectedAtRef.current) {
