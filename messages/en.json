@@ -1932,6 +1932,7 @@
     "player_tag": "Player",
     "monster_tag": "Monster",
     "your_character": "Your character",
+    "group_avg_label": "avg {status}",
     "end_turn": "End Turn",
     "end_turn_retry": "Trying again...",
     "end_turn_error": "Connection issue — try refreshing",

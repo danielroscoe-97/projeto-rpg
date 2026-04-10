@@ -2313,6 +2313,7 @@ export function PlayerJoinClient({
           customAudioUrls={playerAudioUrls}
           isLoadingAudioUrls={isLoadingAudioUrls}
           registeredName={registeredName}
+          effectiveTokenId={effectiveTokenId}
           sessionId={sessionId}
           hpDelta={hpDelta}
           deathSaveResolution={deathSaveResolution}

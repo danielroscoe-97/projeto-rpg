@@ -1932,6 +1932,7 @@
     "player_tag": "Jogador",
     "monster_tag": "Monstro",
     "your_character": "Seu personagem",
+    "group_avg_label": "média {status}",
     "end_turn": "Passar Turno",
     "end_turn_retry": "Tentando novamente...",
     "end_turn_error": "Problema de conexão — tente recarregar",

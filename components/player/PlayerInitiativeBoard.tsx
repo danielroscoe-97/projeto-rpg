@@ -61,6 +61,8 @@ interface PlayerCombatant {
   condition_durations?: Record<string, number>;
   /** Whether this combatant has used their reaction this round */
   reaction_used?: boolean;
+  /** Linked session_token ID — for ID-based reconnection (B3). */
+  session_token_id?: string | null;
 }
 
 
@@ -94,6 +96,28 @@ function HpStatusBadge({ status, percentage }: { status: string; percentage?: nu
       )}
     </span>
   );
+}
+
+/** Compute aggregate HP status for a monster group (collapsed header). */
+const TIER_SEVERITY: Record<string, number> = { FULL: 0, LIGHT: 1, MODERATE: 2, HEAVY: 3, CRITICAL: 4 };
+const TIER_LABEL: Record<number, string> = { 0: "FULL", 1: "LIGHT", 2: "MODERATE", 3: "HEAVY", 4: "CRITICAL" };
+
+function computeGroupAgg(
+  group: { members: PlayerCombatant[]; indices: number[] },
+  currentTurnIndex: number,
+) {
+  const activeMembers = group.members.filter((m) => !m.is_defeated);
+  const worstSeverity = activeMembers.length > 0
+    ? Math.max(...activeMembers.map((m) => TIER_SEVERITY[m.hp_status ?? "LIGHT"] ?? 1))
+    : 4;
+  const aggStatus = worstSeverity >= 4 ? "CRITICAL" : worstSeverity >= 3 ? "HEAVY" : worstSeverity >= 2 ? "MODERATE" : worstSeverity >= 1 ? "LIGHT" : "FULL";
+  const avgSeverity = activeMembers.length > 0
+    ? activeMembers.reduce((sum, m) => sum + (TIER_SEVERITY[m.hp_status ?? "LIGHT"] ?? 1), 0) / activeMembers.length
+    : 4;
+  const avgStatus = TIER_LABEL[Math.round(avgSeverity)] ?? "MODERATE";
+  const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
+  const hasGroupTurn = group.indices.includes(currentTurnIndex);
+  return { aggStatus, avgStatus, activeCount: activeMembers.length, totalCount: group.members.length, baseName, hasGroupTurn };
 }
 
 /** Inline note input for players to signal the DM (e.g. "concentrating on Bless") */
@@ -164,6 +188,8 @@ interface PlayerInitiativeBoardProps {
   customAudioUrls?: Record<string, string>;
   /** The registered player name for this session (used to identify "my" turn) */
   registeredName?: string;
+  /** Token ID for ID-based combatant matching (B3: survives DM renames) */
+  effectiveTokenId?: string;
   /** Session ID — used for push notification subscription */
   sessionId?: string;
   /** Callback when the player ends their own turn */
@@ -205,6 +231,7 @@ export function PlayerInitiativeBoard({
   customAudioFiles = [],
   customAudioUrls = {},
   registeredName,
+  effectiveTokenId,
   sessionId,
   onEndTurn,
   onDeathSave,
@@ -289,7 +316,8 @@ export function PlayerInitiativeBoard({
   const acFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dcFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    const pc = registeredName ? combatants.find((c) => c.is_player && c.name === registeredName) : null;
+    // B3: Match by session_token_id first (ID-based), then fallback to name
+    const pc = registeredName ? combatants.find((c) => c.is_player && ((effectiveTokenId && c.session_token_id === effectiveTokenId) || c.name === registeredName)) : null;
     if (!pc) return;
     // AC changed
     if (prevAcRef.current !== undefined && pc.ac !== prevAcRef.current) {
@@ -363,9 +391,9 @@ export function PlayerInitiativeBoard({
 
   // Separate player characters from others for "own character" highlight
   const playerChars = combatants.filter((c) => c.is_player);
-  // Only the combatant matching registeredName is "own character"
+  // B3: Match by session_token_id first (ID-based), then fallback to name
   const ownChar = registeredName
-    ? playerChars.find((c) => c.name === registeredName) ?? null
+    ? playerChars.find((c) => (effectiveTokenId && c.session_token_id === effectiveTokenId) || c.name === registeredName) ?? null
     : null;
   const ownCharRef = useRef(ownChar);
   ownCharRef.current = ownChar;
@@ -379,8 +407,9 @@ export function PlayerInitiativeBoard({
   // Story 3.1 + 3.2: Turn notification state
   const currentCombatant = combatants[currentTurnIndex];
   // "É sua vez!" only when it's THIS player's turn, not any player
+  // B3: Match by session_token_id first (ID-based), then fallback to name
   const isPlayerTurn = registeredName
-    ? currentCombatant?.is_player === true && currentCombatant.name === registeredName
+    ? currentCombatant?.is_player === true && ((effectiveTokenId && currentCombatant.session_token_id === effectiveTokenId) || currentCombatant.name === registeredName)
     : currentCombatant?.is_player ?? false;
 
   // Resolve next combatant for the "Next up" display
@@ -791,70 +820,41 @@ export function PlayerInitiativeBoard({
             const isFirstMember = groupFirstMemberIds.has(combatant.id);
             const isGroupExpanded = expandedPlayerGroups[gid] ?? false;
             if (!isFirstMember) {
-              // Not the first member — skip if group is collapsed, otherwise render normally below
               if (!isGroupExpanded) return null;
-              // Fall through to render individual row when expanded
-            } else {
-              // First member of the group — render group header
+            } else if (!isGroupExpanded) {
+              // Collapsed: render group header only
               const group = groupMap.get(gid)!;
-              const activeMembers = group.members.filter((m) => !m.is_defeated);
-              const hasGroupTurn = group.indices.includes(currentTurnIndex);
-
-              // Aggregate HP status — worst-case badge + average label
-              const tierSeverity: Record<string, number> = { FULL: 0, LIGHT: 1, MODERATE: 2, HEAVY: 3, CRITICAL: 4 };
-              const tierLabel: Record<number, string> = { 0: "FULL", 1: "LIGHT", 2: "MODERATE", 3: "HEAVY", 4: "CRITICAL" };
-              const worstSeverity = activeMembers.length > 0
-                ? Math.max(...activeMembers.map((m) => tierSeverity[m.hp_status ?? "LIGHT"] ?? 1))
-                : 4;
-              const aggStatus = worstSeverity >= 4 ? "CRITICAL" : worstSeverity >= 3 ? "HEAVY" : worstSeverity >= 2 ? "MODERATE" : worstSeverity >= 1 ? "LIGHT" : "FULL";
-              const avgSeverity = activeMembers.length > 0
-                ? activeMembers.reduce((sum, m) => sum + (tierSeverity[m.hp_status ?? "LIGHT"] ?? 1), 0) / activeMembers.length
-                : 4;
-              const avgStatus = tierLabel[Math.round(avgSeverity)] ?? "MODERATE";
-
-              // Extract group name (remove trailing number/letter suffix)
-              const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
-
-              // When collapsed: render header only (return early)
-              // When expanded: render header + fall through to render first member as individual row
-              if (!isGroupExpanded) {
-                return (
-                  <motion.li key={`group-${gid}`} layout>
-                    <div
-                      className={`flex items-center gap-2 px-4 py-2.5 bg-card border rounded-lg cursor-pointer transition-all duration-300 ${
-                        hasGroupTurn ? "border-gold ring-1 ring-gold/30 bg-amber-400/5" : "border-border"
-                      } border-l-4 border-l-red-500/40`}
-                      onClick={() => togglePlayerGroup(gid)}
-                      role="button"
-                      aria-expanded={false}
-                      data-testid={`player-group-header-${gid}`}
-                    >
-                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                      <span className="text-foreground font-medium text-base lg:text-sm truncate">{baseName}</span>
-                      <span className="text-muted-foreground text-xs shrink-0">
-                        ({activeMembers.length}/{group.members.length})
-                      </span>
-                      <div className="ml-auto flex items-center gap-1.5">
-                        <HpStatusBadge status={aggStatus} />
-                        {avgStatus !== aggStatus && (
-                          <span className="text-muted-foreground text-[10px] hidden sm:inline">
-                            média {avgStatus}
-                          </span>
-                        )}
-                      </div>
+              const { aggStatus, avgStatus, activeCount, totalCount, baseName, hasGroupTurn } = computeGroupAgg(group, currentTurnIndex);
+              return (
+                <motion.li key={`group-${gid}`} layout>
+                  <div
+                    className={`flex items-center gap-2 px-4 py-2.5 bg-card border rounded-lg cursor-pointer transition-all duration-300 ${
+                      hasGroupTurn ? "border-gold ring-1 ring-gold/30 bg-amber-400/5" : "border-border"
+                    } border-l-4 border-l-red-500/40`}
+                    onClick={() => togglePlayerGroup(gid)}
+                    role="button"
+                    aria-expanded={false}
+                    data-testid={`player-group-header-${gid}`}
+                  >
+                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <span className="text-foreground font-medium text-base lg:text-sm truncate">{baseName}</span>
+                    <span className="text-muted-foreground text-xs shrink-0">
+                      ({activeCount}/{totalCount})
+                    </span>
+                    <div className="ml-auto flex items-center gap-1.5">
+                      <HpStatusBadge status={aggStatus} />
+                      {avgStatus !== aggStatus && (
+                        <span className="text-muted-foreground text-[10px] hidden sm:inline">
+                          {t("group_avg_label", { status: avgStatus })}
+                        </span>
+                      )}
                     </div>
-                  </motion.li>
-                );
-              }
-
-              // Expanded: render header + first member falls through to individual rendering below
-              // Use a Fragment to render the header, then let the code below render the first member
-              // We use a separate key for the header to avoid React key conflicts
-              // The header needs to be injected before the first member's individual row
+                  </div>
+                </motion.li>
+              );
             }
+            // Expanded: first member falls through, header built below
           }
-          // For expanded group members (including first member), render as individual rows
-          // The group header for expanded groups is rendered via a separate element
           const isGroupMember = combatant.monster_group_id && groupMap.has(combatant.monster_group_id);
           const isFirstOfExpandedGroup = isGroupMember && groupFirstMemberIds.has(combatant.id) && (expandedPlayerGroups[combatant.monster_group_id!] ?? false);
           const isCurrentTurn = index === currentTurnIndex;
@@ -892,19 +892,7 @@ export function PlayerInitiativeBoard({
           const expandedGroupHeader = isFirstOfExpandedGroup ? (() => {
             const gid = combatant.monster_group_id!;
             const group = groupMap.get(gid)!;
-            const activeMembers = group.members.filter((m) => !m.is_defeated);
-            const hasGroupTurn = group.indices.includes(currentTurnIndex);
-            const tierSeverity: Record<string, number> = { FULL: 0, LIGHT: 1, MODERATE: 2, HEAVY: 3, CRITICAL: 4 };
-            const tierLabel: Record<number, string> = { 0: "FULL", 1: "LIGHT", 2: "MODERATE", 3: "HEAVY", 4: "CRITICAL" };
-            const worstSeverity = activeMembers.length > 0
-              ? Math.max(...activeMembers.map((m) => tierSeverity[m.hp_status ?? "LIGHT"] ?? 1))
-              : 4;
-            const aggStatus = worstSeverity >= 4 ? "CRITICAL" : worstSeverity >= 3 ? "HEAVY" : worstSeverity >= 2 ? "MODERATE" : worstSeverity >= 1 ? "LIGHT" : "FULL";
-            const avgSeverity = activeMembers.length > 0
-              ? activeMembers.reduce((sum, m) => sum + (tierSeverity[m.hp_status ?? "LIGHT"] ?? 1), 0) / activeMembers.length
-              : 4;
-            const avgStatus = tierLabel[Math.round(avgSeverity)] ?? "MODERATE";
-            const baseName = group.members[0]?.name.replace(/\s+[\dA-Z]+$/i, "").trim() || group.members[0]?.name || "";
+            const { aggStatus, avgStatus, activeCount, totalCount, baseName, hasGroupTurn } = computeGroupAgg(group, currentTurnIndex);
             return (
               <motion.li key={`group-${gid}`} layout>
                 <div
@@ -919,7 +907,7 @@ export function PlayerInitiativeBoard({
                   <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                   <span className="text-foreground font-medium text-base lg:text-sm truncate">{baseName}</span>
                   <span className="text-muted-foreground text-xs shrink-0">
-                    ({activeMembers.length}/{group.members.length})
+                    ({activeCount}/{totalCount})
                   </span>
                   <div className="ml-auto flex items-center gap-1.5">
                     <HpStatusBadge status={aggStatus} />
@@ -949,7 +937,7 @@ export function PlayerInitiativeBoard({
                   : isOwnChar
                     ? "border-t border-r border-b border-border bg-card px-4 py-3"
                     : "border-t border-r border-b border-border px-4 py-3"
-              } ${combatant.is_defeated ? "opacity-40 grayscale-[80%]" : isCritical ? "opacity-70 grayscale-[30%] border-2 border-red-500 animate-critical-glow" : ""} ${
+              } ${combatant.is_defeated ? "opacity-40 grayscale-[80%]" : isCritical ? "opacity-80 grayscale-[20%] border-2 border-red-500/60" : ""} ${
                 roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""
               } ${
                 isNewlyRevealed ? "ring-2 ring-gold/60 shadow-[0_0_16px_rgba(212,168,83,0.4)]" : ""
@@ -1138,8 +1126,9 @@ export function PlayerInitiativeBoard({
           );
 
           // If first of expanded group, render both header and individual row
+          // Return array so AnimatePresence sees both motion.li as direct keyed children
           if (expandedGroupHeader) {
-            return <>{expandedGroupHeader}{individualRow}</>;
+            return [expandedGroupHeader, individualRow];
           }
           return individualRow;
         })}
