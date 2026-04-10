@@ -38,14 +38,17 @@ export interface RawCombatantRow {
 export function sanitizeCombatantsForPlayer(combatants: RawCombatantRow[]) {
   return combatants
     .filter((c) => !c.is_hidden)
-    .map((c) => {
+    .map((c, index) => {
+      // R4: Re-assign sequential initiative_order after filtering hidden combatants.
+      // This eliminates collisions from the DB (e.g. failed persists during 504s).
       if (c.is_player) {
         const { display_name: _dn, is_hidden: _h, ...rest } = c;
-        return rest;
+        return { ...rest, initiative_order: index };
       }
       const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _dc, display_name, is_hidden: _h, condition_durations: _cd, session_token_id: _st, ...rest } = c;
       return {
         ...rest,
+        initiative_order: index,
         // Anti-metagaming: replace real name with display_name if set
         name: display_name || rest.name,
         hp_status: getHpStatus(current_hp, max_hp),

@@ -869,8 +869,12 @@ export function CombatSessionClient({
         } as import("@/lib/types/realtime").RealtimeEvent);
       }
       // B2: For rejoin with senderTokenId, link existing combatant to token in DB
+      // Match by existing token link first, then by name (DM may have renamed combatant)
       if (req.senderTokenId) {
-        const matchingCombatant = useCombatStore.getState().combatants.find(
+        const allCombatants = useCombatStore.getState().combatants;
+        const matchingCombatant = allCombatants.find(
+          (c) => c.is_player && c.session_token_id === req.senderTokenId
+        ) ?? allCombatants.find(
           (c) => c.is_player && c.name === req.player_name
         );
         if (matchingCombatant) {

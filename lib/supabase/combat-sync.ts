@@ -56,6 +56,8 @@ export async function reconcileFullState(
       death_saves: c.death_saves ?? null,
       legendary_actions_total: c.legendary_actions_total ?? null,
       legendary_actions_used: c.legendary_actions_used ?? 0,
+      // B2: Preserve token link during offline reconciliation
+      session_token_id: c.session_token_id ?? null,
     }));
 
     const { error } = await supabase.rpc("reconcile_combat_state", {

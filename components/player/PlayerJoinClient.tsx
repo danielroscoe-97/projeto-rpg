@@ -186,6 +186,10 @@ export function PlayerJoinClient({
   // Stores recursive setTimeout handles — named "pollInterval" for semantic clarity but uses setTimeout under the hood
   const pollIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // R1: In-flight guard — prevents overlapping /state requests (thundering herd)
+  const fetchInFlightRef = useRef(false);
+  // R2: Circuit breaker — after 3 consecutive failures, drop to 30s probe interval
+  const consecutiveFailsRef = useRef(0);
   const turnPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTurnBroadcastRef = useRef<number>(0);
   // Broadcast sequence tracking — discard out-of-order events for critical state (turn advance)
@@ -729,10 +733,37 @@ export function PlayerJoinClient({
 
   // Full state fetch via API — used on reconnect & polling fallback.
   // Uses /api/session/[id]/state which sanitizes monster data server-side.
+  // R1: In-flight guard prevents overlapping requests.
+  // R2: Circuit breaker drops to 30s probe after 3 consecutive fails.
+  // R3: Auto-refresh anonymous auth on 401.
   const fetchFullState = useCallback(async (_eid: string) => {
+    // R1: Skip if another request is already in-flight
+    if (fetchInFlightRef.current) return;
+    fetchInFlightRef.current = true;
     try {
-      const res = await fetch(`/api/session/${sessionId}/state`);
-      if (!res.ok) return;
+      let res = await fetch(`/api/session/${sessionId}/state`);
+
+      // R3: Auth auto-refresh — re-authenticate and retry once on 401
+      if (res.status === 401) {
+        const supabase = createClient();
+        const { error: authError } = await supabase.auth.signInAnonymously();
+        if (!authError) {
+          res = await fetch(`/api/session/${sessionId}/state`);
+        }
+      }
+
+      if (!res.ok) {
+        // R2: Track consecutive failures for circuit breaker
+        consecutiveFailsRef.current++;
+        if (consecutiveFailsRef.current >= 3) {
+          pollBackoffRef.current = 30_000; // circuit open: probe every 30s
+        }
+        return;
+      }
+
+      // R2: Reset circuit breaker on success
+      consecutiveFailsRef.current = 0;
+
       const { data } = await res.json();
       if (!data) return;
       if (data.encounter) {
@@ -805,7 +836,14 @@ export function PlayerJoinClient({
         }
       }
     } catch {
-      // Silent failure — will retry
+      // R2: Track failure for circuit breaker
+      consecutiveFailsRef.current++;
+      if (consecutiveFailsRef.current >= 3) {
+        pollBackoffRef.current = 30_000;
+      }
+    } finally {
+      // R1: Release in-flight guard
+      fetchInFlightRef.current = false;
     }
   }, [sessionId, updateTurnIndex, updateCombatants, effectiveTokenId]);
 

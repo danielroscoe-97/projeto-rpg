@@ -104,6 +104,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
           )
           .eq("encounter_id", encounter.id)
           .order("initiative_order", { ascending: true })
+          .order("id", { ascending: true }) // R4: Stable tiebreaker for initiative collisions
           .limit(200)
           .then(({ data }) => data)
       : Promise.resolve(null);

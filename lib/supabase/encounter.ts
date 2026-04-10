@@ -146,6 +146,8 @@ export async function createEncounterWithCombatants(
     player_character_id: c.player_character_id ?? null,
     legendary_actions_total: c.legendary_actions_total ?? null,
     legendary_actions_used: c.legendary_actions_used ?? 0,
+    // B2: Preserve token link for ID-based reconnection
+    ...(c.session_token_id ? { session_token_id: c.session_token_id } : {}),
   }));
 
   const { error: combatantsError } = await supabase
