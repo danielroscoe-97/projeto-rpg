@@ -2,6 +2,20 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
+/** Abort-aware fetch with a per-request timeout (default 8s).
+ *  Prevents Supabase queries from hanging when the DB/auth service is slow. */
+function fetchWithTimeout(timeoutMs = 8000): typeof globalThis.fetch {
+  return (input, init?) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    // If caller already has an AbortSignal, propagate its abort to our controller
+    if (init?.signal) {
+      init.signal.addEventListener("abort", () => controller.abort(), { once: true });
+    }
+    return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(id));
+  };
+}
+
 /**
  * Especially important if using Fluid compute: Don't put this client in a
  * global variable. Always create a new client within each function when using
@@ -14,6 +28,7 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      global: { fetch: fetchWithTimeout(8000) },
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -41,5 +56,6 @@ export function createServiceClient() {
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { global: { fetch: fetchWithTimeout(8000) } },
   );
 }

@@ -84,31 +84,35 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
     const sessionRow = sessionResult.data;
     const encounter = encounterResult.data;
 
-    // Resolve token_owner for split-brain detection (bfcache) — only if requested
-    let tokenOwner: string | null = null;
-    if (tokenIdParam && UUID_RE.test(tokenIdParam)) {
-      const { data: ownerRow } = await serviceClient
-        .from("session_tokens")
-        .select("anon_user_id")
-        .eq("id", tokenIdParam)
-        .eq("session_id", sessionId)
-        .eq("is_active", true)
-        .single();
-      tokenOwner = ownerRow?.anon_user_id ?? null;
-    }
+    // Fire token_owner + combatants in parallel (both depend on earlier results)
+    const tokenOwnerPromise = (tokenIdParam && UUID_RE.test(tokenIdParam))
+      ? serviceClient
+          .from("session_tokens")
+          .select("anon_user_id")
+          .eq("id", tokenIdParam)
+          .eq("session_id", sessionId)
+          .eq("is_active", true)
+          .single()
+          .then(({ data }) => data?.anon_user_id ?? null)
+      : Promise.resolve(null);
+
+    const combatantsPromise = encounter
+      ? serviceClient
+          .from("combatants")
+          .select(
+            "id, name, display_name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, monster_group_id, group_order, condition_durations, death_saves"
+          )
+          .eq("encounter_id", encounter.id)
+          .order("initiative_order", { ascending: true })
+          .limit(200)
+          .then(({ data }) => data)
+      : Promise.resolve(null);
+
+    const [tokenOwner, combatants] = await Promise.all([tokenOwnerPromise, combatantsPromise]);
 
     if (!encounter) {
       return NextResponse.json({ data: { encounter: null, combatants: [], dm_plan: sessionRow?.dm_plan ?? null, dm_last_seen_at: sessionRow?.dm_last_seen_at ?? null, token_owner: tokenOwner } });
     }
-
-    const { data: combatants } = await serviceClient
-      .from("combatants")
-      .select(
-        "id, name, display_name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, monster_group_id, group_order, condition_durations, death_saves"
-      )
-      .eq("encounter_id", encounter.id)
-      .order("initiative_order", { ascending: true })
-      .limit(200);
 
     // Strip sensitive data from monsters — players see only HP status label.
     // Also filter out hidden combatants and apply display_name anti-metagaming.

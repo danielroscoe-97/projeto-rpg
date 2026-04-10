@@ -54,8 +54,21 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refresh session — must not run code between createServerClient and getClaims()
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
+  // Timeout guard: if Supabase auth is slow/down, don't block EVERY request.
+  // API routes handle their own auth; middleware only needs claims for route guards.
+  let user: Record<string, unknown> | null = null;
+  try {
+    const result = await Promise.race([
+      supabase.auth.getClaims(),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000)),
+    ]);
+    if (result && "data" in result) {
+      user = (result.data as { claims?: Record<string, unknown> | null })?.claims ?? null;
+    }
+  } catch {
+    // Auth service unreachable — let the request through without auth context.
+    // Protected routes (/app/*, /admin/*) will 401 via their own auth checks.
+  }
 
   // Protect /app/* routes
   if (pathname.startsWith("/app/") && !user) {

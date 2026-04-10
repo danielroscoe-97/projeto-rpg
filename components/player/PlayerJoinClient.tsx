@@ -1314,12 +1314,19 @@ export function PlayerJoinClient({
     if (!shouldPoll) return;
 
     let cancelled = false;
+    let pollDelay = 5000;
 
     const poll = async () => {
       try {
         if (cancelled || lateJoinRegisteredRef.current) return; // Already resolved or unmounted
         const res = await fetch(`/api/session/${sessionId}/state`);
-        if (!res.ok || cancelled) return;
+        if (cancelled) return;
+        if (!res.ok) {
+          // Backoff on server errors: 5s → 10s → 20s → 30s cap
+          pollDelay = Math.min(pollDelay * 2, 30000);
+          return;
+        }
+        pollDelay = 5000; // Reset on success
         const { data } = await res.json();
         if (!data?.combatants || !lateJoinDataRef.current || cancelled) return;
 
@@ -1360,19 +1367,32 @@ export function PlayerJoinClient({
           }
         }
       } catch {
-        /* silent — will retry on next poll */
+        // Network error — backoff
+        pollDelay = Math.min(pollDelay * 2, 30000);
       }
     };
 
-    // CAT-1: Poll for late-join acceptance — 2s first poll, then every 5s.
+    // CAT-1: Poll for late-join acceptance — 2s first poll, then adaptive interval.
     // Broadcasts are primary detection; polling is fallback.
-    const firstPoll = setTimeout(poll, 2000);
-    const interval = setInterval(poll, 5000);
+    // Exponential backoff on errors: 5s → 10s → 20s → 30s (cap)
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      if (cancelled || lateJoinRegisteredRef.current) return;
+      timer = setTimeout(async () => {
+        await poll();
+        schedule();
+      }, pollDelay);
+    };
+
+    const firstPoll = setTimeout(async () => {
+      await poll();
+      schedule();
+    }, 2000);
 
     return () => {
       cancelled = true;
       clearTimeout(firstPoll);
-      clearInterval(interval);
+      clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- effectiveTokenId is stable after auth init
   }, [lateJoinStatus, sessionId, effectiveTokenId]);
@@ -1404,16 +1424,21 @@ export function PlayerJoinClient({
   }, [isRegistered, active, effectiveTokenId]);
 
   // Lobby polling — fallback when broadcast `combat:started` is missed.
-  // Polls session state every 5s while registered but combat hasn't started.
+  // Polls session state with exponential backoff on errors: 5s → 10s → 20s → 30s cap.
   useEffect(() => {
     if (!isRegistered || active || !sessionId) return;
 
     let cancelled = false;
+    let delay = 5000;
+    let timer: ReturnType<typeof setTimeout>;
+
     const poll = async () => {
       if (cancelled || document.visibilityState === "hidden") return;
       try {
         const res = await fetch(`/api/session/${sessionId}/state`);
-        if (!res.ok || cancelled) return;
+        if (cancelled) return;
+        if (!res.ok) { delay = Math.min(delay * 2, 30000); return; }
+        delay = 5000; // Reset on success
         const { data } = await res.json();
         if (data?.encounter?.is_active && data?.encounter?.id) {
           setActive(true);
@@ -1422,24 +1447,38 @@ export function PlayerJoinClient({
           if (data.encounter.round_number) setRound(data.encounter.round_number);
           if (data.encounter.current_turn_index !== undefined) updateTurnIndex(data.encounter.current_turn_index);
         }
-      } catch { /* silent — will retry */ }
+      } catch { delay = Math.min(delay * 2, 30000); }
     };
 
-    const id = setInterval(poll, 5000);
-    return () => { cancelled = true; clearInterval(id); };
+    const schedule = () => {
+      if (cancelled) return;
+      timer = setTimeout(async () => {
+        await poll();
+        schedule();
+      }, delay);
+    };
+    schedule();
+
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [isRegistered, active, sessionId, updateCombatants, updateTurnIndex]);
 
-  // DM stale detection — checks dm_last_seen_at via polling every 15s.
-  // If DM hasn't heartbeated for >45s, shows "DM offline" indicator.
+  // DM stale detection — checks dm_last_seen_at via polling.
+  // If DM hasn't heartbeated for >90s, shows "DM offline" indicator.
+  // Exponential backoff on errors: 30s → 60s → 120s cap.
   useEffect(() => {
     if (!active || !sessionId) return;
+
+    let cancelled = false;
+    let delay = 30_000;
+    let timer: ReturnType<typeof setTimeout>;
 
     const checkDmPresence = async () => {
       if (document.visibilityState === "hidden") return;
       try {
         // Use lightweight dm-presence endpoint (1 query) instead of full /state (5 queries)
         const res = await fetch(`/api/session/${sessionId}/dm-presence`);
-        if (!res.ok) return;
+        if (!res.ok) { delay = Math.min(delay * 2, 120_000); return; }
+        delay = 30_000; // Reset on success
         const data = await res.json();
         if (data?.dm_last_seen_at) {
           const lastSeen = new Date(data.dm_last_seen_at).getTime();
@@ -1451,12 +1490,20 @@ export function PlayerJoinClient({
           setDmOffline(true);
         }
       } catch {
-        // Can't check — don't change state
+        delay = Math.min(delay * 2, 120_000);
       }
     };
 
-    const id = setInterval(checkDmPresence, 30_000); // 30s — halved from 15s to reduce API calls
-    return () => clearInterval(id);
+    const schedule = () => {
+      if (cancelled) return;
+      timer = setTimeout(async () => {
+        await checkDmPresence();
+        schedule();
+      }, delay);
+    };
+    schedule();
+
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [active, sessionId]);
 
   // Reset DM offline indicator when we receive any state_sync (DM is clearly broadcasting)

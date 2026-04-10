@@ -18,7 +18,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
   // (anonymous sign-in happens client-side in PlayerJoinClient)
   const supabase = createServiceClient();
 
-  // Validate token
+  // --- Phase 1: Validate token (must succeed before anything else) ---
   const { data: tokenRow, error: tokenError } = await supabase
     .from("session_tokens")
     .select("id, session_id")
@@ -39,14 +39,36 @@ export default async function JoinPage({ params }: JoinPageProps) {
     );
   }
 
-  // Verify session is active
-  const { data: session } = await supabase
-    .from("sessions")
-    .select("id, name, is_active, ruleset_version, dm_plan, campaign_id")
-    .eq("id", tokenRow.session_id)
-    .eq("is_active", true)
-    .single();
+  // --- Phase 2: Parallel fetch — session, encounter, auth, registered players ---
+  const [sessionResult, encounterResult, authResult, registeredTokensResult] = await Promise.all([
+    supabase
+      .from("sessions")
+      .select("id, name, is_active, ruleset_version, dm_plan, campaign_id")
+      .eq("id", tokenRow.session_id)
+      .eq("is_active", true)
+      .single(),
+    supabase
+      .from("encounters")
+      .select("id, round_number, current_turn_index, is_active")
+      .eq("session_id", tokenRow.session_id)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    // Auth check — may fail for anonymous players, that's OK
+    createAuthClient()
+      .then((c) => c.auth.getUser())
+      .then(({ data }) => data.user)
+      .catch(() => null),
+    supabase
+      .from("session_tokens")
+      .select("player_name, last_seen_at")
+      .eq("session_id", tokenRow.session_id)
+      .eq("is_active", true)
+      .not("player_name", "is", null),
+  ]);
 
+  const session = sessionResult.data;
   if (!session) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -60,16 +82,36 @@ export default async function JoinPage({ params }: JoinPageProps) {
     );
   }
 
-  // Fetch active encounter + combatants
-  const { data: encounter } = await supabase
-    .from("encounters")
-    .select("id, round_number, current_turn_index, is_active")
-    .eq("session_id", session.id)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+  const encounter = encounterResult.data;
+  const user = authResult;
+  const registeredTokens = registeredTokensResult.data;
 
+  // --- Phase 3: Parallel fetch — combatants + character pre-fill (both depend on phase 2) ---
+  const combatantsPromise = encounter
+    ? supabase
+        .from("combatants")
+        .select(
+          "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version"
+        )
+        .eq("encounter_id", encounter.id)
+        .order("initiative_order", { ascending: true })
+        .then(({ data }) => data)
+    : Promise.resolve(null);
+
+  const sessionCampaignId = session.campaign_id as string | null;
+  const charactersPromise = (user && sessionCampaignId)
+    ? Promise.resolve(
+        supabase
+          .from("player_characters")
+          .select("id, name, max_hp, current_hp, ac, spell_save_dc, spell_slots")
+          .eq("campaign_id", sessionCampaignId)
+          .eq("user_id", user.id)
+      ).then(({ data }) => data).catch(() => null)
+    : Promise.resolve(null);
+
+  const [combatantRows, characters] = await Promise.all([combatantsPromise, charactersPromise]);
+
+  // Filter hidden combatants and strip sensitive monster stats — players only see HP status label
   let combatants: Array<{
     id: string;
     name: string;
@@ -86,77 +128,26 @@ export default async function JoinPage({ params }: JoinPageProps) {
     hp_status?: string;
   }> = [];
 
-  if (encounter) {
-    const { data: combatantRows } = await supabase
-      .from("combatants")
-      .select(
-        "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version"
-      )
-      .eq("encounter_id", encounter.id)
-      .order("initiative_order", { ascending: true });
-
-    // Filter hidden combatants and strip sensitive monster stats — players only see HP status label
-    combatants = (combatantRows ?? [])
+  if (combatantRows) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase infers column types; cast is safe
+    combatants = (combatantRows as any[])
       .filter((c) => !c.is_hidden)
       .map((c) => {
         if (c.is_player) {
           const { is_hidden: _h, ...rest } = c;
           return rest;
         }
-        const { current_hp: _current_hp, max_hp: _max_hp, temp_hp: _temp_hp, ac: _ac, is_hidden: _h, ...safe } = c;
-        return { ...safe, hp_status: getHpStatus(_current_hp, _max_hp) };
+        const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, is_hidden: _h, ...safe } = c;
+        return { ...safe, hp_status: getHpStatus(current_hp ?? 0, max_hp ?? 0) };
       });
   }
 
-  // Auto-join: detect authenticated user with characters in this campaign
-  let prefilledCharacters: Array<{
-    id: string;
-    name: string;
-    max_hp: number;
-    current_hp: number;
-    ac: number;
-    spell_save_dc: number | null;
-    spell_slots?: Record<string, { max: number; used: number }> | null;
-  }> = [];
+  const prefilledCharacters = characters ?? [];
   // campaignId is passed to PlayerJoinClient to enable the shared notes panel
   // Only set for authenticated campaign members — anonymous players get undefined
-  let campaignId: string | undefined;
-
-  try {
-    // Check if user is authenticated (may not be — anonymous players skip this)
-    const authClient = await createAuthClient();
-    const { data: { user } } = await authClient.auth.getUser();
-
-    if (user) {
-      const sessionCampaignId = session.campaign_id as string | null;
-
-      if (sessionCampaignId) {
-        campaignId = sessionCampaignId;
-
-        // Find player's characters in this campaign
-        const { data: characters } = await supabase
-          .from("player_characters")
-          .select("id, name, max_hp, current_hp, ac, spell_save_dc, spell_slots")
-          .eq("campaign_id", sessionCampaignId)
-          .eq("user_id", user.id);
-
-        prefilledCharacters = characters ?? [];
-      }
-    }
-  } catch {
-    // Auth check failed — continue as anonymous (standard empty form)
-  }
+  const campaignId = (user && sessionCampaignId) ? sessionCampaignId : undefined;
 
   const dmPlan = (["free","pro","mesa"].includes(session.dm_plan) ? session.dm_plan : "free") as Plan;
-
-  // Fetch already-registered player names for this session (enables rejoin without cookies)
-  // Include last_seen_at to determine active/inactive status for DM-approval flow
-  const { data: registeredTokens } = await supabase
-    .from("session_tokens")
-    .select("player_name, last_seen_at")
-    .eq("session_id", session.id)
-    .eq("is_active", true)
-    .not("player_name", "is", null);
 
   const ACTIVE_THRESHOLD_MS = 45_000; // 45s — more responsive presence detection
   const now = Date.now();

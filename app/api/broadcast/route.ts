@@ -145,6 +145,11 @@ export async function POST(req: NextRequest) {
 
     const channel = supabaseAdmin.channel(`session:${sessionId}`);
     await new Promise<void>((resolve, reject) => {
+      // Hard timeout — don't let channel subscribe hang the function
+      const timeout = setTimeout(() => {
+        reject(new Error("Channel subscribe timeout (5s)"));
+      }, 5000);
+
       channel.subscribe((status) => {
         if (status === "SUBSCRIBED") {
           channel
@@ -153,9 +158,10 @@ export async function POST(req: NextRequest) {
               event: safeEvent.type,
               payload: safeEvent,
             })
-            .then(() => resolve())
-            .catch(reject);
+            .then(() => { clearTimeout(timeout); resolve(); })
+            .catch((err) => { clearTimeout(timeout); reject(err); });
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          clearTimeout(timeout);
           reject(new Error(`Channel ${status}`));
         }
       });
