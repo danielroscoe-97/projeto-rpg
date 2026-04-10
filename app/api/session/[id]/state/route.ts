@@ -143,4 +143,4 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler(
   }
 };
 
-export const GET = withRateLimit(handler, { max: 60, window: "1 m" });
+export const GET = withRateLimit(handler, { max: 60, window: "1 m", skipForAuthenticated: true });

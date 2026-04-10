@@ -144,6 +144,12 @@ type RateLimitConfig = {
   window: string;
   /** Optional: use a specific prefix for the identifier (e.g. route path) */
   prefix?: string;
+  /**
+   * Skip rate limiting for authenticated (non-anonymous) users.
+   * Saves Redis commands on high-frequency endpoints where auth already provides trust.
+   * Anonymous and unauthenticated requests still get rate-limited.
+   */
+  skipForAuthenticated?: boolean;
 };
 
 /**
@@ -162,6 +168,20 @@ export function withRateLimit(
   config: RateLimitConfig
 ): RouteHandler {
   return async (request: NextRequest, context: { params: Promise<Record<string, string>> }) => {
+    // Skip rate limiting for authenticated users on high-frequency endpoints (saves Redis commands)
+    if (config.skipForAuthenticated) {
+      try {
+        const { createClient } = await import("@/lib/supabase/server");
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          return handler(request, context);
+        }
+      } catch {
+        // Auth check failed — fall through to rate limiting
+      }
+    }
+
     const limiter = createRatelimit(config.max, config.window);
 
     if (!limiter) {

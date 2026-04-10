@@ -82,4 +82,4 @@ const handler: Parameters<typeof withRateLimit>[0] = async function (
   }
 };
 
-export const POST = withRateLimit(handler, { max: 4, window: "30 s" });
+export const POST = withRateLimit(handler, { max: 4, window: "30 s", skipForAuthenticated: true });
