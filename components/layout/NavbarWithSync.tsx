@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { LayoutDashboard } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { DmSyncDot } from "@/components/layout/DmSyncDot";
+import { LogoutButton } from "@/components/logout-button";
 import { useDmChannelStatus } from "@/lib/realtime/use-dm-channel-status";
 
 interface NavbarWithSyncProps {
@@ -34,7 +35,7 @@ export function NavbarWithSync(props: NavbarWithSyncProps) {
   const isCampaignRoute = pathname.startsWith("/app/campaigns/");
 
   // G-08/G-26: Onboarding wizard — minimal navbar (no links, no extras)
-  const isOnboarding = pathname === "/app/onboarding";
+  const isOnboarding = pathname.startsWith("/app/onboarding");
 
   const effectiveLinks = isOnboarding
     ? undefined
@@ -56,7 +57,7 @@ export function NavbarWithSync(props: NavbarWithSyncProps) {
     <Navbar
       {...props}
       links={effectiveLinks}
-      rightSlot={isOnboarding ? undefined : props.rightSlot}
+      rightSlot={isOnboarding ? <LogoutButton /> : props.rightSlot}
       minimal={isOnboarding}
       syncSlot={sessionId ? <DmSyncDot status={status} /> : undefined}
     />

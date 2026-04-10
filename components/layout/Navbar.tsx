@@ -114,9 +114,9 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, mini
             {rightSlot}
           </div>
 
-          {/* Mobile right actions: search + hamburger — hidden in minimal mode */}
-          <div className={`lg:hidden ml-auto flex items-center gap-1${minimal ? " hidden" : ""}`}>
-            {/* Search trigger (mobile) — opens Command Palette */}
+          {/* Mobile right actions: search + hamburger — search hidden in minimal mode */}
+          <div className="lg:hidden ml-auto flex items-center gap-1">
+            {/* Search trigger (mobile) — opens Command Palette, hidden in minimal mode */}
             <button
               type="button"
               onClick={() => {
@@ -128,7 +128,7 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, mini
                   }),
                 );
               }}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-2 text-muted-foreground hover:text-foreground transition-colors"
+              className={`flex items-center justify-center min-h-[44px] min-w-[44px] p-2 text-muted-foreground hover:text-foreground transition-colors${minimal ? " hidden" : ""}`}
               aria-label="Search"
             >
               <svg
