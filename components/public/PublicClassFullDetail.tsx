@@ -197,6 +197,7 @@ interface TocItem {
   id: string;
   label: string;
   icon: React.ReactNode;
+  children?: { id: string; label: string; level: number }[];
 }
 
 // ── Component ───────────────────────────────────────────────────────
@@ -291,6 +292,11 @@ export function PublicClassFullDetail({
       id: "class-features",
       label: L.classFeatures,
       icon: <Swords className="w-4 h-4" />,
+      children: (cls.class_features ?? []).map((f) => ({
+        id: `feature-${slugify(f.name)}`,
+        label: isPt ? f.name_pt : f.name,
+        level: f.level,
+      })),
     });
     if (subclasses.length > 0) {
       items.push({
@@ -323,10 +329,19 @@ export function PublicClassFullDetail({
     return items;
   }, [cls, L, isPt, subclasses.length]);
 
-  // Intersection Observer for active section highlighting
+  // Intersection Observer for active section highlighting (sections + individual features)
   useEffect(() => {
-    const ids = tocItems.map((t) => t.id);
-    const elements = ids
+    // Collect all section IDs + feature sub-item IDs
+    const allIds: string[] = [];
+    for (const item of tocItems) {
+      allIds.push(item.id);
+      if (item.children) {
+        for (const child of item.children) {
+          allIds.push(child.id);
+        }
+      }
+    }
+    const elements = allIds
       .map((id) => document.getElementById(id))
       .filter(Boolean) as HTMLElement[];
     if (elements.length === 0) return;
@@ -347,7 +362,12 @@ export function PublicClassFullDetail({
   }, [tocItems]);
 
   const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById(id);
+    if (el) {
+      const navbarHeight = 80;
+      const y = el.getBoundingClientRect().top + window.scrollY - navbarHeight;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
     setTocOpen(false);
   }, []);
 
@@ -658,12 +678,14 @@ export function PublicClassFullDetail({
               <div className="absolute left-[7px] top-0 bottom-0 w-px bg-white/[0.06]" />
               {tocItems.map((item) => {
                 const isActive = activeSection === item.id;
+                const hasActiveChild = item.children?.some((c) => activeSection === c.id);
+                const isExpanded = isActive || hasActiveChild;
                 return (
                   <li key={item.id} className="relative">
                     {/* Gold dot */}
                     <div
-                      className={`absolute left-[4px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border transition-all duration-200 ${
-                        isActive
+                      className={`absolute left-[4px] top-[12px] w-[7px] h-[7px] rounded-full border transition-all duration-200 ${
+                        isActive || hasActiveChild
                           ? "bg-[#D4A853] border-[#D4A853] shadow-[0_0_6px_rgba(212,168,83,0.4)]"
                           : "bg-[#13131E] border-white/[0.15]"
                       }`}
@@ -671,13 +693,35 @@ export function PublicClassFullDetail({
                     <button
                       onClick={() => scrollTo(item.id)}
                       className={`w-full text-left pl-6 pr-2 py-1.5 rounded-r-md text-[13px] transition-all duration-200 ${
-                        isActive
+                        isActive || hasActiveChild
                           ? "text-[#D4A853] font-medium"
                           : "text-[#9896A0] hover:text-[#E8E6E0]"
                       }`}
                     >
                       <span className="truncate block">{item.label}</span>
                     </button>
+                    {/* Sub-items for features */}
+                    {item.children && item.children.length > 0 && isExpanded && (
+                      <ul className="ml-6 mt-0.5 space-y-0 border-l border-white/[0.06] pl-3">
+                        {item.children.map((child) => {
+                          const isChildActive = activeSection === child.id;
+                          return (
+                            <li key={child.id}>
+                              <button
+                                onClick={() => scrollTo(child.id)}
+                                className={`w-full text-left py-1 text-[11px] transition-all duration-200 truncate ${
+                                  isChildActive
+                                    ? "text-[#D4A853] font-medium"
+                                    : "text-[#9896A0]/70 hover:text-[#E8E6E0]"
+                                }`}
+                              >
+                                {child.label}
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </li>
                 );
               })}
@@ -719,21 +763,40 @@ export function PublicClassFullDetail({
               <ul className="space-y-0.5">
                 {tocItems.map((item) => {
                   const isActive = activeSection === item.id;
+                  const hasActiveChild = item.children?.some((c) => activeSection === c.id);
                   return (
                     <li key={item.id}>
                       <button
                         onClick={() => scrollTo(item.id)}
                         className={`w-full text-left flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all ${
-                          isActive
+                          isActive || hasActiveChild
                             ? "text-[#D4A853] bg-[#D4A853]/10 font-medium"
                             : "text-[#E8E6E0]/70 hover:bg-white/[0.04] hover:text-[#E8E6E0]"
                         }`}
                       >
-                        <span className={`${isActive ? "text-[#D4A853]" : "text-[#9896A0]"}`}>
+                        <span className={`${isActive || hasActiveChild ? "text-[#D4A853]" : "text-[#9896A0]"}`}>
                           {item.icon}
                         </span>
                         <span>{item.label}</span>
                       </button>
+                      {item.children && (isActive || hasActiveChild) && (
+                        <ul className="ml-10 mt-1 mb-2 space-y-0.5 border-l border-white/[0.06] pl-3">
+                          {item.children.map((child) => (
+                            <li key={child.id}>
+                              <button
+                                onClick={() => scrollTo(child.id)}
+                                className={`w-full text-left py-1.5 text-xs transition-all truncate ${
+                                  activeSection === child.id
+                                    ? "text-[#D4A853] font-medium"
+                                    : "text-[#9896A0]/70 hover:text-[#E8E6E0]"
+                                }`}
+                              >
+                                {child.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   );
                 })}
