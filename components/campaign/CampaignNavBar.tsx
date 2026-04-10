@@ -3,6 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  CalendarDays,
   Swords,
   ScrollText,
   Users,
@@ -13,6 +14,7 @@ import {
   Package,
   Network,
   LayoutGrid,
+  Settings,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { SectionId } from "@/lib/types/campaign-hub";
@@ -20,6 +22,7 @@ import type { SectionId } from "@/lib/types/campaign-hub";
 // ── Nav item definitions ────────────────────────────────────────────────────
 
 const NAV_ITEMS: { id: SectionId; icon: LucideIcon; labelKey: string; dmOnly?: boolean }[] = [
+  { id: "sessions", icon: CalendarDays, labelKey: "hub_card_sessions" },
   { id: "encounters", icon: Swords, labelKey: "hub_card_encounters" },
   { id: "quests", icon: ScrollText, labelKey: "hub_card_quests" },
   { id: "players", icon: Users, labelKey: "hub_card_players" },
@@ -29,6 +32,7 @@ const NAV_ITEMS: { id: SectionId; icon: LucideIcon; labelKey: string; dmOnly?: b
   { id: "notes", icon: FileText, labelKey: "hub_card_notes" },
   { id: "inventory", icon: Package, labelKey: "hub_card_inventory", dmOnly: true },
   { id: "mindmap", icon: Network, labelKey: "hub_card_mindmap" },
+  { id: "settings", icon: Settings, labelKey: "hub_card_settings", dmOnly: true },
 ];
 
 // ── Pill styles ─────────────────────────────────────────────────────────────

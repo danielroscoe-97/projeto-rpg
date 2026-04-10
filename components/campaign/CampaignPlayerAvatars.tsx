@@ -16,6 +16,8 @@ interface CampaignPlayerAvatarsProps {
   characters: PlayerCharacter[];
   campaignId: string;
   onInvite?: () => void;
+  /** User IDs that recently joined — shows "new" badge on their avatar */
+  newMemberIds?: Set<string>;
 }
 
 function getHpColor(current: number, max: number): string {
@@ -40,6 +42,7 @@ export function CampaignPlayerAvatars({
   characters,
   campaignId,
   onInvite,
+  newMemberIds,
 }: CampaignPlayerAvatarsProps) {
   const t = useTranslations("campaign");
   const router = useRouter();

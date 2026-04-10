@@ -18,6 +18,7 @@
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
     "e2e:ci": "playwright test e2e/journeys/j1-first-combat.spec.ts e2e/journeys/j2-player-join.spec.ts e2e/journeys/guest-try-mode.spec.ts e2e/combat/turn-advance.spec.ts e2e/auth/login.spec.ts",
+    "e2e:stress": "playwright test e2e/combat/multi-player-stress.spec.ts --project=desktop-chrome",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

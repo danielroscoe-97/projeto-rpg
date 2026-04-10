@@ -3,13 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { Swords, Plus, FileText, UserCircle } from "lucide-react";
+import { Swords, Plus, FileText, UserCircle, CalendarDays } from "lucide-react";
 import { CampaignPlayerAvatars } from "@/components/campaign/CampaignPlayerAvatars";
 import { CampaignStatusCards } from "@/components/campaign/CampaignStatusCards";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
 import { InvitePlayerDialog } from "@/components/campaign/InvitePlayerDialog";
+import { SessionPlanner } from "@/components/campaign/SessionPlanner";
+import { NextSessionCard } from "@/components/campaign/NextSessionCard";
+import { CampaignHealthBadge } from "@/components/campaign/CampaignHealthBadge";
+import { useCampaignMembershipListener } from "@/hooks/use-campaign-membership-listener";
+import { calculateCampaignHealth } from "@/lib/utils/campaign-health";
 import type { PlayerCharacter } from "@/lib/types/database";
+import type { PlannedSession } from "@/lib/types/campaign-hub";
 
 interface CampaignHeroProps {
   campaignId: string;
@@ -23,6 +28,9 @@ interface CampaignHeroProps {
   activeSessionId: string | null;
   activeSessionName: string | null;
   lastSessionDate: string | null;
+  nextPlannedSession?: PlannedSession | null;
+  noteCount?: number;
+  npcCount?: number;
 }
 
 export function CampaignHero({
@@ -37,12 +45,31 @@ export function CampaignHero({
   activeSessionId,
   activeSessionName,
   lastSessionDate,
+  nextPlannedSession,
+  noteCount = 0,
+  npcCount = 0,
 }: CampaignHeroProps) {
   const t = useTranslations("campaign");
   const tDash = useTranslations("dashboard");
   const router = useRouter();
   const [combatOpen, setCombatOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [plannerOpen, setPlannerOpen] = useState(false);
+
+  // Realtime: listen for new member joins
+  const { newMemberIds } = useCampaignMembershipListener({
+    campaignId,
+  });
+
+  // Campaign health calculation
+  const health = calculateCampaignHealth({
+    playerCount,
+    encounterCount: finishedEncounterCount,
+    sessionCount,
+    noteCount,
+    npcCount,
+    lastSessionDate,
+  });
 
   const subtitle = (() => {
     if (activeSessionId) {
@@ -76,7 +103,23 @@ export function CampaignHero({
         characters={characters}
         campaignId={campaignId}
         onInvite={() => setInviteOpen(true)}
+        newMemberIds={newMemberIds}
       />
+
+      {/* Campaign Health — subtle progress bar */}
+      {(playerCount > 0 || sessionCount > 0) && (
+        <CampaignHealthBadge health={health} mode="expanded" />
+      )}
+
+      {/* Next Planned Session Card */}
+      {nextPlannedSession && (
+        <NextSessionCard
+          session={nextPlannedSession}
+          onStart={() => {
+            router.push(`/app/session/${nextPlannedSession.id}`);
+          }}
+        />
+      )}
 
       {/* Status KPI Cards — CombatLaunchSheet lives here, single instance */}
       <CampaignStatusCards
@@ -93,6 +136,17 @@ export function CampaignHero({
 
       {/* Quick Actions Row */}
       <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.04]">
+        {!nextPlannedSession && (
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-emerald-300 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-colors min-h-[44px]"
+            onClick={() => setPlannerOpen(true)}
+          >
+            <CalendarDays className="w-3.5 h-3.5 text-emerald-400" />
+            {t("quick_action_plan_session")}
+          </button>
+        )}
+
         <button
           type="button"
           className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-red-500/20 bg-red-500/5 text-red-300 hover:bg-red-500/10 hover:border-red-500/40 transition-colors min-h-[44px]"
@@ -149,6 +203,12 @@ export function CampaignHero({
         activeSessionId={activeSessionId}
         open={combatOpen}
         onOpenChange={setCombatOpen}
+      />
+      <SessionPlanner
+        campaignId={campaignId}
+        open={plannerOpen}
+        onOpenChange={setPlannerOpen}
+        onSessionCreated={() => router.refresh()}
       />
     </div>
   );

@@ -8,6 +8,7 @@ import type { AggregatedCampaignStats } from "@/lib/utils/campaign-stats";
 // ── Section IDs ──────────────────────────────────────────────────────────────
 
 export type SectionId =
+  | "sessions"
   | "encounters"
   | "quests"
   | "players"
@@ -16,9 +17,11 @@ export type SectionId =
   | "factions"
   | "notes"
   | "inventory"
-  | "mindmap";
+  | "mindmap"
+  | "settings";
 
 export const VALID_SECTIONS: readonly SectionId[] = [
+  "sessions",
   "encounters",
   "quests",
   "players",
@@ -28,10 +31,12 @@ export const VALID_SECTIONS: readonly SectionId[] = [
   "notes",
   "inventory",
   "mindmap",
+  "settings",
 ] as const;
 
 /** Order of sections in the Focus View nav bar. Defines display order. */
 export const SECTION_NAV_ORDER: readonly SectionId[] = [
+  "sessions",
   "encounters",
   "quests",
   "players",
@@ -41,6 +46,7 @@ export const SECTION_NAV_ORDER: readonly SectionId[] = [
   "factions",
   "inventory",
   "mindmap",
+  "settings",
 ] as const;
 
 // ── Section Card (for grid) ──────────────────────────────────────────────────
@@ -79,6 +85,19 @@ export interface CampaignSectionCounts {
   notes: number;
 }
 
+// ── Session types ───────────────────────────────────────────────────────────
+
+export type SessionStatus = "planned" | "active" | "completed" | "cancelled";
+
+export interface PlannedSession {
+  id: string;
+  name: string;
+  description: string | null;
+  scheduled_for: string | null;
+  session_number: number | null;
+  status: SessionStatus;
+}
+
 // ── Hub data (passed from page.tsx server component to client components) ────
 
 export interface CampaignHubData {
@@ -108,4 +127,10 @@ export interface CampaignHubData {
 
   // Members (for PlayerCharacterManager)
   initialMembers?: CampaignMemberWithUser[];
+
+  // Next planned session (for SessionCard in hero)
+  nextPlannedSession?: PlannedSession | null;
+
+  // Last session date (for health indicators)
+  lastSessionDate?: string | null;
 }

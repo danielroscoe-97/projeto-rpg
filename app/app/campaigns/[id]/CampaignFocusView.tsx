@@ -21,6 +21,8 @@ import { LocationList } from "@/components/campaign/LocationList";
 import { FactionList } from "@/components/campaign/FactionList";
 import { BagOfHolding } from "@/components/player-hq/BagOfHolding";
 import { CampaignEncounterBuilder } from "@/components/campaign/CampaignEncounterBuilder";
+import { CampaignSettings } from "@/components/campaign/CampaignSettings";
+import { SessionHistory } from "@/components/campaign/SessionHistory";
 import type { SectionId, MonsterOption } from "@/lib/types/campaign-hub";
 import type { PlayerCharacter } from "@/lib/types/database";
 import type { CampaignMemberWithUser } from "@/lib/types/campaign-membership";
@@ -89,12 +91,12 @@ export function CampaignFocusView({
 
   // Guard DM-only sections — redirect non-owners back to overview
   useEffect(() => {
-    if (!isOwner && section === "inventory") {
+    if (!isOwner && (section === "inventory" || section === "settings")) {
       router.replace(pathname);
     }
   }, [isOwner, section, router, pathname]);
 
-  if (!isOwner && section === "inventory") {
+  if (!isOwner && (section === "inventory" || section === "settings")) {
     return null;
   }
 
@@ -102,6 +104,11 @@ export function CampaignFocusView({
 
   function renderSection() {
     switch (section) {
+      case "sessions":
+        return (
+          <SessionHistory campaignId={campaignId} isOwner={isOwner} />
+        );
+
       case "players":
         return (
           <PlayerCharacterManager
@@ -174,6 +181,15 @@ export function CampaignFocusView({
             campaignName={campaignName}
           />
         );
+
+      case "settings":
+        return isOwner ? (
+          <CampaignSettings
+            campaignId={campaignId}
+            campaignName={campaignName}
+            isOwner={isOwner}
+          />
+        ) : null;
 
       default:
         return null;

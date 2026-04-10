@@ -70,6 +70,8 @@ export interface Database {
           name: string;
           description: string | null;
           cover_image_url: string | null;
+          archived_at: string | null;
+          is_archived: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -79,6 +81,8 @@ export interface Database {
           name: string;
           description?: string | null;
           cover_image_url?: string | null;
+          archived_at?: string | null;
+          is_archived?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -87,6 +91,8 @@ export interface Database {
           name?: string;
           description?: string | null;
           cover_image_url?: string | null;
+          archived_at?: string | null;
+          is_archived?: boolean;
           updated_at?: string;
         };
       };
@@ -205,6 +211,12 @@ export interface Database {
           ruleset_version: RulesetVersion;
           is_active: boolean;
           dm_plan: string;
+          description: string | null;
+          scheduled_for: string | null;
+          session_number: number | null;
+          prep_notes: string | null;
+          recap: string | null;
+          status: string;
           created_at: string;
           updated_at: string;
         };
@@ -216,6 +228,12 @@ export interface Database {
           ruleset_version?: RulesetVersion;
           is_active?: boolean;
           dm_plan?: string;
+          description?: string | null;
+          scheduled_for?: string | null;
+          session_number?: number | null;
+          prep_notes?: string | null;
+          recap?: string | null;
+          status?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -226,6 +244,12 @@ export interface Database {
           ruleset_version?: RulesetVersion;
           is_active?: boolean;
           dm_plan?: string;
+          description?: string | null;
+          scheduled_for?: string | null;
+          session_number?: number | null;
+          prep_notes?: string | null;
+          recap?: string | null;
+          status?: string;
           updated_at?: string;
         };
       };
@@ -990,6 +1014,51 @@ export interface Database {
           last_seen_at?: string | null;
         };
       };
+      campaign_settings: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          game_system: string;
+          party_level: number | null;
+          theme: string | null;
+          description: string | null;
+          is_oneshot: boolean;
+          allow_spectators: boolean;
+          max_players: number;
+          join_code_expires_at: string | null;
+          onboarding_completed: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          game_system?: string;
+          party_level?: number | null;
+          theme?: string | null;
+          description?: string | null;
+          is_oneshot?: boolean;
+          allow_spectators?: boolean;
+          max_players?: number;
+          join_code_expires_at?: string | null;
+          onboarding_completed?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          campaign_id?: string;
+          game_system?: string;
+          party_level?: number | null;
+          theme?: string | null;
+          description?: string | null;
+          is_oneshot?: boolean;
+          allow_spectators?: boolean;
+          max_players?: number;
+          join_code_expires_at?: string | null;
+          onboarding_completed?: boolean;
+          updated_at?: string;
+        };
+      };
     };
     Enums: {
       ruleset_version: RulesetVersion;
@@ -1028,4 +1097,5 @@ export type CharacterSpellInsert = Database["public"]["Tables"]["character_spell
 export type SpellStatus = CharacterSpell["status"];
 export type CharacterInventoryItem = Database["public"]["Tables"]["character_inventory_items"]["Row"];
 export type CharacterInventoryItemInsert = Database["public"]["Tables"]["character_inventory_items"]["Insert"];
+export type CampaignSettings = Database["public"]["Tables"]["campaign_settings"]["Row"];
 export type Currency = { cp: number; sp: number; ep: number; gp: number; pp: number };

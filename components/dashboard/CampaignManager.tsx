@@ -27,12 +27,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CampaignCreationWizard } from "@/components/campaign/CampaignCreationWizard";
+import { CampaignHealthBadge } from "@/components/campaign/CampaignHealthBadge";
+import { calculateCampaignHealth } from "@/lib/utils/campaign-health";
 
 export interface CampaignWithCount {
   id: string;
   name: string;
   created_at: string;
   player_count: number;
+  session_count?: number;
+  encounter_count?: number;
+  note_count?: number;
+  npc_count?: number;
+  last_session_date?: string | null;
 }
 
 interface Props {
@@ -58,8 +66,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
   const router = useRouter();
   const [campaigns, setCampaigns] =
     useState<CampaignWithCount[]>(initialCampaigns);
-  const [showCreate, setShowCreate] = useState(false);
-  const [newName, setNewName] = useState("");
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -68,56 +75,6 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
   const [deleteTarget, setDeleteTarget] = useState<CampaignWithCount | null>(null);
 
   const supabase = createClient();
-
-  // ── Create ─────────────────────────────────────────────────────────────────
-
-  const handleCreate = async () => {
-    const name = newName.trim();
-    if (!name) {
-      setFieldError(true);
-      return;
-    }
-    if (name.length > 50) {
-      setError(t("campaigns_name_max"));
-      setFieldError(true);
-      return;
-    }
-    setFieldError(false);
-    setIsLoading(true);
-    setError(null);
-    try {
-      const { data, error: dbError } = await supabase
-        .from("campaigns")
-        .insert({ owner_id: userId, name })
-        .select("id, name, created_at")
-        .single();
-
-      if (dbError || !data) {
-        captureError(dbError, { component: "CampaignManager", action: "create", category: "database" });
-        throw new Error(dbError?.message ?? t("campaigns_create_error"));
-      }
-
-      setCampaigns((prev) => [
-        {
-          id: data.id,
-          name: data.name,
-          created_at: data.created_at,
-          player_count: 0,
-        },
-        ...prev,
-      ]);
-      setNewName("");
-      setShowCreate(false);
-      toast.success(t("campaigns_created"));
-      router.push(`/app/campaigns/${data.id}`);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t("campaigns_create_error")
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // ── Update ─────────────────────────────────────────────────────────────────
 
@@ -193,22 +150,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">{t("campaigns_title")}</h2>
-        {!showCreate && (
-          <Button
-            size="sm"
-            variant="gold"
-            disabled={isLoading}
-            onClick={() => {
-              setShowCreate(true);
-              setEditingId(null);
-              setEditName("");
-              setNewName("");
-              setError(null);
-            }}
-          >
-            {t("campaigns_new")}
-          </Button>
-        )}
+        <Button
+          size="sm"
+          variant="gold"
+          disabled={isLoading}
+          onClick={() => setWizardOpen(true)}
+        >
+          {t("campaigns_new")}
+        </Button>
       </div>
 
       {/* Error */}
@@ -218,63 +167,15 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
         </p>
       )}
 
-      {/* Create Form */}
-      {showCreate && (
-        <div className="flex items-center gap-2 p-3 bg-card rounded-lg border border-border">
-          <Input
-            placeholder={t("campaigns_name_label")}
-            value={newName}
-            onChange={(e) => { setNewName(e.target.value); setFieldError(false); }}
-            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-            className={`bg-background border-border text-foreground placeholder:text-muted-foreground/60 flex-1${fieldError ? " field-error" : ""}`}
-            aria-invalid={fieldError || undefined}
-            maxLength={50}
-            autoFocus
-          />
-          <Button
-            size="sm"
-            variant="gold"
-            disabled={!newName.trim() || isLoading}
-            onClick={handleCreate}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {tc("saving")}
-              </>
-            ) : (
-              tc("save")
-            )}
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              setShowCreate(false);
-              setNewName("");
-              setError(null);
-            }}
-          >
-            {tc("cancel")}
-          </Button>
-        </div>
-      )}
-
       {/* Empty state */}
-      {campaigns.length === 0 && !showCreate && (
+      {campaigns.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-12 text-center">
           <Image src="/art/icons/pet-cat.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
           <p className="text-muted-foreground text-sm">{t("campaigns_empty")}</p>
           <Button
             variant="gold"
             className="mt-2 min-h-[44px]"
-            onClick={() => {
-              setShowCreate(true);
-              setEditingId(null);
-              setEditName("");
-              setNewName("");
-              setError(null);
-            }}
+            onClick={() => setWizardOpen(true)}
           >
             {t("campaigns_new")}
           </Button>
@@ -357,6 +258,21 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                       {Number(campaign.player_count) !== 1 ? t("campaigns_players_plural") : t("campaigns_players_singular")}
                     </p>
 
+                    {/* Campaign Health Badge */}
+                    <div className="mt-1">
+                      <CampaignHealthBadge
+                        health={calculateCampaignHealth({
+                          playerCount: campaign.player_count,
+                          encounterCount: campaign.encounter_count ?? 0,
+                          sessionCount: campaign.session_count ?? 0,
+                          noteCount: campaign.note_count ?? 0,
+                          npcCount: campaign.npc_count ?? 0,
+                          lastSessionDate: campaign.last_session_date ?? null,
+                        })}
+                        mode="compact"
+                      />
+                    </div>
+
                     {/* Quick actions */}
                     <div className="flex items-center gap-2 mt-3">
                       <Button
@@ -407,8 +323,6 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                               e.stopPropagation();
                               setEditingId(campaign.id);
                               setEditName(campaign.name);
-                              setShowCreate(false);
-                              setNewName("");
                               setError(null);
                             }}
                           >
@@ -472,6 +386,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Campaign Creation Wizard */}
+      <CampaignCreationWizard
+        userId={userId}
+        open={wizardOpen}
+        onOpenChange={setWizardOpen}
+        onCreated={(id) => router.push(`/app/campaigns/${id}`)}
+      />
     </div>
   );
 }
