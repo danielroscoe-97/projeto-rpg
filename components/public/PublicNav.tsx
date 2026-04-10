@@ -8,6 +8,10 @@ interface PublicNavProps {
 
 const LABELS = {
   "en": {
+    classes: "Classes",
+    classesHref: "/classes",
+    races: "Races",
+    racesHref: "/races",
     monsters: "Monsters",
     monstersHref: "/monsters",
     spells: "Spells",
@@ -23,6 +27,10 @@ const LABELS = {
     signUp: "Sign Up",
   },
   "pt-BR": {
+    classes: "Classes",
+    classesHref: "/classes-pt",
+    races: "Raças",
+    racesHref: "/racas",
     monsters: "Monstros",
     monstersHref: "/monstros",
     spells: "Magias",
@@ -73,9 +81,9 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
 
   return (
     <nav className="border-b border-white/[0.06] bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40 shadow-[0_1px_0_rgba(212,168,83,0.06)]">
-      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
+      <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
         {/* Left: logo + breadcrumbs */}
-        <div className="flex items-center gap-3 min-w-0 overflow-hidden max-w-[55%] md:max-w-[45%]">
+        <div className="flex items-center gap-2.5 min-w-0 overflow-hidden max-w-[40%] md:max-w-[30%]">
           <Link
             href="/"
             className="flex items-center gap-2 group shrink-0"
@@ -105,7 +113,19 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
         </div>
 
         {/* Center: nav links */}
-        <div className="hidden md:flex items-center gap-6 shrink-0">
+        <div className="hidden lg:flex items-center gap-4 shrink-0">
+          <Link
+            href={l.classesHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.classes}
+          </Link>
+          <Link
+            href={l.racesHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.races}
+          </Link>
           <Link
             href={l.monstersHref}
             className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
