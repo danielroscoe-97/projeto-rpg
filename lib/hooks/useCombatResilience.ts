@@ -5,12 +5,14 @@ import { useCombatStore } from "@/lib/stores/combat-store";
 import { saveCombatBackup } from "@/lib/stores/combat-persist";
 import { reconcileFullState } from "@/lib/supabase/combat-sync";
 import { replayOfflineQueue, broadcastEvent } from "@/lib/realtime/broadcast";
+import { setSyncStatus } from "@/lib/realtime/offline-queue";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 3000, 8000]; // exponential-ish backoff
 const DM_HEARTBEAT_INTERVAL = 30_000; // 30s — players detect stale after 2 missed beats (~90s)
+const STATE_SYNC_DEDUP_MS = 3_000; // P3: Prevent duplicate state_sync within 3s
 
 /**
  * Combat resilience hook — handles:
@@ -31,6 +33,7 @@ export function useCombatResilience() {
   const heartbeatRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const mountedRef = useRef(true);
   const dmUserIdRef = useRef<string | null>(null);
+  const lastStateSyncRef = useRef(0); // P3: dedup guard for state_sync broadcasts
 
   // Force-save current state to localStorage (called on unload + offline)
   const flushToLocalStorage = useCallback(() => {
@@ -175,19 +178,41 @@ export function useCombatResilience() {
       });
     };
 
+    // Unified reconnect: replay offline queue → broadcast state_sync (with dedup) → sync DB
+    // Fixes P2 (flicker), P3 (duplicate broadcast), P4 (missing replay on visibility)
+    const reconnectAndSync = async () => {
+      if (!mountedRef.current) return;
+      const state = useCombatStore.getState();
+      if (state.session_id) {
+        // Replay queued broadcast events first (sets status to "syncing" internally)
+        await replayOfflineQueue(state.session_id);
+        // E3: Force full state sync — deduplicated within 3s window
+        const now = Date.now();
+        if (
+          state.is_active && state.encounter_id && state.combatants.length > 0 &&
+          now - lastStateSyncRef.current > STATE_SYNC_DEDUP_MS
+        ) {
+          lastStateSyncRef.current = now;
+          broadcastEvent(state.session_id, {
+            type: "session:state_sync",
+            combatants: state.combatants,
+            current_turn_index: state.current_turn_index,
+            round_number: state.round_number,
+            encounter_id: state.encounter_id,
+          });
+        }
+      }
+      // Reconcile full state to DB
+      syncToDatabase();
+    };
+
     const handleOnline = () => {
       if (wasOfflineRef.current) {
         wasOfflineRef.current = false;
-        // Small delay to let the network stabilize
-        timerRef.current = setTimeout(async () => {
-          if (!mountedRef.current) return;
-          // Replay queued broadcast events first, then sync full state to DB
-          const state = useCombatStore.getState();
-          if (state.session_id) {
-            await replayOfflineQueue(state.session_id);
-          }
-          syncToDatabase();
-        }, 1500);
+        // P2: Immediately mark "syncing" to prevent flicker (module-level listener sets "online" first)
+        setSyncStatus("syncing");
+        // Small delay to let the network stabilize, then full reconnect
+        timerRef.current = setTimeout(reconnectAndSync, 1500);
       }
     };
 
@@ -195,7 +220,12 @@ export function useCombatResilience() {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible" && wasOfflineRef.current && navigator.onLine) {
         wasOfflineRef.current = false;
-        syncToDatabase();
+        // P2: Mark syncing immediately
+        setSyncStatus("syncing");
+        // P4: Full reconnect (including replay) — same path as handleOnline
+        // Cancel any pending handleOnline timeout to avoid double-run
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(reconnectAndSync, 500);
       }
       // Always flush when hiding (user might be switching tabs before closing)
       if (document.visibilityState === "hidden") {

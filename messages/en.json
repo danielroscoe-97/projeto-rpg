@@ -1680,7 +1680,10 @@
     "hp_amount_placeholder": "Amount",
     "hp_sent_suffix": "sent to DM",
     "hp_disabled_offline": "No connection",
-    "hp_disabled_unconscious": "Unavailable while unconscious"
+    "hp_disabled_unconscious": "Unavailable while unconscious",
+    "dm_offline_banner": "Offline mode — playing locally",
+    "dm_offline_queued": "{count, plural, one {# queued action} other {# queued actions}}",
+    "dm_syncing_banner": "Reconnected — syncing with players..."
   },
   "conditions": {
     "blinded": "Blinded",
@@ -1849,6 +1852,9 @@
     "sync_connecting": "Connecting...",
     "sync_reconnecting": "Reconnecting...",
     "sync_offline": "Offline — will retry when connected",
+    "dm_offline_badge": "DM Offline",
+    "dm_offline_title": "DM hasn't responded for over 90 seconds",
+    "dm_offline_waiting": "Waiting for DM... Your data is safe, it will update automatically.",
     "you_label": "you",
     "defeated": "Defeated",
     "note_placeholder": "e.g. Concentrating on Bless",

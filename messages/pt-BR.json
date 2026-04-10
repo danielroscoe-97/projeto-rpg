@@ -1680,7 +1680,10 @@
     "hp_amount_placeholder": "Valor",
     "hp_sent_suffix": "enviado ao mestre",
     "hp_disabled_offline": "Sem conexão",
-    "hp_disabled_unconscious": "Indisponível enquanto inconsciente"
+    "hp_disabled_unconscious": "Indisponível enquanto inconsciente",
+    "dm_offline_banner": "Modo offline — jogando localmente",
+    "dm_offline_queued": "{count, plural, one {# ação na fila} other {# ações na fila}}",
+    "dm_syncing_banner": "Reconectado — sincronizando com jogadores..."
   },
   "conditions": {
     "blinded": "Cego",
@@ -1849,6 +1852,9 @@
     "sync_connecting": "Conectando...",
     "sync_reconnecting": "Reconectando...",
     "sync_offline": "Offline — tentará reconectar",
+    "dm_offline_badge": "Mestre Offline",
+    "dm_offline_title": "O mestre não responde há mais de 90 segundos",
+    "dm_offline_waiting": "Aguardando mestre... Seus dados estão seguros, atualizará automaticamente.",
     "you_label": "você",
     "defeated": "Derrotado",
     "note_placeholder": "ex: Concentrando em Bênção",
