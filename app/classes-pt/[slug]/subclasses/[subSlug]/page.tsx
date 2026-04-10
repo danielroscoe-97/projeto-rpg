@@ -53,6 +53,11 @@ export async function generateMetadata({
       type: "article",
       url: `https://pocketdm.com.br/classes-pt/${slug}/subclasses/${subSlug}`,
     },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | Pocket DM`,
+      description,
+    },
     alternates: {
       canonical: `https://pocketdm.com.br/classes-pt/${slug}/subclasses/${subSlug}`,
       languages: {
@@ -61,6 +66,82 @@ export async function generateMetadata({
       },
     },
   };
+}
+
+// ── JSON-LD ────────────────────────────────────────────────────────
+function SubclassJsonLd({
+  cls,
+  sub,
+  slug,
+  subSlug,
+}: {
+  cls: NonNullable<ReturnType<typeof getClassFull>>;
+  sub: NonNullable<ReturnType<typeof getSubclass>>;
+  slug: string;
+  subSlug: string;
+}) {
+  const jsonLdArticle = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    name: `${sub.name_pt} — Subclasse de ${cls.name_pt}`,
+    headline: `${sub.name_pt} — Subclasse de ${cls.name_pt} | D&D 5e`,
+    description: `${sub.name_pt}: ${sub.description_pt}`,
+    author: { "@type": "Organization", name: "Pocket DM" },
+    publisher: {
+      "@type": "Organization",
+      name: "Pocket DM",
+      url: "https://pocketdm.com.br",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://pocketdm.com.br/icons/icon-512.png",
+      },
+    },
+    inLanguage: "pt-BR",
+  };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://pocketdm.com.br",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Classes",
+        item: "https://pocketdm.com.br/classes-pt",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: cls.name_pt,
+        item: `https://pocketdm.com.br/classes-pt/${slug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: sub.name_pt,
+        item: `https://pocketdm.com.br/classes-pt/${slug}/subclasses/${subSlug}`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+    </>
+  );
 }
 
 // ── Page ───────────────────────────────────────────────────────────
@@ -77,15 +158,18 @@ export default async function SubclassDetailPtPage({
   if (!sub) notFound();
 
   return (
-    <div className="min-h-screen bg-background">
-      <PublicNav
-        locale="pt-BR"
-        breadcrumbs={[
-          { label: "Classes", href: "/classes-pt" },
-          { label: cls.name_pt, href: `/classes-pt/${slug}` },
-          { label: sub.name_pt },
-        ]}
-      />
+    <>
+      <SubclassJsonLd cls={cls} sub={sub} slug={slug} subSlug={subSlug} />
+
+      <div className="min-h-screen bg-background">
+        <PublicNav
+          locale="pt-BR"
+          breadcrumbs={[
+            { label: "Classes", href: "/classes-pt" },
+            { label: cls.name_pt, href: `/classes-pt/${slug}` },
+            { label: sub.name_pt },
+          ]}
+        />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <PublicSubclassDetail
@@ -119,5 +203,6 @@ export default async function SubclassDetailPtPage({
 
       <PublicFooter locale="pt-BR" />
     </div>
+    </>
   );
 }

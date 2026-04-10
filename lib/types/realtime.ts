@@ -128,6 +128,8 @@ export interface RealtimeReactionToggle {
   reaction_used: boolean;
   /** Sent by player for ownership validation on DM side; omitted in DM re-broadcasts */
   player_name?: string;
+  /** Token ID for ID-based ownership validation (B3: survives renames) */
+  sender_token_id?: string;
 }
 
 export interface RealtimeLateJoinRequest {
@@ -238,6 +240,8 @@ export interface RealtimePlayerDeathSave {
   player_name: string;
   combatant_id: string;
   result: "success" | "failure";
+  /** Token ID for ID-based ownership validation (B3: survives renames) */
+  sender_token_id?: string;
 }
 
 export interface RealtimePlayerPollVote {
@@ -252,6 +256,8 @@ export interface RealtimePlayerHpAction {
   combatant_id: string;
   action: "damage" | "heal" | "temp_hp";
   amount: number;
+  /** Token ID for ID-based ownership validation (B3: survives renames) */
+  sender_token_id?: string;
 }
 
 export interface RealtimeChatPlayerMessage {
@@ -274,6 +280,8 @@ export interface RealtimePlayerSelfConditionToggle {
   combatant_id: string;
   /** The condition being toggled (must be in BENEFICIAL_CONDITIONS) */
   condition: string;
+  /** Token ID for ID-based ownership validation (B3: survives renames) */
+  sender_token_id?: string;
 }
 
 export interface RealtimeChatDmPostit {

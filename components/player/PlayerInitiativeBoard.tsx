@@ -17,7 +17,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 // WEATHER_DISABLED: import { WeatherOverlay, type WeatherEffect } from "@/components/player/WeatherOverlay";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { TurnPushNotification } from "@/components/player/TurnPushNotification";
-import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
+import { PlayerCompendiumBrowser } from "@/components/player/PlayerCompendiumBrowser";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 import { DiceRoller } from "@/components/dice/DiceRoller";
@@ -303,8 +303,8 @@ export function PlayerInitiativeBoard({
     onDeathSave(ownCharRef.current.id, result);
     deathSaveCooldownRef.current = setTimeout(() => setDeathSavePending(false), 2000);
   }, [deathSavePending, onDeathSave]);
-  // Spell browser state
-  const [spellsOpen, setSpellsOpen] = useState(false);
+  // Compendium browser state
+  const [compendiumOpen, setCompendiumOpen] = useState(false);
   // Beneficial conditions toggle — collapsed by default
   const [showBuffPicker, setShowBuffPicker] = useState(false);
 
@@ -511,11 +511,12 @@ export function PlayerInitiativeBoard({
               ) : currentCombatant && (
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-foreground font-semibold text-base truncate max-w-[200px]">
+                    <span className={`text-foreground font-semibold text-base truncate ${isPlayerTurn ? "max-w-[120px] lg:max-w-[200px]" : "max-w-[200px]"}`}>
                       {isPlayerTurn ? t("your_turn_banner") : t("turn_of", { name: currentCombatant.name })}
                     </span>
+                    {/* Player/Monster tag — hide on mobile when it's player's turn to save space for End Turn button */}
                     {currentCombatant.is_player ? (
-                      <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                      <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20 ${isPlayerTurn ? "hidden lg:inline-flex" : ""}`}>
                         <User className="w-3 h-3" aria-hidden="true" />
                         {t("player_tag")}
                       </span>
@@ -526,19 +527,22 @@ export function PlayerInitiativeBoard({
                       </span>
                     )}
                   </div>
+                  {/* Next up — hide on mobile during player's turn to save space */}
                   {nextCombatant && (
-                    <span className="text-muted-foreground text-xs">
+                    <span className={`text-muted-foreground text-xs ${isPlayerTurn ? "hidden lg:inline" : ""}`}>
                       {t("next_up", { name: nextCombatant.name })}
                     </span>
                   )}
                 </div>
               )}
-              {/* Dice roller — accessible during the whole combat */}
-              <DiceRoller />
+              {/* Dice roller — hide on mobile during player's turn to prioritize End Turn button */}
+              <div className={isPlayerTurn ? "hidden lg:block" : ""}>
+                <DiceRoller />
+              </div>
               <button
                 type="button"
                 onClick={() => setShowActionLog(v => !v)}
-                className="shrink-0 p-1.5 text-muted-foreground hover:text-gold transition-colors rounded"
+                className={`shrink-0 p-1.5 text-muted-foreground hover:text-gold transition-colors rounded ${isPlayerTurn ? "hidden lg:block" : ""}`}
                 aria-label={tc("combat_log_title")}
                 data-testid="player-action-log-btn"
               >
@@ -554,7 +558,7 @@ export function PlayerInitiativeBoard({
                   type="button"
                   onClick={handleEndTurn}
                   disabled={endTurnState !== "idle"}
-                  className={`shrink-0 ml-auto px-4 py-2 font-medium text-sm rounded-lg transition-colors min-h-[44px] disabled:cursor-not-allowed ${
+                  className={`shrink-0 ml-auto px-3 py-2 font-semibold text-sm rounded-lg transition-colors min-h-[44px] min-w-[44px] disabled:cursor-not-allowed ${
                     endTurnState === "confirmed" ? "bg-green-500/20 text-green-400" :
                     endTurnState === "retry" ? "bg-amber-500/20 text-amber-400" :
                     endTurnState === "error" ? "bg-red-500/20 text-red-400" :
@@ -756,14 +760,14 @@ export function PlayerInitiativeBoard({
                     )}
                   </div>
                 )}
-                {/* Spell browser — desktop own-char card */}
+                {/* Compendium browser — desktop own-char card */}
                 <button
                   type="button"
-                  onClick={() => setSpellsOpen(true)}
+                  onClick={() => setCompendiumOpen(true)}
                   className="flex items-center gap-1.5 text-xs text-gold hover:text-gold/80 mt-2 transition-colors"
                 >
                   <BookOpen className="w-3.5 h-3.5" />
-                  {tc("spell_open")}
+                  {tc("compendium_open")}
                 </button>
 
                 {/* Death saves — desktop own-char card */}
@@ -1198,7 +1202,7 @@ export function PlayerInitiativeBoard({
         />
       )}
 
-      {/* Spell browser FAB — mobile only, hidden during turn notification */}
+      {/* Compendium browser FAB — mobile only, hidden during turn notification */}
       <div
         className={`fixed left-4 z-30 lg:hidden transition-opacity duration-200 ${
           isPlayerTurn && !overlayDismissed && notificationsEnabled ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -1207,18 +1211,18 @@ export function PlayerInitiativeBoard({
       >
         <button
           type="button"
-          onClick={() => setSpellsOpen(true)}
+          onClick={() => setCompendiumOpen(true)}
           className="w-11 h-11 rounded-full bg-surface-overlay border border-gold/30 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-          aria-label={tc("spell_open")}
+          aria-label={tc("compendium_open")}
         >
           <BookOpen className="w-5 h-5 text-gold" />
         </button>
       </div>
 
-      {/* Spell browser dialog */}
-      <PlayerSpellBrowser
-        open={spellsOpen}
-        onOpenChange={setSpellsOpen}
+      {/* Compendium browser dialog */}
+      <PlayerCompendiumBrowser
+        open={compendiumOpen}
+        onOpenChange={setCompendiumOpen}
         playerClass={primaryPlayerChar?.class}
         rulesetVersion={rulesetVersion}
       />

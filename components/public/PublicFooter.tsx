@@ -15,7 +15,7 @@ const SECTIONS_EN = [
 const SECTIONS_PT = [
   { label: "Monstros", href: "/monstros" },
   { label: "Magias", href: "/magias" },
-  { label: "Classes", href: "/classes" },
+  { label: "Classes", href: "/classes-pt" },
   { label: "Raças", href: "/racas" },
   { label: "Condições", href: "/condicoes" },
   { label: "Tipos de Dano", href: "/tipos-de-dano" },

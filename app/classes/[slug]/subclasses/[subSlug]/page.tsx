@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSubclassDetail } from "@/components/public/PublicSubclassDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
@@ -65,6 +66,10 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: `https://pocketdm.com.br/classes/${slug}/subclasses/${subSlug}`,
+      languages: {
+        en: `https://pocketdm.com.br/classes/${slug}/subclasses/${subSlug}`,
+        "pt-BR": `https://pocketdm.com.br/classes-pt/${slug}/subclasses/${subSlug}`,
+      },
     },
   };
 }
@@ -97,6 +102,7 @@ function SubclassJsonLd({
         url: "https://pocketdm.com.br/icons/icon-512.png",
       },
     },
+    inLanguage: "en",
   };
 
   const jsonLdBreadcrumb = {
@@ -184,6 +190,16 @@ export default async function SubclassDetailPage({
             }}
             locale="en"
           />
+
+          <p className="text-xs text-gray-500 mt-8 text-center">
+            Also available in{" "}
+            <Link
+              href={`/classes-pt/${slug}/subclasses/${subSlug}`}
+              className="text-[#D4A853] hover:underline"
+            >
+              Português
+            </Link>
+          </p>
 
           <div className="mt-8">
             <PublicCTA entityName={sub.name} locale="en" />

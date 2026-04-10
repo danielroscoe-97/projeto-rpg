@@ -1,0 +1,615 @@
+"use client";
+
+import { useState, useMemo, useCallback } from "react";
+import { useTranslations } from "next-intl";
+import { BookOpen, Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import { SpellCard } from "@/components/oracle/SpellCard";
+import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
+import { useSrdStore } from "@/lib/stores/srd-store";
+import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
+import { getCoreConditions } from "@/lib/srd/srd-search";
+import type { SrdSpell, SrdMonster, SrdCondition } from "@/lib/srd/srd-loader";
+import type { RulesetVersion } from "@/lib/types/database";
+import { cn } from "@/lib/utils";
+
+const LEVELS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
+const PAGE_SIZE = 50;
+
+const SRD_CLASSES = [
+  "Barbarian", "Bard", "Cleric", "Druid", "Fighter",
+  "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer",
+  "Warlock", "Wizard",
+];
+
+type CompendiumTab = "spells" | "conditions" | "monsters";
+
+interface PlayerCompendiumBrowserProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** Pre-select class filter if player class is known */
+  playerClass?: string;
+  /** Ruleset version for default filter */
+  rulesetVersion?: RulesetVersion;
+}
+
+export function PlayerCompendiumBrowser({
+  open,
+  onOpenChange,
+  playerClass,
+  rulesetVersion,
+}: PlayerCompendiumBrowserProps) {
+  const t = useTranslations("combat");
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<CompendiumTab>("spells");
+
+  // Spells data
+  const allSpells = useSrdStore((s) => s.spells);
+  const isStoreLoading = useSrdStore((s) => s.is_loading);
+  const { filtered: spells } = useSrdContentFilter(allSpells);
+  const storeEmpty = allSpells.length === 0;
+
+  // Monsters data
+  const allMonsters = useSrdStore((s) => s.monsters);
+  const { filtered: monsters } = useSrdContentFilter(allMonsters);
+
+  // Conditions data
+  const conditions = useMemo(() => getCoreConditions(), []);
+
+  // Spell filters
+  const [nameFilter, setNameFilter] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+  const [selectedClass, setSelectedClass] = useState<string | null>(
+    playerClass?.trim() || null
+  );
+  const [versionFilter, setVersionFilter] = useState<"all" | "2014" | "2024">(
+    rulesetVersion ?? "all"
+  );
+  const [classDropdownOpen, setClassDropdownOpen] = useState(false);
+  const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
+
+  // Monster filters
+  const [monsterNameFilter, setMonsterNameFilter] = useState("");
+  const [monsterDisplayCount, setMonsterDisplayCount] = useState(PAGE_SIZE);
+
+  // Condition filter
+  const [conditionFilter, setConditionFilter] = useState("");
+
+  // Detail views
+  const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
+  const [selectedMonster, setSelectedMonster] = useState<SrdMonster | null>(null);
+  const [selectedCondition, setSelectedCondition] = useState<SrdCondition | null>(null);
+
+  // Reset state when dialog closes
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (!nextOpen) {
+        setNameFilter("");
+        setSelectedLevel(null);
+        setSelectedClass(playerClass?.trim() || null);
+        setVersionFilter(rulesetVersion ?? "all");
+        setSelectedSpell(null);
+        setSelectedMonster(null);
+        setSelectedCondition(null);
+        setDisplayCount(PAGE_SIZE);
+        setMonsterDisplayCount(PAGE_SIZE);
+        setMonsterNameFilter("");
+        setConditionFilter("");
+        setClassDropdownOpen(false);
+      }
+      onOpenChange(nextOpen);
+    },
+    [onOpenChange, playerClass, rulesetVersion]
+  );
+
+  // Spell filtering
+  const filteredSpells = useMemo(() => {
+    let result = spells;
+    if (nameFilter) {
+      const lower = nameFilter.toLowerCase();
+      result = result.filter((s) => s.name.toLowerCase().includes(lower));
+    }
+    if (versionFilter !== "all") {
+      result = result.filter((s) => s.ruleset_version === versionFilter);
+    }
+    if (selectedLevel !== null) {
+      result = result.filter((s) => s.level === selectedLevel);
+    }
+    if (selectedClass) {
+      const lower = selectedClass.toLowerCase();
+      result = result.filter((s) =>
+        s.classes.some((c) => c.toLowerCase() === lower)
+      );
+    }
+    return result.sort(
+      (a, b) => a.level - b.level || a.name.localeCompare(b.name)
+    );
+  }, [spells, nameFilter, versionFilter, selectedLevel, selectedClass]);
+
+  // Monster filtering
+  const filteredMonsters = useMemo(() => {
+    let result = monsters;
+    if (monsterNameFilter) {
+      const lower = monsterNameFilter.toLowerCase();
+      result = result.filter((m) => m.name.toLowerCase().includes(lower));
+    }
+    return result.sort((a, b) => a.name.localeCompare(b.name));
+  }, [monsters, monsterNameFilter]);
+
+  // Condition filtering
+  const filteredConditions = useMemo(() => {
+    if (!conditionFilter) return conditions;
+    const lower = conditionFilter.toLowerCase();
+    return conditions.filter((c) => c.name.toLowerCase().includes(lower));
+  }, [conditions, conditionFilter]);
+
+  const displayedSpells = filteredSpells.slice(0, displayCount);
+  const spellTotalCount = spells.length;
+  const spellFilteredCount = filteredSpells.length;
+  const hasMoreSpells = spellFilteredCount > displayCount;
+
+  const displayedMonsters = filteredMonsters.slice(0, monsterDisplayCount);
+  const hasMoreMonsters = filteredMonsters.length > monsterDisplayCount;
+
+  // Check if we're in a detail view
+  const inDetail = selectedSpell || selectedMonster || selectedCondition;
+
+  const handleBack = () => {
+    setSelectedSpell(null);
+    setSelectedMonster(null);
+    setSelectedCondition(null);
+  };
+
+  const detailTitle = selectedSpell?.name ?? selectedMonster?.name ?? selectedCondition?.name ?? "";
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className={cn(
+          "max-w-2xl max-h-[85vh] overflow-hidden !p-0 !bg-surface-secondary !border-white/[0.08]",
+          "max-[768px]:!max-w-none max-[768px]:!w-screen max-[768px]:!h-[100dvh] max-[768px]:!max-h-none max-[768px]:!rounded-none max-[768px]:!top-0 max-[768px]:!left-0 max-[768px]:!translate-x-0 max-[768px]:!translate-y-0"
+        )}
+      >
+        <VisuallyHidden.Root>
+          <DialogTitle>{t("compendium_title")}</DialogTitle>
+        </VisuallyHidden.Root>
+
+        {inDetail ? (
+          /* ── Detail View ── */
+          <div className="flex flex-col h-full max-h-[85vh] max-[768px]:max-h-[100dvh]">
+            <div className="flex items-center gap-2 p-3 border-b border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {t("spell_back")}
+              </button>
+              <span className="text-foreground font-semibold text-sm truncate flex-1">
+                {detailTitle}
+              </span>
+            </div>
+            <div className="overflow-y-auto flex-1 p-4">
+              {selectedSpell && <SpellCard spell={selectedSpell} variant="inline" />}
+              {selectedMonster && <MonsterStatBlock monster={selectedMonster} variant="inline" />}
+              {selectedCondition && (
+                <p className="text-sm text-white/90 whitespace-pre-line">
+                  {selectedCondition.description}
+                </p>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* ── List View ── */
+          <div className="flex flex-col h-full max-h-[85vh] max-[768px]:max-h-[100dvh]">
+            {/* Tab bar */}
+            <div className="flex border-b border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveTab("spells")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
+                  activeTab === "spells"
+                    ? "text-gold border-b-2 border-gold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {t("compendium_tab_spells")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("conditions")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
+                  activeTab === "conditions"
+                    ? "text-gold border-b-2 border-gold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <HeartPulse className="w-3.5 h-3.5" />
+                {t("compendium_tab_conditions")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("monsters")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
+                  activeTab === "monsters"
+                    ? "text-gold border-b-2 border-gold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Skull className="w-3.5 h-3.5" />
+                {t("compendium_tab_monsters")}
+              </button>
+            </div>
+
+            {/* ── Spells Tab ── */}
+            {activeTab === "spells" && (
+              <>
+                {/* Filters */}
+                <div className="p-3 space-y-2 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={nameFilter}
+                      onChange={(e) => {
+                        setNameFilter(e.target.value);
+                        setDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("spell_search_placeholder")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {nameFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setNameFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex gap-1 flex-wrap">
+                    {LEVELS.map((lvl) => (
+                      <button
+                        key={lvl}
+                        type="button"
+                        onClick={() => {
+                          setSelectedLevel(selectedLevel === lvl ? null : lvl);
+                          setDisplayCount(PAGE_SIZE);
+                        }}
+                        className={cn(
+                          "px-2 py-0.5 text-xs rounded-full border transition-colors",
+                          selectedLevel === lvl
+                            ? "bg-gold/20 border-gold/50 text-gold"
+                            : "border-white/10 text-muted-foreground hover:border-white/20"
+                        )}
+                      >
+                        {lvl === 0 ? "C" : lvl}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {selectedClass && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-gold/20 border border-gold/50 text-gold">
+                        {selectedClass}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedClass(null);
+                            setDisplayCount(PAGE_SIZE);
+                          }}
+                          className="hover:text-white ml-0.5"
+                          aria-label={t("spell_clear_class")}
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    )}
+
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setClassDropdownOpen(!classDropdownOpen)}
+                        className="flex items-center gap-1 px-2 py-0.5 text-xs border border-white/10 rounded-full text-muted-foreground hover:border-white/20 transition-colors"
+                      >
+                        {selectedClass ? t("spell_change_class") : t("spell_all_classes")}
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                      {classDropdownOpen && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setClassDropdownOpen(false)}
+                          />
+                          <div className="absolute top-full left-0 mt-1 z-20 bg-surface-overlay border border-white/10 rounded-lg shadow-xl py-1 min-w-[140px] max-h-[200px] overflow-y-auto">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedClass(null);
+                                setClassDropdownOpen(false);
+                                setDisplayCount(PAGE_SIZE);
+                              }}
+                              className={cn(
+                                "w-full text-left px-3 py-1.5 text-xs hover:bg-white/5",
+                                !selectedClass ? "text-gold" : "text-muted-foreground"
+                              )}
+                            >
+                              {t("spell_all_classes")}
+                            </button>
+                            {SRD_CLASSES.map((cls) => (
+                              <button
+                                key={cls}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedClass(cls);
+                                  setClassDropdownOpen(false);
+                                  setDisplayCount(PAGE_SIZE);
+                                }}
+                                className={cn(
+                                  "w-full text-left px-3 py-1.5 text-xs hover:bg-white/5",
+                                  selectedClass === cls ? "text-gold" : "text-muted-foreground"
+                                )}
+                              >
+                                {cls}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 ml-auto">
+                      {(["all", "2024", "2014"] as const).map((v) => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => {
+                            setVersionFilter(v);
+                            setDisplayCount(PAGE_SIZE);
+                          }}
+                          className={cn(
+                            "px-1.5 py-0.5 text-[10px] rounded border transition-colors",
+                            versionFilter === v
+                              ? "bg-white/10 border-white/20 text-foreground"
+                              : "border-transparent text-muted-foreground/50 hover:text-muted-foreground"
+                          )}
+                        >
+                          {v === "all" ? t("spell_version_all") : v}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] text-muted-foreground/60">
+                    {spellFilteredCount === spellTotalCount
+                      ? t("spell_count_all", { count: spellTotalCount })
+                      : t("spell_count_filtered", {
+                          filtered: spellFilteredCount,
+                          total: spellTotalCount,
+                        })}
+                  </p>
+                </div>
+
+                {/* Spell list */}
+                <div className="overflow-y-auto flex-1">
+                  {(isStoreLoading || storeEmpty) ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("spell_loading")}
+                    </div>
+                  ) : displayedSpells.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("spell_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedSpells.map((spell) => (
+                        <button
+                          key={spell.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                          onClick={() => setSelectedSpell(spell)}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {spell.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
+                              <span>
+                                {spell.level === 0
+                                  ? t("spell_cantrip")
+                                  : t("spell_level", { level: spell.level })}
+                              </span>
+                              <span>·</span>
+                              <span>{spell.school}</span>
+                              {spell.concentration && (
+                                <>
+                                  <span>·</span>
+                                  <span className="text-purple-400">Conc.</span>
+                                </>
+                              )}
+                              {spell.ritual && (
+                                <>
+                                  <span>·</span>
+                                  <span className="text-blue-400">Ritual</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground/60 shrink-0">
+                            {spell.casting_time}
+                          </span>
+                        </button>
+                      ))}
+
+                      {hasMoreSpells && (
+                        <button
+                          type="button"
+                          onClick={() => setDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", {
+                            remaining: spellFilteredCount - displayCount,
+                          })}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Conditions Tab ── */}
+            {activeTab === "conditions" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={conditionFilter}
+                      onChange={(e) => setConditionFilter(e.target.value)}
+                      placeholder={t("compendium_search_conditions")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {conditionFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setConditionFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {filteredConditions.length} {t("compendium_conditions_count")}
+                  </p>
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {filteredConditions.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    filteredConditions.map((condition) => (
+                      <button
+                        key={condition.id}
+                        type="button"
+                        className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                        onClick={() => setSelectedCondition(condition)}
+                      >
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-foreground truncate">
+                            {condition.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground line-clamp-1">
+                            {condition.description.slice(0, 80)}...
+                          </div>
+                        </div>
+                        <HeartPulse className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
+                      </button>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Monsters Tab ── */}
+            {activeTab === "monsters" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={monsterNameFilter}
+                      onChange={(e) => {
+                        setMonsterNameFilter(e.target.value);
+                        setMonsterDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("compendium_search_monsters")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {monsterNameFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setMonsterNameFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {filteredMonsters.length} {t("compendium_monsters_count")}
+                  </p>
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {(isStoreLoading || allMonsters.length === 0) ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("compendium_loading")}
+                    </div>
+                  ) : displayedMonsters.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedMonsters.map((monster) => (
+                        <button
+                          key={monster.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                          onClick={() => setSelectedMonster(monster)}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {monster.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              <span>CR {monster.cr}</span>
+                              <span>·</span>
+                              <span>{monster.type}</span>
+                              <span>·</span>
+                              <span>{monster.size}</span>
+                            </div>
+                          </div>
+                          <Skull className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
+                        </button>
+                      ))}
+
+                      {hasMoreMonsters && (
+                        <button
+                          type="button"
+                          onClick={() => setMonsterDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", {
+                            remaining: filteredMonsters.length - monsterDisplayCount,
+                          })}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}

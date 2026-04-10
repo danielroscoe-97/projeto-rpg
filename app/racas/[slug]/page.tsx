@@ -55,8 +55,8 @@ export async function generateMetadata({
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
-function RaceJsonLd({ race }: { race: NonNullable<ReturnType<typeof getRaceData>> }) {
-  const jsonLd = {
+function RaceJsonLd({ race, slug }: { race: NonNullable<ReturnType<typeof getRaceData>>; slug: string }) {
+  const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
     name: `${race.namePt} — Raça D&D 5e`,
@@ -67,15 +67,50 @@ function RaceJsonLd({ race }: { race: NonNullable<ReturnType<typeof getRaceData>
       "@type": "Organization",
       name: "Pocket DM",
       url: "https://pocketdm.com.br",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://pocketdm.com.br/icons/icon-512.png",
+      },
     },
     inLanguage: "pt-BR",
   };
 
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://pocketdm.com.br",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Raças",
+        item: "https://pocketdm.com.br/racas",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: race.namePt,
+        item: `https://pocketdm.com.br/racas/${slug}`,
+      },
+    ],
+  };
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+    </>
   );
 }
 
@@ -91,7 +126,7 @@ export default async function RacaDetailPage({
 
   return (
     <>
-      <RaceJsonLd race={race} />
+      <RaceJsonLd race={race} slug={slug} />
 
       <div className="min-h-screen bg-background">
         <PublicNav

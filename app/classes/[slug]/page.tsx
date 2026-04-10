@@ -65,6 +65,10 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: `https://pocketdm.com.br/classes/${slug}`,
+      languages: {
+        en: `https://pocketdm.com.br/classes/${slug}`,
+        "pt-BR": `https://pocketdm.com.br/classes-pt/${slug}`,
+      },
     },
   };
 }
@@ -93,6 +97,7 @@ function ClassJsonLd({
         url: "https://pocketdm.com.br/icons/icon-512.png",
       },
     },
+    inLanguage: "en",
   };
 
   const jsonLdBreadcrumb = {

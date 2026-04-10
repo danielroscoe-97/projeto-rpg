@@ -72,7 +72,7 @@ function ClassJsonLd({
   cls: NonNullable<ReturnType<typeof getClassFull>>;
   slug: string;
 }) {
-  const jsonLd = {
+  const jsonLdArticle = {
     "@context": "https://schema.org",
     "@type": "Article",
     name: `${cls.name_pt} — Classe D&D 5e`,
@@ -83,15 +83,50 @@ function ClassJsonLd({
       "@type": "Organization",
       name: "Pocket DM",
       url: "https://pocketdm.com.br",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://pocketdm.com.br/icons/icon-512.png",
+      },
     },
     inLanguage: "pt-BR",
   };
 
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://pocketdm.com.br",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Classes",
+        item: "https://pocketdm.com.br/classes-pt",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: cls.name_pt,
+        item: `https://pocketdm.com.br/classes-pt/${slug}`,
+      },
+    ],
+  };
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+    </>
   );
 }
 

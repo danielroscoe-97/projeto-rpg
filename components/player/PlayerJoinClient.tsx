@@ -641,6 +641,7 @@ export function PlayerJoinClient({
         combatant_id: combatantId,
         action,
         amount,
+        sender_token_id: effectiveTokenId,
       },
     });
 
@@ -2388,7 +2389,7 @@ export function PlayerJoinClient({
             ch.send({
               type: "broadcast",
               event: "player:end_turn",
-              payload: { player_name: registeredName },
+              payload: { player_name: registeredName, sender_token_id: effectiveTokenId },
             });
           }}
           onDeathSave={(combatantId, result) => {
@@ -2405,6 +2406,7 @@ export function PlayerJoinClient({
                 player_name: registeredName,
                 combatant_id: combatantId,
                 result,
+                sender_token_id: effectiveTokenId,
               },
             });
             // Optimistic local update — show the dot immediately
@@ -2438,6 +2440,7 @@ export function PlayerJoinClient({
                 player_name: registeredName,
                 combatant_id: combatantId,
                 condition,
+                sender_token_id: effectiveTokenId,
               },
             });
           }}
@@ -2470,6 +2473,7 @@ export function PlayerJoinClient({
                 combatant_id: combatantId,
                 reaction_used: newValue,
                 player_name: registeredName,
+                sender_token_id: effectiveTokenId,
               },
             });
           }}

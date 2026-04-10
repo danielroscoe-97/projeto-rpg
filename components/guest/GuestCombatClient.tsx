@@ -25,7 +25,7 @@ import { GuestUpsellModal } from "@/components/guest/GuestUpsellModal";
 import { GuestExpiryModal } from "@/components/guest/GuestExpiryModal";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { PlayerSpellBrowser } from "@/components/player/PlayerSpellBrowser";
+import { PlayerCompendiumBrowser } from "@/components/player/PlayerCompendiumBrowser";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, dispatchInitiativeRoll, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
@@ -851,7 +851,7 @@ export function GuestCombatClient() {
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [upsellTrigger, setUpsellTrigger] = useState<UpsellTrigger>("save");
   const [guestCombatReport, setGuestCombatReport] = useState<CombatReport | null>(null);
-  const [spellsOpen, setSpellsOpen] = useState(false);
+  const [compendiumOpen, setCompendiumOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
   // C.15/UX.04: Post-combat state machine (leaderboard → done, poll skipped for guest)
   type GuestPostCombatPhase = "leaderboard" | null;
@@ -1721,14 +1721,14 @@ export function GuestCombatClient() {
               ?
             </button>
 
-            {/* Spell browser (C.14) */}
+            {/* Compendium browser (C.14) */}
             <button
               type="button"
-              onClick={() => setSpellsOpen(true)}
+              onClick={() => setCompendiumOpen(true)}
               className="px-2 py-1 bg-white/[0.06] text-gold/70 hover:text-gold hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center"
-              aria-label={t("spell_open")}
-              title={t("spell_open")}
-              data-testid="spell-browser-btn"
+              aria-label={t("compendium_open")}
+              title={t("compendium_open")}
+              data-testid="compendium-browser-btn"
             >
               <BookOpen className="w-4 h-4" aria-hidden="true" />
             </button>
@@ -1937,10 +1937,10 @@ export function GuestCombatClient() {
         onClose={() => setCheatsheetOpen(false)}
       />
 
-      {/* Spell browser (C.14 — DM parity) */}
-      <PlayerSpellBrowser
-        open={spellsOpen}
-        onOpenChange={setSpellsOpen}
+      {/* Compendium browser (C.14 — DM parity) */}
+      <PlayerCompendiumBrowser
+        open={compendiumOpen}
+        onOpenChange={setCompendiumOpen}
         rulesetVersion={midCombatRuleset}
       />
 

@@ -34,6 +34,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://pocketdm.com.br/classes",
+    languages: {
+      en: "https://pocketdm.com.br/classes",
+      "pt-BR": "https://pocketdm.com.br/classes-pt",
+    },
   },
 };
 
@@ -61,7 +65,12 @@ function ClassesJsonLd() {
       "@type": "Organization",
       name: "Pocket DM",
       url: "https://pocketdm.com.br",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://pocketdm.com.br/icons/icon-512.png",
+      },
     },
+    inLanguage: "en",
   };
 
   return (
