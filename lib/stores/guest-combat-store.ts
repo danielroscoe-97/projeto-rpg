@@ -445,6 +445,8 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
                   is_defeated: isDefeated,
                   current_hp: isDefeated ? 0 : Math.max(1, c.current_hp),
                   death_saves: undefined,
+                  // W5: Reset reaction when un-defeating (reviving) so revived combatant starts fresh
+                  ...(!isDefeated && { reaction_used: false }),
                 }
               : c
           ),

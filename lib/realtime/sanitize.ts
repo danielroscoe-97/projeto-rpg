@@ -258,6 +258,15 @@ export function validateEventData(event: RealtimeEvent): ValidationError | null 
         return { field: "combatant.name", message: "Combatant name is required" };
       }
       break;
+
+    case "combat:reaction_toggle":
+      if (!event.combatant_id) {
+        return { field: "combatant_id", message: "Combatant ID is required" };
+      }
+      if (typeof event.reaction_used !== "boolean") {
+        return { field: "reaction_used", message: "reaction_used must be a boolean" };
+      }
+      break;
   }
 
   return null;

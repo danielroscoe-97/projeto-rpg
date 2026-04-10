@@ -317,6 +317,8 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
                 is_defeated,
                 current_hp: is_defeated ? 0 : Math.max(1, c.current_hp),
                 death_saves: undefined,
+                // W5: Reset reaction when un-defeating (reviving) so revived combatant starts fresh
+                ...(!is_defeated && { reaction_used: false }),
               }
             : c
         ),

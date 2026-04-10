@@ -1042,7 +1042,7 @@ export function PlayerInitiativeBoard({
                     <button
                       type="button"
                       onClick={() => onToggleReaction?.(combatant.id)}
-                      className={`w-4 h-4 lg:w-3.5 lg:h-3.5 rounded-full border transition-colors ${
+                      className={`w-6 h-6 lg:w-4 lg:h-4 rounded-full border transition-colors ${
                         combatant.reaction_used
                           ? "bg-red-500 border-red-400/60"
                           : "bg-transparent border-emerald-500 hover:border-emerald-400"

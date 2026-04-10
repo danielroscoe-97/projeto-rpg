@@ -183,6 +183,7 @@ export function PlayerJoinClient({
   const playerRatedInlineRef = useRef(false);
   const turnIndexRef = useRef(currentTurnIndex);
   const disconnectedAtRef = useRef<number | null>(null);
+  const lastReactionToggleRef = useRef<number>(0);
   // Stores recursive setTimeout handles — named "pollInterval" for semantic clarity but uses setTimeout under the hood
   const pollIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1022,7 +1023,7 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:reaction_toggle" }, ({ payload }) => {
-          if (payload.combatant_id) {
+          if (payload.combatant_id && typeof payload.reaction_used === "boolean") {
             updateCombatants((prev) =>
               prev.map((c) =>
                 c.id === payload.combatant_id
@@ -2261,10 +2262,11 @@ export function PlayerJoinClient({
             <SyncIndicator status={connectionStatus} />
             {dmOffline && active && (
               <span
-                className="px-2 py-1 bg-red-900/60 text-red-300 text-[10px] font-semibold rounded-full border border-red-700/50 animate-pulse"
-                title="DM hasn't responded for over 45 seconds"
+                className="px-2 py-1 bg-amber-900/50 text-amber-300 text-[10px] font-semibold rounded-full border border-amber-700/40"
+                title={t("dm_offline_title")}
+                data-testid="dm-offline-badge"
               >
-                DM Offline
+                {t("dm_offline_badge")}
               </span>
             )}
             {campaignId && (
@@ -2292,6 +2294,19 @@ export function PlayerJoinClient({
 
         {/* Audio Autoplay Unlock Banner (Story 4) */}
         <AudioUnlockBanner />
+
+        {/* E4: DM offline — graceful degradation banner */}
+        {dmOffline && active && (
+          <div
+            className="flex items-center gap-2 px-3 py-2 bg-amber-900/30 text-amber-200 text-xs font-medium rounded-lg border border-amber-700/30"
+            role="status"
+            aria-live="polite"
+            data-testid="dm-offline-banner"
+          >
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+            <span>{t("dm_offline_waiting")}</span>
+          </div>
+        )}
 
         {/* Shared Notes (W2.2 — authenticated campaign members only) */}
         {showNotes && campaignId && (
@@ -2423,9 +2438,20 @@ export function PlayerJoinClient({
             });
           }}
           onToggleReaction={(combatantId) => {
+            // B1: Check connection BEFORE optimistic update to avoid stale local state on failure
+            const ch = channelRef.current;
+            if (!ch || connectionStatus !== "connected") {
+              toast.error(tRef.current("sync_offline"));
+              return;
+            }
+            // W3: Rate-limit — max 1 toggle per second
+            const now = Date.now();
+            if (now - lastReactionToggleRef.current < 1000) return;
+            lastReactionToggleRef.current = now;
             // D1: Compute new value BEFORE optimistic update to avoid stale closure
             const current = combatantsRef.current.find((c) => c.id === combatantId);
-            const newValue = !(current?.reaction_used ?? false);
+            if (!current) return;
+            const newValue = !current.reaction_used;
             // Optimistic local update
             updateCombatants((prev) =>
               prev.map((c) =>
@@ -2433,11 +2459,6 @@ export function PlayerJoinClient({
               )
             );
             // Broadcast to DM
-            const ch = channelRef.current;
-            if (!ch || connectionStatus !== "connected") {
-              toast.error(tRef.current("sync_offline"));
-              return;
-            }
             ch.send({
               type: "broadcast",
               event: "combat:reaction_toggle",

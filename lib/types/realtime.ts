@@ -126,6 +126,8 @@ export interface RealtimeReactionToggle {
   type: "combat:reaction_toggle";
   combatant_id: string;
   reaction_used: boolean;
+  /** Sent by player for ownership validation on DM side; omitted in DM re-broadcasts */
+  player_name?: string;
 }
 
 export interface RealtimeLateJoinRequest {

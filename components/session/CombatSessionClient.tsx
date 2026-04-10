@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useCombatKeyboardShortcuts } from "@/lib/hooks/useCombatKeyboardShortcuts";
 import { useCombatActions } from "@/lib/hooks/useCombatActions";
 import { useCombatResilience } from "@/lib/hooks/useCombatResilience";
+import { DmOfflineBanner } from "@/components/combat/DmOfflineBanner";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
@@ -1242,8 +1243,8 @@ export function CombatSessionClient({
       // Security: combatant must exist and be a player
       const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
       if (!combatant || !combatant.is_player) return;
-      // Security: name confirmation prevents toggling another player's reaction
-      if (combatant.name.toLowerCase() !== String(player_name ?? "").toLowerCase()) return;
+      // Security: name confirmation prevents toggling another player's reaction (W1: Unicode-safe)
+      if (combatant.name.normalize("NFC").trim().toLocaleLowerCase() !== String(player_name ?? "").normalize("NFC").trim().toLocaleLowerCase()) return;
       useCombatStore.getState().setReactionUsed(combatant_id, reaction_used);
       // Re-broadcast to all players so everyone sees the update
       broadcastEvent(getSessionId()!, { type: "combat:reaction_toggle", combatant_id, reaction_used });
@@ -1390,6 +1391,8 @@ export function CombatSessionClient({
         onAcceptAll={handleAcceptAllJoinRequests}
         onRejectAll={handleRejectAllJoinRequests}
       />
+
+      <DmOfflineBanner />
 
       {/* Compact players row — inline dots + postit senders */}
       {sessionId && (

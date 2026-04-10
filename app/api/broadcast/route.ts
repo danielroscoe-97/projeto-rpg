@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
       "combat:stats_update",
       "combat:player_notes_update",
       "combat:version_switch",
+      "combat:reaction_toggle",
     ]);
 
     let combatants: Combatant[] = [];
