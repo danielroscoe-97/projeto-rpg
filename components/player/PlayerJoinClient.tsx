@@ -555,6 +555,7 @@ export function PlayerJoinClient({
     if (next === "CONNECTED") {
       stopAllPolling();
       pollBackoffRef.current = 2000;
+      consecutiveFailsRef.current = 0; // R2: Reset circuit breaker on reconnect
     }
     if (next === "POLLING_FALLBACK") {
       startPollingWithBackoff(encounterIdRef.current);
@@ -743,11 +744,13 @@ export function PlayerJoinClient({
     try {
       let res = await fetch(`/api/session/${sessionId}/state`);
 
-      // R3: Auth auto-refresh — re-authenticate and retry once on 401
+      // R3: Auth auto-refresh — refresh expired token and retry once on 401.
+      // MUST use refreshSession() (not signInAnonymously) to keep the same anon_user_id
+      // that's linked to the session_token in the DB.
       if (res.status === 401) {
         const supabase = createClient();
-        const { error: authError } = await supabase.auth.signInAnonymously();
-        if (!authError) {
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        if (!refreshError) {
           res = await fetch(`/api/session/${sessionId}/state`);
         }
       }
