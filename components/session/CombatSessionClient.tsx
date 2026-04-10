@@ -39,6 +39,7 @@ import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { persistCombatLog, loadCombatLog, clearCombatLog } from "@/lib/supabase/combat-log-persist";
+import type { CombatStartSnapshot } from "@/lib/supabase/encounter-snapshot";
 import { computeCombatStats, getMaxRound, buildCombatReport } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import type { CombatReport } from "@/lib/types/combat-report";
@@ -190,6 +191,13 @@ export function CombatSessionClient({
       const combatResult = detectCombatResult(snapshotCombatants);
       const qualityFlags = computeDataQualityFlags(snapshotCombatants, preloadedPlayers);
       const combatStarted = useCombatStore.getState().combatStartedAt;
+      // Load start-of-combat snapshot for difficulty analysis delta
+      let combatStartSnap: CombatStartSnapshot | undefined;
+      try {
+        const raw = localStorage.getItem("pocketdm_combat_start_snapshot");
+        if (raw) combatStartSnap = JSON.parse(raw);
+      } catch { /* ignore */ }
+
       persistEncounterSnapshot(encIdForSnapshot, {
         party_snapshot: partySnapshot,
         creatures_snapshot: creaturesSnapshot,
@@ -200,7 +208,11 @@ export function CombatSessionClient({
         // CTA-10: Persist time analytics for longitudinal analysis
         duration_seconds: pending.combatDuration > 0 ? Math.round(pending.combatDuration / 1000) : undefined,
         turn_time_data: Object.keys(pending.turnTimeAccumulated).length > 0 ? pending.turnTimeAccumulated : undefined,
+        combat_start_snapshot: combatStartSnap,
       }).catch(() => { /* fire-and-forget */ });
+
+      // Cleanup start snapshot from localStorage
+      try { localStorage.removeItem("pocketdm_combat_start_snapshot"); } catch { /* ignore */ }
     }
 
     // Show recap if log has any combat activity OR if combatants have HP changes (handles page-refresh mid-combat where in-memory log is lost)
@@ -556,6 +568,20 @@ export function CombatSessionClient({
         }
         await persistInitiativeAndStartCombat(store.encounter_id, sorted);
         store.startCombat();
+        // Capture start-of-combat snapshot for difficulty analysis (HP delta, etc.)
+        try {
+          const startSnapshot: CombatStartSnapshot = {
+            combatants: sorted.map((c) => ({
+              id: c.id, name: c.name, is_player: c.is_player,
+              max_hp: c.max_hp, current_hp: c.current_hp, ac: c.ac,
+              initiative: c.initiative, monster_id: c.monster_id,
+              monster_group_id: c.monster_group_id,
+            })),
+            round: 1,
+            timestamp: Date.now(),
+          };
+          localStorage.setItem("pocketdm_combat_start_snapshot", JSON.stringify(startSnapshot));
+        } catch { /* non-fatal */ }
         // P2-A: Log first combatant's turn so all combatants have matching turn entries
         const firstCombatant = sorted[0];
         if (firstCombatant) {
@@ -1113,7 +1139,8 @@ export function CombatSessionClient({
       const current = snap.combatants[snap.current_turn_index];
       if (!current?.is_player) return;
       // B3: Match by session_token_id first (ID-based, survives renames), then fallback to name
-      const tokenMatch = payload.sender_token_id && current.session_token_id && current.session_token_id === payload.sender_token_id;
+      const senderTokenId = payload.sender_token_id as string | undefined;
+      const tokenMatch = senderTokenId && current.session_token_id && current.session_token_id === senderTokenId;
       const nameMatch = payload.player_name && current.name === payload.player_name;
       if (!tokenMatch && !nameMatch) return;
       handleAdvanceTurnRef.current();
@@ -1130,6 +1157,21 @@ export function CombatSessionClient({
         useCombatStore.getState().addDeathSaveSuccess(combatant_id);
       } else {
         useCombatStore.getState().addDeathSaveFailure(combatant_id);
+      }
+      // Log death save to combat log for difficulty analysis
+      const cForLog = useCombatStore.getState().combatants.find((x) => x.id === combatant_id);
+      if (cForLog) {
+        const round = useCombatStore.getState().round_number;
+        useCombatLogStore.getState().addEntry({
+          round,
+          type: "save",
+          actorName: cForLog.name,
+          description: `Death save: ${result}`,
+          details: {
+            targetId: combatant_id,
+            rollMode: result, // "success" or "failure"
+          },
+        });
       }
       // Broadcast updated state to all players
       const c = useCombatStore.getState().combatants.find((x) => x.id === combatant_id);
@@ -1200,7 +1242,7 @@ export function CombatSessionClient({
       // B3: Verify ownership — token ID first (survives renames), then name fallback
       const senderTokenId = payload.sender_token_id as string | undefined;
       const tokenMatch = senderTokenId && combatant.session_token_id && combatant.session_token_id === senderTokenId;
-      const nameMatch = combatant.name.toLowerCase() === String(player_name).toLowerCase();
+      const nameMatch = combatant.name.normalize("NFC").trim().toLocaleLowerCase() === String(player_name).normalize("NFC").trim().toLocaleLowerCase();
       if (!tokenMatch && !nameMatch) return;
       // P1.04: Ignore damage on already-dead player — prevents spurious death save toasts
       if (action === "damage" && (combatant.current_hp ?? 0) <= 0) return;
@@ -1249,7 +1291,7 @@ export function CombatSessionClient({
       // B3: Verify ownership — token ID first (survives renames), then name fallback
       const senderTokenId = (payload as Record<string, unknown>).sender_token_id as string | undefined;
       const tokenMatch = senderTokenId && combatant.session_token_id && combatant.session_token_id === senderTokenId;
-      const nameMatch = combatant.name.toLowerCase() === String(player_name ?? "").toLowerCase();
+      const nameMatch = combatant.name.normalize("NFC").trim().toLocaleLowerCase() === String(player_name ?? "").normalize("NFC").trim().toLocaleLowerCase();
       if (!tokenMatch && !nameMatch) return;
       // Apply the toggle via the store
       useCombatStore.getState().toggleCondition(combatant_id, condition);
