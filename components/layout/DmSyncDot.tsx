@@ -18,8 +18,8 @@ export function DmSyncDot({ status }: DmSyncDotProps) {
     status === "connected"
       ? "bg-teal-400"
       : status === "connecting"
-        ? "bg-amber-400 animate-pulse"
-        : "bg-red-400 animate-pulse";
+        ? "bg-amber-400 animate-[pulse_4s_ease-in-out_infinite]"
+        : "bg-red-400 animate-[pulse_4s_ease-in-out_infinite]";
 
   const tooltip =
     status === "connected"

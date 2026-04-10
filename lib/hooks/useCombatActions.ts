@@ -32,6 +32,7 @@ import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 import { applyGroupRename } from "@/lib/utils/group-rename";
 import { playTurnSfx } from "@/lib/utils/turn-sfx";
+import { trackEvent } from "@/lib/analytics/track";
 
 /** Get the name of the combatant whose turn is currently active. */
 function getCurrentActorName(): string {
@@ -106,6 +107,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
 
     broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound, next_combatant_id: nextCombatantId });
+    trackEvent("combat:turn_advanced", { round: nextRound, turn_index: nextIdx });
 
     // CP.2.1: Log turn advance
     const currentCombatant = combatants[nextIdx];
@@ -375,6 +377,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     postState.hydrateCombatants(reordered);
 
     broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
+    trackEvent("combat:combatant_removed", { combatant_id: id });
 
     // BT2-02: Broadcast full state sync after removal so players get correct
     // initiative order and adjusted turn index (player-side can't adjust these locally)
@@ -417,6 +420,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     const added = sorted.find((c) => !existingIds.has(c.id));
     if (added && snap.encounter_id) {
       broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
+      trackEvent("combat:combatant_added", { name: added.name, is_player: added.is_player });
 
       // BT2-03: Broadcast full state sync after add so players get correct
       // initiative order (player-side just appends to end without sorting)

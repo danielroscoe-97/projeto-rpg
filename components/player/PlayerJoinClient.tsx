@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { claimPlayerToken, registerPlayerCombatant, markPlayerToken, rejoinAsPlayer } from "@/lib/supabase/player-registration";
+import { trackEvent } from "@/lib/analytics/track";
 import { PlayerInitiativeBoard, type CombatLogEntry } from "@/components/player/PlayerInitiativeBoard";
 import { PlayerLobby } from "@/components/player/PlayerLobby";
 import { SyncIndicator } from "@/components/player/SyncIndicator";
@@ -408,6 +409,7 @@ export function PlayerJoinClient({
               setReconnectingAs(null);
               persistPlayerIdentity(sessionId, rejoinedId, saved.playerName);
               setAuthReady(true);
+              trackEvent("player:reconnected", { session_id: sessionId, method: "stored_identity" });
             }
             return; // Reconnect successful — skip claimPlayerToken
           } catch {
@@ -1222,6 +1224,8 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "chat:dm_postit" }, () => {
           // Delegated to DmPostit component — no action here
         })
+        // NOTE: DM currently signals start via session:state_sync, not combat:started.
+        // Kept as defensive handler in case the event is added in the future.
         .on("broadcast", { event: "combat:started" }, ({ payload }) => {
           setActive(true);
           setCombatStatsData(null);

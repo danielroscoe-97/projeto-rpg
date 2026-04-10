@@ -120,9 +120,43 @@ export async function GET(request: NextRequest) {
     if (context === "campaign_join") {
       return "/app/dashboard?welcome=1";
     }
-    // Check if user has campaigns — if not, go to onboarding
+    // Check if user has an active session token (mid-combat signup) — send them back to combat
+    // CR-1: Query by token value (not anon_user_id) since Supabase assigns a new user ID on signup
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      // CR-2: Validate join_token against DB (not just regex) to prevent session fixation
+      const joinToken = searchParams.get("join_token");
+      if (joinToken) {
+        const service = createServiceClient();
+        const { data: validToken } = await service
+          .from("session_tokens")
+          .select("token")
+          .eq("token", joinToken)
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (validToken?.token) {
+          return `/join/${validToken.token}`;
+        }
+      }
+
+      // CR-1: Also check by anon_user_id as fallback for same-device reconnect
+      const service = createServiceClient();
+      const { data: activeToken, error: tokenError } = await service
+        .from("session_tokens")
+        .select("token")
+        .eq("anon_user_id", user.id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      // CR-6: Only redirect if query succeeded (not on DB error)
+      if (!tokenError && activeToken?.token) {
+        return `/join/${activeToken.token}`;
+      }
+
+      // Check if user has campaigns — if not, go to onboarding
       const { count } = await supabase.from("campaigns").select("id", { count: "exact", head: true }).eq("owner_id", user.id);
       if (count === 0) {
         return "/app/onboarding";
