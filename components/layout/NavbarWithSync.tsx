@@ -33,24 +33,31 @@ export function NavbarWithSync(props: NavbarWithSyncProps) {
   // Inside campaign: hide Compêndio, show Dashboard button instead
   const isCampaignRoute = pathname.startsWith("/app/campaigns/");
 
-  const campaignLinks = isCampaignRoute
-    ? [
-        {
-          href: "/app/dashboard",
-          label: (
-            <span className="inline-flex items-center gap-1.5">
-              <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
-              {t("dashboard")}
-            </span>
-          ),
-        },
-      ]
-    : props.links;
+  // G-08/G-26: Onboarding wizard — minimal navbar (no links, no extras)
+  const isOnboarding = pathname === "/app/onboarding";
+
+  const effectiveLinks = isOnboarding
+    ? undefined
+    : isCampaignRoute
+      ? [
+          {
+            href: "/app/dashboard",
+            label: (
+              <span className="inline-flex items-center gap-1.5">
+                <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
+                {t("dashboard")}
+              </span>
+            ),
+          },
+        ]
+      : props.links;
 
   return (
     <Navbar
       {...props}
-      links={campaignLinks}
+      links={effectiveLinks}
+      rightSlot={isOnboarding ? undefined : props.rightSlot}
+      minimal={isOnboarding}
       syncSlot={sessionId ? <DmSyncDot status={status} /> : undefined}
     />
   );

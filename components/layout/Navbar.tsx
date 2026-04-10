@@ -27,9 +27,11 @@ interface NavbarProps {
   rightSlot?: React.ReactNode;
   /** Optional sync status dot — rendered next to brand text */
   syncSlot?: React.ReactNode;
+  /** Hide mobile hamburger, search, and drawer — used during onboarding wizard */
+  minimal?: boolean;
 }
 
-export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: NavbarProps) {
+export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, minimal }: NavbarProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -112,8 +114,8 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot }: Na
             {rightSlot}
           </div>
 
-          {/* Mobile right actions: search + hamburger */}
-          <div className="lg:hidden ml-auto flex items-center gap-1">
+          {/* Mobile right actions: search + hamburger — hidden in minimal mode */}
+          <div className={`lg:hidden ml-auto flex items-center gap-1${minimal ? " hidden" : ""}`}>
             {/* Search trigger (mobile) — opens Command Palette */}
             <button
               type="button"

@@ -94,9 +94,10 @@ export function DashboardTourProvider({
       useDashboardTourStore.getState().resetTour();
     }
 
+    // G-22: After wizard, give user time to breathe before starting tour
     const fromWizard = typeof window !== "undefined"
       && new URLSearchParams(window.location.search).get("from") === "wizard";
-    const effectiveDelay = fromWizard ? 800 : delayMs;
+    const effectiveDelay = fromWizard ? 3500 : delayMs;
 
     // Use a page-content element as a proxy for "page content is ready".
     // Player tour uses the dashboard header (always present) instead of

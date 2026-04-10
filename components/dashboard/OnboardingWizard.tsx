@@ -273,7 +273,10 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   }
 
   // ── Role Step (JO-05) ──────────────────────────────────────────────
-  const [selectedRole, setSelectedRole] = useState<UserRole>("both");
+  // F-01: No pre-selection — force conscious choice. F-04: Pre-select from signup if available.
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(
+    userRole === "player" || userRole === "dm" || userRole === "both" ? (userRole as UserRole) : null
+  );
   const [roleSubmitting, setRoleSubmitting] = useState(false);
 
   const ROLE_OPTIONS: { value: UserRole; icon: React.ReactNode; labelKey: string; descKey: string }[] = [
@@ -283,6 +286,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   ];
 
   async function handleRoleContinue() {
+    if (!selectedRole) return;
     setRoleSubmitting(true);
     try {
       const supabase = createClient();
@@ -327,8 +331,9 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
         return;
       }
 
-      // DM or Both → continue to welcome
-      setState((s) => ({ ...s, step: "welcome" }));
+      // DM or Both → skip welcome for fresh users (G-09), keep for guest_combat
+      const nextStep = effectiveSource === "guest_combat" ? "welcome" : "choose";
+      setState((s) => ({ ...s, step: nextStep }));
     } catch (err) {
       captureError(err, { component: "OnboardingWizard", action: "handleRoleContinue", category: "database" });
       toast.error(t("role_save_error"));
@@ -382,7 +387,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
 
         <Button
           onClick={handleRoleContinue}
-          disabled={roleSubmitting}
+          disabled={roleSubmitting || !selectedRole}
           variant="gold"
           className="w-full"
         >
@@ -495,24 +500,53 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
           </div>
         </motion.div>
 
-        {/* CTA buttons */}
+        {/* F-07: Engagement hooks — "While you wait" cards */}
         <motion.div
           className="space-y-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.4 }}
         >
+          <p className="text-xs text-muted-foreground/70 uppercase tracking-wider text-center font-medium">
+            {t("player_done_meanwhile")}
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              href="/app/compendium"
+              className="group flex flex-col items-center text-center p-4 rounded-xl border border-gold/20 bg-gold/[0.04] hover:bg-gold/[0.10] hover:border-gold/40 transition-all duration-200"
+            >
+              <Image
+                src="/art/icons/carta.png"
+                alt=""
+                width={32}
+                height={32}
+                className="pixel-art mb-2 opacity-70 group-hover:opacity-100 transition-opacity"
+                aria-hidden="true"
+                unoptimized
+              />
+              <span className="text-sm font-semibold text-foreground">{t("player_done_explore_title")}</span>
+              <span className="text-[11px] text-muted-foreground mt-1 leading-tight">{t("player_done_explore_desc")}</span>
+            </Link>
+            <Link
+              href="/try"
+              className="group flex flex-col items-center text-center p-4 rounded-xl border border-border bg-white/[0.02] hover:bg-white/[0.06] hover:border-gold/30 transition-all duration-200"
+            >
+              <Image
+                src="/art/icons/potion.png"
+                alt=""
+                width={32}
+                height={32}
+                className="pixel-art mb-2 opacity-70 group-hover:opacity-100 transition-opacity"
+                aria-hidden="true"
+                unoptimized
+              />
+              <span className="text-sm font-semibold text-foreground">{t("player_done_try_title")}</span>
+              <span className="text-[11px] text-muted-foreground mt-1 leading-tight">{t("player_done_try_desc")}</span>
+            </Link>
+          </div>
           <Button variant="gold" className="w-full" asChild>
             <Link href="/app/dashboard">{t("player_done_dashboard")}</Link>
           </Button>
-          <div className="flex gap-3">
-            <Button variant="goldOutline" className="flex-1" asChild>
-              <Link href="/app/compendium">{t("player_done_compendium")}</Link>
-            </Button>
-            <Button variant="goldOutline" className="flex-1" asChild>
-              <Link href="/try">{t("player_done_try")}</Link>
-            </Button>
-          </div>
         </motion.div>
       </motion.div>
     );
@@ -553,14 +587,18 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               // Go straight to combat — skip dashboard tour for quick combat path
               router.push("/app/session/new");
             }}
-            className="group relative flex flex-col items-center text-center p-6 rounded-xl border border-gold/30 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/50 transition-all duration-200 cursor-pointer"
+            className="group relative flex flex-col items-center text-center p-6 rounded-xl border-2 border-gold/40 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/60 transition-all duration-200 cursor-pointer shadow-[0_0_20px_rgba(212,168,83,0.08)] hover:shadow-[0_0_24px_rgba(212,168,83,0.15)]"
           >
+            {/* F-05: Recommended badge */}
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider bg-gold text-surface-primary px-3 py-0.5 rounded-full whitespace-nowrap">
+              {t("choose_combat_recommended")}
+            </span>
             <Image
               src="/art/icons/potion.png"
               alt=""
               width={48}
               height={48}
-              className="pixel-art mb-4 opacity-80 group-hover:opacity-100 transition-opacity"
+              className="pixel-art mb-4 opacity-90 group-hover:opacity-100 transition-opacity"
               aria-hidden="true"
               unoptimized
             />
@@ -570,10 +608,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
             <p className="text-sm text-muted-foreground leading-relaxed">
               {t("choose_combat_description")}
             </p>
-            <span className="mt-2 text-[11px] font-medium text-gold/80">
-              {t("choose_combat_recommended")}
-            </span>
-            <span className="mt-2 text-xs font-medium text-gold opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="mt-3 text-xs font-medium text-gold opacity-0 group-hover:opacity-100 transition-opacity">
               {t("choose_combat_cta")}
             </span>
           </button>
@@ -935,35 +970,46 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
             >
               {t("invite_done_cta")}
             </Button>
-            <button
-              type="button"
+            <Button
               onClick={handleFinishWizard}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
-            >
-              {t("invite_skip")}
-            </button>
-          </div>
-        )}
-        {state.step === "done" && (
-          <div className="flex gap-2 w-full flex-col sm:flex-row">
-            <Button
-              asChild
-              variant="gold"
-              className="flex-1"
-            >
-              <Link href={state.campaignId ? `/app/campaigns/${state.campaignId}` : "/app/dashboard"}>
-                {t("configure_campaign_cta")}
-              </Link>
-            </Button>
-            <Button
-              asChild
               variant="goldOutline"
               className="flex-1"
             >
-              <Link href="/app/dashboard?from=wizard">
-                {t("go_to_dashboard")}
+              {t("invite_skip")}
+            </Button>
+          </div>
+        )}
+        {state.step === "done" && (
+          <div className="flex flex-col gap-2 w-full">
+            <Button
+              asChild
+              variant="gold"
+              className="w-full"
+            >
+              <Link href="/app/session/new">
+                {t("first_combat_cta")}
               </Link>
             </Button>
+            <div className="flex gap-2">
+              <Button
+                asChild
+                variant="goldOutline"
+                className="flex-1"
+              >
+                <Link href={state.campaignId ? `/app/campaigns/${state.campaignId}` : "/app/dashboard"}>
+                  {t("configure_campaign_cta")}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="goldOutline"
+                className="flex-1"
+              >
+                <Link href="/app/dashboard?from=wizard">
+                  {t("go_to_dashboard")}
+                </Link>
+              </Button>
+            </div>
           </div>
         )}
       </CardFooter>
@@ -1017,13 +1063,16 @@ function InviteStep({
 
   return (
     <div className="space-y-4">
-      {/* Join link card */}
+      {/* Join link card — truncated on mobile, full on desktop */}
       <div className="p-3 rounded-lg bg-white/[0.04] border border-gold/20">
         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
           {t("invite_link_label")}
         </p>
-        <p className="text-sm font-mono text-gold break-all">
+        <p className="text-sm font-mono text-gold break-all hidden sm:block">
           {joinLink}
+        </p>
+        <p className="text-sm font-mono text-gold sm:hidden select-none">
+          .../join-campaign/{joinCode}
         </p>
       </div>
 
