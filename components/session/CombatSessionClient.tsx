@@ -38,7 +38,7 @@ const DmAtmospherePanel = dynamic(() => import("@/components/audio/DmAtmosphereP
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
-import { persistCombatLog, loadCombatLog, clearCombatLog } from "@/lib/supabase/combat-log-persist";
+import { persistCombatLog, loadCombatLog } from "@/lib/supabase/combat-log-persist";
 import type { CombatStartSnapshot } from "@/lib/supabase/encounter-snapshot";
 import { computeCombatStats, getMaxRound, buildCombatReport } from "@/lib/utils/combat-stats";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
@@ -403,9 +403,8 @@ export function CombatSessionClient({
     setReportShareUrl(null);
     setLeaderboardData(null);
     useCombatLogStore.getState().clear();
-    // Clear DB combat log — report is already saved, log no longer needed
-    const clearEncId = useCombatStore.getState().encounter_id;
-    if (clearEncId) clearCombatLog(clearEncId).catch(() => { /* non-fatal */ });
+    // DB combat log is NOT cleared — persist at line 340 already wrote the final log,
+    // and clearing would race with that write. The column is overwritten on next combat start.
 
     // P1.06: Snapshot Map before await — prevents race condition with late-arriving votes
     const snapshotVotes = new Map(pollVotes);
@@ -1148,7 +1147,7 @@ export function CombatSessionClient({
       // B3: Match by session_token_id first (ID-based, survives renames), then fallback to name
       const senderTokenId = payload.sender_token_id as string | undefined;
       const tokenMatch = senderTokenId && current.session_token_id && current.session_token_id === senderTokenId;
-      const nameMatch = payload.player_name && current.name === payload.player_name;
+      const nameMatch = payload.player_name && current.name.normalize("NFC").trim().toLocaleLowerCase() === String(payload.player_name).normalize("NFC").trim().toLocaleLowerCase();
       if (!tokenMatch && !nameMatch) return;
       handleAdvanceTurnRef.current();
     };
@@ -1160,6 +1159,13 @@ export function CombatSessionClient({
       if (!active) return;
       const { combatant_id, result } = payload as { combatant_id: string; result: "success" | "failure" };
       if (!combatant_id || !result) return;
+      // B3: Verify ownership — token ID first, then name fallback
+      const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
+      if (!combatant || !combatant.is_player) return;
+      const dsSenderTokenId = payload.sender_token_id as string | undefined;
+      const dsTokenMatch = dsSenderTokenId && combatant.session_token_id && combatant.session_token_id === dsSenderTokenId;
+      const dsNameMatch = combatant.name.normalize("NFC").trim().toLocaleLowerCase() === String(payload.player_name ?? "").normalize("NFC").trim().toLocaleLowerCase();
+      if (!dsTokenMatch && !dsNameMatch) return;
       if (result === "success") {
         useCombatStore.getState().addDeathSaveSuccess(combatant_id);
       } else {
