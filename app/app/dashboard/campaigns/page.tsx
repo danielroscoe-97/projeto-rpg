@@ -37,9 +37,33 @@ export default async function CampaignsPage() {
 
   const { data: rawCampaigns } = await supabase
     .from("campaigns")
-    .select("id, name, created_at, is_archived, player_characters(count)")
+    .select(`
+      id, name, created_at, is_archived,
+      player_characters(count),
+      sessions(count),
+      campaign_notes(count),
+      campaign_npcs(count)
+    `)
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
+
+  // Fetch last session date per campaign
+  const campaignIds = (rawCampaigns ?? []).map((c) => c.id as string);
+  let lastSessionMap: Record<string, string> = {};
+  if (campaignIds.length > 0) {
+    const { data: sessionsData } = await supabase
+      .from("sessions")
+      .select("campaign_id, updated_at")
+      .in("campaign_id", campaignIds)
+      .order("updated_at", { ascending: false });
+    // Take first (most recent) per campaign
+    for (const s of sessionsData ?? []) {
+      const cid = s.campaign_id as string;
+      if (!lastSessionMap[cid]) {
+        lastSessionMap[cid] = s.updated_at as string;
+      }
+    }
+  }
 
   const campaigns = (rawCampaigns ?? []).map((c) => ({
     id: c.id as string,
@@ -47,6 +71,13 @@ export default async function CampaignsPage() {
     created_at: c.created_at as string,
     player_count:
       (c.player_characters as { count: number }[])[0]?.count ?? 0,
+    session_count:
+      (c.sessions as { count: number }[])[0]?.count ?? 0,
+    note_count:
+      (c.campaign_notes as { count: number }[])[0]?.count ?? 0,
+    npc_count:
+      (c.campaign_npcs as { count: number }[])[0]?.count ?? 0,
+    last_session_date: lastSessionMap[c.id as string] ?? null,
     is_archived: (c.is_archived as boolean) ?? false,
   }));
 

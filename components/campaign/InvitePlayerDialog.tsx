@@ -39,6 +39,7 @@ const STATUS_ICONS: Record<string, React.ReactNode> = {
 
 export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenChange }: InvitePlayerDialogProps) {
   const t = useTranslations("campaign");
+  const tc = useTranslations("common");
   const [_open, _setOpen] = useState(false);
   const open = controlledOpen ?? _open;
   const setOpen = (next: boolean) => {
@@ -92,7 +93,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
   const handleCopy = useCallback(() => {
     if (!linkCode) return;
     navigator.clipboard.writeText(buildLink(linkCode));
-    toast.success("Link copiado!");
+    toast.success(t("invite_link_copied"));
   }, [linkCode]);
 
   const handleToggleActive = useCallback(async (active: boolean) => {
@@ -122,7 +123,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
         setLinkCode(data.code);
         setLinkActive(true);
         setExpiresAt(data.expires_at ?? null);
-        toast.success("Link renovado!");
+        toast.success(t("invite_link_renewed"));
       }
     } catch (err) {
       captureError(err, { component: "InvitePlayerDialog", action: "renewLink", category: "network" });
@@ -219,25 +220,25 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
           <TabsList className="w-full">
             <TabsTrigger value="link" className="flex-1 gap-1.5">
               <LinkIcon className="w-3.5 h-3.5" />
-              Via Link
+              {t("invite_tab_link")}
             </TabsTrigger>
             <TabsTrigger value="email" className="flex-1 gap-1.5">
               <Mail className="w-3.5 h-3.5" />
-              Via E-mail
+              {t("invite_tab_email")}
             </TabsTrigger>
           </TabsList>
 
           {/* ── Via Link ── */}
           <TabsContent value="link" className="mt-4 space-y-4 flex-none">
             {linkLoading ? (
-              <p className="text-sm text-muted-foreground text-center py-4">Gerando link...</p>
+              <p className="text-sm text-muted-foreground text-center py-4">{t("invite_generating")}</p>
             ) : linkError ? (
               <div className="text-center py-4 space-y-3">
                 <AlertCircle className="w-5 h-5 text-destructive mx-auto" />
-                <p className="text-sm text-muted-foreground">Não foi possível gerar o link de convite.</p>
+                <p className="text-sm text-muted-foreground">{t("invite_error_generate")}</p>
                 <Button type="button" variant="outline" size="sm" onClick={loadJoinLink} className="gap-1.5">
                   <RefreshCw className="w-3.5 h-3.5" />
-                  Tentar novamente
+                  {t("invite_retry")}
                 </Button>
               </div>
             ) : linkCode != null ? (
@@ -249,7 +250,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
                     value={buildLink(linkCode)}
                     className="flex-1 text-xs bg-surface-tertiary border-white/[0.15] text-foreground"
                   />
-                  <Button type="button" variant="outline" size="icon" onClick={handleCopy} title="Copiar link">
+                  <Button type="button" variant="outline" size="icon" onClick={handleCopy} title={t("invite_copy_title")}>
                     <Copy className="w-4 h-4" />
                   </Button>
                 </div>
@@ -268,7 +269,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
 
                 {/* Active toggle */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Desativar Link</span>
+                  <span className="text-sm text-muted-foreground">{t("invite_disable_link")}</span>
                   <Switch checked={linkActive} onCheckedChange={handleToggleActive} />
                 </div>
 
@@ -282,26 +283,26 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
                     onClick={handleRenew}
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
-                    Renovar Link
+                    {t("invite_renew_link")}
                   </Button>
                 ) : (
                   <div className="rounded-lg border border-white/[0.04] p-3 space-y-2">
                     <p className="text-xs text-muted-foreground">
-                      Jogadores com o link antigo precisarão do novo link para entrar.
+                      {t("invite_renew_warning")}
                     </p>
                     <div className="flex gap-2">
                       <Button type="button" variant="destructive" size="sm" className="flex-1" onClick={handleRenew}>
-                        Confirmar
+                        {tc("confirm")}
                       </Button>
                       <Button type="button" variant="ghost" size="sm" className="flex-1" onClick={() => setConfirmRenew(false)}>
-                        Cancelar
+                        {tc("cancel")}
                       </Button>
                     </div>
                   </div>
                 )}
               </>
             ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">Gerando link...</p>
+              <p className="text-sm text-muted-foreground text-center py-4">{t("invite_generating")}</p>
             )}
           </TabsContent>
 

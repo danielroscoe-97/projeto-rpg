@@ -26,6 +26,8 @@ interface CampaignArchiveDialogProps {
   sessionCount?: number;
   encounterCount?: number;
   noteCount?: number;
+  /** Whether the campaign is currently archived — delete requires archive first */
+  isArchived?: boolean;
   mode: "archive" | "restore" | "delete";
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -38,6 +40,7 @@ export function CampaignArchiveDialog({
   sessionCount = 0,
   encounterCount = 0,
   noteCount = 0,
+  isArchived = false,
   mode,
   open,
   onOpenChange,
@@ -94,6 +97,10 @@ export function CampaignArchiveDialog({
   }
 
   async function handleDelete() {
+    if (!isArchived) {
+      toast.error(t("must_archive_first"));
+      return;
+    }
     if (deleteConfirmName !== campaignName) return;
 
     setIsLoading(true);
@@ -245,7 +252,7 @@ export function CampaignArchiveDialog({
           <AlertDialogAction
             onClick={handleDelete}
             className="bg-red-600 hover:bg-red-700 text-foreground"
-            disabled={isLoading || deleteConfirmName !== campaignName}
+            disabled={isLoading || deleteConfirmName !== campaignName || !isArchived}
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

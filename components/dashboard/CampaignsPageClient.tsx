@@ -15,6 +15,11 @@ interface CampaignsPageClientProps {
     name: string;
     created_at: string;
     player_count: number;
+    session_count?: number;
+    note_count?: number;
+    npc_count?: number;
+    last_session_date?: string | null;
+    is_archived?: boolean;
   }[];
   userId: string;
   userRole: UserRole;

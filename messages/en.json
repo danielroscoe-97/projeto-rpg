@@ -225,6 +225,7 @@
     "section_mindmap": "Mind Map",
     "create_character_and_join": "Create Character & Join",
     "new_combat_button": "New Combat",
+    "session_start_error": "Failed to start session. Please try again.",
     "quick_action_invite": "Invite Player",
     "quick_action_encounter": "New Encounter",
     "quick_action_note": "New Note",
@@ -323,12 +324,32 @@
     "hub_card_settings": "Settings",
     "hub_card_sessions": "Sessions",
     "quick_action_plan_session": "Plan Session",
-    "quick_action_invite": "Invite your players",
+    "quick_action_invite_cta": "Invite your players",
     "quick_action_first_encounter": "Create your first encounter",
     "quick_action_first_session": "Start your first session",
     "hero_session_active": "Session in progress: {name}",
     "hero_session_next": "Next session: {name}",
-    "hero_enter_session": "Enter active session"
+    "hero_enter_session": "Enter active session",
+    "invite_link_copied": "Link copied!",
+    "invite_link_renewed": "Link renewed!",
+    "invite_generating": "Generating link...",
+    "invite_disable_link": "Disable Link",
+    "invite_renew_link": "Renew Link",
+    "invite_renew_warning": "Players with the old link will need the new link to join.",
+    "invite_error_generate": "Could not generate the invite link.",
+    "invite_retry": "Try again",
+    "invite_copy_title": "Copy link",
+    "invite_tab_link": "Via Link",
+    "invite_tab_email": "Via E-mail",
+    "join_with_character": "Join with this character",
+    "level_value": "Level {level}"
+  },
+  "joinCampaign": {
+    "error_invalid_link": "Invalid or expired link.",
+    "error_link_disabled": "This link has been disabled by the Game Master.",
+    "error_campaign_full": "This campaign is full. Ask the Game Master to increase the player limit.",
+    "error_link_expired": "This link has expired. Ask the Game Master for a new one.",
+    "back_home": "Back to home"
   },
   "campaign_combat": {
     "title": "Start Combat",
@@ -453,7 +474,11 @@
     "delete_mismatch": "Name does not match",
     "delete_button": "Permanently Delete",
     "delete_success": "Campaign deleted",
-    "error": "Error processing. Please try again."
+    "error": "Error processing. Please try again.",
+    "must_archive_first": "You must archive the campaign before deleting it permanently.",
+    "archived_banner_title": "This campaign has been archived",
+    "archived_banner_desc": "This campaign was archived by the DM and is no longer accessible.",
+    "back_to_dashboard": "Back to Dashboard"
   },
   "sessionPlanner": {
     "title": "Plan Session",
@@ -491,7 +516,7 @@
     "date_days_ago": "{count} days ago",
     "date_in_days": "in {count} days",
     "date_in_weeks": "in {count} weeks",
-    "date_absolute": "",
+    "date_absolute": "{date}",
     "status_planned": "Planned",
     "status_active": "Active",
     "status_completed": "Completed",
@@ -537,7 +562,11 @@
     "status_planned": "Planned",
     "status_active": "Active",
     "status_completed": "Completed",
-    "status_cancelled": "Cancelled"
+    "status_cancelled": "Cancelled",
+    "date_today": "Today",
+    "date_yesterday": "Yesterday",
+    "date_days_ago": "{count}d ago",
+    "date_weeks_ago": "{count}w ago"
   },
   "campaignMembership": {
     "player_joined": "{name} joined the campaign!",

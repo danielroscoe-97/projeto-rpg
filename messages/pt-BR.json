@@ -225,6 +225,7 @@
     "section_mindmap": "Mapa Mental",
     "create_character_and_join": "Criar Personagem e Entrar",
     "new_combat_button": "Novo Combate",
+    "session_start_error": "Erro ao iniciar sessão. Tente novamente.",
     "quick_action_invite": "Convidar Jogador",
     "quick_action_encounter": "Novo Encontro",
     "quick_action_note": "Nova Nota",
@@ -323,12 +324,32 @@
     "hub_card_settings": "Configurações",
     "hub_card_sessions": "Sessões",
     "quick_action_plan_session": "Planejar Sessão",
-    "quick_action_invite": "Convide seus jogadores",
+    "quick_action_invite_cta": "Convide seus jogadores",
     "quick_action_first_encounter": "Crie seu primeiro encontro",
     "quick_action_first_session": "Inicie sua primeira sessão",
     "hero_session_active": "Sessão em andamento: {name}",
     "hero_session_next": "Próxima sessão: {name}",
-    "hero_enter_session": "Entrar na sessão ativa"
+    "hero_enter_session": "Entrar na sessão ativa",
+    "invite_link_copied": "Link copiado!",
+    "invite_link_renewed": "Link renovado!",
+    "invite_generating": "Gerando link...",
+    "invite_disable_link": "Desativar Link",
+    "invite_renew_link": "Renovar Link",
+    "invite_renew_warning": "Jogadores com o link antigo precisarão do novo link para entrar.",
+    "invite_error_generate": "Não foi possível gerar o link de convite.",
+    "invite_retry": "Tentar novamente",
+    "invite_copy_title": "Copiar link",
+    "invite_tab_link": "Via Link",
+    "invite_tab_email": "Via E-mail",
+    "join_with_character": "Entrar com este personagem",
+    "level_value": "Nível {level}"
+  },
+  "joinCampaign": {
+    "error_invalid_link": "Link inválido ou expirado.",
+    "error_link_disabled": "Este link foi desativado pelo Mestre.",
+    "error_campaign_full": "Esta campanha está cheia. Peça ao Mestre para aumentar o limite de jogadores.",
+    "error_link_expired": "Este link expirou. Peça um novo ao Mestre.",
+    "back_home": "Voltar ao início"
   },
   "campaign_combat": {
     "title": "Iniciar Combate",
@@ -453,7 +474,11 @@
     "delete_mismatch": "O nome não corresponde",
     "delete_button": "Excluir Permanentemente",
     "delete_success": "Campanha excluída",
-    "error": "Erro ao processar. Tente novamente."
+    "error": "Erro ao processar. Tente novamente.",
+    "must_archive_first": "Você precisa arquivar a campanha antes de excluí-la permanentemente.",
+    "archived_banner_title": "Esta campanha foi arquivada",
+    "archived_banner_desc": "Esta campanha foi arquivada pelo Mestre e não está mais acessível.",
+    "back_to_dashboard": "Voltar ao Dashboard"
   },
   "sessionPlanner": {
     "title": "Planejar Sessão",
@@ -491,7 +516,7 @@
     "date_days_ago": "há {count} dias",
     "date_in_days": "em {count} dias",
     "date_in_weeks": "em {count} semanas",
-    "date_absolute": "",
+    "date_absolute": "{date}",
     "status_planned": "Planejada",
     "status_active": "Ativa",
     "status_completed": "Concluída",
@@ -537,7 +562,11 @@
     "status_planned": "Planejada",
     "status_active": "Ativa",
     "status_completed": "Concluída",
-    "status_cancelled": "Cancelada"
+    "status_cancelled": "Cancelada",
+    "date_today": "Hoje",
+    "date_yesterday": "Ontem",
+    "date_days_ago": "há {count}d",
+    "date_weeks_ago": "há {count}sem"
   },
   "campaignMembership": {
     "player_joined": "{name} entrou na campanha!",

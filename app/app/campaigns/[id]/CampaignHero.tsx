@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Swords, Plus, FileText, UserCircle, CalendarDays, UserPlus, Play } from "lucide-react";
+import { startSession } from "@/lib/supabase/campaign-sessions";
 import { CampaignPlayerAvatars } from "@/components/campaign/CampaignPlayerAvatars";
 import { CampaignStatusCards } from "@/components/campaign/CampaignStatusCards";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
@@ -19,6 +21,7 @@ import type { PlannedSession } from "@/lib/types/campaign-hub";
 interface CampaignHeroProps {
   campaignId: string;
   campaignName: string;
+  userId: string;
   characters: PlayerCharacter[];
   playerEmails: string[];
   playerCount: number;
@@ -36,6 +39,7 @@ interface CampaignHeroProps {
 export function CampaignHero({
   campaignId,
   campaignName,
+  userId,
   characters,
   playerEmails,
   playerCount,
@@ -148,7 +152,12 @@ export function CampaignHero({
         // Planned session — show session card
         <NextSessionCard
           session={nextPlannedSession}
-          onStart={() => {
+          onStart={async () => {
+            const ok = await startSession(nextPlannedSession.id);
+            if (!ok) {
+              toast.error(t("session_start_error"));
+              return;
+            }
             router.push(`/app/session/${nextPlannedSession.id}`);
           }}
         />
@@ -182,7 +191,7 @@ export function CampaignHero({
             onClick={() => setInviteOpen(true)}
           >
             <UserPlus className="w-3.5 h-3.5 text-amber-400" />
-            {t("quick_action_invite")}
+            {t("quick_action_invite_cta")}
           </button>
         )}
 
@@ -283,6 +292,7 @@ export function CampaignHero({
       />
       <SessionPlanner
         campaignId={campaignId}
+        userId={userId}
         open={plannerOpen}
         onOpenChange={setPlannerOpen}
         onSessionCreated={() => router.refresh()}

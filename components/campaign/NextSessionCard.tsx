@@ -131,7 +131,9 @@ export function NextSessionCard({
               </span>
               {relativeDate && (
                 <span className="text-xs text-amber-400 font-medium">
-                  {t(relativeDate.key, { count: relativeDate.value ?? 0 })}
+                  {relativeDate.key === "date_absolute"
+                    ? t("date_absolute", { date: session.scheduled_for ? new Date(session.scheduled_for).toLocaleDateString() : "" })
+                    : t(relativeDate.key, { count: relativeDate.value ?? 0 })}
                 </span>
               )}
             </div>

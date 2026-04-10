@@ -39,6 +39,7 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
     .select("id, name, owner_id, join_code_active, max_players")
     .eq("join_code", data.code)
     .eq("join_code_active", true)
+    .eq("is_archived", false)
     .maybeSingle();
 
   if (!campaign) throw new Error("Código inválido ou link desativado");

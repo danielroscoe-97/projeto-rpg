@@ -82,6 +82,7 @@ export function CampaignSettings({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedExpiryRef = useRef<ExpiryOption | null>(null);
+  const originalRef = useRef<SettingsData | null>(null);
 
   // ── Load settings on mount ─────────────────────────────────────────────
 
@@ -127,7 +128,7 @@ export function CampaignSettings({
         }
 
         lastSavedExpiryRef.current = expiryOption;
-        setSettings({
+        const loaded: SettingsData = {
           name: campaign?.name ?? campaignName,
           description: campaign?.description ?? "",
           theme: (campaignSettings?.theme as CampaignType) ?? "long_campaign",
@@ -135,7 +136,9 @@ export function CampaignSettings({
           game_system: campaignSettings?.game_system ?? "5e",
           max_players: campaignSettings?.max_players ?? 10,
           join_expiry: expiryOption,
-        });
+        };
+        originalRef.current = loaded;
+        setSettings(loaded);
       } catch {
         // Fall back to defaults with campaign name
         setSettings((prev) => ({ ...prev, name: campaignName }));
@@ -195,6 +198,7 @@ export function CampaignSettings({
 
         if (settingsError) throw settingsError;
 
+        originalRef.current = data;
         setSaveStatus("saved");
         if (savedFadeRef.current) clearTimeout(savedFadeRef.current);
         savedFadeRef.current = setTimeout(() => setSaveStatus("idle"), 2000);
@@ -210,6 +214,11 @@ export function CampaignSettings({
     (patch: Partial<SettingsData>) => {
       setSettings((prev) => {
         const next = { ...prev, ...patch };
+        // Skip save if nothing actually changed
+        if (originalRef.current && JSON.stringify(next) === JSON.stringify(originalRef.current)) {
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          return next;
+        }
         // Debounce save
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => saveSettings(next), 800);

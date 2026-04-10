@@ -4,6 +4,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { JoinCampaignClient } from "@/components/campaign/JoinCampaignClient";
 
 interface JoinCampaignPageProps {
@@ -12,21 +13,23 @@ interface JoinCampaignPageProps {
 
 export default async function JoinCampaignPage({ params }: JoinCampaignPageProps) {
   const { code } = await params;
+  const t = await getTranslations("joinCampaign");
   const service = createServiceClient();
 
   // Validate join code (service client — join_code is a secret)
   const { data: campaign } = await service
     .from("campaigns")
-    .select("id, name, owner_id, join_code_active, max_players, users!campaigns_owner_id_fkey(display_name, email)")
+    .select("id, name, owner_id, join_code_active, max_players, is_archived, users!campaigns_owner_id_fkey(display_name, email)")
     .eq("join_code", code)
+    .eq("is_archived", false)
     .maybeSingle();
 
   if (!campaign) {
-    return <ErrorPage message="Link inválido ou expirado." />;
+    return <ErrorPage message={t("error_invalid_link")} backLabel={t("back_home")} />;
   }
 
   if (!campaign.join_code_active) {
-    return <ErrorPage message="Este link foi desativado pelo Mestre." />;
+    return <ErrorPage message={t("error_link_disabled")} backLabel={t("back_home")} />;
   }
 
   // Check join code expiration
@@ -39,7 +42,7 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
   if (settingsData?.join_code_expires_at) {
     const expiresAt = new Date(settingsData.join_code_expires_at);
     if (expiresAt < new Date()) {
-      return <ErrorPage message="Este link expirou. Peça um novo ao Mestre." />;
+      return <ErrorPage message={t("error_link_expired")} backLabel={t("back_home")} />;
     }
   }
 
@@ -52,7 +55,7 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
       .eq("status", "active");
 
     if ((memberCount ?? 0) >= campaign.max_players) {
-      return <ErrorPage message="Esta campanha está cheia. Peça ao Mestre para aumentar o limite de jogadores." />;
+      return <ErrorPage message={t("error_campaign_full")} backLabel={t("back_home")} />;
     }
   }
 
@@ -101,13 +104,13 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
   );
 }
 
-function ErrorPage({ message }: { message: string }) {
+function ErrorPage({ message, backLabel }: { message: string; backLabel: string }) {
   return (
     <div className="flex min-h-svh items-center justify-center p-6">
       <div className="text-center space-y-4 max-w-sm">
         <h1 className="text-foreground text-xl font-semibold">{message}</h1>
         <Link href="/" className="text-gold hover:underline text-sm">
-          Voltar ao início
+          {backLabel}
         </Link>
       </div>
     </div>

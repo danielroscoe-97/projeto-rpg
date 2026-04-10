@@ -36,7 +36,7 @@ export default async function CampaignPage({
     getCampaignMembership(id, user.id),
     supabase
       .from('campaigns')
-      .select('id, name, description, owner_id')
+      .select('id, name, description, owner_id, is_archived')
       .eq('id', id)
       .single(),
   ])
@@ -48,6 +48,22 @@ export default async function CampaignPage({
 
   // No access: not a member AND not the owner
   if (!role) redirect('/app/dashboard')
+
+  // Archived campaign — show read-only banner
+  if (campaign.is_archived) {
+    const t = await getTranslations("campaignArchive")
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center p-6">
+        <div className="text-center space-y-4 max-w-sm">
+          <h1 className="text-foreground text-xl font-semibold">{t("archived_banner_title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("archived_banner_desc")}</p>
+          <a href="/app/dashboard" className="inline-block text-gold hover:underline text-sm">
+            {t("back_to_dashboard")}
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   // ── Player View ──────────────────────────────────────────────────────────
   if (role === 'player') {
@@ -224,6 +240,7 @@ export default async function CampaignPage({
     { count: noteCount },
     { count: questCount },
     { data: nextPlannedSessionData },
+    { data: campaignSettingsData },
   ] = await Promise.all([
     supabase
       .from('player_characters')
@@ -279,7 +296,14 @@ export default async function CampaignPage({
       .order('scheduled_for', { ascending: true, nullsFirst: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from('campaign_settings')
+      .select('onboarding_completed')
+      .eq('campaign_id', id)
+      .maybeSingle(),
   ])
+
+  const onboardingCompleted = campaignSettingsData?.onboarding_completed ?? false
 
   // Get player emails for combat notifications
   const playerEmails = (initialMembers ?? [])
@@ -354,6 +378,7 @@ export default async function CampaignPage({
               <CampaignHero
                 campaignId={campaign.id}
                 campaignName={campaign.name}
+                userId={user.id}
                 characters={characters ?? []}
                 playerEmails={playerEmails}
                 playerCount={playerCount ?? 0}
@@ -375,7 +400,7 @@ export default async function CampaignPage({
                 npcCount={npcCount ?? 0}
               />
               <CampaignStatsBar stats={campaignStats} />
-              {(playerCount ?? 0) === 0 && finishedEncounterCount === 0 && (sessionCount ?? 0) === 0 ? (
+              {!onboardingCompleted ? (
                 <CampaignOnboardingChecklist
                   campaignId={campaign.id}
                   campaignName={campaign.name}

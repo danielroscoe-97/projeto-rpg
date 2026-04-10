@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2, CalendarDays, FileText, ScrollText } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createSession, startSession } from "@/lib/supabase/campaign-sessions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +21,7 @@ import {
 
 interface SessionPlannerProps {
   campaignId: string;
+  userId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSessionCreated?: (sessionId: string) => void;
@@ -30,13 +31,13 @@ interface SessionPlannerProps {
 
 export function SessionPlanner({
   campaignId,
+  userId,
   open,
   onOpenChange,
   onSessionCreated,
 }: SessionPlannerProps) {
   const t = useTranslations("sessionPlanner");
   const router = useRouter();
-  const supabase = createClient();
 
   const [name, setName] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
@@ -66,45 +67,33 @@ export function SessionPlanner({
     loading(true);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        toast.error(t("error_auth"));
-        loading(false);
-        return;
-      }
-
       const sessionName = name.trim() || t("default_name");
 
-      const { data: session, error } = await supabase
-        .from("sessions")
-        .insert({
-          campaign_id: campaignId,
-          owner_id: user.id,
-          name: sessionName,
-          description: description.trim() || null,
-          scheduled_for: scheduledFor || null,
-          prep_notes: prepNotes.trim() || null,
-          status: startNow ? "active" : "planned",
-          is_active: startNow,
-        })
-        .select("id")
-        .single();
+      const result = await createSession(campaignId, userId, {
+        name: sessionName,
+        description: description.trim() || null,
+        scheduled_for: scheduledFor || null,
+        prep_notes: prepNotes.trim() || null,
+        status: startNow ? "active" : "planned",
+        is_active: startNow,
+      });
 
-      if (error || !session) {
+      if (!result) {
         toast.error(t("error_create"));
         loading(false);
         return;
       }
 
+      if (startNow) {
+        await startSession(result.sessionId);
+      }
+
       toast.success(startNow ? t("success_started") : t("success_planned"));
       onOpenChange(false);
-      onSessionCreated?.(session.id);
+      onSessionCreated?.(result.sessionId);
 
       if (startNow) {
-        router.push(`/app/session/${session.id}`);
+        router.push(`/app/session/${result.sessionId}`);
       }
     } catch {
       toast.error(t("error_create"));

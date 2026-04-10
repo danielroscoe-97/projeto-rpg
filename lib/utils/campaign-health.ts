@@ -73,7 +73,7 @@ export function calculateCampaignHealth(
   } else if (score >= 75) {
     level = "active";
   } else if (score >= 50) {
-    level = "active";
+    level = "growing";
   } else if (score >= 25) {
     level = "growing";
   } else {

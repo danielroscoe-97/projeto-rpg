@@ -376,6 +376,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
           sessionCount={archiveTarget.campaign.session_count}
           encounterCount={archiveTarget.campaign.encounter_count}
           noteCount={archiveTarget.campaign.note_count}
+          isArchived={archiveTarget.campaign.is_archived ?? false}
           mode={archiveTarget.mode}
           open={!!archiveTarget}
           onOpenChange={(open) => { if (!open) setArchiveTarget(null); }}

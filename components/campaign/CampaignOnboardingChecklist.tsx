@@ -8,6 +8,7 @@ import { CheckCircle2, Circle, Users, Swords, ScrollText, Sparkles } from "lucid
 import { InvitePlayerDialog } from "@/components/campaign/InvitePlayerDialog";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
 import { requestXpGrant } from "@/lib/xp/request-xp";
+import { createClient } from "@/lib/supabase/client";
 
 interface CampaignOnboardingChecklistProps {
   campaignId: string;
@@ -81,14 +82,24 @@ export function CampaignOnboardingChecklist({
   const allDone = completedCount === steps.length;
   const currentStepIndex = steps.findIndex((s) => !s.done);
 
+  const persistOnboardingCompleted = useCallback(async () => {
+    const supabase = createClient();
+    await supabase
+      .from("campaign_settings")
+      .update({ onboarding_completed: true })
+      .eq("campaign_id", campaignId);
+  }, [campaignId]);
+
   const handleComplete = useCallback(() => {
     requestXpGrant("dm:campaign_setup_complete", "dm", { campaignId });
+    persistOnboardingCompleted();
     setDismissed(true);
     // Refresh server data after animation
     setTimeout(() => router.refresh(), 400);
-  }, [campaignId, router]);
+  }, [campaignId, router, persistOnboardingCompleted]);
 
   const handleSkip = () => {
+    persistOnboardingCompleted();
     setDismissed(true);
     setTimeout(() => router.refresh(), 400);
   };

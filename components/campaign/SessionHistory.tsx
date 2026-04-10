@@ -46,16 +46,16 @@ type SessionStatus = "planned" | "active" | "completed" | "cancelled";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatSessionDate(dateStr: string): string {
+function formatSessionDate(dateStr: string, t: (key: string, values?: Record<string, string | number>) => string): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  if (diffDays === 0) return t("date_today");
+  if (diffDays === 1) return t("date_yesterday");
+  if (diffDays < 7) return t("date_days_ago", { count: diffDays });
+  if (diffDays < 30) return t("date_weeks_ago", { count: Math.floor(diffDays / 7) });
 
   return date.toLocaleDateString(undefined, {
     day: "numeric",
@@ -220,7 +220,7 @@ function SessionCard({
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" aria-hidden="true" />
-                {formatSessionDate(session.scheduled_for ?? session.created_at)}
+                {formatSessionDate(session.scheduled_for ?? session.created_at, t)}
               </span>
               {stats.totalEncounters > 0 && (
                 <span className="flex items-center gap-1">

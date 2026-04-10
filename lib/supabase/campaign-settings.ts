@@ -5,15 +5,6 @@ import { trackServerEvent } from "@/lib/analytics/track-server";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignSettings as CampaignSettingsRow } from "@/lib/types/database";
 
-// ── Helpers ──
-
-function generateJoinCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = new Uint8Array(8);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => chars[b % chars.length]).join("");
-}
-
 // ── Public API ──
 
 /**
@@ -48,78 +39,30 @@ export async function createCampaignWithSettings(
   }
 
   const supabase = createServiceClient();
-  const joinCode = generateJoinCode();
 
   try {
-    // 1. Insert campaign
-    const { data: campaign, error: campaignError } = await supabase
-      .from("campaigns")
-      .insert({
-        owner_id: userId,
-        name,
-        description: description || null,
-        join_code: joinCode,
-        join_code_active: true,
-      })
-      .select("id")
-      .single();
+    // Atomic RPC: creates campaign + settings in a single transaction
+    // DM membership is auto-inserted by DB trigger handle_new_campaign()
+    const { data, error } = await supabase.rpc("create_campaign_with_settings", {
+      p_owner_id: userId,
+      p_name: name,
+      p_description: description || null,
+    });
 
-    if (campaignError || !campaign) {
-      captureError(campaignError ?? new Error("No campaign returned"), {
+    if (error || !data) {
+      captureError(error ?? new Error("No data returned from RPC"), {
         component: "campaign-settings",
-        action: "insertCampaign",
+        action: "createCampaignWithSettings",
         category: "database",
         extra: { userId },
       });
       return null;
     }
 
-    const campaignId = campaign.id;
-
-    // 2. Insert campaign_settings with defaults
-    const { error: settingsError } = await supabase
-      .from("campaign_settings")
-      .insert({
-        campaign_id: campaignId,
-        game_system: "5e",
-        party_level: 1,
-        is_oneshot: false,
-        allow_spectators: false,
-        max_players: 8,
-        onboarding_completed: false,
-      });
-
-    if (settingsError) {
-      // Non-fatal: campaign was created, settings table might not exist yet
-      captureError(settingsError, {
-        component: "campaign-settings",
-        action: "insertSettings",
-        category: "database",
-        extra: { campaignId },
-      });
-    }
-
-    // 3. Insert campaign_members (DM role)
-    const { error: memberError } = await supabase
-      .from("campaign_members")
-      .insert({
-        campaign_id: campaignId,
-        user_id: userId,
-        role: "dm",
-        status: "active",
-      });
-
-    if (memberError) {
-      captureError(memberError, {
-        component: "campaign-settings",
-        action: "insertMember",
-        category: "database",
-        extra: { campaignId, userId },
-      });
-      // Critical: DM membership failed — clean up orphaned campaign
-      await supabase.from("campaigns").delete().eq("id", campaignId);
-      return null;
-    }
+    const { campaign_id: campaignId, join_code: joinCode } = data as {
+      campaign_id: string;
+      join_code: string;
+    };
 
     trackServerEvent("campaign:created_with_wizard", {
       properties: { campaign_id: campaignId, has_description: !!description },

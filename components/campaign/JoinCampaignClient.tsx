@@ -132,7 +132,7 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
                     <p className="text-foreground text-sm font-medium truncate">{char.name}</p>
                     {(subtitle || char.level) && (
                       <p className="text-muted-foreground text-xs truncate">
-                        {[subtitle, char.level ? `Nível ${char.level}` : null]
+                        {[subtitle, char.level ? t("level_value", { level: char.level }) : null]
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
@@ -252,7 +252,7 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
           {isSubmitting
             ? "..."
             : mode === "pick"
-            ? "Entrar com este personagem"
+            ? t("join_with_character")
             : t("create_character_and_join")}
         </Button>
       </form>

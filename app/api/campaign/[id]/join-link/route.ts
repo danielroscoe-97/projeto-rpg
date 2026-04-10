@@ -62,11 +62,21 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
     if (!join_code) {
       join_code = generateJoinCode();
       join_code_active = true;
-      const { error: updateError } = await supabase
-        .from("campaigns")
-        .update({ join_code, join_code_active: true })
-        .eq("id", campaignId);
+      const expiresAt = new Date(Date.now() + DEFAULT_EXPIRY_DAYS * 86400000).toISOString();
+      const [{ error: updateError }, { error: settingsError }] = await Promise.all([
+        supabase
+          .from("campaigns")
+          .update({ join_code, join_code_active: true })
+          .eq("id", campaignId),
+        supabase
+          .from("campaign_settings")
+          .upsert(
+            { campaign_id: campaignId, join_code_expires_at: expiresAt },
+            { onConflict: "campaign_id" },
+          ),
+      ]);
       if (updateError) throw updateError;
+      if (settingsError) throw settingsError;
     }
 
     // Fetch member count + expiration in parallel

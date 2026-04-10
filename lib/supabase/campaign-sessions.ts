@@ -181,16 +181,29 @@ export async function startSession(sessionId: string): Promise<boolean> {
   const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("sessions")
       .update({ status: "active", is_active: true })
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .eq("status", "planned")
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       captureError(error, {
         component: "campaign-sessions",
         action: "startSession",
         category: "database",
+        extra: { sessionId },
+      });
+      return false;
+    }
+
+    if (!data) {
+      captureError(new Error("Invalid transition: session is not in planned state"), {
+        component: "campaign-sessions",
+        action: "startSession",
+        category: "validation",
         extra: { sessionId },
       });
       return false;
@@ -219,16 +232,29 @@ export async function cancelSession(sessionId: string): Promise<boolean> {
   const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("sessions")
       .update({ status: "cancelled", is_active: false })
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .in("status", ["planned", "active"])
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       captureError(error, {
         component: "campaign-sessions",
         action: "cancelSession",
         category: "database",
+        extra: { sessionId },
+      });
+      return false;
+    }
+
+    if (!data) {
+      captureError(new Error("Invalid transition: session cannot be cancelled from current state"), {
+        component: "campaign-sessions",
+        action: "cancelSession",
+        category: "validation",
         extra: { sessionId },
       });
       return false;
@@ -260,20 +286,33 @@ export async function completeSession(
   const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("sessions")
       .update({
         status: "completed",
         is_active: false,
         ...(recap !== undefined ? { recap } : {}),
       })
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .eq("status", "active")
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       captureError(error, {
         component: "campaign-sessions",
         action: "completeSession",
         category: "database",
+        extra: { sessionId },
+      });
+      return false;
+    }
+
+    if (!data) {
+      captureError(new Error("Invalid transition: session is not in active state"), {
+        component: "campaign-sessions",
+        action: "completeSession",
+        category: "validation",
         extra: { sessionId },
       });
       return false;
