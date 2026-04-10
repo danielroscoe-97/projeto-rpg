@@ -51,14 +51,16 @@ export function CampaignPlayerAvatars({
 
   return (
     <div className="flex flex-wrap gap-3 items-start">
-      {characters.map((char) => (
+      {characters.map((char) => {
+        const isNew = char.user_id && newMemberIds?.has(char.user_id);
+        return (
         <Popover key={char.id}>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex flex-col items-center gap-1 hover:scale-105 transition-transform min-h-[44px]"
+              className="flex flex-col items-center gap-1 hover:scale-105 transition-transform min-h-[44px] relative"
             >
-              <div className="w-10 h-10 rounded-full bg-amber-500/20 ring-2 ring-border flex items-center justify-center overflow-hidden">
+              <div className={`w-10 h-10 rounded-full bg-amber-500/20 ring-2 flex items-center justify-center overflow-hidden ${isNew ? "ring-amber-400 animate-pulse" : "ring-border"}`}>
                 {char.token_url ? (
                   <img
                     src={char.token_url}
@@ -123,7 +125,8 @@ export function CampaignPlayerAvatars({
             </button>
           </PopoverContent>
         </Popover>
-      ))}
+        );
+      })}
 
       {/* Add player button */}
       <button
