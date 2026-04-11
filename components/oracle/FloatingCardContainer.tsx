@@ -539,6 +539,10 @@ export function FloatingCardContainer() {
       const target = e.target as HTMLElement;
       // If click is inside a floating card or its portal, ignore
       if (target.closest("[data-floating-card]") || target.closest("[data-testid='floating-cards-container']")) return;
+      // Ignore clicks on search/compendium buttons and player bottom bar controls
+      if (target.closest('[data-testid^="quick-search"]') ||
+          target.closest('[data-testid^="compendium-browser"]') ||
+          target.closest('[data-testid^="player-bottom-bar"]')) return;
       const visible = cards.filter((c) => !c.isMinimized && !c.isLocked);
       if (visible.length === 0) return;
       const topmost = [...visible].sort((a, b) => b.zIndex - a.zIndex)[0];

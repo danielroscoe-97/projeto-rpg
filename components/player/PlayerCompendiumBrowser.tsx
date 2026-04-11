@@ -79,7 +79,9 @@ export function PlayerCompendiumBrowser({
   const storeFeats = useSrdStore((s) => s.feats);
   const feats = useMemo(() => getAllFeats(), [storeFeats]);
 
-  // Abilities data — loaded in same Phase 2b as feats, use storeFeats as trigger
+  // Abilities data — SRD_ABILITIES is a module-level let replaced by setSrdAbilities()
+  // in srd-store Phase 2b, which runs BEFORE set({ feats }). Using storeFeats as a
+  // proxy trigger ensures this memo re-evaluates when Phase 2b completes.
   const abilities = useMemo(() => [...SRD_ABILITIES], [storeFeats]);
 
   // Races data
@@ -429,7 +431,7 @@ export function PlayerCompendiumBrowser({
                         {selectedAbility.source_class || selectedAbility.source_race}
                       </span>
                     )}
-                    {selectedAbility.level_acquired && (
+                    {selectedAbility.level_acquired != null && (
                       <span className="text-xs text-muted-foreground">
                         Lv {selectedAbility.level_acquired}
                       </span>
@@ -480,19 +482,19 @@ export function PlayerCompendiumBrowser({
               )}
               {selectedBackground && (
                 <div className="space-y-3">
-                  {selectedBackground.skill_proficiencies.length > 0 && (
+                  {selectedBackground.skill_proficiencies?.length > 0 && (
                     <p className="text-sm text-amber-400">
                       Skills: {selectedBackground.skill_proficiencies.join(", ")}
                     </p>
                   )}
-                  {selectedBackground.tool_proficiencies.length > 0 && (
+                  {selectedBackground.tool_proficiencies?.length > 0 && (
                     <p className="text-xs text-muted-foreground">
                       Tools: {selectedBackground.tool_proficiencies.join(", ")}
                     </p>
                   )}
-                  {selectedBackground.languages && (
+                  {selectedBackground.languages?.length > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      Languages: {selectedBackground.languages}
+                      Languages: {selectedBackground.languages.join(", ")}
                     </p>
                   )}
                   {selectedBackground.equipment && (
@@ -705,7 +707,7 @@ export function PlayerCompendiumBrowser({
                                 </div>
                                 <div className="text-xs text-muted-foreground flex items-center gap-1">
                                   <span>{ability.source_class || ability.source_race || "Feat"}</span>
-                                  {ability.level_acquired && <><span>·</span><span>Lv{ability.level_acquired}</span></>}
+                                  {ability.level_acquired != null && <><span>·</span><span>Lv{ability.level_acquired}</span></>}
                                 </div>
                               </div>
                               <Zap className="w-3.5 h-3.5 text-amber-400/60 shrink-0" />
@@ -1288,7 +1290,7 @@ export function PlayerCompendiumBrowser({
                             </div>
                             <div className="text-xs text-muted-foreground flex items-center gap-1">
                               <span>{ability.source_class || ability.source_race || "Feat"}</span>
-                              {ability.level_acquired && (
+                              {ability.level_acquired != null && (
                                 <><span>·</span><span>Lv{ability.level_acquired}</span></>
                               )}
                             </div>
