@@ -5,6 +5,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "analyze": "ANALYZE=true next build",
     "test": "jest",
     "test:watch": "jest --watch",
     "generate-srd": "ts-node scripts/generate-srd-bundles.ts",
@@ -20,7 +21,10 @@
     "e2e:ci": "playwright test e2e/journeys/j1-first-combat.spec.ts e2e/journeys/j2-player-join.spec.ts e2e/journeys/guest-try-mode.spec.ts e2e/combat/turn-advance.spec.ts e2e/auth/login.spec.ts",
     "e2e:stress": "playwright test e2e/combat/multi-player-stress.spec.ts --project=desktop-chrome",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "e2e:visual": "playwright test e2e/visual --project=desktop-chrome",
+    "e2e:visual:update": "playwright test e2e/visual --project=desktop-chrome --update-snapshots",
+    "e2e:a11y": "playwright test e2e/a11y --project=desktop-chrome"
   },
   "dependencies": {
     "@dagrejs/dagre": "^3.0.0",
@@ -73,9 +77,11 @@
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
+    "@axe-core/playwright": "^4.11.1",
     "@eslint/eslintrc": "^3",
     "@imgly/background-removal-node": "^1.4.5",
     "@jest/types": "^30.3.0",
+    "@next/bundle-analyzer": "^16.2.3",
     "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
