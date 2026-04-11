@@ -53,6 +53,11 @@ export function usePersonalInventory(characterId: string) {
         quantity,
         equipped: false,
         notes: null,
+        is_attuned: false,
+        rarity: null,
+        is_magic: false,
+        attune_notes: null,
+        srd_ref: null,
         created_at: now,
         updated_at: now,
       };
@@ -144,14 +149,89 @@ export function usePersonalInventory(characterId: string) {
     [items, supabase, removeItem],
   );
 
+  // Derived: attuned items
+  const attuned = useMemo(() => items.filter((i) => i.is_attuned), [items]);
+
+  // Toggle attunement (optimistic) — max 3
+  const toggleAttune = useCallback(
+    async (id: string) => {
+      const item = items.find((i) => i.id === id);
+      if (!item) return;
+      const newAttuned = !item.is_attuned;
+      // Enforce max 3 attunement
+      if (newAttuned && attuned.length >= 3) {
+        toast.error("Max attunement (3 items)");
+        return;
+      }
+      const prev = items;
+      setItems((current) =>
+        current.map((i) =>
+          i.id === id ? { ...i, is_attuned: newAttuned, updated_at: new Date().toISOString() } : i,
+        ),
+      );
+      const { error } = await supabase
+        .from("character_inventory_items")
+        .update({ is_attuned: newAttuned, updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) {
+        setItems(prev);
+        toast.error("Failed to update attunement");
+      }
+    },
+    [items, attuned.length, supabase],
+  );
+
+  // Add item with attunement fields
+  const addItemFull = useCallback(
+    async (input: {
+      item_name: string;
+      quantity?: number;
+      is_magic?: boolean;
+      rarity?: string | null;
+      is_attuned?: boolean;
+      attune_notes?: string | null;
+      srd_ref?: string | null;
+    }) => {
+      if (input.is_attuned && attuned.length >= 3) {
+        toast.error("Max attunement (3 items)");
+        return null;
+      }
+      const { data, error } = await supabase
+        .from("character_inventory_items")
+        .insert({
+          player_character_id: characterId,
+          item_name: input.item_name,
+          quantity: input.quantity ?? 1,
+          is_magic: input.is_magic ?? false,
+          rarity: input.rarity ?? null,
+          is_attuned: input.is_attuned ?? false,
+          attune_notes: input.attune_notes ?? null,
+          srd_ref: input.srd_ref ?? null,
+        })
+        .select()
+        .single();
+
+      if (error || !data) {
+        toast.error("Failed to add item");
+        return null;
+      }
+      setItems((prev) => [...prev, data]);
+      return data;
+    },
+    [characterId, attuned.length, supabase],
+  );
+
   return {
     items,
     equipped,
     backpack,
+    attuned,
     loading,
     addItem,
+    addItemFull,
     removeItem,
     toggleEquip,
+    toggleAttune,
     updateQuantity,
   };
 }

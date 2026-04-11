@@ -10,6 +10,9 @@ interface RestResetPanelProps {
   countByResetType: (types: string[]) => number;
   spellSlots: Record<string, { max: number; used: number }> | null;
   onSpellSlotsReset: (slots: Record<string, { max: number; used: number }>) => void;
+  /** Additional reset sources (e.g., abilities) */
+  additionalResetByType?: (types: string[]) => Promise<number>;
+  additionalCountByResetType?: (types: string[]) => number;
 }
 
 export function RestResetPanel({
@@ -17,6 +20,8 @@ export function RestResetPanel({
   countByResetType,
   spellSlots,
   onSpellSlotsReset,
+  additionalResetByType,
+  additionalCountByResetType,
 }: RestResetPanelProps) {
   const t = useTranslations("player_hq.resources");
   // I-09 fix: use ref to avoid stale closure
@@ -27,9 +32,9 @@ export function RestResetPanel({
     setConfirmingState(v);
   };
 
-  const shortRestCount = countByResetType(["short_rest"]);
-  const longRestCount = countByResetType(["short_rest", "long_rest"]);
-  const dawnCount = countByResetType(["dawn"]);
+  const shortRestCount = countByResetType(["short_rest"]) + (additionalCountByResetType?.( ["short_rest"]) ?? 0);
+  const longRestCount = countByResetType(["short_rest", "long_rest"]) + (additionalCountByResetType?.(["short_rest", "long_rest"]) ?? 0);
+  const dawnCount = countByResetType(["dawn"]) + (additionalCountByResetType?.(["dawn"]) ?? 0);
 
   // Count used spell slots
   const usedSlotCount = spellSlots
@@ -49,9 +54,11 @@ export function RestResetPanel({
 
       if (type === "short") {
         count = await resetByType(["short_rest"]);
+        count += (await additionalResetByType?.(["short_rest"])) ?? 0;
         navigator.vibrate?.([50, 30, 50]);
       } else if (type === "long") {
         count = await resetByType(["short_rest", "long_rest"]);
+        count += (await additionalResetByType?.(["short_rest", "long_rest"])) ?? 0;
         // Also reset spell slots
         if (spellSlots) {
           const reset = Object.fromEntries(
@@ -63,6 +70,7 @@ export function RestResetPanel({
         navigator.vibrate?.([100, 50, 100]);
       } else {
         count = await resetByType(["dawn"]);
+        count += (await additionalResetByType?.(["dawn"])) ?? 0;
         navigator.vibrate?.([50, 30, 50]);
       }
 

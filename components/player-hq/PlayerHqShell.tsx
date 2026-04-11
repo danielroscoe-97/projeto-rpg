@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Heart, Sparkles, Package, ScrollText, Map, Network, ChevronLeft, type LucideIcon } from "lucide-react";
+import { Heart, Sparkles, Package, ScrollText, Map, Network, ChevronLeft, Zap, type LucideIcon } from "lucide-react";
 import { ClassIcon } from "@/components/character/ClassIcon";
 import { CharacterStatusPanel } from "./CharacterStatusPanel";
 import { CharacterCoreStats } from "./CharacterCoreStats";
@@ -20,15 +20,19 @@ import { PlayerQuestBoard } from "./PlayerQuestBoard";
 import { PlayerMindMap } from "./PlayerMindMap";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
+import { useCharacterAbilities } from "@/lib/hooks/useCharacterAbilities";
 import { useNotifications } from "@/lib/hooks/useNotifications";
+import { AbilitiesSection } from "./AbilitiesSection";
+import { AttunementSection } from "./AttunementSection";
 import { PlayerHqTourProvider } from "@/components/tour/PlayerHqTourProvider";
 
-type Tab = "map" | "sheet" | "resources" | "inventory" | "notes" | "quests";
+type Tab = "map" | "sheet" | "resources" | "abilities" | "inventory" | "notes" | "quests";
 
 const TABS: Array<{ key: Tab; icon: LucideIcon; labelKey: string }> = [
   { key: "map", icon: Network, labelKey: "tabs.map" },
   { key: "sheet", icon: Heart, labelKey: "tabs.sheet" },
   { key: "resources", icon: Sparkles, labelKey: "tabs.resources" },
+  { key: "abilities", icon: Zap, labelKey: "tabs.abilities" },
   { key: "inventory", icon: Package, labelKey: "tabs.inventory" },
   { key: "notes", icon: ScrollText, labelKey: "tabs.notes" },
   { key: "quests", icon: Map, labelKey: "tabs.quests" },
@@ -134,6 +138,7 @@ export function PlayerHqShell({
 
   // C-01 fix: Single instance of useResourceTrackers, shared by RestResetPanel + ResourceTrackerList
   const resourceHook = useResourceTrackers(characterId);
+  const abilitiesHook = useCharacterAbilities(characterId);
 
   const { notifications } = useNotifications(userId);
 
@@ -265,6 +270,8 @@ export function PlayerHqShell({
             countByResetType={resourceHook.countByResetType}
             spellSlots={character.spell_slots}
             onSpellSlotsReset={updateSpellSlots}
+            additionalResetByType={abilitiesHook.resetByType}
+            additionalCountByResetType={abilitiesHook.countByResetType}
           />
           <SpellSlotsHq
             spellSlots={character.spell_slots}
@@ -282,8 +289,19 @@ export function PlayerHqShell({
           <SpellListSection characterId={characterId} />
         </div>
       )}
+      {activeTab === "abilities" && (
+        <AbilitiesSection
+          characterId={characterId}
+          characterClass={character.class}
+          characterRace={character.race}
+        />
+      )}
+
       {activeTab === "inventory" && (
         <div className="space-y-4">
+          {/* Attunement slots */}
+          <AttunementSection characterId={characterId} />
+
           {/* Personal inventory */}
           <PersonalInventory characterId={characterId} />
 
