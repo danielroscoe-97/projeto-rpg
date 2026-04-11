@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import { PageViewTracker } from "@/components/analytics/PageViewTracker";
+import { ErrorTrackingProvider } from "@/components/ErrorTrackingProvider";
 import "./globals.css";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
@@ -158,6 +159,7 @@ export default async function RootLayout({
             {children}
           </ThemeProvider>
         </NextIntlClientProvider>
+        <ErrorTrackingProvider />
         <Suspense fallback={null}>
           <PageViewTracker />
         </Suspense>
