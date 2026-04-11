@@ -125,6 +125,7 @@ export function CombatSessionClient({
   const [leaderboardMeta, setLeaderboardMeta] = useState<{ name: string; rounds: number; combatDuration: number }>({ name: "", rounds: 0, combatDuration: 0 });
   const [combatReport, setCombatReport] = useState<CombatReport | null>(null);
   const [reportShareUrl, setReportShareUrl] = useState<string | null>(null);
+  const reportAutoSaveRef = useRef(false); // Idempotency guard: prevent duplicate auto-save POST
   const [previousDurationMs, setPreviousDurationMs] = useState<number | null>(null);
   // WEATHER_DISABLED: const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
@@ -242,19 +243,23 @@ export function CombatSessionClient({
         setCombatReport(report);
 
         // F4: Auto-persist combat report — capture URL for share link dedup
+        // Guard: prevent duplicate POST if proceedAfterNaming fires twice (React re-render)
         const encId = useCombatStore.getState().encounter_id;
-        fetch("/api/combat-reports", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            report,
-            campaignId: campaignId ?? undefined,
-            encounterId: encId ?? undefined,
-          }),
-        })
-          .then((res) => res.ok ? res.json() : null)
-          .then((data) => { if (data?.url) setReportShareUrl(data.url); })
-          .catch(() => { /* non-fatal */ });
+        if (!reportAutoSaveRef.current) {
+          reportAutoSaveRef.current = true;
+          fetch("/api/combat-reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              report,
+              campaignId: campaignId ?? undefined,
+              encounterId: encId ?? undefined,
+            }),
+          })
+            .then((res) => res.ok ? res.json() : null)
+            .then((data) => { if (data?.url) setReportShareUrl(data.url); })
+            .catch(() => { /* non-fatal */ });
+        }
 
         // CTA-11: Fetch previous encounter duration for trend comparison (fire-and-forget)
         if (campaignId) {
@@ -400,6 +405,7 @@ export function CombatSessionClient({
     setPollVotes(new Map());
     setCombatReport(null);
     setReportShareUrl(null);
+    reportAutoSaveRef.current = false;
     setLeaderboardData(null);
     useCombatLogStore.getState().clear();
     // DB combat log is NOT cleared — persist at line 340 already wrote the final log,

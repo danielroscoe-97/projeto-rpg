@@ -1680,9 +1680,17 @@ export function PlayerJoinClient({
       if (encounterIdRef.current) {
         try {
           await fetchFullState(encounterIdRef.current);
+          if (isRegisteredRef.current) {
+            trackEvent("player:reconnected", { session_id: sessionId, method: "visibility_change" });
+          }
         } catch {
           await new Promise((r) => setTimeout(r, 2000));
-          try { await fetchFullState(encounterIdRef.current!); } catch { /* give up */ }
+          try {
+            await fetchFullState(encounterIdRef.current!);
+            if (isRegisteredRef.current) {
+              trackEvent("player:reconnected", { session_id: sessionId, method: "visibility_change" });
+            }
+          } catch { /* give up */ }
         }
       }
 
@@ -1718,7 +1726,12 @@ export function PlayerJoinClient({
       heartbeatRef.current?.();
       // Sync full state
       if (encounterIdRef.current) {
-        try { await fetchFullState(encounterIdRef.current); } catch { /* best-effort */ }
+        try {
+          await fetchFullState(encounterIdRef.current);
+          if (isRegisteredRef.current) {
+            trackEvent("player:reconnected", { session_id: sessionId, method: "network_recovery" });
+          }
+        } catch { /* best-effort */ }
       }
       // Reconnect channel if it died during offline
       if (disconnectedAtRef.current && supabaseRef.current) {
