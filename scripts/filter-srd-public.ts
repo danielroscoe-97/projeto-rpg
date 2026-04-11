@@ -40,9 +40,10 @@ function loadWhitelist(filename: string): Set<string> {
 const monsterWhitelist = loadWhitelist("srd-monster-whitelist.json");
 const spellWhitelist = loadWhitelist("srd-spell-whitelist.json");
 const itemWhitelist = loadWhitelist("srd-item-whitelist.json");
+const raceWhitelist = loadWhitelist("srd-race-whitelist.json");
 
 console.log(
-  `Whitelists loaded: ${monsterWhitelist.size} monsters, ${spellWhitelist.size} spells, ${itemWhitelist.size} items`
+  `Whitelists loaded: ${monsterWhitelist.size} monsters, ${spellWhitelist.size} spells, ${itemWhitelist.size} items, ${raceWhitelist.size} races`
 );
 
 // ── Process monsters ────────────────────────────────────────────────
@@ -117,6 +118,35 @@ for (const version of ["2014", "2024"] as const) {
   console.log(
     `${filename}: ${total} total → ${filtered.length} SRD/Basic (public), ${total} stamped (data)`
   );
+}
+
+// ── Process races ──────────────────────────────────────────────────
+{
+  const filename = "races-full.json";
+  const SRD_RACE_SOURCES = new Set(["PHB", "XPHB"]);
+  try {
+    const raw = JSON.parse(readFileSync(join(DATA_DIR, filename), "utf-8"));
+    const total = raw.length;
+
+    // SRD races must match both whitelist slug AND come from PHB/XPHB source
+    const stamped = raw.map((r: { name: string; source?: string }) => ({
+      ...r,
+      is_srd: raceWhitelist.has(toSlug(r.name)) && SRD_RACE_SOURCES.has(r.source || ""),
+    }));
+
+    writeFileSync(join(DATA_DIR, filename), JSON.stringify(stamped));
+
+    const filtered = stamped.filter(
+      (r: { is_srd: boolean }) => r.is_srd === true
+    );
+    writeFileSync(join(PUBLIC_DIR, filename), JSON.stringify(filtered));
+
+    console.log(
+      `${filename}: ${total} total → ${filtered.length} SRD (public), ${total} stamped (data)`
+    );
+  } catch {
+    console.log(`${filename}: skipped (not found in data/srd/)`);
+  }
 }
 
 // ── Copy SRD-safe files as-is ───────────────────────────────────────
