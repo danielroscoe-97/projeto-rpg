@@ -48,6 +48,18 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler()
 
   const avgPlayers = avgPlayersResult.data as { dm_count: number; avg_players: number } | null;
 
+  // Phase 2: Event-based analytics (funnel, feature usage, combat stats)
+  const [funnelResult, topEventsResult, guestFunnelResult, combatStatsResult] = await Promise.all([
+    // Funnel: distinct users per event (last 30d)
+    admin.rpc("admin_event_funnel", { since: thirtyDaysAgo }),
+    // Top 15 events by count (last 30d)
+    admin.rpc("admin_top_events", { since: thirtyDaysAgo, lim: 15 }),
+    // Guest funnel: guest events (last 30d)
+    admin.rpc("admin_guest_funnel", { since: thirtyDaysAgo }),
+    // Combat stats: avg rounds, avg duration (last 30d)
+    admin.rpc("admin_combat_stats", { since: thirtyDaysAgo }),
+  ]);
+
   return NextResponse.json({
     data: {
       total_users: totalUsers,
@@ -56,6 +68,11 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler()
       day1_activation_pct: day1Activation,
       week2_retention_pct: week2Retention,
       avg_players_per_dm: Number(avgPlayers?.avg_players ?? 0),
+      // Phase 2
+      funnel: funnelResult.data ?? [],
+      top_events: topEventsResult.data ?? [],
+      guest_funnel: guestFunnelResult.data ?? [],
+      combat_stats: combatStatsResult.data ?? null,
     },
   });
 };
