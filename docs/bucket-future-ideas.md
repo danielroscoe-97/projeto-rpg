@@ -4,7 +4,7 @@
 > Consulte este arquivo antes de planejar sprints para evitar retrabalho.
 > PRD master: [prd-v2.md](prd-v2.md) | Epics master: [epics-and-sprints-spec.md](epics-and-sprints-spec.md)
 >
-> **Ultima atualizacao:** 2026-04-11 (varredura completa do codebase)
+> **Ultima atualizacao:** 2026-04-11 (F-31 colors + F-45b demo + F-01 proficiencies/spells/equipment/PDF)
 
 ---
 
@@ -24,7 +24,7 @@
 
 | # | Item | Status | Notas |
 |---|------|--------|-------|
-| F-01 | Ficha de personagem completa | ❌ | Apenas stats essenciais (CharacterEditSheet). Full sheet e V3+ |
+| F-01 | ~~Ficha de personagem completa~~ | 🔧 | Proficiencies (saves+skills+tools+languages+armor+weapons), spell filters (level/school/concentration), equipment weight tracking, PDF export. Falta: features cross-ref, spell prepared slots integration |
 | F-02 | XP tracking por combate | ❌ | Nenhum sistema de XP existe |
 | F-03 | Distribuicao automatica de XP | ❌ | Depende de F-02 |
 | F-04 | Level up automatico | ❌ | Depende de F-02 |
@@ -126,10 +126,10 @@
 
 | # | Item | Status | Notas |
 |---|------|--------|-------|
-| F-31 | Hardcoded colors cleanup | ❌ | Severidade baixa |
+| F-31 | ~~Hardcoded colors cleanup~~ | ✅ | 49 files: hex→theme tokens (text-foreground, text-gold, bg-gold, var(--accent-gold)). Remaining: opengraph(satori), QR libs, canvas API, SVG gradients |
 | F-32 | ~~E2E tests coverage~~ | ✅ | 584 testes em 40 specs. Desktop Chrome + Mobile Safari. 90%+ cobertura em guest/player/DM/campaign/audio/i18n. Gaps restantes: character creation (0 testes), preset CRUD (1 teste) |
 | BUG-T3-05 | ~~og:image per-page~~ | ✅ | 7 routes opengraph-image: landing, blog, monsters EN/PT, spells EN/PT, shortlinks |
-| F-45b | Demo video update | ❌ | HTML slideshow pode precisar refresh com features novas |
+| F-45b | ~~Demo video update~~ | ✅ | pocket-dm-demo-v2.html: 8 scenes, 72s, CSS animations. Landing→Combat→Soundboard→Recap→QR Join→Player View→Campaign→Compendium |
 
 ## Combate — Beta Backlog Trilha B
 
