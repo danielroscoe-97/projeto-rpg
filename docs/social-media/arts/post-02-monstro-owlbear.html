@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1080">
 <title>Post #02 — Monstro da Semana: Owlbear</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -153,8 +153,8 @@
   }
 
   .monster-art {
-    width: 320px;
-    height: 320px;
+    width: 440px;
+    height: 440px;
     position: relative;
     z-index: 1;
     display: flex;
@@ -225,14 +225,14 @@
   }
   .stat-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
+    font-size: 20px;
     color: #9896A0;
     letter-spacing: 2px;
     margin-bottom: 8px;
   }
   .stat-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 42px;
+    font-size: 48px;
     font-weight: 700;
     color: #F5F0E8;
   }
@@ -269,13 +269,13 @@
   }
   .ability-name {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
+    font-size: 18px;
     color: #9896A0;
     margin-bottom: 6px;
   }
   .ability-score {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: #F5F0E8;
   }
@@ -291,14 +291,14 @@
   }
   .attack-title {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
+    font-size: 19px;
     color: #C0392B;
     letter-spacing: 2px;
     margin-bottom: 15px;
   }
   .attack-line {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 24px;
+    font-size: 26px;
     color: #F5F0E8;
     margin-bottom: 10px;
     display: flex;
@@ -316,7 +316,7 @@
     border: 1px solid rgba(212,168,83,0.25);
     border-radius: 4px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 18px;
+    font-size: 20px;
     color: #D4A853;
   }
 
@@ -445,10 +445,11 @@
   }
   .lore-text {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 32px;
+    font-size: 28px;
     color: #C8C6C0;
     line-height: 1.7;
     font-style: italic;
+    word-spacing: 2px;
   }
   .lore-text strong {
     color: #D4A853;
@@ -547,7 +548,7 @@
 <body>
 
 <!-- ===== SLIDE 1 — CAPA ===== -->
-<p class="slide-label">Slide 1 / 5 — Capa</p>
+<p class="slide-label">Slide 1 / 6 — Capa</p>
 <div class="slide slide-1">
   <div class="corner-ornament corner-tl"></div>
   <div class="corner-ornament corner-tr"></div>
@@ -557,50 +558,25 @@
   <div class="tag tag-red">Monstro da Semana</div>
 
   <div class="monster-art">
-    <!-- Owlbear pixel art placeholder - SVG stylized -->
-    <svg class="owlbear-pixel" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
-      <!-- Owl ears -->
-      <rect x="9" y="2" width="2" height="3" fill="#8B6914"/>
-      <rect x="21" y="2" width="2" height="3" fill="#8B6914"/>
-      <!-- Head -->
-      <rect x="11" y="4" width="10" height="8" fill="#A0522D"/>
-      <rect x="10" y="5" width="12" height="6" fill="#8B4513"/>
-      <!-- Face disc (owl) -->
-      <rect x="12" y="5" width="8" height="5" fill="#DEB887"/>
-      <!-- Eyes -->
-      <rect x="13" y="6" width="2" height="2" fill="#FFD700"/>
-      <rect x="17" y="6" width="2" height="2" fill="#FFD700"/>
-      <rect x="13" y="7" width="1" height="1" fill="#000"/>
-      <rect x="18" y="7" width="1" height="1" fill="#000"/>
-      <!-- Beak -->
-      <rect x="15" y="8" width="2" height="2" fill="#D4A853"/>
-      <!-- Body -->
-      <rect x="8" y="12" width="16" height="12" fill="#8B4513"/>
-      <rect x="9" y="13" width="14" height="10" fill="#A0522D"/>
-      <!-- Belly -->
-      <rect x="12" y="14" width="8" height="7" fill="#DEB887"/>
-      <!-- Arms/claws -->
-      <rect x="6" y="14" width="2" height="6" fill="#8B4513"/>
-      <rect x="24" y="14" width="2" height="6" fill="#8B4513"/>
-      <rect x="5" y="19" width="2" height="2" fill="#D4A853"/>
-      <rect x="25" y="19" width="2" height="2" fill="#D4A853"/>
-      <!-- Legs -->
-      <rect x="10" y="24" width="4" height="4" fill="#8B4513"/>
-      <rect x="18" y="24" width="4" height="4" fill="#8B4513"/>
-      <!-- Feet/claws -->
-      <rect x="9" y="27" width="6" height="2" fill="#D4A853"/>
-      <rect x="17" y="27" width="6" height="2" fill="#D4A853"/>
-      <!-- Feather tufts -->
-      <rect x="10" y="12" width="3" height="2" fill="#DEB887" opacity="0.5"/>
-      <rect x="19" y="12" width="3" height="2" fill="#DEB887" opacity="0.5"/>
-    </svg>
+    <!--
+      INSTRUÇÃO: Salve uma arte de Owlbear como:
+      docs/social-media/arts/assets/owlbear.png
+      A imagem aparece automaticamente. Enquanto não existir, mostra o orc placeholder.
+    -->
+    <img src="assets/owlbear.png" alt="Owlbear" style="width:420px; height:auto; object-fit:contain; filter:drop-shadow(0 0 60px rgba(192,57,43,0.4)) drop-shadow(0 0 120px rgba(212,168,83,0.15));" onerror="this.src='../../../public/art/decorations/orc-silhouette.svg'; this.style.width='220px'; this.style.height='220px'; this.style.opacity='0.6';">
   </div>
 
   <div class="monster-name">OWLBEAR</div>
+  <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; color:#9896A0; position:relative; z-index:1; margin-top:-10px; letter-spacing:3px;">Urso-Coruja</div>
 
   <div style="display:flex; align-items:center; gap:20px; position:relative; z-index:1;">
-    <div class="cr-badge">CR 3</div>
-    <span style="font-family:'JetBrains Mono',monospace; font-size:20px; color:#9896A0;">Large Monstrosity</span>
+    <div style="width:56px; height:56px; border-radius:50%; overflow:hidden; border:2px solid rgba(192,57,43,0.5); box-shadow:0 0 20px rgba(192,57,43,0.3);">
+      <img src="assets/owlbear-token.png" alt="" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+    <div style="display:flex; flex-direction:column; gap:2px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:20px; color:#9896A0;">Large Monstrosity</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:#C0392B;">CR 3</span>
+    </div>
   </div>
 
   <div class="handle">@pocket.dm</div>
@@ -608,11 +584,21 @@
 </div>
 
 <!-- ===== SLIDE 2 — STATS ===== -->
-<p class="slide-label">Slide 2 / 5 — Stats</p>
+<p class="slide-label">Slide 2 / 6 — Stats EN</p>
 <div class="slide slide-stats">
   <div class="stat-header">
-    <div class="stat-name">Owlbear</div>
-    <div class="cr-badge">CR 3</div>
+    <div class="stat-name" style="display:flex; flex-direction:column; gap:2px;">
+      <span>Owlbear</span>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:400; color:#9896A0; font-variant:normal; text-transform:none; letter-spacing:0;">Urso-Coruja</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+        <div style="width:48px; height:48px; border-radius:50%; overflow:hidden; border:2px solid rgba(192,57,43,0.5); box-shadow:0 0 15px rgba(192,57,43,0.3);">
+          <img src="assets/owlbear-token.png" alt="" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; color:#C0392B;">CR 3</span>
+      </div>
+    </div>
   </div>
 
   <div class="stat-row">
@@ -620,17 +606,17 @@
       <div class="stat-label">HP</div>
       <div class="stat-value stat-value-hp">59</div>
       <div class="hp-bar"><div class="hp-fill"></div></div>
-      <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#666; margin-top:6px;">7d10 + 21</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:17px; color:#666; margin-top:6px;">7d10 + 21</div>
     </div>
     <div class="stat-block">
       <div class="stat-label">AC</div>
       <div class="stat-value stat-value-ac">13</div>
-      <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#666; margin-top:14px;">Natural Armor</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:17px; color:#666; margin-top:14px;">Natural Armor</div>
     </div>
     <div class="stat-block">
       <div class="stat-label">SPEED</div>
       <div class="stat-value stat-value-spd">40</div>
-      <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#666; margin-top:14px;">ft</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:17px; color:#666; margin-top:14px;">ft</div>
     </div>
   </div>
 
@@ -675,9 +661,17 @@
 
   <div class="special-tag">Keen Sight and Smell</div>
 
+  <div style="position:absolute; bottom:70px; left:50%; transform:translateX(-50%); z-index:2;">
+    <div style="padding:6px 16px; background:rgba(212,168,83,0.08); border:1px solid rgba(212,168,83,0.2); border-radius:20px; display:flex; align-items:center; gap:6px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#D4A853; letter-spacing:1px;">DESLIZE PARA PT-BR</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#D4A853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
   <div class="dots">
     <div class="dot"></div>
     <div class="dot active"></div>
+    <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
@@ -686,41 +680,138 @@
   <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg2)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/></g><path fill="url(#wg2)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
 </div>
 
-<!-- ===== SLIDE 3 — TACTICS ===== -->
-<p class="slide-label">Slide 3 / 5 — Taticas</p>
+<!-- ===== SLIDE 3 — STATS PT-BR ===== -->
+<p class="slide-label">Slide 3 / 6 — Stats PT-BR</p>
+<div class="slide slide-stats">
+  <div class="stat-header">
+    <div class="stat-name" style="display:flex; flex-direction:column; gap:2px;">
+      <span>Urso-Coruja</span>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:400; color:#9896A0; font-variant:normal; text-transform:none; letter-spacing:0;">Owlbear</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+        <div style="width:48px; height:48px; border-radius:50%; overflow:hidden; border:2px solid rgba(192,57,43,0.5); box-shadow:0 0 15px rgba(192,57,43,0.3);">
+          <img src="assets/owlbear-token.png" alt="" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; color:#C0392B;">ND 3</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-block">
+      <div class="stat-label">PV</div>
+      <div class="stat-value stat-value-hp">59</div>
+      <div class="hp-bar"><div class="hp-fill"></div></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:17px; color:#666; margin-top:6px;">7d10 + 21</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">CA</div>
+      <div class="stat-value stat-value-ac">13</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:17px; color:#666; margin-top:14px;">Armadura Natural</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">DESL.</div>
+      <div class="stat-value stat-value-spd">12</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:17px; color:#666; margin-top:14px;">m</div>
+    </div>
+  </div>
+
+  <div class="ability-grid">
+    <div class="ability">
+      <div class="ability-name">FOR</div>
+      <div class="ability-score ability-high">20</div>
+    </div>
+    <div class="ability">
+      <div class="ability-name">DES</div>
+      <div class="ability-score">12</div>
+    </div>
+    <div class="ability">
+      <div class="ability-name">CON</div>
+      <div class="ability-score ability-high">17</div>
+    </div>
+    <div class="ability">
+      <div class="ability-name">INT</div>
+      <div class="ability-score ability-low">3</div>
+    </div>
+    <div class="ability">
+      <div class="ability-name">SAB</div>
+      <div class="ability-score">12</div>
+    </div>
+    <div class="ability">
+      <div class="ability-name">CAR</div>
+      <div class="ability-score ability-low">7</div>
+    </div>
+  </div>
+
+  <div class="attacks-section">
+    <div class="attack-title">ATAQUES MÚLTIPLOS</div>
+    <div class="attack-line">
+      <span><span class="attack-name">Bico</span></span>
+      <span><span class="attack-bonus">+7</span> &nbsp; <span class="attack-dmg">1d10+5 perfurante</span></span>
+    </div>
+    <div class="attack-line">
+      <span><span class="attack-name">Garras</span></span>
+      <span><span class="attack-bonus">+7</span> &nbsp; <span class="attack-dmg">2d8+5 cortante</span></span>
+    </div>
+  </div>
+
+  <div class="special-tag">Visão e Faro Aguçados</div>
+
+  <div style="position:absolute; bottom:70px; left:50%; transform:translateX(-50%); z-index:2;">
+    <div style="padding:6px 16px; background:rgba(74,158,92,0.1); border:1px solid rgba(74,158,92,0.25); border-radius:20px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#4A9E5C; letter-spacing:1px;">TRADUÇÃO PT-BR</span>
+    </div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg2b" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg2b)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/></g><path fill="url(#wg2b)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 4 — TACTICS ===== -->
+<p class="slide-label">Slide 4 / 6 — Taticas</p>
 <div class="slide slide-tactics">
   <div class="section-title">Como Usar</div>
 
   <div class="tactic-item">
-    <div class="tactic-icon">🌲</div>
+    <div class="tactic-icon"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 4v24M8 12l8-8 8 8M6 28h20" stroke="#2ECC71" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/><path d="M10 20l6-6 6 6" stroke="#2ECC71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/></svg></div>
     <div class="tactic-content">
       <div class="tactic-label">TERRENO IDEAL</div>
-      <div class="tactic-text"><strong>Florestas densas</strong> e <strong>cavernas</strong> com saida estreita. O Owlbear ocupa espaco Large — use terreno fechado a favor dele.</div>
+      <div class="tactic-text"><strong>Florestas densas</strong> e <strong>cavernas</strong> com saída estreita. O Owlbear ocupa espaço Large. Use terreno fechado a favor dele.</div>
     </div>
   </div>
 
   <div class="tactic-item">
-    <div class="tactic-icon">⚔️</div>
+    <div class="tactic-icon"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M6 26L20 12M20 12V18M20 12H14" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M26 26L12 12M12 12V18M12 12H18" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="26" r="1.5" fill="#C0392B" opacity="0.6"/><circle cx="26" cy="26" r="1.5" fill="#C0392B" opacity="0.6"/></svg></div>
     <div class="tactic-content">
       <div class="tactic-label">COMPORTAMENTO</div>
-      <div class="tactic-text">Ataca o alvo <strong>mais proximo</strong>. Nao recua — <strong>luta ate a morte</strong>. INT 3 = nao pensa, so destroi.</div>
+      <div class="tactic-text">Ataca o alvo <strong>mais próximo</strong>. Não recua, <strong>luta até a morte</strong>. INT 3 = não pensa, só destrói.</div>
     </div>
   </div>
 
   <div class="tactic-item">
-    <div class="tactic-icon">👃</div>
+    <div class="tactic-icon"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="15" r="9" stroke="#D4A853" stroke-width="1.8"/><ellipse cx="16" cy="24" rx="7" ry="2" stroke="#D4A853" stroke-width="1.2" opacity="0.4"/><path d="M12 13q2-3 4-1t4-1" stroke="#D4A853" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/><circle cx="13.5" cy="12" r="1" fill="#D4A853" opacity="0.3"/><circle cx="19" cy="10.5" r="0.7" fill="#D4A853" opacity="0.3"/></svg></div>
     <div class="tactic-content">
       <div class="tactic-label">KEEN SENSES</div>
-      <div class="tactic-text">Advantage em Perception (sight + smell). <strong>Stealth nao funciona facil.</strong> Emboscada do Owlbear, nao contra ele.</div>
+      <div class="tactic-text">Advantage em Perception (sight + smell). <strong>Stealth não funciona fácil.</strong> Emboscada do Owlbear, não contra ele.</div>
     </div>
   </div>
 
   <div class="combo-box">
     <div class="combo-label">COMBO SUGERIDO</div>
-    <div class="combo-text"><strong>2 Owlbears</strong> + terreno fechado = jogadores encurralados.<br>CR efetivo sobe pra <strong>~5</strong>. Perfeito pra party nivel 3-4.</div>
+    <div class="combo-text"><strong>2 Owlbears</strong> + terreno fechado = jogadores encurralados.<br>CR efetivo sobe pra <strong>~5</strong>. Perfeito pra party nível 3-4.</div>
   </div>
 
   <div class="dots">
+    <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot active"></div>
@@ -732,27 +823,28 @@
 </div>
 
 <!-- ===== SLIDE 4 — LORE ===== -->
-<p class="slide-label">Slide 4 / 5 — Lore</p>
+<p class="slide-label">Slide 5 / 6 — Lore</p>
 <div class="slide slide-lore">
   <div class="section-title" style="position:relative; z-index:1;">Lore</div>
 
   <div class="lore-quote">
     <div class="lore-text">
-      Cruzamento magico de um <strong>urso pardo</strong> com uma <strong>coruja-gigante</strong>. O resultado e uma criatura territorial, imprevisivel e impossivel de domesticar.<br><br>
+      Cruzamento mágico de um <strong>urso pardo</strong> com uma <strong>coruja-gigante</strong>. O resultado é uma criatura territorial, imprevisível e impossível de domesticar.<br><br>
       Ouviu um <strong>guincho agudo</strong> na floresta escura?<br>
-      Ja era.
+      Já era.
     </div>
   </div>
 
-  <div class="lore-source" style="margin-left:50px;">— SRD 5.1, Bestiario</div>
+  <div class="lore-source" style="margin-left:50px;">— SRD 5.1, Bestiário</div>
 
   <div style="position:relative; z-index:1; margin-top:50px; padding:25px 35px; background:rgba(212,168,83,0.06); border-radius:8px; border:1px solid rgba(212,168,83,0.12);">
     <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; color:#9896A0; line-height:1.6;">
-      <strong style="color:#D4A853;">Curiosidade:</strong> Alguns nobres tentam domesticar Owlbears como guardas de propriedade. A taxa de sucesso e... baixa.
+      <strong style="color:#D4A853;">Curiosidade:</strong> Alguns nobres tentam domesticar Owlbears como guardas de propriedade. A taxa de sucesso é... baixa.
     </div>
   </div>
 
   <div class="dots">
+    <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
@@ -764,7 +856,7 @@
 </div>
 
 <!-- ===== SLIDE 5 — CTA ===== -->
-<p class="slide-label">Slide 5 / 5 — CTA</p>
+<p class="slide-label">Slide 6 / 6 — CTA</p>
 <div class="slide slide-cta">
   <div class="corner-ornament corner-tl"></div>
   <div class="corner-ornament corner-tr"></div>
@@ -775,9 +867,12 @@
 
   <div class="sep" style="position:relative; z-index:1;"></div>
 
-  <div class="cta-text">Vai usar <em>Owlbear</em><br>na proxima sessao?</div>
-  <div class="cta-sub">Gerencie esse combate no Pocket DM.<br>Iniciativa, HP, condicoes — tudo automatico.</div>
-  <div class="cta-button">GRATUITO — LINK NA BIO</div>
+  <div class="cta-text">Vai usar <em>Owlbear</em><br>na próxima sessão?</div>
+  <div class="cta-sub">Stat block completo traduzido para PT-BR.<br>Iniciativa, HP, condições. Tudo automático.</div>
+  <div style="position:relative; z-index:1; margin:16px 0 8px; padding:12px 24px; background:rgba(74,158,92,0.08); border:1px solid rgba(74,158,92,0.2); border-radius:8px; text-align:center;">
+    <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; color:#4A9E5C; font-weight:600;">Tradução PT-BR completa e gratuita</span>
+  </div>
+  <div class="cta-button">GRATUITO · LINK NA BIO</div>
   <div class="cta-handle">@pocket.dm</div>
 </div>
 
