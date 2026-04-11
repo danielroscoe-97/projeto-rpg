@@ -1197,7 +1197,24 @@
       "collapse": "Recolher"
     },
     "pdf_export": {
-      "export_pdf": "Exportar PDF"
+      "export_pdf": "Exportar PDF",
+      "title_sheet": "Ficha de Personagem",
+      "section_ability_scores": "Atributos",
+      "section_combat": "Combate",
+      "section_saving_throws": "Testes de Resistência",
+      "section_skills": "Perícias",
+      "section_other_proficiencies": "Outras Proficiências",
+      "label_languages": "Idiomas",
+      "label_tools": "Ferramentas",
+      "label_armor": "Armaduras",
+      "label_weapons": "Armas",
+      "label_ac": "CA",
+      "label_hp": "PV",
+      "label_speed": "Deslocamento",
+      "label_initiative": "Iniciativa",
+      "label_prof_bonus": "Bônus Prof.",
+      "label_level": "Nível",
+      "footer_text": "Gerado por Pocket DM (pocketdm.app)"
     },
     "edit": {
       "edit_character": "Editar Personagem",

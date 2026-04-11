@@ -1,53 +1,17 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { FileDown } from "lucide-react";
 import type { CharacterProficiencies } from "@/lib/types/database";
-
-// ── D&D 5e Skill → Ability mapping ──────────────────────────────
-const SKILLS: Array<{ key: string; ability: string }> = [
-  { key: "acrobatics", ability: "DEX" },
-  { key: "animal_handling", ability: "WIS" },
-  { key: "arcana", ability: "INT" },
-  { key: "athletics", ability: "STR" },
-  { key: "deception", ability: "CHA" },
-  { key: "history", ability: "INT" },
-  { key: "insight", ability: "WIS" },
-  { key: "intimidation", ability: "CHA" },
-  { key: "investigation", ability: "INT" },
-  { key: "medicine", ability: "WIS" },
-  { key: "nature", ability: "INT" },
-  { key: "perception", ability: "WIS" },
-  { key: "performance", ability: "CHA" },
-  { key: "persuasion", ability: "CHA" },
-  { key: "religion", ability: "INT" },
-  { key: "sleight_of_hand", ability: "DEX" },
-  { key: "stealth", ability: "DEX" },
-  { key: "survival", ability: "WIS" },
-];
-
-function mod(score: number | null): string {
-  if (score == null) return "+0";
-  const m = Math.floor((score - 10) / 2);
-  return m >= 0 ? `+${m}` : `${m}`;
-}
-
-function profBonus(level: number | null): number {
-  if (!level || level <= 4) return 2;
-  if (level <= 8) return 3;
-  if (level <= 12) return 4;
-  if (level <= 16) return 5;
-  return 6;
-}
-
-// Skill label mapping (simplified — just capitalize the key)
-function skillLabel(key: string): string {
-  return key
-    .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
+import {
+  SKILLS,
+  profBonusForLevel,
+  getModifier,
+  formatMod,
+  skillLabel,
+  escapeHtml,
+} from "@/lib/constants/dnd-skills";
 
 interface CharacterData {
   name: string;
@@ -79,16 +43,9 @@ interface CharacterPdfExportProps {
 
 export function CharacterPdfExport({ character }: CharacterPdfExportProps) {
   const t = useTranslations("player_hq.pdf_export");
-  const printRef = useRef<HTMLDivElement>(null);
 
   const handleExport = useCallback(() => {
-    const el = printRef.current;
-    if (!el) return;
-
-    const win = window.open("", "_blank");
-    if (!win) return;
-
-    const pb = profBonus(character.level);
+    const pb = profBonusForLevel(character.level);
     const saves = character.proficiencies.saving_throws ?? [];
     const skills = character.proficiencies.skills ?? {};
     const abilityScores: Record<string, number | null> = {
@@ -96,17 +53,46 @@ export function CharacterPdfExport({ character }: CharacterPdfExportProps) {
       INT: character.int_score, WIS: character.wis, CHA: character.cha_score,
     };
 
+    // All user-facing strings via i18n
+    const L = {
+      abilityScores: t("section_ability_scores"),
+      combat: t("section_combat"),
+      savingThrows: t("section_saving_throws"),
+      skills: t("section_skills"),
+      otherProf: t("section_other_proficiencies"),
+      languages: t("label_languages"),
+      tools: t("label_tools"),
+      armor: t("label_armor"),
+      weapons: t("label_weapons"),
+      ac: t("label_ac"),
+      hp: t("label_hp"),
+      speed: t("label_speed"),
+      initiative: t("label_initiative"),
+      profBonus: t("label_prof_bonus"),
+      level: t("label_level"),
+      footer: t("footer_text"),
+      title: t("title_sheet"),
+    };
+
+    // Escape all user-provided strings
+    const eName = escapeHtml(character.name);
+    const eRace = character.race ? escapeHtml(character.race) : null;
+    const eClass = character.class ? escapeHtml(character.class) : null;
+    const eSubclass = character.subclass ? escapeHtml(character.subclass) : null;
+    const eBackground = character.background ? escapeHtml(character.background) : null;
+    const eAlignment = character.alignment ? escapeHtml(character.alignment) : null;
+
     const html = `<!DOCTYPE html>
 <html><head>
 <meta charset="UTF-8">
-<title>${character.name} — Character Sheet</title>
+<title>${eName} — ${escapeHtml(L.title)}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Plus Jakarta Sans', sans-serif; color: #1a1a1a; padding: 24px; max-width: 800px; margin: 0 auto; }
   h1 { font-family: 'Cinzel', serif; font-size: 28px; color: #7a200d; border-bottom: 2px solid #922610; padding-bottom: 4px; }
   h2 { font-family: 'Cinzel', serif; font-size: 16px; color: #922610; border-bottom: 1px solid #c9a959; padding-bottom: 2px; margin: 16px 0 8px; }
-  .header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
   .subtitle { font-size: 14px; color: #666; }
   .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; text-align: center; }
   .stat-box { border: 1px solid #c9a959; border-radius: 6px; padding: 8px 4px; }
@@ -124,81 +110,88 @@ export function CharacterPdfExport({ character }: CharacterPdfExportProps) {
   .mod-value { margin-left: auto; font-weight: 600; min-width: 28px; text-align: right; }
   .ability-tag { font-size: 10px; color: #999; text-transform: uppercase; }
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .tags { display: flex; flex-wrap: wrap; gap: 4px; }
-  .tag { font-size: 12px; padding: 2px 8px; border: 1px solid #ddd; border-radius: 4px; background: #f8f8f8; }
   .footer { margin-top: 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 8px; }
   @media print { body { padding: 12px; } }
 </style>
 </head><body>
 <div class="header">
-  <h1>${character.name}</h1>
-  <div class="subtitle">${[character.race, character.class, character.level ? `Level ${character.level}` : null, character.subclass].filter(Boolean).join(" · ")}</div>
+  <h1>${eName}</h1>
+  <div class="subtitle">${[eRace, eClass, character.level ? `${escapeHtml(L.level)} ${character.level}` : null, eSubclass].filter(Boolean).join(" &middot; ")}</div>
 </div>
-${character.background || character.alignment ? `<p class="subtitle" style="margin-bottom:8px">${[character.background, character.alignment].filter(Boolean).join(" · ")}</p>` : ""}
+${eBackground || eAlignment ? `<p class="subtitle" style="margin-bottom:8px">${[eBackground, eAlignment].filter(Boolean).join(" &middot; ")}</p>` : ""}
 
-<h2>Ability Scores</h2>
+<h2>${escapeHtml(L.abilityScores)}</h2>
 <div class="stats-grid">
 ${["STR", "DEX", "CON", "INT", "WIS", "CHA"].map(a => `
   <div class="stat-box">
     <div class="stat-label">${a}</div>
-    <div class="stat-score">${abilityScores[a] ?? "—"}</div>
-    <div class="stat-mod">${mod(abilityScores[a])}</div>
+    <div class="stat-score">${abilityScores[a] ?? "&mdash;"}</div>
+    <div class="stat-mod">${formatMod(getModifier(abilityScores[a]))}</div>
   </div>`).join("")}
 </div>
 
-<h2>Combat</h2>
+<h2>${escapeHtml(L.combat)}</h2>
 <div class="combat-grid">
-  <div class="combat-box"><div class="combat-label">AC</div><div class="combat-value">${character.ac}</div></div>
-  <div class="combat-box"><div class="combat-label">HP</div><div class="combat-value">${character.current_hp}/${character.max_hp}</div></div>
-  <div class="combat-box"><div class="combat-label">Speed</div><div class="combat-value">${character.speed ?? "—"}</div></div>
-  <div class="combat-box"><div class="combat-label">Initiative</div><div class="combat-value">${character.initiative_bonus != null ? (character.initiative_bonus >= 0 ? `+${character.initiative_bonus}` : character.initiative_bonus) : mod(character.dex)}</div></div>
-  <div class="combat-box"><div class="combat-label">Prof Bonus</div><div class="combat-value">+${pb}</div></div>
+  <div class="combat-box"><div class="combat-label">${escapeHtml(L.ac)}</div><div class="combat-value">${character.ac}</div></div>
+  <div class="combat-box"><div class="combat-label">${escapeHtml(L.hp)}</div><div class="combat-value">${character.current_hp}/${character.max_hp}</div></div>
+  <div class="combat-box"><div class="combat-label">${escapeHtml(L.speed)}</div><div class="combat-value">${character.speed ?? "&mdash;"}</div></div>
+  <div class="combat-box"><div class="combat-label">${escapeHtml(L.initiative)}</div><div class="combat-value">${character.initiative_bonus != null ? formatMod(character.initiative_bonus) : formatMod(getModifier(character.dex))}</div></div>
+  <div class="combat-box"><div class="combat-label">${escapeHtml(L.profBonus)}</div><div class="combat-value">+${pb}</div></div>
 </div>
 
 <div class="two-col">
 <div>
-<h2>Saving Throws</h2>
+<h2>${escapeHtml(L.savingThrows)}</h2>
 ${["STR", "DEX", "CON", "INT", "WIS", "CHA"].map(a => {
   const key = a.toLowerCase();
   const isProficient = saves.includes(key);
-  const scoreMod = Math.floor(((abilityScores[a] ?? 10) - 10) / 2);
+  const scoreMod = getModifier(abilityScores[a]);
   const total = scoreMod + (isProficient ? pb : 0);
-  return `<div class="save-row"><span class="dot ${isProficient ? "filled" : ""}"></span>${a}<span class="mod-value">${total >= 0 ? `+${total}` : total}</span></div>`;
+  return `<div class="save-row"><span class="dot ${isProficient ? "filled" : ""}"></span>${a}<span class="mod-value">${formatMod(total)}</span></div>`;
 }).join("")}
 </div>
 
 <div>
-<h2>Skills</h2>
+<h2>${escapeHtml(L.skills)}</h2>
 ${SKILLS.map(({ key, ability }) => {
   const prof = skills[key];
-  const scoreMod = Math.floor(((abilityScores[ability] ?? 10) - 10) / 2);
+  const scoreMod = getModifier(abilityScores[ability.toUpperCase()]);
   const bonus = prof === "expertise" ? pb * 2 : prof === "proficient" ? pb : 0;
   const total = scoreMod + bonus;
-  return `<div class="skill-row"><span class="dot ${prof === "expertise" ? "double" : prof ? "filled" : ""}"></span>${skillLabel(key)}<span class="ability-tag">${ability}</span><span class="mod-value">${total >= 0 ? `+${total}` : total}</span></div>`;
+  return `<div class="skill-row"><span class="dot ${prof === "expertise" ? "double" : prof ? "filled" : ""}"></span>${skillLabel(key)}<span class="ability-tag">${ability.toUpperCase()}</span><span class="mod-value">${formatMod(total)}</span></div>`;
 }).join("")}
 </div>
 </div>
 
 ${(character.proficiencies.languages?.length || character.proficiencies.tools?.length || character.proficiencies.armor?.length || character.proficiencies.weapons?.length) ? `
-<h2>Other Proficiencies</h2>
+<h2>${escapeHtml(L.otherProf)}</h2>
 <div style="font-size:13px; line-height:1.6">
-${character.proficiencies.languages?.length ? `<p><strong>Languages:</strong> ${character.proficiencies.languages.join(", ")}</p>` : ""}
-${character.proficiencies.tools?.length ? `<p><strong>Tools:</strong> ${character.proficiencies.tools.join(", ")}</p>` : ""}
-${character.proficiencies.armor?.length ? `<p><strong>Armor:</strong> ${character.proficiencies.armor.join(", ")}</p>` : ""}
-${character.proficiencies.weapons?.length ? `<p><strong>Weapons:</strong> ${character.proficiencies.weapons.join(", ")}</p>` : ""}
+${character.proficiencies.languages?.length ? `<p><strong>${escapeHtml(L.languages)}:</strong> ${character.proficiencies.languages.map(escapeHtml).join(", ")}</p>` : ""}
+${character.proficiencies.tools?.length ? `<p><strong>${escapeHtml(L.tools)}:</strong> ${character.proficiencies.tools.map(escapeHtml).join(", ")}</p>` : ""}
+${character.proficiencies.armor?.length ? `<p><strong>${escapeHtml(L.armor)}:</strong> ${character.proficiencies.armor.map(escapeHtml).join(", ")}</p>` : ""}
+${character.proficiencies.weapons?.length ? `<p><strong>${escapeHtml(L.weapons)}:</strong> ${character.proficiencies.weapons.map(escapeHtml).join(", ")}</p>` : ""}
 </div>` : ""}
 
 <div class="footer">
-  ${character.name} — Generated by Pocket DM (pocketdm.app)
+  ${eName} &mdash; ${escapeHtml(L.footer)}
 </div>
 </body></html>`;
 
-    win.document.write(html);
-    win.document.close();
-    // Wait for fonts to load, then trigger print dialog
+    // Use hidden iframe instead of window.open to avoid popup blockers (especially iOS Safari)
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none";
+    document.body.appendChild(iframe);
+    const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
+    if (!doc) { iframe.remove(); return; }
+    doc.open();
+    doc.write(html);
+    doc.close();
+    // Wait for fonts to load, then trigger print
     setTimeout(() => {
-      win.print();
-    }, 500);
+      iframe.contentWindow?.print();
+      // Clean up after print dialog closes
+      setTimeout(() => iframe.remove(), 2000);
+    }, 600);
   }, [character, t]);
 
   return (

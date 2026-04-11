@@ -162,23 +162,23 @@ export function PublicSubclassDetail({
     <article className="relative">
       {/* ── EN/PT Language Toggle ─────────────────────────────── */}
       <div className="flex justify-end mb-4">
-        <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
+        <div className="flex items-center rounded-lg border border-white/[0.08] overflow-hidden">
           <button
             onClick={() => setCurrentLocale("en")}
-            className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+            className={`min-h-[44px] min-w-[44px] px-4 py-2.5 text-sm font-semibold tracking-wide transition-colors ${
               !isPt
                 ? "bg-gold text-gray-950"
-                : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
+                : "bg-white/[0.04] text-gray-400 hover:text-gray-300"
             }`}
           >
             EN
           </button>
           <button
             onClick={() => setCurrentLocale("pt-BR")}
-            className={`px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+            className={`min-h-[44px] min-w-[44px] px-4 py-2.5 text-sm font-semibold tracking-wide transition-colors ${
               isPt
                 ? "bg-gold text-gray-950"
-                : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
+                : "bg-white/[0.04] text-gray-400 hover:text-gray-300"
             }`}
           >
             PT

@@ -2,52 +2,18 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Shield, BookOpen, Wrench, Globe, Shirt, Swords, ChevronDown, ChevronUp, Check, Star } from "lucide-react";
+import { Shield, BookOpen, Wrench, Globe, Shirt, Swords, ChevronDown, ChevronUp, Check, Star, Pencil } from "lucide-react";
 import type { CharacterProficiencies, SkillProficiency } from "@/lib/types/database";
-
-// ── D&D 5e Skill definitions ──────────────────────────────────────
-const ABILITY_SCORES = ["str", "dex", "con", "int", "wis", "cha"] as const;
-type AbilityScore = (typeof ABILITY_SCORES)[number];
-
-const SKILLS: Array<{ key: string; ability: AbilityScore }> = [
-  { key: "acrobatics", ability: "dex" },
-  { key: "animal_handling", ability: "wis" },
-  { key: "arcana", ability: "int" },
-  { key: "athletics", ability: "str" },
-  { key: "deception", ability: "cha" },
-  { key: "history", ability: "int" },
-  { key: "insight", ability: "wis" },
-  { key: "intimidation", ability: "cha" },
-  { key: "investigation", ability: "int" },
-  { key: "medicine", ability: "wis" },
-  { key: "nature", ability: "int" },
-  { key: "perception", ability: "wis" },
-  { key: "performance", ability: "cha" },
-  { key: "persuasion", ability: "cha" },
-  { key: "religion", ability: "int" },
-  { key: "sleight_of_hand", ability: "dex" },
-  { key: "stealth", ability: "dex" },
-  { key: "survival", ability: "wis" },
-];
+import {
+  ABILITY_SCORES,
+  SKILLS,
+  profBonusForLevel,
+  getModifier,
+  formatMod,
+  type AbilityScore,
+} from "@/lib/constants/dnd-skills";
 
 const SAVING_THROWS = ABILITY_SCORES;
-
-function getModifier(score: number | null): number {
-  if (score == null) return 0;
-  return Math.floor((score - 10) / 2);
-}
-
-function profBonusForLevel(level: number | null): number {
-  if (!level || level <= 4) return 2;
-  if (level <= 8) return 3;
-  if (level <= 12) return 4;
-  if (level <= 16) return 5;
-  return 6;
-}
-
-function formatMod(n: number): string {
-  return n >= 0 ? `+${n}` : `${n}`;
-}
 
 // ── Section toggle (used for collapsible groups) ──────────────────
 function SectionToggle({
@@ -314,7 +280,7 @@ export function ProficienciesSection({
   const toggleSave = (ability: string) => {
     const next = savingThrows.includes(ability)
       ? savingThrows.filter((a) => a !== ability)
-      : [...savingThrows, ability];
+      : [...new Set([...savingThrows, ability])];
     update({ saving_throws: next });
   };
 
@@ -359,8 +325,13 @@ export function ProficienciesSection({
           <button
             type="button"
             onClick={() => setEditing(!editing)}
-            className="text-[10px] font-medium text-gold hover:text-gold-light transition-colors px-2 py-1 rounded border border-gold/20 hover:border-gold/40"
+            className={`min-h-[44px] min-w-[44px] inline-flex items-center gap-1.5 text-xs font-medium transition-colors px-3 py-2 rounded-lg ${
+              editing
+                ? "bg-gold/15 text-gold border border-gold/30"
+                : "text-muted-foreground hover:text-gold border border-transparent hover:border-gold/20"
+            }`}
           >
+            <Pencil className="w-3.5 h-3.5" />
             {editing ? "Done" : t("edit")}
           </button>
         </div>
