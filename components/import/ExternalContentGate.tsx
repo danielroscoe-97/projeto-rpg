@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -23,6 +23,11 @@ export function ExternalContentGate({ open, onOpenChange, onAccepted }: External
   const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  // Reset state when dialog closes (P2: prevents stale done/accepted on reopen)
+  useEffect(() => {
+    if (!open) { setAccepted(false); setDone(false); }
+  }, [open]);
 
   async function handleActivate() {
     if (!accepted || loading) return;

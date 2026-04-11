@@ -58,7 +58,6 @@ const ALLOWED_EVENTS = new Set([
   "upsell:clicked",
   "upsell:dismissed",
   "pricing:visited",
-  "checkout:started",
   "checkout:completed",
   "checkout:canceled",
   "subscription:canceled",

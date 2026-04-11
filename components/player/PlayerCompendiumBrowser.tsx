@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull, Globe, Sword, Star } from "lucide-react";
+import { Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull, Globe, Sword, Star, Zap, ScrollText, Users } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { SpellCard } from "@/components/oracle/SpellCard";
@@ -11,8 +11,9 @@ import { ItemCard } from "@/components/oracle/ItemCard";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { getCoreConditions, getAllFeats } from "@/lib/srd/srd-search";
-import type { SrdSpell, SrdMonster, SrdCondition, SrdItem } from "@/lib/srd/srd-loader";
+import type { SrdSpell, SrdMonster, SrdCondition, SrdItem, SrdRace, SrdBackground } from "@/lib/srd/srd-loader";
 import type { SrdFeatEntry } from "@/lib/srd/srd-search";
+import { SRD_ABILITIES, type SrdAbility } from "@/lib/data/srd-abilities";
 import type { RulesetVersion } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 
@@ -25,14 +26,17 @@ const SRD_CLASSES = [
   "Warlock", "Wizard",
 ];
 
-type CompendiumTab = "all" | "spells" | "conditions" | "monsters" | "items" | "feats";
+type CompendiumTab = "all" | "spells" | "conditions" | "monsters" | "items" | "feats" | "abilities" | "races" | "backgrounds";
 
 type GlobalResult =
   | { kind: "spell"; item: SrdSpell }
   | { kind: "monster"; item: SrdMonster }
   | { kind: "condition"; item: SrdCondition }
   | { kind: "item"; item: SrdItem }
-  | { kind: "feat"; item: SrdFeatEntry };
+  | { kind: "feat"; item: SrdFeatEntry }
+  | { kind: "ability"; item: SrdAbility }
+  | { kind: "race"; item: SrdRace }
+  | { kind: "background"; item: SrdBackground };
 
 interface PlayerCompendiumBrowserProps {
   open: boolean;
@@ -75,6 +79,15 @@ export function PlayerCompendiumBrowser({
   const storeFeats = useSrdStore((s) => s.feats);
   const feats = useMemo(() => getAllFeats(), [storeFeats]);
 
+  // Abilities data — loaded in same Phase 2b as feats, use storeFeats as trigger
+  const abilities = useMemo(() => [...SRD_ABILITIES], [storeFeats]);
+
+  // Races data
+  const races = useSrdStore((s) => s.races);
+
+  // Backgrounds data
+  const backgrounds = useSrdStore((s) => s.backgrounds);
+
   // Spell filters
   const [nameFilter, setNameFilter] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
@@ -102,6 +115,18 @@ export function PlayerCompendiumBrowser({
   const [featNameFilter, setFeatNameFilter] = useState("");
   const [featDisplayCount, setFeatDisplayCount] = useState(PAGE_SIZE);
 
+  // Ability filters
+  const [abilityNameFilter, setAbilityNameFilter] = useState("");
+  const [abilityDisplayCount, setAbilityDisplayCount] = useState(PAGE_SIZE);
+
+  // Race filters
+  const [raceNameFilter, setRaceNameFilter] = useState("");
+  const [raceDisplayCount, setRaceDisplayCount] = useState(PAGE_SIZE);
+
+  // Background filters
+  const [backgroundNameFilter, setBackgroundNameFilter] = useState("");
+  const [backgroundDisplayCount, setBackgroundDisplayCount] = useState(PAGE_SIZE);
+
   // Global search
   const [globalFilter, setGlobalFilter] = useState("");
   const [globalDisplayCount, setGlobalDisplayCount] = useState(PAGE_SIZE);
@@ -112,6 +137,9 @@ export function PlayerCompendiumBrowser({
   const [selectedCondition, setSelectedCondition] = useState<SrdCondition | null>(null);
   const [selectedItem, setSelectedItem] = useState<SrdItem | null>(null);
   const [selectedFeat, setSelectedFeat] = useState<SrdFeatEntry | null>(null);
+  const [selectedAbility, setSelectedAbility] = useState<SrdAbility | null>(null);
+  const [selectedRace, setSelectedRace] = useState<SrdRace | null>(null);
+  const [selectedBackground, setSelectedBackground] = useState<SrdBackground | null>(null);
 
   // Reset state when dialog closes
   const handleOpenChange = useCallback(
@@ -126,6 +154,9 @@ export function PlayerCompendiumBrowser({
         setSelectedCondition(null);
         setSelectedItem(null);
         setSelectedFeat(null);
+        setSelectedAbility(null);
+        setSelectedRace(null);
+        setSelectedBackground(null);
         setActiveTab("all");
         setDisplayCount(PAGE_SIZE);
         setMonsterDisplayCount(PAGE_SIZE);
@@ -135,6 +166,12 @@ export function PlayerCompendiumBrowser({
         setItemDisplayCount(PAGE_SIZE);
         setFeatNameFilter("");
         setFeatDisplayCount(PAGE_SIZE);
+        setAbilityNameFilter("");
+        setAbilityDisplayCount(PAGE_SIZE);
+        setRaceNameFilter("");
+        setRaceDisplayCount(PAGE_SIZE);
+        setBackgroundNameFilter("");
+        setBackgroundDisplayCount(PAGE_SIZE);
         setGlobalFilter("");
         setGlobalDisplayCount(PAGE_SIZE);
         setClassDropdownOpen(false);
@@ -205,6 +242,38 @@ export function PlayerCompendiumBrowser({
     return result.sort((a, b) => a.name.localeCompare(b.name));
   }, [feats, featNameFilter]);
 
+  // Ability filtering
+  const filteredAbilities = useMemo(() => {
+    let result = abilities;
+    if (abilityNameFilter) {
+      const lower = abilityNameFilter.toLowerCase();
+      result = result.filter(
+        (a) => a.name.toLowerCase().includes(lower) || a.name_pt.toLowerCase().includes(lower)
+      );
+    }
+    return result.sort((a, b) => a.name.localeCompare(b.name));
+  }, [abilities, abilityNameFilter]);
+
+  // Race filtering
+  const filteredRaces = useMemo(() => {
+    let result = [...races];
+    if (raceNameFilter) {
+      const lower = raceNameFilter.toLowerCase();
+      result = result.filter((r) => r.name.toLowerCase().includes(lower));
+    }
+    return result.sort((a, b) => a.name.localeCompare(b.name));
+  }, [races, raceNameFilter]);
+
+  // Background filtering
+  const filteredBackgrounds = useMemo(() => {
+    let result = [...backgrounds];
+    if (backgroundNameFilter) {
+      const lower = backgroundNameFilter.toLowerCase();
+      result = result.filter((b) => b.name.toLowerCase().includes(lower));
+    }
+    return result.sort((a, b) => a.name.localeCompare(b.name));
+  }, [backgrounds, backgroundNameFilter]);
+
   // Global search — unified results across all types
   const globalResults = useMemo((): GlobalResult[] => {
     if (!globalFilter || globalFilter.length < 2) return [];
@@ -225,8 +294,18 @@ export function PlayerCompendiumBrowser({
     for (const f of feats) {
       if (f.name.toLowerCase().includes(lower)) results.push({ kind: "feat", item: f });
     }
+    for (const a of abilities) {
+      if (a.name.toLowerCase().includes(lower) || a.name_pt.toLowerCase().includes(lower))
+        results.push({ kind: "ability", item: a });
+    }
+    for (const r of races) {
+      if (r.name.toLowerCase().includes(lower)) results.push({ kind: "race", item: r });
+    }
+    for (const b of backgrounds) {
+      if (b.name.toLowerCase().includes(lower)) results.push({ kind: "background", item: b });
+    }
     return results.sort((a, b) => a.item.name.localeCompare(b.item.name));
-  }, [spells, monsters, conditions, items, feats, globalFilter]);
+  }, [spells, monsters, conditions, items, feats, abilities, races, backgrounds, globalFilter]);
 
   const displayedSpells = filteredSpells.slice(0, displayCount);
   const spellTotalCount = spells.length;
@@ -242,11 +321,20 @@ export function PlayerCompendiumBrowser({
   const displayedFeats = filteredFeats.slice(0, featDisplayCount);
   const hasMoreFeats = filteredFeats.length > featDisplayCount;
 
+  const displayedAbilities = filteredAbilities.slice(0, abilityDisplayCount);
+  const hasMoreAbilities = filteredAbilities.length > abilityDisplayCount;
+
+  const displayedRaces = filteredRaces.slice(0, raceDisplayCount);
+  const hasMoreRaces = filteredRaces.length > raceDisplayCount;
+
+  const displayedBackgrounds = filteredBackgrounds.slice(0, backgroundDisplayCount);
+  const hasMoreBackgrounds = filteredBackgrounds.length > backgroundDisplayCount;
+
   const displayedGlobal = globalResults.slice(0, globalDisplayCount);
   const hasMoreGlobal = globalResults.length > globalDisplayCount;
 
   // Check if we're in a detail view
-  const inDetail = selectedSpell || selectedMonster || selectedCondition || selectedItem || selectedFeat;
+  const inDetail = selectedSpell || selectedMonster || selectedCondition || selectedItem || selectedFeat || selectedAbility || selectedRace || selectedBackground;
 
   const handleBack = () => {
     setSelectedSpell(null);
@@ -254,9 +342,12 @@ export function PlayerCompendiumBrowser({
     setSelectedCondition(null);
     setSelectedItem(null);
     setSelectedFeat(null);
+    setSelectedAbility(null);
+    setSelectedRace(null);
+    setSelectedBackground(null);
   };
 
-  const detailTitle = selectedSpell?.name ?? selectedMonster?.name ?? selectedCondition?.name ?? selectedItem?.name ?? selectedFeat?.name ?? "";
+  const detailTitle = selectedSpell?.name ?? selectedMonster?.name ?? selectedCondition?.name ?? selectedItem?.name ?? selectedFeat?.name ?? selectedAbility?.name ?? selectedRace?.name ?? selectedBackground?.name ?? "";
 
   const tabItems: { key: CompendiumTab; icon: React.ReactNode; label: string }[] = [
     { key: "all", icon: <Globe className="w-3.5 h-3.5" />, label: t("compendium_tab_all") },
@@ -265,6 +356,9 @@ export function PlayerCompendiumBrowser({
     { key: "monsters", icon: <Skull className="w-3.5 h-3.5" />, label: t("compendium_tab_monsters") },
     { key: "items", icon: <Sword className="w-3.5 h-3.5" />, label: t("compendium_tab_items") },
     { key: "feats", icon: <Star className="w-3.5 h-3.5" />, label: t("compendium_tab_feats") },
+    { key: "abilities", icon: <Zap className="w-3.5 h-3.5" />, label: t("compendium_tab_abilities") },
+    { key: "races", icon: <Users className="w-3.5 h-3.5" />, label: t("compendium_tab_races") },
+    { key: "backgrounds", icon: <ScrollText className="w-3.5 h-3.5" />, label: t("compendium_tab_backgrounds") },
   ];
 
   return (
@@ -316,20 +410,127 @@ export function PlayerCompendiumBrowser({
                   </p>
                 </div>
               )}
+              {selectedAbility && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-xs px-2 py-0.5 rounded ${
+                      selectedAbility.ability_type === "class_feature" ? "bg-amber-400/10 text-amber-400"
+                      : selectedAbility.ability_type === "racial_trait" ? "bg-emerald-400/10 text-emerald-400"
+                      : selectedAbility.ability_type === "subclass_feature" ? "bg-cyan-400/10 text-cyan-400"
+                      : "bg-purple-400/10 text-purple-400"
+                    }`}>
+                      {selectedAbility.ability_type === "class_feature" ? "Class Feature"
+                      : selectedAbility.ability_type === "racial_trait" ? "Racial Trait"
+                      : selectedAbility.ability_type === "subclass_feature" ? "Subclass Feature"
+                      : "Feat"}
+                    </span>
+                    {(selectedAbility.source_class || selectedAbility.source_race) && (
+                      <span className="text-xs text-muted-foreground">
+                        {selectedAbility.source_class || selectedAbility.source_race}
+                      </span>
+                    )}
+                    {selectedAbility.level_acquired && (
+                      <span className="text-xs text-muted-foreground">
+                        Lv {selectedAbility.level_acquired}
+                      </span>
+                    )}
+                    {selectedAbility.reset_type && (
+                      <span className="text-xs text-muted-foreground/60 bg-white/5 px-1.5 py-0.5 rounded">
+                        {selectedAbility.reset_type.replace("_", " ")}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-white/90 whitespace-pre-line leading-relaxed">
+                    {selectedAbility.description}
+                  </p>
+                </div>
+              )}
+              {selectedRace && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
+                    {selectedRace.size.length > 0 && (
+                      <span className="bg-white/5 px-1.5 py-0.5 rounded">Size: {selectedRace.size.join("/")}</span>
+                    )}
+                    {selectedRace.speed?.walk != null && (
+                      <span className="bg-white/5 px-1.5 py-0.5 rounded">Speed: {selectedRace.speed.walk} ft</span>
+                    )}
+                    {selectedRace.darkvision != null && selectedRace.darkvision > 0 && (
+                      <span className="bg-white/5 px-1.5 py-0.5 rounded">Darkvision: {selectedRace.darkvision} ft</span>
+                    )}
+                  </div>
+                  {selectedRace.ability_bonuses && (
+                    <p className="text-sm text-amber-400">{selectedRace.ability_bonuses}</p>
+                  )}
+                  {selectedRace.languages && (
+                    <p className="text-xs text-muted-foreground">Languages: {selectedRace.languages}</p>
+                  )}
+                  {selectedRace.traits.length > 0 && (
+                    <div className="space-y-2 pt-1">
+                      {selectedRace.traits.map((trait) => (
+                        <div key={trait.name}>
+                          <h4 className="text-sm font-semibold text-foreground">{trait.name}</h4>
+                          <p className="text-sm text-white/90 whitespace-pre-line leading-relaxed mt-0.5">
+                            {trait.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {selectedBackground && (
+                <div className="space-y-3">
+                  {selectedBackground.skill_proficiencies.length > 0 && (
+                    <p className="text-sm text-amber-400">
+                      Skills: {selectedBackground.skill_proficiencies.join(", ")}
+                    </p>
+                  )}
+                  {selectedBackground.tool_proficiencies.length > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      Tools: {selectedBackground.tool_proficiencies.join(", ")}
+                    </p>
+                  )}
+                  {selectedBackground.languages && (
+                    <p className="text-xs text-muted-foreground">
+                      Languages: {selectedBackground.languages}
+                    </p>
+                  )}
+                  {selectedBackground.equipment && (
+                    <p className="text-xs text-muted-foreground">
+                      Equipment: {selectedBackground.equipment}
+                    </p>
+                  )}
+                  {selectedBackground.feature_name && (
+                    <div className="pt-1">
+                      <h4 className="text-sm font-semibold text-foreground">{selectedBackground.feature_name}</h4>
+                      {selectedBackground.feature_description && (
+                        <p className="text-sm text-white/90 whitespace-pre-line leading-relaxed mt-0.5">
+                          {selectedBackground.feature_description}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {selectedBackground.description && (
+                    <p className="text-sm text-white/90 whitespace-pre-line leading-relaxed">
+                      {selectedBackground.description}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ) : (
           /* ── List View ── */
           <div className="flex flex-col h-full max-h-[85vh] max-[768px]:max-h-[100dvh]">
-            {/* Tab bar */}
-            <div className="flex border-b border-white/10 shrink-0">
+            {/* Tab bar — scrollable on narrow screens */}
+            <div className="flex border-b border-white/10 shrink-0 overflow-x-auto scrollbar-hide">
               {tabItems.map((tab) => (
                 <button
                   key={tab.key}
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
+                    "flex items-center justify-center gap-1 px-2.5 py-2.5 text-xs font-medium transition-colors shrink-0 whitespace-nowrap",
                     activeTab === tab.key
                       ? "text-gold border-b-2 border-gold"
                       : "text-muted-foreground hover:text-foreground"
@@ -486,6 +687,70 @@ export function PlayerCompendiumBrowser({
                                 )}
                               </div>
                               <Star className="w-3.5 h-3.5 text-yellow-400/60 shrink-0" />
+                            </button>
+                          );
+                        }
+                        if (result.kind === "ability") {
+                          const ability = result.item;
+                          return (
+                            <button
+                              key={`ab-${ability.id}`}
+                              type="button"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                              onClick={() => setSelectedAbility(ability)}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                  {ability.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <span>{ability.source_class || ability.source_race || "Feat"}</span>
+                                  {ability.level_acquired && <><span>·</span><span>Lv{ability.level_acquired}</span></>}
+                                </div>
+                              </div>
+                              <Zap className="w-3.5 h-3.5 text-amber-400/60 shrink-0" />
+                            </button>
+                          );
+                        }
+                        if (result.kind === "race") {
+                          const race = result.item;
+                          return (
+                            <button
+                              key={`race-${race.id}`}
+                              type="button"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                              onClick={() => setSelectedRace(race)}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                  {race.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  {race.ability_bonuses && <span>{race.ability_bonuses}</span>}
+                                </div>
+                              </div>
+                              <Users className="w-3.5 h-3.5 text-blue-400/60 shrink-0" />
+                            </button>
+                          );
+                        }
+                        if (result.kind === "background") {
+                          const bg = result.item;
+                          return (
+                            <button
+                              key={`bg-${bg.id}`}
+                              type="button"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                              onClick={() => setSelectedBackground(bg)}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                  {bg.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground line-clamp-1">
+                                  {bg.skill_proficiencies.join(", ")}
+                                </div>
+                              </div>
+                              <ScrollText className="w-3.5 h-3.5 text-teal-400/60 shrink-0" />
                             </button>
                           );
                         }
@@ -835,7 +1100,7 @@ export function PlayerCompendiumBrowser({
                 </div>
 
                 <div className="overflow-y-auto flex-1">
-                  {(isStoreLoading || items.length === 0) ? (
+                  {isStoreLoading ? (
                     <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
                       <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
                       {t("compendium_loading")}
@@ -959,6 +1224,253 @@ export function PlayerCompendiumBrowser({
                           className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
                         >
                           {t("spell_load_more", { remaining: filteredFeats.length - featDisplayCount })}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Abilities Tab ── */}
+            {activeTab === "abilities" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={abilityNameFilter}
+                      onChange={(e) => {
+                        setAbilityNameFilter(e.target.value);
+                        setAbilityDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("compendium_search_abilities")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {abilityNameFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setAbilityNameFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {filteredAbilities.length} {t("compendium_abilities_count")}
+                  </p>
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {abilities.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("compendium_loading")}
+                    </div>
+                  ) : displayedAbilities.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedAbilities.map((ability) => (
+                        <button
+                          key={ability.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                          onClick={() => setSelectedAbility(ability)}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {ability.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              <span>{ability.source_class || ability.source_race || "Feat"}</span>
+                              {ability.level_acquired && (
+                                <><span>·</span><span>Lv{ability.level_acquired}</span></>
+                              )}
+                            </div>
+                          </div>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                            ability.ability_type === "class_feature" ? "bg-amber-400/10 text-amber-400"
+                            : ability.ability_type === "racial_trait" ? "bg-emerald-400/10 text-emerald-400"
+                            : ability.ability_type === "subclass_feature" ? "bg-cyan-400/10 text-cyan-400"
+                            : "bg-purple-400/10 text-purple-400"
+                          }`}>
+                            {ability.ability_type === "class_feature" ? "Class"
+                            : ability.ability_type === "racial_trait" ? "Racial"
+                            : ability.ability_type === "subclass_feature" ? "Subclass"
+                            : "Feat"}
+                          </span>
+                        </button>
+                      ))}
+
+                      {hasMoreAbilities && (
+                        <button
+                          type="button"
+                          onClick={() => setAbilityDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", { remaining: filteredAbilities.length - abilityDisplayCount })}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Races Tab ── */}
+            {activeTab === "races" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={raceNameFilter}
+                      onChange={(e) => {
+                        setRaceNameFilter(e.target.value);
+                        setRaceDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("compendium_search_races")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {raceNameFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setRaceNameFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {filteredRaces.length} {t("compendium_races_count")}
+                  </p>
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {races.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("compendium_loading")}
+                    </div>
+                  ) : displayedRaces.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedRaces.map((race) => (
+                        <button
+                          key={race.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                          onClick={() => setSelectedRace(race)}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {race.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              {race.ability_bonuses && <span>{race.ability_bonuses}</span>}
+                              {race.languages && (
+                                <><span>·</span><span>{race.languages}</span></>
+                              )}
+                            </div>
+                          </div>
+                          <Users className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
+                        </button>
+                      ))}
+
+                      {hasMoreRaces && (
+                        <button
+                          type="button"
+                          onClick={() => setRaceDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", { remaining: filteredRaces.length - raceDisplayCount })}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Backgrounds Tab ── */}
+            {activeTab === "backgrounds" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={backgroundNameFilter}
+                      onChange={(e) => {
+                        setBackgroundNameFilter(e.target.value);
+                        setBackgroundDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("compendium_search_backgrounds")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {backgroundNameFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setBackgroundNameFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {filteredBackgrounds.length} {t("compendium_backgrounds_count")}
+                  </p>
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {backgrounds.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("compendium_loading")}
+                    </div>
+                  ) : displayedBackgrounds.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedBackgrounds.map((bg) => (
+                        <button
+                          key={bg.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                          onClick={() => setSelectedBackground(bg)}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {bg.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground line-clamp-1">
+                              {bg.skill_proficiencies.join(", ")}
+                            </div>
+                          </div>
+                          <ScrollText className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
+                        </button>
+                      ))}
+
+                      {hasMoreBackgrounds && (
+                        <button
+                          type="button"
+                          onClick={() => setBackgroundDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", { remaining: filteredBackgrounds.length - backgroundDisplayCount })}
                         </button>
                       )}
                     </>

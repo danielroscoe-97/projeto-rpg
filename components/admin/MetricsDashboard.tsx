@@ -83,9 +83,9 @@ export function MetricsDashboard() {
     return <p className="text-muted-foreground text-sm">Loading metrics...</p>;
   }
 
-  const maxFunnel = Math.max(...metrics.funnel.map((f) => f.unique_users), 1);
-  const maxTopEvent = Math.max(...metrics.top_events.map((e) => e.event_count), 1);
-  const maxGuest = Math.max(...metrics.guest_funnel.map((f) => f.event_count), 1);
+  const maxFunnel = Math.max(...(metrics.funnel ?? []).map((f) => f.unique_users), 1);
+  const maxTopEvent = Math.max(...(metrics.top_events ?? []).map((e) => e.event_count), 1);
+  const maxGuest = Math.max(...(metrics.guest_funnel ?? []).map((f) => f.event_count), 1);
 
   return (
     <div data-testid="metrics-dashboard">

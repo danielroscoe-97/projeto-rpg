@@ -407,7 +407,7 @@ export function MonsterSearchPanel({
         next[altMonster!.id] = qty;
         return next;
       });
-      setResults(prev => prev.map((m, i) => i === idx ? altMonster! : m));
+      setResults(prev => prev.map((m) => m.id === monster.id ? altMonster! : m));
     } finally {
       isTogglingRef.current = false;
     }

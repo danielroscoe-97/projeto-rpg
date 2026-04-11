@@ -46,6 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/encounter-builder`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/feats`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/backgrounds`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/items`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
   ];
 
   // ── Compendium indexes (PT-BR) ──────────────────────────────────
@@ -64,6 +65,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/classes-pt`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/talentos`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/antecedentes`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/itens`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
   ];
 
   // ── Legal ────────────────────────────────────────────────────────

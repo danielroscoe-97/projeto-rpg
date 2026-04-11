@@ -91,12 +91,16 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
     if (open && !linkCode) loadJoinLink();
   }, [open, linkCode, loadJoinLink]);
 
-  const handleCopy = useCallback(() => {
+  const handleCopy = useCallback(async () => {
     if (!linkCode) return;
-    navigator.clipboard.writeText(buildLink(linkCode));
-    trackEvent("share:link_copied");
-    toast.success(t("invite_link_copied"));
-  }, [linkCode]);
+    try {
+      await navigator.clipboard.writeText(buildLink(linkCode));
+      trackEvent("share:link_copied");
+      toast.success(t("invite_link_copied"));
+    } catch {
+      toast.error(t("invite_copy_error"));
+    }
+  }, [linkCode, t]);
 
   const handleToggleActive = useCallback(async (active: boolean) => {
     setLinkActive(active);

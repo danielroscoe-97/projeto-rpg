@@ -57,8 +57,18 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler()
     // Guest funnel: guest events (last 30d)
     admin.rpc("admin_guest_funnel", { since: thirtyDaysAgo }),
     // Combat stats: avg rounds, avg duration (last 30d)
-    admin.rpc("admin_combat_stats", { since: thirtyDaysAgo }),
+    admin.rpc("admin_combat_stats", { since: thirtyDaysAgo }).single(),
   ]);
+
+  // Log Phase 2 RPC errors server-side (non-blocking)
+  for (const [name, result] of [
+    ["funnel", funnelResult], ["top_events", topEventsResult],
+    ["guest_funnel", guestFunnelResult], ["combat_stats", combatStatsResult],
+  ] as const) {
+    if ((result as { error?: unknown }).error) {
+      console.warn(`[admin/metrics] RPC ${name} failed:`, (result as { error: unknown }).error);
+    }
+  }
 
   return NextResponse.json({
     data: {
