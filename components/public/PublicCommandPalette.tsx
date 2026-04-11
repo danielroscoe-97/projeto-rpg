@@ -363,13 +363,13 @@ export function PublicCommandPalette({ locale }: PublicCommandPaletteProps) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-150"
+        className="fixed inset-0 z-[10060] bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-150"
         onClick={handleDismiss}
         aria-hidden="true"
       />
 
       {/* Command Palette */}
-      <div className="fixed inset-0 z-[61] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4 pointer-events-none">
+      <div className="fixed inset-0 z-[10061] flex items-start justify-center pt-[15vh] md:pt-[20vh] px-4 pointer-events-none">
         <Command
           className="w-full max-w-[640px] rounded-xl border border-white/10 bg-surface-secondary shadow-2xl shadow-black/40 overflow-hidden animate-in zoom-in-95 fade-in-0 duration-150 pointer-events-auto"
           label={l.label}

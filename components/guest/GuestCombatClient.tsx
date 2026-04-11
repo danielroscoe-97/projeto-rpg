@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen, ScrollText, Pause, Play } from "lucide-react";
+import { Share2, Lock, User, UserCircle, Sparkles, Skull, Undo2, BookOpen, ScrollText, Pause, Play, Search } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence } from "framer-motion";
 import { useGuestCombatStore, getGuestNumberedName, saveGuestCombatSnapshot } from "@/lib/stores/guest-combat-store";
@@ -1732,10 +1732,7 @@ export function GuestCombatClient() {
               title={t("search_compendium")}
               data-testid="quick-search-btn"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
+              <Search className="w-4 h-4" aria-hidden="true" />
             </button>
 
             {/* Compendium browser (C.14) */}

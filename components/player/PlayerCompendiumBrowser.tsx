@@ -71,8 +71,9 @@ export function PlayerCompendiumBrowser({
   // appropriate SRD source by SrdInitializer (already filtered by mode)
   const items = useSrdStore((s) => s.items);
 
-  // Feats data
-  const feats = useMemo(() => getAllFeats(), []);
+  // Feats data — re-compute when store finishes deferred Phase 2b load
+  const storeFeats = useSrdStore((s) => s.feats);
+  const feats = useMemo(() => getAllFeats(), [storeFeats]);
 
   // Spell filters
   const [nameFilter, setNameFilter] = useState("");
@@ -125,6 +126,7 @@ export function PlayerCompendiumBrowser({
         setSelectedCondition(null);
         setSelectedItem(null);
         setSelectedFeat(null);
+        setActiveTab("all");
         setDisplayCount(PAGE_SIZE);
         setMonsterDisplayCount(PAGE_SIZE);
         setMonsterNameFilter("");
