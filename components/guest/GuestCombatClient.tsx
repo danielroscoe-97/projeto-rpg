@@ -658,6 +658,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       <div data-tour-id="monster-search">
         <MonsterSearchPanel
           rulesetVersion={rulesetVersion}
+          onRulesetChange={setRulesetVersion}
           keepOpenAfterAdd
           onSelectMonster={handleSelectMonster}
           onSelectMonsterGroup={handleSelectMonsterGroup}
@@ -846,7 +847,7 @@ export function GuestCombatClient() {
   const tg = useTranslations("guest");
   const tCommon = useTranslations("common");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [midCombatRuleset] = useState<RulesetVersion>("2014");
+  const [midCombatRuleset, setMidCombatRuleset] = useState<RulesetVersion>("2014");
   const [midCombatAddRow, setMidCombatAddRow] = useState<AddRowForm>(EMPTY_ADD_ROW);
   const [midCombatAddRowRole, setMidCombatAddRowRole] = useState<CombatantRole>(DEFAULT_ADD_ROW_ROLE);
   const [upsellOpen, setUpsellOpen] = useState(false);
@@ -1777,6 +1778,7 @@ export function GuestCombatClient() {
             </SheetHeader>
             <MonsterSearchPanel
               rulesetVersion={midCombatRuleset}
+              onRulesetChange={setMidCombatRuleset}
               onSelectMonster={handleMidCombatSelectMonster}
               onSelectMonsterGroup={handleMidCombatSelectMonsterGroup}
             />

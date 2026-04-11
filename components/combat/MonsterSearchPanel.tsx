@@ -5,11 +5,11 @@ import { useTranslations } from "next-intl";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useTourStore } from "@/lib/stores/tour-store";
 import Fuse from "fuse.js";
-import { mergeImportedMonsters } from "@/lib/srd/srd-search";
+import { mergeImportedMonsters, getCrossVersionMonsterId, getMonsterById } from "@/lib/srd/srd-search";
 import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
-import { VersionBadge } from "@/components/session/RulesetSelector";
+import { VersionBadge, RulesetSelector } from "@/components/session/RulesetSelector";
 import { useExtendedCompendium } from "@/lib/hooks/use-extended-compendium";
 import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { ImportContentModal } from "@/components/import/ImportContentModal";
@@ -133,6 +133,8 @@ interface MonsterSearchPanelProps {
   placeholder?: string;
   /** Keep results open after adding a monster (setup mode) — default: false (combat mode clears) */
   keepOpenAfterAdd?: boolean;
+  /** Called when the DM changes the ruleset version from within the search filter panel */
+  onRulesetChange?: (version: RulesetVersion) => void;
 }
 
 const DEBOUNCE_MS = 200;
@@ -151,6 +153,7 @@ export function MonsterSearchPanel({
   onManualAdd,
   placeholder,
   keepOpenAfterAdd = false,
+  onRulesetChange,
 }: MonsterSearchPanelProps) {
   const t = useTranslations("combat");
   const tCompendium = useTranslations("compendium");
@@ -200,10 +203,11 @@ export function MonsterSearchPanel({
   const hasFilters = crMin !== "" || crMax !== "" || selectedTypes.size > 0 || sourceFilter !== "all";
   const shouldShowResults = query.trim() !== "" || hasFilters;
 
-  // Click outside to close results
+  // Click outside to close results (disabled during tour and setup keepOpen mode)
   useEffect(() => {
-    if (!shouldShowResults || results.length === 0) return;
+    if (!shouldShowResults || results.length === 0 || keepOpenAfterAdd) return;
     const handleClickOutside = (e: MouseEvent) => {
+      if (useTourStore.getState().isActive) return;
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
         setQuery("");
         setResults([]);
@@ -212,7 +216,7 @@ export function MonsterSearchPanel({
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [shouldShowResults, results.length]);
+  }, [shouldShowResults, results.length, keepOpenAfterAdd]);
 
   // Check if user has imported content
   useEffect(() => {
@@ -371,6 +375,28 @@ export function MonsterSearchPanel({
     [onSelectMonsterGroup, onMonsterAdded, isHidden, keepOpenAfterAdd, t]
   );
 
+  // Toggle a single monster result to its cross-version equivalent (2014↔2024)
+  const handleVersionToggle = useCallback(async (monster: SrdMonster, idx: number) => {
+    const crossrefId = getCrossVersionMonsterId(monster.id);
+    if (!crossrefId) {
+      toast.info(t("no_alternate_version"));
+      return;
+    }
+    const altVersion: RulesetVersion = monster.ruleset_version === "2014" ? "2024" : "2014";
+    let altMonster = getMonsterById(crossrefId, altVersion);
+    if (!altMonster) {
+      // Lazy-load the alternate version data and merge into global map
+      const altMonsters = await loadMonsters(altVersion);
+      mergeImportedMonsters(altMonsters);
+      altMonster = getMonsterById(crossrefId, altVersion);
+    }
+    if (!altMonster) {
+      toast.info(t("no_alternate_version"));
+      return;
+    }
+    setResults(prev => prev.map((m, i) => i === idx ? altMonster! : m));
+  }, [t]);
+
   // Filter campaign players by query
   const matchedPlayers = query.trim() && campaignPlayers
     ? campaignPlayers.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()))
@@ -401,7 +427,13 @@ export function MonsterSearchPanel({
       setActiveIndex((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter" && activeIndex >= 0) {
       e.preventDefault();
-      handleSelect(results[activeIndex]);
+      const monster = results[activeIndex];
+      const qty = rowQuantities[monster.id] ?? 1;
+      if (qty > 1 && onSelectMonsterGroup) {
+        handleSelectGroup(monster, qty);
+      } else {
+        handleSelect(monster);
+      }
     } else if (e.key === "Escape") {
       setQuery("");
       setResults([]);
@@ -496,6 +528,15 @@ export function MonsterSearchPanel({
       {/* Filter panel */}
       {filtersOpen && (
         <div className="bg-card/50 border border-border/50 rounded-md p-3 space-y-3">
+          {/* Version filter (2014 / 2024) */}
+          {onRulesetChange && (
+            <div>
+              <p className="text-[11px] text-muted-foreground/70 uppercase tracking-wider mb-1.5">
+                {t("search_filter_version")}
+              </p>
+              <RulesetSelector value={rulesetVersion} onChange={onRulesetChange} label="" />
+            </div>
+          )}
           {/* Source filter */}
           <div>
             <p className="text-[11px] text-muted-foreground/70 uppercase tracking-wider mb-1.5">
@@ -676,7 +717,14 @@ export function MonsterSearchPanel({
                         {monster.name}
                       </span>
                       <CrBadge cr={monster.cr} />
-                      <VersionBadge version={monster.ruleset_version} />
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleVersionToggle(monster, idx); }}
+                        className="cursor-pointer hover:ring-1 hover:ring-gold/40 rounded transition-all"
+                        title={t("switch_version_tooltip", { version: monster.ruleset_version === "2014" ? "2024" : "2014" })}
+                      >
+                        <VersionBadge version={monster.ruleset_version} />
+                      </button>
                       {monster.is_srd === false && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-400">
                           {tImport("badge_external")}
