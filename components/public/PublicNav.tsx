@@ -20,6 +20,10 @@ const LABELS = {
     conditionsHref: "/conditions",
     items: "Items",
     itemsHref: "/items",
+    feats: "Feats",
+    featsHref: "/feats",
+    backgrounds: "Backgrounds",
+    backgroundsHref: "/backgrounds",
     dice: "Dice",
     diceHref: "/dice",
     rules: "Rules",
@@ -41,6 +45,10 @@ const LABELS = {
     conditionsHref: "/condicoes",
     items: "Itens",
     itemsHref: "/itens",
+    feats: "Talentos",
+    featsHref: "/talentos",
+    backgrounds: "Antecedentes",
+    backgroundsHref: "/antecedentes",
     dice: "Dados",
     diceHref: "/dados",
     rules: "Regras",
@@ -153,6 +161,18 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
             className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
           >
             {l.races}
+          </Link>
+          <Link
+            href={l.featsHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.feats}
+          </Link>
+          <Link
+            href={l.backgroundsHref}
+            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
+          >
+            {l.backgrounds}
           </Link>
           <Link
             href={l.diceHref}

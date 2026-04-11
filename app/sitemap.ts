@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import {
   getSrdMonstersDeduped,
   getSrdSpellsDeduped,
+  getSrdFeats,
+  getSrdBackgrounds,
+  getSrdItems,
   toSlug,
   toMonsterSlugPt,
   toSpellSlugPt,
@@ -41,6 +44,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/actions`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/ability-scores`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/encounter-builder`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/feats`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/backgrounds`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
   ];
 
   // ── Compendium indexes (PT-BR) ──────────────────────────────────
@@ -57,6 +62,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/atributos`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/calculadora-encontro`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/classes-pt`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/talentos`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/antecedentes`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
   ];
 
   // ── Legal ────────────────────────────────────────────────────────
