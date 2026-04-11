@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
@@ -95,4 +96,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withSentryConfig(withNextIntl(nextConfig), {
+  // Suppress Sentry CLI source map upload warnings in dev
+  silent: !process.env.CI,
+  // Disable automatic instrumentation for specific routes (performance)
+  disableLogger: true,
+});
