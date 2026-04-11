@@ -100,13 +100,38 @@ export function PublicMobileMenu({ open, onClose, locale }: PublicMobileMenuProp
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, handleKeyDown]);
 
-  if (!open || !mounted) return null;
+  // Keep mounted during exit animation so the slide-out is visible
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setVisible(true);
+    } else if (visible) {
+      const timer = setTimeout(() => setVisible(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [open, visible]);
+
+  if (!visible || !mounted) return null;
 
   const sections = getSections(locale);
   const isPt = locale === "pt-BR";
 
   return createPortal(
-    <div className="fixed inset-x-0 top-0 bottom-0 z-[55] bg-gray-950 lg:hidden overflow-y-auto pt-14">
+    <>
+      {/* Backdrop fade */}
+      <div
+        className={`fixed inset-0 z-[54] bg-black/60 lg:hidden transition-opacity duration-300 ${
+          open ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      {/* Drawer slide from top */}
+      <div
+        className={`fixed inset-x-0 top-0 bottom-0 z-[55] bg-gray-950 lg:hidden overflow-y-auto pt-14 transition-transform duration-300 ease-out ${
+          open ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
       <div className="p-4 flex flex-col gap-1">
         {sections.map((section) => (
           <div key={section.title || "quick"}>
@@ -162,7 +187,8 @@ export function PublicMobileMenu({ open, onClose, locale }: PublicMobileMenuProp
           Pocket DM — {isPt ? "O rastreador de combate para" : "The combat tracker for"} D&amp;D 5e
         </p>
       </div>
-    </div>,
+    </div>
+    </>,
     document.body,
   );
 }
