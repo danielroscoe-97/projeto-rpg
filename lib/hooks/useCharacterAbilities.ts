@@ -18,12 +18,14 @@ export function useCharacterAbilities(characterId: string) {
 
   // Fetch
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       const { data, error } = await supabase
         .from("character_abilities")
         .select("*")
         .eq("player_character_id", characterId)
         .order("display_order", { ascending: true });
+      if (cancelled) return;
       if (error) {
         toast.error("Failed to load abilities");
       }
@@ -31,6 +33,7 @@ export function useCharacterAbilities(characterId: string) {
       setLoading(false);
     };
     fetchData();
+    return () => { cancelled = true; };
   }, [characterId, supabase]);
 
   // Add ability
@@ -65,18 +68,26 @@ export function useCharacterAbilities(characterId: string) {
   // Update ability (optimistic)
   const updateAbility = useCallback(
     async (id: string, updates: CharacterAbilityUpdate) => {
-      const prev = abilities;
+      const original = abilities.find((a) => a.id === id);
+      if (!original) return { data: null, error: new Error("Not found") };
+
       setAbilities((current) =>
-        current.map((a) => (a.id === id ? { ...a, ...updates } : a))
+        current.map((a) =>
+          a.id === id ? { ...a, ...updates, updated_at: new Date().toISOString() } : a
+        )
       );
       const { error } = await supabase
         .from("character_abilities")
         .update(updates)
         .eq("id", id);
       if (error) {
-        setAbilities(prev);
+        setAbilities((current) =>
+          current.map((a) => (a.id === id ? original : a))
+        );
         toast.error("Failed to update ability");
+        return { data: null, error };
       }
+      return { data: null, error: null };
     },
     [abilities, supabase]
   );
@@ -105,14 +116,19 @@ export function useCharacterAbilities(characterId: string) {
   // Delete ability (optimistic)
   const deleteAbility = useCallback(
     async (id: string) => {
-      const prev = abilities;
+      const original = abilities.find((a) => a.id === id);
       setAbilities((current) => current.filter((a) => a.id !== id));
       const { error } = await supabase
         .from("character_abilities")
         .delete()
         .eq("id", id);
       if (error) {
-        setAbilities(prev);
+        if (original) {
+          setAbilities((current) => {
+            const already = current.some((a) => a.id === id);
+            return already ? current : [...current, original].sort((a, b) => a.display_order - b.display_order);
+          });
+        }
         toast.error("Failed to delete ability");
       }
     },
@@ -122,34 +138,44 @@ export function useCharacterAbilities(characterId: string) {
   // Reset by type — for RestResetPanel integration
   const resetByType = useCallback(
     async (resetTypes: string[]) => {
-      const affected = abilities.filter(
+      const affectedOriginals = abilities.filter(
         (a) =>
           a.reset_type != null &&
           resetTypes.includes(a.reset_type) &&
           a.current_uses > 0
       );
-      if (affected.length === 0) return 0;
+      if (affectedOriginals.length === 0) return 0;
+
+      const affectedIds = new Set(affectedOriginals.map((a) => a.id));
 
       // Optimistic
-      setAbilities((prev) =>
-        prev.map((a) =>
+      setAbilities((current) =>
+        current.map((a) =>
           a.reset_type != null && resetTypes.includes(a.reset_type)
             ? { ...a, current_uses: 0 }
             : a
         )
       );
 
-      const ids = affected.map((a) => a.id);
+      const ids = Array.from(affectedIds);
       const { error } = await supabase
         .from("character_abilities")
         .update({ current_uses: 0 })
         .in("id", ids);
 
       if (error) {
+        // Rollback: restore only affected items
+        setAbilities((current) =>
+          current.map((a) => {
+            if (!affectedIds.has(a.id)) return a;
+            const orig = affectedOriginals.find((o) => o.id === a.id);
+            return orig ?? a;
+          })
+        );
         toast.error("Failed to reset abilities");
       }
 
-      return affected.length;
+      return affectedOriginals.length;
     },
     [abilities, supabase]
   );

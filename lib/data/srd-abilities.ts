@@ -1,4 +1,16 @@
-import srdAbilitiesData from "./srd-abilities-index.json";
+/**
+ * SRD Abilities — dual-mode data.
+ *
+ * The static import below loads the PUBLIC SRD-only filtered version
+ * (689 entries from PHB/XPHB). This is safe for the client bundle since
+ * it contains only SRD 5.1 / 5.2 content.
+ *
+ * The full dataset (2890 entries including non-SRD) lives at
+ * data/srd/abilities-index.json and is served via the auth-gated
+ * /api/srd/full/ route. The srd-store.ts Phase 2b handles loading
+ * the full version when isFullDataMode() is true.
+ */
+import srdAbilitiesPublic from "../../public/srd/abilities-index.json";
 
 export interface SrdAbility {
   id: string;
@@ -15,7 +27,13 @@ export interface SrdAbility {
   srd_ref: string;
 }
 
-export const SRD_ABILITIES: SrdAbility[] = srdAbilitiesData as SrdAbility[];
+/** SRD-only abilities (safe for client bundle). Replaced at runtime by full data when authed. */
+export let SRD_ABILITIES: SrdAbility[] = srdAbilitiesPublic as SrdAbility[];
+
+/** Replace the in-memory abilities array with the full dataset (auth users only). */
+export function setSrdAbilities(data: SrdAbility[]) {
+  SRD_ABILITIES = data;
+}
 
 /**
  * Search abilities by name, class, race, or type.

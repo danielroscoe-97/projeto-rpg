@@ -658,6 +658,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       <div data-tour-id="monster-search">
         <MonsterSearchPanel
           rulesetVersion={rulesetVersion}
+          keepOpenAfterAdd
           onSelectMonster={handleSelectMonster}
           onSelectMonsterGroup={handleSelectMonsterGroup}
           onMonsterAdded={handleMonsterAdded}

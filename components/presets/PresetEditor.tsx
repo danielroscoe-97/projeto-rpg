@@ -117,6 +117,7 @@ export function PresetEditor({ preset, onSave, onCancel }: PresetEditorProps) {
       {/* Monster Search */}
       <MonsterSearchPanel
         rulesetVersion={rulesetVersion}
+        keepOpenAfterAdd
         onSelectMonster={handleSelectMonster}
       />
 

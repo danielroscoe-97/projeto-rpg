@@ -119,7 +119,7 @@ export function AddAbilityDialog({
       const parsedMax = parseInt(maxUses, 10);
       const finalMaxUses = Number.isNaN(parsedMax) || parsedMax <= 0 ? null : parsedMax;
 
-      await onAdd({
+      const result = await onAdd({
         name: name.trim(),
         name_pt: namePt.trim() || null,
         description: description.trim() || null,
@@ -134,7 +134,9 @@ export function AddAbilityDialog({
         srd_ref: srdRef,
         source,
       });
-      onClose();
+      if (!result?.error) {
+        onClose();
+      }
     } finally {
       setSaving(false);
     }

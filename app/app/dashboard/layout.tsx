@@ -15,6 +15,7 @@ export default async function DashboardRouteLayout({
     campaigns: t("campaigns"),
     combats: t("combats"),
     characters: t("characters"),
+    compendium: t("compendium"),
     soundboard: t("soundboard"),
     presets: t("presets"),
     settings: t("settings"),

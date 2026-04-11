@@ -34,6 +34,7 @@ const translations = {
   campaigns: "Campaigns",
   combats: "Combats",
   characters: "Characters",
+  compendium: "Compendium",
   soundboard: "Soundboard",
   settings: "Settings",
   profile: "Profile",

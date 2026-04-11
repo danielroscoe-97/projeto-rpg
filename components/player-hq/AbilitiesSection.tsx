@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Plus, Swords, Dna, Star, Sparkles, Wrench, Zap } from "lucide-react";
 import { useCharacterAbilities } from "@/lib/hooks/useCharacterAbilities";
@@ -53,16 +53,16 @@ export function AbilitiesSection({
     filterByType,
   } = useCharacterAbilities(characterId);
 
-  const filtered = filterByType(filter);
+  const filtered = useMemo(() => filterByType(filter), [filterByType, filter]);
 
   // Group by type for display
-  const grouped = {
+  const grouped = useMemo(() => ({
     class_feature: filtered.filter((a) => a.ability_type === "class_feature"),
     subclass_feature: filtered.filter((a) => a.ability_type === "subclass_feature"),
     racial_trait: filtered.filter((a) => a.ability_type === "racial_trait"),
     feat: filtered.filter((a) => a.ability_type === "feat"),
     manual: filtered.filter((a) => a.ability_type === "manual"),
-  };
+  }), [filtered]);
 
   // Only show group headers when filter=all
   const showGroups = filter === "all";

@@ -14,6 +14,7 @@ interface DashboardLayoutProps {
     campaigns: string;
     combats: string;
     characters: string;
+    compendium: string;
     soundboard: string;
     presets: string;
     settings: string;

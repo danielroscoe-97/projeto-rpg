@@ -87,14 +87,20 @@ export function usePersonalInventory(characterId: string) {
   // Remove item (optimistic)
   const removeItem = useCallback(
     async (id: string) => {
-      const backup = items.find((i) => i.id === id);
+      const idx = items.findIndex((i) => i.id === id);
+      const backup = items[idx];
+      if (!backup) return;
       setItems((prev) => prev.filter((i) => i.id !== id));
       const { error } = await supabase
         .from("character_inventory_items")
         .delete()
         .eq("id", id);
-      if (error && backup) {
-        setItems((prev) => [...prev, backup]);
+      if (error) {
+        setItems((current) => {
+          const copy = [...current];
+          copy.splice(Math.min(idx, copy.length), 0, backup);
+          return copy;
+        });
         toast.error("Failed to remove item");
       }
     },
@@ -181,7 +187,7 @@ export function usePersonalInventory(characterId: string) {
     [items, attuned.length, supabase],
   );
 
-  // Add item with attunement fields
+  // Add item with attunement fields (optimistic)
   const addItemFull = useCallback(
     async (input: {
       item_name: string;
@@ -196,6 +202,25 @@ export function usePersonalInventory(characterId: string) {
         toast.error("Max attunement (3 items)");
         return null;
       }
+      const tempId = `temp-${Date.now()}`;
+      const now = new Date().toISOString();
+      const optimistic: CharacterInventoryItem = {
+        id: tempId,
+        player_character_id: characterId,
+        item_name: input.item_name,
+        quantity: input.quantity ?? 1,
+        equipped: false,
+        notes: null,
+        is_attuned: input.is_attuned ?? false,
+        rarity: input.rarity ?? null,
+        is_magic: input.is_magic ?? false,
+        attune_notes: input.attune_notes ?? null,
+        srd_ref: input.srd_ref ?? null,
+        created_at: now,
+        updated_at: now,
+      };
+      setItems((prev) => [...prev, optimistic]);
+
       const { data, error } = await supabase
         .from("character_inventory_items")
         .insert({
@@ -212,10 +237,11 @@ export function usePersonalInventory(characterId: string) {
         .single();
 
       if (error || !data) {
+        setItems((prev) => prev.filter((i) => i.id !== tempId));
         toast.error("Failed to add item");
         return null;
       }
-      setItems((prev) => [...prev, data]);
+      setItems((prev) => prev.map((i) => (i.id === tempId ? data : i)));
       return data;
     },
     [characterId, attuned.length, supabase],

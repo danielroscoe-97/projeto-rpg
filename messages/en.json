@@ -35,6 +35,8 @@
     "spells": "Spells",
     "conditions": "Conditions",
     "items": "Items",
+    "classes": "Classes",
+    "feats": "Feats",
     "presets": "Combat Presets",
     "soundboard": "Soundboard",
     "settings": "Settings",
@@ -1100,7 +1102,9 @@
       "attune": "Attune",
       "unattune": "Unattune",
       "empty_attune_slot": "Empty slot",
-      "max_attunement_reached": "Max attunement (3 items)"
+      "max_attunement_reached": "Max attunement (3 items)",
+      "add_custom_item": "+ Add custom item",
+      "custom_item_name_label": "Custom item name"
     },
     "abilities": {
       "title": "Abilities",
@@ -1137,7 +1141,9 @@
       "filter_racial": "Racial",
       "filter_feat": "Feats",
       "filter_subclass": "Subclass",
-      "filter_manual": "Custom"
+      "filter_manual": "Custom",
+      "expand": "Expand",
+      "collapse": "Collapse"
     },
     "edit": {
       "edit_character": "Edit Character",
@@ -1248,6 +1254,7 @@
     "create_npc": "Create NPC",
     "invite_player": "Invite Player",
     "presets": "Presets",
+    "compendium": "Compendium",
     "more": "More",
     "nav_label": "Dashboard navigation"
   },
@@ -1707,6 +1714,8 @@
     "monster_quantity_group_hint": "Will be added as a group",
     "monster_quantity_group_label": "Group:",
     "monster_quantity_group_btn": "group",
+    "monster_added_toast": "✓ {name} added",
+    "monster_added_toast_group": "✓ {name} ×{qty} added",
     "omnibar_manual_add": "Manual Monster/Player",
     "omnibar_manual_title": "Add manually",
     "omnibar_players_section": "Campaign Players",

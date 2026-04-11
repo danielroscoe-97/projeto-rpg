@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -373,22 +373,40 @@ export function PlayerInitiativeBoard({
   const [idsAtRound2Start, setIdsAtRound2Start] = useState<Set<string> | null>(null);
 
   // Update max revealed index when turn advances or combatants change in round 1
+  // When the active turn is a grouped monster, reveal ALL group members at once
   useEffect(() => {
     if (roundNumber >= 2) {
       // When round 2 starts, reveal all
       setMaxRevealedIndex(combatants.length - 1);
     } else if (roundNumber === 1) {
-      // B3: Recalculate when combatants are added — include new combatant if their
-      // position is at or before the current turn index
-      setMaxRevealedIndex((prev) => Math.max(prev, currentTurnIndex));
+      let revealUpTo = currentTurnIndex;
+      // If the current combatant belongs to a monster group, reveal all group members
+      const current = combatants[currentTurnIndex];
+      if (current?.monster_group_id) {
+        for (let i = 0; i < combatants.length; i++) {
+          if (combatants[i].monster_group_id === current.monster_group_id) {
+            revealUpTo = Math.max(revealUpTo, i);
+          }
+        }
+      }
+      setMaxRevealedIndex((prev) => Math.max(prev, revealUpTo));
     }
-  }, [currentTurnIndex, roundNumber, combatants.length]);
+  }, [currentTurnIndex, roundNumber, combatants.length, combatants]);
 
   // Progressive reveal: in round 1, only show combatants up to current turn
+  // Also reveals all members of the active combatant's monster group
   const isRevealed = useCallback((index: number) => {
     if (roundNumber >= 2) return true;
-    return index <= maxRevealedIndex;
-  }, [roundNumber, maxRevealedIndex]);
+    if (index <= maxRevealedIndex) return true;
+    // Check if this combatant is in the same group as the current turn combatant
+    const current = combatants[currentTurnIndex];
+    const target = combatants[index];
+    if (current?.monster_group_id && target?.monster_group_id &&
+        current.monster_group_id === target.monster_group_id) {
+      return true;
+    }
+    return false;
+  }, [roundNumber, maxRevealedIndex, combatants, currentTurnIndex]);
 
   // Detect HP damage to auto-reveal mystery creatures
   useEffect(() => {
@@ -790,6 +808,26 @@ export function PlayerInitiativeBoard({
                     </button>
                     {showBuffPicker && (
                       <div className="flex flex-wrap gap-1 mt-1">
+                        {/* Concentrating toggle — purple, separate from buffs */}
+                        {(() => {
+                          const isConcentrating = pc.conditions.some((c) => c === "concentrating" || c.startsWith("concentrating:"));
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => onSelfConditionToggle(pc.id, "concentrating")}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
+                                isConcentrating
+                                  ? "bg-purple-600 text-white"
+                                  : "bg-purple-900/20 text-purple-400/70 hover:bg-purple-900/40 hover:text-purple-300"
+                              }`}
+                              aria-pressed={isConcentrating}
+                              title={isConcentrating ? "Remove Concentrating" : "Apply Concentrating"}
+                            >
+                              <Focus className="w-3 h-3" />
+                              Concentrating
+                            </button>
+                          );
+                        })()}
                         {BENEFICIAL_CONDITIONS.map((condition) => {
                           const isActive = pc.conditions.includes(condition);
                           return (
@@ -1158,6 +1196,26 @@ export function PlayerInitiativeBoard({
                   </button>
                   {showBuffPicker && (
                     <div className="flex flex-wrap gap-1 mt-1">
+                      {/* Concentrating toggle — purple, separate from buffs */}
+                      {(() => {
+                        const isConcentrating = combatant.conditions.some((c) => c === "concentrating" || c.startsWith("concentrating:"));
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => onSelfConditionToggle(combatant.id, "concentrating")}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
+                              isConcentrating
+                                ? "bg-purple-600 text-white"
+                                : "bg-purple-900/20 text-purple-400/70 hover:bg-purple-900/40 hover:text-purple-300"
+                            }`}
+                            aria-pressed={isConcentrating}
+                            title={isConcentrating ? "Remove Concentrating" : "Apply Concentrating"}
+                          >
+                            <Focus className="w-3 h-3" />
+                            Concentrating
+                          </button>
+                        );
+                      })()}
                       {BENEFICIAL_CONDITIONS.map((condition) => {
                         const isActive = combatant.conditions.includes(condition);
                         return (

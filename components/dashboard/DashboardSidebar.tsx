@@ -15,6 +15,7 @@ import {
   Ellipsis,
   Plus,
   UserPlus,
+  BookOpen,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,7 @@ interface SidebarTranslations {
   campaigns: string;
   combats: string;
   characters: string;
+  compendium: string;
   soundboard: string;
   presets: string;
   settings: string;
@@ -47,6 +49,7 @@ const NAV_ITEMS_DESKTOP_BASE = [
   { key: "campaigns" as const, href: "/app/dashboard/campaigns", icon: Swords, dmOnly: false },
   { key: "combats" as const, href: "/app/dashboard/combats", icon: ScrollText, dmOnly: false },
   { key: "characters" as const, href: "/app/dashboard/characters", icon: Users, dmOnly: false },
+  { key: "compendium" as const, href: "/app/compendium", icon: BookOpen, dmOnly: false },
   { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music, dmOnly: false },
   { key: "presets" as const, href: "/app/dashboard/presets", icon: Package, dmOnly: true },
   { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings, dmOnly: false },
@@ -60,6 +63,7 @@ const NAV_ITEMS_MOBILE_PRIMARY = [
 
 const NAV_ITEMS_MOBILE_MORE_BASE = [
   { key: "characters" as const, href: "/app/dashboard/characters", icon: Users, dmOnly: false },
+  { key: "compendium" as const, href: "/app/compendium", icon: BookOpen, dmOnly: false },
   { key: "soundboard" as const, href: "/app/dashboard/soundboard", icon: Music, dmOnly: false },
   { key: "presets" as const, href: "/app/dashboard/presets", icon: Package, dmOnly: true },
   { key: "settings" as const, href: "/app/dashboard/settings", icon: Settings, dmOnly: false },
@@ -114,6 +118,9 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false, collaps
     }
     if (href === "/app/dashboard/presets") {
       return pathname.startsWith("/app/dashboard/presets") || pathname.startsWith("/app/presets");
+    }
+    if (href === "/app/compendium") {
+      return pathname.startsWith("/app/compendium");
     }
     return pathname.startsWith(href);
   };

@@ -127,25 +127,25 @@ export function CommandPalette() {
     handleClose();
   }, [pinCard, handleClose]);
 
-  const _handlePinSpell = useCallback((spell: SrdSpell) => {
-    pinCard("spell", spell.id, spell.ruleset_version);
-    handleClose();
-  }, [pinCard, handleClose]);
-
   const handleViewSpell = useCallback((spell: SrdSpell) => {
     setSelectedSpell(spell);
     handleClose();
   }, [handleClose]);
 
-  const _handlePinCondition = useCallback((condition: SrdCondition) => {
-    pinCard("condition", condition.id, "2014");
-    handleClose();
-  }, [pinCard, handleClose]);
-
   const handleViewCondition = useCallback((condition: SrdCondition) => {
     setSelectedCondition(condition);
     handleClose();
   }, [handleClose]);
+
+  const handlePinItem = useCallback((id: string) => {
+    pinCard("item", id, "2014");
+    handleClose();
+  }, [pinCard, handleClose]);
+
+  const handlePinFeat = useCallback((id: string, version?: string) => {
+    pinCard("feat", id, (version ?? "2014") as "2014" | "2024");
+    handleClose();
+  }, [pinCard, handleClose]);
 
   function formatCR(cr: string) {
     return cr === "0.125" ? "1/8" : cr === "0.25" ? "1/4" : cr === "0.5" ? "1/2" : cr;
@@ -387,7 +387,7 @@ export function CommandPalette() {
                   <Command.Item
                     key={`i:${r.item.id}`}
                     value={`item:${r.item.id}`}
-                    onSelect={handleClose}
+                    onSelect={() => handlePinItem(r.item.id)}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
                   >
                     <div className="flex-1 min-w-0">
@@ -414,7 +414,7 @@ export function CommandPalette() {
                   <Command.Item
                     key={`f:${r.item.id}`}
                     value={`feat:${r.item.id}`}
-                    onSelect={handleClose}
+                    onSelect={() => handlePinFeat(r.item.id, r.item.ruleset_version)}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
                   >
                     <div className="flex-1 min-w-0">

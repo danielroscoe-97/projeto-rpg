@@ -786,33 +786,35 @@ export function PlayerJoinClient({
         const isHpActionProtected = Date.now() - hpActionOptimisticRef.current < 5000;
         // B3: Preserve optimistic conditions for 5s after broadcast
         const isConditionProtected = Date.now() - conditionOptimisticRef.current < 5000;
-        if (isDeathSaveProtected || isHpActionProtected || isConditionProtected) {
-          updateCombatants((prev) => {
-            const serverList = data.combatants as PlayerCombatant[];
-            return serverList.map((sc) => {
-              const local = prev.find((lc) => lc.id === sc.id);
-              // Preserve optimistic death saves
-              if (isDeathSaveProtected && local?.death_saves && sc.death_saves) {
-                const localTotal = (local.death_saves.successes ?? 0) + (local.death_saves.failures ?? 0);
-                const serverTotal = (sc.death_saves.successes ?? 0) + (sc.death_saves.failures ?? 0);
-                if (localTotal > serverTotal) {
-                  return { ...sc, death_saves: local.death_saves };
-                }
+        // ALWAYS merge local state for runtime-only fields (reaction_used is not in DB)
+        updateCombatants((prev) => {
+          const serverList = data.combatants as PlayerCombatant[];
+          return serverList.map((sc) => {
+            const local = prev.find((lc) => lc.id === sc.id);
+            let merged = sc;
+            // reaction_used is runtime-only (not in DB) — always preserve from local state
+            if (local && typeof local.reaction_used === "boolean" && sc.reaction_used === undefined) {
+              merged = { ...merged, reaction_used: local.reaction_used };
+            }
+            // Preserve optimistic death saves
+            if (isDeathSaveProtected && local?.death_saves && sc.death_saves) {
+              const localTotal = (local.death_saves.successes ?? 0) + (local.death_saves.failures ?? 0);
+              const serverTotal = (sc.death_saves.successes ?? 0) + (sc.death_saves.failures ?? 0);
+              if (localTotal > serverTotal) {
+                merged = { ...merged, death_saves: local.death_saves };
               }
-              // P1.03: Preserve optimistic HP only for the specific combatant that was acted on
-              if (isHpActionProtected && local && sc.id === lastHpActionCombatantRef.current) {
-                return { ...sc, current_hp: local.current_hp, temp_hp: local.temp_hp };
-              }
-              // B3: Preserve conditions from broadcast over potentially stale server data
-              if (isConditionProtected && local?.conditions) {
-                return { ...sc, conditions: local.conditions, condition_durations: local.condition_durations };
-              }
-              return sc;
-            });
+            }
+            // P1.03: Preserve optimistic HP only for the specific combatant that was acted on
+            if (isHpActionProtected && local && sc.id === lastHpActionCombatantRef.current) {
+              merged = { ...merged, current_hp: local.current_hp, temp_hp: local.temp_hp };
+            }
+            // B3: Preserve conditions from broadcast over potentially stale server data
+            if (isConditionProtected && local?.conditions) {
+              merged = { ...merged, conditions: local.conditions, condition_durations: local.condition_durations };
+            }
+            return merged;
           });
-        } else {
-          updateCombatants(data.combatants);
-        }
+        });
       }
       // Mesa model: update DM plan from API response
       if (data.dm_plan) {
@@ -2471,6 +2473,20 @@ export function PlayerJoinClient({
               toast.error(tRef.current("sync_offline"));
               return;
             }
+            // Optimistic local update — toggle condition immediately for instant UI feedback
+            conditionOptimisticRef.current = Date.now();
+            updateCombatants((prev) =>
+              prev.map((c) => {
+                if (c.id !== combatantId) return c;
+                const has = c.conditions.includes(condition);
+                return {
+                  ...c,
+                  conditions: has
+                    ? c.conditions.filter((cond) => cond !== condition)
+                    : [...c.conditions, condition],
+                };
+              })
+            );
             ch.send({
               type: "broadcast",
               event: "player:self_condition_toggle",

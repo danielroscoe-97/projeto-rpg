@@ -13,7 +13,7 @@ import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { BookOpen, Skull, Sparkles, HeartPulse, Backpack } from "lucide-react";
+import { BookOpen, Skull, Sparkles, HeartPulse, Backpack, GraduationCap, Star } from "lucide-react";
 
 export default async function AppLayout({
   children,
@@ -92,6 +92,24 @@ export default async function AppLayout({
             <span className="inline-flex items-center gap-1.5">
               <HeartPulse className="w-4 h-4" aria-hidden="true" />
               {t("conditions")}
+            </span>
+          ),
+        },
+        {
+          href: "/app/compendium?tab=classes",
+          label: (
+            <span className="inline-flex items-center gap-1.5">
+              <GraduationCap className="w-4 h-4" aria-hidden="true" />
+              {t("classes")}
+            </span>
+          ),
+        },
+        {
+          href: "/app/compendium?tab=feats",
+          label: (
+            <span className="inline-flex items-center gap-1.5">
+              <Star className="w-4 h-4" aria-hidden="true" />
+              {t("feats")}
             </span>
           ),
         },

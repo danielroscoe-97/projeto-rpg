@@ -96,14 +96,14 @@ async function addMonsterGroup(page: Page, name: string, qty: number) {
   const testId = await firstResult.getAttribute("data-testid");
   const monsterId = testId?.replace("srd-result-", "") ?? "";
 
-  // Adjust quantity via +/- buttons to reach desired qty (default is 2)
+  // Adjust quantity via +/- buttons to reach desired qty (default is 1)
   const plusBtn = firstResult.locator('button:has-text("+")').first();
-  for (let i = 2; i < qty; i++) {
+  for (let i = 1; i < qty; i++) {
     await plusBtn.click();
     await page.waitForTimeout(100);
   }
 
-  // Click the group add button (e.g. "+3 grupo")
+  // Click the unified add button (now shows "Adicionar ×N grupo" when qty > 1)
   const groupBtn = page.locator(`[data-testid="add-group-${monsterId}"]`);
   await expect(groupBtn).toBeVisible({ timeout: 3_000 });
   await groupBtn.click();

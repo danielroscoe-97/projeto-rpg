@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useCombatStore } from "@/lib/stores/combat-store";
-import { persistInitiativeAndStartCombat, persistInitiativeOrder, persistNewCombatant } from "@/lib/supabase/session";
+import { persistInitiativeAndStartCombat, persistInitiativeOrder, persistNewCombatant, persistConditions } from "@/lib/supabase/session";
 import { EncounterSetup } from "@/components/combat/EncounterSetup";
 import { CombatantRow } from "@/components/combat/CombatantRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
@@ -1313,8 +1313,10 @@ export function CombatSessionClient({
       if (!active) return;
       const { combatant_id, condition, player_name } = payload as { combatant_id: string; condition: string; player_name: string };
       if (!combatant_id || !condition || typeof condition !== "string") return;
-      // Security: only allow beneficial conditions
-      if (!(BENEFICIAL_CONDITIONS as readonly string[]).includes(condition)) return;
+      // Security: only allow beneficial conditions + concentrating
+      const isAllowed = (BENEFICIAL_CONDITIONS as readonly string[]).includes(condition)
+        || condition === "concentrating" || condition.startsWith("concentrating:");
+      if (!isAllowed) return;
       // Security: combatant must exist and be a player — use ID as primary key, token/name as confirmation
       const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);
       if (!combatant || !combatant.is_player) return;
@@ -1334,6 +1336,8 @@ export function CombatSessionClient({
           conditions: updated.conditions,
           condition_durations: updated.condition_durations,
         });
+        // Persist self-applied conditions to DB so fetchFullState returns them
+        persistConditions(combatant_id, updated.conditions).catch(() => { /* non-fatal */ });
       }
     };
 

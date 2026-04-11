@@ -17,10 +17,10 @@ interface PlayerHpActionsProps {
 
 type HpActionType = "damage" | "heal" | "temp_hp";
 
-const ACTION_CONFIG: Record<HpActionType, { color: string; bgColor: string; borderColor: string }> = {
-  damage: { color: "text-red-400", bgColor: "bg-red-600/80", borderColor: "border-red-500/30" },
-  heal: { color: "text-green-400", bgColor: "bg-green-600/80", borderColor: "border-green-500/30" },
-  temp_hp: { color: "text-blue-400", bgColor: "bg-blue-600/80", borderColor: "border-blue-500/30" },
+const ACTION_CONFIG: Record<HpActionType, { color: string; bgColor: string; borderColor: string; idleBg: string }> = {
+  damage: { color: "text-red-400", bgColor: "bg-red-600/80", borderColor: "border-red-500/40", idleBg: "bg-red-500/15" },
+  heal: { color: "text-green-400", bgColor: "bg-green-600/80", borderColor: "border-green-500/40", idleBg: "bg-green-500/15" },
+  temp_hp: { color: "text-blue-400", bgColor: "bg-blue-600/80", borderColor: "border-blue-500/40", idleBg: "bg-blue-500/15" },
 };
 
 export function PlayerHpActions({
@@ -96,7 +96,7 @@ export function PlayerHpActions({
   ];
 
   return (
-    <div ref={containerRef} className="relative flex items-center gap-1">
+    <div ref={containerRef} className="relative flex items-center gap-2">
       {actions.map(({ key, label, icon: Icon }) => {
         const config = ACTION_CONFIG[key];
         const disabledByCondition = isDisabledByCondition(key);
@@ -126,18 +126,18 @@ export function PlayerHpActions({
             }
             className={cn(
               // UX.14 — min touch target 44px, increased padding
-              "flex items-center gap-0.5 px-2.5 py-1.5 text-xs font-medium rounded border transition-colors min-h-[36px] touch-manipulation",
+              "flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border transition-colors min-h-[40px] touch-manipulation",
               // UX.16 — distinct visual for offline vs disabled-by-condition
               isOffline
                 ? "opacity-30 pointer-events-none border-transparent text-muted-foreground"
                 : disabledByCondition
                   ? "opacity-50 pointer-events-none border-transparent text-muted-foreground"
                   : activeAction === key
-                    ? `${config.color} ${config.borderColor}`
-                    : `${config.color} border-transparent hover:${config.borderColor}`
+                    ? `${config.color} ${config.borderColor} ${config.idleBg}`
+                    : `${config.color} ${config.borderColor} ${config.idleBg} hover:brightness-125`
             )}
           >
-            <Icon className="w-3 h-3" />
+            <Icon className="w-4 h-4" />
             {label}
           </button>
         );

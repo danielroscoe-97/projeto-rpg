@@ -131,6 +131,8 @@ interface MonsterSearchPanelProps {
   onManualAdd?: (data: { name: string; hp?: number; ac?: number; initiative?: number; role?: CombatantRole }) => void;
   /** Placeholder override */
   placeholder?: string;
+  /** Keep results open after adding a monster (setup mode) — default: false (combat mode clears) */
+  keepOpenAfterAdd?: boolean;
 }
 
 const DEBOUNCE_MS = 200;
@@ -148,6 +150,7 @@ export function MonsterSearchPanel({
   defaultManualOpen = false,
   onManualAdd,
   placeholder,
+  keepOpenAfterAdd = false,
 }: MonsterSearchPanelProps) {
   const t = useTranslations("combat");
   const tCompendium = useTranslations("compendium");
@@ -319,13 +322,18 @@ export function MonsterSearchPanel({
       const opts = isHidden ? { isHidden: true } : undefined;
       onSelectMonster(monster, opts);
       onMonsterAdded?.();
-      setQuery("");
-      setResults([]);
-      setActiveIndex(-1);
-      setRowQuantities({});
-      setIsHidden(false);
+      if (keepOpenAfterAdd) {
+        setRowQuantities((prev) => ({ ...prev, [monster.id]: 1 }));
+        toast.success(t("monster_added_toast", { name: monster.name }));
+      } else {
+        setQuery("");
+        setResults([]);
+        setActiveIndex(-1);
+        setRowQuantities({});
+        setIsHidden(false);
+      }
     },
-    [onSelectMonster, onMonsterAdded, isHidden]
+    [onSelectMonster, onMonsterAdded, isHidden, keepOpenAfterAdd, t]
   );
 
   const handleSelectGroup = useCallback(
@@ -334,13 +342,18 @@ export function MonsterSearchPanel({
       const opts = isHidden ? { isHidden: true } : undefined;
       onSelectMonsterGroup(monster, qty, opts);
       onMonsterAdded?.();
-      setQuery("");
-      setResults([]);
-      setActiveIndex(-1);
-      setRowQuantities({});
-      setIsHidden(false);
+      if (keepOpenAfterAdd) {
+        setRowQuantities((prev) => ({ ...prev, [monster.id]: 1 }));
+        toast.success(t("monster_added_toast_group", { name: monster.name, qty: String(qty) }));
+      } else {
+        setQuery("");
+        setResults([]);
+        setActiveIndex(-1);
+        setRowQuantities({});
+        setIsHidden(false);
+      }
     },
-    [onSelectMonsterGroup, onMonsterAdded, isHidden]
+    [onSelectMonsterGroup, onMonsterAdded, isHidden, keepOpenAfterAdd, t]
   );
 
   // Filter campaign players by query
@@ -623,17 +636,27 @@ export function MonsterSearchPanel({
                 data-testid={`srd-result-${monster.id}`}
                 {...(idx === 0 ? { "data-tour-id": "monster-result" } : {})}
               >
-                {/* Top row: token + info + ficha */}
-                <div className="flex items-center gap-3">
-                  <MonsterToken
-                    tokenUrl={monster.token_url}
-                    fallbackTokenUrl={monster.fallback_token_url}
-                    creatureType={monster.type}
-                    name={monster.name}
-                    size={36}
-                  />
+                {/* Single inline row: token + info + ficha + stepper + add */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Token — clickable to open stat card */}
+                  <button
+                    type="button"
+                    onClick={() => { if (useTourStore.getState().isActive) return; pinCard("monster", monster.id, monster.ruleset_version); }}
+                    className="shrink-0 rounded-full hover:ring-2 hover:ring-gold/40 transition-all cursor-pointer"
+                    aria-label={t("setup_view_card_aria", { name: monster.name })}
+                    title={t("setup_view_card_aria", { name: monster.name })}
+                  >
+                    <MonsterToken
+                      tokenUrl={monster.token_url}
+                      fallbackTokenUrl={monster.fallback_token_url}
+                      creatureType={monster.type}
+                      name={monster.name}
+                      size={36}
+                    />
+                  </button>
+                  {/* Info block */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-foreground text-sm font-medium">
                         {monster.name}
                       </span>
@@ -653,59 +676,69 @@ export function MonsterSearchPanel({
                       <span>AC {monster.armor_class}</span>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => { if (useTourStore.getState().isActive) return; pinCard("monster", monster.id, monster.ruleset_version); }}
-                    className="flex items-center gap-1 px-2 py-1.5 text-xs text-muted-foreground hover:text-gold hover:bg-gold/10 rounded transition-all shrink-0 border border-transparent hover:border-gold/30"
-                    aria-label={t("setup_view_card_aria", { name: monster.name })}
-                    title={t("setup_view_card_aria", { name: monster.name })}
-                    data-testid={`ver-ficha-${monster.id}`}
-                  >
-                    <span aria-hidden>📖</span>
-                    <span>{t("ver_ficha")}</span>
-                  </button>
-                </div>
-                {/* Bottom row: Add ×1 + inline group stepper */}
-                <div className="flex items-center gap-2 mt-1.5 ml-[48px]">
-                  <button
-                    type="button"
-                    onClick={() => handleSelect(monster)}
-                    className="px-3 py-1 text-xs font-medium rounded bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
-                    data-testid={`add-one-${monster.id}`}
-                    {...(idx === 0 ? { "data-tour-id": "add-monster-btn" } : {})}
-                  >
-                    {t("setup_add")}
-                  </button>
+                  {/* Ver Ficha — icon-only with tooltip */}
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={() => { if (useTourStore.getState().isActive) return; pinCard("monster", monster.id, monster.ruleset_version); }}
+                          className="shrink-0 w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-gold hover:bg-gold/10 rounded transition-all border border-transparent hover:border-gold/30"
+                          aria-label={t("setup_view_card_aria", { name: monster.name })}
+                          data-testid={`ver-ficha-${monster.id}`}
+                        >
+                          <span aria-hidden>📖</span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs">{t("ver_ficha")}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  {/* Quantity stepper — always visible when group add is supported */}
                   {onSelectMonsterGroup && (
-                    <div className="flex items-center gap-1 ml-auto">
-                      <span className="text-[11px] text-muted-foreground/60">{t("monster_quantity_group_label")}</span>
+                    <div className="flex items-center gap-0.5 rounded-md border border-white/[0.08] bg-white/[0.03] p-0.5 shrink-0">
                       <button
                         type="button"
-                        onClick={() => setRowQuantities((prev) => ({ ...prev, [monster.id]: Math.max(2, rowQty - 1) }))}
-                        disabled={rowQty <= 2}
-                        className="w-6 h-6 flex items-center justify-center text-xs font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        onClick={() => setRowQuantities((prev) => ({ ...prev, [monster.id]: Math.max(1, rowQty - 1) }))}
+                        disabled={rowQty <= 1}
+                        className="w-6 h-6 flex items-center justify-center text-xs font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.12] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       >
                         -
                       </button>
-                      <span className="w-6 text-center text-xs font-mono text-foreground">{rowQty > 1 ? rowQty : 2}</span>
+                      <span className="w-6 text-center text-xs font-mono font-semibold text-foreground select-none">{rowQty}</span>
                       <button
                         type="button"
-                        onClick={() => setRowQuantities((prev) => ({ ...prev, [monster.id]: Math.min(20, (rowQty > 1 ? rowQty : 2) + 1) }))}
+                        onClick={() => setRowQuantities((prev) => ({ ...prev, [monster.id]: Math.min(20, (rowQty > 0 ? rowQty : 1) + 1) }))}
                         disabled={rowQty >= 20}
-                        className="w-6 h-6 flex items-center justify-center text-xs font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="w-6 h-6 flex items-center justify-center text-xs font-bold rounded bg-white/[0.06] text-muted-foreground hover:bg-white/[0.12] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       >
                         +
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSelectGroup(monster, rowQty > 1 ? rowQty : 2)}
-                        className="px-2 py-1 text-xs font-medium rounded bg-purple-600/80 text-white hover:bg-purple-500 transition-colors"
-                        data-testid={`add-group-${monster.id}`}
-                      >
-                        +{rowQty > 1 ? rowQty : 2} {t("monster_quantity_group_btn")}
-                      </button>
                     </div>
                   )}
+                  {/* Add button — adaptive label */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const qty = rowQty > 1 ? rowQty : 1;
+                      if (qty === 1 || !onSelectMonsterGroup) {
+                        handleSelect(monster);
+                      } else {
+                        handleSelectGroup(monster, qty);
+                      }
+                    }}
+                    className={`shrink-0 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                      rowQty > 1
+                        ? "bg-purple-600 text-white hover:bg-purple-500 shadow-[0_0_8px_rgba(147,51,234,0.3)]"
+                        : "bg-emerald-600 text-white hover:bg-emerald-500"
+                    }`}
+                    data-testid={rowQty > 1 ? `add-group-${monster.id}` : `add-one-${monster.id}`}
+                    {...(idx === 0 ? { "data-tour-id": "add-monster-btn" } : {})}
+                  >
+                    {rowQty > 1
+                      ? `+${rowQty} ${t("monster_quantity_group_btn")}`
+                      : t("setup_add")
+                    }
+                  </button>
                 </div>
               </li>
             );

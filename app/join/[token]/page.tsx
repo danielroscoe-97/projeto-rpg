@@ -126,6 +126,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
     monster_id: string | null;
     ruleset_version: string | null;
     hp_status?: string;
+    reaction_used: boolean;
   }> = [];
 
   if (combatantRows) {
@@ -135,10 +136,10 @@ export default async function JoinPage({ params }: JoinPageProps) {
       .map((c) => {
         if (c.is_player) {
           const { is_hidden: _h, ...rest } = c;
-          return rest;
+          return { ...rest, reaction_used: false };
         }
         const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, is_hidden: _h, ...safe } = c;
-        return { ...safe, hp_status: getHpStatus(current_hp ?? 0, max_hp ?? 0) };
+        return { ...safe, hp_status: getHpStatus(current_hp ?? 0, max_hp ?? 0), reaction_used: false };
       });
   }
 

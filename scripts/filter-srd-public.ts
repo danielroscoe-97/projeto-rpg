@@ -143,6 +143,59 @@ for (const file of COPY_AS_IS) {
   }
 }
 
+// ── Process abilities index ────────────────────────────────────────
+{
+  const filename = "abilities-index.json";
+  try {
+    const raw: { ability_type: string; source: string; source_class: string | null; source_race: string | null; srd_ref: string }[] =
+      JSON.parse(readFileSync(join(DATA_DIR, filename), "utf-8"));
+    const total = raw.length;
+
+    const SRD_SOURCES = new Set(["PHB", "XPHB"]);
+    const SRD_CLASSES = new Set([
+      "barbarian", "bard", "cleric", "druid", "fighter", "monk",
+      "paladin", "ranger", "rogue", "sorcerer", "warlock", "wizard",
+    ]);
+    const SRD_SUBCLASS_SLUGS = [
+      "berserker", "lore", "life", "land", "champion", "open-hand",
+      "devotion", "hunter", "thief", "draconic", "fiend", "evocation", "evoker",
+    ];
+    const SRD_RACE_PREFIXES = [
+      "dragonborn", "dwarf", "elf", "gnome", "half-elf", "half-orc",
+      "halfling", "human", "tiefling", "goliath",
+    ];
+    const PS_PATTERN = /human-(ixalan|kaladesh|zendikar|amonkhet|dominaria)/i;
+
+    const filtered = raw.filter((e) => {
+      if (!SRD_SOURCES.has(e.source)) return false;
+      switch (e.ability_type) {
+        case "class_feature":
+          return SRD_CLASSES.has(e.source_class || "");
+        case "subclass_feature": {
+          const subSlug = (e.srd_ref.split(":")[2] || "");
+          return SRD_SUBCLASS_SLUGS.some((s) => subSlug.includes(s));
+        }
+        case "racial_trait": {
+          const r = e.source_race || "";
+          if (PS_PATTERN.test(r)) return false;
+          return SRD_RACE_PREFIXES.some((p) => r === p || r.startsWith(p + " ("));
+        }
+        case "feat":
+          return true;
+        default:
+          return false;
+      }
+    });
+
+    writeFileSync(join(PUBLIC_DIR, filename), JSON.stringify(filtered));
+    console.log(
+      `${filename}: ${total} total → ${filtered.length} SRD (public)`
+    );
+  } catch {
+    console.log(`${filename}: skipped (not found in data/srd/)`);
+  }
+}
+
 // ── Summary ─────────────────────────────────────────────────────────
 console.log("\n✅ Public SRD bundles generated successfully.");
 console.log("   public/srd/ → SRD-only content (safe for public access)");

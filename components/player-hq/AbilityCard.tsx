@@ -109,8 +109,8 @@ export function AbilityCard({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="w-5 h-5 flex items-center justify-center text-muted-foreground shrink-0"
-            aria-label={expanded ? "Collapse" : "Expand"}
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground shrink-0"
+            aria-label={expanded ? t("collapse") : t("expand")}
           >
             {expanded ? (
               <ChevronDown className="w-3.5 h-3.5" />

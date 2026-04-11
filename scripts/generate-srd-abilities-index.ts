@@ -266,6 +266,11 @@ deduped.sort((a, b) => {
 fs.writeFileSync(OUTPUT_PATH, JSON.stringify(deduped, null, 2), "utf-8");
 console.log(`✅ Generated ${deduped.length} SRD abilities → ${OUTPUT_PATH}`);
 
+// Also copy to data/srd/ for the auth-gated API route
+const DATA_SRD_COPY = path.resolve(__dirname, "../data/srd/abilities-index.json");
+fs.writeFileSync(DATA_SRD_COPY, JSON.stringify(deduped), "utf-8");
+console.log(`   Copied to ${DATA_SRD_COPY} (auth API)`);
+
 const byType = deduped.reduce((acc, e) => {
   acc[e.ability_type] = (acc[e.ability_type] || 0) + 1;
   return acc;
@@ -274,3 +279,4 @@ console.log("   Breakdown:", byType);
 
 const bySrd = deduped.filter((e) => e.srd).length;
 console.log(`   SRD-marked: ${bySrd} / ${deduped.length}`);
+console.log("   ⚠ Run filter-srd-abilities-public.ts next to update public/srd/abilities-index.json");

@@ -224,6 +224,7 @@ function AttunementPicker({
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
             placeholder={t("item_name_placeholder")}
+            aria-label={t("custom_item_name_label")}
             autoFocus
             className="flex-1 min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
@@ -242,7 +243,7 @@ function AttunementPicker({
             onClick={() => setShowCustom(true)}
             className="text-xs text-amber-400/70 hover:text-amber-400 transition-colors"
           >
-            + Add custom item
+            {t("add_custom_item")}
           </button>
           <button
             type="button"

@@ -35,6 +35,8 @@
     "spells": "Magias",
     "conditions": "Condições",
     "items": "Itens",
+    "classes": "Classes",
+    "feats": "Talentos",
     "presets": "Presets de Combate",
     "soundboard": "Soundboard",
     "settings": "Configurações",
@@ -1100,7 +1102,9 @@
       "attune": "Sintonizar",
       "unattune": "Dessintonizar",
       "empty_attune_slot": "Slot vazio",
-      "max_attunement_reached": "Máximo de sintonizações (3 itens)"
+      "max_attunement_reached": "Máximo de sintonizações (3 itens)",
+      "add_custom_item": "+ Adicionar item personalizado",
+      "custom_item_name_label": "Nome do item personalizado"
     },
     "abilities": {
       "title": "Habilidades",
@@ -1137,7 +1141,9 @@
       "filter_racial": "Racial",
       "filter_feat": "Talentos",
       "filter_subclass": "Subclasse",
-      "filter_manual": "Custom"
+      "filter_manual": "Custom",
+      "expand": "Expandir",
+      "collapse": "Recolher"
     },
     "edit": {
       "edit_character": "Editar Personagem",
@@ -1248,6 +1254,7 @@
     "create_npc": "Criar NPC",
     "invite_player": "Convidar Jogador",
     "presets": "Presets",
+    "compendium": "Compêndio",
     "more": "Mais",
     "nav_label": "Navegação do dashboard"
   },
@@ -1707,6 +1714,8 @@
     "monster_quantity_group_hint": "Serão adicionados como grupo",
     "monster_quantity_group_label": "Grupo:",
     "monster_quantity_group_btn": "grupo",
+    "monster_added_toast": "✓ {name} adicionado",
+    "monster_added_toast_group": "✓ {name} ×{qty} adicionado",
     "omnibar_manual_add": "Monstro/Jogador Manual",
     "omnibar_manual_title": "Adicionar manualmente",
     "omnibar_players_section": "Players da Campanha",

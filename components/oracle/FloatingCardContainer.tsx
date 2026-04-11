@@ -18,6 +18,7 @@ import {
   getMonsterById,
   getSpellById,
   getItemById,
+  getFeatById,
   findCondition,
 } from "@/lib/srd/srd-search";
 import { useSrdStore } from "@/lib/stores/srd-store";
@@ -103,6 +104,8 @@ function resolveDisplayName(card: PinnedCard): string {
     );
   if (card.type === "item")
     return getItemById(card.entityId)?.name ?? card.entityId;
+  if (card.type === "feat")
+    return getFeatById(card.entityId)?.name ?? card.entityId;
   if (card.type === "oracle-ai")
     return card.oracleData?.question?.slice(0, 40) ?? "Oracle AI";
   return findCondition(card.entityId)?.name ?? card.entityId;
@@ -395,6 +398,97 @@ function PinnedItemCard({
 }
 
 // ---------------------------------------------------------------------------
+// Pinned Feat Card Wrapper
+// ---------------------------------------------------------------------------
+
+function PinnedFeatCard({
+  card,
+  onFocus,
+  onLock,
+  onClose,
+  onMinimize,
+}: {
+  card: PinnedCard;
+  onFocus: () => void;
+  onLock: () => void;
+  onClose: () => void;
+  onMinimize: () => void;
+}) {
+  const feat = getFeatById(card.entityId);
+  if (!feat) {
+    return (
+      <div className="stat-card-5e card-floating" data-testid="card-not-found">
+        <div className="card-toolbar">
+          <button type="button" onClick={onClose} aria-label="Close card">
+            ×
+          </button>
+        </div>
+        <p className="card-name">Feat not found</p>
+        <p className="card-subtitle">{card.entityId}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="stat-card-5e card-floating">
+      <div className="card-toolbar">
+        <button
+          type="button"
+          onClick={onLock}
+          aria-label={
+            card.isLocked ? "Unlock card position" : "Lock card position"
+          }
+          title={card.isLocked ? "Desbloquear posição" : "Travar posição"}
+        >
+          {card.isLocked ? "🔒" : "🔓"}
+        </button>
+        <button
+          type="button"
+          onClick={onFocus}
+          aria-label="Bring card to front"
+          title="Trazer para frente"
+        >
+          ⬆️
+        </button>
+        <button
+          type="button"
+          onClick={onMinimize}
+          aria-label="Minimize card"
+          title="Minimize"
+        >
+          −
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close card"
+          title="Close"
+        >
+          ×
+        </button>
+      </div>
+      <p className="card-name">{feat.name}</p>
+      {feat.prerequisite && (
+        <p className="card-subtitle" style={{ color: "#f59e0b" }}>
+          Prerequisite: {feat.prerequisite}
+        </p>
+      )}
+      <hr className="card-divider" />
+      <div
+        className="card-text"
+        style={{ whiteSpace: "pre-line", lineHeight: 1.55 }}
+      >
+        {feat.description}
+      </div>
+      {feat.source && (
+        <p className="card-subtitle" style={{ marginTop: "0.5rem" }}>
+          Source: {feat.source}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main Container
 // ---------------------------------------------------------------------------
 
@@ -547,6 +641,16 @@ export function FloatingCardContainer() {
       case "item":
         return (
           <PinnedItemCard
+            card={card}
+            onFocus={onFocusCard}
+            onLock={onLock}
+            onClose={onClose}
+            onMinimize={onMinimize}
+          />
+        );
+      case "feat":
+        return (
+          <PinnedFeatCard
             card={card}
             onFocus={onFocusCard}
             onLock={onLock}

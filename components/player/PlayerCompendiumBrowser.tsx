@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { BookOpen, Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull } from "lucide-react";
+import { Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull, Globe } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { SpellCard } from "@/components/oracle/SpellCard";
@@ -23,7 +23,12 @@ const SRD_CLASSES = [
   "Warlock", "Wizard",
 ];
 
-type CompendiumTab = "spells" | "conditions" | "monsters";
+type CompendiumTab = "all" | "spells" | "conditions" | "monsters";
+
+type GlobalResult =
+  | { kind: "spell"; item: SrdSpell }
+  | { kind: "monster"; item: SrdMonster }
+  | { kind: "condition"; item: SrdCondition };
 
 interface PlayerCompendiumBrowserProps {
   open: boolean;
@@ -43,7 +48,7 @@ export function PlayerCompendiumBrowser({
   const t = useTranslations("combat");
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<CompendiumTab>("spells");
+  const [activeTab, setActiveTab] = useState<CompendiumTab>("all");
 
   // Spells data
   const allSpells = useSrdStore((s) => s.spells);
@@ -77,6 +82,10 @@ export function PlayerCompendiumBrowser({
   // Condition filter
   const [conditionFilter, setConditionFilter] = useState("");
 
+  // Global search
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalDisplayCount, setGlobalDisplayCount] = useState(PAGE_SIZE);
+
   // Detail views
   const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
   const [selectedMonster, setSelectedMonster] = useState<SrdMonster | null>(null);
@@ -97,6 +106,8 @@ export function PlayerCompendiumBrowser({
         setMonsterDisplayCount(PAGE_SIZE);
         setMonsterNameFilter("");
         setConditionFilter("");
+        setGlobalFilter("");
+        setGlobalDisplayCount(PAGE_SIZE);
         setClassDropdownOpen(false);
       }
       onOpenChange(nextOpen);
@@ -145,6 +156,23 @@ export function PlayerCompendiumBrowser({
     return conditions.filter((c) => c.name.toLowerCase().includes(lower));
   }, [conditions, conditionFilter]);
 
+  // Global search — unified results across all types
+  const globalResults = useMemo((): GlobalResult[] => {
+    if (!globalFilter || globalFilter.length < 2) return [];
+    const lower = globalFilter.toLowerCase();
+    const results: GlobalResult[] = [];
+    for (const s of spells) {
+      if (s.name.toLowerCase().includes(lower)) results.push({ kind: "spell", item: s });
+    }
+    for (const m of monsters) {
+      if (m.name.toLowerCase().includes(lower)) results.push({ kind: "monster", item: m });
+    }
+    for (const c of conditions) {
+      if (c.name.toLowerCase().includes(lower)) results.push({ kind: "condition", item: c });
+    }
+    return results.sort((a, b) => a.item.name.localeCompare(b.item.name));
+  }, [spells, monsters, conditions, globalFilter]);
+
   const displayedSpells = filteredSpells.slice(0, displayCount);
   const spellTotalCount = spells.length;
   const spellFilteredCount = filteredSpells.length;
@@ -152,6 +180,9 @@ export function PlayerCompendiumBrowser({
 
   const displayedMonsters = filteredMonsters.slice(0, monsterDisplayCount);
   const hasMoreMonsters = filteredMonsters.length > monsterDisplayCount;
+
+  const displayedGlobal = globalResults.slice(0, globalDisplayCount);
+  const hasMoreGlobal = globalResults.length > globalDisplayCount;
 
   // Check if we're in a detail view
   const inDetail = selectedSpell || selectedMonster || selectedCondition;
@@ -163,6 +194,13 @@ export function PlayerCompendiumBrowser({
   };
 
   const detailTitle = selectedSpell?.name ?? selectedMonster?.name ?? selectedCondition?.name ?? "";
+
+  const tabItems: { key: CompendiumTab; icon: React.ReactNode; label: string }[] = [
+    { key: "all", icon: <Globe className="w-3.5 h-3.5" />, label: t("compendium_tab_all") },
+    { key: "spells", icon: <Sparkles className="w-3.5 h-3.5" />, label: t("compendium_tab_spells") },
+    { key: "conditions", icon: <HeartPulse className="w-3.5 h-3.5" />, label: t("compendium_tab_conditions") },
+    { key: "monsters", icon: <Skull className="w-3.5 h-3.5" />, label: t("compendium_tab_monsters") },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -207,46 +245,161 @@ export function PlayerCompendiumBrowser({
           <div className="flex flex-col h-full max-h-[85vh] max-[768px]:max-h-[100dvh]">
             {/* Tab bar */}
             <div className="flex border-b border-white/10 shrink-0">
-              <button
-                type="button"
-                onClick={() => setActiveTab("spells")}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
-                  activeTab === "spells"
-                    ? "text-gold border-b-2 border-gold"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                {t("compendium_tab_spells")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("conditions")}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
-                  activeTab === "conditions"
-                    ? "text-gold border-b-2 border-gold"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <HeartPulse className="w-3.5 h-3.5" />
-                {t("compendium_tab_conditions")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("monsters")}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
-                  activeTab === "monsters"
-                    ? "text-gold border-b-2 border-gold"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Skull className="w-3.5 h-3.5" />
-                {t("compendium_tab_monsters")}
-              </button>
+              {tabItems.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveTab(tab.key)}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors",
+                    activeTab === tab.key
+                      ? "text-gold border-b-2 border-gold"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              ))}
             </div>
+
+            {/* ── All Tab (Global Search) ── */}
+            {activeTab === "all" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={globalFilter}
+                      onChange={(e) => {
+                        setGlobalFilter(e.target.value);
+                        setGlobalDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("compendium_search_all")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                      autoFocus
+                    />
+                    {globalFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setGlobalFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  {globalFilter.length >= 2 && (
+                    <p className="text-[10px] text-muted-foreground/60 mt-1">
+                      {globalResults.length} {t("compendium_results_count")}
+                    </p>
+                  )}
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {globalFilter.length < 2 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm px-6 text-center">
+                      {t("compendium_search_hint")}
+                    </div>
+                  ) : (isStoreLoading || storeEmpty) ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("compendium_loading")}
+                    </div>
+                  ) : displayedGlobal.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedGlobal.map((result) => {
+                        if (result.kind === "spell") {
+                          const spell = result.item;
+                          return (
+                            <button
+                              key={`spell-${spell.id}`}
+                              type="button"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                              onClick={() => setSelectedSpell(spell)}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                  {spell.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <span>
+                                    {spell.level === 0 ? t("spell_cantrip") : t("spell_level", { level: spell.level })}
+                                  </span>
+                                  <span>·</span>
+                                  <span>{spell.school}</span>
+                                </div>
+                              </div>
+                              <Sparkles className="w-3.5 h-3.5 text-purple-400/60 shrink-0" />
+                            </button>
+                          );
+                        }
+                        if (result.kind === "monster") {
+                          const monster = result.item;
+                          return (
+                            <button
+                              key={`monster-${monster.id}`}
+                              type="button"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                              onClick={() => setSelectedMonster(monster)}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                  {monster.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <span>CR {monster.cr}</span>
+                                  <span>·</span>
+                                  <span>{monster.type}</span>
+                                  <span>·</span>
+                                  <span>{monster.size}</span>
+                                </div>
+                              </div>
+                              <Skull className="w-3.5 h-3.5 text-red-400/60 shrink-0" />
+                            </button>
+                          );
+                        }
+                        // condition
+                        const condition = result.item;
+                        return (
+                          <button
+                            key={`cond-${condition.id}`}
+                            type="button"
+                            className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                            onClick={() => setSelectedCondition(condition)}
+                          >
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium text-foreground truncate">
+                                {condition.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground line-clamp-1">
+                                {condition.description.slice(0, 80)}...
+                              </div>
+                            </div>
+                            <HeartPulse className="w-3.5 h-3.5 text-emerald-400/60 shrink-0" />
+                          </button>
+                        );
+                      })}
+
+                      {hasMoreGlobal && (
+                        <button
+                          type="button"
+                          onClick={() => setGlobalDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", { remaining: globalResults.length - globalDisplayCount })}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
 
             {/* ── Spells Tab ── */}
             {activeTab === "spells" && (
@@ -607,6 +760,7 @@ export function PlayerCompendiumBrowser({
                 </div>
               </>
             )}
+
           </div>
         )}
       </DialogContent>

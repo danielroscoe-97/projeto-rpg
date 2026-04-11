@@ -214,9 +214,25 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
           srdSearchProvider.buildBackgroundIndex(backgrounds);
 
           // Build abilities index (class features + racial + feats + subclass)
+          // In full-data mode, fetch the complete abilities index from the
+          // auth-gated API; otherwise use the statically-imported SRD-only set.
           try {
-            const { SRD_ABILITIES } = await import("@/lib/data/srd-abilities");
-            srdSearchProvider.buildAbilityIndex(SRD_ABILITIES);
+            if (isFullDataMode()) {
+              const resp = await fetch("/api/srd/full/abilities-index.json");
+              if (resp.ok) {
+                const fullAbilities = await resp.json();
+                const { setSrdAbilities } = await import("@/lib/data/srd-abilities");
+                setSrdAbilities(fullAbilities);
+                srdSearchProvider.buildAbilityIndex(fullAbilities);
+              } else {
+                // Fallback to public SRD-only data
+                const { SRD_ABILITIES } = await import("@/lib/data/srd-abilities");
+                srdSearchProvider.buildAbilityIndex(SRD_ABILITIES);
+              }
+            } else {
+              const { SRD_ABILITIES } = await import("@/lib/data/srd-abilities");
+              srdSearchProvider.buildAbilityIndex(SRD_ABILITIES);
+            }
           } catch {
             // Abilities index load failure is non-critical
           }

@@ -816,6 +816,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
       {/* OmniBar: SRD Monster Search + Campaign Players + Manual Add */}
       <MonsterSearchPanel
         rulesetVersion={rulesetVersion}
+        keepOpenAfterAdd
         onSelectMonster={handleSelectMonster}
         onMonsterAdded={handleMonsterAdded}
         onSelectMonsterGroup={handleSelectMonsterGroup}
