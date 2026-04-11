@@ -67,59 +67,16 @@ export function subscribeToCampaignMembers(
 
 /**
  * Subscribe to new member joins across multiple campaigns (for Dashboard).
- * Returns the RealtimeChannel for cleanup.
- *
- * Since Supabase Realtime filters only support `eq` (not `in`),
- * we subscribe to ALL campaign_members INSERTs and filter client-side.
+ * Uses one filtered channel per campaign to avoid leaking global metadata.
+ * Returns array of RealtimeChannels for cleanup.
  */
 export function subscribeToDashboardMembers(
   campaignIds: string[],
   onMemberJoined: (event: MemberJoinEvent) => void,
-): RealtimeChannel | null {
-  if (campaignIds.length === 0) return null;
+): RealtimeChannel[] {
+  if (campaignIds.length === 0) return [];
 
-  const supabase = createClient();
-
-  const channel = supabase
-    .channel("dashboard-members")
-    .on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "campaign_members",
-      },
-      async (payload) => {
-        const newMember = payload.new as {
-          campaign_id: string;
-          user_id: string;
-          role: string;
-        };
-
-        // Client-side filter: only care about our campaigns
-        if (!campaignIds.includes(newMember.campaign_id)) return;
-
-        let displayName: string | null = null;
-        try {
-          const { data } = await supabase
-            .from("users")
-            .select("display_name")
-            .eq("id", newMember.user_id)
-            .maybeSingle();
-          displayName = data?.display_name ?? null;
-        } catch {
-          // Best-effort
-        }
-
-        onMemberJoined({
-          campaign_id: newMember.campaign_id,
-          user_id: newMember.user_id,
-          role: newMember.role,
-          display_name: displayName,
-        });
-      },
-    )
-    .subscribe();
-
-  return channel;
+  return campaignIds.map((id) =>
+    subscribeToCampaignMembers(id, onMemberJoined),
+  );
 }

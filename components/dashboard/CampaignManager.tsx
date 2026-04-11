@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
@@ -69,7 +69,7 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
   const archivedCampaigns = campaigns.filter((c) => c.is_archived);
   const visibleCampaigns = showArchived ? campaigns : activeCampaigns;
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   // ── Update ─────────────────────────────────────────────────────────────────
 

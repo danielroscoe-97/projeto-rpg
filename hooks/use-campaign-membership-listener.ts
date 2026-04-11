@@ -7,6 +7,8 @@ import { subscribeToCampaignMembers } from "@/lib/realtime/campaign-membership-l
 import type { MemberJoinEvent } from "@/lib/realtime/campaign-membership-listener";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
+type TranslationFn = ReturnType<typeof useTranslations>;
+
 interface UseCampaignMembershipListenerOptions {
   campaignId: string;
   enabled?: boolean;
@@ -28,6 +30,8 @@ export function useCampaignMembershipListener({
   onMemberJoined,
 }: UseCampaignMembershipListenerOptions): UseCampaignMembershipListenerReturn {
   const t = useTranslations("campaignMembership");
+  const tRef = useRef<TranslationFn>(t);
+  tRef.current = t;
   const channelRef = useRef<RealtimeChannel | null>(null);
   const onMemberJoinedRef = useRef(onMemberJoined);
   onMemberJoinedRef.current = onMemberJoined;
@@ -60,8 +64,8 @@ export function useCampaignMembershipListener({
       setVersion((v) => v + 1);
 
       // Show toast notification
-      const name = event.display_name || t("anonymous_player");
-      toast.success(t("player_joined", { name }));
+      const name = event.display_name || tRef.current("anonymous_player");
+      toast.success(tRef.current("player_joined", { name }));
 
       // Fire external callback if provided
       onMemberJoinedRef.current?.(event);
@@ -73,7 +77,8 @@ export function useCampaignMembershipListener({
       channelRef.current?.unsubscribe();
       channelRef.current = null;
     };
-  }, [campaignId, enabled, t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- tRef is stable
+  }, [campaignId, enabled]);
 
   return {
     newMemberIds: memberIdsRef.current,

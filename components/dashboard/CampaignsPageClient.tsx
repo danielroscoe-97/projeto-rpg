@@ -18,6 +18,7 @@ interface CampaignsPageClientProps {
     session_count?: number;
     note_count?: number;
     npc_count?: number;
+    encounter_count?: number;
     last_session_date?: string | null;
     is_archived?: boolean;
   }[];

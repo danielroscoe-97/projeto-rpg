@@ -41,6 +41,14 @@ export function SessionRecapDialog({
 
   const remaining = MAX_CHARS - recap.length;
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setRecap("");
+      setSaving(false);
+    }
+    onOpenChange(nextOpen);
+  };
+
   const handleComplete = async (withRecap: boolean) => {
     setSaving(true);
     try {
@@ -65,7 +73,7 @@ export function SessionRecapDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-lg" data-testid="session-recap-dialog">
         <DialogHeader>
           <DialogTitle>

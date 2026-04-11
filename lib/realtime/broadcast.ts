@@ -212,9 +212,23 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
   if (event.type === "combat:initiative_reorder") {
     // Filter out hidden combatants from reorder broadcasts
     const visibleCombatants = event.combatants.filter((c) => !c.is_hidden);
+
+    // Adjust turn index for visible list (same logic as state_sync)
+    let adjustedTurnIndex = event.current_turn_index;
+    const turnCombatant = event.combatants[event.current_turn_index];
+    if (turnCombatant) {
+      if (turnCombatant.is_hidden) {
+        adjustedTurnIndex = -1;
+      } else {
+        const visibleIdx = visibleCombatants.findIndex((c) => c.id === turnCombatant.id);
+        adjustedTurnIndex = visibleIdx >= 0 ? visibleIdx : event.current_turn_index;
+      }
+    }
+
     const result: SanitizedInitiativeReorder = {
       type: event.type,
       combatants: visibleCombatants.map(sanitizeCombatant),
+      current_turn_index: adjustedTurnIndex,
     };
     return result;
   }

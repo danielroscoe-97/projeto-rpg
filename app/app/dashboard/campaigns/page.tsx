@@ -47,20 +47,39 @@ export default async function CampaignsPage() {
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
-  // Fetch last session date per campaign
+  // Fetch last session date + encounter counts per campaign
   const campaignIds = (rawCampaigns ?? []).map((c) => c.id as string);
   let lastSessionMap: Record<string, string> = {};
+  let encounterCountMap: Record<string, number> = {};
   if (campaignIds.length > 0) {
     const { data: sessionsData } = await supabase
       .from("sessions")
-      .select("campaign_id, updated_at")
+      .select("id, campaign_id, updated_at")
       .in("campaign_id", campaignIds)
       .order("updated_at", { ascending: false });
     // Take first (most recent) per campaign
+    const sessionIds: string[] = [];
     for (const s of sessionsData ?? []) {
       const cid = s.campaign_id as string;
+      sessionIds.push(s.id as string);
       if (!lastSessionMap[cid]) {
         lastSessionMap[cid] = s.updated_at as string;
+      }
+    }
+    // Count encounters per campaign via sessions
+    if (sessionIds.length > 0) {
+      const { data: encountersData } = await supabase
+        .from("encounters")
+        .select("session_id")
+        .in("session_id", sessionIds);
+      // Build session→campaign map, then count encounters per campaign
+      const sessionToCampaign: Record<string, string> = {};
+      for (const s of sessionsData ?? []) {
+        sessionToCampaign[s.id as string] = s.campaign_id as string;
+      }
+      for (const e of encountersData ?? []) {
+        const cid = sessionToCampaign[e.session_id as string];
+        if (cid) encounterCountMap[cid] = (encounterCountMap[cid] ?? 0) + 1;
       }
     }
   }
@@ -77,6 +96,7 @@ export default async function CampaignsPage() {
       (c.campaign_notes as { count: number }[])[0]?.count ?? 0,
     npc_count:
       (c.campaign_npcs as { count: number }[])[0]?.count ?? 0,
+    encounter_count: encounterCountMap[c.id as string] ?? 0,
     last_session_date: lastSessionMap[c.id as string] ?? null,
     is_archived: (c.is_archived as boolean) ?? false,
   }));
