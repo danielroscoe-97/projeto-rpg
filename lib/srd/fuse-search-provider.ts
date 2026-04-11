@@ -94,6 +94,10 @@ export class FuseSearchProvider implements SrdSearchProvider {
     search.mergeImportedSpells(data);
   }
 
+  setMonsterCrossref(data: Record<string, string>): void {
+    search.setMonsterCrossref(data);
+  }
+
   // ── Feats, Backgrounds, Abilities ──────────────────────────────
 
   buildFeatIndex(data: SrdFeatEntry[]): void {

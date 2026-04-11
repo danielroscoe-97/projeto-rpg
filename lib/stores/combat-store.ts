@@ -379,6 +379,13 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       ),
     })),
 
+  setMonsterId: (id: string, monsterId: string) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) =>
+        c.id === id ? { ...c, monster_id: monsterId } : c
+      ),
+    })),
+
   updateDmNotes: (id, notes) =>
     set((state) => ({
       combatants: state.combatants.map((c) =>

@@ -41,6 +41,8 @@ let spellMap: Map<string, SrdSpell> = new Map();
 let itemMap: Map<string, SrdItem> = new Map();
 let featMap: Map<string, SrdFeatEntry> = new Map();
 let backgroundMap: Map<string, SrdBackgroundEntry> = new Map();
+// Cross-version monster ID mapping (bidirectional: 2014-id ↔ 2024-id)
+let monsterCrossref: Record<string, string> = {};
 
 const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
   keys: [
@@ -190,6 +192,17 @@ export function getMonsterById(
   version: RulesetVersion
 ): SrdMonster | undefined {
   return monsterMap.get(`${id}:${version}`);
+}
+
+/** Set the cross-version monster ID mapping. Called by srd-store after loading. */
+export function setMonsterCrossref(data: Record<string, string>): void {
+  monsterCrossref = data;
+}
+
+/** Get the equivalent monster ID in the other ruleset version.
+ *  Returns undefined if no cross-version equivalent exists. */
+export function getCrossVersionMonsterId(monsterId: string): string | undefined {
+  return monsterCrossref[monsterId];
 }
 
 /** Returns all loaded spells (both versions). Used by LinkedText for cross-referencing. */

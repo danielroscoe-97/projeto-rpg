@@ -145,6 +145,8 @@ export interface CombatActions {
   updateCombatantStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   /** Switch a combatant's ruleset version. */
   setRulesetVersion: (id: string, version: RulesetVersion) => void;
+  /** Update monster_id when switching to a cross-version equivalent. */
+  setMonsterId: (id: string, monsterId: string) => void;
   /** Update DM-only notes for a combatant. */
   updateDmNotes: (id: string, notes: string) => void;
   /** Update player-visible notes for a combatant. */

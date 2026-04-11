@@ -111,12 +111,15 @@ export async function persistCombatantStats(
 /** Persists ruleset_version for a combatant. */
 export async function persistRulesetVersion(
   combatantId: string,
-  rulesetVersion: string
+  rulesetVersion: string,
+  newMonsterId?: string
 ): Promise<void> {
   const supabase = createClient();
+  const update: Record<string, string> = { ruleset_version: rulesetVersion };
+  if (newMonsterId) update.monster_id = newMonsterId;
   const { error } = await supabase
     .from("combatants")
-    .update({ ruleset_version: rulesetVersion })
+    .update(update)
     .eq("id", combatantId);
   if (error) throw new Error(error.message);
 }

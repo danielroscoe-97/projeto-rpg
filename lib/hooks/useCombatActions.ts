@@ -509,10 +509,32 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     persistCombatantStats(id, dbStats as Parameters<typeof persistCombatantStats>[1]).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError, getSessionId]);
 
-  const handleSwitchVersion = useCallback((id: string, version: RulesetVersion) => {
-    useCombatStore.getState().setRulesetVersion(id, version);
+  const handleSwitchVersion = useCallback((id: string, version: RulesetVersion, newMonsterId?: string) => {
+    const store = useCombatStore.getState();
+    store.setRulesetVersion(id, version);
+    if (newMonsterId) {
+      store.setMonsterId(id, newMonsterId);
+    }
+    // Update stats from the new version's monster data
+    if (newMonsterId) {
+      const newMonster = getMonsterById(newMonsterId, version);
+      if (newMonster) {
+        const combatant = store.combatants.find((c) => c.id === id);
+        if (combatant) {
+          const newMaxHp = newMonster.hit_points;
+          const cappedHp = Math.min(combatant.current_hp, newMaxHp);
+          store.hydrateCombatants(
+            store.combatants.map((c) =>
+              c.id === id
+                ? { ...c, max_hp: newMaxHp, current_hp: cappedHp, ac: newMonster.armor_class, token_url: newMonster.token_url ?? c.token_url }
+                : c
+            )
+          );
+        }
+      }
+    }
     broadcastEvent(getSessionId(), { type: "combat:version_switch", combatant_id: id, ruleset_version: version });
-    persistRulesetVersion(id, version).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    persistRulesetVersion(id, version, newMonsterId).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError, getSessionId]);
 
   const handleUpdateDmNotes = useCallback((id: string, notes: string) => {

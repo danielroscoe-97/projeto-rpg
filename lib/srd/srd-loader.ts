@@ -199,6 +199,30 @@ export interface SrdBackground {
   basicRules?: boolean;
 }
 
+const monsterCrossrefCache = new Map<string, Promise<Record<string, string>>>();
+
+/** Fetches the monster version crossref map (id→id bidirectional).
+ *  Used to map 2014 monster IDs to 2024 equivalents and vice versa. */
+export function loadMonsterCrossref(): Promise<Record<string, string>> {
+  const key = loaderCacheKey("crossref");
+  const cached = monsterCrossrefCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(srdDataUrl("monster-version-crossref.json"))
+    .then((res) => {
+      if (!res.ok) {
+        monsterCrossrefCache.delete(key);
+        return {} as Record<string, string>;
+      }
+      return res.json() as Promise<Record<string, string>>;
+    })
+    .catch(() => {
+      monsterCrossrefCache.delete(key);
+      return {} as Record<string, string>;
+    });
+  monsterCrossrefCache.set(key, promise);
+  return promise;
+}
+
 const monsterCache = new Map<string, Promise<SrdMonster[]>>();
 
 /** Cache key that includes version + data mode so public/full never collide. */
@@ -215,6 +239,7 @@ export function _clearMonsterCache() {
 /** Clear ALL module-level loader caches. Call when data mode changes. */
 export function clearAllLoaderCaches() {
   monsterCache.clear();
+  monsterCrossrefCache.clear();
   madMonsterCache.clear();
   featCache.clear();
   backgroundCache.clear();

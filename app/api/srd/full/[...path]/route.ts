@@ -19,6 +19,7 @@ const ALLOWED_FILES = new Set([
   "monsters-2014.json",
   "monsters-2024.json",
   "monsters-mad.json",
+  "monster-version-crossref.json",
   "spells-2014.json",
   "spells-2024.json",
   "items.json",

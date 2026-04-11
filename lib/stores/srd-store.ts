@@ -10,6 +10,7 @@ import {
   loadFeats,
   loadBackgrounds,
   loadClasses,
+  loadMonsterCrossref,
   clearAllLoaderCaches,
 } from "@/lib/srd/srd-loader";
 import {
@@ -152,6 +153,11 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
       srdSearchProvider.buildSpellIndex(spellsPrimary);
       srdSearchProvider.buildItemIndex(items);
       srdSearchProvider.setConditionData(conditions);
+
+      // Load monster cross-version ID map (fire-and-forget, non-critical)
+      loadMonsterCrossref().then((crossref) => {
+        srdSearchProvider.setMonsterCrossref(crossref);
+      }).catch(() => { /* crossref failure is non-critical */ });
 
       // Merge imported content if extended compendium was previously accepted
       try {

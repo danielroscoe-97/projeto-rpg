@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { getMonsterById } from "@/lib/srd/srd-search";
+import { getMonsterById, getCrossVersionMonsterId } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useSrdStore } from "@/lib/stores/srd-store";
@@ -41,7 +41,7 @@ export interface CombatantRowProps {
   onRemoveCombatant?: (id: string) => void;
   onUpdateStats?: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   onSetInitiative?: (id: string, value: number | null) => void;
-  onSwitchVersion?: (id: string, version: RulesetVersion) => void;
+  onSwitchVersion?: (id: string, version: RulesetVersion, newMonsterId?: string) => void;
   onUpdateDmNotes?: (id: string, notes: string) => void;
   onUpdatePlayerNotes?: (id: string, notes: string) => void;
   /** All combatants for target selection in MonsterActionBar and multi-target AoE */
@@ -217,9 +217,10 @@ export const CombatantRow = memo(function CombatantRow({
   };
 
   const isMonster = !!combatant.monster_id;
-  // Only show the ruleset switch button if a handler is provided — callers omit it during combat
-  const canSwitchVersion = isMonster && combatant.ruleset_version !== null && !!onSwitchVersion;
   const otherVersion: RulesetVersion = combatant.ruleset_version === "2024" ? "2014" : "2024";
+  // Only show switch button if a cross-version equivalent exists
+  const crossVersionId = combatant.monster_id ? getCrossVersionMonsterId(combatant.monster_id) : undefined;
+  const canSwitchVersion = isMonster && combatant.ruleset_version !== null && !!onSwitchVersion && !!crossVersionId;
   // CRITICAL visual: ≤10% HP, alive (P-08)
   const isCritical = combatant.max_hp > 0 && !combatant.is_defeated && combatant.current_hp / combatant.max_hp <= 0.1;
 
@@ -788,11 +789,11 @@ export const CombatantRow = memo(function CombatantRow({
                   toVersion={otherVersion}
                   currentHp={combatant.current_hp}
                   newMaxHp={
-                    combatant.monster_id
-                      ? getMonsterById(combatant.monster_id, otherVersion)?.hit_points
+                    crossVersionId
+                      ? getMonsterById(crossVersionId, otherVersion)?.hit_points
                       : undefined
                   }
-                  onConfirm={() => onSwitchVersion?.(combatant.id, otherVersion)}
+                  onConfirm={() => onSwitchVersion?.(combatant.id, otherVersion, crossVersionId)}
                 />
               </>
             )}
