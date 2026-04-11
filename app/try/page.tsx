@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GuestCombatClient } from "@/components/guest/GuestCombatClient";
+import { SrdInitializer } from "@/components/srd/SrdInitializer";
 
 export const metadata: Metadata = {
   title: "Modo Visitante — Combat Tracker D&D 5e Grátis",
@@ -36,5 +37,10 @@ export default async function TryPage() {
     redirect("/app/session/new?quick=true");
   }
 
-  return <GuestCombatClient />;
+  return (
+    <>
+      <SrdInitializer />
+      <GuestCombatClient />
+    </>
+  );
 }

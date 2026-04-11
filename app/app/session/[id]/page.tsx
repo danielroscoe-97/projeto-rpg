@@ -138,6 +138,7 @@ export default async function SessionPage({ params }: SessionPageProps) {
         isActive={encounter?.is_active ?? false}
         roundNumber={encounter?.round_number ?? 1}
         currentTurnIndex={encounter?.current_turn_index ?? 0}
+        rulesetVersion={session.ruleset_version === "2024" ? "2024" : "2014"}
         campaignId={session.campaign_id ?? null}
       />
 

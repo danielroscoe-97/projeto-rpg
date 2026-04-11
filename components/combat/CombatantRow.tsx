@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import { useSrdStore } from "@/lib/stores/srd-store";
 import { VersionBadge } from "@/components/session/RulesetSelector";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { MonsterToken } from "@/components/srd/MonsterToken";
@@ -93,6 +94,8 @@ export const CombatantRow = memo(function CombatantRow({
 }: CombatantRowProps) {
   const t = useTranslations("combat");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+  // Subscribe to SRD loaded versions so the row re-renders when monster data becomes available
+  const srdVersionCount = useSrdStore((s) => s.loadedVersions.size);
 
   // --- All hooks MUST be declared before any conditional return (React rules of hooks) ---
   const [isExpanded, setIsExpanded] = useState(false);
@@ -127,6 +130,8 @@ export const CombatantRow = memo(function CombatantRow({
   }, [combatant.current_hp, combatant.is_lair_action]);
 
   // Look up full monster data for stat block expansion
+  // srdVersionCount triggers re-render when SRD versions finish loading
+  void srdVersionCount;
   const fullMonster =
     combatant.monster_id && combatant.ruleset_version
       ? getMonsterById(combatant.monster_id, combatant.ruleset_version)

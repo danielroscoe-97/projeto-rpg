@@ -20,6 +20,7 @@ import {
   getItemById,
   findCondition,
 } from "@/lib/srd/srd-search";
+import { useSrdStore } from "@/lib/stores/srd-store";
 import { MonsterStatBlock } from "./MonsterStatBlock";
 import { SpellCard } from "./SpellCard";
 import { ItemCard } from "./ItemCard";
@@ -195,6 +196,8 @@ function PinnedMonsterCard({
   onClose: () => void;
   onMinimize: () => void;
 }) {
+  // Re-render when SRD versions finish loading so the card resolves after deferred loads
+  void useSrdStore((s) => s.loadedVersions.size);
   const monster = getMonsterById(card.entityId, card.rulesetVersion);
   if (!monster) {
     return (
@@ -239,6 +242,7 @@ function PinnedSpellCard({
   onClose: () => void;
   onMinimize: () => void;
 }) {
+  void useSrdStore((s) => s.loadedVersions.size);
   const spell = getSpellById(card.entityId, card.rulesetVersion);
   if (!spell) {
     return (

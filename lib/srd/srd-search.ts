@@ -157,19 +157,16 @@ export function getAllItems(): SrdItem[] {
  * Homebrew entries get `is_homebrew: true` for badge rendering.
  */
 export function mergeHomebrewMonsters(homebrew: SrdMonster[]): void {
-  if (!monsterIndex) return;
   homebrew.forEach((m) => monsterMap.set(`${m.id}:${m.ruleset_version}`, m));
   monsterIndex = new Fuse(Array.from(monsterMap.values()), MONSTER_OPTIONS);
 }
 
 export function mergeHomebrewSpells(homebrew: SrdSpell[]): void {
-  if (!spellIndex) return;
   homebrew.forEach((s) => spellMap.set(`${s.id}:${s.ruleset_version}`, s));
   spellIndex = new Fuse(Array.from(spellMap.values()), SPELL_OPTIONS);
 }
 
 export function mergeHomebrewItems(homebrew: SrdItem[]): void {
-  if (!itemIndex) return;
   homebrew.forEach((i) => itemMap.set(i.id, i));
   itemIndex = new Fuse(Array.from(itemMap.values()), ITEM_OPTIONS);
 }
@@ -181,13 +178,11 @@ export function mergeHomebrewItems(homebrew: SrdItem[]): void {
  * Call after loading imported content from IndexedDB.
  */
 export function mergeImportedMonsters(imported: SrdMonster[]): void {
-  if (!monsterIndex) return;
   imported.forEach((m) => monsterMap.set(`${m.id}:${m.ruleset_version}`, m));
   monsterIndex = new Fuse(Array.from(monsterMap.values()), MONSTER_OPTIONS);
 }
 
 export function mergeImportedSpells(imported: SrdSpell[]): void {
-  if (!spellIndex) return;
   imported.forEach((s) => spellMap.set(`${s.id}:${s.ruleset_version}`, s));
   spellIndex = new Fuse(Array.from(spellMap.values()), SPELL_OPTIONS);
 }
