@@ -1278,7 +1278,7 @@ function ComparisonSection() {
         </div>
 
         <div className="mt-7 text-center">
-          <p className="text-xs text-white/20 italic">
+          <p className="text-xs text-white/50 italic">
             Desenvolvido por mestres para mestres. Não viemos para substituir o seu VTT, mas para libertar sua mesa.
           </p>
         </div>

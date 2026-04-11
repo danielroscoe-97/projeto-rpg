@@ -77,7 +77,7 @@ export function PublicSpellSearch({ spells, basePath = "/spells", buttonLabel = 
       {isOpen && (
         <div className="mt-3 rounded-xl bg-gray-800/50 border border-white/[0.06] p-4 space-y-3">
           <div className="relative">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
             <input
@@ -85,13 +85,13 @@ export function PublicSpellSearch({ spells, basePath = "/spells", buttonLabel = 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name..."
-              className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-gold/40 transition-colors"
+              className="w-full h-9 pl-9 pr-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-400 focus:outline-none focus:border-gold/40 transition-colors"
               autoFocus
             />
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            <span className="text-xs text-gray-500 mr-1 self-center">School:</span>
+            <span className="text-xs text-gray-400 mr-1 self-center">School:</span>
             {SPELL_SCHOOLS.map((s) => (
               <button key={s} type="button"
                 onClick={() => setSchoolFilter(schoolFilter === s ? null : s)}
@@ -104,7 +104,7 @@ export function PublicSpellSearch({ spells, basePath = "/spells", buttonLabel = 
 
           {hasFilters && (
             <div className="border-t border-white/[0.06] pt-3">
-              <p className="text-xs text-gray-500 mb-2">{filtered.length} results</p>
+              <p className="text-xs text-gray-400 mb-2">{filtered.length} results</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                 {filtered.map((s) => (
                   <button key={s.name} type="button"
@@ -112,7 +112,7 @@ export function PublicSpellSearch({ spells, basePath = "/spells", buttonLabel = 
                     className="flex items-center justify-between rounded-lg px-3 py-2 text-left hover:bg-white/[0.06] transition-colors"
                   >
                     <span className="text-gray-200 text-sm">{s.name}</span>
-                    <span className="text-gray-500 text-xs">
+                    <span className="text-gray-400 text-xs">
                       {s.level === 0 ? "Cantrip" : `Lvl ${s.level}`} · {s.school.slice(0, 4)}
                     </span>
                   </button>

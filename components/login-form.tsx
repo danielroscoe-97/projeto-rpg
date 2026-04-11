@@ -124,7 +124,7 @@ export function LoginForm({
             </label>
             <Link
               href="/auth/forgot-password"
-              className="text-[11px] text-muted-foreground/60 hover:text-gold transition-colors"
+              className="text-[11px] text-muted-foreground/90 hover:text-gold transition-colors"
             >
               {t("forgot_password")}
             </Link>
@@ -175,7 +175,7 @@ export function LoginForm({
           <div className="w-full border-t border-white/[0.08]" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-card px-3 text-muted-foreground/60">{t("or_separator")}</span>
+          <span className="bg-card px-3 text-muted-foreground/90">{t("or_separator")}</span>
         </div>
       </div>
 
@@ -192,9 +192,9 @@ export function LoginForm({
       />
 
       {/* Footer link */}
-      <p className="mt-4 text-center text-sm text-muted-foreground/60">
+      <p className="mt-4 text-center text-sm text-muted-foreground/90">
         {t("no_account")}{" "}
-        <Link href="/auth/sign-up" className="text-gold hover:underline underline-offset-4">
+        <Link href="/auth/sign-up" className="text-gold underline underline-offset-4 hover:text-gold/80">
           {t("signup_link")}
         </Link>
       </p>

@@ -307,7 +307,7 @@ export function SignUpForm({
           <div className="w-full border-t border-white/[0.08]" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-card px-3 text-muted-foreground/60">{t("or_separator")}</span>
+          <span className="bg-card px-3 text-muted-foreground/90">{t("or_separator")}</span>
         </div>
       </div>
 
@@ -327,9 +327,9 @@ export function SignUpForm({
       />
 
       {/* Footer link */}
-      <p className="mt-4 text-center text-sm text-muted-foreground/60">
+      <p className="mt-4 text-center text-sm text-muted-foreground/90">
         {t("have_account")}{" "}
-        <Link href="/auth/login" className="text-gold hover:underline underline-offset-4">
+        <Link href="/auth/login" className="text-gold underline underline-offset-4 hover:text-gold/80">
           {t("login_link")}
         </Link>
       </p>

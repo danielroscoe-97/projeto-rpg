@@ -22,7 +22,7 @@ export function LanguageToggle({ locale, onToggle, size = "sm" }: LanguageToggle
         className={`${px} ${py} ${text} font-medium transition-colors ${
           locale === "en"
             ? "bg-gold text-gray-950"
-            : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
+            : "bg-white/[0.04] text-gray-400 hover:text-gray-300"
         }`}
       >
         EN
@@ -33,7 +33,7 @@ export function LanguageToggle({ locale, onToggle, size = "sm" }: LanguageToggle
         className={`${px} ${py} ${text} font-medium transition-colors ${
           locale === "pt-BR"
             ? "bg-gold text-gray-950"
-            : "bg-white/[0.04] text-gray-500 hover:text-gray-300"
+            : "bg-white/[0.04] text-gray-400 hover:text-gray-300"
         }`}
       >
         PT

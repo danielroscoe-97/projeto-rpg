@@ -136,7 +136,7 @@ export default function ItemsIndexPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/try"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3 text-white font-semibold hover:bg-gold/90 transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3 text-gray-950 font-semibold hover:bg-gold/90 transition-colors"
               >
                 Try Combat Tracker — Free
               </Link>

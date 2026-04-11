@@ -79,7 +79,7 @@ export async function Footer() {
               </Link>
             </nav>
             <nav aria-label="Compendium navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              <span className="text-muted-foreground/50 text-xs font-semibold uppercase tracking-wider inline-flex items-center min-h-[44px]">
+              <span className="text-muted-foreground/80 text-xs font-semibold uppercase tracking-wider inline-flex items-center min-h-[44px]">
                 {t("footer_compendium")}
               </span>
               <Link
@@ -111,7 +111,7 @@ export async function Footer() {
         </div>
 
         {/* Attribution + copyright + Pipers */}
-        <div className="mt-8 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground/60">
+        <div className="mt-8 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground/80">
           <p className="flex items-center gap-1.5 flex-wrap">
             <span>&copy; {new Date().getFullYear()} {t("footer_brand")}</span>
             <span className="text-white/10">|</span>

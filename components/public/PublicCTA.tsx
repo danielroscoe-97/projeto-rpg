@@ -122,7 +122,7 @@ export function PublicCTA({ entityName, lore, locale = "en", compendiumHref }: P
           )}
           <Link
             href="/try"
-            className="rounded-lg bg-gold px-5 py-2.5 text-white font-semibold text-sm hover:bg-gold/90 transition-colors whitespace-nowrap"
+            className="rounded-lg bg-gold px-5 py-2.5 text-gray-950 font-semibold text-sm hover:bg-gold/90 transition-colors whitespace-nowrap"
           >
             {L.ctaBtn}
           </Link>

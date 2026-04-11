@@ -26,7 +26,7 @@ export function FilterChips({ options, selected, onSelect, label }: FilterChipsP
   return (
     <div className="flex flex-wrap gap-1.5 items-center">
       {label && (
-        <span className="text-xs text-gray-500 font-medium mr-1">{label}</span>
+        <span className="text-xs text-gray-400 font-medium mr-1">{label}</span>
       )}
       {options.map((opt) => (
         <button

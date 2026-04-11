@@ -146,7 +146,7 @@ export function SrdLoadingScreen({ children }: { children: React.ReactNode }) {
             <AnimatePresence mode="wait">
               <motion.p
                 key={messageSlot}
-                className="text-sm text-muted-foreground/70 font-medium"
+                className="text-sm text-muted-foreground font-medium"
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}

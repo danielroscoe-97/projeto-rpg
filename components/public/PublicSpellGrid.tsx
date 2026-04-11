@@ -282,12 +282,12 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
             {/* Toggles */}
             <div className="flex flex-wrap gap-2 items-center">
               <button type="button" aria-pressed={concFilter} onClick={() => setConcFilter((v) => !v)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${concFilter ? "bg-amber-600/20 text-amber-300 border-amber-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${concFilter ? "bg-amber-600/20 text-amber-300 border-amber-500/40" : "bg-white/[0.04] text-gray-400 border-white/[0.06] hover:text-gray-300"}`}
               >
                 {concentrationLabel}
               </button>
               <button type="button" aria-pressed={ritualFilter} onClick={() => setRitualFilter((v) => !v)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${ritualFilter ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/40" : "bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-300"}`}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${ritualFilter ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/40" : "bg-white/[0.04] text-gray-400 border-white/[0.06] hover:text-gray-300"}`}
               >
                 {ritualLabel}
               </button>
@@ -310,21 +310,21 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
               <button
                 type="button"
                 onClick={() => setEditionFilter(null)}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === null ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === null ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-400 hover:text-gray-300"}`}
               >
                 {editionAll}
               </button>
               <button
                 type="button"
                 onClick={() => setEditionFilter(editionFilter === "2014" ? null : "2014")}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2014" ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2014" ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-400 hover:text-gray-300"}`}
               >
                 2014
               </button>
               <button
                 type="button"
                 onClick={() => setEditionFilter(editionFilter === "2024" ? null : "2024")}
-                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2024" ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-500 hover:text-gray-300"}`}
+                className={`px-2 py-0.5 text-xs font-medium transition-colors ${editionFilter === "2024" ? "bg-gold text-gray-950" : "bg-white/[0.04] text-gray-400 hover:text-gray-300"}`}
               >
                 2024
               </button>
@@ -380,7 +380,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                       )}
                     </span>
                     {s.nameEn && s.namePt && s.nameEn.toLowerCase() !== s.namePt.toLowerCase() && (
-                      <span className="text-[11px] text-gray-500 italic truncate">
+                      <span className="text-[11px] text-gray-400 italic truncate">
                         {isPt ? s.nameEn : s.namePt}
                       </span>
                     )}
@@ -388,7 +388,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     {s.concentration && <span className="text-amber-400/60 text-xs" title="Concentration">©</span>}
                     {s.ritual && <span className="text-emerald-400/60 text-xs" title="Ritual">®</span>}
-                    <span className={`text-xs font-mono ${SCHOOL_COLORS[s.school] ?? "text-gray-500"}`}>
+                    <span className={`text-xs font-mono ${SCHOOL_COLORS[s.school] ?? "text-gray-400"}`}>
                       {schoolAbbr(s.school)}
                     </span>
                   </div>
@@ -398,7 +398,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
                   <div className={`hidden lg:block absolute left-0 z-50 w-96 rounded-lg border border-gold/20 bg-gray-900 shadow-xl shadow-black/40 p-4 transition-opacity duration-150 ${isHovered ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} ${flipUp ? "bottom-full mb-1" : "top-full mt-1"}`}>
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-sm font-bold text-foreground font-[family-name:var(--font-cinzel)]">{displayName(s)}</span>
-                      <span className={`text-xs ${SCHOOL_COLORS[s.school] ?? "text-gray-500"}`}>{schoolDisplay(s.school)}</span>
+                      <span className={`text-xs ${SCHOOL_COLORS[s.school] ?? "text-gray-400"}`}>{schoolDisplay(s.school)}</span>
                     </div>
                     <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-gray-400 mb-2">
                       {s.casting_time && <span>{isPt ? "Tempo" : "Cast"}: {s.casting_time}</span>}

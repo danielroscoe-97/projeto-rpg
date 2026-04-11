@@ -1,19 +1,19 @@
 /** "Feito com ❤️ pelos Pipers" — branded studio signature for footers */
 export function PipersSignature() {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/50 select-none">
+    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground select-none">
       <span>Feito com</span>
       <span className="text-red-400/70 text-sm animate-pulse">&#10084;</span>
       <span>pelos</span>
       <span className="inline-flex items-center gap-1">
-        <span className="font-display text-[13px] tracking-[0.08em] text-muted-foreground/70">
+        <span className="font-display text-[13px] tracking-[0.08em] text-muted-foreground">
           Pipers
         </span>
         {/* Inline pipe icon — classic curved pipe with smoke */}
         <svg
           viewBox="0 0 22 20"
           fill="none"
-          className="w-[18px] h-[16px] text-muted-foreground/50"
+          className="w-[18px] h-[16px] text-muted-foreground"
           aria-hidden="true"
         >
           {/* Smoke */}

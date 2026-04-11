@@ -25,7 +25,7 @@ export function CompendiumSearchInput({
   return (
     <div className="relative">
       <svg
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none"
+        className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -45,13 +45,13 @@ export function CompendiumSearchInput({
         placeholder={placeholder}
         autoFocus={autoFocus}
         aria-label={placeholder}
-        className="w-full h-11 pl-10 pr-9 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:border-gold/40 transition-colors"
+        className="w-full h-11 pl-10 pr-9 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-gray-200 placeholder:text-gray-400 focus:outline-none focus:border-gold/40 transition-colors"
       />
       {value && (
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
           aria-label="Clear search"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

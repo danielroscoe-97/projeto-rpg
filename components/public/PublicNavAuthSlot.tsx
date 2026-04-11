@@ -20,7 +20,7 @@ function LoggedOutButtons({ locale = "en" }: Props) {
     <>
       <Link
         href="/try"
-        className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-gold px-3 py-1.5 text-white text-sm font-semibold hover:bg-gold/90 transition-colors"
+        className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-gold px-3 py-1.5 text-gray-950 text-sm font-semibold hover:bg-gold/90 transition-colors"
       >
         {l.tryFree}
       </Link>

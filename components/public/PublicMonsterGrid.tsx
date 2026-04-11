@@ -243,12 +243,12 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
                       {displayName(m)}
                     </span>
                     {subtitleName(m) && (
-                      <span className="text-[11px] text-gray-500 italic block truncate">
+                      <span className="text-[11px] text-gray-400 italic block truncate">
                         {subtitleName(m)}
                       </span>
                     )}
                   </span>
-                  <span className="text-gray-500 text-xs font-mono tabular-nums whitespace-nowrap">
+                  <span className="text-gray-400 text-xs font-mono tabular-nums whitespace-nowrap">
                     CR {m.cr}
                   </span>
                   {m.isMAD && (
