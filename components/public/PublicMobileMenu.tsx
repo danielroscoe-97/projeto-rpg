@@ -16,26 +16,21 @@ function getSections(locale: Locale): MenuSection[] {
   const isPt = locale === "pt-BR";
   return [
     {
-      title: isPt ? "Referência de Combate" : "Combat Reference",
+      title: isPt ? "Referência" : "Reference",
       links: [
         { label: isPt ? "Monstros" : "Monsters", href: isPt ? "/monstros" : "/monsters" },
         { label: isPt ? "Magias" : "Spells", href: isPt ? "/magias" : "/spells" },
         { label: isPt ? "Condições" : "Conditions", href: isPt ? "/condicoes" : "/conditions" },
+        { label: isPt ? "Itens" : "Items", href: isPt ? "/itens" : "/items" },
       ],
     },
     {
-      title: isPt ? "Criação de Personagem" : "Character Building",
+      title: isPt ? "Jogador" : "Player",
       links: [
         { label: "Classes", href: isPt ? "/classes-pt" : "/classes" },
         { label: isPt ? "Raças" : "Races", href: isPt ? "/racas" : "/races" },
         { label: isPt ? "Talentos" : "Feats", href: isPt ? "/talentos" : "/feats" },
         { label: isPt ? "Antecedentes" : "Backgrounds", href: isPt ? "/antecedentes" : "/backgrounds" },
-      ],
-    },
-    {
-      title: isPt ? "Equipamento" : "Equipment",
-      links: [
-        { label: isPt ? "Itens" : "Items", href: isPt ? "/itens" : "/items" },
       ],
     },
     {
@@ -48,12 +43,7 @@ function getSections(locale: Locale): MenuSection[] {
           label: isPt ? "Calculadora de Encontro" : "Encounter Builder",
           href: isPt ? "/calculadora-encontro" : "/encounter-builder",
         },
-      ],
-    },
-    {
-      title: "",
-      links: [
-        { label: isPt ? "Rastreador de Combate" : "Combat Tracker", href: "/try" },
+        { label: "Combat Tracker", href: "/try" },
       ],
     },
   ];
@@ -135,14 +125,9 @@ export function PublicMobileMenu({ open, onClose, locale }: PublicMobileMenuProp
       <div className="p-4 flex flex-col gap-1">
         {sections.map((section) => (
           <div key={section.title || "quick"}>
-            {section.title && (
-              <span className="text-[10px] text-gray-500 uppercase tracking-wider font-medium px-4 pt-3 pb-1 block">
-                {section.title}
-              </span>
-            )}
-            {!section.title && (
-              <div className="border-t border-white/[0.06] mt-2 pt-2" />
-            )}
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-medium px-4 pt-3 pb-1 block">
+              {section.title}
+            </span>
             {section.links.map((link) => (
               <Link
                 key={link.href}

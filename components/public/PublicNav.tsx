@@ -1,64 +1,13 @@
 import Link from "next/link";
 import { PublicNavAuthSlot } from "./PublicNavAuthSlot";
 import { PublicNavClient } from "./PublicNavClient";
+import { PublicDesktopNav } from "./PublicDesktopNav";
 
 interface PublicNavProps {
   breadcrumbs?: { label: string; href?: string }[];
   locale?: "en" | "pt-BR";
 }
 
-const LABELS = {
-  "en": {
-    classes: "Classes",
-    classesHref: "/classes",
-    races: "Races",
-    racesHref: "/races",
-    monsters: "Monsters",
-    monstersHref: "/monsters",
-    spells: "Spells",
-    spellsHref: "/spells",
-    conditions: "Conditions",
-    conditionsHref: "/conditions",
-    items: "Items",
-    itemsHref: "/items",
-    feats: "Feats",
-    featsHref: "/feats",
-    backgrounds: "Backgrounds",
-    backgroundsHref: "/backgrounds",
-    dice: "Dice",
-    diceHref: "/dice",
-    rules: "Rules",
-    rulesHref: "/rules",
-    combat: "Combat Tracker",
-    tryFree: "Try Free",
-    signUp: "Sign Up",
-  },
-  "pt-BR": {
-    classes: "Classes",
-    classesHref: "/classes-pt",
-    races: "Raças",
-    racesHref: "/racas",
-    monsters: "Monstros",
-    monstersHref: "/monstros",
-    spells: "Magias",
-    spellsHref: "/magias",
-    conditions: "Condições",
-    conditionsHref: "/condicoes",
-    items: "Itens",
-    itemsHref: "/itens",
-    feats: "Talentos",
-    featsHref: "/talentos",
-    backgrounds: "Antecedentes",
-    backgroundsHref: "/antecedentes",
-    dice: "Dados",
-    diceHref: "/dados",
-    rules: "Regras",
-    rulesHref: "/regras",
-    combat: "Combat Tracker",
-    tryFree: "Testar Grátis",
-    signUp: "Cadastrar",
-  },
-} as const;
 
 function CrownD20Logo({ className }: { className?: string }) {
   return (
@@ -90,8 +39,6 @@ function CrownD20Logo({ className }: { className?: string }) {
 }
 
 export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
-  const l = LABELS[locale];
-
   return (
     <nav className="border-b border-white/[0.06] bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40 shadow-[0_1px_0_rgba(212,168,83,0.06)]">
       <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2 lg:gap-3">
@@ -125,75 +72,8 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
           ))}
         </div>
 
-        {/* Center: nav links */}
-        <div className="hidden lg:flex items-center gap-4 shrink-0">
-          <Link
-            href={l.monstersHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.monsters}
-          </Link>
-          <Link
-            href={l.spellsHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.spells}
-          </Link>
-          <Link
-            href={l.conditionsHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.conditions}
-          </Link>
-          <Link
-            href={l.itemsHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.items}
-          </Link>
-          <Link
-            href={l.classesHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.classes}
-          </Link>
-          <Link
-            href={l.racesHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.races}
-          </Link>
-          <Link
-            href={l.featsHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.feats}
-          </Link>
-          <Link
-            href={l.backgroundsHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.backgrounds}
-          </Link>
-          <Link
-            href={l.diceHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.dice}
-          </Link>
-          <Link
-            href={l.rulesHref}
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.rules}
-          </Link>
-          <Link
-            href="/try"
-            className="text-gray-400 hover:text-gray-200 text-sm transition-colors"
-          >
-            {l.combat}
-          </Link>
-        </div>
+        {/* Center: grouped dropdown nav */}
+        <PublicDesktopNav locale={locale} />
 
         {/* Right: search + auth + hamburger */}
         <div className="flex items-center gap-1 shrink-0">
