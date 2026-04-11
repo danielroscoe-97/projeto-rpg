@@ -146,6 +146,51 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
+  // ── Feat detail pages (EN + PT-BR, SRD only) ────────────────────
+  const feats = getSrdFeats();
+  const featPagesEN: MetadataRoute.Sitemap = feats.map((f) => ({
+    url: `${BASE_URL}/feats/${f.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+  const featPagesPT: MetadataRoute.Sitemap = feats.map((f) => ({
+    url: `${BASE_URL}/talentos/${f.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  // ── Background detail pages (EN + PT-BR, SRD only) ─────────────
+  const backgrounds = getSrdBackgrounds();
+  const backgroundPagesEN: MetadataRoute.Sitemap = backgrounds.map((b) => ({
+    url: `${BASE_URL}/backgrounds/${b.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+  const backgroundPagesPT: MetadataRoute.Sitemap = backgrounds.map((b) => ({
+    url: `${BASE_URL}/antecedentes/${b.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  // ── Item detail pages (EN + PT-BR, SRD only) ───────────────────
+  const items = getSrdItems();
+  const itemPagesEN: MetadataRoute.Sitemap = items.map((i) => ({
+    url: `${BASE_URL}/items/${i.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+  const itemPagesPT: MetadataRoute.Sitemap = items.map((i) => ({
+    url: `${BASE_URL}/itens/${i.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
   // ── Blog ─────────────────────────────────────────────────────────
   const blogIndex: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
@@ -174,5 +219,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...classPagesPT,
     ...subclassPages,
     ...subclassPagesPT,
+    ...featPagesEN,
+    ...featPagesPT,
+    ...backgroundPagesEN,
+    ...backgroundPagesPT,
+    ...itemPagesEN,
+    ...itemPagesPT,
   ];
 }

@@ -8,13 +8,13 @@ import { getMonsterById } from "@/lib/srd/srd-search";
 
 export type GuestCombatPhase = "setup" | "combat" | "ended";
 
-/** Guest session hard limit: 60 minutes */
-export const SESSION_LIMIT_MS = 60 * 60 * 1000;
+/** Guest session hard limit: 4 hours */
+export const SESSION_LIMIT_MS = 4 * 60 * 60 * 1000;
 const SESSION_START_KEY = "guest-session-start";
 const COMBAT_SNAPSHOT_KEY = "guest-combat-snapshot";
 const SNAPSHOT_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-/** Check if the guest session has expired (60 min from first visit) */
+/** Check if the guest session has expired (4h from first visit) */
 export function isGuestExpired(): boolean {
   if (typeof window === "undefined") return false;
   try {

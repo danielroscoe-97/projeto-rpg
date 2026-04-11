@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics/track";
 import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +94,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
   const handleCopy = useCallback(() => {
     if (!linkCode) return;
     navigator.clipboard.writeText(buildLink(linkCode));
+    trackEvent("share:link_copied");
     toast.success(t("invite_link_copied"));
   }, [linkCode]);
 

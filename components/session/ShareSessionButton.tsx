@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/analytics/track";
 import { createSessionToken, getExistingSessionToken } from "@/lib/supabase/session-token";
 import { Button } from "@/components/ui/button";
 import QRCode from "qrcode";
@@ -60,6 +61,7 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
       setJoinUrl(url);
       setShowQr(true);
       await navigator.clipboard.writeText(url);
+      trackEvent("share:link_copied");
       setCopied(true);
       if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
       copiedTimerRef.current = setTimeout(() => {
@@ -77,6 +79,7 @@ export function ShareSessionButton({ sessionId }: ShareSessionButtonProps) {
     if (!joinUrl) return;
     try {
       await navigator.clipboard.writeText(joinUrl);
+      trackEvent("share:link_copied");
       setCopied(true);
       if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
       copiedTimerRef.current = setTimeout(() => {

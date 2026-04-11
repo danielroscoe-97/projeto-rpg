@@ -137,26 +137,31 @@ export function CommandPalette() {
   }, []);
 
   const handlePinMonster = useCallback((monster: SrdMonster) => {
+    trackEvent("oracle:result_click", { type: "monster", id: monster.id });
     pinCard("monster", monster.id, monster.ruleset_version);
     handleClose();
   }, [pinCard, handleClose]);
 
   const handleViewSpell = useCallback((spell: SrdSpell) => {
+    trackEvent("oracle:result_click", { type: "spell", id: spell.id });
     setSelectedSpell(spell);
     handleClose();
   }, [handleClose]);
 
   const handleViewCondition = useCallback((condition: SrdCondition) => {
+    trackEvent("oracle:result_click", { type: "condition", id: condition.id });
     setSelectedCondition(condition);
     handleClose();
   }, [handleClose]);
 
   const handlePinItem = useCallback((id: string) => {
+    trackEvent("oracle:result_click", { type: "item", id });
     pinCard("item", id, "2014");
     handleClose();
   }, [pinCard, handleClose]);
 
   const handlePinFeat = useCallback((id: string, version?: string) => {
+    trackEvent("oracle:result_click", { type: "feat", id });
     pinCard("feat", id, (version ?? "2014") as "2014" | "2024");
     handleClose();
   }, [pinCard, handleClose]);

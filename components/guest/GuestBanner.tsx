@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const DISMISSED_KEY = "guest-banner-dismissed";
 const SESSION_START_KEY = "guest-session-start";
-const SESSION_LIMIT_MS = 60 * 60 * 1000; // 60 minutes
+const SESSION_LIMIT_MS = 4 * 60 * 60 * 1000; // 4 hours
 
 export function GuestBanner() {
   const t = useTranslations("guest");

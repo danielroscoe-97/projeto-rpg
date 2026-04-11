@@ -22,6 +22,8 @@ const ALLOWED_EVENTS = new Set([
   "combat:ended",
   "combat:hp_changed",
   "combat:condition_toggled",
+  "combat:combatant_added",
+  "combat:combatant_removed",
   // Oracle
   "oracle:search",
   "oracle:result_click",
@@ -33,11 +35,24 @@ const ALLOWED_EVENTS = new Set([
   "share:link_copied",
   // Player
   "player:joined",
+  "player:rejoined",
+  "player:reconnected",
   "player:spell_searched",
+  "player:session_token_created",
   // Compendium
   "compendium:visited",
+  // Public search
+  "public:omnisearch",
   // Settings
   "settings:language_changed",
+  // Onboarding tours
+  "onboarding:tour_skipped",
+  "onboarding:tour_completed",
+  "onboarding:tour_dismissed",
+  "onboarding:combat_tour_skipped",
+  "onboarding:combat_tour_completed",
+  "onboarding:hq_tour_skipped",
+  "onboarding:hq_tour_completed",
   // Conversion (future-ready)
   "upsell:shown",
   "upsell:clicked",
@@ -47,6 +62,9 @@ const ALLOWED_EVENTS = new Set([
   "checkout:completed",
   "checkout:canceled",
   "subscription:canceled",
+  "trial_activated",
+  "checkout_started",
+  "pro_badge_click",
   // Guest conversion funnel
   "guest:session_expired",
   "guest:expired_cta_signup",
@@ -55,7 +73,24 @@ const ALLOWED_EVENTS = new Set([
   "guest:combat_started",
   "guest:combat_ended",
   "guest:upsell_shown",
+  "guest:post_combat_upsell_shown",
   "guest:recap_save_signup",
+  // Campaign lifecycle (server-side)
+  "campaign:created_with_wizard",
+  "campaign:invite_accepted",
+  "campaign:invite_declined",
+  "campaign:member_left",
+  "campaign:member_removed",
+  // Session lifecycle (server-side)
+  "session:created",
+  "session:started",
+  "session:cancelled",
+  "session:completed",
+  // Email events (server-side)
+  "email:welcome_sent",
+  "email:first_combat_sent",
+  "email:combat_recap_sent",
+  "email:invite_accepted_sent",
 ]);
 
 // In-process rate limiter: 60 events/min per IP

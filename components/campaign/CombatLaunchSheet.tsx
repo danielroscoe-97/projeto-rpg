@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/analytics/track";
 import {
   Dialog,
   DialogContent,
@@ -94,6 +95,7 @@ export function CombatLaunchSheet({
     if (!activeSessionId) return;
     const url = `${window.location.origin}/app/session/${activeSessionId}`;
     await navigator.clipboard.writeText(url);
+    trackEvent("share:link_copied");
     setCopied(true);
     toast.success(t("link_copied"));
     setTimeout(() => setCopied(false), 2000);

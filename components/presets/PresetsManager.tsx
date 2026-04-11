@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/analytics/track";
 import { Plus, Trash2, Pencil, Copy, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PresetEditor } from "@/components/presets/PresetEditor";
@@ -26,6 +27,7 @@ export function PresetsManager({ initialPresets, userId }: PresetsManagerProps) 
     try {
       setError(null);
       const preset = await createPreset(userId, name, monsters, rulesetVersion);
+      trackEvent("preset:created");
       setPresets((prev) => [preset, ...prev]);
       setIsCreating(false);
     } catch {

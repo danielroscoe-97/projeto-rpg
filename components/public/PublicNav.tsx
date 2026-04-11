@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PublicNavAuthSlot } from "./PublicNavAuthSlot";
+import { PublicNavClient } from "./PublicNavClient";
 
 interface PublicNavProps {
   breadcrumbs?: { label: string; href?: string }[];
@@ -93,20 +94,20 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
 
   return (
     <nav className="border-b border-white/[0.06] bg-gray-950/95 backdrop-blur-sm sticky top-0 z-40 shadow-[0_1px_0_rgba(212,168,83,0.06)]">
-      <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
+      <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2 lg:gap-3">
         {/* Left: logo + breadcrumbs */}
-        <div className="flex items-center gap-2.5 min-w-0 overflow-hidden max-w-[40%] md:max-w-[30%]">
+        <div className="flex items-center gap-2.5 min-w-0 overflow-hidden">
           <Link
             href="/"
             className="flex items-center gap-2 group shrink-0"
           >
             <CrownD20Logo className="w-6 h-6 transition-opacity group-hover:opacity-80" />
-            <span className="text-gold font-semibold font-[family-name:var(--font-cinzel)] tracking-wide text-sm whitespace-nowrap">
+            <span className="hidden sm:inline text-gold font-semibold font-[family-name:var(--font-cinzel)] tracking-wide text-sm whitespace-nowrap">
               Pocket DM
             </span>
           </Link>
           {breadcrumbs?.map((crumb, i) => (
-            <span key={i} className="flex items-center gap-3 min-w-0">
+            <span key={i} className="hidden sm:flex items-center gap-3 min-w-0">
               <span className="text-gray-700 shrink-0">/</span>
               {crumb.href ? (
                 <Link
@@ -194,9 +195,12 @@ export function PublicNav({ breadcrumbs, locale = "en" }: PublicNavProps) {
           </Link>
         </div>
 
-        {/* Right: auth-aware CTA */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <PublicNavAuthSlot locale={locale} />
+        {/* Right: search + auth + hamburger */}
+        <div className="flex items-center gap-1 shrink-0">
+          <PublicNavClient locale={locale} />
+          <div className="hidden sm:block">
+            <PublicNavAuthSlot locale={locale} />
+          </div>
         </div>
       </div>
     </nav>

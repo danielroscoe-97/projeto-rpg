@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/analytics/track";
 import Link from "next/link";
 import { Check, ChevronDown } from "lucide-react";
 
@@ -107,6 +108,10 @@ function FaqItem({
 export default function PricingPage() {
   const t = useTranslations("pricing");
   const [yearly, setYearly] = useState(false);
+
+  useEffect(() => {
+    trackEvent("pricing:visited");
+  }, []);
 
   const freeFeatures = [
     t("free_features.combat_tracker"),

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics/track";
 import { Link2, Copy, Check, X, Clock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -73,6 +74,7 @@ export function InviteMember({ campaignId }: InviteMemberProps) {
     async (link: string) => {
       try {
         await navigator.clipboard.writeText(link);
+        trackEvent("share:link_copied");
         setCopied(true);
         toast.success(t("link_copied"));
         if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);

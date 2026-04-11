@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/analytics/track";
 import { Package } from "lucide-react";
 import { fetchPresets } from "@/lib/supabase/presets";
 import type { PresetRow } from "@/lib/supabase/presets";
@@ -40,6 +41,7 @@ export function PresetLoader({ onLoad }: PresetLoaderProps) {
   }, [isOpen, isLoading, loadPresets]);
 
   const handleSelect = (preset: PresetRow) => {
+    trackEvent("preset:loaded", { preset_id: preset.id });
     onLoad(preset.monsters);
     setIsOpen(false);
   };

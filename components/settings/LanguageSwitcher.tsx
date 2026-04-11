@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { trackEvent } from "@/lib/analytics/track";
 
 export function LanguageSwitcher() {
   const locale = useLocale();
@@ -11,6 +12,7 @@ export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   async function onChange(newLocale: string) {
+    trackEvent("settings:language_changed", { locale: newLocale });
     document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=31536000;SameSite=Lax`;
 
     try {

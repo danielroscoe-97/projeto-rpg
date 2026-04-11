@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/analytics/track";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { MonsterBrowser } from "@/components/compendium/MonsterBrowser";
 import { SpellBrowser } from "@/components/compendium/SpellBrowser";
@@ -21,6 +22,10 @@ function CompendiumContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const isLoading = useSrdStore((s) => s.is_loading);
+
+  useEffect(() => {
+    trackEvent("compendium:visited");
+  }, []);
 
   const tabParam = searchParams.get("tab") as Tab | null;
   const activeTab: Tab = (tabParam && ["monsters", "spells", "classes", "items", "feats", "backgrounds", "races", "conditions"].includes(tabParam)) ? tabParam : "monsters";
