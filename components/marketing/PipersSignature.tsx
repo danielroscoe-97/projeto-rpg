@@ -1,7 +1,7 @@
 /** "Feito com ❤️ pelos Pipers" — branded studio signature for footers */
 export function PipersSignature() {
   return (
-    <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground/50 select-none">
+    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/50 select-none">
       <span>Feito com</span>
       <span className="text-red-400/70 text-sm animate-pulse">&#10084;</span>
       <span>pelos</span>
@@ -55,6 +55,6 @@ export function PipersSignature() {
           />
         </svg>
       </span>
-    </div>
+    </span>
   );
 }

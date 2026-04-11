@@ -16,10 +16,14 @@ const STATUS_CONFIG: Record<SyncStatus, { color: string; label: string }> = {
 };
 
 export function ConnectionStatus() {
-  const [status, setStatus] = useState<SyncStatus>(getSyncStatus);
+  // Start as "online" to match server render and avoid hydration mismatch
+  const [status, setStatus] = useState<SyncStatus>("online");
   const [queueSize, setQueueSize] = useState(0);
 
   useEffect(() => {
+    // Sync with actual status after mount (client-only)
+    setStatus(getSyncStatus());
+
     const unsub = onSyncStatusChange((newStatus) => {
       setStatus(newStatus);
       getQueueSize().then(setQueueSize);
