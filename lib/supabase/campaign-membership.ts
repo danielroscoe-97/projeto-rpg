@@ -527,20 +527,7 @@ export async function getCampaignMembers(
 
   const { data, error } = await supabase
     .from("campaign_members")
-    .select(
-      `
-      id,
-      campaign_id,
-      user_id,
-      role,
-      joined_at,
-      status,
-      users!campaign_members_user_id_fkey (
-        display_name,
-        email
-      )
-    `
-    )
+    .select("id, campaign_id, user_id, role, joined_at, status")
     .eq("campaign_id", campaignId)
     .eq("status", "active");
 
@@ -555,6 +542,19 @@ export async function getCampaignMembers(
   }
 
   if (!data || data.length === 0) return [];
+
+  // Fetch user info separately (FK points to auth.users, not public.users — PostgREST can't follow)
+  const userIds = data.map((m: Record<string, unknown>) => m.user_id as string);
+  const userMap: Record<string, { display_name: string | null; email: string }> = {};
+  if (userIds.length > 0) {
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, display_name, email")
+      .in("id", userIds);
+    for (const u of users ?? []) {
+      userMap[u.id] = { display_name: u.display_name, email: u.email ?? "" };
+    }
+  }
 
   // Fetch character names for players
   const playerUserIds = data
@@ -578,8 +578,8 @@ export async function getCampaignMembers(
 
   const members: CampaignMemberWithUser[] = data.map(
     (row: Record<string, unknown>) => {
-      const user = row.users as Record<string, unknown> | null;
       const userId = row.user_id as string;
+      const user = userMap[userId];
 
       return {
         id: row.id as string,
@@ -588,8 +588,8 @@ export async function getCampaignMembers(
         role: row.role as CampaignMemberWithUser["role"],
         joined_at: row.joined_at as string,
         status: row.status as CampaignMemberWithUser["status"],
-        display_name: (user?.display_name as string) ?? null,
-        email: (user?.email as string) ?? "",
+        display_name: user?.display_name ?? null,
+        email: user?.email ?? "",
         character_name: characterMap[userId]?.name ?? null,
         character_id: characterMap[userId]?.id ?? null,
         character_class: characterMap[userId]?.characterClass ?? null,

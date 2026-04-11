@@ -123,7 +123,7 @@ export function SessionPlanner({
               id="session-name"
               value={name}
               onChange={(e) => setName(e.target.value.slice(0, 100))}
-              placeholder={t("name_placeholder")}
+              placeholder={t("name_placeholder", { number: "?" })}
               maxLength={100}
               disabled={isLoading}
               className="bg-background border-border text-foreground min-h-[44px]"
