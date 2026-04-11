@@ -2,15 +2,17 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull, Globe } from "lucide-react";
+import { Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull, Globe, Sword, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { SpellCard } from "@/components/oracle/SpellCard";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
+import { ItemCard } from "@/components/oracle/ItemCard";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
-import { getCoreConditions } from "@/lib/srd/srd-search";
-import type { SrdSpell, SrdMonster, SrdCondition } from "@/lib/srd/srd-loader";
+import { getCoreConditions, getAllFeats } from "@/lib/srd/srd-search";
+import type { SrdSpell, SrdMonster, SrdCondition, SrdItem } from "@/lib/srd/srd-loader";
+import type { SrdFeatEntry } from "@/lib/srd/srd-search";
 import type { RulesetVersion } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 
@@ -23,12 +25,14 @@ const SRD_CLASSES = [
   "Warlock", "Wizard",
 ];
 
-type CompendiumTab = "all" | "spells" | "conditions" | "monsters";
+type CompendiumTab = "all" | "spells" | "conditions" | "monsters" | "items" | "feats";
 
 type GlobalResult =
   | { kind: "spell"; item: SrdSpell }
   | { kind: "monster"; item: SrdMonster }
-  | { kind: "condition"; item: SrdCondition };
+  | { kind: "condition"; item: SrdCondition }
+  | { kind: "item"; item: SrdItem }
+  | { kind: "feat"; item: SrdFeatEntry };
 
 interface PlayerCompendiumBrowserProps {
   open: boolean;
@@ -63,6 +67,13 @@ export function PlayerCompendiumBrowser({
   // Conditions data
   const conditions = useMemo(() => getCoreConditions(), []);
 
+  // Items data — no content filter needed; items are loaded from the
+  // appropriate SRD source by SrdInitializer (already filtered by mode)
+  const items = useSrdStore((s) => s.items);
+
+  // Feats data
+  const feats = useMemo(() => getAllFeats(), []);
+
   // Spell filters
   const [nameFilter, setNameFilter] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
@@ -82,6 +93,14 @@ export function PlayerCompendiumBrowser({
   // Condition filter
   const [conditionFilter, setConditionFilter] = useState("");
 
+  // Item filters
+  const [itemNameFilter, setItemNameFilter] = useState("");
+  const [itemDisplayCount, setItemDisplayCount] = useState(PAGE_SIZE);
+
+  // Feat filters
+  const [featNameFilter, setFeatNameFilter] = useState("");
+  const [featDisplayCount, setFeatDisplayCount] = useState(PAGE_SIZE);
+
   // Global search
   const [globalFilter, setGlobalFilter] = useState("");
   const [globalDisplayCount, setGlobalDisplayCount] = useState(PAGE_SIZE);
@@ -90,6 +109,8 @@ export function PlayerCompendiumBrowser({
   const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
   const [selectedMonster, setSelectedMonster] = useState<SrdMonster | null>(null);
   const [selectedCondition, setSelectedCondition] = useState<SrdCondition | null>(null);
+  const [selectedItem, setSelectedItem] = useState<SrdItem | null>(null);
+  const [selectedFeat, setSelectedFeat] = useState<SrdFeatEntry | null>(null);
 
   // Reset state when dialog closes
   const handleOpenChange = useCallback(
@@ -102,10 +123,16 @@ export function PlayerCompendiumBrowser({
         setSelectedSpell(null);
         setSelectedMonster(null);
         setSelectedCondition(null);
+        setSelectedItem(null);
+        setSelectedFeat(null);
         setDisplayCount(PAGE_SIZE);
         setMonsterDisplayCount(PAGE_SIZE);
         setMonsterNameFilter("");
         setConditionFilter("");
+        setItemNameFilter("");
+        setItemDisplayCount(PAGE_SIZE);
+        setFeatNameFilter("");
+        setFeatDisplayCount(PAGE_SIZE);
         setGlobalFilter("");
         setGlobalDisplayCount(PAGE_SIZE);
         setClassDropdownOpen(false);
@@ -156,6 +183,26 @@ export function PlayerCompendiumBrowser({
     return conditions.filter((c) => c.name.toLowerCase().includes(lower));
   }, [conditions, conditionFilter]);
 
+  // Item filtering
+  const filteredItems = useMemo(() => {
+    let result = items;
+    if (itemNameFilter) {
+      const lower = itemNameFilter.toLowerCase();
+      result = result.filter((i) => i.name.toLowerCase().includes(lower));
+    }
+    return result.sort((a, b) => a.name.localeCompare(b.name));
+  }, [items, itemNameFilter]);
+
+  // Feat filtering
+  const filteredFeats = useMemo(() => {
+    let result = feats;
+    if (featNameFilter) {
+      const lower = featNameFilter.toLowerCase();
+      result = result.filter((f) => f.name.toLowerCase().includes(lower));
+    }
+    return result.sort((a, b) => a.name.localeCompare(b.name));
+  }, [feats, featNameFilter]);
+
   // Global search — unified results across all types
   const globalResults = useMemo((): GlobalResult[] => {
     if (!globalFilter || globalFilter.length < 2) return [];
@@ -170,8 +217,14 @@ export function PlayerCompendiumBrowser({
     for (const c of conditions) {
       if (c.name.toLowerCase().includes(lower)) results.push({ kind: "condition", item: c });
     }
+    for (const i of items) {
+      if (i.name.toLowerCase().includes(lower)) results.push({ kind: "item", item: i });
+    }
+    for (const f of feats) {
+      if (f.name.toLowerCase().includes(lower)) results.push({ kind: "feat", item: f });
+    }
     return results.sort((a, b) => a.item.name.localeCompare(b.item.name));
-  }, [spells, monsters, conditions, globalFilter]);
+  }, [spells, monsters, conditions, items, feats, globalFilter]);
 
   const displayedSpells = filteredSpells.slice(0, displayCount);
   const spellTotalCount = spells.length;
@@ -181,25 +234,35 @@ export function PlayerCompendiumBrowser({
   const displayedMonsters = filteredMonsters.slice(0, monsterDisplayCount);
   const hasMoreMonsters = filteredMonsters.length > monsterDisplayCount;
 
+  const displayedItems = filteredItems.slice(0, itemDisplayCount);
+  const hasMoreItems = filteredItems.length > itemDisplayCount;
+
+  const displayedFeats = filteredFeats.slice(0, featDisplayCount);
+  const hasMoreFeats = filteredFeats.length > featDisplayCount;
+
   const displayedGlobal = globalResults.slice(0, globalDisplayCount);
   const hasMoreGlobal = globalResults.length > globalDisplayCount;
 
   // Check if we're in a detail view
-  const inDetail = selectedSpell || selectedMonster || selectedCondition;
+  const inDetail = selectedSpell || selectedMonster || selectedCondition || selectedItem || selectedFeat;
 
   const handleBack = () => {
     setSelectedSpell(null);
     setSelectedMonster(null);
     setSelectedCondition(null);
+    setSelectedItem(null);
+    setSelectedFeat(null);
   };
 
-  const detailTitle = selectedSpell?.name ?? selectedMonster?.name ?? selectedCondition?.name ?? "";
+  const detailTitle = selectedSpell?.name ?? selectedMonster?.name ?? selectedCondition?.name ?? selectedItem?.name ?? selectedFeat?.name ?? "";
 
   const tabItems: { key: CompendiumTab; icon: React.ReactNode; label: string }[] = [
     { key: "all", icon: <Globe className="w-3.5 h-3.5" />, label: t("compendium_tab_all") },
     { key: "spells", icon: <Sparkles className="w-3.5 h-3.5" />, label: t("compendium_tab_spells") },
     { key: "conditions", icon: <HeartPulse className="w-3.5 h-3.5" />, label: t("compendium_tab_conditions") },
     { key: "monsters", icon: <Skull className="w-3.5 h-3.5" />, label: t("compendium_tab_monsters") },
+    { key: "items", icon: <Sword className="w-3.5 h-3.5" />, label: t("compendium_tab_items") },
+    { key: "feats", icon: <Star className="w-3.5 h-3.5" />, label: t("compendium_tab_feats") },
   ];
 
   return (
@@ -237,6 +300,19 @@ export function PlayerCompendiumBrowser({
                 <p className="text-sm text-white/90 whitespace-pre-line">
                   {selectedCondition.description}
                 </p>
+              )}
+              {selectedItem && <ItemCard item={selectedItem} variant="inline" />}
+              {selectedFeat && (
+                <div className="space-y-3">
+                  {selectedFeat.prerequisite && (
+                    <p className="text-sm text-amber-400">
+                      {t("compendium_feat_prerequisite")}: {selectedFeat.prerequisite}
+                    </p>
+                  )}
+                  <p className="text-sm text-white/90 whitespace-pre-line leading-relaxed">
+                    {selectedFeat.description}
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -364,8 +440,55 @@ export function PlayerCompendiumBrowser({
                             </button>
                           );
                         }
+                        if (result.kind === "item") {
+                          const item = result.item;
+                          return (
+                            <button
+                              key={`item-${item.id}`}
+                              type="button"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                              onClick={() => setSelectedItem(item)}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                  {item.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <span>{item.type}</span>
+                                  {item.rarity && item.rarity !== "none" && (
+                                    <><span>·</span><span>{item.rarity}</span></>
+                                  )}
+                                </div>
+                              </div>
+                              <Sword className="w-3.5 h-3.5 text-amber-400/60 shrink-0" />
+                            </button>
+                          );
+                        }
+                        if (result.kind === "feat") {
+                          const feat = result.item;
+                          return (
+                            <button
+                              key={`feat-${feat.id}`}
+                              type="button"
+                              className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                              onClick={() => setSelectedFeat(feat)}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                  {feat.name}
+                                </div>
+                                {feat.prerequisite && (
+                                  <div className="text-xs text-muted-foreground line-clamp-1">
+                                    {feat.prerequisite}
+                                  </div>
+                                )}
+                              </div>
+                              <Star className="w-3.5 h-3.5 text-yellow-400/60 shrink-0" />
+                            </button>
+                          );
+                        }
                         // condition
-                        const condition = result.item;
+                        const condition = result.item as SrdCondition;
                         return (
                           <button
                             key={`cond-${condition.id}`}
@@ -673,6 +796,170 @@ export function PlayerCompendiumBrowser({
                         <HeartPulse className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
                       </button>
                     ))
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Items Tab ── */}
+            {activeTab === "items" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={itemNameFilter}
+                      onChange={(e) => {
+                        setItemNameFilter(e.target.value);
+                        setItemDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("compendium_search_items")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {itemNameFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setItemNameFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {filteredItems.length} {t("compendium_items_count")}
+                  </p>
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {(isStoreLoading || items.length === 0) ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("compendium_loading")}
+                    </div>
+                  ) : displayedItems.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedItems.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                          onClick={() => setSelectedItem(item)}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {item.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              <span>{item.type}</span>
+                              {item.rarity && item.rarity !== "none" && (
+                                <><span>·</span><span>{item.rarity}</span></>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {item.reqAttune && (
+                              <span className="text-[10px] text-purple-400 bg-purple-400/10 px-1.5 py-0.5 rounded">ATT</span>
+                            )}
+                            <Sword className="w-3.5 h-3.5 text-muted-foreground/40" />
+                          </div>
+                        </button>
+                      ))}
+
+                      {hasMoreItems && (
+                        <button
+                          type="button"
+                          onClick={() => setItemDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", { remaining: filteredItems.length - itemDisplayCount })}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ── Feats Tab ── */}
+            {activeTab === "feats" && (
+              <>
+                <div className="p-3 border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <input
+                      type="text"
+                      value={featNameFilter}
+                      onChange={(e) => {
+                        setFeatNameFilter(e.target.value);
+                        setFeatDisplayCount(PAGE_SIZE);
+                      }}
+                      placeholder={t("compendium_search_feats")}
+                      className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
+                    />
+                    {featNameFilter && (
+                      <button
+                        type="button"
+                        onClick={() => setFeatNameFilter("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    {filteredFeats.length} {t("compendium_feats_count")}
+                  </p>
+                </div>
+
+                <div className="overflow-y-auto flex-1">
+                  {feats.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground text-sm">
+                      <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                      {t("compendium_loading")}
+                    </div>
+                  ) : displayedFeats.length === 0 ? (
+                    <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                      {t("compendium_no_results")}
+                    </div>
+                  ) : (
+                    <>
+                      {displayedFeats.map((feat) => (
+                        <button
+                          key={feat.id}
+                          type="button"
+                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
+                          onClick={() => setSelectedFeat(feat)}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {feat.name}
+                            </div>
+                            {feat.prerequisite && (
+                              <div className="text-xs text-muted-foreground line-clamp-1">
+                                {feat.prerequisite}
+                              </div>
+                            )}
+                          </div>
+                          <Star className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
+                        </button>
+                      ))}
+
+                      {hasMoreFeats && (
+                        <button
+                          type="button"
+                          onClick={() => setFeatDisplayCount((c) => c + PAGE_SIZE)}
+                          className="w-full py-3 text-xs text-gold hover:text-gold/80 transition-colors"
+                        >
+                          {t("spell_load_more", { remaining: filteredFeats.length - featDisplayCount })}
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               </>

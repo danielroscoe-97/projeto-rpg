@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Shield, Zap } from "lucide-react";
+import { Shield, Zap, Search } from "lucide-react";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
@@ -107,6 +107,14 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
                 {character.name}
               </span>
               <span className="text-xs text-red-400 font-medium">0 HP</span>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("command-palette:open"))}
+                className="flex items-center justify-center min-h-[44px] min-w-[44px] -my-2 ml-auto text-muted-foreground hover:text-gold transition-colors shrink-0"
+                aria-label={t("search_compendium")}
+              >
+                <Search className="w-4 h-4" />
+              </button>
             </div>
             {isPlayerTurn && (
               <p className="text-xs text-red-300 mb-1">{t("death_saves_your_turn")}</p>
@@ -127,6 +135,15 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
               <span className="text-foreground text-sm font-semibold truncate max-w-[100px]">
                 {character.name}
               </span>
+
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("command-palette:open"))}
+                className="flex items-center justify-center min-h-[44px] min-w-[44px] -my-2 text-muted-foreground hover:text-gold transition-colors shrink-0"
+                aria-label={t("search_compendium")}
+              >
+                <Search className="w-4 h-4" />
+              </button>
 
               {character.is_defeated && (
                 <span className="text-xs text-red-400 font-medium shrink-0">

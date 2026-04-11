@@ -1723,6 +1723,21 @@ export function GuestCombatClient() {
               ?
             </button>
 
+            {/* Quick search (Ctrl+K) */}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("command-palette:open"))}
+              className="px-2 py-1 bg-white/[0.06] text-gold/70 hover:text-gold hover:bg-white/[0.1] rounded-md transition-all duration-[250ms] text-sm min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px] inline-flex items-center justify-center"
+              aria-label={t("search_compendium")}
+              title={t("search_compendium")}
+              data-testid="quick-search-btn"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+            </button>
+
             {/* Compendium browser (C.14) */}
             <button
               type="button"

@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { SrdLoadingScreen } from "@/components/srd/SrdLoadingScreen";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
+import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { GuestBanner } from "@/components/guest/GuestBanner";
 import { TourProvider } from "@/components/tour/TourProvider";
 import { DiceHistoryPanel } from "@/components/dice/DiceHistoryPanel";
@@ -34,6 +35,7 @@ export default async function TryLayout({ children }: { children: React.ReactNod
       />
       <SrdLoadingScreen>
         <FloatingCardContainer />
+        <CommandPalette />
         <main className="flex-1 pt-[72px] isolate">
           <GuestBanner />
           <div className="p-3 sm:p-6">
