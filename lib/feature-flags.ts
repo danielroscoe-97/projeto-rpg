@@ -59,7 +59,16 @@ async function fetchFlags(): Promise<FeatureFlag[]> {
     return flagCache ?? DEFAULT_FLAGS;
   }
 
-  flagCache = data as FeatureFlag[];
+  // Merge: DB flags take precedence; fill missing keys from defaults
+  // so that known flags (e.g. extended_compendium) always have a value
+  // even if the row hasn't been inserted into feature_flags yet.
+  const dbKeys = new Set((data as FeatureFlag[]).map((f) => f.key));
+  const merged = [
+    ...(data as FeatureFlag[]),
+    ...DEFAULT_FLAGS.filter((d) => !dbKeys.has(d.key)),
+  ];
+
+  flagCache = merged;
   cacheTimestamp = Date.now();
   fetchPromise = null;
   return flagCache;

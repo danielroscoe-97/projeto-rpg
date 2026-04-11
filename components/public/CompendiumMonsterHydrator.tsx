@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
-import { useSrdStore } from "@/lib/stores/srd-store";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useContentAccess } from "@/lib/hooks/use-content-access";
 import { PublicMonsterGrid } from "./PublicMonsterGrid";
 import { toSlug } from "@/lib/utils/monster";
+import type { SrdMonster } from "@/lib/srd/srd-loader";
 
 interface MonsterEntry {
   name: string;
@@ -41,11 +42,10 @@ interface Props {
  * Client-side hydrator that upgrades the SSR monster grid for beta testers.
  *
  * - Public/guest visitors see the SSR data (SRD-only, deduplicated)
- * - Beta testers see the full dataset from the SRD store (all books)
+ * - Beta testers see the full dataset fetched directly from /api/srd/full/
  *
- * The PublicSrdBridge (in PublicNavClient) handles detecting beta access
- * and switching the SRD store to full mode. This component simply reads
- * the store and swaps the data when full mode is active.
+ * Uses useContentAccess() to detect beta access, then fetches monster data
+ * directly from the auth-gated API — no dependency on the SRD store chain.
  */
 export function CompendiumMonsterHydrator({
   ssrMonsters,
@@ -55,17 +55,41 @@ export function CompendiumMonsterHydrator({
   locale = "en",
   labels,
 }: Props) {
-  const storeMonsters = useSrdStore((s) => s.monsters);
-  const loadedMode = useSrdStore((s) => s.loadedMode);
+  const { canAccess, isLoading } = useContentAccess();
+  const [fullMonsters, setFullMonsters] = useState<SrdMonster[] | null>(null);
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (isLoading || !canAccess || fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    Promise.all([
+      fetch("/api/srd/full/monsters-2014.json").then((r) =>
+        r.ok ? (r.json() as Promise<SrdMonster[]>) : ([] as SrdMonster[])
+      ),
+      fetch("/api/srd/full/monsters-2024.json").then((r) =>
+        r.ok ? (r.json() as Promise<SrdMonster[]>) : ([] as SrdMonster[])
+      ),
+      fetch("/api/srd/full/monsters-mad.json").then((r) =>
+        r.ok ? (r.json() as Promise<SrdMonster[]>) : ([] as SrdMonster[])
+      ),
+    ])
+      .then(([m2014, m2024, mad]) => {
+        setFullMonsters([...m2014, ...m2024, ...mad]);
+      })
+      .catch(() => {
+        // Fetch failed — stay with SSR data
+      });
+  }, [canAccess, isLoading]);
 
   const monsters = useMemo(() => {
-    if (loadedMode !== "full" || storeMonsters.length === 0) {
+    if (!fullMonsters || fullMonsters.length === 0) {
       return ssrMonsters;
     }
 
     const isPt = locale === "pt-BR";
 
-    return storeMonsters.map((m) => {
+    return fullMonsters.map((m) => {
       const enSlug = toSlug(m.name);
       const ptName = ptNameMap[enSlug] ?? m.name;
       return {
@@ -80,7 +104,7 @@ export function CompendiumMonsterHydrator({
         fallbackTokenUrl: m.fallback_token_url,
       };
     });
-  }, [storeMonsters, loadedMode, ssrMonsters, ptNameMap, ptSlugMap, locale]);
+  }, [fullMonsters, ssrMonsters, ptNameMap, ptSlugMap, locale]);
 
   return (
     <PublicMonsterGrid
