@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Plus, Search } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, Plus, Search } from "lucide-react";
 import { SpellCard } from "./SpellCard";
 import { useCharacterSpells } from "@/lib/hooks/useCharacterSpells";
 import type { CharacterSpellInsert, SpellStatus } from "@/lib/types/database";
@@ -171,9 +172,16 @@ export function SpellListSection({ characterId }: SpellListSectionProps) {
 
       {/* Empty state */}
       {spells.length === 0 && !showAddForm && (
-        <p className="text-sm text-muted-foreground py-4 text-center">
-          {t("empty_state")}
-        </p>
+        <div className="py-4 text-center space-y-3">
+          <p className="text-sm text-muted-foreground">{t("empty_state")}</p>
+          <Link
+            href="/app/compendium?tab=spells"
+            className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-lg bg-amber-400/10 border border-amber-400/20 text-sm text-amber-400 hover:bg-amber-400/20 transition-colors"
+          >
+            <BookOpen className="w-4 h-4" />
+            {t("browse_srd_spells")}
+          </Link>
+        </div>
       )}
 
       {/* Grouped spell list */}

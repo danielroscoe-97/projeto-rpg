@@ -1,6 +1,8 @@
 "use client";
 
 import "@/styles/stat-card-5e.css";
+import { LinkedText } from "@/components/oracle/LinkedText";
+import type { RulesetVersion } from "@/lib/types/database";
 
 /** Maps condition names to left-border colors for the reference variant */
 const REFERENCE_BORDER_COLORS: Record<string, string> = {
@@ -22,7 +24,7 @@ const REFERENCE_BORDER_COLORS: Record<string, string> = {
 };
 
 export interface ConditionCardProps {
-  condition: { id: string; name: string; description: string; source?: string };
+  condition: { id: string; name: string; description: string; source?: string; ruleset_version?: RulesetVersion };
   variant?: "inline" | "card" | "reference";
   onClose?: () => void;
   /** @deprecated Use onFocus instead */
@@ -94,7 +96,7 @@ export function ConditionCard({
         {expanded && (
           <div className="border-t border-white/[0.06] px-4 py-3">
             <div className="text-sm text-foreground whitespace-pre-line leading-relaxed">
-              {condition.description}
+              <LinkedText text={condition.description} rulesetVersion={condition.ruleset_version ?? "2014"} />
             </div>
           </div>
         )}
@@ -148,7 +150,7 @@ export function ConditionCard({
         <div className="trait-block" data-testid="condition-description">
           {condition.description.split("\n\n").map((paragraph, i) => (
             <p key={i} className="trait-desc" style={{ marginBottom: "0.5em" }}>
-              {paragraph}
+              <LinkedText text={paragraph} rulesetVersion={condition.ruleset_version ?? "2014"} />
             </p>
           ))}
         </div>

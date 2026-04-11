@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import Link from "next/link";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { ClassIcon } from "@/components/character/ClassIcon";
 import { ChevronDown, ChevronRight, Search } from "lucide-react";
@@ -244,6 +245,18 @@ export function ClassBrowser() {
                       label={t("class_weapon_prof")}
                       value={cls.weapon_proficiencies || "\u2014"}
                     />
+
+                    {/* Link to public class detail page */}
+                    <div className="pt-1">
+                      <Link
+                        href={isPt ? `/classes-pt/${cls.id}` : `/classes/${cls.id}`}
+                        className="text-sm text-amber-400/70 hover:text-amber-400 transition-colors"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {t("class_view_full")} →
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>

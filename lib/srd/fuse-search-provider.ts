@@ -1,7 +1,7 @@
 import type { SrdSearchProvider, SearchOptions } from "./search-provider";
 import type { FuseResult } from "fuse.js";
 import type { SrdMonster, SrdSpell, SrdItem, SrdCondition } from "./srd-loader";
-import type { SrdFeatEntry, SrdBackgroundEntry } from "./srd-search";
+import type { SrdFeatEntry, SrdBackgroundEntry, SrdRace } from "./srd-search";
 import type { SrdAbility } from "@/lib/data/srd-abilities";
 import type { RulesetVersion } from "@/lib/types/database";
 import * as search from "./srd-search";
@@ -122,6 +122,20 @@ export class FuseSearchProvider implements SrdSearchProvider {
 
   searchAbilities(query: string): FuseResult<SrdAbility>[] {
     return search.searchAbilities(query);
+  }
+
+  // ── Races ──────────────────────────────────────────────────────────
+
+  buildRaceIndex(data: SrdRace[]): void {
+    search.buildRaceIndex(data);
+  }
+
+  searchRaces(query: string): FuseResult<SrdRace>[] {
+    return search.searchRaces(query);
+  }
+
+  getAllRaces(): SrdRace[] {
+    return search.getAllRaces();
   }
 
   isReady(): boolean {

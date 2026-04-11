@@ -193,8 +193,26 @@ export function MonsterSearchPanel({
   const [hasImported, setHasImported] = useState(false);
   const listRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const madMonstersRef = useRef<SrdMonster[]>([]);
   const fuseRef = useRef<Fuse<SrdMonster> | null>(null);
+
+  const hasFilters = crMin !== "" || crMax !== "" || selectedTypes.size > 0 || sourceFilter !== "all";
+  const shouldShowResults = query.trim() !== "" || hasFilters;
+
+  // Click outside to close results
+  useEffect(() => {
+    if (!shouldShowResults || results.length === 0) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setQuery("");
+        setResults([]);
+        setActiveIndex(-1);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [shouldShowResults, results.length]);
 
   // Check if user has imported content
   useEffect(() => {
@@ -214,9 +232,6 @@ export function MonsterSearchPanel({
       })
       .catch(() => {});
   }, []);
-
-  const hasFilters = crMin !== "" || crMax !== "" || selectedTypes.size > 0 || sourceFilter !== "all";
-  const shouldShowResults = query.trim() !== "" || hasFilters;
 
   // Load monster list when ruleset changes
   useEffect(() => {
@@ -405,7 +420,7 @@ export function MonsterSearchPanel({
   const availableTypes = getTypes(allMonsters);
 
   return (
-    <div className="space-y-1">
+    <div ref={panelRef} className="space-y-1">
       {/* Label + filter toggle + manual add */}
       <div className="flex items-center justify-between gap-2">
         <label className="text-foreground text-sm font-semibold block">

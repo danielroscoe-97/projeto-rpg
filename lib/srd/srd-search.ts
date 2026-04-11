@@ -1,9 +1,9 @@
 import Fuse, { type IFuseOptions, type FuseResult } from "fuse.js";
-import type { SrdMonster, SrdSpell, SrdCondition, SrdItem } from "./srd-loader";
+import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdRace } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { SrdAbility } from "@/lib/data/srd-abilities";
 
-export type { SrdMonster, SrdSpell, SrdItem };
+export type { SrdMonster, SrdSpell, SrdItem, SrdRace };
 
 // ── Types for feats & backgrounds (flat search) ──────────────────
 export interface SrdFeatEntry {
@@ -34,6 +34,7 @@ let itemIndex: Fuse<SrdItem> | null = null;
 let featIndex: Fuse<SrdFeatEntry> | null = null;
 let backgroundIndex: Fuse<SrdBackgroundEntry> | null = null;
 let abilityIndex: Fuse<SrdAbility> | null = null;
+let raceIndex: Fuse<SrdRace> | null = null;
 let conditionData: SrdCondition[] = [];
 // keyed by `${id}:${ruleset_version}` for O(1) lookup
 let monsterMap: Map<string, SrdMonster> = new Map();
@@ -41,6 +42,7 @@ let spellMap: Map<string, SrdSpell> = new Map();
 let itemMap: Map<string, SrdItem> = new Map();
 let featMap: Map<string, SrdFeatEntry> = new Map();
 let backgroundMap: Map<string, SrdBackgroundEntry> = new Map();
+let raceMap: Map<string, SrdRace> = new Map();
 // Cross-version monster ID mapping (bidirectional: 2014-id ↔ 2024-id)
 let monsterCrossref: Record<string, string> = {};
 
@@ -96,6 +98,19 @@ const BACKGROUND_OPTIONS: IFuseOptions<SrdBackgroundEntry> = {
     { name: "name", weight: 0.6 },
     { name: "skill_proficiencies", weight: 0.3 },
     { name: "source", weight: 0.1 },
+  ],
+  threshold: 0.35,
+  ignoreLocation: true,
+  includeScore: true,
+  minMatchCharLength: 2,
+};
+
+const RACE_OPTIONS: IFuseOptions<SrdRace> = {
+  keys: [
+    { name: "name", weight: 0.6 },
+    { name: "ability_bonuses", weight: 0.2 },
+    { name: "source", weight: 0.1 },
+    { name: "languages", weight: 0.1 },
   ],
   threshold: 0.35,
   ignoreLocation: true,
@@ -263,6 +278,26 @@ export function getAllBackgrounds(): SrdBackgroundEntry[] {
   return Array.from(backgroundMap.values());
 }
 
+// ── Races ─────────────────────────────────────────────────────────────────────
+
+export function buildRaceIndex(data: SrdRace[]): void {
+  raceIndex = new Fuse(data, RACE_OPTIONS);
+  raceMap = new Map(data.map((r) => [r.id, r]));
+}
+
+export function searchRaces(query: string): FuseResult<SrdRace>[] {
+  if (!raceIndex || !query) return [];
+  return raceIndex.search(query);
+}
+
+export function getAllRaces(): SrdRace[] {
+  return Array.from(raceMap.values());
+}
+
+export function getRaceById(id: string): SrdRace | undefined {
+  return raceMap.get(id);
+}
+
 // ── Abilities (class features, racial traits, feats, subclass features) ──────
 
 export function buildAbilityIndex(data: SrdAbility[]): void {
@@ -320,10 +355,12 @@ export function resetSrdIndexes(): void {
   featIndex = null;
   backgroundIndex = null;
   abilityIndex = null;
+  raceIndex = null;
   conditionData = [];
   monsterMap = new Map();
   spellMap = new Map();
   itemMap = new Map();
   featMap = new Map();
   backgroundMap = new Map();
+  raceMap = new Map();
 }

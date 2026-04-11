@@ -1,12 +1,12 @@
 import { openDB } from "idb";
-import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat, SrdBackground } from "./srd-loader";
+import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat, SrdBackground, SrdRace } from "./srd-loader";
 import type { SrdClass } from "@/lib/types/srd-class";
 import type { RulesetVersion } from "@/lib/types/database";
 import { cacheSuffix } from "./srd-mode";
 
 const DB_NAME = "srd-cache";
-// Bumped to 9: added backgrounds object store
-const DB_VERSION = 9;
+// Bumped to 10: added races object store
+const DB_VERSION = 10;
 
 // Singleton promise — one IDBDatabase connection shared across all reads/writes
 let _dbPromise: ReturnType<typeof openDB> | null = null;
@@ -41,6 +41,9 @@ export function getDb() {
         }
         if (!db.objectStoreNames.contains("backgrounds")) {
           db.createObjectStore("backgrounds");
+        }
+        if (!db.objectStoreNames.contains("races")) {
+          db.createObjectStore("races");
         }
         // Clear stale data on version upgrade so fresh SRD bundles
         // (with token_url and latest fields) get fetched and cached.
@@ -203,6 +206,27 @@ export async function setCachedClasses(
   try {
     const db = await getDb();
     await db.put("classes", data, `all${cacheSuffix()}`);
+  } catch {
+    // Private browsing or storage quota — degrade gracefully
+  }
+}
+
+export async function getCachedRaces(): Promise<SrdRace[] | null> {
+  try {
+    const db = await getDb();
+    const result = await db.get("races", `all${cacheSuffix()}`);
+    return result ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function setCachedRaces(
+  data: SrdRace[]
+): Promise<void> {
+  try {
+    const db = await getDb();
+    await db.put("races", data, `all${cacheSuffix()}`);
   } catch {
     // Private browsing or storage quota — degrade gracefully
   }

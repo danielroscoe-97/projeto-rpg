@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { Search, Pin, ChevronDown, ChevronRight } from "lucide-react";
+import { LinkedText } from "@/components/oracle/LinkedText";
 
 type PrereqFilter = "all" | "has_prereq" | "no_prereq";
 
@@ -103,7 +104,7 @@ export function FeatBrowser() {
                   </p>
                 )}
                 <div className="text-sm text-foreground/80 whitespace-pre-line leading-relaxed">
-                  {feat.description}
+                  <LinkedText text={feat.description} rulesetVersion="2014" />
                 </div>
                 <button
                   type="button"

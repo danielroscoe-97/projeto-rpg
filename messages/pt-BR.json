@@ -1036,7 +1036,8 @@
       "empty_state": "Nenhuma magia adicionada. Toque em + para começar.",
       "no_search_results": "Nenhuma magia encontrada",
       "cancel": "Cancelar",
-      "add": "Adicionar"
+      "add": "Adicionar",
+      "browse_srd_spells": "Ver Magias do SRD"
     },
     "inventory": {
       "title": "Bolsa de Acumulação",
@@ -1060,6 +1061,7 @@
       "item_notes_placeholder": "ex: Encontrado no covil do dragão",
       "cancel": "Cancelar",
       "add": "Adicionar",
+      "browse_srd_items": "Ver Itens do SRD",
       "essentials": {
         "title": "Essenciais",
         "potions": "Poções de Cura",
@@ -2595,6 +2597,7 @@
     "class_saving_throws": "Salvaguardas",
     "class_armor_prof": "Proficiências de Armadura",
     "class_weapon_prof": "Proficiências de Armas",
+    "class_view_full": "Ver classe completa",
     "classes_found_aria": "{count} classes encontradas",
     "tab_feats": "Talentos",
     "feats_search_placeholder": "Buscar talento...",
@@ -2603,7 +2606,29 @@
     "feats_filter_no_prereq": "Sem Pré-requisito",
     "feats_count": "{count} talentos encontrados",
     "feats_prerequisite": "Pré-requisito",
-    "feats_pin": "Fixar no combate"
+    "feats_pin": "Fixar no combate",
+    "tab_backgrounds": "Antecedentes",
+    "backgrounds_search_placeholder": "Buscar antecedente...",
+    "backgrounds_count": "{count} antecedentes encontrados",
+    "backgrounds_skill_profs": "Proficiências de Perícia",
+    "backgrounds_tool_profs": "Proficiências de Ferramenta",
+    "backgrounds_languages": "Idiomas",
+    "backgrounds_equipment": "Equipamento",
+    "backgrounds_feature": "Característica",
+    "tab_races": "Raças",
+    "races_search_placeholder": "Buscar raça...",
+    "races_size_filter_all": "Todos os Tamanhos",
+    "races_size_filter_S": "Pequeno",
+    "races_size_filter_M": "Médio",
+    "races_size_filter_L": "Grande",
+    "races_count": "{count} entradas ({unique} raças)",
+    "races_size": "Tamanho",
+    "races_speed": "Velocidade",
+    "races_darkvision": "Visão no Escuro",
+    "races_languages": "Idiomas",
+    "races_ability_bonuses": "Bônus de Atributo",
+    "races_traits": "Traços",
+    "races_empty": "Nenhuma raça encontrada."
   },
   "guest": {
     "guest_notice": "Modo Visitante — seus dados não serão salvos na nuvem.",

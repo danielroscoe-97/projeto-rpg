@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat, SrdBackground } from "@/lib/srd/srd-loader";
+import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat, SrdBackground, SrdRace } from "@/lib/srd/srd-loader";
 import type { SrdClass } from "@/lib/types/srd-class";
 import {
   loadMonsters,
@@ -10,6 +10,7 @@ import {
   loadFeats,
   loadBackgrounds,
   loadClasses,
+  loadRaces,
   loadMonsterCrossref,
   clearAllLoaderCaches,
 } from "@/lib/srd/srd-loader";
@@ -28,6 +29,8 @@ import {
   setCachedBackgrounds,
   getCachedClasses,
   setCachedClasses,
+  getCachedRaces,
+  setCachedRaces,
 } from "@/lib/srd/srd-cache";
 import { srdSearchProvider } from "@/lib/srd/fuse-search-provider";
 import { getImportedMonsters } from "@/lib/import/import-cache";
@@ -44,6 +47,7 @@ interface SrdState {
   feats: SrdFeat[];
   backgrounds: SrdBackground[];
   classes: SrdClass[];
+  races: SrdRace[];
   is_loading: boolean;
   /** Tracks whether the in-memory store was loaded from public or full SRD data. */
   loadedMode: SrdDataMode | null;
@@ -68,6 +72,7 @@ const initialState: SrdState = {
   feats: [],
   backgrounds: [],
   classes: [],
+  races: [],
   is_loading: false,
   loadedMode: null,
   loadedVersions: new Set(),
@@ -112,6 +117,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         feats: [],
         backgrounds: [],
         classes: [],
+        races: [],
         loadedVersions: new Set(),
         error: null,
       });
@@ -193,10 +199,10 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         get().loadVersionOnDemand(DEFERRED_VERSION);
       });
 
-      // Phase 2b: Load feats + backgrounds + abilities index (non-critical, deferred)
+      // Phase 2b: Load feats + backgrounds + races + abilities index (non-critical, deferred)
       scheduleDeferred(async () => {
         try {
-          const [feats, backgrounds] = await Promise.all([
+          const [feats, backgrounds, races] = await Promise.all([
             loadWithCache(
               () => getCachedFeats(),
               (d) => setCachedFeats(d),
@@ -207,11 +213,17 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
               (d) => setCachedBackgrounds(d),
               () => loadBackgrounds()
             ),
+            loadWithCache(
+              () => getCachedRaces(),
+              (d) => setCachedRaces(d),
+              () => loadRaces()
+            ),
           ]);
 
-          // Build Fuse.js search indices for feats & backgrounds
+          // Build Fuse.js search indices for feats, backgrounds & races
           srdSearchProvider.buildFeatIndex(feats);
           srdSearchProvider.buildBackgroundIndex(backgrounds);
+          srdSearchProvider.buildRaceIndex(races);
 
           // Build abilities index (class features + racial + feats + subclass)
           // In full-data mode, fetch the complete abilities index from the
@@ -237,9 +249,9 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
             // Abilities index load failure is non-critical
           }
 
-          set({ feats, backgrounds });
+          set({ feats, backgrounds, races });
         } catch {
-          // Feats/backgrounds load failure is non-critical
+          // Feats/backgrounds/races load failure is non-critical
         }
       });
 

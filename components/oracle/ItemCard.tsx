@@ -2,6 +2,7 @@
 
 import type { SrdItem } from "@/lib/srd/srd-loader";
 import { useTranslations } from "next-intl";
+import { LinkedText } from "@/components/oracle/LinkedText";
 
 interface ItemCardProps {
   item: SrdItem;
@@ -145,7 +146,7 @@ export function ItemCard({ item, variant = "card" }: ItemCardProps) {
           <div className="trait-block space-y-2">
             {item.entries.map((entry, i) => (
               <p key={i} className="text-sm text-foreground/90 leading-relaxed whitespace-pre-line">
-                {entry}
+                <LinkedText text={entry} rulesetVersion={item.edition === "one" ? "2024" : "2014"} />
               </p>
             ))}
           </div>

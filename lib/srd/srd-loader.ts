@@ -199,6 +199,25 @@ export interface SrdBackground {
   basicRules?: boolean;
 }
 
+export interface SrdRaceTrait {
+  name: string;
+  description: string;
+}
+
+export interface SrdRace {
+  id: string;
+  name: string;
+  source: string;
+  ruleset_version: RulesetVersion;
+  /** Size abbreviations: "T" | "S" | "M" | "L" | "H" | "G" */
+  size: string[];
+  speed: Record<string, number>;
+  darkvision: number | null;
+  ability_bonuses: string;
+  languages: string;
+  traits: SrdRaceTrait[];
+}
+
 const monsterCrossrefCache = new Map<string, Promise<Record<string, string>>>();
 
 /** Fetches the monster version crossref map (id→id bidirectional).
@@ -245,6 +264,7 @@ export function clearAllLoaderCaches() {
   backgroundCache.clear();
   itemCache.clear();
   classCache.clear();
+  raceCache.clear();
 }
 
 /** Fetches the SRD monster bundle for a given ruleset version.
@@ -352,6 +372,30 @@ export function loadBackgrounds(): Promise<SrdBackground[]> {
 }
 
 const classCache = new Map<string, Promise<SrdClass[]>>();
+
+const raceCache = new Map<string, Promise<SrdRace[]>>();
+
+/** Fetches the full races bundle (auth-gated).
+ *  Returns empty array for public/guest mode since races-full.json is not in public/srd/. */
+export function loadRaces(): Promise<SrdRace[]> {
+  const key = loaderCacheKey("all");
+  const cached = raceCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(srdDataUrl("races-full.json"))
+    .then((res) => {
+      if (!res.ok) {
+        raceCache.delete(key);
+        return [] as SrdRace[];
+      }
+      return res.json() as Promise<SrdRace[]>;
+    })
+    .catch(() => {
+      raceCache.delete(key);
+      return [] as SrdRace[];
+    });
+  raceCache.set(key, promise);
+  return promise;
+}
 
 const itemCache = new Map<string, Promise<SrdItem[]>>();
 

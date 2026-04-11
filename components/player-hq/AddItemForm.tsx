@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,14 +78,24 @@ export function AddItemForm({ open, onClose, onAdd }: AddItemFormProps) {
               placeholder={t("item_notes_placeholder")}
             />
           </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" onClick={onClose}>
-              {t("cancel")}
-            </Button>
-            <Button type="submit" variant="gold" disabled={!name.trim() || saving}>
-              {saving && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-              {t("add")}
-            </Button>
+          <div className="flex items-center justify-between gap-2 pt-2">
+            <Link
+              href="/app/compendium?tab=items"
+              onClick={onClose}
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 text-sm text-amber-400/70 hover:text-amber-400 transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              {t("browse_srd_items")}
+            </Link>
+            <div className="flex gap-2">
+              <Button type="button" variant="ghost" onClick={onClose}>
+                {t("cancel")}
+              </Button>
+              <Button type="submit" variant="gold" disabled={!name.trim() || saving}>
+                {saving && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+                {t("add")}
+              </Button>
+            </div>
           </div>
         </form>
       </DialogContent>

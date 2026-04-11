@@ -9,10 +9,12 @@ import { SpellBrowser } from "@/components/compendium/SpellBrowser";
 import { ConditionReference } from "@/components/compendium/ConditionReference";
 import { ItemBrowser } from "@/components/compendium/ItemBrowser";
 import { FeatBrowser } from "@/components/compendium/FeatBrowser";
+import { BackgroundBrowser } from "@/components/compendium/BackgroundBrowser";
 import { ClassBrowser } from "@/components/compendium/ClassBrowser";
+import { RaceBrowser } from "@/components/compendium/RaceBrowser";
 import { CompendiumSkeleton } from "@/components/ui/skeletons/CompendiumSkeleton";
 
-type Tab = "monsters" | "spells" | "classes" | "items" | "feats" | "conditions";
+type Tab = "monsters" | "spells" | "classes" | "items" | "feats" | "backgrounds" | "races" | "conditions";
 
 function CompendiumContent() {
   const t = useTranslations("compendium");
@@ -21,7 +23,7 @@ function CompendiumContent() {
   const isLoading = useSrdStore((s) => s.is_loading);
 
   const tabParam = searchParams.get("tab") as Tab | null;
-  const activeTab: Tab = (tabParam && ["monsters", "spells", "classes", "items", "feats", "conditions"].includes(tabParam)) ? tabParam : "monsters";
+  const activeTab: Tab = (tabParam && ["monsters", "spells", "classes", "items", "feats", "backgrounds", "races", "conditions"].includes(tabParam)) ? tabParam : "monsters";
 
   function handleTabChange(tab: Tab) {
     router.replace(`/app/compendium?tab=${tab}`, { scroll: false });
@@ -33,6 +35,8 @@ function CompendiumContent() {
     { key: "classes", label: t("tab_classes") },
     { key: "items", label: t("tab_items") },
     { key: "feats", label: t("tab_feats") },
+    { key: "backgrounds", label: t("tab_backgrounds") },
+    { key: "races", label: t("tab_races") },
     { key: "conditions", label: t("tab_conditions") },
   ];
 
@@ -74,6 +78,8 @@ function CompendiumContent() {
           {activeTab === "classes" && <ClassBrowser />}
           {activeTab === "items" && <ItemBrowser />}
           {activeTab === "feats" && <FeatBrowser />}
+          {activeTab === "backgrounds" && <BackgroundBrowser />}
+          {activeTab === "races" && <RaceBrowser />}
           {activeTab === "conditions" && <ConditionReference />}
         </>
       )}

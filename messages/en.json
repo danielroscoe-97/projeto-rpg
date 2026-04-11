@@ -1036,7 +1036,8 @@
       "empty_state": "No spells added yet. Tap + to start.",
       "no_search_results": "No spells found",
       "cancel": "Cancel",
-      "add": "Add"
+      "add": "Add",
+      "browse_srd_spells": "Browse SRD Spells"
     },
     "inventory": {
       "title": "Bag of Holding",
@@ -1060,6 +1061,7 @@
       "item_notes_placeholder": "e.g. Found in the dragon's lair",
       "cancel": "Cancel",
       "add": "Add",
+      "browse_srd_items": "Browse SRD Items",
       "essentials": {
         "title": "Essentials",
         "potions": "Healing Potions",
@@ -2595,6 +2597,7 @@
     "class_saving_throws": "Saving Throws",
     "class_armor_prof": "Armor Proficiencies",
     "class_weapon_prof": "Weapon Proficiencies",
+    "class_view_full": "View full class",
     "classes_found_aria": "{count} classes found",
     "tab_feats": "Feats",
     "feats_search_placeholder": "Search feat...",
@@ -2603,7 +2606,29 @@
     "feats_filter_no_prereq": "No Prerequisite",
     "feats_count": "{count} feats found",
     "feats_prerequisite": "Prerequisite",
-    "feats_pin": "Pin to combat"
+    "feats_pin": "Pin to combat",
+    "tab_backgrounds": "Backgrounds",
+    "backgrounds_search_placeholder": "Search background...",
+    "backgrounds_count": "{count} backgrounds found",
+    "backgrounds_skill_profs": "Skill Proficiencies",
+    "backgrounds_tool_profs": "Tool Proficiencies",
+    "backgrounds_languages": "Languages",
+    "backgrounds_equipment": "Equipment",
+    "backgrounds_feature": "Feature",
+    "tab_races": "Races",
+    "races_search_placeholder": "Search race...",
+    "races_size_filter_all": "All Sizes",
+    "races_size_filter_S": "Small",
+    "races_size_filter_M": "Medium",
+    "races_size_filter_L": "Large",
+    "races_count": "{count} entries ({unique} races)",
+    "races_size": "Size",
+    "races_speed": "Speed",
+    "races_darkvision": "Darkvision",
+    "races_languages": "Languages",
+    "races_ability_bonuses": "Ability Score Increases",
+    "races_traits": "Traits",
+    "races_empty": "No races match your search."
   },
   "guest": {
     "guest_notice": "Guest mode — your combat won't be saved.",
