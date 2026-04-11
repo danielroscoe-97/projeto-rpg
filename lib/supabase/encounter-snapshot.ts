@@ -63,7 +63,6 @@ export interface EncounterSnapshotData {
   party_snapshot: PartyMemberSnapshot[];
   creatures_snapshot: CreatureSnapshot[];
   combat_result: CombatResult;
-  started_at: string | null;
   ended_at: string;
   has_manual_creatures: boolean;
   has_unknown_cr: boolean;
@@ -207,7 +206,7 @@ export async function persistEncounterSnapshot(
     party_snapshot: data.party_snapshot,
     creatures_snapshot: data.creatures_snapshot,
     combat_result: data.combat_result,
-    started_at: data.started_at,
+    // started_at is set server-side in persistInitiativeAndStartCombat — not overwritten here
     ended_at: data.ended_at,
     has_manual_creatures: data.has_manual_creatures,
     has_unknown_cr: data.has_unknown_cr,

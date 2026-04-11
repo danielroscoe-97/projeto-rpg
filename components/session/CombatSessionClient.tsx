@@ -191,7 +191,6 @@ export function CombatSessionClient({
       const creaturesSnapshot = buildCreaturesSnapshot(snapshotCombatants);
       const combatResult = detectCombatResult(snapshotCombatants);
       const qualityFlags = computeDataQualityFlags(snapshotCombatants, preloadedPlayers);
-      const combatStarted = useCombatStore.getState().combatStartedAt;
       // Load start-of-combat snapshot for difficulty analysis delta
       // CR: Validate encounter_id to prevent stale snapshot from a previous combat
       let combatStartSnap: CombatStartSnapshot | undefined;
@@ -209,7 +208,6 @@ export function CombatSessionClient({
         party_snapshot: partySnapshot,
         creatures_snapshot: creaturesSnapshot,
         combat_result: combatResult,
-        started_at: combatStarted ? new Date(combatStarted).toISOString() : null,
         ended_at: new Date().toISOString(),
         ...qualityFlags,
         // CTA-10: Persist time analytics for longitudinal analysis

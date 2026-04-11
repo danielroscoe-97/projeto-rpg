@@ -23,10 +23,10 @@ export async function persistInitiativeAndStartCombat(
     )
   );
 
-  // Mark encounter as active
+  // Mark encounter as active and record start time server-side
   const { error } = await supabase
     .from("encounters")
-    .update({ is_active: true })
+    .update({ is_active: true, started_at: new Date().toISOString() })
     .eq("id", encounterId);
 
   if (error) throw new Error(error.message);

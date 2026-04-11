@@ -39,6 +39,10 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
   // Abort in-flight save on unmount
   const abortRef = useRef<AbortController | null>(null);
   useEffect(() => () => { abortRef.current?.abort(); }, []);
+  // Sync isSaved when auto-save completes (existingShareUrl arrives after mount)
+  useEffect(() => {
+    if (existingShareUrl && !isSaved) setIsSaved(true);
+  }, [existingShareUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleShareText = useCallback(async () => {
     const text = formatRecapShareText(report);
