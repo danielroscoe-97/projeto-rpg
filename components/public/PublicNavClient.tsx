@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { PublicMobileMenu } from "./PublicMobileMenu";
+import { PublicSrdBridge } from "./PublicSrdBridge";
+import { PublicCommandPalette } from "./PublicCommandPalette";
+import { PublicFloatingCards } from "./PublicFloatingCards";
 
 type Locale = "en" | "pt-BR";
 
@@ -78,6 +81,11 @@ export function PublicNavClient({ locale }: PublicNavClientProps) {
         onClose={handleCloseMobile}
         locale={locale}
       />
+
+      {/* Workstream B: OmniSearch + SRD init + Floating cards */}
+      <PublicSrdBridge />
+      <PublicCommandPalette locale={locale} />
+      <PublicFloatingCards />
     </>
   );
 }
