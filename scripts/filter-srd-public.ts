@@ -123,6 +123,7 @@ for (const version of ["2014", "2024"] as const) {
 const COPY_AS_IS = [
   "conditions.json",
   "feats.json",
+  "backgrounds.json",
   "classes-srd.json",
   "classes-full.json",
   "subclasses-srd.json",

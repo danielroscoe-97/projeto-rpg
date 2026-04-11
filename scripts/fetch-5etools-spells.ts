@@ -21,7 +21,8 @@ import { join } from "path";
 const BASE_URL =
   "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells";
 const INDEX_URL = `${BASE_URL}/index.json`;
-const OUTPUT_DIR = join(process.cwd(), "public", "srd");
+const OUTPUT_DIR = join(process.cwd(), "data", "srd");
+const PUBLIC_DIR = join(process.cwd(), "public", "srd");
 
 // Sources that represent the 2024 revised ruleset
 const SOURCES_2024 = new Set(["XPHB", "XDMG", "XMM"]);
@@ -513,18 +514,20 @@ async function main() {
   const final2014 = dedup(spells2014);
   const final2024 = dedup(spells2024);
 
-  // 6. Write output
+  // 6. Write output to data/srd/ (full) and public/srd/ (same, pre-filter)
+  mkdirSync(OUTPUT_DIR, { recursive: true });
+  mkdirSync(PUBLIC_DIR, { recursive: true });
   const files = [
     { name: "spells-2014.json", data: final2014 },
     { name: "spells-2024.json", data: final2024 },
   ];
 
   for (const f of files) {
-    const path = join(OUTPUT_DIR, f.name);
     const json = JSON.stringify(f.data, null, 2);
-    writeFileSync(path, json);
+    writeFileSync(join(OUTPUT_DIR, f.name), json);
+    writeFileSync(join(PUBLIC_DIR, f.name), json);
     const sizeMB = (Buffer.byteLength(json) / (1024 * 1024)).toFixed(1);
-    console.log(`  ${f.name}: ${f.data.length} spells (${sizeMB} MB)`);
+    console.log(`  ${f.name}: ${f.data.length} spells (${sizeMB} MB) → data/srd/ + public/srd/`);
   }
 
   console.log(`\nDone!`);

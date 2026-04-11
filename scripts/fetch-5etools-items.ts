@@ -25,7 +25,8 @@ const DATA_URL =
   "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data";
 const ITEMS_URL = `${DATA_URL}/items.json`;
 const ITEMS_BASE_URL = `${DATA_URL}/items-base.json`;
-const OUTPUT_DIR = join(process.cwd(), "public", "srd");
+const OUTPUT_DIR = join(process.cwd(), "data", "srd");
+const PUBLIC_DIR = join(process.cwd(), "public", "srd");
 
 // Sources that represent the 2024 revised ruleset
 const SOURCES_2024 = new Set(["XPHB", "XDMG", "XMM"]);
@@ -376,8 +377,6 @@ function transformItem(
   raw: Record<string, unknown>,
   isBaseItem: boolean
 ): SrdItem | null {
-  // Skip copy entries
-  if (raw._copy) return null;
 
   const name = String(raw.name || "Unknown");
   const sourceCode = String(raw.source || "PHB");
@@ -487,6 +486,131 @@ async function fetchJSON(url: string, retries = 3): Promise<unknown> {
   return null;
 }
 
+// ── _copy resolution ──────────────────────────────────────────────
+
+/** Key for item lookup by name+source */
+function itemKey(name: string, source: string): string {
+  return `${name}|||${source}`;
+}
+
+/**
+ * Resolves _copy inheritance chains. Items with _copy inherit all fields
+ * from the parent, then overlay their own fields on top.
+ * Handles chains (A copies B copies C) via recursive resolution.
+ */
+function resolveCopyItems(items: Record<string, unknown>[]): Record<string, unknown>[] {
+  // Build lookup of all items by name+source
+  const lookup = new Map<string, Record<string, unknown>>();
+  for (const item of items) {
+    const name = String(item.name || "");
+    const source = String(item.source || "");
+    if (name) lookup.set(itemKey(name, source), item);
+  }
+
+  const resolved = new Map<string, Record<string, unknown>>();
+  const resolving = new Set<string>(); // cycle detection
+
+  function resolve(item: Record<string, unknown>): Record<string, unknown> {
+    const key = itemKey(String(item.name), String(item.source));
+
+    // Already resolved
+    const cached = resolved.get(key);
+    if (cached) return cached;
+
+    // No _copy — return as-is
+    if (!item._copy) {
+      resolved.set(key, item);
+      return item;
+    }
+
+    // Cycle detection
+    if (resolving.has(key)) return item;
+    resolving.add(key);
+
+    const copyRef = item._copy as Record<string, unknown>;
+    const parentKey = itemKey(String(copyRef.name), String(copyRef.source));
+    const parent = lookup.get(parentKey);
+
+    if (!parent) {
+      // Parent not found — treat as standalone item
+      const standalone = { ...item };
+      delete standalone._copy;
+      resolved.set(key, standalone);
+      resolving.delete(key);
+      return standalone;
+    }
+
+    // Recursively resolve the parent first
+    const resolvedParent = resolve(parent);
+
+    // Merge: parent fields as base, child fields overlay
+    const merged: Record<string, unknown> = { ...resolvedParent };
+    for (const [k, v] of Object.entries(item)) {
+      if (k === "_copy") continue; // strip _copy from output
+      merged[k] = v;
+    }
+
+    resolved.set(key, merged);
+    resolving.delete(key);
+    return merged;
+  }
+
+  return items.map(resolve);
+}
+
+// ── itemGroup expansion ───────────────────────────────────────────
+
+/**
+ * Expands itemGroup entries into individual items.
+ * Each group is a parent template; its `items` array references sub-items
+ * that may or may not exist in the main item array.
+ * For sub-items NOT found in the main array, we create entries from the
+ * group template with the sub-item name.
+ */
+function expandItemGroups(
+  groups: Record<string, unknown>[],
+  existingItems: Record<string, unknown>[]
+): Record<string, unknown>[] {
+  // Build lookup of existing items
+  const existing = new Set<string>();
+  for (const item of existingItems) {
+    existing.add(itemKey(String(item.name), String(item.source)));
+  }
+
+  const expanded: Record<string, unknown>[] = [];
+
+  for (const group of groups) {
+    const subItemRefs = group.items as string[] | undefined;
+    if (!subItemRefs || subItemRefs.length === 0) continue;
+
+    for (const ref of subItemRefs) {
+      // refs are "ItemName|Source" format
+      const parts = ref.split("|");
+      const subName = parts[0]?.trim();
+      const subSource = parts[1]?.trim() || String(group.source || "");
+      if (!subName) continue;
+
+      // Skip if this item already exists in the main array
+      if (existing.has(itemKey(subName, subSource))) continue;
+
+      // Create item from group template
+      const item: Record<string, unknown> = {};
+      // Copy relevant fields from group template
+      for (const [k, v] of Object.entries(group)) {
+        if (k === "items") continue; // don't copy the sub-item refs
+        item[k] = v;
+      }
+      // Override with sub-item specifics
+      item.name = subName;
+      item.source = subSource;
+
+      expanded.push(item);
+    }
+  }
+
+  return expanded;
+}
+
 // ── Main ───────────────────────────────────────────────────────────
 
 async function main() {
@@ -506,37 +630,52 @@ async function main() {
   if (!itemsData) throw new Error("Failed to fetch items.json");
 
   const magicItems = (itemsData.item || []) as Record<string, unknown>[];
-  console.log(`  Found ${magicItems.length} items`);
+  const itemGroups = (itemsData.itemGroup || []) as Record<string, unknown>[];
+  console.log(`  Found ${magicItems.length} items + ${itemGroups.length} item groups`);
 
-  // 3. Transform all items
+  // 3. Resolve _copy inheritance chains in magic items
+  console.log("\nResolving _copy inheritance...");
+  const copyCount = magicItems.filter((i) => i._copy).length;
+  const resolvedMagicItems = resolveCopyItems(magicItems);
+  console.log(`  Resolved ${copyCount} _copy items`);
+
+  // 4. Expand itemGroup generic variants
+  console.log("Expanding item groups...");
+  const expandedFromGroups = expandItemGroups(itemGroups, resolvedMagicItems);
+  console.log(`  Expanded ${expandedFromGroups.length} sub-items from ${itemGroups.length} groups`);
+
+  // 5. Transform all items
   console.log("\nTransforming items...");
   const allItems: SrdItem[] = [];
-  let skippedCopies = 0;
+  let skipped = 0;
 
   // Base items
   for (const raw of baseItems) {
     const transformed = transformItem(raw, true);
-    if (!transformed) {
-      skippedCopies++;
-      continue;
-    }
+    if (!transformed) { skipped++; continue; }
     allItems.push(transformed);
   }
   console.log(`  Base items: ${allItems.length} transformed`);
 
-  // Magic items
+  // Magic items (with _copy resolved)
   const magicStart = allItems.length;
-  for (const raw of magicItems) {
+  for (const raw of resolvedMagicItems) {
     const transformed = transformItem(raw, false);
-    if (!transformed) {
-      skippedCopies++;
-      continue;
-    }
+    if (!transformed) { skipped++; continue; }
     allItems.push(transformed);
   }
   console.log(`  Magic/special items: ${allItems.length - magicStart} transformed`);
 
-  // 4. Deduplicate by id (keep first occurrence)
+  // Expanded group sub-items
+  const groupStart = allItems.length;
+  for (const raw of expandedFromGroups) {
+    const transformed = transformItem(raw, false);
+    if (!transformed) { skipped++; continue; }
+    allItems.push(transformed);
+  }
+  console.log(`  Group sub-items: ${allItems.length - groupStart} transformed`);
+
+  // 6. Deduplicate by id (keep first occurrence)
   const seen = new Map<string, SrdItem>();
   for (const item of allItems) {
     if (!seen.has(item.id)) {
@@ -545,7 +684,7 @@ async function main() {
   }
   const deduped = Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
 
-  // 5. Stats
+  // 7. Stats
   const mundaneCount = deduped.filter((i) => !i.isMagic).length;
   const magicCount = deduped.filter((i) => i.isMagic).length;
 
@@ -559,17 +698,21 @@ async function main() {
     typeStats[item.type] = (typeStats[item.type] || 0) + 1;
   }
 
-  // 6. Write output
-  const path = join(OUTPUT_DIR, "items.json");
+  // 8. Write output to data/srd/ (full) and public/srd/ (same, pre-filter)
+  mkdirSync(OUTPUT_DIR, { recursive: true });
+  mkdirSync(PUBLIC_DIR, { recursive: true });
   const json = JSON.stringify(deduped, null, 2);
-  writeFileSync(path, json);
+  writeFileSync(join(OUTPUT_DIR, "items.json"), json);
+  writeFileSync(join(PUBLIC_DIR, "items.json"), json);
   const sizeMB = (Buffer.byteLength(json) / (1024 * 1024)).toFixed(1);
 
-  console.log(`\n  items.json: ${deduped.length} items (${sizeMB} MB)`);
+  console.log(`\n  items.json: ${deduped.length} items (${sizeMB} MB)  → data/srd/ + public/srd/`);
 
   console.log(`\nDone!`);
-  console.log(`  Total raw entries: ${baseItems.length + magicItems.length}`);
-  console.log(`  Skipped (copies): ${skippedCopies}`);
+  console.log(`  Total raw entries: ${baseItems.length + magicItems.length} + ${expandedFromGroups.length} from groups`);
+  console.log(`  Skipped: ${skipped}`);
+  console.log(`  _copy resolved: ${copyCount}`);
+  console.log(`  Groups expanded: ${expandedFromGroups.length}`);
   console.log(`  Mundane items: ${mundaneCount}`);
   console.log(`  Magic items: ${magicCount}`);
   console.log(`  Total unique: ${deduped.length}`);

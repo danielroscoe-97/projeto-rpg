@@ -179,6 +179,24 @@ export interface SrdFeat {
   prerequisite: string | null;
   source: string;
   ruleset_version: string;
+  srd?: boolean;
+  basicRules?: boolean;
+}
+
+export interface SrdBackground {
+  id: string;
+  name: string;
+  source: string;
+  ruleset_version: RulesetVersion;
+  description: string;
+  skill_proficiencies: string[];
+  tool_proficiencies: string[];
+  languages: string[];
+  equipment: string;
+  feature_name: string | null;
+  feature_description: string | null;
+  srd?: boolean;
+  basicRules?: boolean;
 }
 
 const monsterCache = new Map<string, Promise<SrdMonster[]>>();
@@ -199,6 +217,7 @@ export function clearAllLoaderCaches() {
   monsterCache.clear();
   madMonsterCache.clear();
   featCache.clear();
+  backgroundCache.clear();
   itemCache.clear();
   classCache.clear();
 }
@@ -285,24 +304,49 @@ export function loadFeats(): Promise<SrdFeat[]> {
   return promise;
 }
 
+const backgroundCache = new Map<string, Promise<SrdBackground[]>>();
+
+export function loadBackgrounds(): Promise<SrdBackground[]> {
+  const key = loaderCacheKey("all");
+  const cached = backgroundCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(srdDataUrl("backgrounds.json"))
+    .then((res) => {
+      if (!res.ok) {
+        backgroundCache.delete(key);
+        return [] as SrdBackground[];
+      }
+      return res.json() as Promise<SrdBackground[]>;
+    })
+    .catch(() => {
+      backgroundCache.delete(key);
+      return [] as SrdBackground[];
+    });
+  backgroundCache.set(key, promise);
+  return promise;
+}
+
 const classCache = new Map<string, Promise<SrdClass[]>>();
 
 const itemCache = new Map<string, Promise<SrdItem[]>>();
 
 /** Fetches the SRD items bundle (consolidated mundane + magic).
- *  Filters to SRD/Basic Rules items only (defense in depth — server also filters).
- *  Promise is cached so multiple callers share one fetch+parse. */
+ *  In public mode: filters to SRD/Basic Rules items only.
+ *  In full mode (beta testers): returns ALL items without filtering. */
 export function loadItems(): Promise<SrdItem[]> {
   const key = loaderCacheKey("all");
   const cached = itemCache.get(key);
   if (cached) return cached;
+  const fullMode = isFullDataMode();
   const promise = fetch(srdDataUrl("items.json")).then((res) => {
     if (!res.ok) {
       itemCache.delete(key);
       throw new Error(`Failed to load SRD items: ${res.status}`);
     }
     return (res.json() as Promise<SrdItem[]>).then((items) =>
-      items.filter((i) => i.srd === true || i.basicRules === true)
+      fullMode
+        ? items
+        : items.filter((i) => i.srd === true || i.basicRules === true)
     );
   });
   itemCache.set(key, promise);

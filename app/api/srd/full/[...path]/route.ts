@@ -24,6 +24,7 @@ const ALLOWED_FILES = new Set([
   "items.json",
   "conditions.json",
   "feats.json",
+  "backgrounds.json",
   "classes-srd.json",
 ]);
 

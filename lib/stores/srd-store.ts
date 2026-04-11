@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat } from "@/lib/srd/srd-loader";
+import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdFeat, SrdBackground } from "@/lib/srd/srd-loader";
 import type { SrdClass } from "@/lib/types/srd-class";
 import {
   loadMonsters,
@@ -8,6 +8,7 @@ import {
   loadItems,
   loadMadMonsters,
   loadFeats,
+  loadBackgrounds,
   loadClasses,
   clearAllLoaderCaches,
 } from "@/lib/srd/srd-loader";
@@ -22,6 +23,8 @@ import {
   setCachedItems,
   getCachedFeats,
   setCachedFeats,
+  getCachedBackgrounds,
+  setCachedBackgrounds,
   getCachedClasses,
   setCachedClasses,
 } from "@/lib/srd/srd-cache";
@@ -38,6 +41,7 @@ interface SrdState {
   conditions: SrdCondition[];
   items: SrdItem[];
   feats: SrdFeat[];
+  backgrounds: SrdBackground[];
   classes: SrdClass[];
   is_loading: boolean;
   /** Tracks whether the in-memory store was loaded from public or full SRD data. */
@@ -61,6 +65,7 @@ const initialState: SrdState = {
   conditions: [],
   items: [],
   feats: [],
+  backgrounds: [],
   classes: [],
   is_loading: false,
   loadedMode: null,
@@ -104,6 +109,7 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         conditions: [],
         items: [],
         feats: [],
+        backgrounds: [],
         classes: [],
         loadedVersions: new Set(),
         error: null,
@@ -192,6 +198,20 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
           set({ feats });
         } catch {
           // Feats load failure is non-critical
+        }
+      });
+
+      // Phase 2c: Load backgrounds (non-critical, deferred)
+      scheduleDeferred(async () => {
+        try {
+          const backgrounds = await loadWithCache(
+            () => getCachedBackgrounds(),
+            (d) => setCachedBackgrounds(d),
+            () => loadBackgrounds()
+          );
+          set({ backgrounds });
+        } catch {
+          // Backgrounds load failure is non-critical
         }
       });
 

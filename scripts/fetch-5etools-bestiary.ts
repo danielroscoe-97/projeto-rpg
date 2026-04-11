@@ -23,7 +23,8 @@ import { join } from "path";
 const BASE_URL =
   "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/bestiary";
 const INDEX_URL = `${BASE_URL}/index.json`;
-const OUTPUT_DIR = join(process.cwd(), "public", "srd");
+const OUTPUT_DIR = join(process.cwd(), "data", "srd");
+const PUBLIC_DIR = join(process.cwd(), "public", "srd");
 
 // Sources that represent the 2024 revised ruleset
 const SOURCES_2024 = new Set(["XMM", "XPHB", "XDMG"]);
@@ -652,6 +653,162 @@ function getLairKey(monsterSlug: string): string | null {
   return monsterSlug;
 }
 
+// ── _copy resolution ──────────────────────────────────────────────
+
+/** Key for monster lookup by name+source */
+function monsterKey(name: string, source: string): string {
+  return `${name}|||${source}`;
+}
+
+/**
+ * Apply a single _mod operation to a target array.
+ * Handles: replaceArr, appendArr, prependArr, removeArr.
+ */
+function applyModOp(
+  target: unknown[],
+  op: Record<string, unknown>
+): unknown[] {
+  const mode = String(op.mode || "");
+  const result = [...target];
+
+  if (mode === "appendArr" && op.items) {
+    const items = Array.isArray(op.items) ? op.items : [op.items];
+    result.push(...items);
+  } else if (mode === "prependArr" && op.items) {
+    const items = Array.isArray(op.items) ? op.items : [op.items];
+    result.unshift(...items);
+  } else if (mode === "replaceArr" && op.replace && op.items) {
+    const replaceName = String(op.replace);
+    const items = Array.isArray(op.items) ? op.items : [op.items];
+    const idx = result.findIndex(
+      (e) =>
+        typeof e === "object" &&
+        e !== null &&
+        (e as Record<string, unknown>).name === replaceName
+    );
+    if (idx >= 0) {
+      result.splice(idx, 1, ...items);
+    } else {
+      result.push(...items); // fallback: append if not found
+    }
+  } else if (mode === "removeArr") {
+    // op.names can be a string array, or op.remove can be a single name
+    const rawNames = op.names || (op.remove ? [op.remove] : []);
+    const nameList = Array.isArray(rawNames) ? rawNames : [rawNames];
+    const nameSet = new Set(nameList.map((n: unknown) => String(n)));
+    if (nameSet.size > 0) {
+      return result.filter(
+        (e) =>
+          !(
+            typeof e === "object" &&
+            e !== null &&
+            nameSet.has(String((e as Record<string, unknown>).name))
+          )
+      );
+    }
+  } else if (mode === "replaceOrAppendArr" && op.replace && op.items) {
+    const replaceName = String(op.replace);
+    const items = Array.isArray(op.items) ? op.items : [op.items];
+    const idx = result.findIndex(
+      (e) =>
+        typeof e === "object" &&
+        e !== null &&
+        (e as Record<string, unknown>).name === replaceName
+    );
+    if (idx >= 0) {
+      result.splice(idx, 1, ...items);
+    } else {
+      result.push(...items);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Apply _mod instructions to a cloned parent monster.
+ * _mod keys are field names (action, trait, legendary, reaction, etc.)
+ * Each value is either a single operation or an array of operations.
+ */
+function applyMod(
+  monster: Record<string, unknown>,
+  mod: Record<string, unknown>
+): void {
+  for (const [field, ops] of Object.entries(mod)) {
+    const operations = Array.isArray(ops) ? ops : [ops];
+    let current = (monster[field] || []) as unknown[];
+    if (!Array.isArray(current)) continue;
+
+    for (const op of operations) {
+      if (typeof op !== "object" || op === null) continue;
+      current = applyModOp(current, op as Record<string, unknown>);
+    }
+    monster[field] = current;
+  }
+}
+
+/**
+ * Resolves _copy inheritance chains for monsters.
+ * Each source file is processed independently, but parents can be in
+ * any source. allMonsters contains ALL raw monsters from ALL sources.
+ */
+function resolveCopyMonsters(
+  allRawMonsters: { raw: Record<string, unknown>; source: string }[]
+): { raw: Record<string, unknown>; source: string }[] {
+  // Build lookup of all monsters by name+source
+  const lookup = new Map<string, Record<string, unknown>>();
+  for (const entry of allRawMonsters) {
+    const name = String(entry.raw.name || "");
+    const src = String(entry.raw.source || entry.source);
+    if (name && !entry.raw._copy) {
+      lookup.set(monsterKey(name, src), entry.raw);
+    }
+  }
+
+  const resolved: { raw: Record<string, unknown>; source: string }[] = [];
+  let resolvedCount = 0;
+  let unresolvedCount = 0;
+
+  for (const entry of allRawMonsters) {
+    if (!entry.raw._copy) {
+      resolved.push(entry);
+      continue;
+    }
+
+    const copyRef = entry.raw._copy as Record<string, unknown>;
+    const parentName = String(copyRef.name || "");
+    const parentSource = String(copyRef.source || "");
+    const parent = lookup.get(monsterKey(parentName, parentSource));
+
+    if (!parent) {
+      unresolvedCount++;
+      continue; // parent not found — skip
+    }
+
+    // Deep clone parent
+    const merged = JSON.parse(JSON.stringify(parent)) as Record<string, unknown>;
+
+    // Apply _mod operations if present
+    if (copyRef._mod) {
+      applyMod(merged, copyRef._mod as Record<string, unknown>);
+    }
+
+    // Overlay child's own fields (name, source, page, etc.)
+    for (const [k, v] of Object.entries(entry.raw)) {
+      if (k === "_copy") continue;
+      merged[k] = v;
+    }
+
+    resolved.push({ raw: merged, source: entry.source });
+    resolvedCount++;
+  }
+
+  console.log(
+    `  Resolved ${resolvedCount} _copy monsters (${unresolvedCount} unresolved — parent not found)`
+  );
+  return resolved;
+}
+
 // ── Main transform ─────────────────────────────────────────────────
 
 function transformMonster(
@@ -660,8 +817,6 @@ function transformMonster(
   version: "2014" | "2024",
   lairDataMap?: Record<string, LairData>
 ): SrdMonster | null {
-  // Skip copy/variant entries that reference other monsters
-  if (raw._copy) return null;
 
   const name = String(raw.name || "Unknown");
   const slug = name
@@ -945,11 +1100,9 @@ async function main() {
   const sourceEntries = Object.entries(index);
   console.log(`  Found ${sourceEntries.length} source books`);
 
-  // 2. Fetch all bestiary files
-  const monsters2014: SrdMonster[] = [];
-  const monsters2024: SrdMonster[] = [];
+  // 2. Fetch all bestiary files and collect raw monsters
+  const allRawMonsters: { raw: Record<string, unknown>; source: string }[] = [];
   let totalRaw = 0;
-  let skippedCopies = 0;
 
   // Process in batches of 5 to avoid overwhelming the connection
   const BATCH_SIZE = 5;
@@ -971,28 +1124,40 @@ async function main() {
     for (const { sourceCode, monsters } of results) {
       if (monsters.length === 0) continue;
       totalRaw += monsters.length;
-
-      const is2024 = SOURCES_2024.has(sourceCode);
-      const version = is2024 ? "2024" : "2014";
+      const copyCount = monsters.filter((m) => m._copy).length;
 
       for (const raw of monsters) {
-        const transformed = transformMonster(raw, sourceCode, version, lairData);
-        if (!transformed) {
-          skippedCopies++;
-          continue;
-        }
-
-        if (is2024) {
-          monsters2024.push(transformed);
-        } else {
-          monsters2014.push(transformed);
-        }
+        allRawMonsters.push({ raw, source: sourceCode });
       }
 
-      const target = is2024 ? monsters2024 : monsters2014;
+      const version = SOURCES_2024.has(sourceCode) ? "2024" : "2014";
       console.log(
-        `  [${String(i + results.indexOf(results.find((r) => r.sourceCode === sourceCode)!) + 1).padStart(3)}/${sourceEntries.length}] ${sourceCode.padEnd(12)} → ${monsters.length} monsters (${version})`
+        `  [${String(i + results.indexOf(results.find((r) => r.sourceCode === sourceCode)!) + 1).padStart(3)}/${sourceEntries.length}] ${sourceCode.padEnd(12)} → ${monsters.length} monsters (${version})${copyCount > 0 ? ` [${copyCount} _copy]` : ""}`
       );
+    }
+  }
+
+  // 2b. Resolve _copy inheritance chains across ALL sources
+  console.log("\nResolving _copy inheritance...");
+  const resolvedMonsters = resolveCopyMonsters(allRawMonsters);
+
+  // 2c. Transform resolved monsters
+  const monsters2014: SrdMonster[] = [];
+  const monsters2024: SrdMonster[] = [];
+  let skipped = 0;
+
+  for (const { raw, source: sourceCode } of resolvedMonsters) {
+    const is2024 = SOURCES_2024.has(sourceCode);
+    const version = is2024 ? "2024" : "2014";
+    const transformed = transformMonster(raw, sourceCode, version, lairData);
+    if (!transformed) {
+      skipped++;
+      continue;
+    }
+    if (is2024) {
+      monsters2024.push(transformed);
+    } else {
+      monsters2014.push(transformed);
     }
   }
 
@@ -1016,23 +1181,25 @@ async function main() {
   console.log("\nComputing fallback token URLs...");
   assignFallbackTokens(final2014, final2024);
 
-  // 4. Write output
+  // 4. Write output to data/srd/ (full) and public/srd/ (same, pre-filter)
+  mkdirSync(OUTPUT_DIR, { recursive: true });
+  mkdirSync(PUBLIC_DIR, { recursive: true });
   const files = [
     { name: "monsters-2014.json", data: final2014 },
     { name: "monsters-2024.json", data: final2024 },
   ];
 
   for (const f of files) {
-    const path = join(OUTPUT_DIR, f.name);
     const json = JSON.stringify(f.data, null, 2);
-    writeFileSync(path, json);
+    writeFileSync(join(OUTPUT_DIR, f.name), json);
+    writeFileSync(join(PUBLIC_DIR, f.name), json);
     const sizeMB = (Buffer.byteLength(json) / (1024 * 1024)).toFixed(1);
-    console.log(`  ${f.name}: ${f.data.length} monsters (${sizeMB} MB)`);
+    console.log(`  ${f.name}: ${f.data.length} monsters (${sizeMB} MB) → data/srd/ + public/srd/`);
   }
 
   console.log(`\nDone!`);
   console.log(`  Total raw entries: ${totalRaw}`);
-  console.log(`  Skipped (copies/variants): ${skippedCopies}`);
+  console.log(`  Skipped: ${skipped}`);
   console.log(`  2014 monsters: ${final2014.length}`);
   console.log(`  2024 monsters: ${final2024.length}`);
   console.log(`  Combined unique: ${final2014.length + final2024.length}`);
