@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { captureError } from "@/lib/errors/capture";
 
 /**
@@ -8,19 +8,24 @@ import { captureError } from "@/lib/errors/capture";
  * Captures unhandled errors and promise rejections and sends them to Supabase.
  * Sentry's own GlobalHandlers integration already captures these for Sentry,
  * so we pass skipSentry: true to avoid duplicate Sentry events.
+ * Sentry client init is handled by sentry.client.config.ts via instrumentation-client.ts.
  * Mount once in the root layout.
  */
 export function ErrorTrackingProvider() {
+  const initialized = useRef(false);
+
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
     function handleError(event: ErrorEvent) {
-      // Ignore errors from browser extensions or cross-origin scripts
       if (event.filename && !event.filename.includes(window.location.origin)) return;
 
       captureError(event.error ?? event.message, {
         component: "GlobalErrorHandler",
         action: "window.onerror",
         category: "unknown",
-        skipSentry: true, // Sentry GlobalHandlers already captures window.onerror
+        skipSentry: true,
         extra: {
           filename: event.filename,
           lineno: event.lineno,
@@ -35,7 +40,7 @@ export function ErrorTrackingProvider() {
         component: "GlobalErrorHandler",
         action: "unhandledrejection",
         category: "unknown",
-        skipSentry: true, // Sentry GlobalHandlers already captures unhandledrejection
+        skipSentry: true,
         extra: {
           type: typeof error,
           message: error?.message ?? String(error),

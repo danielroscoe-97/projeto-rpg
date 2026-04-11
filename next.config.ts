@@ -52,7 +52,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.ingest.sentry.io https://sentry.io https://*.vercel-scripts.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://api.stripe.com",
+              "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://sentry.io https://*.vercel-scripts.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://api.stripe.com",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
