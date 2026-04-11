@@ -66,93 +66,87 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     turnPendingRef.current = true;
     setTurnPending(true);
 
-    // Cut any playing audio immediately on turn advance
-    useAudioStore.getState().stopAllAudio();
+    try {
+      // Cut any playing audio immediately on turn advance
+      useAudioStore.getState().stopAllAudio();
 
-    const snap = useCombatStore.getState();
-    const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } = snap;
-    if (!encounter_id) {
-      turnPendingRef.current = false;
-      setTurnPending(false);
-      return;
-    }
+      const snap = useCombatStore.getState();
+      const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } = snap;
+      if (!encounter_id) return;
 
-    advanceTurn();
-    playTurnSfx();
-    const postAdvance = useCombatStore.getState();
-    const { current_turn_index: nextIdx, round_number: nextRound, combatants } = postAdvance;
-    if (nextIdx === prevIdx && nextRound === prevRound) {
-      turnPendingRef.current = false;
-      setTurnPending(false);
-      return;
-    }
+      advanceTurn();
+      playTurnSfx();
+      const postAdvance = useCombatStore.getState();
+      const { current_turn_index: nextIdx, round_number: nextRound, combatants } = postAdvance;
+      if (nextIdx === prevIdx && nextRound === prevRound) return;
 
-    // Auto-expand group when turn advances to a grouped combatant
-    const nextCombatant = combatants[nextIdx];
-    if (nextCombatant?.monster_group_id) {
-      const { expandedGroups, toggleGroupExpanded } = useCombatStore.getState();
-      if (!expandedGroups[nextCombatant.monster_group_id]) {
-        toggleGroupExpanded(nextCombatant.monster_group_id);
-      }
-    }
-
-    // Compute next_combatant_id: the non-defeated combatant after the current one (Story 3.1)
-    let nextCombatantId: string | undefined;
-    if (combatants.length > 1) {
-      for (let i = 1; i < combatants.length; i++) {
-        const candidate = combatants[(nextIdx + i) % combatants.length];
-        if (!candidate.is_defeated) {
-          nextCombatantId = candidate.id;
-          break;
+      // Auto-expand group when turn advances to a grouped combatant
+      const nextCombatant = combatants[nextIdx];
+      if (nextCombatant?.monster_group_id) {
+        const { expandedGroups, toggleGroupExpanded } = useCombatStore.getState();
+        if (!expandedGroups[nextCombatant.monster_group_id]) {
+          toggleGroupExpanded(nextCombatant.monster_group_id);
         }
       }
-    }
 
-    broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound, next_combatant_id: nextCombatantId });
-    trackEvent("combat:turn_advanced", { round: nextRound, turn_index: nextIdx });
+      // Compute next_combatant_id: the non-defeated combatant after the current one (Story 3.1)
+      let nextCombatantId: string | undefined;
+      if (combatants.length > 1) {
+        for (let i = 1; i < combatants.length; i++) {
+          const candidate = combatants[(nextIdx + i) % combatants.length];
+          if (!candidate.is_defeated) {
+            nextCombatantId = candidate.id;
+            break;
+          }
+        }
+      }
 
-    // CP.2.1: Log turn advance
-    const currentCombatant = combatants[nextIdx];
+      broadcastEvent(getSessionId(), { type: "combat:turn_advance", current_turn_index: nextIdx, round_number: nextRound, next_combatant_id: nextCombatantId });
+      trackEvent("combat:turn_advanced", { round: nextRound, turn_index: nextIdx });
 
-    // Story 1.5: Fire-and-forget push notification to the current combatant (if player)
-    // Runs async — never blocks the UI or DB persist
-    if (currentCombatant?.is_player && !currentCombatant.is_defeated) {
-      const sid = getSessionId();
-      if (sid) {
-        fetch("/api/push/notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sessionId: sid,
-            playerName: currentCombatant.name,
-          }),
-        }).catch(() => {
-          // Push notify is best-effort — silently ignore failures
+      // CP.2.1: Log turn advance
+      const currentCombatant = combatants[nextIdx];
+
+      // Story 1.5: Fire-and-forget push notification to the current combatant (if player)
+      // Runs async — never blocks the UI or DB persist
+      if (currentCombatant?.is_player && !currentCombatant.is_defeated) {
+        const sid = getSessionId();
+        if (sid) {
+          fetch("/api/push/notify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sessionId: sid,
+              playerName: currentCombatant.name,
+            }),
+          }).catch(() => {
+            // Push notify is best-effort — silently ignore failures
+          });
+        }
+      }
+      if (currentCombatant) {
+        useCombatLogStore.getState().addEntry({
+          round: nextRound,
+          type: "turn",
+          actorName: currentCombatant.name,
+          description: `Turn: ${currentCombatant.name}`,
         });
-      }
-    }
-    if (currentCombatant) {
-      useCombatLogStore.getState().addEntry({
-        round: nextRound,
-        type: "turn",
-        actorName: currentCombatant.name,
-        description: `Turn: ${currentCombatant.name}`,
-      });
 
-      // CP.2.3: Condition save reminders at start of turn
-      showTurnConditionReminder(currentCombatant.name, currentCombatant.conditions);
-    }
-
-    try {
-      await persistTurnAdvance(encounter_id, nextIdx, nextRound);
-      // Flush combat log to DB at each new round (fire-and-forget)
-      if (nextRound > prevRound) {
-        const logEntries = useCombatLogStore.getState().entries;
-        persistCombatLog(encounter_id, logEntries).catch(() => { /* non-fatal */ });
+        // CP.2.3: Condition save reminders at start of turn
+        showTurnConditionReminder(currentCombatant.name, currentCombatant.conditions);
       }
-    } catch (err) {
-      useCombatStore.getState().hydrateActiveState(prevIdx, prevRound);
-      setError(err instanceof Error ? err.message : t("error_save_turn"));
+
+      try {
+        await persistTurnAdvance(encounter_id, nextIdx, nextRound);
+        // Flush combat log to DB at each new round (fire-and-forget)
+        if (nextRound > prevRound) {
+          const logEntries = useCombatLogStore.getState().entries;
+          persistCombatLog(encounter_id, logEntries).catch(() => { /* non-fatal */ });
+        }
+      } catch (err) {
+        useCombatStore.getState().hydrateActiveState(prevIdx, prevRound);
+        setError(err instanceof Error ? err.message : t("error_save_turn"));
+      }
     } finally {
       turnPendingRef.current = false;
       setTurnPending(false);
@@ -546,7 +540,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       }
     }
     const reordered = postReorder.combatants;
-    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: reordered });
+    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: reordered, current_turn_index: postReorder.current_turn_index });
     persistInitiativeOrder(
       reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
     ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
@@ -554,6 +548,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
   const handleSetInitiative = useCallback((id: string, value: number | null) => {
     const snap = useCombatStore.getState();
+    const currentCombatant = snap.combatants[snap.current_turn_index];
     const combatant = snap.combatants.find((c) => c.id === id);
 
     // If this combatant belongs to a group, set/clear initiative for the whole group
@@ -572,9 +567,17 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
 
     const postSet = useCombatStore.getState();
-    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: postSet.combatants });
+    // Stabilize turn index: re-sort may have moved the current combatant
+    if (currentCombatant) {
+      const newIdx = postSet.combatants.findIndex((c) => c.id === currentCombatant.id);
+      if (newIdx !== -1 && newIdx !== snap.current_turn_index) {
+        postSet.hydrateActiveState(newIdx, snap.round_number);
+      }
+    }
+    const finalState = useCombatStore.getState();
+    broadcastEvent(getSessionId(), { type: "combat:initiative_reorder", combatants: finalState.combatants, current_turn_index: finalState.current_turn_index });
     persistInitiativeOrder(
-      postSet.combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
+      finalState.combatants.map((c) => ({ id: c.id, initiative_order: c.initiative_order, initiative: c.initiative }))
     ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
   }, [setError, getSessionId]);
 

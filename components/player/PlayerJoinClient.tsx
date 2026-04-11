@@ -1150,6 +1150,9 @@ export function PlayerJoinClient({
           if (payload.combatants) {
             updateCombatants(payload.combatants);
           }
+          if (payload.current_turn_index !== undefined) {
+            updateTurnIndex(payload.current_turn_index);
+          }
         })
         .on("broadcast", { event: "combat:late_join_response" }, ({ payload }) => {
           if (payload.request_id !== lateJoinRequestIdRef.current) return;

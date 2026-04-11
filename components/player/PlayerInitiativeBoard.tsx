@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -366,6 +366,12 @@ export function PlayerInitiativeBoard({
     knownIdsRef.current = new Set(combatants.map((c) => c.id));
   }, [combatants]);
 
+  // Track combatants auto-revealed by taking damage (mystery → revealed)
+  const [damagedRevealedIds, setDamagedRevealedIds] = useState<Set<string>>(new Set());
+  const prevHpPctRef = useRef<Map<string, number>>(new Map());
+  // Snapshot of combatant IDs when round 2 starts (to detect mid-combat additions)
+  const [idsAtRound2Start, setIdsAtRound2Start] = useState<Set<string> | null>(null);
+
   // Update max revealed index when turn advances or combatants change in round 1
   useEffect(() => {
     if (roundNumber >= 2) {
@@ -384,6 +390,55 @@ export function PlayerInitiativeBoard({
     return index <= maxRevealedIndex;
   }, [roundNumber, maxRevealedIndex]);
 
+  // Detect HP damage to auto-reveal mystery creatures
+  useEffect(() => {
+    const newDamaged: string[] = [];
+    for (const c of combatants) {
+      if (c.is_player) continue;
+      const currentPct = c.hp_percentage ?? 100;
+      const prevPct = prevHpPctRef.current.get(c.id);
+      if (prevPct !== undefined && currentPct < prevPct) {
+        newDamaged.push(c.id);
+      }
+      prevHpPctRef.current.set(c.id, currentPct);
+    }
+    if (newDamaged.length > 0) {
+      setDamagedRevealedIds((prev) => {
+        const next = new Set(prev);
+        for (const id of newDamaged) next.add(id);
+        return next;
+      });
+    }
+  }, [combatants]);
+
+  // Snapshot IDs at round 2 start to detect new additions
+  useEffect(() => {
+    if (roundNumber >= 2 && idsAtRound2Start === null) {
+      setIdsAtRound2Start(new Set(combatants.map((c) => c.id)));
+    }
+  }, [roundNumber, combatants, idsAtRound2Start]);
+
+  // Pre-compute mystery creature numbers for sequential labeling
+  const mysteryNumbers = useMemo(() => {
+    const map = new Map<string, number>();
+    let counter = 0;
+    for (let i = 0; i < combatants.length; i++) {
+      const c = combatants[i];
+      if (c.is_player) continue;
+      if (damagedRevealedIds.has(c.id)) continue;
+
+      const isHidden = roundNumber === 1
+        ? i > maxRevealedIndex
+        : (idsAtRound2Start !== null && !idsAtRound2Start.has(c.id));
+
+      if (isHidden) {
+        counter++;
+        map.set(c.id, counter);
+      }
+    }
+    return map;
+  }, [combatants, damagedRevealedIds, roundNumber, maxRevealedIndex, idsAtRound2Start]);
+
   // Auto-scroll to current turn combatant when turn changes
   useEffect(() => {
     turnRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -399,10 +454,8 @@ export function PlayerInitiativeBoard({
   ownCharRef.current = ownChar;
   const hasOwnChar = ownChar !== null;
 
-  // Count revealed vs total for round 1 display
-  const revealedCount = roundNumber >= 2
-    ? combatants.length
-    : Math.min(maxRevealedIndex + 1, combatants.length);
+  // Count revealed vs total for mystery creature indicator
+  const revealedCount = combatants.length - mysteryNumbers.size;
 
   // Story 3.1 + 3.2: Turn notification state
   const currentCombatant = combatants[currentTurnIndex];
@@ -794,8 +847,8 @@ export function PlayerInitiativeBoard({
         </div>
       )}
 
-      {/* Round 1 reveal indicator */}
-      {roundNumber === 1 && (
+      {/* Mystery creature indicator */}
+      {mysteryNumbers.size > 0 && (
         <div className="text-center py-2">
           <p className="text-muted-foreground text-sm lg:text-xs">
             {t("reveal_count", { revealed: revealedCount })}
@@ -815,8 +868,32 @@ export function PlayerInitiativeBoard({
       >
         <AnimatePresence mode="popLayout">
         {combatants.map((combatant, index) => {
-          // Progressive reveal: hide unrevealed combatants in round 1
-          if (!isRevealed(index)) return null;
+          // Progressive reveal: hide player characters whose turn hasn't come
+          if (combatant.is_player && !isRevealed(index)) return null;
+
+          // Mystery card: unrevealed monsters shown as numbered hidden creatures
+          const mysteryNum = mysteryNumbers.get(combatant.id);
+          if (mysteryNum !== undefined) {
+            return (
+              <motion.li
+                key={combatant.id}
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="bg-card/40 border border-purple-500/20 rounded-lg px-4 py-3 min-h-[48px] border-l-4 border-l-purple-500/30"
+                data-testid={`mystery-combatant-${combatant.id}`}
+              >
+                <div className="flex items-center gap-2 min-h-[36px] lg:min-h-0">
+                  <EyeOff className="w-4 h-4 text-purple-400/60 shrink-0" />
+                  <span className="text-purple-300/70 font-medium text-base lg:text-sm italic">
+                    {t("hidden_creature", { number: mysteryNum })}
+                  </span>
+                </div>
+              </motion.li>
+            );
+          }
 
           // Monster group handling
           if (combatant.monster_group_id && groupMap.has(combatant.monster_group_id)) {

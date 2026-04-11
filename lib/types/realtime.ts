@@ -82,6 +82,7 @@ export interface RealtimeCombatantRemove {
 export interface RealtimeInitiativeReorder {
   type: "combat:initiative_reorder";
   combatants: Combatant[];
+  current_turn_index: number;
 }
 
 export interface RealtimeVersionSwitch {
@@ -377,6 +378,7 @@ export interface SanitizedStateSync {
 export interface SanitizedInitiativeReorder {
   type: "combat:initiative_reorder";
   combatants: SanitizedCombatant[];
+  current_turn_index: number;
 }
 
 /** Player-safe HP update for player characters (full HP data) */

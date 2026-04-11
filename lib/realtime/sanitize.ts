@@ -119,12 +119,13 @@ export function sanitizePayloadServer(
     return result;
   }
 
-  // Initiative reorder: filter hidden
+  // Initiative reorder: filter hidden, adjust turn index
   if (event.type === "combat:initiative_reorder") {
     const visible = event.combatants.filter((c) => !c.is_hidden);
     const result: SanitizedInitiativeReorder = {
       type: event.type,
       combatants: visible.map(sanitizeCombatant),
+      current_turn_index: adjustTurnIndex(event.current_turn_index, event.combatants),
     };
     return result;
   }
