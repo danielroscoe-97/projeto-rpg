@@ -163,8 +163,8 @@ export function useContentAccess(): ContentAccess {
 
   const isAuthenticated = authChecked && !!userId;
   const isLoading = !authChecked || (isAuthenticated && dbLoading);
-  // Beta-only: only whitelisted users can access "Completo" content
-  const canAccess = flagEnabled && isAuthenticated && isWhitelisted;
+  // Access granted if user is whitelisted OR has accepted the content agreement
+  const canAccess = flagEnabled && isAuthenticated && (isWhitelisted || hasAgreed);
 
   return {
     canAccess,

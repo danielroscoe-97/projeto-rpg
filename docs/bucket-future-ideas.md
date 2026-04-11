@@ -83,9 +83,9 @@
 | # | Item | Status | Notas |
 |---|------|--------|-------|
 | F-27 | ~~Companheiros — ver outros PCs~~ | ✅ | PlayerCampaignView com avatares, badges, HP bars |
-| F-28 | Historico de combates visao jogador | 🔧 | CombatHistoryCard basico existe, falta: recap detalhado. ~3h |
+| F-28 | ~~Historico de combates visao jogador~~ | ✅ | EncounterHistory (379 linhas) + SessionHistory (477 linhas) + CombatHistoryCard. Combatants, HP, outcomes, paginacao |
 | F-29 | ~~Notificacao "e sua vez"~~ | ✅ | TurnNotificationOverlay + TurnPushNotification + haptic + Web Push |
-| F-30 | Presence de membros online | ❌ | ~3h estimado |
+| F-30 | ~~Presence de membros online~~ | ✅ | PlayersOnlinePanel (Supabase Realtime presence) + DM heartbeat polling + online/idle/offline states |
 
 ## Compendium & Referencia
 
@@ -110,7 +110,7 @@
 | F-40 | ~~Notas dos players~~ | ✅ | PlayerNotesSection.tsx — Quick Notes, Journal, NPC Journal. Debounced save |
 | F-41 | ~~Spell slots tracker~~ | ✅ | SpellSlotsHq.tsx — dots por nivel, toggle, haptic feedback |
 | F-42 | ~~Difficulty vote~~ | ✅ | DifficultyPoll.tsx — 5 niveis, broadcast, motion animations |
-| F-44 | Email invite via Novu | 🔧 | `sendCampaignInviteEmail()` existe via Resend. Falta: trigger automatico no fluxo de invite do DM |
+| F-44 | ~~Email invite~~ | ✅ | Resend API auto-envia no invite do DM (`/api/campaign/[id]/invites`). Rate-limited 20/dia. Fail-open |
 | F-45 | Quick Add Character Mode | 🗄️ | User preference: modo manual suficiente por agora |
 | F-46 | Avatar Storage Cleanup | 🗄️ | Low priority. Orphaned files de personagens deletados permanecem |
 
@@ -146,9 +146,9 @@
 | DM Campaign Journey v2 | ✅ 3 sprints + code review | Completo e deployado |
 | User Journey & Onboarding | ✅ Sprint 1 completo | JO-01 a JO-16 deployados |
 | Character Abilities & Attunement | ✅ | AB-01 a AT-04 implementados, migration 123-126 |
-| Content Access Control | 🔧 | Whitelist admin existe. Falta: agreements, compendium refactor (18 SP) |
-| Encounter Builder Logado | 🔧 | Guest builder completo. Auth version usa `/app/session/new`. Falta: dentro de campanha (2 sprints) |
-| Combat Recap (Spotify Wrapped) | 📋 | Spec completa, awaiting implementation |
+| Content Access Control | 🔧 | Whitelist admin ✅, Agreements DB ✅, API ✅. Falta: ExternalContentGate UI (Accept button). Bug `useContentAccess` corrigido 2026-04-11 |
+| Encounter Builder Logado | ✅ | CampaignEncounterBuilder dentro de CampaignFocusView (`?section=encounters`). DM-only |
+| ~~Combat Recap (Spotify Wrapped)~~ | ✅ | CombatRecap.tsx + RecapAwardsCarousel + RecapNarratives + RecapSummary + RecapActions. 8 awards, 4 narrativas, share links, email, broadcast, public pages `/r/[code]` |
 | SEO Supremo | ✅ Waves 1-3 | Monsters, spells, conditions, classes, races, backgrounds, feats, items. 3500+ paginas |
 
 ---
@@ -157,9 +157,9 @@
 
 | Status | Quantidade | % |
 |--------|-----------|---|
-| ✅ DONE | 27 | 55% |
-| 🔧 PARCIAL | 8 | 16% |
-| ❌ NAO FEITO | 12 | 24% |
+| ✅ DONE | 32 | 64% |
+| 🔧 PARCIAL | 5 | 10% |
+| ❌ NAO FEITO | 10 | 20% |
 | 🗄️ DEFERRED | 3 | 6% |
 
 > **Ultima atualizacao:** 2026-04-11 — varredura completa do codebase por agente automatizado
