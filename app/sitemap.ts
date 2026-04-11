@@ -9,6 +9,7 @@ import {
 import { getRaceSlugs } from "@/lib/srd/races-data";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import classesData from "@/data/srd/classes-srd.json";
+import subclassesData from "@/data/srd/subclasses-srd.json";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
@@ -55,6 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/acoes-em-combate`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/atributos`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/calculadora-encontro`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/classes-pt`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
   ];
 
   // ── Legal ────────────────────────────────────────────────────────
@@ -109,12 +111,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  // ── Class detail pages (EN only — no PT-BR route) ───────────────
+  // ── Class detail pages (EN + PT-BR) ──────────────────────────────
   const classPages: MetadataRoute.Sitemap = classesData.map((c: { id: string }) => ({
     url: `${BASE_URL}/classes/${c.id}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.6,
+  }));
+  const classPagesPT: MetadataRoute.Sitemap = classesData.map((c: { id: string }) => ({
+    url: `${BASE_URL}/classes-pt/${c.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  // ── Subclass detail pages (EN + PT-BR) ─────────────────────────
+  const subclassPages: MetadataRoute.Sitemap = (subclassesData as Array<{ id: string; class_id: string }>).map((s) => ({
+    url: `${BASE_URL}/classes/${s.class_id}/subclasses/${s.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+  const subclassPagesPT: MetadataRoute.Sitemap = (subclassesData as Array<{ id: string; class_id: string }>).map((s) => ({
+    url: `${BASE_URL}/classes-pt/${s.class_id}/subclasses/${s.id}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
   }));
 
   // ── Blog ─────────────────────────────────────────────────────────
@@ -142,5 +164,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...racePagesEN,
     ...racePagesPT,
     ...classPages,
+    ...classPagesPT,
+    ...subclassPages,
+    ...subclassPagesPT,
   ];
 }
