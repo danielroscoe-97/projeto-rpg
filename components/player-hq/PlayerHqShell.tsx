@@ -25,6 +25,7 @@ import { useNotifications } from "@/lib/hooks/useNotifications";
 import { AbilitiesSection } from "./AbilitiesSection";
 import { AttunementSection } from "./AttunementSection";
 import { ProficienciesSection } from "./ProficienciesSection";
+import { CharacterPdfExport } from "./CharacterPdfExport";
 import { PlayerHqTourProvider } from "@/components/tour/PlayerHqTourProvider";
 
 type Tab = "map" | "sheet" | "resources" | "abilities" | "inventory" | "notes" | "quests";
@@ -187,6 +188,12 @@ export function PlayerHqShell({
               .join(" · ") || campaignName}
           </p>
         </div>
+        <CharacterPdfExport
+          character={{
+            ...character,
+            proficiencies: character.proficiencies ?? {},
+          }}
+        />
         <CharacterEditSheet
           character={character}
           onSave={saveField}

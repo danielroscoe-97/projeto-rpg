@@ -1196,6 +1196,9 @@
       "expand": "Expandir",
       "collapse": "Recolher"
     },
+    "pdf_export": {
+      "export_pdf": "Exportar PDF"
+    },
     "edit": {
       "edit_character": "Editar Personagem",
       "identity": "Identidade",

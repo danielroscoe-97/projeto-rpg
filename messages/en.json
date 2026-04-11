@@ -1196,6 +1196,9 @@
       "expand": "Expand",
       "collapse": "Collapse"
     },
+    "pdf_export": {
+      "export_pdf": "Export PDF"
+    },
     "edit": {
       "edit_character": "Edit Character",
       "identity": "Identity",
