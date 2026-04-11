@@ -59,7 +59,7 @@ export function BackgroundBrowser() {
               ) : (
                 <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
               )}
-              <span className="font-medium text-foreground text-sm">{bg.name}</span>
+              <span id={`background-${bg.id}`} className="font-medium text-foreground text-sm">{bg.name}</span>
               {bg.skill_proficiencies.length > 0 && (
                 <span className="ml-auto text-xs text-muted-foreground shrink-0 hidden sm:block">
                   {bg.skill_proficiencies.join(", ")}
@@ -142,6 +142,11 @@ export function BackgroundBrowser() {
             )}
           </div>
         ))}
+        {filtered.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            {backgrounds.length === 0 ? "Loading..." : t("backgrounds_empty")}
+          </p>
+        )}
       </div>
     </div>
   );

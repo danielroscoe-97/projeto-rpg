@@ -10,6 +10,7 @@ export function usePersonalInventory(characterId: string) {
   const [loading, setLoading] = useState(true);
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
+  const removingRef = useRef(new Set<string>());
 
   // Fetch
   useEffect(() => {
@@ -87,14 +88,20 @@ export function usePersonalInventory(characterId: string) {
   // Remove item (optimistic)
   const removeItem = useCallback(
     async (id: string) => {
+      if (removingRef.current.has(id)) return;
+      removingRef.current.add(id);
       const idx = items.findIndex((i) => i.id === id);
       const backup = items[idx];
-      if (!backup) return;
+      if (!backup) {
+        removingRef.current.delete(id);
+        return;
+      }
       setItems((prev) => prev.filter((i) => i.id !== id));
       const { error } = await supabase
         .from("character_inventory_items")
         .delete()
         .eq("id", id);
+      removingRef.current.delete(id);
       if (error) {
         setItems((current) => {
           const copy = [...current];
@@ -202,7 +209,7 @@ export function usePersonalInventory(characterId: string) {
         toast.error("Max attunement (3 items)");
         return null;
       }
-      const tempId = `temp-${Date.now()}`;
+      const tempId = crypto.randomUUID();
       const now = new Date().toISOString();
       const optimistic: CharacterInventoryItem = {
         id: tempId,

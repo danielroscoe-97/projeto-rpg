@@ -51,7 +51,7 @@ export function searchSrdAbilities(
   const q = query.toLowerCase().trim();
   const limit = options?.limit ?? 20;
 
-  let results = SRD_ABILITIES;
+  let results = [...SRD_ABILITIES];
 
   // Filter by ability type if specified
   if (options?.abilityType) {

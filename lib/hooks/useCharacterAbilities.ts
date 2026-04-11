@@ -15,6 +15,7 @@ export function useCharacterAbilities(characterId: string) {
   const [loading, setLoading] = useState(true);
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
+  const deletingRef = useRef(new Set<string>());
 
   // Fetch
   useEffect(() => {
@@ -116,12 +117,15 @@ export function useCharacterAbilities(characterId: string) {
   // Delete ability (optimistic)
   const deleteAbility = useCallback(
     async (id: string) => {
+      if (deletingRef.current.has(id)) return;
+      deletingRef.current.add(id);
       const original = abilities.find((a) => a.id === id);
       setAbilities((current) => current.filter((a) => a.id !== id));
       const { error } = await supabase
         .from("character_abilities")
         .delete()
         .eq("id", id);
+      deletingRef.current.delete(id);
       if (error) {
         if (original) {
           setAbilities((current) => {

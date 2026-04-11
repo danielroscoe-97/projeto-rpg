@@ -131,18 +131,22 @@ function MinimizedCard({
         ? "✨"
         : card.type === "item"
           ? "⚔️"
-          : card.type === "oracle-ai"
-            ? "🔮"
-            : "⚡";
+          : card.type === "feat"
+            ? "📜"
+            : card.type === "oracle-ai"
+              ? "🔮"
+              : "⚡";
   const displayName = resolveDisplayName(card);
   const typeClass =
     card.type === "spell"
       ? "card-type-spell"
       : card.type === "condition"
         ? "card-type-condition"
-        : card.type === "oracle-ai"
-          ? "card-type-oracle-ai"
-          : "";
+        : card.type === "feat"
+          ? "card-type-feat"
+          : card.type === "oracle-ai"
+            ? "card-type-oracle-ai"
+            : "";
 
   return (
     <div
@@ -340,6 +344,7 @@ function PinnedItemCard({
   onClose: () => void;
   onMinimize: () => void;
 }) {
+  void useSrdStore((s) => s.loadedVersions.size); // re-render when deferred data loads
   const item = getItemById(card.entityId);
   if (!item) {
     return (
@@ -414,6 +419,7 @@ function PinnedFeatCard({
   onClose: () => void;
   onMinimize: () => void;
 }) {
+  void useSrdStore((s) => s.loadedVersions.size); // re-render when deferred data loads
   const feat = getFeatById(card.entityId);
   if (!feat) {
     return (
@@ -473,12 +479,16 @@ function PinnedFeatCard({
         </p>
       )}
       <hr className="card-divider" />
-      <div
-        className="card-text"
-        style={{ whiteSpace: "pre-line", lineHeight: 1.55 }}
-      >
-        {feat.description}
-      </div>
+      {feat.description ? (
+        <div
+          className="card-text"
+          style={{ whiteSpace: "pre-line", lineHeight: 1.55 }}
+        >
+          {feat.description}
+        </div>
+      ) : (
+        <p className="card-subtitle italic">No description available</p>
+      )}
       {feat.source && (
         <p className="card-subtitle" style={{ marginTop: "0.5rem" }}>
           Source: {feat.source}

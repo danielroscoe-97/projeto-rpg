@@ -22,12 +22,11 @@ function formatSize(size: string[]): string {
 }
 
 function formatSpeed(speed: Record<string, number>): string {
-  return Object.entries(speed)
-    .map(([mode, ft]) => {
-      const label = mode === "walk" ? "" : ` ${mode}`;
-      return `${ft} ft.${label}`;
-    })
-    .join(", ");
+  const parts = Object.entries(speed).map(([mode, ft]) => {
+    const label = mode === "walk" ? "" : ` ${mode}`;
+    return `${ft} ft.${label}`;
+  });
+  return parts.length > 0 ? parts.join(", ") : "—";
 }
 
 // Ability score pill colors matching PublicRaceDetail
@@ -83,7 +82,7 @@ function RaceRow({ race, isExpanded, onToggle }: {
         ) : (
           <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
         )}
-        <span className="font-medium text-foreground text-sm">{race.name}</span>
+        <span id={`race-${race.id}`} className="font-medium text-foreground text-sm">{race.name}</span>
         <span className="ml-auto flex items-center gap-2 shrink-0">
           <span className="text-xs text-muted-foreground">{formatSize(race.size)}</span>
           {race.ability_bonuses && (
@@ -176,7 +175,7 @@ export function RaceBrowser() {
       result = result.filter(
         (r) =>
           r.name.toLowerCase().includes(lower) ||
-          r.ability_bonuses.toLowerCase().includes(lower)
+          (r.ability_bonuses?.toLowerCase()?.includes(lower) ?? false)
       );
     }
     if (sizeFilter !== "all") {
