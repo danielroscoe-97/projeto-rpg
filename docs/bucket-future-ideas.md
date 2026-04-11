@@ -49,10 +49,9 @@
 | # | Item | Status | Notas |
 |---|------|--------|-------|
 | F-13 | ~~Efeitos sonoros por turno~~ | ✅ | DmSoundboard + PlayerSoundboard + DmAtmospherePanel integrados no combate. Turn SFX via `playTurnSfx()` em useCombatActions, toggleavel. Notification sound no TurnNotificationOverlay |
-| F-14 | Lock: so jogador do turno toca som | ❌ | Nao implementado |
 | F-14 | ~~Lock: so jogador do turno toca som~~ | ✅ | PlayerSoundboard so ativa quando `isPlayerTurn=true`. Cooldown 2s anti-spam |
 | F-15 | ~~Audio remoto no PC do mestre~~ | ✅ | DmAtmospherePanel broadcasts `audio:play_sound`, `audio:ambient_start/stop` para players via Supabase Realtime |
-| F-16 | Biblioteca de sons pre-definidos | 🔧 | 5 ambient + 4 music + SFX presets existem. Falta: expandir biblioteca com mais assets |
+| F-16 | ~~Biblioteca de sons pre-definidos~~ | ✅ | 151 presets em 9 categorias (Magic 60, Dramatic 23, Interaction 20, Attack 19, Music 14, Ambient 9, Defense 4, Monster 2). 159 MP3s em disco. Expansao futura e so assets, zero mudanca de codigo |
 
 ## IA & Inteligencia
 
@@ -128,7 +127,7 @@
 | # | Item | Status | Notas |
 |---|------|--------|-------|
 | F-31 | Hardcoded colors cleanup | ❌ | Severidade baixa |
-| F-32 | E2E tests coverage | 🔧 | Testes existem (lair-actions, guest-qa) mas cobertura e limitada |
+| F-32 | ~~E2E tests coverage~~ | ✅ | 584 testes em 40 specs. Desktop Chrome + Mobile Safari. 90%+ cobertura em guest/player/DM/campaign/audio/i18n. Gaps restantes: character creation (0 testes), preset CRUD (1 teste) |
 | BUG-T3-05 | ~~og:image per-page~~ | ✅ | 7 routes opengraph-image: landing, blog, monsters EN/PT, spells EN/PT, shortlinks |
 | F-45b | Demo video update | ❌ | HTML slideshow pode precisar refresh com features novas |
 
@@ -158,8 +157,7 @@
 
 | Status | Quantidade | % |
 |--------|-----------|---|
-| ✅ DONE | 36 | 72% |
-| 🔧 PARCIAL | 2 | 4% |
+| ✅ DONE | 38 | 76% |
 | ❌ NAO FEITO | 9 | 18% |
 | 🗄️ DEFERRED | 3 | 6% |
 
