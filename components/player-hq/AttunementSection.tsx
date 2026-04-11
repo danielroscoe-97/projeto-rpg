@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link2, Unlink, Plus, Gem } from "lucide-react";
+import { Link2, Unlink, Plus, Gem, BookOpen } from "lucide-react";
 import { usePersonalInventory } from "@/lib/hooks/usePersonalInventory";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { CharacterInventoryItem } from "@/lib/types/database";
 
 const MAX_ATTUNEMENT = 3;
@@ -135,6 +136,7 @@ function AttunedItemRow({
   onUnattune: () => void;
 }) {
   const t = useTranslations("player_hq.personal");
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const rarityColor = item.rarity
     ? RARITY_COLORS[item.rarity.toLowerCase()] ?? "text-muted-foreground"
     : "text-muted-foreground";
@@ -154,6 +156,16 @@ function AttunedItemRow({
           </span>
         )}
       </div>
+      {item.srd_ref && (
+        <button
+          type="button"
+          onClick={() => pinCard("item", item.srd_ref!, "2014")}
+          className="flex items-center justify-center text-xs text-muted-foreground hover:text-gold transition-colors min-w-[44px] min-h-[44px]"
+          title={t("view_in_compendium")}
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+        </button>
+      )}
       {!readOnly && (
         <button
           type="button"

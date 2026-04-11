@@ -1106,7 +1106,8 @@
       "empty_attune_slot": "Slot vazio",
       "max_attunement_reached": "Máximo de sintonizações (3 itens)",
       "add_custom_item": "+ Adicionar item personalizado",
-      "custom_item_name_label": "Nome do item personalizado"
+      "custom_item_name_label": "Nome do item personalizado",
+      "view_in_compendium": "Ver no Compêndio"
     },
     "abilities": {
       "title": "Habilidades",
@@ -1136,6 +1137,7 @@
       "save": "Salvar",
       "add": "Adicionar",
       "edit": "Editar",
+      "search_ability": "Buscar no Compêndio",
       "remove": "Remover habilidade",
       "level_prefix": "Nv",
       "filter_all": "Todas",

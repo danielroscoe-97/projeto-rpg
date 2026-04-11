@@ -166,7 +166,7 @@ export default async function SpellPage({
           />
 
           {/* Two-box CTA */}
-          <PublicCTA entityName={spell.name} />
+          <PublicCTA entityName={spell.name} compendiumHref="/app/compendium?tab=spells" />
 
           <p className="text-xs text-muted-foreground mt-12 text-center">
             Also available in{" "}

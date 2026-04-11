@@ -114,6 +114,7 @@ export function CombatSessionClient({
   const t = useTranslations("combat");
   const tMeth = useTranslations("methodology");
   const [addMode, setAddMode] = useState<"open" | null>(null);
+  const [midCombatRuleset, setMidCombatRuleset] = useState<RulesetVersion>(rulesetVersion);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
   // Session created on-demand by EncounterSetup for sharing before combat
@@ -1546,7 +1547,8 @@ export function CombatSessionClient({
             <SheetTitle>{t("add_combatant_title")}</SheetTitle>
           </SheetHeader>
           <MonsterSearchPanel
-            rulesetVersion={rulesetVersion}
+            rulesetVersion={midCombatRuleset}
+            onRulesetChange={setMidCombatRuleset}
             onSelectMonster={handleSelectMonster}
             onSelectMonsterGroup={handleSelectMonsterGroup}
             showManualAdd

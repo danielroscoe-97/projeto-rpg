@@ -152,7 +152,7 @@ export default async function MonsterPage({
           <PublicMonsterStatBlock monster={monster} locale="en" slug={slug} />
 
           {/* Lore tabs + CTA banner */}
-          <PublicCTA entityName={monster.name} lore={lore ?? undefined} locale="en" />
+          <PublicCTA entityName={monster.name} lore={lore ?? undefined} locale="en" compendiumHref="/app/compendium?tab=monsters" />
 
           <p className="text-xs text-muted-foreground mt-12 text-center">
             Also available in{" "}

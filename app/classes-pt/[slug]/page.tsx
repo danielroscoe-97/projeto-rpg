@@ -170,7 +170,7 @@ export default async function ClassDetailPtPage({
           </p>
 
           <div className="mt-8">
-            <PublicCTA entityName={cls.name_pt} locale="pt-BR" />
+            <PublicCTA entityName={cls.name_pt} locale="pt-BR" compendiumHref="/app/compendium?tab=classes" />
           </div>
         </main>
 

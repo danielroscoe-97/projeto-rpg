@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import type { SrdMonster, SrdSpell, SrdItem } from "./srd-loader";
+import type { SrdMonster, SrdSpell, SrdItem, SrdFeat, SrdBackground } from "./srd-loader";
 
 // ── PT-BR slug maps (EN slug → PT slug) ───────────────────────────
 let monsterPtMap: Record<string, string> | null = null;
@@ -258,4 +258,53 @@ export function getMonsterBySlug(slug: string): SrdMonster | undefined {
 export function getSpellBySlug(slug: string): SrdSpell | undefined {
   return getSrdSpells().find((s) => toSlug(s.name) === slug)
     ?? getSrdSpells().find((s) => s.id === slug);
+}
+
+// ── Feats & Backgrounds (SRD / Basic Rules only) ──────────────────
+let featCache: SrdFeat[] | null = null;
+let backgroundCache: SrdBackground[] | null = null;
+
+/** Load SRD-licensed feats only (srd || basicRules).
+ *  Filters out non-SRD content from data/srd/feats.json. */
+export function getSrdFeats(): SrdFeat[] {
+  if (featCache) return featCache;
+  try {
+    const all: SrdFeat[] = JSON.parse(
+      readFileSync(join(SRD_DIR, "feats.json"), "utf-8")
+    );
+    featCache = all.filter((f) => f.srd || f.basicRules);
+  } catch {
+    featCache = [];
+  }
+  return featCache;
+}
+
+/** Load SRD-licensed backgrounds only (srd || basicRules).
+ *  Filters out non-SRD content from data/srd/backgrounds.json. */
+export function getSrdBackgrounds(): SrdBackground[] {
+  if (backgroundCache) return backgroundCache;
+  try {
+    const all: SrdBackground[] = JSON.parse(
+      readFileSync(join(SRD_DIR, "backgrounds.json"), "utf-8")
+    );
+    backgroundCache = all.filter((b) => b.srd || b.basicRules);
+  } catch {
+    backgroundCache = [];
+  }
+  return backgroundCache;
+}
+
+/** Find a feat by its id (used as slug) */
+export function getFeatBySlug(slug: string): SrdFeat | undefined {
+  return getSrdFeats().find((f) => f.id === slug);
+}
+
+/** Find a background by its id (used as slug) */
+export function getBackgroundBySlug(slug: string): SrdBackground | undefined {
+  return getSrdBackgrounds().find((b) => b.id === slug);
+}
+
+/** Find an item by its id (used as slug) */
+export function getItemBySlug(slug: string): SrdItem | undefined {
+  return getSrdItems().find((i) => i.id === slug);
 }

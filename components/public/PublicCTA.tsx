@@ -14,6 +14,7 @@ interface PublicCTAProps {
   entityName?: string;
   lore?: LoreSection;
   locale?: "en" | "pt-BR";
+  compendiumHref?: string;
 }
 
 const LABELS = {
@@ -26,6 +27,7 @@ const LABELS = {
       name ? `Ready to roll initiative with ${name}?` : "What is Pocket DM?",
     ctaSub: "Free D&D 5e combat tracker · real-time initiative · no signup",
     ctaBtn: "Start Combat →",
+    compendiumBtn: "Open in Compendium",
   },
   "pt-BR": {
     about: (name: string) => `Sobre ${name}`,
@@ -36,12 +38,13 @@ const LABELS = {
       name ? `Pronto pra rolar iniciativa com ${name}?` : "O que é o Pocket DM?",
     ctaSub: "Combat Tracker gratuito · D&D 5e · sem cadastro",
     ctaBtn: "Iniciar Combate →",
+    compendiumBtn: "Ver no Compêndio",
   },
 } as const;
 
 type TabId = "combat" | "world" | "dmTips";
 
-export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
+export function PublicCTA({ entityName, lore, locale = "en", compendiumHref }: PublicCTAProps) {
   const L = LABELS[locale];
 
   const availableTabs: { id: TabId; label: string; items: string[] }[] = [
@@ -108,12 +111,22 @@ export function PublicCTA({ entityName, lore, locale = "en" }: PublicCTAProps) {
           </p>
           <p className="text-gray-400 text-sm mt-0.5">{L.ctaSub}</p>
         </div>
-        <Link
-          href="/try"
-          className="shrink-0 rounded-lg bg-gold px-5 py-2.5 text-white font-semibold text-sm hover:bg-gold/90 transition-colors whitespace-nowrap"
-        >
-          {L.ctaBtn}
-        </Link>
+        <div className="flex items-center gap-2 shrink-0">
+          {compendiumHref && (
+            <Link
+              href={compendiumHref}
+              className="rounded-lg border border-gold/30 bg-gold/[0.08] px-5 py-2.5 text-gold font-semibold text-sm hover:bg-gold/15 transition-colors whitespace-nowrap"
+            >
+              {L.compendiumBtn}
+            </Link>
+          )}
+          <Link
+            href="/try"
+            className="rounded-lg bg-gold px-5 py-2.5 text-white font-semibold text-sm hover:bg-gold/90 transition-colors whitespace-nowrap"
+          >
+            {L.ctaBtn}
+          </Link>
+        </div>
       </div>
     </div>
   );

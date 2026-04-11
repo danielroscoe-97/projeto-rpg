@@ -17,6 +17,7 @@ import {
   Star,
   Sparkles,
   Wrench,
+  Search,
 } from "lucide-react";
 import { ResourceDots } from "./ResourceDots";
 import type { CharacterAbility } from "@/lib/types/database";
@@ -167,6 +168,17 @@ export function AbilityCard({
         {/* Actions (right side) */}
         {!readOnly && (
           <div className="flex items-center gap-0.5 shrink-0">
+            {/* Search in CommandPalette */}
+            {ability.source === "srd" && (
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("command-palette:open", { detail: { query: ability.name } }))}
+                className="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-gold transition-colors min-w-[44px] min-h-[44px]"
+                aria-label={t("search_ability")}
+              >
+                <Search className="w-3 h-3" />
+              </button>
+            )}
             {/* Reset button */}
             {hasUses && ability.current_uses > 0 && (
               <button

@@ -197,7 +197,7 @@ export default async function MagiaPage({
           />
 
           {/* Two-box CTA */}
-          <PublicCTA entityName={spell.name} locale="pt-BR" />
+          <PublicCTA entityName={spell.name} locale="pt-BR" compendiumHref="/app/compendium?tab=spells" />
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Página disponível em{" "}

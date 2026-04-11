@@ -122,6 +122,20 @@ export function CommandPalette() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, handleClose]);
 
+  // Programmatic open with optional pre-filled query (used by AbilityCard, etc.)
+  useEffect(() => {
+    function handleOpenEvent(e: Event) {
+      const detail = (e as CustomEvent<{ query?: string }>).detail;
+      if (detail?.query) {
+        setQuery(detail.query);
+        setDebouncedQuery(detail.query);
+      }
+      setOpen(true);
+    }
+    window.addEventListener("command-palette:open", handleOpenEvent);
+    return () => window.removeEventListener("command-palette:open", handleOpenEvent);
+  }, []);
+
   const handlePinMonster = useCallback((monster: SrdMonster) => {
     pinCard("monster", monster.id, monster.ruleset_version);
     handleClose();

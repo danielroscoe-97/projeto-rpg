@@ -376,25 +376,41 @@ export function MonsterSearchPanel({
   );
 
   // Toggle a single monster result to its cross-version equivalent (2014↔2024)
+  const isTogglingRef = useRef(false);
   const handleVersionToggle = useCallback(async (monster: SrdMonster, idx: number) => {
-    const crossrefId = getCrossVersionMonsterId(monster.id);
-    if (!crossrefId) {
-      toast.info(t("no_alternate_version"));
-      return;
+    if (isTogglingRef.current) return;
+    isTogglingRef.current = true;
+    try {
+      const crossrefId = getCrossVersionMonsterId(monster.id);
+      if (!crossrefId) {
+        toast.info(t("no_alternate_version"));
+        return;
+      }
+      const altVersion: RulesetVersion = monster.ruleset_version === "2014" ? "2024" : "2014";
+      let altMonster = getMonsterById(crossrefId, altVersion);
+      if (!altMonster) {
+        // Lazy-load the alternate version data and merge into global map
+        const altMonsters = await loadMonsters(altVersion);
+        mergeImportedMonsters(altMonsters);
+        altMonster = getMonsterById(crossrefId, altVersion);
+      }
+      if (!altMonster) {
+        toast.info(t("no_alternate_version"));
+        return;
+      }
+      // F-01: Migrate rowQuantities to the new monster id
+      setRowQuantities(prev => {
+        const qty = prev[monster.id];
+        if (!qty || qty <= 1) return prev;
+        const next = { ...prev };
+        delete next[monster.id];
+        next[altMonster!.id] = qty;
+        return next;
+      });
+      setResults(prev => prev.map((m, i) => i === idx ? altMonster! : m));
+    } finally {
+      isTogglingRef.current = false;
     }
-    const altVersion: RulesetVersion = monster.ruleset_version === "2014" ? "2024" : "2014";
-    let altMonster = getMonsterById(crossrefId, altVersion);
-    if (!altMonster) {
-      // Lazy-load the alternate version data and merge into global map
-      const altMonsters = await loadMonsters(altVersion);
-      mergeImportedMonsters(altMonsters);
-      altMonster = getMonsterById(crossrefId, altVersion);
-    }
-    if (!altMonster) {
-      toast.info(t("no_alternate_version"));
-      return;
-    }
-    setResults(prev => prev.map((m, i) => i === idx ? altMonster! : m));
   }, [t]);
 
   // Filter campaign players by query
@@ -717,14 +733,37 @@ export function MonsterSearchPanel({
                         {monster.name}
                       </span>
                       <CrBadge cr={monster.cr} />
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); handleVersionToggle(monster, idx); }}
-                        className="cursor-pointer hover:ring-1 hover:ring-gold/40 rounded transition-all"
-                        title={t("switch_version_tooltip", { version: monster.ruleset_version === "2014" ? "2024" : "2014" })}
-                      >
-                        <VersionBadge version={monster.ruleset_version} />
-                      </button>
+                      {getCrossVersionMonsterId(monster.id) ? (
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleVersionToggle(monster, idx); }}
+                                className="cursor-pointer hover:ring-1 hover:ring-gold/40 rounded transition-all"
+                              >
+                                <VersionBadge version={monster.ruleset_version} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs">
+                              {t("switch_version_tooltip", { version: monster.ruleset_version === "2014" ? "2024" : "2014" })}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ) : (
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="cursor-default opacity-60">
+                                <VersionBadge version={monster.ruleset_version} />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs">
+                              {t("no_alternate_version")}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                       {monster.is_srd === false && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-400">
                           {tImport("badge_external")}

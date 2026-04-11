@@ -1106,7 +1106,8 @@
       "empty_attune_slot": "Empty slot",
       "max_attunement_reached": "Max attunement (3 items)",
       "add_custom_item": "+ Add custom item",
-      "custom_item_name_label": "Custom item name"
+      "custom_item_name_label": "Custom item name",
+      "view_in_compendium": "View in Compendium"
     },
     "abilities": {
       "title": "Abilities",
@@ -1136,6 +1137,7 @@
       "save": "Save",
       "add": "Add",
       "edit": "Edit",
+      "search_ability": "Search in Compendium",
       "remove": "Remove ability",
       "level_prefix": "Lv",
       "filter_all": "All",

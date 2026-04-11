@@ -167,7 +167,7 @@ export default async function MonstroPage({
           <PublicMonsterStatBlock monster={monster} locale="pt-BR" slug={enSlug} />
 
           {/* Two-box CTA */}
-          <PublicCTA entityName={ptName} lore={lore ?? undefined} locale="pt-BR" />
+          <PublicCTA entityName={ptName} lore={lore ?? undefined} locale="pt-BR" compendiumHref="/app/compendium?tab=monsters" />
           {/* Language link */}
           <p className="text-xs text-gray-500 mt-12 text-center">
             Página disponível em{" "}

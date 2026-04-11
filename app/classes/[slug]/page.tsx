@@ -178,7 +178,7 @@ export default async function ClassDetailPage({
           </p>
 
           <div className="mt-8">
-            <PublicCTA entityName={cls.name} locale="en" />
+            <PublicCTA entityName={cls.name} locale="en" compendiumHref="/app/compendium?tab=classes" />
           </div>
         </main>
 
