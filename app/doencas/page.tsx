@@ -104,7 +104,7 @@ export default function DoencasPage() {
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Página disponível em{" "}
-            <Link href="/diseases" className="text-[#D4A853] hover:underline">
+            <Link href="/diseases" className="text-gold hover:underline">
               English
             </Link>
           </p>

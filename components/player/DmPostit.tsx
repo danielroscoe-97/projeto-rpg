@@ -100,7 +100,7 @@ export function DmPostit({ channelRef, tokenId, playerName, isActive }: DmPostit
           className="fixed top-4 right-4 z-50 w-72 max-w-[calc(100vw-2rem)] rounded-lg shadow-xl border-l-4 p-3"
           style={{
             background: "rgba(212, 168, 83, 0.12)",
-            borderLeftColor: "#D4A853",
+            borderLeftColor: "var(--accent-gold)",
             backdropFilter: "blur(8px)",
             borderTop: "1px solid rgba(212,168,83,0.25)",
             borderRight: "1px solid rgba(212,168,83,0.25)",

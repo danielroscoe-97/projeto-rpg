@@ -16,7 +16,7 @@ const STATUS_ICON: Record<QuestStatus, React.ComponentType<{ className?: string 
 
 const STATUS_BORDER: Record<QuestStatus, string> = {
   available: "border-muted-foreground/30",
-  active: "border-[#D4A853]/50 shadow-[0_0_8px_rgba(212,168,83,0.15)]",
+  active: "border-gold/50 shadow-[0_0_8px_rgba(212,168,83,0.15)]",
   completed: "border-green-600/30 opacity-70",
   failed: "border-red-500/30 opacity-70",
   cancelled: "border-zinc-500/30 opacity-50",
@@ -24,14 +24,14 @@ const STATUS_BORDER: Record<QuestStatus, string> = {
 
 const STATUS_ICON_CLASS: Record<QuestStatus, string> = {
   available: "text-muted-foreground",
-  active: "text-[#D4A853]",
+  active: "text-gold",
   completed: "text-green-500",
   failed: "text-red-400",
   cancelled: "text-zinc-500",
 };
 
 const STATUS_BADGE: Record<QuestStatus, { label: string; className: string }> = {
-  active: { label: "active", className: "bg-[#D4A853]/20 text-[#D4A853]" },
+  active: { label: "active", className: "bg-gold/20 text-gold" },
   available: { label: "available", className: "bg-muted text-muted-foreground" },
   completed: { label: "completed", className: "bg-green-500/20 text-green-500" },
   failed: { label: "failed", className: "bg-red-500/20 text-red-400" },
@@ -87,7 +87,7 @@ export function PlayerQuestCard({
   return (
     <div
       className={`border rounded-lg transition-colors ${STATUS_BORDER[quest.status]} ${
-        isFavorite ? "ring-1 ring-[#D4A853]/40 border-[#D4A853]/50" : ""
+        isFavorite ? "ring-1 ring-gold/40 border-gold/50" : ""
       }`}
     >
       {/* Header — clickable to expand */}
@@ -131,7 +131,7 @@ export function PlayerQuestCard({
         >
           <Star
             className={`h-4 w-4 ${
-              isFavorite ? "fill-[#D4A853] text-[#D4A853]" : "text-muted-foreground/40"
+              isFavorite ? "fill-gold text-gold" : "text-muted-foreground/40"
             }`}
           />
         </button>

@@ -22,11 +22,11 @@ function SearchMockup() {
       <div className={CARD_INNER}>
         {/* Search bar */}
         <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-white/[0.02]">
-          <svg className="w-3 h-3 text-[#5C5A65] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg className="w-3 h-3 text-muted-foreground/60 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
           </svg>
           <div className="flex items-center gap-px">
-            <span className="text-[10px] font-mono text-[#9896A0] leading-none">Adult Red Dr</span>
+            <span className="text-[10px] font-mono text-muted-foreground leading-none">Adult Red Dr</span>
             <span
               className="inline-block w-[1px] h-[11px] bg-gold"
               style={{ animation: "mockup-blink 1s step-end infinite" }}
@@ -62,7 +62,7 @@ function SearchMockup() {
               <span
                 className="text-[8px] font-mono px-1 py-0.5 rounded-sm leading-none"
                 style={{
-                  color: "#D4A853",
+                  color: "var(--accent-gold)",
                   background: "rgba(212,168,83,0.1)",
                 }}
               >
@@ -74,9 +74,9 @@ function SearchMockup() {
 
         {/* Bottom stat bar */}
         <div className="flex items-center justify-center gap-3 px-2 py-2 border-t border-white/[0.04] bg-white/[0.015]">
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">1.100+ monstros</span>
+          <span className="text-[10px] text-gold/80 font-mono">1.100+ monstros</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">604 magias</span>
+          <span className="text-[10px] text-gold/80 font-mono">604 magias</span>
         </div>
       </div>
     </div>
@@ -98,12 +98,12 @@ function InitiativeMockup() {
       <div className={CARD_INNER}>
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/[0.06] bg-white/[0.02]">
-          <span className="text-[9px] text-[#9896A0] uppercase tracking-wider leading-none">Iniciativa</span>
+          <span className="text-[9px] text-muted-foreground uppercase tracking-wider leading-none">Iniciativa</span>
           <div className="flex items-center gap-1">
-            <svg className="w-[10px] h-[10px] text-[#D4A853]/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <svg className="w-[10px] h-[10px] text-gold/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
             </svg>
-            <span className="text-[7px] text-[#D4A853]/50 font-mono leading-none">auto-sort</span>
+            <span className="text-[7px] text-gold/50 font-mono leading-none">auto-sort</span>
           </div>
         </div>
 
@@ -132,7 +132,7 @@ function InitiativeMockup() {
               {/* Init badge */}
               <span
                 className="text-[10px] font-mono font-bold w-[18px] text-center leading-none shrink-0"
-                style={{ color: c.active ? "#D4A853" : "#9896A0" }}
+                style={{ color: c.active ? "var(--accent-gold)" : "var(--text-secondary)" }}
               >
                 {c.init}
               </span>
@@ -158,9 +158,9 @@ function InitiativeMockup() {
 
         {/* Bottom hint */}
         <div className="flex items-center justify-center gap-3 px-2 py-2 border-t border-white/[0.04] bg-white/[0.015]">
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">drag &amp; drop</span>
+          <span className="text-[10px] text-gold/80 font-mono">drag &amp; drop</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">empates resolvidos</span>
+          <span className="text-[10px] text-gold/80 font-mono">empates resolvidos</span>
         </div>
       </div>
     </div>
@@ -177,10 +177,10 @@ function ShareMockup() {
         <div className="flex items-center justify-center gap-0 px-3 pt-4 pb-2.5">
           {/* DM laptop */}
           <div className="flex flex-col items-center gap-1.5 shrink-0">
-            <svg className="w-9 h-9 text-[#D4A853]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg className="w-9 h-9 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            <span className="text-[9px] text-[#D4A853] font-mono leading-none">DM</span>
+            <span className="text-[9px] text-gold font-mono leading-none">DM</span>
           </div>
 
           {/* Signal waves + QR */}
@@ -194,7 +194,7 @@ function ShareMockup() {
                 }}
               />
             ))}
-            <svg className="relative z-10 w-3.5 h-3.5 text-[#D4A853]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="relative z-10 w-3.5 h-3.5 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" rx="1" />
               <rect x="14" y="3" width="7" height="7" rx="1" />
               <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -278,7 +278,7 @@ function CombatMockup() {
       <div className={CARD_INNER}>
         {/* Header with round + live badge */}
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/[0.06] bg-white/[0.02]">
-          <span className="text-[9px] font-mono text-[#9896A0] uppercase tracking-wider leading-none">Rodada 3</span>
+          <span className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider leading-none">Rodada 3</span>
           <div className="flex items-center gap-1">
             <span
               className="w-[6px] h-[6px] rounded-full bg-red-500"
@@ -311,7 +311,7 @@ function CombatMockup() {
                 </span>
               )}
               {/* Init */}
-              <span className="text-[9px] font-mono font-bold w-[16px] text-center leading-none shrink-0" style={{ color: r.active ? "#D4A853" : "#5C5A65" }}>
+              <span className="text-[9px] font-mono font-bold w-[16px] text-center leading-none shrink-0" style={{ color: r.active ? "var(--accent-gold)" : "var(--text-tertiary)" }}>
                 {r.init}
               </span>
               {/* Token */}
@@ -354,11 +354,11 @@ function CombatMockup() {
 
         {/* Bottom features */}
         <div className="flex items-center justify-center gap-3 px-2 py-2 border-t border-white/[0.04] bg-white/[0.015]">
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">HP</span>
+          <span className="text-[10px] text-gold/80 font-mono">HP</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">condições</span>
+          <span className="text-[10px] text-gold/80 font-mono">condições</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">undo/redo</span>
+          <span className="text-[10px] text-gold/80 font-mono">undo/redo</span>
         </div>
       </div>
     </div>

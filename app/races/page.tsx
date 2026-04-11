@@ -103,7 +103,7 @@ export default function RacesPage() {
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Also available in{" "}
-            <Link href="/racas" className="text-[#D4A853] hover:underline">
+            <Link href="/racas" className="text-gold hover:underline">
               Português
             </Link>
           </p>

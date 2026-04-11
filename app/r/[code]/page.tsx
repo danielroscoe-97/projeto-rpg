@@ -121,10 +121,10 @@ export default async function ReportPage({ params }: PageProps) {
   return (
     <div className="w-full max-w-md">
       {/* Card */}
-      <div className="rounded-2xl border border-[#D4A853]/30 bg-[#12121a] shadow-2xl overflow-hidden">
+      <div className="rounded-2xl border border-gold/30 bg-[#12121a] shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="border-b border-white/10 px-5 py-4 text-center">
-          <p className="text-xs text-[#D4A853]/60 uppercase tracking-[0.2em] font-semibold inline-flex items-center justify-center gap-1">
+          <p className="text-xs text-gold/60 uppercase tracking-[0.2em] font-semibold inline-flex items-center justify-center gap-1">
             <Swords className="size-3.5" /> Combat Recap
           </p>
           <h1 className="text-xl font-bold text-white mt-1">
@@ -144,7 +144,7 @@ export default async function ReportPage({ params }: PageProps) {
                   key={award.type}
                   className="rounded-lg bg-white/[0.04] border border-white/[0.08] p-2.5 text-center"
                 >
-                  <p className="text-lg leading-none flex justify-center text-[#D4A853]">
+                  <p className="text-lg leading-none flex justify-center text-gold">
                     {(() => { const Icon = AWARD_ICONS[award.type] ?? Star; return <Icon className="size-5" />; })()}
                   </p>
                   <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
@@ -162,7 +162,7 @@ export default async function ReportPage({ params }: PageProps) {
           {/* Narratives */}
           {narratives.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-xs text-[#D4A853]/60 uppercase tracking-wider font-semibold inline-flex items-center gap-1">
+              <p className="text-xs text-gold/60 uppercase tracking-wider font-semibold inline-flex items-center gap-1">
                 <BookOpen className="size-3" /> Epic Moments
               </p>
               {narratives.slice(0, 2).map((n, i) => (
@@ -189,7 +189,7 @@ export default async function ReportPage({ params }: PageProps) {
           </p>
           <Link
             href="/try"
-            className="inline-flex items-center justify-center gap-2 bg-[#D4A853] text-black font-bold px-6 py-2.5 rounded-lg text-sm hover:bg-[#D4A853]/90 transition-colors min-h-[44px]"
+            className="inline-flex items-center justify-center gap-2 bg-gold text-black font-bold px-6 py-2.5 rounded-lg text-sm hover:bg-gold/90 transition-colors min-h-[44px]"
           >
             <Rocket className="size-4" /> {s.button}
           </Link>

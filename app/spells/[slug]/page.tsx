@@ -170,7 +170,7 @@ export default async function SpellPage({
 
           <p className="text-xs text-muted-foreground mt-12 text-center">
             Also available in{" "}
-            <Link href={`/magias/${toSpellSlugPt(toSlug(spell.name))}`} className="text-[#D4A853] hover:underline">
+            <Link href={`/magias/${toSpellSlugPt(toSlug(spell.name))}`} className="text-gold hover:underline">
               Português
             </Link>
           </p>

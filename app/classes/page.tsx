@@ -97,7 +97,7 @@ export default function ClassesIndexPage() {
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Also available in{" "}
-            <Link href="/classes-pt" className="text-[#D4A853] hover:underline">
+            <Link href="/classes-pt" className="text-gold hover:underline">
               Português
             </Link>
           </p>

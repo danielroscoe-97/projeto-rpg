@@ -84,7 +84,7 @@ export default function DadosPage() {
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Página disponível em{" "}
-            <Link href="/dice" className="text-[#D4A853] hover:underline">
+            <Link href="/dice" className="text-gold hover:underline">
               English
             </Link>
           </p>

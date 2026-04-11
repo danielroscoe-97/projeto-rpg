@@ -90,7 +90,7 @@ export function PlayerQuestBoard({ campaignId, userId }: PlayerQuestBoardProps) 
       {activeQuests.length > 0 && (
         <section>
           <div className="flex items-center gap-2 mb-2">
-            <Target className="h-4 w-4 text-[#D4A853]" />
+            <Target className="h-4 w-4 text-gold" />
             <h3 className="text-sm font-semibold text-foreground">
               {t("section_active")} ({activeQuests.length})
             </h3>

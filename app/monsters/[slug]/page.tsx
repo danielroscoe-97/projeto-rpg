@@ -156,7 +156,7 @@ export default async function MonsterPage({
 
           <p className="text-xs text-muted-foreground mt-12 text-center">
             Also available in{" "}
-            <Link href={`/monstros/${toMonsterSlugPt(slug)}`} className="text-[#D4A853] hover:underline">
+            <Link href={`/monstros/${toMonsterSlugPt(slug)}`} className="text-gold hover:underline">
               Português
             </Link>
           </p>

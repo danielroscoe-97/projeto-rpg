@@ -155,7 +155,7 @@ export default async function ItemDetailPage({
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Also available in{" "}
-            <Link href={`/itens/${slug}`} className="text-[#D4A853] hover:underline">
+            <Link href={`/itens/${slug}`} className="text-gold hover:underline">
               Português
             </Link>
           </p>

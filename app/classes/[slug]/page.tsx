@@ -172,7 +172,7 @@ export default async function ClassDetailPage({
 
           <p className="text-xs text-gray-500 mt-8 text-center">
             Also available in{" "}
-            <Link href={`/classes-pt/${slug}`} className="text-[#D4A853] hover:underline">
+            <Link href={`/classes-pt/${slug}`} className="text-gold hover:underline">
               Português
             </Link>
           </p>

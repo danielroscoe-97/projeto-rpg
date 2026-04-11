@@ -24,8 +24,8 @@ function MonstersMockup() {
       <div className={CARD_INNER}>
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06] bg-white/[0.02]">
-          <span className="text-[9px] text-[#9896A0] uppercase tracking-wider leading-none">Bestiário</span>
-          <span className="text-[8px] font-mono px-1.5 py-0.5 rounded-sm leading-none text-[#D4A853] bg-[#D4A853]/10">
+          <span className="text-[9px] text-muted-foreground uppercase tracking-wider leading-none">Bestiário</span>
+          <span className="text-[8px] font-mono px-1.5 py-0.5 rounded-sm leading-none text-gold bg-gold/10">
             1.100+
           </span>
         </div>
@@ -37,7 +37,7 @@ function MonstersMockup() {
               key={i}
               className="text-[7px] px-1.5 py-0.5 rounded-full leading-none"
               style={{
-                color: i === 2 ? "#D4A853" : "#5C5A65",
+                color: i === 2 ? "var(--accent-gold)" : "var(--text-tertiary)",
                 background: i === 2 ? "rgba(212,168,83,0.1)" : "rgba(255,255,255,0.04)",
                 border: i === 2 ? "0.5px solid rgba(212,168,83,0.3)" : "0.5px solid rgba(255,255,255,0.06)",
               }}
@@ -74,7 +74,7 @@ function MonstersMockup() {
               {/* Type */}
               <span className="text-[7px] text-[#5C5A65] leading-none hidden sm:inline">{m.type}</span>
               {/* CR */}
-              <span className="text-[8px] font-mono px-1 py-0.5 rounded-sm leading-none text-[#D4A853] bg-[#D4A853]/10">
+              <span className="text-[8px] font-mono px-1 py-0.5 rounded-sm leading-none text-gold bg-gold/10">
                 CR {m.cr}
               </span>
             </div>
@@ -83,11 +83,11 @@ function MonstersMockup() {
 
         {/* Bottom */}
         <div className={CARD_FOOTER}>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">SRD 5.1</span>
+          <span className="text-[10px] text-gold/80 font-mono">SRD 5.1</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">SRD 2024</span>
+          <span className="text-[10px] text-gold/80 font-mono">SRD 2024</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">MAD</span>
+          <span className="text-[10px] text-gold/80 font-mono">MAD</span>
         </div>
       </div>
     </div>
@@ -108,7 +108,7 @@ function SpellsMockup() {
       <div className={CARD_INNER}>
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06] bg-white/[0.02]">
-          <span className="text-[9px] text-[#9896A0] uppercase tracking-wider leading-none">Grimório</span>
+          <span className="text-[9px] text-muted-foreground uppercase tracking-wider leading-none">Grimório</span>
           <span className="text-[8px] font-mono px-1.5 py-0.5 rounded-sm leading-none text-[#A855F7] bg-[#A855F7]/10">
             600+
           </span>
@@ -125,7 +125,7 @@ function SpellsMockup() {
               key={i}
               className="text-[7px] px-1.5 py-0.5 rounded-full leading-none"
               style={{
-                color: f.active ? "#A855F7" : "#5C5A65",
+                color: f.active ? "#A855F7" : "var(--text-tertiary)",
                 background: f.active ? "rgba(168,85,247,0.1)" : "rgba(255,255,255,0.04)",
                 border: f.active ? "0.5px solid rgba(168,85,247,0.3)" : "0.5px solid rgba(255,255,255,0.06)",
               }}
@@ -152,7 +152,7 @@ function SpellsMockup() {
               <div
                 className="w-4 h-4 rounded-full shrink-0 flex items-center justify-center text-[7px] font-mono font-bold leading-none"
                 style={{
-                  color: s.highlight ? "#A855F7" : "#9896A0",
+                  color: s.highlight ? "#A855F7" : "var(--text-secondary)",
                   background: s.highlight ? "rgba(168,85,247,0.15)" : "rgba(255,255,255,0.04)",
                   border: `1px solid ${s.highlight ? "rgba(168,85,247,0.3)" : "rgba(255,255,255,0.08)"}`,
                 }}
@@ -201,8 +201,8 @@ function ClassesMockup() {
       <div className={CARD_INNER}>
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06] bg-white/[0.02]">
-          <span className="text-[9px] text-[#9896A0] uppercase tracking-wider leading-none">Classes</span>
-          <span className="text-[8px] font-mono px-1.5 py-0.5 rounded-sm leading-none text-[#D4A853] bg-[#D4A853]/10">
+          <span className="text-[9px] text-muted-foreground uppercase tracking-wider leading-none">Classes</span>
+          <span className="text-[8px] font-mono px-1.5 py-0.5 rounded-sm leading-none text-gold bg-gold/10">
             12
           </span>
         </div>
@@ -218,7 +218,7 @@ function ClassesMockup() {
               key={i}
               className="text-[7px] px-1.5 py-0.5 rounded-full leading-none"
               style={{
-                color: f.active ? "#D4A853" : "#5C5A65",
+                color: f.active ? "var(--accent-gold)" : "var(--text-tertiary)",
                 background: f.active ? "rgba(212,168,83,0.1)" : "rgba(255,255,255,0.04)",
                 border: f.active ? "0.5px solid rgba(212,168,83,0.3)" : "0.5px solid rgba(255,255,255,0.06)",
               }}
@@ -258,7 +258,7 @@ function ClassesMockup() {
               {/* Name */}
               <span className="text-[9px] text-[#C8C6C0] truncate flex-1 leading-none">{c.name}</span>
               {/* Hit Die */}
-              <span className="text-[8px] font-mono text-[#9896A0] leading-none">{c.hitDie}</span>
+              <span className="text-[8px] font-mono text-muted-foreground leading-none">{c.hitDie}</span>
               {/* Role badge */}
               <span
                 className="text-[7px] px-1 py-0.5 rounded-sm leading-none"
@@ -276,11 +276,11 @@ function ClassesMockup() {
 
         {/* Bottom */}
         <div className={CARD_FOOTER}>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">hit dice</span>
+          <span className="text-[10px] text-gold/80 font-mono">hit dice</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">subclasses</span>
+          <span className="text-[10px] text-gold/80 font-mono">subclasses</span>
           <span className="text-[8px] text-white/20">|</span>
-          <span className="text-[10px] text-[#D4A853]/80 font-mono">proficiências</span>
+          <span className="text-[10px] text-gold/80 font-mono">proficiências</span>
         </div>
       </div>
     </div>
@@ -301,7 +301,7 @@ function RacesMockup() {
       <div className={CARD_INNER}>
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06] bg-white/[0.02]">
-          <span className="text-[9px] text-[#9896A0] uppercase tracking-wider leading-none">Raças</span>
+          <span className="text-[9px] text-muted-foreground uppercase tracking-wider leading-none">Raças</span>
           <span className="text-[8px] font-mono px-1.5 py-0.5 rounded-sm leading-none text-[#22C55E] bg-[#22C55E]/10">
             9
           </span>
@@ -318,7 +318,7 @@ function RacesMockup() {
               key={i}
               className="text-[7px] px-1.5 py-0.5 rounded-full leading-none"
               style={{
-                color: f.active ? "#22C55E" : "#5C5A65",
+                color: f.active ? "#22C55E" : "var(--text-tertiary)",
                 background: f.active ? "rgba(34,197,94,0.1)" : "rgba(255,255,255,0.04)",
                 border: f.active ? "0.5px solid rgba(34,197,94,0.3)" : "0.5px solid rgba(255,255,255,0.06)",
               }}
@@ -355,7 +355,7 @@ function RacesMockup() {
               {/* Name */}
               <span className="text-[9px] text-[#C8C6C0] truncate flex-1 leading-none">{r.name}</span>
               {/* Ability bonus */}
-              <span className="text-[7px] font-mono text-[#D4A853] leading-none">{r.bonus}</span>
+              <span className="text-[7px] font-mono text-gold leading-none">{r.bonus}</span>
               {/* Trait */}
               <span
                 className="text-[7px] px-1 py-0.5 rounded-sm leading-none hidden sm:inline"

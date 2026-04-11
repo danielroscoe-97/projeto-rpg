@@ -142,14 +142,14 @@ export function DiceRoller() {
                   className={`relative w-12 h-12 rounded-lg border transition-colors font-cinzel font-bold text-sm
                     ${
                       count > 0
-                        ? "border-[#D4A853]/60 bg-[#D4A853]/10 text-[#D4A853]"
-                        : "border-muted-foreground/30 text-muted-foreground hover:border-[#D4A853]/40"
+                        ? "border-gold/60 bg-gold/10 text-gold"
+                        : "border-muted-foreground/30 text-muted-foreground hover:border-gold/40"
                     }`}
                   aria-label={`d${sides}: ${count}`}
                 >
                   d{sides}
                   {count > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#D4A853] text-background text-[10px] font-bold flex items-center justify-center">
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gold text-background text-[10px] font-bold flex items-center justify-center">
                       {count}
                     </span>
                   )}
@@ -176,14 +176,14 @@ export function DiceRoller() {
         {/* Roll button + total */}
         <div className="mt-3 flex items-center gap-2">
           <Button
-            className="flex-1 bg-[#D4A853] hover:bg-[#D4A853]/80 text-background font-semibold"
+            className="flex-1 bg-gold hover:bg-gold/80 text-background font-semibold"
             disabled={!hasAnyDie}
             onClick={handleRoll}
           >
             {t("roller_roll")}
           </Button>
           {lastTotal !== null && (
-            <span className="text-2xl font-cinzel font-bold text-[#D4A853] min-w-[2.5rem] text-center">
+            <span className="text-2xl font-cinzel font-bold text-gold min-w-[2.5rem] text-center">
               {lastTotal}
             </span>
           )}

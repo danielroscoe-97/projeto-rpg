@@ -164,7 +164,7 @@ export default async function ClassDetailPtPage({
 
           <p className="text-xs text-gray-500 mt-8 text-center">
             Página disponível em{" "}
-            <Link href={`/classes/${slug}`} className="text-[#D4A853] hover:underline">
+            <Link href={`/classes/${slug}`} className="text-gold hover:underline">
               English
             </Link>
           </p>

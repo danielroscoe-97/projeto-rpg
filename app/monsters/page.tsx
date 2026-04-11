@@ -106,7 +106,7 @@ export default function MonstersIndexPage() {
         <PublicMonsterGrid monsters={monsters} />
 
         {/* CTA */}
-        <div className="mt-12 rounded-xl bg-gradient-to-br from-[#D4A853]/[0.06] to-gray-800/50 border border-[#D4A853]/10 p-8 text-center">
+        <div className="mt-12 rounded-xl bg-gradient-to-br from-gold/[0.06] to-gray-800/50 border border-gold/10 p-8 text-center">
           <h2 className="text-xl font-bold text-gray-100 font-[family-name:var(--font-cinzel)] mb-2">
             Use any monster in combat
           </h2>
@@ -118,13 +118,13 @@ export default function MonstersIndexPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/try"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4A853] px-6 py-3 text-white font-semibold hover:bg-[#D4A853]/90 transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3 text-white font-semibold hover:bg-gold/90 transition-colors"
             >
               Try Combat Tracker — Free
             </Link>
             <Link
               href="/auth/sign-up"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#D4A853]/30 px-6 py-3 text-[#D4A853] font-semibold hover:bg-[#D4A853]/10 transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-gold/30 px-6 py-3 text-gold font-semibold hover:bg-gold/10 transition-colors"
             >
               Create Free Account
             </Link>

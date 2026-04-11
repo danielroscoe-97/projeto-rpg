@@ -70,7 +70,7 @@ function GoldDivider({ className: cn }: { className?: string }) {
       className={`h-[2px] my-4 ${cn ?? ""}`}
       style={{
         background:
-          "linear-gradient(to right, transparent, #922610, #c9a959, #922610, transparent)",
+          "linear-gradient(to right, transparent, var(--5e-accent-red), var(--5e-accent-gold), var(--5e-accent-red), transparent)",
       }}
     />
   );
@@ -101,7 +101,7 @@ function Prose({ text }: { text: string }) {
           return (
             <ul
               key={i}
-              className="space-y-1.5 text-[#E8E6E0]/80 text-base leading-relaxed ml-4"
+              className="space-y-1.5 text-foreground/80 text-base leading-relaxed ml-4"
             >
               {lines
                 .filter((l) => l.trim())
@@ -118,7 +118,7 @@ function Prose({ text }: { text: string }) {
         }
 
         return (
-          <p key={i} className="text-[#E8E6E0]/80 text-base leading-relaxed">
+          <p key={i} className="text-foreground/80 text-base leading-relaxed">
             {p.split("\n").map((line, j, arr) => (
               <span key={j}>
                 {line}
@@ -194,7 +194,7 @@ export function PublicSubclassDetail({
             className="absolute left-0 top-0 bottom-0 w-1"
             style={{
               background:
-                "linear-gradient(to bottom, #D4A853, #B8903D, #D4A853)",
+                "linear-gradient(to bottom, var(--accent-gold), #B8903D, var(--accent-gold))",
             }}
           />
 
@@ -217,17 +217,17 @@ export function PublicSubclassDetail({
               </div>
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-3xl md:text-4xl font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)] leading-tight tracking-wide">
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground font-[family-name:var(--font-cinzel)] leading-tight tracking-wide">
                   {subclassName}
                 </h1>
                 {isPt && (
-                  <p className="text-sm text-[#9896A0] italic mt-1">
+                  <p className="text-sm text-muted-foreground italic mt-1">
                     {subclass.name}
                   </p>
                 )}
 
                 {/* Parent class subtitle */}
-                <p className="text-[#E8E6E0]/70 text-lg mt-3">
+                <p className="text-foreground/70 text-lg mt-3">
                   <Link
                     href={classHref}
                     className="text-gold hover:text-gold-light transition-colors underline underline-offset-2"
@@ -245,7 +245,7 @@ export function PublicSubclassDetail({
                     {L.levelSuffix}
                   </span>
                   {subclass.source && (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-surface-primary text-xs font-medium text-[#9896A0] border border-white/[0.06]">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-surface-primary text-xs font-medium text-muted-foreground border border-white/[0.06]">
                       {subclass.source}
                     </span>
                   )}
@@ -261,7 +261,7 @@ export function PublicSubclassDetail({
         {/* ── Subclass description ─────────────────────────────── */}
         {subclassDesc && (
           <SectionCard>
-            <h2 className="text-xl md:text-2xl font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)] tracking-wide">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground font-[family-name:var(--font-cinzel)] tracking-wide">
               {isPt ? "Descri\u00e7\u00e3o" : "Description"}
             </h2>
             <GoldDivider />
@@ -276,7 +276,7 @@ export function PublicSubclassDetail({
         {sortedFeatures.length > 0 && (
           <div>
             <div className="mb-6">
-              <h2 className="text-xl md:text-2xl font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)] tracking-wide">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground font-[family-name:var(--font-cinzel)] tracking-wide">
                 {L.features}
               </h2>
               <GoldDivider className="mt-2" />
@@ -310,14 +310,14 @@ export function PublicSubclassDetail({
 
           <Link
             href={altLocaleHref}
-            className="text-xs text-[#9896A0] hover:text-gold transition-colors"
+            className="text-xs text-muted-foreground hover:text-gold transition-colors"
           >
             {L.alsoAvailable}
           </Link>
         </div>
 
         {/* ── SRD Attribution ──────────────────────────────────── */}
-        <p className="text-xs text-[#9896A0]/60 text-center leading-relaxed px-4 pb-8">
+        <p className="text-xs text-muted-foreground/60 text-center leading-relaxed px-4 pb-8">
           {L.srdNote}
         </p>
       </div>
@@ -355,7 +355,7 @@ function FeatureCard({
               {name}
             </h3>
             {isPt && feature.name !== feature.name_pt && (
-              <p className="text-xs text-[#9896A0] italic mt-0.5">
+              <p className="text-xs text-muted-foreground italic mt-0.5">
                 {feature.name}
               </p>
             )}

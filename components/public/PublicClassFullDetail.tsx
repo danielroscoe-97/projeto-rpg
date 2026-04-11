@@ -514,7 +514,7 @@ export function PublicClassFullDetail({
                   <SectionHeader>
                     {isPt ? cls.subclass_name_pt : cls.subclass_name}
                   </SectionHeader>
-                  <p className="text-sm text-[#9896A0] mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {L.subclassLevel} {cls.subclass_level}
                   </p>
                 </div>
@@ -585,7 +585,7 @@ export function PublicClassFullDetail({
                     <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-2">
                       {L.multiclassPrereqs}
                     </h3>
-                    <p className="text-[#E8E6E0]/80 text-base leading-relaxed">
+                    <p className="text-foreground/80 text-base leading-relaxed">
                       {isPt
                         ? cls.multiclass_prerequisites_pt
                         : cls.multiclass_prerequisites}
@@ -602,7 +602,7 @@ export function PublicClassFullDetail({
                     <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-2">
                       {L.multiclassProf}
                     </h3>
-                    <p className="text-[#E8E6E0]/80 text-base leading-relaxed">
+                    <p className="text-foreground/80 text-base leading-relaxed">
                       {isPt
                         ? cls.multiclass_proficiencies_pt
                         : cls.multiclass_proficiencies}
@@ -662,7 +662,7 @@ export function PublicClassFullDetail({
           )}
 
           {/* 11. SRD Attribution */}
-          <p className="text-xs text-[#9896A0]/60 text-center leading-relaxed px-4 pb-8">
+          <p className="text-xs text-muted-foreground/60 text-center leading-relaxed px-4 pb-8">
             {L.srdNote}
           </p>
         </div>
@@ -695,7 +695,7 @@ export function PublicClassFullDetail({
                       className={`w-full text-left pl-6 pr-2 py-1.5 rounded-r-md text-[13px] transition-all duration-200 ${
                         isActive || hasActiveChild
                           ? "text-gold font-medium"
-                          : "text-[#9896A0] hover:text-[#E8E6E0]"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <span className="truncate block">{item.label}</span>
@@ -712,7 +712,7 @@ export function PublicClassFullDetail({
                                 className={`w-full text-left py-1 text-[11px] transition-all duration-200 truncate ${
                                   isChildActive
                                     ? "text-gold font-medium"
-                                    : "text-[#9896A0]/70 hover:text-[#E8E6E0]"
+                                    : "text-muted-foreground/70 hover:text-foreground"
                                 }`}
                               >
                                 {child.label}
@@ -771,10 +771,10 @@ export function PublicClassFullDetail({
                         className={`w-full text-left flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all ${
                           isActive || hasActiveChild
                             ? "text-gold bg-gold/10 font-medium"
-                            : "text-[#E8E6E0]/70 hover:bg-white/[0.04] hover:text-[#E8E6E0]"
+                            : "text-foreground/70 hover:bg-white/[0.04] hover:text-foreground"
                         }`}
                       >
-                        <span className={`${isActive || hasActiveChild ? "text-gold" : "text-[#9896A0]"}`}>
+                        <span className={`${isActive || hasActiveChild ? "text-gold" : "text-muted-foreground"}`}>
                           {item.icon}
                         </span>
                         <span>{item.label}</span>
@@ -788,7 +788,7 @@ export function PublicClassFullDetail({
                                 className={`w-full text-left py-1.5 text-xs transition-all truncate ${
                                   activeSection === child.id
                                     ? "text-gold font-medium"
-                                    : "text-[#9896A0]/70 hover:text-[#E8E6E0]"
+                                    : "text-muted-foreground/70 hover:text-foreground"
                                 }`}
                               >
                                 {child.label}
@@ -841,7 +841,7 @@ function SectionHeader({
   as?: "h2" | "span";
 }) {
   const className =
-    "text-xl md:text-2xl font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)] tracking-wide";
+    "text-xl md:text-2xl font-bold text-foreground font-[family-name:var(--font-cinzel)] tracking-wide";
   if (as === "span") return <span className={className}>{children}</span>;
   return <h2 className={className}>{children}</h2>;
 }
@@ -874,7 +874,7 @@ function Prose({ text, dropcap }: { text: string; dropcap?: boolean }) {
           return (
             <ul
               key={i}
-              className="space-y-1.5 text-[#E8E6E0]/80 text-base leading-relaxed ml-4"
+              className="space-y-1.5 text-foreground/80 text-base leading-relaxed ml-4"
             >
               {lines
                 .filter((l) => l.trim())
@@ -893,7 +893,7 @@ function Prose({ text, dropcap }: { text: string; dropcap?: boolean }) {
         return (
           <p
             key={i}
-            className={`text-[#E8E6E0]/80 text-base leading-relaxed ${
+            className={`text-foreground/80 text-base leading-relaxed ${
               isFirstParagraph ? "first-letter:text-4xl first-letter:font-bold first-letter:text-gold first-letter:float-left first-letter:mr-2 first-letter:mt-1 first-letter:font-[family-name:var(--font-cinzel)]" : ""
             }`}
           >
@@ -917,7 +917,7 @@ function PropLine({ label, value }: { label: string; value: string }) {
       <p className="text-[11px] text-gold font-semibold uppercase tracking-wider mb-1">
         {label}
       </p>
-      <p className="text-sm font-medium text-[#E8E6E0]">{value}</p>
+      <p className="text-sm font-medium text-foreground">{value}</p>
     </div>
   );
 }
@@ -956,7 +956,7 @@ function HeroSection({
         className="absolute left-0 top-0 bottom-0 w-1"
         style={{
           background:
-            "linear-gradient(to bottom, #D4A853, #B8903D, #D4A853)",
+            "linear-gradient(to bottom, var(--accent-gold), #B8903D, var(--accent-gold))",
         }}
       />
 
@@ -971,13 +971,13 @@ function HeroSection({
           </div>
 
           <div className="min-w-0 flex-1">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)] leading-tight tracking-wide">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground font-[family-name:var(--font-cinzel)] leading-tight tracking-wide">
               {displayName}
             </h1>
             {isPt && (
-              <p className="text-sm text-[#9896A0] italic mt-1">{cls.name}</p>
+              <p className="text-sm text-muted-foreground italic mt-1">{cls.name}</p>
             )}
-            <p className="text-[#E8E6E0]/70 text-lg mt-3 leading-relaxed max-w-prose">
+            <p className="text-foreground/70 text-lg mt-3 leading-relaxed max-w-prose">
               {description}
             </p>
 
@@ -1031,7 +1031,7 @@ function StatBlockSection({
                 const colonIdx = line.indexOf(":");
                 if (colonIdx === -1)
                   return (
-                    <p key={i} className="text-[#E8E6E0]/80 text-sm leading-relaxed">
+                    <p key={i} className="text-foreground/80 text-sm leading-relaxed">
                       {line}
                     </p>
                   );
@@ -1039,8 +1039,8 @@ function StatBlockSection({
                 const value = line.slice(colonIdx + 1);
                 return (
                   <p key={i} className="text-sm leading-relaxed">
-                    <span className="font-bold text-[#E8E6E0]">{label}</span>
-                    <span className="text-[#E8E6E0]/70">{value}</span>
+                    <span className="font-bold text-foreground">{label}</span>
+                    <span className="text-foreground/70">{value}</span>
                   </p>
                 );
               })}
@@ -1080,17 +1080,17 @@ function StatBlockSection({
       {/* Quick stats row */}
       <div className="flex flex-wrap gap-x-8 gap-y-2">
         <div>
-          <span className="font-bold text-[#E8E6E0] text-sm">{L.hitDie}: </span>
+          <span className="font-bold text-foreground text-sm">{L.hitDie}: </span>
           <span className="text-gold font-mono font-bold text-sm">{cls.hit_die}</span>
         </div>
         <div>
-          <span className="font-bold text-[#E8E6E0] text-sm">{L.primaryAbility}: </span>
-          <span className="text-[#E8E6E0]/70 text-sm">{cls.primary_ability}</span>
+          <span className="font-bold text-foreground text-sm">{L.primaryAbility}: </span>
+          <span className="text-foreground/70 text-sm">{cls.primary_ability}</span>
         </div>
         {cls.spellcaster && (
           <div>
-            <span className="font-bold text-[#E8E6E0] text-sm">{L.spellcasting}: </span>
-            <span className="text-[#E8E6E0]/70 text-sm">{cls.spellcasting_ability}</span>
+            <span className="font-bold text-foreground text-sm">{L.spellcasting}: </span>
+            <span className="text-foreground/70 text-sm">{cls.spellcasting_ability}</span>
           </div>
         )}
       </div>
@@ -1102,7 +1102,7 @@ function ProfLine({ label, value }: { label: string; value: string }) {
   return (
     <p className="text-sm leading-relaxed">
       <span className="font-bold text-gold">{label}: </span>
-      <span className="text-[#E8E6E0]/70">{value}</span>
+      <span className="text-foreground/70">{value}</span>
     </p>
   );
 }
@@ -1128,7 +1128,7 @@ function ClassProgressionTable({
 }) {
   if (rows.length === 0) {
     return (
-      <p className="text-[#9896A0] text-sm p-6 italic">
+      <p className="text-muted-foreground text-sm p-6 italic">
         No class table data available.
       </p>
     );
@@ -1204,10 +1204,10 @@ function ClassProgressionTable({
                 <td className="sticky left-0 z-10 px-3 py-2.5 font-bold text-gold font-mono text-center bg-inherit">
                   {row.level}
                 </td>
-                <td className="px-3 py-2.5 text-center text-[#E8E6E0]/60 font-mono text-xs">
+                <td className="px-3 py-2.5 text-center text-foreground/60 font-mono text-xs">
                   {row.proficiency_bonus || profBonusForLevel(row.level)}
                 </td>
-                <td className="px-3 py-2.5 text-[#E8E6E0]/80">
+                <td className="px-3 py-2.5 text-foreground/80">
                   {features ? (
                     <FeatureLinks features={features} />
                   ) : (
@@ -1217,7 +1217,7 @@ function ClassProgressionTable({
                 {extraKeys.map((key) => (
                   <td
                     key={key}
-                    className="px-3 py-2.5 text-center text-[#E8E6E0]/70 font-mono tabular-nums"
+                    className="px-3 py-2.5 text-center text-foreground/70 font-mono tabular-nums"
                   >
                     {extras?.[key] || (
                       <span className="text-white/10">&mdash;</span>
@@ -1226,7 +1226,7 @@ function ClassProgressionTable({
                 ))}
                 {isCaster &&
                   rows.some((r) => r.cantrips_known !== undefined) && (
-                    <td className="px-3 py-2.5 text-center text-[#E8E6E0]/70 font-mono tabular-nums">
+                    <td className="px-3 py-2.5 text-center text-foreground/70 font-mono tabular-nums">
                       {row.cantrips_known ?? (
                         <span className="text-white/10">&mdash;</span>
                       )}
@@ -1234,7 +1234,7 @@ function ClassProgressionTable({
                   )}
                 {isCaster &&
                   rows.some((r) => r.spells_known !== undefined) && (
-                    <td className="px-3 py-2.5 text-center text-[#E8E6E0]/70 font-mono tabular-nums">
+                    <td className="px-3 py-2.5 text-center text-foreground/70 font-mono tabular-nums">
                       {row.spells_known ?? (
                         <span className="text-white/10">&mdash;</span>
                       )}
@@ -1246,7 +1246,7 @@ function ClassProgressionTable({
                     return (
                       <td
                         key={lvl}
-                        className="px-2 py-2.5 text-center font-mono tabular-nums text-[#E8E6E0]/70"
+                        className="px-2 py-2.5 text-center font-mono tabular-nums text-foreground/70"
                       >
                         {val ? (
                           val
@@ -1285,7 +1285,7 @@ function FeatureLinks({ features }: { features: string }) {
             {i > 0 && ", "}
             <a
               href={`#feature-${slug}`}
-              className="text-[#E8E6E0]/80 hover:text-gold underline decoration-dotted decoration-gold/30 underline-offset-2 transition-colors"
+              className="text-foreground/80 hover:text-gold underline decoration-dotted decoration-gold/30 underline-offset-2 transition-colors"
             >
               {feat}
             </a>
@@ -1329,7 +1329,7 @@ function FeatureCard({
               {name}
             </h3>
             {isPt && feature.name !== feature.name_pt && (
-              <p className="text-xs text-[#9896A0] italic mt-0.5">
+              <p className="text-xs text-muted-foreground italic mt-0.5">
                 {feature.name}
               </p>
             )}
@@ -1409,7 +1409,7 @@ function SubclassCard({
         className="absolute left-0 top-0 bottom-0 w-1"
         style={{
           background: sub.is_srd
-            ? "linear-gradient(to bottom, #D4A853, #B8903D)"
+            ? "linear-gradient(to bottom, var(--accent-gold), #B8903D)"
             : "linear-gradient(to bottom, rgba(255,255,255,0.1), transparent)",
         }}
       />
@@ -1418,7 +1418,7 @@ function SubclassCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-lg font-bold text-[#E8E6E0] font-[family-name:var(--font-cinzel)]">
+              <h3 className="text-lg font-bold text-foreground font-[family-name:var(--font-cinzel)]">
                 {name}
               </h3>
               {sub.is_srd && (
@@ -1427,13 +1427,13 @@ function SubclassCard({
                 </span>
               )}
               {sub.source && (
-                <span className="text-[10px] text-[#9896A0] uppercase tracking-wide">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
                   {sub.source}
                 </span>
               )}
             </div>
             {isPt && sub.name !== sub.name_pt && (
-              <p className="text-xs text-[#9896A0] italic mt-0.5">{sub.name}</p>
+              <p className="text-xs text-muted-foreground italic mt-0.5">{sub.name}</p>
             )}
           </div>
           <Link
@@ -1446,7 +1446,7 @@ function SubclassCard({
         </div>
 
         {desc && (
-          <p className="text-[#E8E6E0]/60 text-sm mt-3 leading-relaxed line-clamp-3">
+          <p className="text-foreground/60 text-sm mt-3 leading-relaxed line-clamp-3">
             {desc}
           </p>
         )}

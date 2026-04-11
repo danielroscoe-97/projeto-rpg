@@ -61,7 +61,7 @@ const LABELS = {
 // ── Section config ────────────────────────────────────────────────
 const SECTIONS: { id: SectionId; color: string; borderColor: string; bgHover: string }[] = [
   { id: "actions", color: "#E53E3E", borderColor: "border-l-[#E53E3E]", bgHover: "hover:border-[#E53E3E]/30" },
-  { id: "bonus", color: "#D4A853", borderColor: "border-l-gold", bgHover: "hover:border-gold/30" },
+  { id: "bonus", color: "var(--accent-gold)", borderColor: "border-l-gold", bgHover: "hover:border-gold/30" },
   { id: "reactions", color: "#805AD5", borderColor: "border-l-[#805AD5]", bgHover: "hover:border-[#805AD5]/30" },
   { id: "other", color: "#718096", borderColor: "border-l-[#718096]", bgHover: "hover:border-[#718096]/30" },
 ];

@@ -195,7 +195,7 @@ export default async function SubclassDetailPage({
             Also available in{" "}
             <Link
               href={`/classes-pt/${slug}/subclasses/${subSlug}`}
-              className="text-[#D4A853] hover:underline"
+              className="text-gold hover:underline"
             >
               Português
             </Link>

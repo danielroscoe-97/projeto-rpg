@@ -130,7 +130,7 @@ export default async function FeatDetailPage({
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Also available in{" "}
-            <Link href={`/talentos/${slug}`} className="text-[#D4A853] hover:underline">
+            <Link href={`/talentos/${slug}`} className="text-gold hover:underline">
               Português
             </Link>
           </p>

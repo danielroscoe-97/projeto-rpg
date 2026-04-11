@@ -477,16 +477,16 @@ function CompendiumCardIcon({ type }: { type: "monsters" | "spells" | "classes" 
       );
     case "classes":
       return (
-        <svg viewBox="0 0 80 80" fill="none" className={cls}>
+        <svg viewBox="0 0 80 80" fill="none" className={`${cls} text-gold`}>
           {/* Shield shape */}
-          <path d="M40 10L14 24v18c0 14 10 24 26 30 16-6 26-16 26-30V24L40 10z" stroke="#D4A853" strokeWidth="1.5" fill="#D4A853" fillOpacity="0.06" />
+          <path d="M40 10L14 24v18c0 14 10 24 26 30 16-6 26-16 26-30V24L40 10z" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.06" />
           {/* Inner cross */}
-          <path d="M40 24v32M28 40h24" stroke="#D4A853" strokeWidth="1.2" opacity="0.25" strokeLinecap="round" />
+          <path d="M40 24v32M28 40h24" stroke="currentColor" strokeWidth="1.2" opacity="0.25" strokeLinecap="round" />
           {/* Sword behind shield */}
-          <path d="M40 6v8M38 8h4" stroke="#D4A853" strokeWidth="1" opacity="0.2" strokeLinecap="round" />
+          <path d="M40 6v8M38 8h4" stroke="currentColor" strokeWidth="1" opacity="0.2" strokeLinecap="round" />
           {/* Decorative arcs */}
-          <path d="M24 28c4-2 10-4 16-4s12 2 16 4" stroke="#D4A853" strokeWidth="0.6" opacity="0.15" />
-          <path d="M22 52c6 6 12 10 18 12 6-2 12-6 18-12" stroke="#D4A853" strokeWidth="0.6" opacity="0.12" />
+          <path d="M24 28c4-2 10-4 16-4s12 2 16 4" stroke="currentColor" strokeWidth="0.6" opacity="0.15" />
+          <path d="M22 52c6 6 12 10 18 12 6-2 12-6 18-12" stroke="currentColor" strokeWidth="0.6" opacity="0.12" />
         </svg>
       );
     case "races":
@@ -515,15 +515,15 @@ function CornerFlourish({ position }: { position: "top-left" | "bottom-right" })
   return (
     <svg
       width="28" height="28" viewBox="0 0 28 28" fill="none"
-      className={`absolute pointer-events-none w-5 h-5 md:w-7 md:h-7 opacity-[0.18] group-hover:opacity-[0.38] transition-opacity duration-300 ${
+      className={`absolute pointer-events-none w-5 h-5 md:w-7 md:h-7 text-gold opacity-[0.18] group-hover:opacity-[0.38] transition-opacity duration-300 ${
         isTopLeft ? "top-0 left-0" : "bottom-0 right-0 rotate-180"
       }`}
       aria-hidden="true"
     >
-      <path d="M2 26V10C2 5.6 5.6 2 10 2h16" stroke="#D4A853" strokeWidth="1.2" strokeLinecap="round" />
-      <path d="M2 18V10C2 5.6 5.6 2 10 2h8" stroke="#D4A853" strokeWidth="0.6" strokeLinecap="round" opacity="0.6" />
-      <circle cx="2" cy="26" r="1.5" fill="#D4A853" opacity="0.5" />
-      <circle cx="26" cy="2" r="1" fill="#D4A853" opacity="0.35" />
+      <path d="M2 26V10C2 5.6 5.6 2 10 2h16" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M2 18V10C2 5.6 5.6 2 10 2h8" stroke="currentColor" strokeWidth="0.6" strokeLinecap="round" opacity="0.6" />
+      <circle cx="2" cy="26" r="1.5" fill="currentColor" opacity="0.5" />
+      <circle cx="26" cy="2" r="1" fill="currentColor" opacity="0.35" />
     </svg>
   );
 }
@@ -532,12 +532,12 @@ function CornerFlourish({ position }: { position: "top-left" | "bottom-right" })
 function GoldenSeam() {
   return (
     <div className="relative h-[8px] mx-3 flex items-center" aria-hidden="true">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#D4A853]/25 to-transparent" />
-      <svg width="8" height="8" viewBox="0 0 8 8" className="mx-1 shrink-0">
-        <path d="M4 0.5L7.5 4L4 7.5L0.5 4Z" fill="#D4A853" opacity="0.3" />
-        <circle cx="4" cy="4" r="1" fill="#D4A853" opacity="0.5" />
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
+      <svg width="8" height="8" viewBox="0 0 8 8" className="mx-1 shrink-0 text-gold">
+        <path d="M4 0.5L7.5 4L4 7.5L0.5 4Z" fill="currentColor" opacity="0.3" />
+        <circle cx="4" cy="4" r="1" fill="currentColor" opacity="0.5" />
       </svg>
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#D4A853]/25 to-transparent" />
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
     </div>
   );
 }
@@ -562,9 +562,9 @@ function CompendiumBadgeIcon({ type }: { type: "monsters" | "spells" | "classes"
       );
     case "classes":
       return (
-        <svg viewBox="0 0 16 16" fill="none" className={cls}>
-          <path d="M8 2L3 6v4l5 4 5-4V6L8 2z" stroke="#D4A853" strokeWidth="1.2" fill="none" opacity="0.8" />
-          <path d="M8 5v6M5.5 8h5" stroke="#D4A853" strokeWidth="0.8" opacity="0.5" />
+        <svg viewBox="0 0 16 16" fill="none" className={`${cls} text-gold`}>
+          <path d="M8 2L3 6v4l5 4 5-4V6L8 2z" stroke="currentColor" strokeWidth="1.2" fill="none" opacity="0.8" />
+          <path d="M8 5v6M5.5 8h5" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
         </svg>
       );
     case "races":

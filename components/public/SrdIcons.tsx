@@ -718,8 +718,8 @@ export function SrdInitialCircle({
     <span
       className={`inline-flex items-center justify-center rounded-full border font-bold font-[family-name:var(--font-cinzel)] ${className ?? "w-10 h-10 text-lg"}`}
       style={{
-        borderColor: color ?? "#D4A853",
-        color: color ?? "#D4A853",
+        borderColor: color ?? "var(--accent-gold)",
+        color: color ?? "var(--accent-gold)",
         backgroundColor: color ? `${color}15` : "rgba(212,168,83,0.08)",
       }}
     >

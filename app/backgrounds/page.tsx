@@ -119,7 +119,7 @@ export default function BackgroundsPage() {
 
           <p className="text-xs text-gray-500 mt-12 text-center">
             Also available in{" "}
-            <Link href="/antecedentes" className="text-[#D4A853] hover:underline">
+            <Link href="/antecedentes" className="text-gold hover:underline">
               Português
             </Link>
           </p>
