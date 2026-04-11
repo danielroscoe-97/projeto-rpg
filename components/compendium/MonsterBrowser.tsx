@@ -115,7 +115,7 @@ export function MonsterBrowser() {
   const t = useTranslations("compendium");
   const allMonsters = useSrdStore((s) => s.monsters);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
-  const { canAccess, isAuthenticated, isLoading: accessLoading } = useContentAccess();
+  const { canAccess, isAuthenticated, isLoading: accessLoading, onGateCompleted } = useContentAccess();
   const [gateOpen, setGateOpen] = useState(false);
 
   // Filters
@@ -462,7 +462,7 @@ export function MonsterBrowser() {
         </div>
       </div>
 
-      <ExternalContentGate open={gateOpen} onOpenChange={setGateOpen} />
+      <ExternalContentGate open={gateOpen} onOpenChange={setGateOpen} onAccepted={onGateCompleted} />
     </div>
   );
 }

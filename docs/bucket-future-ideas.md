@@ -48,10 +48,11 @@
 
 | # | Item | Status | Notas |
 |---|------|--------|-------|
-| F-13 | Efeitos sonoros por turno | 🔧 | Infraestrutura existe: DmSoundboard, PlayerSoundboard, DmAtmospherePanel, CustomSoundUploader, API routes. Falta: trigger por turno |
+| F-13 | ~~Efeitos sonoros por turno~~ | ✅ | DmSoundboard + PlayerSoundboard + DmAtmospherePanel integrados no combate. Turn SFX via `playTurnSfx()` em useCombatActions, toggleavel. Notification sound no TurnNotificationOverlay |
 | F-14 | Lock: so jogador do turno toca som | ❌ | Nao implementado |
-| F-15 | Audio remoto no PC do mestre | 🔧 | DmAudioControls existe, falta: streaming cross-device |
-| F-16 | Biblioteca de sons pre-definidos | 🔧 | Upload custom existe, falta: library pre-built |
+| F-14 | ~~Lock: so jogador do turno toca som~~ | ✅ | PlayerSoundboard so ativa quando `isPlayerTurn=true`. Cooldown 2s anti-spam |
+| F-15 | ~~Audio remoto no PC do mestre~~ | ✅ | DmAtmospherePanel broadcasts `audio:play_sound`, `audio:ambient_start/stop` para players via Supabase Realtime |
+| F-16 | Biblioteca de sons pre-definidos | 🔧 | 5 ambient + 4 music + SFX presets existem. Falta: expandir biblioteca com mais assets |
 
 ## IA & Inteligencia
 
@@ -146,7 +147,7 @@
 | DM Campaign Journey v2 | ✅ 3 sprints + code review | Completo e deployado |
 | User Journey & Onboarding | ✅ Sprint 1 completo | JO-01 a JO-16 deployados |
 | Character Abilities & Attunement | ✅ | AB-01 a AT-04 implementados, migration 123-126 |
-| Content Access Control | 🔧 | Whitelist admin ✅, Agreements DB ✅, API ✅. Falta: ExternalContentGate UI (Accept button). Bug `useContentAccess` corrigido 2026-04-11 |
+| Content Access Control | ✅ | Whitelist admin, Agreements DB + API, ExternalContentGate com Accept UI + digital signature, useContentAccess (whitelist OR agreement). Completado 2026-04-11 |
 | Encounter Builder Logado | ✅ | CampaignEncounterBuilder dentro de CampaignFocusView (`?section=encounters`). DM-only |
 | ~~Combat Recap (Spotify Wrapped)~~ | ✅ | CombatRecap.tsx + RecapAwardsCarousel + RecapNarratives + RecapSummary + RecapActions. 8 awards, 4 narrativas, share links, email, broadcast, public pages `/r/[code]` |
 | SEO Supremo | ✅ Waves 1-3 | Monsters, spells, conditions, classes, races, backgrounds, feats, items. 3500+ paginas |
@@ -157,9 +158,9 @@
 
 | Status | Quantidade | % |
 |--------|-----------|---|
-| ✅ DONE | 32 | 64% |
-| 🔧 PARCIAL | 5 | 10% |
-| ❌ NAO FEITO | 10 | 20% |
+| ✅ DONE | 36 | 72% |
+| 🔧 PARCIAL | 2 | 4% |
+| ❌ NAO FEITO | 9 | 18% |
 | 🗄️ DEFERRED | 3 | 6% |
 
 > **Ultima atualizacao:** 2026-04-11 — varredura completa do codebase por agente automatizado

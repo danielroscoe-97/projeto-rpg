@@ -58,7 +58,7 @@ export function SpellBrowser() {
   const allSpells = useSrdStore((s) => s.spells);
   const { filtered: spells, showNonSrd } = useSrdContentFilter(allSpells);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
-  const { canAccess, isAuthenticated } = useContentAccess();
+  const { canAccess, isAuthenticated, onGateCompleted } = useContentAccess();
   const [gateOpen, setGateOpen] = useState(false);
 
   // Count hidden non-SRD spells for the gating banner
@@ -424,7 +424,7 @@ export function SpellBrowser() {
         </div>
       </div>
 
-      <ExternalContentGate open={gateOpen} onOpenChange={setGateOpen} />
+      <ExternalContentGate open={gateOpen} onOpenChange={setGateOpen} onAccepted={onGateCompleted} />
     </div>
   );
 }
