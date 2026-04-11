@@ -1038,7 +1038,12 @@
       "no_search_results": "Nenhuma magia encontrada",
       "cancel": "Cancelar",
       "add": "Adicionar",
-      "browse_srd_spells": "Ver Magias do SRD"
+      "browse_srd_spells": "Ver Magias do SRD",
+      "advanced_filters": "Filtros",
+      "filter_level": "Nível",
+      "filter_school": "Escola",
+      "filter_conc": "Tipo",
+      "filter_concentration": "Concentração"
     },
     "inventory": {
       "title": "Bolsa de Acumulação",
@@ -1097,6 +1102,7 @@
       "currency_gp": "GP",
       "currency_pp": "PP",
       "no_personal_items": "Nenhum item pessoal ainda",
+      "total_weight": "Peso Total",
       "equip": "Equipar",
       "unequip": "Desequipar",
       "remove_item": "Remover",

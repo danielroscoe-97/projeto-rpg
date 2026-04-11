@@ -973,6 +973,8 @@ export interface Database {
           is_magic: boolean;
           attune_notes: string | null;
           srd_ref: string | null;
+          weight: number | null;
+          cost_gp: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -988,6 +990,8 @@ export interface Database {
           is_magic?: boolean;
           attune_notes?: string | null;
           srd_ref?: string | null;
+          weight?: number | null;
+          cost_gp?: number | null;
         };
         Update: {
           item_name?: string;
@@ -999,6 +1003,8 @@ export interface Database {
           is_magic?: boolean;
           attune_notes?: string | null;
           srd_ref?: string | null;
+          weight?: number | null;
+          cost_gp?: number | null;
           updated_at?: string;
         };
       };

@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronRight,
   Package,
+  Weight,
 } from "lucide-react";
 import { usePersonalInventory } from "@/lib/hooks/usePersonalInventory";
 import { usePersonalCurrency } from "@/lib/hooks/usePersonalCurrency";
@@ -142,6 +143,12 @@ function PersonalItemCard({
                 x{item.quantity}
               </span>
             )}
+            {item.weight != null && item.weight > 0 && (
+              <span className="text-[10px] text-muted-foreground/60 font-mono flex items-center gap-0.5">
+                <Weight className="w-2.5 h-2.5" />
+                {item.weight * item.quantity} lb
+              </span>
+            )}
           </div>
         </button>
 
@@ -198,19 +205,22 @@ function InlineAddItem({
   onAdd,
   onCancel,
 }: {
-  onAdd: (name: string, quantity: number) => void;
+  onAdd: (name: string, quantity: number, weight?: number) => void;
   onCancel: () => void;
 }) {
   const t = useTranslations("player_hq.personal");
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("1");
+  const [weight, setWeight] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    onAdd(name.trim(), Math.max(1, parseInt(quantity, 10) || 1));
+    const w = parseFloat(weight);
+    onAdd(name.trim(), Math.max(1, parseInt(quantity, 10) || 1), Number.isNaN(w) ? undefined : w);
     setName("");
     setQuantity("1");
+    setWeight("");
   };
 
   return (
@@ -233,6 +243,16 @@ function InlineAddItem({
         onChange={(e) => setQuantity(e.target.value)}
         className="w-12 text-center bg-white/[0.04] border border-white/[0.08] rounded-md text-sm font-mono text-foreground focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         aria-label="Quantity"
+      />
+      <input
+        type="number"
+        min={0}
+        step="0.1"
+        value={weight}
+        onChange={(e) => setWeight(e.target.value)}
+        placeholder="lb"
+        className="w-14 text-center bg-white/[0.04] border border-white/[0.08] rounded-md text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        aria-label="Weight (lbs)"
       />
       <button
         type="submit"
@@ -324,8 +344,8 @@ export function PersonalInventory({
   const loading = itemsLoading || currencyLoading;
 
   const handleAddItem = useCallback(
-    async (name: string, quantity: number) => {
-      await addItem(name, quantity);
+    async (name: string, quantity: number, weight?: number) => {
+      await addItem(name, quantity, weight);
     },
     [addItem],
   );
@@ -337,6 +357,14 @@ export function PersonalInventory({
   const hasEquipped = equipped.length > 0;
   const hasBackpack = backpack.length > 0;
   const hasItems = hasEquipped || hasBackpack;
+
+  // Total weight calculation
+  const allItems = [...equipped, ...backpack];
+  const totalWeight = allItems.reduce(
+    (sum, item) => sum + (item.weight ?? 0) * item.quantity,
+    0
+  );
+  const hasAnyWeight = allItems.some((item) => item.weight != null && item.weight > 0);
 
   return (
     <div className="space-y-5">
@@ -364,6 +392,21 @@ export function PersonalInventory({
           ))}
         </div>
       </div>
+
+      {/* ============================================================ */}
+      {/*  SECTION — Total weight                                       */}
+      {/* ============================================================ */}
+      {hasAnyWeight && (
+        <div className="flex items-center gap-2 px-1">
+          <Weight className="w-3.5 h-3.5 text-muted-foreground/50" />
+          <span className="text-xs text-muted-foreground">
+            {t("total_weight")}:
+          </span>
+          <span className="text-xs font-mono font-semibold text-foreground">
+            {Math.round(totalWeight * 10) / 10} lb
+          </span>
+        </div>
+      )}
 
       {/* ============================================================ */}
       {/*  SECTION — Equipped items                                     */}
@@ -424,8 +467,8 @@ export function PersonalInventory({
         <>
           {showAdd ? (
             <InlineAddItem
-              onAdd={(name, qty) => {
-                handleAddItem(name, qty);
+              onAdd={(name, qty, weight) => {
+                handleAddItem(name, qty, weight);
                 setShowAdd(false);
               }}
               onCancel={() => setShowAdd(false)}

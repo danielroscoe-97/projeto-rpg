@@ -44,7 +44,7 @@ export function usePersonalInventory(characterId: string) {
 
   // Add item (optimistic)
   const addItem = useCallback(
-    async (name: string, quantity: number = 1) => {
+    async (name: string, quantity: number = 1, weight?: number) => {
       const tempId = crypto.randomUUID();
       const now = new Date().toISOString();
       const optimistic: CharacterInventoryItem = {
@@ -59,6 +59,8 @@ export function usePersonalInventory(characterId: string) {
         is_magic: false,
         attune_notes: null,
         srd_ref: null,
+        weight: weight ?? null,
+        cost_gp: null,
         created_at: now,
         updated_at: now,
       };
@@ -70,6 +72,7 @@ export function usePersonalInventory(characterId: string) {
           player_character_id: characterId,
           item_name: name,
           quantity,
+          ...(weight != null ? { weight } : {}),
         })
         .select()
         .single();
@@ -223,6 +226,8 @@ export function usePersonalInventory(characterId: string) {
         is_magic: input.is_magic ?? false,
         attune_notes: input.attune_notes ?? null,
         srd_ref: input.srd_ref ?? null,
+        weight: null,
+        cost_gp: null,
         created_at: now,
         updated_at: now,
       };

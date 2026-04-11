@@ -1038,7 +1038,12 @@
       "no_search_results": "No spells found",
       "cancel": "Cancel",
       "add": "Add",
-      "browse_srd_spells": "Browse SRD Spells"
+      "browse_srd_spells": "Browse SRD Spells",
+      "advanced_filters": "Filters",
+      "filter_level": "Level",
+      "filter_school": "School",
+      "filter_conc": "Type",
+      "filter_concentration": "Concentration"
     },
     "inventory": {
       "title": "Bag of Holding",
@@ -1097,6 +1102,7 @@
       "currency_gp": "GP",
       "currency_pp": "PP",
       "no_personal_items": "No personal items yet",
+      "total_weight": "Total Weight",
       "equip": "Equip",
       "unequip": "Unequip",
       "remove_item": "Remove",

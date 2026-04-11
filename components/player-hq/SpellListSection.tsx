@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { BookOpen, Plus, Search } from "lucide-react";
+import { BookOpen, Plus, Search, Filter } from "lucide-react";
 import { SpellCard } from "./SpellCard";
 import { useCharacterSpells } from "@/lib/hooks/useCharacterSpells";
 import type { CharacterSpellInsert, SpellStatus } from "@/lib/types/database";
@@ -21,12 +21,36 @@ export function SpellListSection({ characterId }: SpellListSectionProps) {
   const [search, setSearch] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [newSpell, setNewSpell] = useState({ name: "", level: "0" });
+  const [levelFilter, setLevelFilter] = useState<number | null>(null);
+  const [schoolFilter, setSchoolFilter] = useState<string | null>(null);
+  const [concFilter, setConcFilter] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Collect available schools for filter pills
+  const availableSchools = useMemo(() => {
+    const schools = new Set<string>();
+    for (const s of spells) {
+      if (s.school) schools.add(s.school);
+    }
+    return [...schools].sort();
+  }, [spells]);
+
+  // Collect available levels for filter pills
+  const availableLevels = useMemo(() => {
+    const levels = new Set<number>();
+    for (const s of spells) levels.add(s.spell_level);
+    return [...levels].sort((a, b) => a - b);
+  }, [spells]);
 
   const filtered = useMemo(() => {
     let result = spells;
     if (filter === "prepared") result = result.filter((s) => s.status === "prepared");
     else if (filter === "favorite") result = result.filter((s) => s.status === "favorite");
     else if (filter === "cantrips") result = result.filter((s) => s.spell_level === 0);
+
+    if (levelFilter !== null) result = result.filter((s) => s.spell_level === levelFilter);
+    if (schoolFilter) result = result.filter((s) => s.school === schoolFilter);
+    if (concFilter) result = result.filter((s) => s.is_concentration);
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -37,7 +61,7 @@ export function SpellListSection({ characterId }: SpellListSectionProps) {
       );
     }
     return result;
-  }, [spells, filter, search]);
+  }, [spells, filter, search, levelFilter, schoolFilter, concFilter]);
 
   // Group by level for display
   const grouped = useMemo(() => {
@@ -124,7 +148,97 @@ export function SpellListSection({ characterId }: SpellListSectionProps) {
             {label}
           </button>
         ))}
+        {spells.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className={`shrink-0 px-3 min-h-[36px] text-xs rounded-full border transition-colors flex items-center gap-1 ${
+              showAdvanced || levelFilter !== null || schoolFilter || concFilter
+                ? "border-amber-400/50 bg-amber-400/10 text-amber-400"
+                : "border-border text-muted-foreground hover:border-white/20"
+            }`}
+          >
+            <Filter className="w-3 h-3" />
+            {t("advanced_filters")}
+          </button>
+        )}
       </div>
+
+      {/* Advanced filters */}
+      {showAdvanced && (
+        <div className="bg-white/[0.02] rounded-lg border border-border/30 p-3 space-y-2">
+          {/* Level filter */}
+          {availableLevels.length > 1 && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider w-12 shrink-0">{t("filter_level")}</span>
+              <button
+                type="button"
+                onClick={() => setLevelFilter(null)}
+                className={`text-[10px] px-2 py-1 rounded-md transition-colors ${
+                  levelFilter === null ? "bg-amber-400/15 text-amber-400 border border-amber-400/30" : "text-muted-foreground hover:text-foreground border border-transparent"
+                }`}
+              >
+                {t("filter_all")}
+              </button>
+              {availableLevels.map((lvl) => (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => setLevelFilter(levelFilter === lvl ? null : lvl)}
+                  className={`text-[10px] px-2 py-1 rounded-md font-mono transition-colors ${
+                    levelFilter === lvl ? "bg-amber-400/15 text-amber-400 border border-amber-400/30" : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
+                >
+                  {lvl === 0 ? "C" : lvl}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* School filter */}
+          {availableSchools.length > 1 && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider w-12 shrink-0">{t("filter_school")}</span>
+              <button
+                type="button"
+                onClick={() => setSchoolFilter(null)}
+                className={`text-[10px] px-2 py-1 rounded-md transition-colors ${
+                  !schoolFilter ? "bg-amber-400/15 text-amber-400 border border-amber-400/30" : "text-muted-foreground hover:text-foreground border border-transparent"
+                }`}
+              >
+                {t("filter_all")}
+              </button>
+              {availableSchools.map((school) => (
+                <button
+                  key={school}
+                  type="button"
+                  onClick={() => setSchoolFilter(schoolFilter === school ? null : school)}
+                  className={`text-[10px] px-2 py-1 rounded-md transition-colors ${
+                    schoolFilter === school ? "bg-amber-400/15 text-amber-400 border border-amber-400/30" : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
+                >
+                  {school}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Concentration toggle */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider w-12 shrink-0">{t("filter_conc")}</span>
+            <button
+              type="button"
+              onClick={() => setConcFilter(!concFilter)}
+              className={`text-[10px] px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${
+                concFilter ? "bg-orange-500/15 text-orange-300 border border-orange-500/30" : "text-muted-foreground hover:text-foreground border border-transparent"
+              }`}
+            >
+              <span className="text-[9px] px-1 py-0.5 rounded bg-orange-500/20 text-orange-300">C</span>
+              {t("filter_concentration")}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add manual form */}
       {showAddForm && (
