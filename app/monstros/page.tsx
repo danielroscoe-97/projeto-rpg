@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import {
-  getSrdMonsters,
   getSrdMonstersDeduped,
   toSlug,
   toMonsterSlugPt,
 } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
-import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
+import { CompendiumMonsterHydrator } from "@/components/public/CompendiumMonsterHydrator";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
+import monsterSlugsPt from "@/data/srd/monster-names-pt.json";
 
 export const metadata: Metadata = {
   title: "Bestiário D&D 5e — Lista de Monstros SRD",
@@ -44,6 +44,14 @@ export const revalidate = 86400;
 export default function MonstrosIndexPage() {
   const deduped = getSrdMonstersDeduped();
   const ptNames = monsterNamesPt as Record<string, { name?: string }>;
+
+  // Build simplified maps for client-side hydration (beta testers see full data)
+  const ptNameMap: Record<string, string> = {};
+  for (const [slug, entry] of Object.entries(ptNames)) {
+    if (entry.name) ptNameMap[slug] = entry.name;
+  }
+  const ptSlugMap = monsterSlugsPt as Record<string, string>;
+
   const monsters = deduped.map((m) => {
     const enSlug = toSlug(m.name);
     const ptName = ptNames[enSlug]?.name ?? m.name;
@@ -59,8 +67,6 @@ export default function MonstrosIndexPage() {
       fallbackTokenUrl: m.fallback_token_url,
     };
   });
-
-  const total = getSrdMonsters().length;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -95,7 +101,7 @@ export default function MonstrosIndexPage() {
             Bestiário D&amp;D 5e
           </h1>
           <p className="text-gray-400 text-lg">
-            {total} monstros com roladores de dados interativos e fichas táticas. Todo conteúdo SRD é gratuito sob{" "}
+            {deduped.length} monstros com roladores de dados interativos e fichas táticas. Todo conteúdo SRD é gratuito sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-200"
@@ -108,8 +114,10 @@ export default function MonstrosIndexPage() {
           </p>
         </div>
 
-        <PublicMonsterGrid
-          monsters={monsters}
+        <CompendiumMonsterHydrator
+          ssrMonsters={monsters}
+          ptNameMap={ptNameMap}
+          ptSlugMap={ptSlugMap}
           basePath="/monstros"
           locale="pt-BR"
           labels={{

@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getSrdMonstersDeduped, toSlug } from "@/lib/srd/srd-data-server";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
+import monsterSlugsPt from "@/data/srd/monster-names-pt.json";
 import { PublicNav } from "@/components/public/PublicNav";
-import { PublicMonsterGrid } from "@/components/public/PublicMonsterGrid";
+import { CompendiumMonsterHydrator } from "@/components/public/CompendiumMonsterHydrator";
 import { PublicFooter } from "@/components/public/PublicFooter";
 
 export const metadata: Metadata = {
@@ -38,6 +39,14 @@ export const revalidate = 86400;
 
 export default function MonstersIndexPage() {
   const ptNames = monsterNamesPt as Record<string, { name?: string }>;
+
+  // Build simplified maps for client-side hydration (beta testers see full data)
+  const ptNameMap: Record<string, string> = {};
+  for (const [slug, entry] of Object.entries(ptNames)) {
+    if (entry.name) ptNameMap[slug] = entry.name;
+  }
+  const ptSlugMap = monsterSlugsPt as Record<string, string>;
+
   const monsters = getSrdMonstersDeduped()
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((m) => {
@@ -103,7 +112,11 @@ export default function MonstersIndexPage() {
         </div>
 
         {/* Interactive grid with filters */}
-        <PublicMonsterGrid monsters={monsters} />
+        <CompendiumMonsterHydrator
+          ssrMonsters={monsters}
+          ptNameMap={ptNameMap}
+          ptSlugMap={ptSlugMap}
+        />
 
         {/* CTA */}
         <div className="mt-12 rounded-xl bg-gradient-to-br from-gold/[0.06] to-gray-800/50 border border-gold/10 p-8 text-center">
