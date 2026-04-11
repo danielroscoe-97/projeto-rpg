@@ -34,6 +34,7 @@ type CharacterStatus = Pick<
   | "cha_score"
   | "notes"
   | "token_url"
+  | "proficiencies"
 >;
 
 export function useCharacterStatus(characterId: string | null) {
@@ -59,7 +60,7 @@ export function useCharacterStatus(characterId: string | null) {
       const { data, error } = await supabase
         .from("player_characters")
         .select(
-          "id, current_hp, max_hp, hp_temp, ac, conditions, inspiration, speed, initiative_bonus, spell_slots, spell_save_dc, name, race, class, level, subclass, subrace, background, alignment, str, dex, con, int_score, wis, cha_score, notes, token_url"
+          "id, current_hp, max_hp, hp_temp, ac, conditions, inspiration, speed, initiative_bonus, spell_slots, spell_save_dc, name, race, class, level, subclass, subrace, background, alignment, str, dex, con, int_score, wis, cha_score, notes, token_url, proficiencies"
         )
         .eq("id", characterId)
         .single();

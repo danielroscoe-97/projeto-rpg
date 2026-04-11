@@ -183,6 +183,7 @@ export default function NewEncounterPage() {
         wis: null,
         cha_score: null,
         traits: null,
+        proficiencies: {},
         currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

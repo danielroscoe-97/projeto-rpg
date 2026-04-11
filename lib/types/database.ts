@@ -129,6 +129,7 @@ export interface Database {
           wis: number | null;
           cha_score: number | null;
           traits: { personality?: string; ideal?: string; bond?: string; flaw?: string } | null;
+          proficiencies: CharacterProficiencies;
           currency: { cp: number; sp: number; ep: number; gp: number; pp: number };
           created_at: string;
           updated_at: string;
@@ -163,6 +164,7 @@ export interface Database {
           int_score?: number | null;
           wis?: number | null;
           cha_score?: number | null;
+          proficiencies?: CharacterProficiencies;
           traits?: { personality?: string; ideal?: string; bond?: string; flaw?: string } | null;
           currency?: { cp: number; sp: number; ep: number; gp: number; pp: number };
           created_at?: string;
@@ -197,6 +199,7 @@ export interface Database {
           int_score?: number | null;
           wis?: number | null;
           cha_score?: number | null;
+          proficiencies?: CharacterProficiencies;
           traits?: { personality?: string; ideal?: string; bond?: string; flaw?: string } | null;
           currency?: { cp: number; sp: number; ep: number; gp: number; pp: number };
           updated_at?: string;
@@ -1136,6 +1139,18 @@ export interface Database {
       ruleset_version: RulesetVersion;
     };
   };
+}
+
+// ── Proficiencies JSONB shape ──────────────────────────────────────
+export type SkillProficiency = "proficient" | "expertise";
+
+export interface CharacterProficiencies {
+  saving_throws?: string[];
+  skills?: Record<string, SkillProficiency>;
+  tools?: string[];
+  languages?: string[];
+  armor?: string[];
+  weapons?: string[];
 }
 
 // Convenience type aliases

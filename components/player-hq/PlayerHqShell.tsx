@@ -24,6 +24,7 @@ import { useCharacterAbilities } from "@/lib/hooks/useCharacterAbilities";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { AbilitiesSection } from "./AbilitiesSection";
 import { AttunementSection } from "./AttunementSection";
+import { ProficienciesSection } from "./ProficienciesSection";
 import { PlayerHqTourProvider } from "@/components/tour/PlayerHqTourProvider";
 
 type Tab = "map" | "sheet" | "resources" | "abilities" | "inventory" | "notes" | "quests";
@@ -259,6 +260,17 @@ export function PlayerHqShell({
             wis={character.wis}
             chaScore={character.cha_score}
             onToggleInspiration={toggleInspiration}
+          />
+          <ProficienciesSection
+            proficiencies={character.proficiencies ?? {}}
+            level={character.level}
+            str={character.str}
+            dex={character.dex}
+            con={character.con}
+            intScore={character.int_score}
+            wis={character.wis}
+            chaScore={character.cha_score}
+            onSave={saveField}
           />
         </div>
       )}
