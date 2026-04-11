@@ -187,31 +187,37 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
         get().loadVersionOnDemand(DEFERRED_VERSION);
       });
 
-      // Phase 2b: Load feats (non-critical, deferred)
+      // Phase 2b: Load feats + backgrounds + abilities index (non-critical, deferred)
       scheduleDeferred(async () => {
         try {
-          const feats = await loadWithCache(
-            () => getCachedFeats(),
-            (d) => setCachedFeats(d),
-            () => loadFeats()
-          );
-          set({ feats });
-        } catch {
-          // Feats load failure is non-critical
-        }
-      });
+          const [feats, backgrounds] = await Promise.all([
+            loadWithCache(
+              () => getCachedFeats(),
+              (d) => setCachedFeats(d),
+              () => loadFeats()
+            ),
+            loadWithCache(
+              () => getCachedBackgrounds(),
+              (d) => setCachedBackgrounds(d),
+              () => loadBackgrounds()
+            ),
+          ]);
 
-      // Phase 2c: Load backgrounds (non-critical, deferred)
-      scheduleDeferred(async () => {
-        try {
-          const backgrounds = await loadWithCache(
-            () => getCachedBackgrounds(),
-            (d) => setCachedBackgrounds(d),
-            () => loadBackgrounds()
-          );
-          set({ backgrounds });
+          // Build Fuse.js search indices for feats & backgrounds
+          srdSearchProvider.buildFeatIndex(feats);
+          srdSearchProvider.buildBackgroundIndex(backgrounds);
+
+          // Build abilities index (class features + racial + feats + subclass)
+          try {
+            const { SRD_ABILITIES } = await import("@/lib/data/srd-abilities");
+            srdSearchProvider.buildAbilityIndex(SRD_ABILITIES);
+          } catch {
+            // Abilities index load failure is non-critical
+          }
+
+          set({ feats, backgrounds });
         } catch {
-          // Backgrounds load failure is non-critical
+          // Feats/backgrounds load failure is non-critical
         }
       });
 

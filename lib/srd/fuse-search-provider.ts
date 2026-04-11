@@ -1,6 +1,8 @@
 import type { SrdSearchProvider, SearchOptions } from "./search-provider";
 import type { FuseResult } from "fuse.js";
 import type { SrdMonster, SrdSpell, SrdItem, SrdCondition } from "./srd-loader";
+import type { SrdFeatEntry, SrdBackgroundEntry } from "./srd-search";
+import type { SrdAbility } from "@/lib/data/srd-abilities";
 import type { RulesetVersion } from "@/lib/types/database";
 import * as search from "./srd-search";
 
@@ -90,6 +92,32 @@ export class FuseSearchProvider implements SrdSearchProvider {
 
   mergeImportedSpells(data: SrdSpell[]): void {
     search.mergeImportedSpells(data);
+  }
+
+  // ── Feats, Backgrounds, Abilities ──────────────────────────────
+
+  buildFeatIndex(data: SrdFeatEntry[]): void {
+    search.buildFeatIndex(data);
+  }
+
+  searchFeats(query: string): FuseResult<SrdFeatEntry>[] {
+    return search.searchFeats(query);
+  }
+
+  buildBackgroundIndex(data: SrdBackgroundEntry[]): void {
+    search.buildBackgroundIndex(data);
+  }
+
+  searchBackgrounds(query: string): FuseResult<SrdBackgroundEntry>[] {
+    return search.searchBackgrounds(query);
+  }
+
+  buildAbilityIndex(data: SrdAbility[]): void {
+    search.buildAbilityIndex(data);
+  }
+
+  searchAbilities(query: string): FuseResult<SrdAbility>[] {
+    return search.searchAbilities(query);
   }
 
   isReady(): boolean {

@@ -1,18 +1,46 @@
 import Fuse, { type IFuseOptions, type FuseResult } from "fuse.js";
 import type { SrdMonster, SrdSpell, SrdCondition, SrdItem } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
+import type { SrdAbility } from "@/lib/data/srd-abilities";
 
 export type { SrdMonster, SrdSpell, SrdItem };
+
+// ── Types for feats & backgrounds (flat search) ──────────────────
+export interface SrdFeatEntry {
+  id: string;
+  name: string;
+  description: string;
+  prerequisite: string | null;
+  source: string;
+  ruleset_version: string;
+  srd?: boolean;
+}
+
+export interface SrdBackgroundEntry {
+  id: string;
+  name: string;
+  description: string;
+  source: string;
+  skill_proficiencies: string[];
+  feature_name: string | null;
+  feature_description: string | null;
+  srd?: boolean;
+}
 
 // Singletons — built once by srd-store initializeSrd(), reused for all queries
 let monsterIndex: Fuse<SrdMonster> | null = null;
 let spellIndex: Fuse<SrdSpell> | null = null;
 let itemIndex: Fuse<SrdItem> | null = null;
+let featIndex: Fuse<SrdFeatEntry> | null = null;
+let backgroundIndex: Fuse<SrdBackgroundEntry> | null = null;
+let abilityIndex: Fuse<SrdAbility> | null = null;
 let conditionData: SrdCondition[] = [];
 // keyed by `${id}:${ruleset_version}` for O(1) lookup
 let monsterMap: Map<string, SrdMonster> = new Map();
 let spellMap: Map<string, SrdSpell> = new Map();
 let itemMap: Map<string, SrdItem> = new Map();
+let featMap: Map<string, SrdFeatEntry> = new Map();
+let backgroundMap: Map<string, SrdBackgroundEntry> = new Map();
 
 const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
   keys: [
@@ -42,6 +70,43 @@ const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
     { name: "name", weight: 0.6 },
     { name: "classes", weight: 0.2 },
     { name: "school", weight: 0.2 },
+  ],
+  threshold: 0.35,
+  ignoreLocation: true,
+  includeScore: true,
+  minMatchCharLength: 2,
+};
+
+const FEAT_OPTIONS: IFuseOptions<SrdFeatEntry> = {
+  keys: [
+    { name: "name", weight: 0.6 },
+    { name: "description", weight: 0.3 },
+    { name: "source", weight: 0.1 },
+  ],
+  threshold: 0.35,
+  ignoreLocation: true,
+  includeScore: true,
+  minMatchCharLength: 2,
+};
+
+const BACKGROUND_OPTIONS: IFuseOptions<SrdBackgroundEntry> = {
+  keys: [
+    { name: "name", weight: 0.6 },
+    { name: "skill_proficiencies", weight: 0.3 },
+    { name: "source", weight: 0.1 },
+  ],
+  threshold: 0.35,
+  ignoreLocation: true,
+  includeScore: true,
+  minMatchCharLength: 2,
+};
+
+const ABILITY_OPTIONS: IFuseOptions<SrdAbility> = {
+  keys: [
+    { name: "name", weight: 0.5 },
+    { name: "name_pt", weight: 0.2 },
+    { name: "source_class", weight: 0.15 },
+    { name: "source_race", weight: 0.15 },
   ],
   threshold: 0.35,
   ignoreLocation: true,
@@ -149,6 +214,53 @@ export function getAllItems(): SrdItem[] {
   return Array.from(itemMap.values());
 }
 
+// ── Feats ────────────────────────────────────────────────────────────────────
+
+export function buildFeatIndex(data: SrdFeatEntry[]): void {
+  featIndex = new Fuse(data, FEAT_OPTIONS);
+  featMap = new Map(data.map((f) => [f.id, f]));
+}
+
+export function searchFeats(query: string): FuseResult<SrdFeatEntry>[] {
+  if (!featIndex || !query) return [];
+  return featIndex.search(query);
+}
+
+export function getAllFeats(): SrdFeatEntry[] {
+  return Array.from(featMap.values());
+}
+
+export function getFeatById(id: string): SrdFeatEntry | undefined {
+  return featMap.get(id);
+}
+
+// ── Backgrounds ──────────────────────────────────────────────────────────────
+
+export function buildBackgroundIndex(data: SrdBackgroundEntry[]): void {
+  backgroundIndex = new Fuse(data, BACKGROUND_OPTIONS);
+  backgroundMap = new Map(data.map((b) => [b.id, b]));
+}
+
+export function searchBackgrounds(query: string): FuseResult<SrdBackgroundEntry>[] {
+  if (!backgroundIndex || !query) return [];
+  return backgroundIndex.search(query);
+}
+
+export function getAllBackgrounds(): SrdBackgroundEntry[] {
+  return Array.from(backgroundMap.values());
+}
+
+// ── Abilities (class features, racial traits, feats, subclass features) ──────
+
+export function buildAbilityIndex(data: SrdAbility[]): void {
+  abilityIndex = new Fuse(data, ABILITY_OPTIONS);
+}
+
+export function searchAbilities(query: string): FuseResult<SrdAbility>[] {
+  if (!abilityIndex || !query) return [];
+  return abilityIndex.search(query);
+}
+
 // ── Homebrew merge ────────────────────────────────────────────────────────────
 
 /**
@@ -192,8 +304,13 @@ export function resetSrdIndexes(): void {
   monsterIndex = null;
   spellIndex = null;
   itemIndex = null;
+  featIndex = null;
+  backgroundIndex = null;
+  abilityIndex = null;
   conditionData = [];
   monsterMap = new Map();
   spellMap = new Map();
   itemMap = new Map();
+  featMap = new Map();
+  backgroundMap = new Map();
 }

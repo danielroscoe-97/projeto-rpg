@@ -4,20 +4,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { trackEvent } from "@/lib/analytics/track";
 import { Command } from "cmdk";
-import { searchMonsters, searchSpells, getAllConditions } from "@/lib/srd/srd-search";
+import { searchMonsters, searchSpells, searchItems, searchFeats, searchBackgrounds, searchAbilities, getAllConditions } from "@/lib/srd/srd-search";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal";
 import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
 import type { SrdMonster, SrdSpell } from "@/lib/srd/srd-loader";
 import type { SrdCondition } from "@/lib/srd/srd-loader";
-import { Skull, Sparkles, HeartPulse, X } from "lucide-react";
+import { Skull, Sparkles, HeartPulse, X, Sword, Star, ScrollText, Zap } from "lucide-react";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 
 const MAX_RESULTS_PER_GROUP = 5;
 const DEBOUNCE_MS = 150;
 
-type SearchFilter = "all" | "monster" | "spell" | "condition";
+type SearchFilter = "all" | "monster" | "spell" | "condition" | "item" | "feat" | "background" | "ability";
 
 export function CommandPalette() {
   const t = useTranslations("command_palette");
@@ -47,6 +47,10 @@ export function CommandPalette() {
   const showMonsters = filter === "all" || filter === "monster";
   const showSpells = filter === "all" || filter === "spell";
   const showConditions = filter === "all" || filter === "condition";
+  const showItems = filter === "all" || filter === "item";
+  const showFeats = filter === "all" || filter === "feat";
+  const showBackgrounds = filter === "all" || filter === "background";
+  const showAbilities = filter === "all" || filter === "ability";
 
   const monsterResults = debouncedQuery && showMonsters
     ? searchMonsters(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
@@ -59,8 +63,21 @@ export function CommandPalette() {
         c.name.toLowerCase().includes(debouncedQuery.toLowerCase()),
       ).slice(0, MAX_RESULTS_PER_GROUP)
     : [];
+  const itemResults = debouncedQuery && showItems
+    ? searchItems(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
+    : [];
+  const featResults = debouncedQuery && showFeats
+    ? searchFeats(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
+    : [];
+  const backgroundResults = debouncedQuery && showBackgrounds
+    ? searchBackgrounds(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
+    : [];
+  const abilityResults = debouncedQuery && showAbilities
+    ? searchAbilities(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
+    : [];
 
-  const totalResults = monsterResults.length + spellResults.length + conditionResults.length;
+  const totalResults = monsterResults.length + spellResults.length + conditionResults.length
+    + itemResults.length + featResults.length + backgroundResults.length + abilityResults.length;
   const hasResults = totalResults > 0;
 
   // Track search queries (debounced — fires once per final query, not per keystroke)
@@ -217,11 +234,15 @@ export function CommandPalette() {
           </div>
 
           {/* Filter pills */}
-          <div className="flex items-center gap-1.5 px-4 py-2 border-b border-white/[0.08]">
+          <div className="flex items-center gap-1.5 px-4 py-2 border-b border-white/[0.08] overflow-x-auto scrollbar-hide">
             {([
               { key: "all" as SearchFilter, label: t("filter_all"), icon: null },
               { key: "monster" as SearchFilter, label: t("group_monsters"), icon: <Skull className="w-3 h-3" /> },
               { key: "spell" as SearchFilter, label: t("group_spells"), icon: <Sparkles className="w-3 h-3" /> },
+              { key: "item" as SearchFilter, label: t("group_items"), icon: <Sword className="w-3 h-3" /> },
+              { key: "feat" as SearchFilter, label: t("group_feats"), icon: <Star className="w-3 h-3" /> },
+              { key: "background" as SearchFilter, label: t("group_backgrounds"), icon: <ScrollText className="w-3 h-3" /> },
+              { key: "ability" as SearchFilter, label: t("group_abilities"), icon: <Zap className="w-3 h-3" /> },
               { key: "condition" as SearchFilter, label: t("group_conditions"), icon: <HeartPulse className="w-3 h-3" /> },
             ]).map((f) => (
               <button
@@ -350,6 +371,125 @@ export function CommandPalette() {
                     <span className="font-medium">{c.name}</span>
                     <span className="text-xs text-muted-foreground truncate flex-1">
                       {c.description.split("\n")[0].slice(0, 60)}…
+                    </span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Items */}
+            {itemResults.length > 0 && (
+              <Command.Group heading={t("group_items")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <Sword className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_items")}
+                </div>
+                {itemResults.map((r) => (
+                  <Command.Item
+                    key={`i:${r.item.id}`}
+                    value={`item:${r.item.id}`}
+                    onSelect={handleClose}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium">{r.item.name}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {r.item.type}{r.item.rarity ? ` · ${r.item.rarity}` : ""}
+                      </span>
+                    </div>
+                    {r.item.reqAttune && (
+                      <span className="text-[10px] text-purple-400 bg-purple-400/10 px-1.5 py-0.5 rounded">ATT</span>
+                    )}
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Feats */}
+            {featResults.length > 0 && (
+              <Command.Group heading={t("group_feats")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <Star className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_feats")}
+                </div>
+                {featResults.map((r) => (
+                  <Command.Item
+                    key={`f:${r.item.id}`}
+                    value={`feat:${r.item.id}`}
+                    onSelect={handleClose}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium">{r.item.name}</span>
+                      {r.item.prerequisite && (
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          {r.item.prerequisite}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.06] text-muted-foreground">
+                      {r.item.source}
+                    </span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Backgrounds */}
+            {backgroundResults.length > 0 && (
+              <Command.Group heading={t("group_backgrounds")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <ScrollText className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_backgrounds")}
+                </div>
+                {backgroundResults.map((r) => (
+                  <Command.Item
+                    key={`bg:${r.item.id}`}
+                    value={`background:${r.item.id}`}
+                    onSelect={handleClose}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium">{r.item.name}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {r.item.skill_proficiencies.join(", ")}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.06] text-muted-foreground">
+                      {r.item.source}
+                    </span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Abilities (class features, racial traits, subclass features) */}
+            {abilityResults.length > 0 && (
+              <Command.Group heading={t("group_abilities")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <Zap className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_abilities")}
+                </div>
+                {abilityResults.map((r) => (
+                  <Command.Item
+                    key={`ab:${r.item.id}`}
+                    value={`ability:${r.item.id}`}
+                    onSelect={handleClose}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium">{r.item.name}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {r.item.source_class || r.item.source_race || "Feat"}
+                        {r.item.level_acquired ? ` · Lv${r.item.level_acquired}` : ""}
+                      </span>
+                    </div>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                      r.item.ability_type === "class_feature" ? "bg-amber-400/10 text-amber-400"
+                      : r.item.ability_type === "racial_trait" ? "bg-emerald-400/10 text-emerald-400"
+                      : r.item.ability_type === "subclass_feature" ? "bg-cyan-400/10 text-cyan-400"
+                      : "bg-purple-400/10 text-purple-400"
+                    }`}>
+                      {r.item.ability_type === "class_feature" ? "Class"
+                      : r.item.ability_type === "racial_trait" ? "Racial"
+                      : r.item.ability_type === "subclass_feature" ? "Subclass"
+                      : "Feat"}
                     </span>
                   </Command.Item>
                 ))}
