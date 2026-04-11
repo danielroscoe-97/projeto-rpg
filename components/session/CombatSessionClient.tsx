@@ -496,6 +496,9 @@ export function CombatSessionClient({
   }, []);
 
   // Hydrate the store from server-fetched data (skip for fresh encounters).
+  // Use a ref to ensure clearEncounter only runs once for "new encounter" mode,
+  // preventing combatant loss from effect re-runs (React Strict Mode, dep changes).
+  const hydrationDoneRef = useRef(false);
   useEffect(() => {
     const store = useCombatStore.getState();
     if (encounterId && sessionId) {
@@ -553,8 +556,11 @@ export function CombatSessionClient({
           }).catch(() => { /* non-fatal */ });
         }
       }
-    } else {
+      hydrationDoneRef.current = true;
+    } else if (!hydrationDoneRef.current) {
+      // Only clear on initial mount — subsequent re-runs must not wipe user-added combatants
       store.clearEncounter();
+      hydrationDoneRef.current = true;
     }
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
 

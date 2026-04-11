@@ -8,6 +8,10 @@ import { CombatSessionClient } from "@/components/session/CombatSessionClient";
 import type { PlayerCharacter } from "@/lib/types/database";
 import { fetchEncounterPreset } from "@/lib/supabase/encounter-presets";
 import type { EncounterPreset } from "@/lib/types/encounter-preset";
+import type { Combatant } from "@/lib/types/combat";
+
+/** Stable empty array — avoids referential changes that retrigger CombatSessionClient hydration effect */
+const EMPTY_COMBATANTS: Combatant[] = [];
 
 interface CampaignOption {
   id: string;
@@ -202,7 +206,7 @@ export default function NewEncounterPage() {
       <CombatSessionClient
         sessionId={null}
         encounterId={null}
-        initialCombatants={[]}
+        initialCombatants={EMPTY_COMBATANTS}
         isActive={false}
         roundNumber={1}
         currentTurnIndex={0}
