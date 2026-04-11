@@ -260,6 +260,8 @@ export function clearAllLoaderCaches() {
   monsterCache.clear();
   monsterCrossrefCache.clear();
   madMonsterCache.clear();
+  spellCache.clear();
+  conditionCache.clear();
   featCache.clear();
   backgroundCache.clear();
   itemCache.clear();
@@ -310,26 +312,44 @@ export function loadMadMonsters(): Promise<SrdMonster[]> {
   return promise;
 }
 
+const spellCache = new Map<string, Promise<SrdSpell[]>>();
+
 /** Fetches the SRD spell bundle for a given ruleset version.
- *  Results are cached by the browser via the standard fetch cache. */
-export async function loadSpells(
+ *  Promise is cached so multiple callers share one fetch+parse. */
+export function loadSpells(
   version: RulesetVersion
 ): Promise<SrdSpell[]> {
-  const res = await fetch(srdDataUrl(`spells-${version}.json`));
-  if (!res.ok) {
-    throw new Error(`Failed to load SRD spells (${version}): ${res.status}`);
-  }
-  return res.json() as Promise<SrdSpell[]>;
+  const key = loaderCacheKey(version);
+  const cached = spellCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(srdDataUrl(`spells-${version}.json`)).then((res) => {
+    if (!res.ok) {
+      spellCache.delete(key);
+      throw new Error(`Failed to load SRD spells (${version}): ${res.status}`);
+    }
+    return res.json() as Promise<SrdSpell[]>;
+  });
+  spellCache.set(key, promise);
+  return promise;
 }
 
+const conditionCache = new Map<string, Promise<SrdCondition[]>>();
+
 /** Fetches the SRD conditions bundle (version-agnostic).
- *  Results are cached by the browser via the standard fetch cache. */
-export async function loadConditions(): Promise<SrdCondition[]> {
-  const res = await fetch(srdDataUrl("conditions.json"));
-  if (!res.ok) {
-    throw new Error(`Failed to load SRD conditions: ${res.status}`);
-  }
-  return res.json() as Promise<SrdCondition[]>;
+ *  Promise is cached so multiple callers share one fetch+parse. */
+export function loadConditions(): Promise<SrdCondition[]> {
+  const key = loaderCacheKey("all");
+  const cached = conditionCache.get(key);
+  if (cached) return cached;
+  const promise = fetch(srdDataUrl("conditions.json")).then((res) => {
+    if (!res.ok) {
+      conditionCache.delete(key);
+      throw new Error(`Failed to load SRD conditions: ${res.status}`);
+    }
+    return res.json() as Promise<SrdCondition[]>;
+  });
+  conditionCache.set(key, promise);
+  return promise;
 }
 
 const featCache = new Map<string, Promise<SrdFeat[]>>();

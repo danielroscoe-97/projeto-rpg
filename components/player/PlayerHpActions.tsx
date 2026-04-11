@@ -125,8 +125,8 @@ export function PlayerHpActions({
                   : undefined
             }
             className={cn(
-              // UX.14 — min touch target 44px, increased padding
-              "flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border transition-colors min-h-[40px] touch-manipulation",
+              // UX.14 — WCAG min touch target 44px
+              "flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border transition-colors min-h-[44px] touch-manipulation",
               // UX.16 — distinct visual for offline vs disabled-by-condition
               isOffline
                 ? "opacity-30 pointer-events-none border-transparent text-muted-foreground"

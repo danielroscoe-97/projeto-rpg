@@ -95,6 +95,9 @@ async function loadWithCache<T>(
 const PRIMARY_VERSION: RulesetVersion = "2024";
 const DEFERRED_VERSION: RulesetVersion = "2014";
 
+/** Tracks in-flight loadVersionOnDemand calls to prevent duplicate fetches. */
+const versionLoadInFlight = new Set<string>();
+
 export const useSrdStore = create<SrdStore>((set, get) => ({
   ...initialState,
 
@@ -279,9 +282,15 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
     const { loadedVersions, loadedMode } = get();
     if (loadedVersions.has(version) && loadedMode === requestedMode) return;
 
+    // Prevent duplicate in-flight fetches for the same version+mode
+    const flightKey = `${version}:${requestedMode}`;
+    if (versionLoadInFlight.has(flightKey)) return;
+    versionLoadInFlight.add(flightKey);
+
     // If a deferred load from a previous mode fires after the user changes
     // access level, re-bootstrap the store instead of mixing datasets.
     if (loadedMode && loadedMode !== requestedMode) {
+      versionLoadInFlight.delete(flightKey);
       await get().initializeSrd();
       return;
     }
@@ -318,6 +327,8 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
       });
     } catch {
       // Deferred load failure is non-critical — user can retry via search
+    } finally {
+      versionLoadInFlight.delete(flightKey);
     }
   },
 }));
