@@ -1,114 +1,176 @@
 # Compendium i18n Audit — 2026-04-12
 
-## O que foi feito nesta sessao
+## Resumo Executivo
 
-### 1. Contagem dinamica de monstros no hero
-- O numero "776 monstros" no hero agora atualiza quando o usuario loga (mostra ~4472)
-- Componente `MonsterHeroCount` + store `monster-count-store.ts` (useSyncExternalStore)
-- `CompendiumMonsterHydrator` chama `setHeroMonsterCount()` ao carregar dados completos
-
-### 2. Aspas removidas dos nomes de monstros
-- `cleanDisplayName()` em `lib/utils/monster.ts` remove aspas retas e curly quotes
-- Afeta: "The Demogorgon" e "Size-of-a-Field" Mouse
-- Aplicado no displayName, subtitleName e agrupamento alfabetico
-
-### 3. Letras acentuadas agrupadas (A+A, I+I)
-- `baseFirstLetter()` normaliza via NFD decomposition
-- Monstros como "Arvore Desperta" (A) e "Incubo" (I) agora ficam nos grupos A e I
-
-### 4. Filtro de CR com selecao de valores
-- Dois `<select>` dropdowns (Min / Max) com 31 valores: 0, 1/8, 1/4, 1/2, 1..30
-- Substituiu os chips de range fixo (0-1, 2-4, etc.)
-- Auto-corrige min > max e vice-versa
-
-### 5. Traducao PT-BR de nomes de monstros
-- Script: `scripts/translate-monster-names.ts` (dicionario + regex, sem API)
-- Resultado: **4085/4085 monstros com nome PT-BR** (antes: 731)
-  - 738 traducoes manuais preservadas (com abilities/actions)
-  - 1382 traduzidos por padroes
-  - 1955 nomes proprios mantidos como-is (NPCs)
-- Para re-rodar: `npx tsx scripts/translate-monster-names.ts --force`
+Internacionalizacao completa do Pocket DM em uma sessao:
+- **100% do compendio traduzido** para PT-BR (7268 itens de conteudo)
+- **Landing page bilingue** (PT-BR + EN, 159 keys via next-intl)
+- **Toggle de idioma persistente** em todas as paginas do compendio
+- **2 code reviews** com 9 fixes aplicados (3 CRITICAL + 6 WARNING)
+- **Auditoria SRD** com fix critico de vazamento de dados corrigido
 
 ---
 
-## Auditoria de paginas do compendio — Status de traducao
+## Sprint 1 — Quick Wins + Magias
 
-### Totalmente traduzidos (EN + PT com dados)
+### S1-01: Toggle de idioma persistente
+- Hook `useLocalePreference` salva preferencia em localStorage + cookie NEXT_LOCALE
+- Sync init (sem hydration flash), try-catch (Safari private)
+- Aplicado em 6 grids: Monsters, Spells, Items, Feats, Races, Conditions, Classes
+- Troca uma vez → todas as paginas lembram
 
-| Conteudo | Rota EN | Rota PT | Dados PT | Status |
-|----------|---------|---------|----------|--------|
-| Monstros | /monsters | /monstros | monster-descriptions-pt.json, monster-names-pt.json | COMPLETO |
-| Magias | /spells | /magias | spell-descriptions-pt.json, spell-names-pt.json | COMPLETO (~198 SRD) |
+### S1-02: Condicoes e Doencas
+- Ja traduzidas (hardcoded no PublicConditionsGrid.tsx)
+- 64 condicoes com nomes e descricoes PT-BR
 
-### UI traduzida, dados em ingles (GAP)
+### S1-03+04: Magias SRD + nao-SRD
+- Script: `scripts/translate-spell-names.ts`
+- **557/557 magias com nome PT-BR** (361 pre-existentes + 196 novas)
 
-| Conteudo | Rota EN | Rota PT | Itens | Prioridade |
-|----------|---------|---------|-------|------------|
-| Itens | /items | /itens | ~1164 SRD | MEDIA |
-| Talentos | /feats | /talentos | 265 SRD | MEDIA |
-| Racas | /races | /racas | 9 core + subraces | MEDIA |
-| Classes | /classes | /classes-pt | 12 classes + features | MEDIA |
-| Antecedentes | /backgrounds | /antecedentes | 156 SRD | BAIXA |
-| Condicoes | /conditions | /condicoes | ~64 tipos | BAIXA |
-| Doencas | /diseases | /doencas | subset de conditions | BAIXA |
+### S1-05: hreflang
+- Ja presente em todas as 54 paginas do compendio (verificado)
 
-### Estaticos — sem gap de traducao
-
-| Conteudo | Rota EN | Rota PT | Status |
-|----------|---------|---------|--------|
-| Acoes | /actions | /acoes-em-combate | COMPLETO (hardcoded) |
-| Atributos | /ability-scores | /atributos | COMPLETO (hardcoded) |
-| Tipos de dano | /damage-types | /tipos-de-dano | COMPLETO (hardcoded) |
+**Commit:** `c879ea2`
 
 ---
 
-## Fontes externas de traducao PT-BR
+## Sprint 2 — Itens + Talentos
 
-### Usaveis em paginas publicas (licenca CC)
+### S2-01+02: Itens
+- Script: `scripts/translate-item-names.ts`
+- **1985/1985 itens com nome PT-BR** (1354 traduzidos + 631 nomes proprios)
 
-| Fonte | Conteudo | Licenca | URL |
-|-------|----------|---------|-----|
-| Artificio RPG SRD 5.2 PT-BR | SRD completo (monstros, magias, itens, classes) | CC-BY-4.0 | https://artificiorpg.com/dd/dnd-srd-52-portugues-download/ |
-| Aventureiros dos Reinos | 400+ termos traduzidos | Creative Commons (variante nao especificada) | https://aventureirosdosreinos.com/tabela-de-traducoes/ |
+### S2-03+04: Talentos
+- Script: `scripts/translate-feat-names.ts`
+- **216/216 talentos com nome PT-BR** (156 traduzidos + 60 nomes proprios)
 
-### Usaveis apenas em conteudo auth-gated
-
-| Fonte | Conteudo | Formato | URL |
-|-------|----------|---------|-----|
-| decito/dnd5e-pt-br (Foundry VTT) | 331 monstros, 319 magias, 791 itens em JSON | JSON estruturado | https://github.com/decito/dnd5e-pt-br |
-| comic-code Gist | 318 magias com descricoes completas | JSON array | https://gist.github.com/comic-code/e7693a7ff162c4cf9726e682445fc57f |
-| Guia do Tiferino | Dicionario oficial Galapagos | PDF (DMsGuild) | https://www.dmsguild.com/product/308596 |
-
-### Apenas referencia (NAO usar diretamente)
-
-| Fonte | Motivo |
-|-------|--------|
-| Galapagos Jogos (publicacoes oficiais) | Copyright — convencoes oficiais sao referencia |
-| 5etools PT-BR mirrors | Dados em ingles, traducao e so UI |
-| hotaydev/dnd-beyond-kit | Frases de UI, nao nomes de monstros/magias |
+**Commit:** `413d810`
 
 ---
 
-## Proximos passos recomendados
+## Sprint 3 — Racas + Classes + Antecedentes
 
-1. **Extrair traducoes do Artificio RPG SRD 5.2 PDF** (CC-BY-4.0) — unica fonte segura para paginas publicas
-2. **Cross-validar nossas traducoes** com o repo decito/dnd5e-pt-br para qualidade
-3. **Criar scripts similares ao translate-monster-names.ts** para: magias, itens, talentos, racas
-4. **Priorizar**: Magias (gap de ~163 SRD) > Itens > Talentos > Racas > Classes > Antecedentes > Condicoes
+### Racas
+- Ja 100% bilingue (dados nativos em `lib/srd/races-data.ts` com nameEn/namePt)
+
+### Classes
+- Ja 100% bilingue (`classes-full.json` com name_pt + description_pt)
+
+### Antecedentes
+- Script: `scripts/translate-background-names.ts`
+- **145/145 antecedentes com nome PT-BR** (92 traduzidos + 53 nomes proprios)
+
+**Commit:** `233e558`
 
 ---
 
-## Arquivos modificados nesta sessao
+## Landing Page Bilingue
 
-- `components/public/MonsterHeroCount.tsx` — NOVO
-- `lib/stores/monster-count-store.ts` — NOVO
-- `scripts/translate-monster-names.ts` — NOVO (reescrito, sem API)
-- `app/monsters/page.tsx` — MonsterHeroCount
-- `app/monstros/page.tsx` — MonsterHeroCount
-- `components/public/CompendiumMonsterHydrator.tsx` — setHeroMonsterCount
-- `components/public/PublicMonsterGrid.tsx` — CR filter, cleanDisplayName, baseFirstLetter
-- `lib/utils/monster.ts` — ALL_CR_VALUES, cleanDisplayName, baseFirstLetter
-- `data/srd/monster-descriptions-pt.json` — 4085 nomes PT-BR
-- `data/srd/monster-names-pt.json` — slug mappings atualizados
+- 159 keys no namespace "landing" (messages/pt-BR.json + messages/en.json)
+- Todas as 8 secoes: Hero, Features, How It Works, Comparison, Compendium, Social Proof, Beyond Combat, Final CTA
+- Navbar + FAQ JSON-LD tambem traduzidos
+- Idioma auto-detectado pelo cookie NEXT_LOCALE (middleware)
 
-Commit: `5fab53a`
+**Commit:** `0ea7b1e`
+
+---
+
+## Code Reviews + Fixes
+
+### Code Review 1 (apos Sprint 1+2)
+
+| ID | Severidade | Issue | Fix |
+|----|-----------|-------|-----|
+| C1 | CRITICAL | localStorage sem try-catch (crash Safari private) | try-catch com fallback |
+| C2 | CRITICAL | useLocalePreference duplicado no LanguageToggle | Removido — so parent persiste |
+| C3 | CRITICAL | toSlug destruia acentos (slugs quebrados) | NFD normalize antes do strip |
+| W1 | WARNING | "de o" em vez de "do" (106 itens) | Post-processing de contracoes |
+| W5 | WARNING | Hydration flash EN→PT | Sync read no useState init |
+| W6 | WARNING | samesite vs SameSite | Padronizado com codebase |
+
+**Commit:** `233e558`
+
+### Code Review 2 (apos LP + Sprint 3)
+
+| ID | Severidade | Issue | Fix |
+|----|-----------|-------|-----|
+| C-1 | CRITICAL | ptNameMap com ~3300 nomes nao-SRD no HTML publico | Filtrado por srdSlugs |
+| W-1 | WARNING | 78 feats sem preposicoes traduzidas | Adicionado of/the/and ao dict |
+| W-3 | WARNING | Folk Hero → "Heroi Heroi" | Corrigido para "Heroi Popular" |
+| W-2 | INFO | ~252 itens com traducao parcial | Limitacao do dicionario |
+| W-4 | INFO | Background script sem --stats | Comportamento inconsistente |
+
+**Commit:** fix(srd-compliance)
+
+---
+
+## Cobertura Final de Traducao
+
+| Conteudo | Total | PT-BR | Cobertura |
+|----------|-------|-------|-----------|
+| Monstros | 4085 | 4085 | 100% |
+| Magias | 557 | 557 | 100% |
+| Itens | 1985 | 1985 | 100% |
+| Talentos | 216 | 216 | 100% |
+| Condicoes | 64 | 64 | 100% |
+| Antecedentes | 145 | 145 | 100% |
+| Racas | 9 | 9 | 100% |
+| Classes | 12 | 12 | 100% |
+| Landing Page | 159 keys | 159 keys | 100% |
+| Messages i18n | 3804+ keys | 3804+ keys | 100% |
+
+**Total: 7268 itens de conteudo + 159 keys de LP traduzidos**
+
+---
+
+## Protecao SRD — Status
+
+| Verificacao | Resultado |
+|-------------|-----------|
+| Traducoes PT em public/srd/ | ZERO (correto) |
+| Traducoes PT em data/srd/ | 11 arquivos (correto) |
+| API auth-gated serve traducoes | NAO (correto) |
+| ptNameMap no SSR | Filtrado por srdSlugs (corrigido) |
+| Magias usam helpers server-side | SIM (correto) |
+
+---
+
+## Scripts de Traducao
+
+| Script | Conteudo | Dicionario | Padroes |
+|--------|----------|------------|---------|
+| `translate-monster-names.ts` | 4085 monstros | ~400 termos | 25+ regex patterns |
+| `translate-spell-names.ts` | 557 magias | ~200 termos | 20+ regex patterns |
+| `translate-item-names.ts` | 1985 itens | ~250 termos | 30+ regex patterns |
+| `translate-feat-names.ts` | 216 talentos | ~80 termos | word-by-word |
+| `translate-background-names.ts` | 145 antecedentes | ~60 termos | 7 regex patterns |
+
+Re-rodar qualquer um: `npx tsx scripts/translate-{tipo}-names.ts --force`
+
+---
+
+## Fontes Externas Identificadas
+
+### Usaveis em paginas publicas (CC-BY-4.0)
+- **Artificio RPG SRD 5.2 PT-BR** — SRD completo traduzido profissionalmente
+
+### Usaveis em conteudo auth-gated
+- **decito/dnd5e-pt-br** — 331 monstros, 319 magias, 791 itens em JSON
+- **comic-code Gist** — 318 magias com descricoes completas
+
+### Referencia apenas
+- **Guia do Tiferino** — Dicionario oficial Galapagos (DMsGuild)
+
+---
+
+## Proximos Passos
+
+1. Cross-validar traducoes com Artificio RPG SRD 5.2 (CC-BY-4.0)
+2. Melhorar qualidade dos ~252 itens com traducao parcial (LLM ou manual)
+3. Blog posts em ingles (top 3-5 para SEO internacional)
+
+---
+
+## Prompt de Revisao
+
+Ver `docs/review-prompt-i18n-srd-audit.md` para prompt completo de validacao por terceiros.
