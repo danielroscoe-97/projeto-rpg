@@ -1893,7 +1893,7 @@
     "name_pt": "Abi-Dalzim's Horrid Wilting"
   },
   "absorb-elements": {
-    "name_pt": "Absorb Elements"
+    "name_pt": "Absorver Elementos"
   },
   "aganazzars-scorcher": {
     "name_pt": "Scorcher de Aganazzar"
@@ -1905,13 +1905,13 @@
     "name_pt": "Mooncloak de Alustriel"
   },
   "antagonize": {
-    "name_pt": "Antagonize"
+    "name_pt": "Antagonizar"
   },
   "ashardalons-stride": {
     "name_pt": "Stride de Ashardalon"
   },
   "backlash": {
-    "name_pt": "Backlash"
+    "name_pt": "Retaliação"
   },
   "beast-bond": {
     "name_pt": "Besta Bond"
@@ -1926,22 +1926,22 @@
     "name_pt": "Booming Lâmina"
   },
   "borrowed-knowledge": {
-    "name_pt": "Borrowed Knowledge"
+    "name_pt": "Conhecimento Emprestado"
   },
   "cacophonic-shield": {
     "name_pt": "Cacophonic Escudo"
   },
   "catapult": {
-    "name_pt": "Catapult"
+    "name_pt": "Catapulta"
   },
   "catnap": {
-    "name_pt": "Catnap"
+    "name_pt": "Cochilo"
   },
   "cause-fear": {
     "name_pt": "Cause Medo"
   },
   "ceremony": {
-    "name_pt": "Ceremony"
+    "name_pt": "Cerimônia"
   },
   "chaos-bolt": {
     "name_pt": "Caos Raio"
@@ -1956,7 +1956,7 @@
     "name_pt": "Control Chamas"
   },
   "control-winds": {
-    "name_pt": "Control Winds"
+    "name_pt": "Controlar Ventos"
   },
   "create-bonfire": {
     "name_pt": "Criar Bonfire"
@@ -1974,13 +1974,13 @@
     "name_pt": "Coroa de Stars"
   },
   "danse-macabre": {
-    "name_pt": "Danse Macabre"
+    "name_pt": "Dança Macabra"
   },
   "dark-star": {
-    "name_pt": "Dark Star"
+    "name_pt": "Estrela Negra"
   },
   "dawn": {
-    "name_pt": "Dawn"
+    "name_pt": "Aurora"
   },
   "death-armor": {
     "name_pt": "Morte Armadura"
@@ -1989,16 +1989,16 @@
     "name_pt": "Helpful Homunculi de Deryan"
   },
   "dirge": {
-    "name_pt": "Dirge"
+    "name_pt": "Réquiem"
   },
   "distort-value": {
-    "name_pt": "Distort Value"
+    "name_pt": "Distorcer Valor"
   },
   "doomtide": {
-    "name_pt": "Doomtide"
+    "name_pt": "Maré da Perdição"
   },
   "draconic-transformation": {
-    "name_pt": "Draconic Transformation"
+    "name_pt": "Transformação Dracônica"
   },
   "dragons-breath": {
     "name_pt": "Sopro de Dragon"
@@ -2016,7 +2016,7 @@
     "name_pt": "Terra Tremor"
   },
   "earthbind": {
-    "name_pt": "Earthbind"
+    "name_pt": "Prender à Terra"
   },
   "elemental-bane": {
     "name_pt": "Elemental Perdição"
@@ -2028,22 +2028,22 @@
     "name_pt": "Elusion de Elminster"
   },
   "encode-thoughts": {
-    "name_pt": "Encode Thoughts"
+    "name_pt": "Codificar Pensamentos"
   },
   "enemies-abound": {
-    "name_pt": "Enemies Abound"
+    "name_pt": "Inimigos por Toda Parte"
   },
   "enervation": {
-    "name_pt": "Enervation"
+    "name_pt": "Enervação"
   },
   "erupting-earth": {
     "name_pt": "Erupting Terra"
   },
   "far-step": {
-    "name_pt": "Far Step"
+    "name_pt": "Passo Distante"
   },
   "fast-friends": {
-    "name_pt": "Fast Friends"
+    "name_pt": "Amigos Rápidos"
   },
   "find-greater-steed": {
     "name_pt": "Encontrar Maior Corcel"
@@ -2064,7 +2064,7 @@
     "name_pt": "Gelo Fingers"
   },
   "frostbite": {
-    "name_pt": "Frostbite"
+    "name_pt": "Queimadura de Gelo"
   },
   "galders-speedy-courier": {
     "name_pt": "Speedy Courier de Galder"
@@ -2082,10 +2082,10 @@
     "name_pt": "Gift de Gab"
   },
   "gravity-fissure": {
-    "name_pt": "Gravity Fissure"
+    "name_pt": "Fissura Gravitacional"
   },
   "gravity-sinkhole": {
-    "name_pt": "Gravity Sinkhole"
+    "name_pt": "Buraco Gravitacional"
   },
   "green-flame-blade": {
     "name_pt": "Green-Flame Lâmina"
@@ -2094,7 +2094,7 @@
     "name_pt": "Guardião de Nature"
   },
   "gust": {
-    "name_pt": "Gust"
+    "name_pt": "Rajada"
   },
   "healing-spirit": {
     "name_pt": "Cura Espírito"
@@ -2115,37 +2115,37 @@
     "name_pt": "Illusory Dragão"
   },
   "immolation": {
-    "name_pt": "Immolation"
+    "name_pt": "Imolação"
   },
   "immovable-object": {
-    "name_pt": "Immovable Object"
+    "name_pt": "Objeto Imóvel"
   },
   "incite-greed": {
-    "name_pt": "Incite Greed"
+    "name_pt": "Incitar Ganância"
   },
   "infernal-calling": {
-    "name_pt": "Infernal Calling"
+    "name_pt": "Chamado Infernal"
   },
   "infestation": {
-    "name_pt": "Infestation"
+    "name_pt": "Infestação"
   },
   "intellect-fortress": {
-    "name_pt": "Intellect Fortress"
+    "name_pt": "Fortaleza do Intelecto"
   },
   "investiture-of-flame": {
-    "name_pt": "Investiture de Chama"
+    "name_pt": "Investidura de Chama"
   },
   "investiture-of-ice": {
-    "name_pt": "Investiture de Gelo"
+    "name_pt": "Investidura de Gelo"
   },
   "investiture-of-stone": {
-    "name_pt": "Investiture de Pedra"
+    "name_pt": "Investidura de Pedra"
   },
   "investiture-of-wind": {
-    "name_pt": "Investiture de Vento"
+    "name_pt": "Investidura de Vento"
   },
   "invulnerability": {
-    "name_pt": "Invulnerability"
+    "name_pt": "Invulnerabilidade"
   },
   "jims-glowing-coin": {
     "name_pt": "Glowing Coin de Jim"
@@ -2154,7 +2154,7 @@
     "name_pt": "Mágico Míssil de Jim"
   },
   "kinetic-jaunt": {
-    "name_pt": "Kinetic Jaunt"
+    "name_pt": "Passeio Cinético"
   },
   "laerals-silver-lance": {
     "name_pt": "Prata Lance de Laeral"
@@ -2166,7 +2166,7 @@
     "name_pt": "Relâmpago Lure"
   },
   "linked-glyphs": {
-    "name_pt": "Linked Glyphs"
+    "name_pt": "Glifos Vinculados"
   },
   "maddening-darkness": {
     "name_pt": "Maddening Escuridão"
@@ -2178,7 +2178,7 @@
     "name_pt": "Mágico Pedra"
   },
   "magnify-gravity": {
-    "name_pt": "Magnify Gravity"
+    "name_pt": "Amplificar Gravidade"
   },
   "mass-polymorph": {
     "name_pt": "Polymorph em Massa"
@@ -2193,7 +2193,7 @@
     "name_pt": "Mental Prisão"
   },
   "mighty-fortress": {
-    "name_pt": "Mighty Fortress"
+    "name_pt": "Fortaleza Poderosa"
   },
   "mind-sliver": {
     "name_pt": "Mente Sliver"
@@ -2205,19 +2205,19 @@
     "name_pt": "Mold Terra"
   },
   "motivational-speech": {
-    "name_pt": "Motivational Speech"
+    "name_pt": "Discurso Motivacional"
   },
   "nathairs-mischief": {
     "name_pt": "Mischief de Nathair"
   },
   "negative-energy-flood": {
-    "name_pt": "Negative Energy Flood"
+    "name_pt": "Inundação de Energia Negativa"
   },
   "power-word-pain": {
-    "name_pt": "Poder Palavra Pain"
+    "name_pt": "Palavra de Poder: Dor"
   },
   "primal-savagery": {
-    "name_pt": "Primal Savagery"
+    "name_pt": "Selvageria Primal"
   },
   "primordial-ward": {
     "name_pt": "Primordial Proteção"
@@ -2229,25 +2229,25 @@
     "name_pt": "Pulse Onda"
   },
   "pyrotechnics": {
-    "name_pt": "Pyrotechnics"
+    "name_pt": "Pirotecnia"
   },
   "raulothims-psychic-lance": {
     "name_pt": "Psíquico Lance de Raulothim"
   },
   "ravenous-void": {
-    "name_pt": "Ravenous Void"
+    "name_pt": "Vazio Voraz"
   },
   "reality-break": {
-    "name_pt": "Reality Break"
+    "name_pt": "Ruptura da Realidade"
   },
   "rimes-binding-ice": {
     "name_pt": "Binding Gelo de Rime"
   },
   "sapping-sting": {
-    "name_pt": "Sapping Sting"
+    "name_pt": "Picada Enfraquecedora"
   },
   "scatter": {
-    "name_pt": "Scatter"
+    "name_pt": "Dispersar"
   },
   "shadow-blade": {
     "name_pt": "Sombra Lâmina"
@@ -2259,22 +2259,22 @@
     "name_pt": "Shape Água"
   },
   "sickening-radiance": {
-    "name_pt": "Sickening Radiance"
+    "name_pt": "Radiância Nauseante"
   },
   "silvery-barbs": {
-    "name_pt": "Silvery Barbs"
+    "name_pt": "Farpas Prateadas"
   },
   "simbuls-synostodweomer": {
     "name_pt": "Synostodweomer de Simbul"
   },
   "skill-empowerment": {
-    "name_pt": "Skill Empowerment"
+    "name_pt": "Empoderamento de Perícia"
   },
   "skywrite": {
-    "name_pt": "Skywrite"
+    "name_pt": "Escrita Celestial"
   },
   "snare": {
-    "name_pt": "Snare"
+    "name_pt": "Armadilha"
   },
   "snillocs-snowball-swarm": {
     "name_pt": "Snowball Swarm de Snilloc"
@@ -2286,7 +2286,7 @@
     "name_pt": "Alma Gaiola"
   },
   "spellfire-flare": {
-    "name_pt": "Spellfire Flare"
+    "name_pt": "Clarão de Fogo Mágico"
   },
   "spellfire-storm": {
     "name_pt": "Spellfire Tempestade"
@@ -2349,7 +2349,7 @@
     "name_pt": "Syluné's Viper"
   },
   "synaptic-static": {
-    "name_pt": "Synaptic Static"
+    "name_pt": "Estática Sináptica"
   },
   "tashas-caustic-brew": {
     "name_pt": "Caustic Brew de Tasha"
@@ -2364,19 +2364,19 @@
     "name_pt": "Temple do Gods"
   },
   "temporal-shunt": {
-    "name_pt": "Temporal Shunt"
+    "name_pt": "Desvio Temporal"
   },
   "tensers-transformation": {
     "name_pt": "Transformation de Tenser"
   },
   "tether-essence": {
-    "name_pt": "Tether Essence"
+    "name_pt": "Amarrar Essência"
   },
   "thunder-step": {
     "name_pt": "Trovão Step"
   },
   "thunderclap": {
-    "name_pt": "Thunderclap"
+    "name_pt": "Trovoada"
   },
   "tidal-wave": {
     "name_pt": "Tidal Onda"
@@ -2409,13 +2409,13 @@
     "name_pt": "Muralha de Água"
   },
   "wardaway": {
-    "name_pt": "Wardaway"
+    "name_pt": "Repelir"
   },
   "warding-wind": {
     "name_pt": "Warding Vento"
   },
   "warp-sense": {
-    "name_pt": "Warp Sense"
+    "name_pt": "Sentido Distorcido"
   },
   "watery-sphere": {
     "name_pt": "Watery Esfera"
@@ -2433,22 +2433,22 @@
     "name_pt": "Wrath de Nature"
   },
   "wristpocket": {
-    "name_pt": "Wristpocket"
+    "name_pt": "Bolso de Pulso"
   },
   "zephyr-strike": {
-    "name_pt": "Zephyr Strike"
+    "name_pt": "Golpe do Zéfiro"
   },
   "arcane-vigor": {
     "name_pt": "Arcano Vigor"
   },
   "befuddlement": {
-    "name_pt": "Befuddlement"
+    "name_pt": "Confusão"
   },
   "divine-smite": {
     "name_pt": "Divino Smite"
   },
   "elementalism": {
-    "name_pt": "Elementalism"
+    "name_pt": "Elementalismo"
   },
   "fount-of-moonlight": {
     "name_pt": "Fount de Moonlight"
@@ -2457,16 +2457,16 @@
     "name_pt": "Tempestade de Radiance de Jallarzi"
   },
   "power-word-fortify": {
-    "name_pt": "Poder Palavra Fortify"
+    "name_pt": "Palavra de Poder: Fortificar"
   },
   "shining-smite": {
-    "name_pt": "Shining Smite"
+    "name_pt": "Punição Brilhante"
   },
   "sorcerous-burst": {
     "name_pt": "Sorcerous Explosão"
   },
   "starry-wisp": {
-    "name_pt": "Starry Wisp"
+    "name_pt": "Fagulha Estelar"
   },
   "summon-dragon": {
     "name_pt": "Invocar Dragão"

@@ -57,6 +57,86 @@ const WORD_DICT: Record<string, string> = {
   with: "com",
   from: "de",
   in: "em",
+  // ── Missing words (audit fix) ──────────────────────
+  archery: "Arquearia",
+  blind: "Cego",
+  unarmed: "Desarmado",
+  mark: "Marca",
+  detection: "Detecção",
+  handling: "Manuseio",
+  boon: "Benção",
+  prowess: "Proeza",
+  vigor: "Vigor",
+  skill: "Perícia",
+  scion: "Descendente",
+  baleful: "Funesto",
+  bloodlust: "Sede de Sangue",
+  bomber: "Bombardeiro",
+  blessed: "Abençoado",
+  warrior: "Guerreiro",
+  greater: "Maior",
+  lesser: "Menor",
+  hill: "Colina",
+  fire: "Fogo",
+  frost: "Gelo",
+  stone: "Pedra",
+  cloud: "Nuvem",
+  storm: "Tempestade",
+};
+
+// ── Manual overrides for feats that don't translate well word-by-word ──
+const NAME_OVERRIDES: Record<string, string> = {
+  "Bountiful Luck": "Sorte Abundante",
+  "Cartomancer": "Cartomante",
+  "Chef": "Chef",
+  "Cloying Mists": "Névoas Sufocantes",
+  "Crafter": "Artífice",
+  "Defensive Duelist": "Duelista Defensivo",
+  "Delicious Pain": "Dor Deliciosa",
+  "Divinely Favored": "Favorecido Divino",
+  "Dragonscarred": "Cicatriz Dracônica",
+  "Dueling": "Duelo",
+  "Dungeon Delver": "Explorador de Masmorras",
+  "Dwarven Fortitude": "Fortitude Anã",
+  "Elven Accuracy": "Precisão Élfica",
+  "Emerald Enclave Fledgling": "Novato do Enclave Esmeralda",
+  "Fade Away": "Desvanecer",
+  "Fairy Trickster": "Trapaceiro Feérico",
+  "Harper Agent": "Agente Harper",
+  "Harper Teamwork": "Trabalho em Equipe Harper",
+  "Heavily Armored": "Armadura Pesada",
+  "Infernal Constitution": "Constituição Infernal",
+  "Interception": "Interceptação",
+  "Light Bringer": "Portador da Luz",
+  "Linguist": "Linguista",
+  "Lordly Resolve": "Resolução Senhorial",
+  "Love Bites": "Mordida do Amor",
+  "Moderately Armored": "Armadura Moderada",
+  "Musician": "Músico",
+  "Orcish Fury": "Fúria Orc",
+  "Outlands Envoy": "Enviado das Terras Exteriores",
+  "Planar Wanderer": "Andarilho Planar",
+  "Protection": "Proteção",
+  "Putrefy": "Putrefação",
+  "Quicksmithing": "Forja Rápida",
+  "Rebuke": "Repreensão",
+  "Revenant Blade": "Lâmina Revenant",
+  "Righteous Heritor": "Herdeiro Virtuoso",
+  "Rune Shaper": "Moldador de Runas",
+  "Second Chance": "Segunda Chance",
+  "Servo Crafting": "Fabricação de Servos",
+  "Shadowmoor Hexer": "Feiticeiro de Shadowmoor",
+  "Speedy": "Veloz",
+  "Spellfire Spark": "Fagulha de Fogo Mágico",
+  "Squat Nimbleness": "Agilidade Compacta",
+  "Street Justice": "Justiça das Ruas",
+  "Strixhaven Mascot": "Mascote de Strixhaven",
+  "Tireless Reveler": "Folião Incansável",
+  "Treacherous Allure": "Encanto Traiçoeiro",
+  "Vampire Hunter": "Caçador de Vampiros",
+  "Vampiric Exultation": "Exultação Vampírica",
+  "Zhentarim Ruffian": "Rufião Zhentarim",
+  "Zhentarim Tactics": "Táticas Zhentarim",
 };
 
 function translateCompound(phrase: string): string {
@@ -64,8 +144,20 @@ function translateCompound(phrase: string): string {
   return words.map((wd) => WORD_DICT[wd.toLowerCase()] ?? wd).join(" ");
 }
 
+function contractPrepositions(text: string): string {
+  return text
+    .replace(/\bde o\b/gi, "do")
+    .replace(/\bde a\b/gi, "da")
+    .replace(/\bde os\b/gi, "dos")
+    .replace(/\bde as\b/gi, "das")
+    .replace(/\bem o\b/gi, "no")
+    .replace(/\bem a\b/gi, "na");
+}
+
 function translateName(name: string): string {
-  return translateCompound(name.replace(/["""\u201C\u201D]/g, ""));
+  const clean = name.replace(/["""\u201C\u201D]/g, "");
+  if (NAME_OVERRIDES[clean]) return contractPrepositions(NAME_OVERRIDES[clean]);
+  return contractPrepositions(translateCompound(clean));
 }
 
 // ── Main ─────────────────────────────────────────────────────────────

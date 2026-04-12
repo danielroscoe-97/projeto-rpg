@@ -277,6 +277,12 @@ const WORD_DICT: Record<string, string> = {
   spider: "Aranha",
   // ── Possessives / prepositions ─────────────────
   of: "de",
+  investiture: "Investidura",
+  pain: "Dor",
+  fortify: "Fortificar",
+  stun: "Atordoar",
+  kill: "Matar",
+  heal: "Curar",
   the: "o",
   and: "e",
   or: "ou",
@@ -286,6 +292,76 @@ const WORD_DICT: Record<string, string> = {
   into: "em",
   upon: "sobre",
   within: "dentro de",
+};
+
+// ── Manual overrides for spells that don't translate well word-by-word ──
+const NAME_OVERRIDES: Record<string, string> = {
+  "Clone": "Clone",
+  "Geas": "Geas",
+  "Tsunami": "Tsunami",
+  "Absorb Elements": "Absorver Elementos",
+  "Antagonize": "Antagonizar",
+  "Backlash": "Retaliação",
+  "Borrowed Knowledge": "Conhecimento Emprestado",
+  "Catapult": "Catapulta",
+  "Catnap": "Cochilo",
+  "Ceremony": "Cerimônia",
+  "Control Winds": "Controlar Ventos",
+  "Danse Macabre": "Dança Macabra",
+  "Dark Star": "Estrela Negra",
+  "Dawn": "Aurora",
+  "Dirge": "Réquiem",
+  "Distort Value": "Distorcer Valor",
+  "Doomtide": "Maré da Perdição",
+  "Draconic Transformation": "Transformação Dracônica",
+  "Earthbind": "Prender à Terra",
+  "Encode Thoughts": "Codificar Pensamentos",
+  "Enemies Abound": "Inimigos por Toda Parte",
+  "Enervation": "Enervação",
+  "Far Step": "Passo Distante",
+  "Fast Friends": "Amigos Rápidos",
+  "Frostbite": "Queimadura de Gelo",
+  "Gravity Fissure": "Fissura Gravitacional",
+  "Gravity Sinkhole": "Buraco Gravitacional",
+  "Gust": "Rajada",
+  "Immolation": "Imolação",
+  "Immovable Object": "Objeto Imóvel",
+  "Incite Greed": "Incitar Ganância",
+  "Infernal Calling": "Chamado Infernal",
+  "Infestation": "Infestação",
+  "Intellect Fortress": "Fortaleza do Intelecto",
+  "Invulnerability": "Invulnerabilidade",
+  "Kinetic Jaunt": "Passeio Cinético",
+  "Linked Glyphs": "Glifos Vinculados",
+  "Maelstrom": "Maelstrom",
+  "Magnify Gravity": "Amplificar Gravidade",
+  "Mighty Fortress": "Fortaleza Poderosa",
+  "Motivational Speech": "Discurso Motivacional",
+  "Negative Energy Flood": "Inundação de Energia Negativa",
+  "Primal Savagery": "Selvageria Primal",
+  "Pyrotechnics": "Pirotecnia",
+  "Ravenous Void": "Vazio Voraz",
+  "Reality Break": "Ruptura da Realidade",
+  "Sapping Sting": "Picada Enfraquecedora",
+  "Scatter": "Dispersar",
+  "Sickening Radiance": "Radiância Nauseante",
+  "Silvery Barbs": "Farpas Prateadas",
+  "Skill Empowerment": "Empoderamento de Perícia",
+  "Skywrite": "Escrita Celestial",
+  "Snare": "Armadilha",
+  "Spellfire Flare": "Clarão de Fogo Mágico",
+  "Synaptic Static": "Estática Sináptica",
+  "Temporal Shunt": "Desvio Temporal",
+  "Tether Essence": "Amarrar Essência",
+  "Thunderclap": "Trovoada",
+  "Wardaway": "Repelir",
+  "Warp Sense": "Sentido Distorcido",
+  "Wristpocket": "Bolso de Pulso",
+  "Zephyr Strike": "Golpe do Zéfiro",
+  "Befuddlement": "Confusão",
+  "Elementalism": "Elementalismo",
+  "Shining Smite": "Punição Brilhante",
+  "Starry Wisp": "Fagulha Estelar",
 };
 
 // ── Patterns ─────────────────────────────────────────────────────────
@@ -305,6 +381,10 @@ function translateCompound(phrase: string): string {
 }
 
 const PATTERNS: TranslationPattern[] = [
+  // "Power Word X" → "Palavra de Poder: X"
+  { regex: /^Power Word (.+)$/i, replace: (m) => `Palavra de Poder: ${translateCompound(m[1])}` },
+  // "Investiture of X" → "Investidura de X"
+  { regex: /^Investiture of (.+)$/i, replace: (m) => `Investidura de ${translateCompound(m[1])}` },
   // "X's Y" → "Y de X" (possessive)
   { regex: /^(\w+)'s (.+)$/i, replace: (m) => `${translateCompound(m[2])} de ${m[1]}` },
   // "Wall of X" → "Muralha de X"
@@ -357,15 +437,28 @@ const PATTERNS: TranslationPattern[] = [
   { regex: /^Mass (.+)$/i, replace: (m) => `${translateCompound(m[1])} em Massa` },
 ];
 
+function contractPrepositions(text: string): string {
+  return text
+    .replace(/\bde o\b/gi, "do")
+    .replace(/\bde a\b/gi, "da")
+    .replace(/\bde os\b/gi, "dos")
+    .replace(/\bde as\b/gi, "das")
+    .replace(/\bem o\b/gi, "no")
+    .replace(/\bem a\b/gi, "na");
+}
+
 function translateName(name: string): string {
   const clean = name.replace(/["""\u201C\u201D]/g, "");
 
+  // Check manual overrides first
+  if (NAME_OVERRIDES[clean]) return contractPrepositions(NAME_OVERRIDES[clean]);
+
   for (const pat of PATTERNS) {
     const m = clean.match(pat.regex);
-    if (m) return pat.replace(m);
+    if (m) return contractPrepositions(pat.replace(m));
   }
 
-  return translateCompound(clean);
+  return contractPrepositions(translateCompound(clean));
 }
 
 // ── CLI args ─────────────────────────────────────────────────────────

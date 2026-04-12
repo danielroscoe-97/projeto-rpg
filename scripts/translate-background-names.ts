@@ -46,6 +46,64 @@ const WORD_DICT: Record<string, string> = {
   // Misc
   of: "de", the: "o", and: "e",
   aberrant: "Aberrante", dragon: "Dragão", mark: "Marca",
+  // ── Missing words (audit fix) ──────────────────────
+  drifter: "Andarilho",
+  astral: "Astral",
+  carouser: "Boêmio",
+  legionnaire: "Legionário",
+  functionary: "Funcionário",
+  freebooter: "Corsário",
+  squire: "Escudeiro",
+  purple: "Púrpura",
+  mercenary: "Mercenário",
+  caretaker: "Zelador",
+  emerald: "Esmeralda",
+  enclave: "Enclave",
+  zhentarim: "Zhentarim",
+  variant: "Variante",
+};
+
+// ── Manual overrides for backgrounds that don't translate well ──
+const NAME_OVERRIDES: Record<string, string> = {
+  "Custom Background": "Antecedente Personalizado",
+  "Dead Magic Dweller": "Habitante da Magia Morta",
+  "Dimir Operative": "Operativo Dimir",
+  "Faceless": "Sem Rosto",
+  "Feylost": "Perdido nas Fadas",
+  "Fisher": "Pescador",
+  "Genie Touched": "Tocado por Gênio",
+  "Giant Foundling": "Criado por Gigantes",
+  "Grinner": "Sorridente",
+  "Gruul Anarch": "Anarquista Gruul",
+  "Guide": "Guia",
+  "Harper": "Harper",
+  "Ice Fisher": "Pescador de Gelo",
+  "Inheritor": "Herdeiro",
+  "Inquisitive": "Inquisitivo",
+  "Inquisitor": "Inquisidor",
+  "Izzet Engineer": "Engenheiro Izzet",
+  "Lorehold Student": "Estudante de Lorehold",
+  "Lorwyn Expert": "Especialista de Lorwyn",
+  "Mulhorandi Tomb Raider": "Saqueador de Tumbas Mulhorandi",
+  "Mythalkeeper": "Guardião de Mythal",
+  "Orzhov Representative": "Representante Orzhov",
+  "Plaintiff": "Demandante",
+  "Planar Philosopher": "Filósofo Planar",
+  "Prismari Student": "Estudante de Prismari",
+  "Quandrix Student": "Estudante de Quandrix",
+  "Rewarded": "Recompensado",
+  "Rival Intern": "Estagiário Rival",
+  "Rune Carver": "Entalhador de Runas",
+  "Shadowmoor Expert": "Especialista de Shadowmoor",
+  "Shipwright": "Construtor Naval",
+  "Silverquill Student": "Estudante de Silverquill",
+  "Simic Scientist": "Cientista Simic",
+  "Uthgardt Tribe Member": "Membro da Tribo Uthgardt",
+  "Vampire Devotee": "Devoto Vampírico",
+  "Vizier": "Vizir",
+  "Wildspacer": "Viajante do Espaço Selvagem",
+  "Witchlight Hand": "Artista do Witchlight",
+  "Witherbloom Student": "Estudante de Witherbloom",
 };
 
 function translateCompound(phrase: string): string {
@@ -68,19 +126,31 @@ const PATTERNS: TranslationPattern[] = [
   { regex: /^Folk (.+)$/i, replace: (m) => `Herói Popular` },
 ];
 
+function contractPrepositions(text: string): string {
+  return text
+    .replace(/\bde o\b/gi, "do")
+    .replace(/\bde a\b/gi, "da")
+    .replace(/\bde os\b/gi, "dos")
+    .replace(/\bde as\b/gi, "das")
+    .replace(/\bem o\b/gi, "no")
+    .replace(/\bem a\b/gi, "na");
+}
+
 function translateName(name: string): string {
   const clean = name.replace(/["""\u201C\u201D]/g, "");
+  if (NAME_OVERRIDES[clean]) return NAME_OVERRIDES[clean];
   for (const pat of PATTERNS) {
     const m = clean.match(pat.regex);
-    if (m) return pat.replace(m);
+    if (m) return contractPrepositions(pat.replace(m));
   }
-  return translateCompound(clean);
+  return contractPrepositions(translateCompound(clean));
 }
 
 // ── Main ─────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
+const forceAll = args.includes("--force");
 
 function loadJson<T>(filename: string): T {
   const path = join(DATA_DIR, filename);
@@ -103,7 +173,11 @@ for (const b of backgrounds) {
   deduped.push(b);
 }
 
-const untranslated = deduped.filter((b) => !descPt[toSlug(b.name)]?.name_pt);
+const untranslated = deduped.filter((b) => {
+  if (!descPt[toSlug(b.name)]?.name_pt) return true;
+  if (forceAll) return true;
+  return false;
+});
 
 console.log(`Total unique backgrounds: ${deduped.length}`);
 console.log(`Missing: ${untranslated.length}`);

@@ -34,7 +34,7 @@ const WORD_DICT: Record<string, string> = {
   blowgun: "Zarabatana",
   // Armor
   armor: "Armadura", shield: "Escudo", plate: "Placas",
-  chain: "Cota", mail: "Malha", leather: "Couro",
+  chainmail: "Cota de Malha", mail: "Malha", leather: "Couro",
   studded: "Cravejado", scale: "Escamas", breastplate: "Couraça",
   halfplate: "Meia Armadura", hide: "Peles", padded: "Acolchoada",
   ring: "Anel", helm: "Elmo", helmet: "Capacete",
@@ -90,7 +90,7 @@ const WORD_DICT: Record<string, string> = {
   force: "Força", cold: "Frio",
   // D&D specific
   wand: "Varinha", rod: "Bastão", orb: "Orbe",
-  figurine: "Estatueta", horn: "Chifre", horn: "Trompa",
+  figurine: "Estatueta",
   feather: "Pena", token: "Símbolo", talisman: "Talismã",
   periapt: "Periaptro", phylactery: "Filactério", ioun: "Ioun",
   deck: "Baralho", card: "Carta", cards: "Cartas",
@@ -114,6 +114,114 @@ const WORD_DICT: Record<string, string> = {
   regeneration: "Regeneração", absorption: "Absorção",
   // Size/quantity
   many: "Muitos", all: "Todos", three: "Três",
+  // ── Missing words (audit fix) ──────────────────────
+  trinket: "Berloque",
+  ceremonial: "Cerimonial", electrum: "Electro",
+  pommel: "Punho", filigree: "Filigrana",
+  black: "Negro", white: "Branco", red: "Vermelho",
+  blue: "Azul", green: "Verde", purple: "Púrpura",
+  cloud: "Nuvem", hill: "Colina",
+  skull: "Crânio", bird: "Pássaro",
+  pearls: "Pérolas", medallions: "Medalhões",
+  tourmalines: "Turmalinas",
+  life: "Vida", sized: "Tamanho",
+  cast: "Fundido", set: "Cravado",
+  frame: "Moldura", painted: "Pintado",
+  mock: "Falso", patch: "Tapa-Olho",
+  handheld: "Portátil", detailed: "Detalhado",
+  birdcage: "Gaiola", cage: "Gaiola",
+  vestments: "Vestes", dusk: "Crepúsculo",
+  legion: "Legião", coalition: "Coalizão",
+  brazen: "Audaz", moonstone: "Pedra-da-Lua",
+  inlay: "Incrustação", crafted: "Fabricado",
+  exotic: "Exótico", lute: "Alaúde",
+  mother: "Madrepérola",
+  // ── Massive expansion (round 2) ───────────────────
+  // Gemstones / minerals
+  alexandrite: "Alexandrita", amber: "Âmbar", aquamarine: "Água-marinha",
+  azurite: "Azurita", bloodstone: "Heliotrópio", carnelian: "Cornalina",
+  chalcedony: "Calcedônia", chrysoberyl: "Crisoberilo", chrysoprase: "Crisópraso",
+  citrine: "Citrino", coral: "Coral", garnet: "Granada",
+  hematite: "Hematita", iolite: "Iolita", jacinth: "Jacinto",
+  jasper: "Jaspe", jet: "Azeviche", lapis: "Lápis",
+  lazuli: "Lazúli", malachite: "Malaquita", moss: "Musgo",
+  onyx: "Ônix", peridot: "Peridoto", quartz: "Quartzo",
+  rhodochrosite: "Rodocrosita", sardonyx: "Sardônica",
+  spinel: "Espinélio", tanzanite: "Tanzanita", topaz: "Topázio",
+  tourmaline: "Turmalina", turquoise: "Turquesa", zircon: "Zircão",
+  agate: "Ágata", banded: "Listrada",
+  // Weapons / firearms
+  pistol: "Pistola", rifle: "Rifle", musket: "Mosquete",
+  revolver: "Revólver", shotgun: "Escopeta", grenade: "Granada",
+  bomb: "Bomba", bullet: "Bala", bullets: "Balas",
+  ammunition: "Munição", cannon: "Canhão", laser: "Laser",
+  antimatter: "Antimatéria", automatic: "Automático",
+  // Ship / vehicle
+  ship: "Navio", airship: "Aeronave", boat: "Barco",
+  galley: "Galé", longship: "Drakkar", rowboat: "Barco a Remo",
+  sailboat: "Veleiro", warship: "Navio de Guerra", keelboat: "Quilha",
+  // Guild / Ravnica
+  signet: "Sinete", keyrune: "Runaschave",
+  guild: "Guilda",
+  // Common items
+  abacus: "Ábaco", stilts: "Pernas de Pau", adjustable: "Ajustável",
+  antitoxin: "Antitoxina", arrow: "Flecha", arrows: "Flechas",
+  barrel: "Barril", basket: "Cesta", bedroll: "Saco de Dormir",
+  bell: "Sino", blanket: "Cobertor", bolt: "Virote", bolts: "Virotes",
+  bucket: "Balde", caltrops: "Estrepes", chalk: "Giz",
+  climber: "Escalador", crowbar: "Pé de Cabra",
+  fishing: "Pesca", equipment: "Equipamento",
+  grappling: "Escalada", hook: "Gancho",
+  hourglass: "Ampulheta", ink: "Tinta", ladder: "Escada",
+  lock: "Fechadura", magnifying: "Lupa", manacles: "Algemas",
+  mess: "Conjunto", miner: "Minerador",
+  paper: "Papel", parchment: "Pergaminho",
+  piton: "Piton", ram: "Aríete", rations: "Rações",
+  sealing: "Lacre", wax: "Cera",
+  shovel: "Pá", signal: "Sinal", whistle: "Apito",
+  sledge: "Picareta", soap: "Sabão",
+  spike: "Cravo", spikes: "Cravos",
+  tent: "Tenda", tinderbox: "Caixa de Fogo",
+  vial: "Frasco", waterskin: "Cantil",
+  whetstone: "Pedra de Amolar",
+  // Tattoo / shard
+  tattoo: "Tatuagem", shard: "Estilhaço",
+  primer: "Grimório", scaled: "Escamado",
+  ornament: "Ornamento",
+  // Fabrics / materials
+  silk: "Seda", velvet: "Veludo", satin: "Cetim",
+  linen: "Linho", cotton: "Algodão", wool: "Lã",
+  cloth: "Tecido", thread: "Linha",
+  // Misc D&D items
+  spellbook: "Grimório", alchemical: "Alquímico",
+  compendium: "Compêndio", archive: "Arquivo",
+  astral: "Astral", arcane: "Arcano",
+  battery: "Bateria", propulsion: "Propulsão", arm: "Braço",
+  branch: "Ramo", breath: "Sopro", bottled: "Engarrafado",
+  breathing: "Respiração", bubble: "Bolha",
+  blood: "Sangue", fury: "Fúria",
+  blast: "Explosão", scepter: "Cetro",
+  blight: "Praga", ichor: "Ícor",
+  bobbing: "Flutuante", lily: "Lírio", pad: "Almofada",
+  basic: "Básico", bookmark: "Marcador",
+  borderlands: "Fronteiras", tabard: "Tabardo",
+  burnt: "Queimado", fumes: "Vapores",
+  // Music
+  bagpipes: "Gaita de Foles", bandore: "Bandora",
+  birdpipes: "Flauta de Pássaro", drum: "Tambor",
+  dulcimer: "Dulcimer", fiddle: "Violino",
+  flute: "Flauta", harp: "Harpa", horn: "Trompa", chifre: "Chifre",
+  lyre: "Lira", pan: "Pan", shawm: "Charamela",
+  viol: "Viola", zulkoon: "Zulkoon",
+  // Actions / modifiers
+  ascendant: "Ascendente", stirring: "Agitado",
+  wakened: "Despertado", dormant: "Adormecido",
+  astromancy: "Astromancia",
+  baleful: "Funesto", talon: "Garra",
+  bearing: "Rolamento", bearings: "Rolamentos",
+  ball: "Esfera",
+  runestone: "Pedra Rúnica",
+  goggles: "Óculos", blasted: "Explosivo",
 };
 
 function translateCompound(phrase: string): string {
@@ -133,6 +241,17 @@ interface TranslationPattern {
 }
 
 const PATTERNS: TranslationPattern[] = [
+  // "Belt/Potion of X Giant Strength" → "Cinto/Poção de Força de Gigante de X"
+  {
+    regex: /^(Belt|Potion) of (\w+) Giant Strength$/i,
+    replace: (m) => {
+      const container = m[1].toLowerCase() === "belt" ? "Cinto" : "Poção";
+      const type = WORD_DICT[m[2].toLowerCase()] ?? m[2];
+      return `${container} de Força de Gigante de ${type}`;
+    },
+  },
+  // "X Trinket" → "Berloque X"
+  { regex: /^(.+) Trinket$/i, replace: (m) => `Berloque ${translateCompound(m[1])}` },
   // "Potion of X" → "Poção de X"
   { regex: /^Potion of (.+)$/i, replace: (m) => `Poção de ${translateCompound(m[1])}` },
   // "Scroll of X" → "Pergaminho de X"
@@ -197,15 +316,25 @@ const PATTERNS: TranslationPattern[] = [
   { regex: /^(\w+)'s (.+)$/i, replace: (m) => `${translateCompound(m[2])} de ${m[1]}` },
 ];
 
+function contractPrepositions(text: string): string {
+  return text
+    .replace(/\bde o\b/gi, "do")
+    .replace(/\bde a\b/gi, "da")
+    .replace(/\bde os\b/gi, "dos")
+    .replace(/\bde as\b/gi, "das")
+    .replace(/\bem o\b/gi, "no")
+    .replace(/\bem a\b/gi, "na");
+}
+
 function translateName(name: string): string {
   const clean = name.replace(/["""\u201C\u201D]/g, "");
 
   for (const pat of PATTERNS) {
     const m = clean.match(pat.regex);
-    if (m) return pat.replace(m);
+    if (m) return contractPrepositions(pat.replace(m));
   }
 
-  return translateCompound(clean);
+  return contractPrepositions(translateCompound(clean));
 }
 
 // ── Main ─────────────────────────────────────────────────────────────

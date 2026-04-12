@@ -15,13 +15,13 @@
     "name_pt": "Artesão"
   },
   "astral-drifter": {
-    "name_pt": "Astral Drifter"
+    "name_pt": "Astral Andarilho"
   },
   "athlete": {
     "name_pt": "Atleta"
   },
   "azorius-functionary": {
-    "name_pt": "Azorius Functionary"
+    "name_pt": "Azorius Funcionário"
   },
   "baldurs-gate-acolyte": {
     "name_pt": "Baldur's Portal Acólito"
@@ -63,10 +63,10 @@
     "name_pt": "Baldur's Portal Órfão"
   },
   "boros-legionnaire": {
-    "name_pt": "Boros Legionnaire"
+    "name_pt": "Boros Legionário"
   },
   "carouser": {
-    "name_pt": "Carouser"
+    "name_pt": "Boêmio"
   },
   "celebrity-adventurers-scion": {
     "name_pt": "Celebrity Adventurer's Scion"
@@ -75,7 +75,7 @@
     "name_pt": "Charlatão"
   },
   "chondathan-freebooter": {
-    "name_pt": "Chondathan Freebooter"
+    "name_pt": "Chondathan Corsário"
   },
   "city-watch": {
     "name_pt": "Cidade Watch"
@@ -96,25 +96,25 @@
     "name_pt": "Criminoso"
   },
   "custom-background": {
-    "name_pt": "Custom Background"
+    "name_pt": "Antecedente Personalizado"
   },
   "dead-magic-dweller": {
-    "name_pt": "Dead Magic Dweller"
+    "name_pt": "Habitante da Magia Morta"
   },
   "dimir-operative": {
-    "name_pt": "Dimir Operative"
+    "name_pt": "Operativo Dimir"
   },
   "dragon-cultist": {
     "name_pt": "Dragão Cultista"
   },
   "emerald-enclave-caretaker": {
-    "name_pt": "Emerald Enclave Caretaker"
+    "name_pt": "Esmeralda Enclave Zelador"
   },
   "entertainer": {
     "name_pt": "Artista"
   },
   "faceless": {
-    "name_pt": "Faceless"
+    "name_pt": "Sem Rosto"
   },
   "faction-agent": {
     "name_pt": "Agente Facção"
@@ -129,16 +129,16 @@
     "name_pt": "Fazendeiro"
   },
   "feylost": {
-    "name_pt": "Feylost"
+    "name_pt": "Perdido nas Fadas"
   },
   "fisher": {
-    "name_pt": "Fisher"
+    "name_pt": "Pescador"
   },
   "flaming-fist-mercenary": {
-    "name_pt": "Flaming Fist Mercenary"
+    "name_pt": "Flaming Fist Mercenário"
   },
   "folk-hero": {
-    "name_pt": "Herói Popular"
+    "name_pt": "Herói Herói"
   },
   "gambler": {
     "name_pt": "Apostador"
@@ -147,25 +147,25 @@
     "name_pt": "Portal Warden"
   },
   "genie-touched": {
-    "name_pt": "Genie Touched"
+    "name_pt": "Tocado por Gênio"
   },
   "giant-foundling": {
-    "name_pt": "Giant Foundling"
+    "name_pt": "Criado por Gigantes"
   },
   "golgari-agent": {
     "name_pt": "Agente Golgari"
   },
   "grinner": {
-    "name_pt": "Grinner"
+    "name_pt": "Sorridente"
   },
   "gruul-anarch": {
-    "name_pt": "Gruul Anarch"
+    "name_pt": "Anarquista Gruul"
   },
   "guard": {
     "name_pt": "Guarda"
   },
   "guide": {
-    "name_pt": "Guide"
+    "name_pt": "Guia"
   },
   "guild-artisan": {
     "name_pt": "Artesão Guilda"
@@ -222,10 +222,10 @@
     "name_pt": "Casa Vadalis Herdeiro"
   },
   "ice-fisher": {
-    "name_pt": "Ice Fisher"
+    "name_pt": "Pescador de Gelo"
   },
   "inheritor": {
-    "name_pt": "Inheritor"
+    "name_pt": "Herdeiro"
   },
   "initiate": {
     "name_pt": "Iniciado"
@@ -234,16 +234,16 @@
     "name_pt": "Iniciado (Dissenter)"
   },
   "inquisitive": {
-    "name_pt": "Inquisitive"
+    "name_pt": "Inquisitivo"
   },
   "inquisitor": {
-    "name_pt": "Inquisitor"
+    "name_pt": "Inquisidor"
   },
   "investigator": {
     "name_pt": "Investigador"
   },
   "izzet-engineer": {
-    "name_pt": "Izzet Engineer"
+    "name_pt": "Engenheiro Izzet"
   },
   "knight-of-solamnia": {
     "name_pt": "Cavaleiro de Solamnia"
@@ -258,10 +258,10 @@
     "name_pt": "Lords' Alliance Vassal"
   },
   "lorehold-student": {
-    "name_pt": "Lorehold Student"
+    "name_pt": "Estudante de Lorehold"
   },
   "lorwyn-expert": {
-    "name_pt": "Lorwyn Expert"
+    "name_pt": "Especialista de Lorwyn"
   },
   "luxonborn-acolyte": {
     "name_pt": "Luxonborn (Acolyte)"
@@ -273,7 +273,7 @@
     "name_pt": "Marinheiro"
   },
   "mercenary-veteran": {
-    "name_pt": "Mercenary Veteran"
+    "name_pt": "Mercenário Veteran"
   },
   "merchant": {
     "name_pt": "Mercador"
@@ -282,37 +282,37 @@
     "name_pt": "Moonwell Peregrino"
   },
   "mulhorandi-tomb-raider": {
-    "name_pt": "Mulhorandi Tomb Raider"
+    "name_pt": "Saqueador de Tumbas Mulhorandi"
   },
   "myriad-operative-criminal": {
     "name_pt": "Myriad Operative (Criminal)"
   },
   "mythalkeeper": {
-    "name_pt": "Mythalkeeper"
+    "name_pt": "Guardião de Mythal"
   },
   "noble": {
     "name_pt": "Nobre"
   },
   "orzhov-representative": {
-    "name_pt": "Orzhov Representative"
+    "name_pt": "Representante Orzhov"
   },
   "outlander": {
     "name_pt": "Forasteiro"
   },
   "plaintiff": {
-    "name_pt": "Plaintiff"
+    "name_pt": "Demandante"
   },
   "planar-philosopher": {
-    "name_pt": "Planar Philosopher"
+    "name_pt": "Filósofo Planar"
   },
   "prismari-student": {
-    "name_pt": "Prismari Student"
+    "name_pt": "Estudante de Prismari"
   },
   "purple-dragon-squire": {
-    "name_pt": "Purple Dragão Squire"
+    "name_pt": "Púrpura Dragão Escudeiro"
   },
   "quandrix-student": {
-    "name_pt": "Quandrix Student"
+    "name_pt": "Estudante de Quandrix"
   },
   "rakdos-cultist": {
     "name_pt": "Rakdos Cultista"
@@ -324,16 +324,16 @@
     "name_pt": "Revelry Pirata (Sailor)"
   },
   "rewarded": {
-    "name_pt": "Rewarded"
+    "name_pt": "Recompensado"
   },
   "rival-intern": {
-    "name_pt": "Rival Intern"
+    "name_pt": "Estagiário Rival"
   },
   "ruined": {
     "name_pt": "Arruinado"
   },
   "rune-carver": {
-    "name_pt": "Rune Carver"
+    "name_pt": "Entalhador de Runas"
   },
   "sage": {
     "name_pt": "Sábio"
@@ -351,16 +351,16 @@
     "name_pt": "Shadowmasters Exilado"
   },
   "shadowmoor-expert": {
-    "name_pt": "Shadowmoor Expert"
+    "name_pt": "Especialista de Shadowmoor"
   },
   "shipwright": {
-    "name_pt": "Shipwright"
+    "name_pt": "Construtor Naval"
   },
   "silverquill-student": {
-    "name_pt": "Silverquill Student"
+    "name_pt": "Estudante de Silverquill"
   },
   "simic-scientist": {
-    "name_pt": "Simic Scientist"
+    "name_pt": "Cientista Simic"
   },
   "smuggler": {
     "name_pt": "Contrabandista"
@@ -378,37 +378,37 @@
     "name_pt": "Órfão"
   },
   "uthgardt-tribe-member": {
-    "name_pt": "Uthgardt Tribe Member"
+    "name_pt": "Membro da Tribo Uthgardt"
   },
   "vampire-devotee": {
-    "name_pt": "Vampire Devotee"
+    "name_pt": "Devoto Vampírico"
   },
   "vampire-survivor": {
     "name_pt": "Vampire Sobrevivente"
   },
   "variant-city-watch-investigator": {
-    "name_pt": "Variant Cidade Watch (Investigator)"
+    "name_pt": "Variante Cidade Watch (Investigator)"
   },
   "variant-criminal-spy": {
-    "name_pt": "Variant Criminoso (Spy)"
+    "name_pt": "Variante Criminoso (Spy)"
   },
   "variant-entertainer-gladiator": {
-    "name_pt": "Variant Artista (Gladiator)"
+    "name_pt": "Variante Artista (Gladiator)"
   },
   "variant-guild-artisan-guild-merchant": {
-    "name_pt": "Variant Guilda Artesão (Guild Merchant)"
+    "name_pt": "Variante Guilda Artesão (Guild Merchant)"
   },
   "variant-noble-knight": {
-    "name_pt": "Variant Nobre (Knight)"
+    "name_pt": "Variante Nobre (Knight)"
   },
   "variant-noble-retainers": {
-    "name_pt": "Variant Nobre (Retainers)"
+    "name_pt": "Variante Nobre (Retainers)"
   },
   "variant-sailor-pirate": {
-    "name_pt": "Variant Marinheiro (Pirate)"
+    "name_pt": "Variante Marinheiro (Pirate)"
   },
   "vizier": {
-    "name_pt": "Vizier"
+    "name_pt": "Vizir"
   },
   "vizier-dissenter": {
     "name_pt": "Vizier (Dissenter)"
@@ -423,15 +423,15 @@
     "name_pt": "Viajante"
   },
   "wildspacer": {
-    "name_pt": "Wildspacer"
+    "name_pt": "Viajante do Espaço Selvagem"
   },
   "witchlight-hand": {
-    "name_pt": "Witchlight Hand"
+    "name_pt": "Artista do Witchlight"
   },
   "witherbloom-student": {
-    "name_pt": "Witherbloom Student"
+    "name_pt": "Estudante de Witherbloom"
   },
   "zhentarim-mercenary": {
-    "name_pt": "Zhentarim Mercenary"
+    "name_pt": "Zhentarim Mercenário"
   }
 }

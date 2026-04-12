@@ -26,6 +26,8 @@ const DATA_DIR = join(process.cwd(), "data", "srd");
 function toSlug(name: string): string {
   return name
     .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[''""]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
@@ -805,6 +807,75 @@ const WORD_DICT: Record<string, string> = {
   tabaxi: "Tabaxi",
   lizardfolk: "Povo-Lagarto",
   merfolk: "Tritão",
+  // ── Prepositions / connectors (for compound phrases) ──
+  of: "de",
+  the: "o",
+  and: "e",
+  or: "ou",
+  with: "com",
+  from: "de",
+  in: "em",
+  evil: "Maligno",
+  good: "Benigno",
+  land: "Terra",
+  sea: "Mar",
+  slave: "Escravo",
+  old: "Velho",
+  one: "Um",
+  cradle: "Berço",
+  scion: "Descendente",
+  aspirant: "Aspirante",
+  comet: "Cometa",
+  // ── Roles / classes ──
+  horror: "Horror", apprentice: "Aprendiz", replica: "Réplica",
+  space: "Espacial", hulk: "Hulk", mutate: "Mutante",
+  skirmisher: "Escaramuçador", draconian: "Draconiano",
+  high: "Alto", ashen: "Cinzento",
+  animated: "Animado", corrupted: "Corrompido", cursed: "Amaldiçoado",
+  blessed: "Abençoado", lost: "Perdido", fallen: "Caído",
+  risen: "Renascido", awakened: "Desperto", enraged: "Enfurecido",
+  withered: "Murcho", mutated: "Mutado", armored: "Blindado",
+  flying: "Voador", mounted: "Montado", clockwork: "Autômato",
+  deep: "Profundo", dark: "Sombrio",
+  iron: "Ferro", steel: "Aço", bronze: "Bronze", silver: "Prata",
+  gold: "Ouro", crystal: "Cristal", bone: "Osso",
+  blood: "Sangue", death: "Morte", night: "Noite",
+  war: "Guerra", battle: "Batalha", wild: "Selvagem",
+  feral: "Feroz", rabid: "Raivoso",
+  veteran: "Veterano", champion: "Campeão",
+  lord: "Senhor", lady: "Senhora", prince: "Príncipe",
+  princess: "Princesa", king: "Rei", queen: "Rainha",
+  emperor: "Imperador", chief: "Chefe", captain: "Capitão",
+  commander: "Comandante", warlord: "Senhor da Guerra",
+  assassin: "Assassino", spy: "Espião", scout: "Batedor",
+  guard: "Guarda", sentinel: "Sentinela", warden: "Guardião",
+  keeper: "Guardião", protector: "Protetor",
+  hunter: "Caçador", tracker: "Rastreador", stalker: "Perseguidor",
+  shaman: "Xamã", druid: "Druida", mystic: "Místico",
+  oracle: "Oráculo", cultist: "Cultista", fanatic: "Fanático",
+  zealot: "Zelote", acolyte: "Acólito",
+  priest: "Sacerdote", priestess: "Sacerdotisa",
+  cleric: "Clérigo", paladin: "Paladino", monk: "Monge",
+  bard: "Bardo", rogue: "Ladino", ranger: "Patrulheiro",
+  sorcerer: "Feiticeiro", warlock: "Bruxo", artificer: "Artífice",
+  thief: "Ladrão", bandit: "Bandido", pirate: "Pirata",
+  marauder: "Saqueador", raider: "Invasor",
+  mercenary: "Mercenário", gladiator: "Gladiador",
+  barbarian: "Bárbaro", nomad: "Nômade", exile: "Exilado",
+  sage: "Sábio", scholar: "Erudito",
+  diviner: "Adivinho", conjurer: "Conjurador",
+  enchanter: "Encantador", evoker: "Evocador",
+  illusionist: "Ilusionista", necromancer: "Necromante",
+  transmuter: "Transmutador", swashbuckler: "Espadachim",
+  archdruid: "Arquidruida", archmage: "Arquimago",
+  noble: "Nobre", commoner: "Plebeu",
+  merchant: "Mercador", minion: "Lacaio",
+  thrall: "Servo", servant: "Servo", bodyguard: "Guarda-costas",
+  enforcer: "Executor", executioner: "Carrasco",
+  jailer: "Carcereiro", harbinger: "Arauto", herald: "Arauto",
+  emissary: "Emissário", avenger: "Vingador",
+  inquisitor: "Inquisidor", templar: "Templário",
+  crusader: "Cruzado",
 };
 
 // ── Compound patterns ────────────────────────────────────────────────
@@ -824,6 +895,11 @@ const PATTERNS: TranslationPattern[] = [
   {
     regex: /^Swarm of (.+)$/i,
     replace: (m) => `Enxame de ${translateCompound(m[1])}`,
+  },
+  // "COLOR Dragon Wyrmling" → "Filhote de Dragão COR"
+  {
+    regex: /^(.+) Dragon Wyrmling$/i,
+    replace: (m) => `Filhote de Dragão ${translateCompound(m[1])}`,
   },
   // "X Wyrmling" → "Filhote de X"
   {
@@ -1031,7 +1107,7 @@ function needsArticle(word: string): string {
   }
   // "de" for materials
   if (
-    ["ferro", "aço", "bronze", "cobre", "latão", "prata", "ouro", "gelo", "cristal", "vidro", "carvão", "magma", "vapor"].includes(lower)
+    ["ferro", "aço", "bronze", "cobre", "latão", "prata", "ouro", "cristal", "vidro", "carvão", "magma", "vapor"].includes(lower)
   ) {
     return "de";
   }
@@ -1081,6 +1157,18 @@ function translateCompound(phrase: string): string {
   return translated.join(" ") + paren;
 }
 
+// ── PT preposition contractions ──────────────────────────────────────
+
+function contractPrepositions(text: string): string {
+  return text
+    .replace(/\bde o\b/gi, "do")
+    .replace(/\bde a\b/gi, "da")
+    .replace(/\bde os\b/gi, "dos")
+    .replace(/\bde as\b/gi, "das")
+    .replace(/\bem o\b/gi, "no")
+    .replace(/\bem a\b/gi, "na");
+}
+
 // ── Main translate function ──────────────────────────────────────────
 
 function translateName(name: string): string {
@@ -1090,11 +1178,11 @@ function translateName(name: string): string {
   // Try exact patterns first
   for (const pat of PATTERNS) {
     const m = clean.match(pat.regex);
-    if (m) return pat.replace(m);
+    if (m) return contractPrepositions(pat.replace(m));
   }
 
   // Fall back to word-by-word translation
-  return translateCompound(clean);
+  return contractPrepositions(translateCompound(clean));
 }
 
 // ── CLI args ─────────────────────────────────────────────────────────
