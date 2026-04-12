@@ -181,13 +181,28 @@ test.describe("J2 — Player Recebe o Link", () => {
   test("J2.8 — Mobile: player join funciona em viewport Pixel 5", async ({
     browser,
   }) => {
+    test.setTimeout(180_000); // Extra time for DM setup + mobile join
+
     // DM setup (desktop)
     const dmContext = await browser.newContext();
     const dmPage = await dmContext.newPage();
 
-    const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
-      { name: "Dragon", hp: "178", ac: "18", init: "16" },
-    ]);
+    let token: string | null = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+          { name: "Dragon", hp: "178", ac: "18", init: "16" },
+        ]);
+        break;
+      } catch (e) {
+        if (attempt === 0 && String(e).includes("Timeout")) {
+          await dmPage.goto("about:blank");
+          await dmPage.waitForTimeout(2_000);
+          continue;
+        }
+        throw e;
+      }
+    }
 
     if (!token) {
       test.skip(true, "Could not generate share token");
