@@ -69,13 +69,25 @@ Todos os 10 adversariais passaram **38/38**:
 - `e2e/journeys/j6-combat-core-loop.spec.ts` — 4/4 ALL PASS
 - `e2e/auth/login.spec.ts` — ALL PASS
 
-### Testes com falhas de flakiness (nao sao bugs, sao timeouts)
+### Testes com falhas reais — authenticated player join (INVESTIGAR)
 
-| Teste | Causa | Acao necessaria |
-|-------|-------|----------------|
-| J2.8 (mobile Pixel 5) | start-combat-btn disabled apos 22 testes sequenciais | Timeout ja aumentado (180s) + retry. Testar isolado. |
-| J9.2, J9.4, J9.5 | playerJoinCombat timeout na posicao 29-32 da fila | Timeout aumentado (180s). Rodam em 38s isolados (J9.1/J9.3 passam). |
-| M13 (recap mobile) | Leaderboard aparece antes do recap | Fix commitado, nao retestado ainda. |
+**Finding:** J9.2, J9.4, J9.5 e J2.8 falham MESMO rodando isolados. O padrao e claro:
+- Testes que usam `loginAs()` + `playerJoinCombat()` (player AUTENTICADO) = **FALHAM**
+- Testes que usam player ANONIMO (sem login, so join form) = **PASSAM 100%**
+- J9.1 e J9.3 passam porque NAO logam o player antes do join
+
+**Hipotese:** O fluxo de `playerJoinCombat` com usuario autenticado (via `loginAs`) tem um timing issue — o login redireciona para `/app/dashboard`, e o `goto(/join/token)` subsequente pode conflitar com a sessao autenticada vs o fluxo anonimo do join. Os adversariais usam `playerSubmitJoin` (anonimo) e passam 100%.
+
+**Acao na proxima sessao:**
+1. Investigar se `playerJoinCombat` precisa de logica diferente para players autenticados
+2. Verificar se o `/join/[token]` trata `auth` vs `anon` de forma diferente
+3. Considerar usar `playerSubmitJoin` + `dmAcceptPlayer` em vez de `playerJoinCombat` nos J9/J2
+
+| Teste | Causa | Acao |
+|-------|-------|------|
+| J9.2, J9.4, J9.5 | playerJoinCombat timeout com player AUTENTICADO | Investigar auth vs anon join flow |
+| J2.8 (mobile Pixel 5) | Mesmo padrao + viewport mobile | Investigar + scroll fix |
+| M13 (recap mobile) | Leaderboard aparece antes do recap | Fix commitado, nao retestado |
 
 **Comando pra revalidar esses:**
 ```bash
