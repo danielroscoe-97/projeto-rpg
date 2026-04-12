@@ -3,8 +3,26 @@ import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
 import { checkRateLimit } from "../rate-limit";
 
+/** Routes that never need a Supabase session refresh.
+ *  Skipping auth here avoids AbortError on fast client-side navigations
+ *  between public pages (BUG-003). */
+const PUBLIC_PREFIXES = [
+  "/api/health",
+  "/compendium",
+  "/blog",
+  "/methodology",
+  "/try",
+  "/srd",
+];
+
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // BUG-003: Skip Supabase auth refresh on purely public routes — avoids
+  // AbortError when the browser cancels the fetch during fast navigation.
+  if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next({ request });
+  }
 
   // Rate-limit POST to auth endpoints
   if (

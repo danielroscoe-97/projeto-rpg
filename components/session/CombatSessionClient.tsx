@@ -26,7 +26,7 @@ import { DmOfflineBanner } from "@/components/combat/DmOfflineBanner";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
-import { broadcastEvent, getDmChannel, registerHiddenLookup } from "@/lib/realtime/broadcast";
+import { broadcastEvent, getDmChannel, cleanupDmChannel, registerHiddenLookup } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
@@ -498,6 +498,14 @@ export function CombatSessionClient({
       () => useCombatStore.getState().combatants
     );
     return () => { registerHiddenLookup(() => false); };
+  }, []);
+
+  // BUG-005: Clean up the DM broadcast channel when leaving the session.
+  // Without this, stale channels accumulate and cause CHANNEL_ERROR on re-entry.
+  useEffect(() => {
+    return () => {
+      cleanupDmChannel();
+    };
   }, []);
 
   // Hydrate the store from server-fetched data (skip for fresh encounters).

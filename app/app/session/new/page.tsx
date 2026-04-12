@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -19,7 +19,17 @@ interface CampaignOption {
   player_count: number;
 }
 
+/** BUG-006: Wrap in Suspense to avoid hydration mismatch from useSearchParams.
+ *  Next.js requires a Suspense boundary around client components that read searchParams. */
 export default function NewEncounterPage() {
+  return (
+    <Suspense>
+      <NewEncounterPageInner />
+    </Suspense>
+  );
+}
+
+function NewEncounterPageInner() {
   const t = useTranslations("session");
   const searchParams = useSearchParams();
 
