@@ -41,8 +41,16 @@ export default async function JoinPage({ params }: JoinPageProps) {
     );
   }
 
-  // --- Phase 2: Parallel fetch — session, encounter, auth, registered players ---
-  const [sessionResult, encounterResult, authResult, registeredTokensResult] = await Promise.all([
+  // --- Phase 2: Auth check (sequential to avoid lock contention with service client) ---
+  // Creates a cookie-based server client; must not race with the service client's queries
+  // to prevent Supabase auth lock stealing (was causing 35+ Sentry errors/day).
+  const authUser = await createAuthClient()
+    .then((c) => c.auth.getUser())
+    .then(({ data }) => data.user)
+    .catch(() => null);
+
+  // --- Phase 3: Parallel fetch — session, encounter, registered players ---
+  const [sessionResult, encounterResult, registeredTokensResult] = await Promise.all([
     supabase
       .from("sessions")
       .select("id, name, is_active, ruleset_version, dm_plan, campaign_id")
@@ -57,11 +65,6 @@ export default async function JoinPage({ params }: JoinPageProps) {
       .order("created_at", { ascending: false })
       .limit(1)
       .single(),
-    // Auth check — may fail for anonymous players, that's OK
-    createAuthClient()
-      .then((c) => c.auth.getUser())
-      .then(({ data }) => data.user)
-      .catch(() => null),
     supabase
       .from("session_tokens")
       .select("player_name, last_seen_at")
@@ -85,10 +88,10 @@ export default async function JoinPage({ params }: JoinPageProps) {
   }
 
   const encounter = encounterResult.data;
-  const user = authResult;
+  const user = authUser;
   const registeredTokens = registeredTokensResult.data;
 
-  // --- Phase 3: Parallel fetch — combatants + character pre-fill (both depend on phase 2) ---
+  // --- Phase 4: Parallel fetch — combatants + character pre-fill (both depend on phase 2/3) ---
   const combatantsPromise = encounter
     ? supabase
         .from("combatants")

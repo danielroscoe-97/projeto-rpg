@@ -13,6 +13,7 @@ const PUBLIC_PREFIXES = [
   "/methodology",
   "/try",
   "/srd",
+  "/join",
 ];
 
 export async function updateSession(request: NextRequest) {

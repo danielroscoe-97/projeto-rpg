@@ -192,6 +192,7 @@ test.describe("J2 — Player Recebe o Link", () => {
       try {
         token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
           { name: "Dragon", hp: "178", ac: "18", init: "16" },
+          { name: "Kobold Scout", hp: "7", ac: "12", init: "6" },
         ]);
         break;
       } catch (e) {

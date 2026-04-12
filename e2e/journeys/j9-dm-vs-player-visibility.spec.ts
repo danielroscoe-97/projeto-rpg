@@ -91,6 +91,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Orc Warchief", hp: "93", ac: "16", init: "12" },
+      { name: "Goblin Grunt", hp: "7", ac: "13", init: "8" },
     ]);
 
     if (!token) {
@@ -183,6 +184,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Target Goblin", hp: "20", ac: "15", init: "10" },
+      { name: "Skeleton Guard", hp: "13", ac: "13", init: "6" },
     ]);
 
     if (!token) {
@@ -250,6 +252,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Dragon", hp: "200", ac: "19", init: "20" },
+      { name: "Kobold Minion", hp: "5", ac: "12", init: "4" },
     ]);
 
     if (!token) {

@@ -138,6 +138,7 @@ test.describe("J11 — Player View Completa", () => {
     // Monster with 100 HP — we'll damage it to test tier transitions
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Troll", hp: "100", ac: "15", init: "12" },
+      { name: "Goblin", hp: "7", ac: "13", init: "6" },
     ]);
 
     if (!token) {
@@ -202,6 +203,7 @@ test.describe("J11 — Player View Completa", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Boss", hp: "100", ac: "18", init: "18" },
+      { name: "Minion", hp: "7", ac: "12", init: "5" },
     ]);
 
     if (!token) {
@@ -308,6 +310,7 @@ test.describe("J11 — Player View Completa", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Giant", hp: "100", ac: "14", init: "8" },
+      { name: "Wolf", hp: "11", ac: "13", init: "12" },
     ]);
 
     if (!token) {

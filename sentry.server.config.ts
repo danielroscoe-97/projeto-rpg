@@ -7,6 +7,21 @@ if (!Sentry.getClient()) {
     enabled: !!process.env.SENTRY_DSN,
     tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
     beforeSend(event) {
+      // Drop noisy errors that are expected during normal operation (mirror of client-side filter)
+      try {
+        const msg = event.exception?.values?.[0]?.value ?? "";
+        const type = event.exception?.values?.[0]?.type ?? "";
+        if (
+          /lock.*stolen|lock.*released|Lock broken/i.test(msg) ||
+          /AbortError/i.test(type) || /AbortError/i.test(msg) ||
+          /CHANNEL_ERROR/i.test(msg) ||
+          /Invalid or expired session token/i.test(msg) ||
+          /This operation was aborted/i.test(msg)
+        ) {
+          return null;
+        }
+      } catch { /* never let filtering crash the pipeline */ }
+
       try {
         if (event.exception?.values) {
           for (const ex of event.exception.values) {
