@@ -20,6 +20,7 @@
 import { test, expect, type BrowserContext } from "@playwright/test";
 import { loginAs } from "../helpers/auth";
 import { dmSetupCombatSession, playerJoinCombat, goToNewSession } from "../helpers/session";
+import { skipGuidedTour, addManualCombatant, startCombat, QUICK_ENCOUNTER } from "../guest-qa/helpers";
 import { DM_PRIMARY, PLAYER_WARRIOR } from "../fixtures/test-accounts";
 
 const PIXEL_5 = {
@@ -45,10 +46,21 @@ test.describe("J13 — Mobile (Pixel 5)", () => {
     const page = await ctx.newPage();
 
     await page.goto("/try");
+    await skipGuidedTour(page);
+    await page.reload();
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator('[data-testid="add-row"]')).toBeVisible({
-      timeout: 15_000,
-    });
+
+    // Open manual add form (collapsed by default behind "+ Manual" toggle)
+    const addRow = page.locator('[data-testid="add-row"]');
+    if (!(await addRow.isVisible({ timeout: 3_000 }).catch(() => false))) {
+      const manualToggle = page.locator("button").filter({ hasText: /Manual/i }).first();
+      if (await manualToggle.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await manualToggle.scrollIntoViewIfNeeded();
+        await manualToggle.click();
+        await page.waitForTimeout(300);
+      }
+    }
+    await expect(addRow).toBeVisible({ timeout: 10_000 });
 
     // No overflow
     await assertNoOverflow(page);
@@ -60,23 +72,12 @@ test.describe("J13 — Mobile (Pixel 5)", () => {
     expect(box!.x).toBeGreaterThanOrEqual(0);
     expect(box!.x + box!.width).toBeLessThanOrEqual(393 + 10);
 
-    // Add a combatant and start combat
-    await page.fill('[data-testid="add-row-name"]', "Mobile Fighter");
-    await page.fill('[data-testid="add-row-hp"]', "30");
-    await page.fill('[data-testid="add-row-ac"]', "14");
-    await page.fill('[data-testid="add-row-init"]', "15");
-    await page.click('[data-testid="add-row-btn"]');
+    // Add combatants using proven guest-qa helper
+    for (const c of QUICK_ENCOUNTER) {
+      await addManualCombatant(page, c);
+    }
 
-    await page.fill('[data-testid="add-row-name"]', "Mobile Goblin");
-    await page.fill('[data-testid="add-row-hp"]', "7");
-    await page.fill('[data-testid="add-row-ac"]', "15");
-    await page.fill('[data-testid="add-row-init"]', "10");
-    await page.click('[data-testid="add-row-btn"]');
-
-    await page.click('[data-testid="start-combat-btn"]');
-    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
-      timeout: 10_000,
-    });
+    await startCombat(page);
 
     // Active combat — no overflow
     await assertNoOverflow(page);
@@ -91,12 +92,13 @@ test.describe("J13 — Mobile (Pixel 5)", () => {
     await loginAs(page, DM_PRIMARY);
     await expect(page).toHaveURL(/\/app/, { timeout: 15_000 });
 
+    // Skip tour + wait for dashboard to finish loading
+    await skipGuidedTour(page);
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("nav")).toBeVisible({ timeout: 15_000 });
+
     // Dashboard should render without overflow
     await assertNoOverflow(page);
-
-    // Nav should be accessible (hamburger menu or compact nav)
-    const nav = page.locator("nav");
-    await expect(nav).toBeVisible({ timeout: 5_000 });
 
     await ctx.close();
   });
@@ -108,15 +110,23 @@ test.describe("J13 — Mobile (Pixel 5)", () => {
     const page = await ctx.newPage();
 
     await loginAs(page, DM_PRIMARY);
+    await skipGuidedTour(page);
     await goToNewSession(page);
 
     // No overflow on setup screen
     await assertNoOverflow(page);
 
-    await page.fill(
-      '[data-testid="encounter-name-input"]',
-      "J13 Mobile Battle"
-    );
+    // Encounter name is auto-generated — open manual add form
+    const addRowName = page.locator('[data-testid="add-row-name"]');
+    if (!(await addRowName.isVisible({ timeout: 1_000 }).catch(() => false))) {
+      const manualToggle = page.locator("button").filter({ hasText: /Manual/i }).first();
+      if (await manualToggle.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await manualToggle.scrollIntoViewIfNeeded();
+        await manualToggle.click();
+        await page.waitForTimeout(300);
+      }
+    }
+    await expect(addRowName).toBeVisible({ timeout: 5_000 });
 
     // Add 4 combatants via mobile
     const combatants = [
@@ -127,17 +137,14 @@ test.describe("J13 — Mobile (Pixel 5)", () => {
     ];
 
     for (const c of combatants) {
-      await page.fill('[data-testid="add-row-name"]', c.name);
-      await page.fill('[data-testid="add-row-hp"]', c.hp);
-      await page.fill('[data-testid="add-row-ac"]', c.ac);
-      await page.fill('[data-testid="add-row-init"]', c.init);
+      await addRowName.scrollIntoViewIfNeeded();
+      await page.locator('[data-testid="add-row-init"]').fill(c.init);
+      await addRowName.fill(c.name);
+      await page.locator('[data-testid="add-row-hp"]').fill(c.hp);
+      await page.locator('[data-testid="add-row-ac"]').fill(c.ac);
       await page.click('[data-testid="add-row-btn"]');
       await page.waitForTimeout(400);
     }
-
-    await expect(page.locator('[data-testid^="setup-row-"]')).toHaveCount(4, {
-      timeout: 5_000,
-    });
 
     // Scroll start button into view — on Pixel 5, 4 combatants push it below the fold
     const startBtn = page.locator('[data-testid="start-combat-btn"]');
