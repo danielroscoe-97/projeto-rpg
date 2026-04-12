@@ -191,6 +191,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
                   setCrMin(v);
                   if (v && crMax && parseCR(v) > parseCR(crMax)) setCrMax(v);
                 }}
+                aria-label="Minimum Challenge Rating"
                 className="bg-white/[0.06] border border-white/[0.08] rounded-md px-2 py-1 text-xs text-gray-300 focus:outline-none focus:ring-1 focus:ring-gold/50 min-w-[4.5rem]"
               >
                 <option value="">Min</option>
@@ -206,6 +207,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
                   setCrMax(v);
                   if (v && crMin && parseCR(v) < parseCR(crMin)) setCrMin(v);
                 }}
+                aria-label="Maximum Challenge Rating"
                 className="bg-white/[0.06] border border-white/[0.08] rounded-md px-2 py-1 text-xs text-gray-300 focus:outline-none focus:ring-1 focus:ring-gold/50 min-w-[4.5rem]"
               >
                 <option value="">Max</option>
