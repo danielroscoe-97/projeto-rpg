@@ -21,15 +21,6 @@ const CATEGORY_COLORS: Record<BlogCategory, string> = {
   devlog: "text-gold",
 };
 
-const CATEGORY_BG: Record<BlogCategory, string> = {
-  tutorial: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  guia: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  lista: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  comparativo: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  build: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-  devlog: "bg-gold/10 text-gold border-gold/20",
-};
-
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("pt-BR", {
     day: "numeric",
@@ -38,14 +29,10 @@ function formatDate(date: string) {
   });
 }
 
-/* ─── Featured Post (Notion-style hero) ──────────────────── */
+/* ─── Featured Hero Card ─────────────────────────────────── */
 function FeaturedCard({ post }: { post: BlogPost }) {
   return (
-    <Link
-      href={`/blog/${post.slug}`}
-      className="group block mb-12"
-    >
-      {/* Image — large, rounded, prominent */}
+    <Link href={`/blog/${post.slug}`} className="group block mb-10">
       <div className="relative w-full aspect-[3/1] rounded-2xl overflow-hidden mb-5">
         {post.image && (
           <Image
@@ -57,23 +44,19 @@ function FeaturedCard({ post }: { post: BlogPost }) {
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
       </div>
-
-      {/* Content — below image, clean */}
       <div className="max-w-2xl">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-2">
           <span className={`text-[11px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[post.category]}`}>
             {BLOG_CATEGORIES[post.category]}
           </span>
-          <span className="text-[11px] text-foreground/25">
-            {formatDate(post.date)}
-          </span>
+          <span className="text-[11px] text-foreground/50">{formatDate(post.date)}</span>
         </div>
-        <h2 className="font-display text-2xl sm:text-3xl text-foreground group-hover:text-gold transition-colors duration-200 leading-tight mb-3">
+        <h2 className="font-display text-2xl sm:text-3xl text-foreground group-hover:text-gold transition-colors duration-200 leading-tight mb-2">
           {post.title}
         </h2>
-        <p className="text-[15px] text-foreground/45 leading-relaxed line-clamp-2">
+        <p className="text-[15px] text-foreground/65 leading-relaxed line-clamp-2">
           {post.description}
         </p>
       </div>
@@ -81,14 +64,56 @@ function FeaturedCard({ post }: { post: BlogPost }) {
   );
 }
 
-/* ─── Post Card (Notion/Framer style — image top, text bottom) ── */
+/* ─── Large Card (2-column recent) ───────────────────────── */
+function LargeCard({ post }: { post: BlogPost }) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 overflow-hidden h-full"
+    >
+      <div className="relative w-full aspect-[16/9] overflow-hidden">
+        {post.image && (
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+            sizes="(max-width: 640px) 100vw, 50vw"
+          />
+        )}
+      </div>
+      <div className="p-5 flex flex-col flex-1">
+        <div className="flex items-center gap-3 mb-2">
+          <span className={`text-[10px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[post.category]}`}>
+            {BLOG_CATEGORIES[post.category]}
+          </span>
+          {getPostLang(post.slug) === "en" && (
+            <span className="text-[9px] font-bold text-sky-400/60 uppercase">EN</span>
+          )}
+        </div>
+        <h3 className="font-display text-lg text-foreground group-hover:text-gold transition-colors duration-200 leading-snug mb-2 flex-1">
+          {post.title}
+        </h3>
+        <p className="text-[13px] text-foreground/60 leading-relaxed line-clamp-2 mb-3">
+          {post.description}
+        </p>
+        <div className="flex items-center gap-2 text-[11px] text-foreground/45">
+          <span>{formatDate(post.date)}</span>
+          <span className="text-foreground/25">&middot;</span>
+          <span>{post.readingTime}</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+/* ─── Standard Card (3-column grid) ──────────────────────── */
 function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
       className="group flex flex-col h-full rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 overflow-hidden"
     >
-      {/* Image */}
       <div className="relative w-full aspect-[16/10] overflow-hidden">
         {post.image && (
           <Image
@@ -100,8 +125,6 @@ function PostCard({ post }: { post: BlogPost }) {
           />
         )}
       </div>
-
-      {/* Text */}
       <div className="flex flex-col flex-1 p-4">
         <div className="flex items-center gap-3 mb-2">
           <span className={`text-[10px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[post.category]}`}>
@@ -111,16 +134,65 @@ function PostCard({ post }: { post: BlogPost }) {
             <span className="text-[9px] font-bold text-sky-400/60 uppercase">EN</span>
           )}
         </div>
-        <h3 className="font-display text-[16px] text-foreground/90 group-hover:text-gold transition-colors duration-200 leading-snug mb-2 flex-1">
+        <h3 className="font-display text-[15px] text-foreground group-hover:text-gold transition-colors duration-200 leading-snug mb-2 flex-1">
           {post.title}
         </h3>
-        <div className="flex items-center gap-2 text-[11px] text-foreground/30">
+        <div className="flex items-center gap-2 text-[11px] text-foreground/45">
           <span>{formatDate(post.date)}</span>
-          <span className="text-foreground/15">&middot;</span>
+          <span className="text-foreground/25">&middot;</span>
           <span>{post.readingTime}</span>
         </div>
       </div>
     </Link>
+  );
+}
+
+/* ─── Horizontal Card (sidebar/list style) ───────────────── */
+function HorizontalCard({ post }: { post: BlogPost }) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group flex gap-4 items-start py-4 border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] -mx-3 px-3 rounded-lg transition-colors"
+    >
+      <div className="relative w-24 h-16 sm:w-28 sm:h-[72px] rounded-lg overflow-hidden shrink-0">
+        {post.image && (
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="120px"
+          />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className={`text-[9px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[post.category]}`}>
+          {BLOG_CATEGORIES[post.category]}
+        </span>
+        <h4 className="text-[14px] text-foreground/90 group-hover:text-gold transition-colors leading-snug mt-0.5 line-clamp-2">
+          {post.title}
+        </h4>
+        <span className="text-[10px] text-foreground/45 mt-1 block">{post.readingTime}</span>
+      </div>
+    </Link>
+  );
+}
+
+/* ─── Section Header ─────────────────────────────────────── */
+function SectionHeader({ title, action }: { title: string; action?: { label: string; onClick: () => void } }) {
+  return (
+    <div className="flex items-center justify-between mb-5">
+      <h2 className="font-display text-lg text-foreground">{title}</h2>
+      {action && (
+        <button
+          type="button"
+          onClick={action.onClick}
+          className="text-[11px] text-foreground/45 hover:text-foreground/60 transition-colors"
+        >
+          {action.label} &rarr;
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -171,14 +243,21 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
 
   const hasFilters = !!(query || activeCategory || langFilter !== "all");
 
-  // Separate pinned/featured from regular posts
+  // Layout sections (only when no filters active)
   const featuredPost = !hasFilters ? sorted.find((p) => p.pinned) : undefined;
-  const regularPosts = featuredPost ? sorted.filter((p) => p !== featuredPost) : sorted;
+  const nonFeatured = featuredPost ? sorted.filter((p) => p !== featuredPost) : sorted;
+  const recentPosts = !hasFilters ? nonFeatured.slice(0, 2) : [];
+  const guides = !hasFilters ? nonFeatured.filter((p) => p.category === "tutorial" || p.category === "guia").slice(0, 4) : [];
+  const guideSlugs = new Set(guides.map((p) => p.slug));
+  const recentSlugs = new Set(recentPosts.map((p) => p.slug));
+  const remainingPosts = !hasFilters
+    ? nonFeatured.filter((p) => !recentSlugs.has(p.slug) && !guideSlugs.has(p.slug))
+    : sorted;
 
   return (
     <div>
       {/* ─── Search + Filters ─── */}
-      <div className="sticky top-[64px] z-20 -mx-6 px-6 py-4 backdrop-blur-xl border-b border-white/[0.04] mb-10" style={{ backgroundColor: "hsl(233 26% 10% / 0.85)" }}>
+      <div className="py-4 mb-8">
         <div className="relative mb-3">
           <svg
             className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/25 pointer-events-none"
@@ -198,7 +277,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar artigos..."
-            className="w-full h-10 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.06] text-sm text-foreground placeholder:text-foreground/25 focus:outline-none focus:border-white/[0.15] focus:bg-white/[0.06] transition-all"
+            className="w-full h-10 pl-10 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.06] text-sm text-foreground placeholder:text-foreground/45 focus:outline-none focus:border-white/[0.15] focus:bg-white/[0.06] transition-all"
           />
         </div>
 
@@ -206,10 +285,10 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
           <button
             type="button"
             onClick={() => setActiveCategory(null)}
-            className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all whitespace-nowrap shrink-0 ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
               !activeCategory
                 ? "bg-foreground/10 text-foreground"
-                : "text-foreground/35 hover:text-foreground/60"
+                : "text-foreground/45 hover:text-foreground/70"
             }`}
           >
             Todos
@@ -219,10 +298,10 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
               key={cat}
               type="button"
               onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all whitespace-nowrap shrink-0 ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
                 activeCategory === cat
                   ? "bg-foreground/10 text-foreground"
-                  : "text-foreground/35 hover:text-foreground/60"
+                  : "text-foreground/45 hover:text-foreground/70"
               }`}
             >
               {BLOG_CATEGORIES[cat]}
@@ -237,10 +316,10 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
                   key={l}
                   type="button"
                   onClick={() => setLangFilter(l)}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all whitespace-nowrap shrink-0 ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
                     langFilter === l
                       ? "bg-foreground/10 text-foreground"
-                      : "text-foreground/35 hover:text-foreground/60"
+                      : "text-foreground/45 hover:text-foreground/70"
                   }`}
                 >
                   {l === "all" ? "Todos" : l.toUpperCase()}
@@ -251,41 +330,98 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
         </div>
       </div>
 
-      {/* ─── Featured Post ─── */}
-      {featuredPost && <FeaturedCard post={featuredPost} />}
-
-      {/* Results count when filtered */}
+      {/* ─── Filtered Results ─── */}
       {hasFilters && (
-        <p className="text-xs text-foreground/30 mb-6">
-          {sorted.length} {sorted.length === 1 ? "artigo" : "artigos"}
-          {activeCategory && ` em ${BLOG_CATEGORIES[activeCategory]}`}
-          <button
-            type="button"
-            onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
-            className="ml-2 text-foreground/50 hover:text-foreground underline underline-offset-2"
-          >
-            Limpar
-          </button>
-        </p>
+        <>
+          <p className="text-xs text-foreground/45 mb-6">
+            {sorted.length} {sorted.length === 1 ? "artigo" : "artigos"}
+            {activeCategory && ` em ${BLOG_CATEGORIES[activeCategory]}`}
+            <button
+              type="button"
+              onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
+              className="ml-2 text-foreground/50 hover:text-foreground underline underline-offset-2"
+            >
+              Limpar
+            </button>
+          </p>
+          {sorted.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-foreground/45 text-sm">Nenhum artigo encontrado.</p>
+              <button
+                type="button"
+                onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
+                className="mt-3 text-foreground/50 text-sm hover:text-foreground underline underline-offset-2"
+              >
+                Limpar filtros
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {sorted.map((post) => (
+                <PostCard key={post.slug} post={post} />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
-      {sorted.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-foreground/30 text-sm">Nenhum artigo encontrado.</p>
-          <button
-            type="button"
-            onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
-            className="mt-3 text-foreground/50 text-sm hover:text-foreground underline underline-offset-2"
-          >
-            Limpar filtros
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-          {regularPosts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
+      {/* ─── Home Layout (no filters) ─── */}
+      {!hasFilters && (
+        <>
+          {/* 1. Featured Post */}
+          {featuredPost && <FeaturedCard post={featuredPost} />}
+
+          {/* 2. Recent — 2 large cards */}
+          {recentPosts.length > 0 && (
+            <section className="mb-12">
+              <SectionHeader title="Recentes" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {recentPosts.map((post) => (
+                  <LargeCard key={post.slug} post={post} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 3. Guides + Sidebar */}
+          {guides.length > 0 && (
+            <section className="mb-12">
+              <SectionHeader
+                title="Guias & Tutoriais"
+                action={{ label: "Ver todos", onClick: () => setActiveCategory("tutorial") }}
+              />
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+                {/* Main: 2-col grid of guides */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {guides.slice(0, 4).map((post) => (
+                    <PostCard key={post.slug} post={post} />
+                  ))}
+                </div>
+                {/* Sidebar: quick links */}
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+                  <h3 className="text-[11px] font-semibold uppercase tracking-widest text-foreground/40 mb-4">
+                    Populares
+                  </h3>
+                  {nonFeatured.slice(0, 5).map((post) => (
+                    <HorizontalCard key={post.slug} post={post} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* 4. Remaining posts */}
+          {remainingPosts.length > 0 && (
+            <section>
+              <SectionHeader title="Mais artigos" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {remainingPosts.map((post) => (
+                  <PostCard key={post.slug} post={post} />
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
     </div>
   );

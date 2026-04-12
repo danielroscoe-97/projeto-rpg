@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ChevronDown, X, LayoutDashboard, Home } from "lucide-react";
@@ -31,8 +30,18 @@ interface NavbarProps {
   minimal?: boolean;
 }
 
+// Hardcoded labels — removes next-intl SSR context dependency
+// (same resilience pattern as ActiveEffectsBadges fix, commit 33f4c39)
+const NAV_LABELS: Record<string, string> = {
+  close_menu: "Fechar menu",
+  open_menu: "Abrir menu",
+  dashboard: "Dashboard",
+  brand: "Pocket DM",
+  mobile_tagline: "Combat tracker para D&D 5e.\n1100+ monstros · 600+ magias · Grátis.",
+};
+
 export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, minimal }: NavbarProps) {
-  const t = useTranslations("nav");
+  const t = (key: string) => NAV_LABELS[key] ?? key;
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

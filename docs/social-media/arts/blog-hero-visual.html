@@ -31,32 +31,32 @@
   .hero-bg {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #0d0d14 0%, #13131E 40%, #1A1A28 100%);
+    background: linear-gradient(135deg, #111122 0%, #181830 40%, #1e1e3a 100%);
   }
   .hero-vignette {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 70% 60%, transparent 20%, rgba(0,0,0,0.5) 100%);
+    background: radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0,0,0,0.3) 100%);
     z-index: 1;
   }
   .hero-art {
     position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 720px;
-    height: 720px;
-    object-fit: contain;
-    object-position: center bottom;
-    opacity: 0.35;
-    filter: saturate(0.6) brightness(0.9);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    object-fit: cover;
+    opacity: 0.70;
+    filter: saturate(0.85) brightness(1.2);
     z-index: 0;
   }
   .hero-grid {
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(212,168,83,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212,168,83,0.02) 1px, transparent 1px);
+      linear-gradient(rgba(212,168,83,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,168,83,0.04) 1px, transparent 1px);
     background-size: 80px 80px;
     z-index: 0;
   }
@@ -65,87 +65,153 @@
     position: absolute;
     top: 50%;
     left: 40%;
-    width: 600px;
-    height: 400px;
+    width: 700px;
+    height: 500px;
     transform: translate(-50%, -50%);
-    background: radial-gradient(ellipse, rgba(212,168,83,0.06) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(212,168,83,0.10) 0%, transparent 70%);
     z-index: 0;
+  }
+  /* Category badge — bottom-left */
+  .hero-badge {
+    position: absolute;
+    bottom: 36px;
+    left: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px 8px 14px;
+    border-radius: 6px;
+    font-family: 'Cinzel', 'Georgia', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    z-index: 2;
+    backdrop-filter: blur(8px);
+  }
+  .hero-badge svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+  .badge-tutorial { background: rgba(96,165,250,0.12); color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
+  .badge-guia { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
+  .badge-lista { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+  .badge-comparativo { background: rgba(192,132,252,0.12); color: #c084fc; border: 1px solid rgba(192,132,252,0.25); }
+  .badge-build { background: rgba(251,113,133,0.12); color: #fb7185; border: 1px solid rgba(251,113,133,0.25); }
+  .badge-devlog { background: rgba(212,168,83,0.12); color: #d4a853; border: 1px solid rgba(212,168,83,0.25); }
+
+  /* Decorative d20 — top-right corner */
+  .hero-d20 {
+    position: absolute;
+    top: 32px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.12;
+    z-index: 2;
   }
 </style>
 </head>
 <body>
 
-<!-- 1: diario-de-aventura -->
+<!-- SVG icons for badges -->
+<svg style="display:none">
+  <symbol id="ico-scroll" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 002-2v-2H10v2a2 2 0 01-2 2zm0 0a2 2 0 01-2-2V5a2 2 0 012-2h9.5L22 7.5V19a2 2 0 01-2 2H8z"/></symbol>
+  <symbol id="ico-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+  <symbol id="ico-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+  <symbol id="ico-swords" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="14" x2="9" y2="18"/><line x1="7" y1="17" x2="4" y2="20"/><line x1="3" y1="19" x2="5" y2="21"/></symbol>
+  <symbol id="ico-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="ico-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5z"/></symbol>
+  <!-- d20 decorative -->
+  <symbol id="d20" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><polygon points="50,2 95,27 95,73 50,98 5,73 5,27" stroke-width="3"/><polygon points="50,2 80,40 50,80 20,40" stroke-width="1.5" opacity="0.5"/><line x1="50" y1="2" x2="50" y2="80" stroke-width="1" opacity="0.3"/><line x1="5" y1="27" x2="80" y2="40" stroke-width="1" opacity="0.3"/><line x1="95" y1="27" x2="20" y2="40" stroke-width="1" opacity="0.3"/><line x1="5" y1="73" x2="50" y2="80" stroke-width="1" opacity="0.3"/><line x1="95" y1="73" x2="50" y2="80" stroke-width="1" opacity="0.3"/></symbol>
+</svg>
+
+<!-- 1: diario-de-aventura (devlog) -->
 <p class="label">diario-de-aventura.png</p>
 <div class="hero">
   <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #171520 40%, #1a1828 100%);"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/ancient-red-dragon.png" alt="" style="opacity: 0.3; width: 800px; height: 800px; right: -40px; bottom: -100px;">
+  <img class="hero-art" src="../arts/assets/ancient-red-dragon.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-devlog"><svg><use href="#ico-quill"/></svg>Devlog</div>
+  <svg class="hero-d20" style="color: #d4a853;"><use href="#d20"/></svg>
 </div>
 
-<!-- 2: combat-tracker -->
+<!-- 2: combat-tracker (tutorial) -->
 <p class="label">combat-tracker.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/death-knight.png" alt="">
+  <img class="hero-art" src="../arts/assets/death-knight.png" alt="" style="transform: translate(-50%, -38%);">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-tutorial"><svg><use href="#ico-scroll"/></svg>Tutorial</div>
+  <svg class="hero-d20" style="color: #60a5fa;"><use href="#d20"/></svg>
 </div>
 
-<!-- 3: 5-ferramentas -->
+<!-- 3: 5-ferramentas (lista) -->
 <p class="label">5-ferramentas.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/owlbear.png" alt="" style="opacity: 0.4;">
+  <img class="hero-art" src="../arts/assets/owlbear.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-lista"><svg><use href="#ico-list"/></svg>Lista</div>
+  <svg class="hero-d20" style="color: #fbbf24;"><use href="#d20"/></svg>
 </div>
 
-<!-- 4: tracker-vs-vtt -->
+<!-- 4: tracker-vs-vtt (comparativo) -->
 <p class="label">tracker-vs-vtt.png</p>
 <div class="hero">
   <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #141320 40%, #1a1528 100%);"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/chimera.png" alt="">
+  <img class="hero-art" src="../arts/assets/chimera.png" alt="" style="width: 1000px; height: 900px;">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-comparativo"><svg><use href="#ico-swords"/></svg>Comparativo</div>
+  <svg class="hero-d20" style="color: #c084fc;"><use href="#d20"/></svg>
 </div>
 
-<!-- 5: condicoes -->
+<!-- 5: condicoes (guia) -->
 <p class="label">condicoes.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/medusa.png" alt="" style="opacity: 0.38;">
+  <img class="hero-art" src="../arts/assets/medusa.png" alt="" style="transform: translate(-50%, -38%);">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-guia"><svg><use href="#ico-compass"/></svg>Guia</div>
+  <svg class="hero-d20" style="color: #34d399;"><use href="#d20"/></svg>
 </div>
 
-<!-- 6: agilizar-combate -->
+<!-- 6: agilizar-combate (tutorial) -->
 <p class="label">agilizar-combate.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/vampire.png" alt="" style="opacity: 0.38;">
+  <img class="hero-art" src="../arts/assets/vampire.png" alt="" style="transform: translate(-50%, -38%);">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-tutorial"><svg><use href="#ico-scroll"/></svg>Tutorial</div>
+  <svg class="hero-d20" style="color: #60a5fa;"><use href="#d20"/></svg>
 </div>
 
-<!-- 7: tutorial-pocket-dm -->
+<!-- 7: tutorial-pocket-dm (tutorial) -->
 <p class="label">tutorial-pocket-dm.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/troll.png" alt="" style="opacity: 0.38;">
+  <img class="hero-art" src="../arts/assets/troll.png" alt="" style="transform: translate(-50%, -38%);">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-tutorial"><svg><use href="#ico-scroll"/></svg>Tutorial</div>
+  <svg class="hero-d20" style="color: #60a5fa;"><use href="#d20"/></svg>
 </div>
 
-<!-- 8: encounter-building -->
+<!-- 8: encounter-building (tutorial) -->
 <p class="label">encounter-building.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
@@ -153,116 +219,140 @@
   <div class="hero-glow"></div>
   <img class="hero-art" src="../arts/assets/ancient-red-dragon.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-tutorial"><svg><use href="#ico-scroll"/></svg>Tutorial</div>
+  <svg class="hero-d20" style="color: #60a5fa;"><use href="#d20"/></svg>
 </div>
 
-<!-- 9: first-time-dm -->
+<!-- 9: first-time-dm (tutorial) -->
 <p class="label">first-time-dm.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/goblin.png" alt="" style="opacity: 0.45; width: 600px; height: 600px;">
+  <img class="hero-art" src="../arts/assets/goblin.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-tutorial"><svg><use href="#ico-scroll"/></svg>Tutorial</div>
+  <svg class="hero-d20" style="color: #60a5fa;"><use href="#d20"/></svg>
 </div>
 
-<!-- 10: ambient-music -->
+<!-- 10: ambient-music (guia) -->
 <p class="label">ambient-music.png</p>
 <div class="hero">
   <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #141420 40%, #1a1528 100%);"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/lich.png" alt="" style="opacity: 0.35;">
+  <img class="hero-art" src="../arts/assets/lich.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-guia"><svg><use href="#ico-compass"/></svg>Guia</div>
+  <svg class="hero-d20" style="color: #34d399;"><use href="#d20"/></svg>
 </div>
 
-<!-- 11: melhores-monstros -->
+<!-- 11: melhores-monstros (lista) -->
 <p class="label">melhores-monstros.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/tarrasque.png" alt="" style="opacity: 0.4; width: 800px; height: 800px; right: -60px; bottom: -80px;">
+  <img class="hero-art" src="../arts/assets/tarrasque.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-lista"><svg><use href="#ico-list"/></svg>Lista</div>
+  <svg class="hero-d20" style="color: #fbbf24;"><use href="#d20"/></svg>
 </div>
 
-<!-- 12: challenge-rating -->
+<!-- 12: challenge-rating (guia) -->
 <p class="label">challenge-rating.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/hydra.png" alt="" style="opacity: 0.38;">
+  <img class="hero-art" src="../arts/assets/hydra.png" alt="" style="width: 1000px; height: 900px;">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-guia"><svg><use href="#ico-compass"/></svg>Guia</div>
+  <svg class="hero-d20" style="color: #34d399;"><use href="#d20"/></svg>
 </div>
 
-<!-- 13: theater-vs-grid -->
+<!-- 13: theater-vs-grid (comparativo) -->
 <p class="label">theater-vs-grid.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/minotaur.png" alt="" style="opacity: 0.4;">
+  <img class="hero-art" src="../arts/assets/minotaur.png" alt="" style="transform: translate(-50%, -38%);">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-comparativo"><svg><use href="#ico-swords"/></svg>Comparativo</div>
+  <svg class="hero-d20" style="color: #c084fc;"><use href="#d20"/></svg>
 </div>
 
-<!-- 14: cleric-sorcerer-build -->
+<!-- 14: cleric-sorcerer-build (build) -->
 <p class="label">cleric-sorcerer-build.png</p>
 <div class="hero">
-  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #1a1318 40%, #201520 100%);"></div>
+  <div class="hero-bg" style="background: linear-gradient(135deg, #111122 0%, #1a1320 40%, #1e1528 100%);"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow" style="left: 55%;"></div>
-  <img class="hero-art" src="../arts/assets/capa-barsavi-portrait.png" alt="" style="opacity: 0.45; right: 40px; bottom: -60px; width: 550px; height: 700px; object-fit: cover; filter: saturate(0.8) brightness(0.95);">
+  <img class="hero-art" src="../arts/assets/capa-barsavi-portrait.png" alt="" style="width: 750px; height: 1000px; opacity: 0.75; filter: saturate(0.9) brightness(1.25); transform: translate(-50%, -35%);">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-build"><svg><use href="#ico-shield"/></svg>Build</div>
+  <svg class="hero-d20" style="color: #fb7185;"><use href="#d20"/></svg>
 </div>
 
-<!-- 15: cleric-sorcerer-build-en -->
+<!-- 15: cleric-sorcerer-build-en (build) -->
 <p class="label">cleric-sorcerer-build-en.png</p>
 <div class="hero">
-  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #1a1318 40%, #201520 100%);"></div>
+  <div class="hero-bg" style="background: linear-gradient(135deg, #111122 0%, #1a1320 40%, #1e1528 100%);"></div>
   <div class="hero-grid"></div>
-  <div class="hero-glow" style="left: 55%;"></div>
-  <img class="hero-art" src="../arts/assets/capa-barsavi-portrait.png" alt="" style="opacity: 0.45; right: 40px; bottom: -60px; width: 550px; height: 700px; object-fit: cover; filter: saturate(0.8) brightness(0.95);">
+  <div class="hero-glow" style="left: 50%;"></div>
+  <img class="hero-art" src="../arts/assets/capa-barsavi-portrait.png" alt="" style="width: 750px; height: 1000px; opacity: 0.75; filter: saturate(0.9) brightness(1.25); transform: translate(-50%, -35%);">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-build"><svg><use href="#ico-shield"/></svg>Build</div>
+  <svg class="hero-d20" style="color: #fb7185;"><use href="#d20"/></svg>
 </div>
 
-<!-- 16: ebook-guia-mestre-eficaz -->
+<!-- 16: ebook-guia-mestre-eficaz (guia) -->
 <p class="label">ebook-guia-mestre-eficaz.png</p>
 <div class="hero">
   <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #151520 40%, #1a1a28 100%);"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/kraken.png" alt="" style="opacity: 0.3; width: 780px; height: 780px; right: -40px; bottom: -80px;">
+  <img class="hero-art" src="../arts/assets/kraken.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-guia"><svg><use href="#ico-compass"/></svg>Guia</div>
+  <svg class="hero-d20" style="color: #34d399;"><use href="#d20"/></svg>
 </div>
 
-<!-- 17: gerenciar-hp -->
+<!-- 17: gerenciar-hp (tutorial) -->
 <p class="label">gerenciar-hp.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/oni.png" alt="" style="opacity: 0.4;">
+  <img class="hero-art" src="../arts/assets/oni.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-tutorial"><svg><use href="#ico-scroll"/></svg>Tutorial</div>
+  <svg class="hero-d20" style="color: #60a5fa;"><use href="#d20"/></svg>
 </div>
 
-<!-- 18: 7-erros-combate -->
+<!-- 18: 7-erros-combate (lista) -->
 <p class="label">7-erros-combate.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/flameskull.png" alt="" style="opacity: 0.45; width: 600px; height: 600px;">
+  <img class="hero-art" src="../arts/assets/flameskull.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-lista"><svg><use href="#ico-list"/></svg>Lista</div>
+  <svg class="hero-d20" style="color: #fbbf24;"><use href="#d20"/></svg>
 </div>
 
-<!-- 19: iniciativa -->
+<!-- 19: iniciativa (guia) -->
 <p class="label">iniciativa.png</p>
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <img class="hero-art" src="../arts/assets/werewolf.png" alt="" style="opacity: 0.4;">
+  <img class="hero-art" src="../arts/assets/werewolf.png" alt="">
   <div class="hero-vignette"></div>
+  <div class="hero-badge badge-guia"><svg><use href="#ico-compass"/></svg>Guia</div>
+  <svg class="hero-d20" style="color: #34d399;"><use href="#d20"/></svg>
 </div>
 
 </body>

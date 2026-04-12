@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
 import { EbookCTA } from "@/components/blog/EbookCTA";
+import { BLOG_NAV_LINKS } from "@/lib/blog/blog-nav-links";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
@@ -214,12 +215,7 @@ export default function EbookPage() {
       <Navbar
         brand="Pocket DM"
         brandHref="/"
-        links={[
-          { href: "/blog", label: "Blog" },
-          { href: "/monstros", label: "Monstros" },
-          { href: "/magias", label: "Magias" },
-          { href: "/pricing", label: "Preços" },
-        ]}
+        links={BLOG_NAV_LINKS}
         rightSlot={<BlogNavAuthSlot />}
       />
 
