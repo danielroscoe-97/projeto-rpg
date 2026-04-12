@@ -36,6 +36,7 @@ const DmAtmospherePanel = dynamic(() => import("@/components/audio/DmAtmosphereP
   ssr: false,
 });
 import { useAudioStore } from "@/lib/stores/audio-store";
+import { useFavoritesStore } from "@/lib/stores/favorites-store";
 import { getPresetById } from "@/lib/utils/audio-presets";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { persistCombatLog, loadCombatLog } from "@/lib/supabase/combat-log-persist";
@@ -444,6 +445,11 @@ export function CombatSessionClient({
     }
     doEndEncounter();
   }, [doEndEncounter, getSessionId, pollVotes]);
+
+  // Hydrate audio favorites store (DM is always authenticated)
+  useEffect(() => {
+    useFavoritesStore.getState().hydrate(true);
+  }, []);
 
   // Hide navbar + reduce main padding when combat is active — saves ~72px vertical space
   useEffect(() => {

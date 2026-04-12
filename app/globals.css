@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
 @layer utilities {
   /* Safe area padding for iOS devices with home indicator / notch */
   .safe-area-pb {

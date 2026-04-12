@@ -3382,7 +3382,15 @@
     "replace_sound": "Substituir som",
     "tap_to_enable_sound": "Toque para ativar som",
     "disabled_not_turn_short": "Seu turno",
-    "turn_sfx_toggle": "Som ao trocar turno"
+    "turn_sfx_toggle": "Som ao trocar turno",
+    "favorites_title": "Favoritos",
+    "favorites_empty_hint": "Toque na estrela de qualquer som para favoritar",
+    "favorites_remove": "Remover dos favoritos",
+    "favorites_add": "Adicionar aos favoritos",
+    "favorites_added": "Adicionado aos favoritos",
+    "favorites_removed": "Removido dos favoritos",
+    "favorites_limit": "Limite de favoritos atingido",
+    "tab_favorites": "Favoritos"
   },
   "lp_pricing": {
     "section_title": "Simples e transparente.",

@@ -27,3 +27,13 @@ export interface AudioPlayEvent {
   /** Signed URL for custom sounds (DM resolves presets locally) */
   audio_url?: string;
 }
+
+/** A user's bookmarked audio preset for quick access */
+export interface AudioFavorite {
+  id: string;
+  user_id: string;
+  preset_id: string;
+  source: "preset" | "custom";
+  position: number;
+  created_at: string;
+}

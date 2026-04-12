@@ -3,7 +3,11 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Star } from "lucide-react";
 import { getPlayerSfxPresets } from "@/lib/utils/audio-presets";
+import { useFavoritesStore } from "@/lib/stores/favorites-store";
+import { AudioFavoritesBar } from "@/components/audio/AudioFavoritesBar";
 import type { AudioPreset, PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
@@ -103,6 +107,28 @@ export function PlayerSoundboard({
     });
   }, [activeTab, presetsByTab, search, t]);
 
+  const isFavorite = useFavoritesStore((s) => s.isFavorite);
+  const addFavorite = useFavoritesStore((s) => s.addFavorite);
+  const removeFavorite = useFavoritesStore((s) => s.removeFavorite);
+
+  const handleToggleFavorite = useCallback(
+    async (presetId: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isFavorite(presetId)) {
+        removeFavorite(presetId);
+        toast(t("favorites_removed"), { duration: 1500 });
+      } else {
+        const added = await addFavorite(presetId, "preset");
+        if (added) {
+          toast.success(t("favorites_added"), { duration: 1500 });
+        } else {
+          toast.error(t("favorites_limit"), { duration: 2000 });
+        }
+      }
+    },
+    [isFavorite, addFavorite, removeFavorite, t]
+  );
+
   const hasCustomFiles = customAudioFiles.length > 0;
   const customUrlsReady = Object.keys(customAudioUrls).length > 0;
   const isCustomLoading = isLoadingAudio || (hasCustomFiles && !customUrlsReady);
@@ -167,6 +193,12 @@ export function PlayerSoundboard({
               ))}
             </div>
 
+            {/* Favorites Bar */}
+            <AudioFavoritesBar
+              onPlaySound={handlePlaySound}
+              cooldownId={cooldownId}
+            />
+
             {/* Search */}
             <div className="px-3 pt-3 pb-2 shrink-0">
               <input
@@ -193,13 +225,26 @@ export function PlayerSoundboard({
                         disabled={isCooling}
                         onClick={() => handlePlaySound(preset.id, "preset")}
                         whileTap={!isCooling ? { scale: 0.9 } : undefined}
-                        className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                        className={`group/preset relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
                           isCooling
                             ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
                             : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08]"
                         }`}
                         data-testid={`preset-btn-${preset.id}`}
                       >
+                        {/* Favorite star */}
+                        <button
+                          type="button"
+                          onClick={(e) => handleToggleFavorite(preset.id, e)}
+                          className={`absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full transition-all ${
+                            isFavorite(preset.id)
+                              ? "text-gold"
+                              : "text-transparent group-hover/preset:text-muted-foreground/40"
+                          }`}
+                          aria-label={isFavorite(preset.id) ? t("favorites_remove") : t("favorites_add")}
+                        >
+                          <Star className={`w-3 h-3 ${isFavorite(preset.id) ? "fill-gold" : ""}`} />
+                        </button>
                         <span className="text-lg leading-none">{preset.icon}</span>
                         <span className="text-[10px] leading-tight text-center truncate w-full">
                           {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}

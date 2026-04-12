@@ -40,6 +40,7 @@ import type {
   RealtimePlayerNotesUpdate,
 } from "@/lib/types/realtime";
 import { useAudioStore } from "@/lib/stores/audio-store";
+import { useFavoritesStore } from "@/lib/stores/favorites-store";
 import { AudioUnlockBanner } from "@/components/audio/AudioUnlockBanner";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import { CombatLeaderboard } from "@/components/combat/CombatLeaderboard";
@@ -349,6 +350,18 @@ export function PlayerJoinClient({
       if (audioRefreshTimerRef.current) clearTimeout(audioRefreshTimerRef.current);
     };
   }, [authReady, generateSignedUrls, scheduleUrlRefresh]);
+
+  // Hydrate audio favorites store (works for both anon and auth)
+  useEffect(() => {
+    if (!authReady) return;
+    async function hydrateFavorites() {
+      const supabase = createClient();
+      const { data: { user: u } } = await supabase.auth.getUser();
+      const isRealAuth = !!u && !u.is_anonymous;
+      useFavoritesStore.getState().hydrate(isRealAuth);
+    }
+    hydrateFavorites();
+  }, [authReady]);
 
   // Mesa model: seed session DM plan into subscription store
   useEffect(() => {

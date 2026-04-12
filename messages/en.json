@@ -3382,7 +3382,15 @@
     "replace_sound": "Replace sound",
     "tap_to_enable_sound": "Tap to enable sound",
     "disabled_not_turn_short": "Your turn",
-    "turn_sfx_toggle": "Turn advance sound"
+    "turn_sfx_toggle": "Turn advance sound",
+    "favorites_title": "Favorites",
+    "favorites_empty_hint": "Tap the star on any sound to add it here",
+    "favorites_remove": "Remove from favorites",
+    "favorites_add": "Add to favorites",
+    "favorites_added": "Added to favorites",
+    "favorites_removed": "Removed from favorites",
+    "favorites_limit": "Favorites limit reached",
+    "tab_favorites": "Favorites"
   },
   "lp_pricing": {
     "section_title": "Simple and transparent.",

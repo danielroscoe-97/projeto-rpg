@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useDragControls } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Square, Minimize2, X } from "lucide-react";
+import { toast } from "sonner";
+import { Square, Minimize2, X, Star } from "lucide-react";
 import { useAudioStore } from "@/lib/stores/audio-store";
+import { useFavoritesStore } from "@/lib/stores/favorites-store";
+import { AudioFavoritesBar } from "@/components/audio/AudioFavoritesBar";
 import {
   getAmbientPresets,
   getMusicPresets,
@@ -18,7 +21,7 @@ import { AudioUploadManager } from "@/components/audio/AudioUploadManager";
 const SFX_COOLDOWN_MS = 1500;
 const STORAGE_KEY = "pocket-dm-atmosphere-position";
 
-type Tab = "ambient" | "music" | "sfx" | "uploads" | "volume";
+type Tab = "favorites" | "ambient" | "music" | "sfx" | "uploads" | "volume";
 
 interface SavedState {
   x: number;
@@ -87,9 +90,18 @@ export function DmAtmospherePanel({
   const setVolume = useAudioStore((s) => s.setVolume);
   const toggleMute = useAudioStore((s) => s.toggleMute);
 
+  const isFavorite = useFavoritesStore((s) => s.isFavorite);
+  const addFavorite = useFavoritesStore((s) => s.addFavorite);
+  const removeFavStore = useFavoritesStore((s) => s.removeFavorite);
+
   const ambientPresets = getAmbientPresets();
   const musicPresets = getMusicPresets();
   const sfxPresets = getSfxPresets();
+
+  const allPresets = useMemo(
+    () => [...ambientPresets, ...musicPresets, ...sfxPresets],
+    [ambientPresets, musicPresets, sfxPresets]
+  );
 
   // Mount check for portal
   useEffect(() => {
@@ -170,6 +182,37 @@ export function DmAtmospherePanel({
     onBroadcast?.("audio:ambient_stop", {});
   }, [stopAllAudio, onBroadcast]);
 
+  const handleToggleFavorite = useCallback(
+    async (presetId: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isFavorite(presetId)) {
+        removeFavStore(presetId);
+        toast(t("favorites_removed"), { duration: 1500 });
+      } else {
+        const added = await addFavorite(presetId, "preset");
+        if (added) {
+          toast.success(t("favorites_added"), { duration: 1500 });
+        } else {
+          toast.error(t("favorites_limit"), { duration: 2000 });
+        }
+      }
+    },
+    [isFavorite, addFavorite, removeFavStore, t]
+  );
+
+  const handlePlayForBar = useCallback(
+    (presetId: string, _source: "preset" | "custom", _url?: string) => {
+      const preset = allPresets.find((p) => p.id === presetId);
+      if (!preset) return;
+      if (preset.category === "ambient" || preset.category === "music") {
+        handleAmbientToggle(presetId);
+      } else {
+        handleSfxPlay(presetId);
+      }
+    },
+    [allPresets, handleAmbientToggle, handleSfxPlay]
+  );
+
   const toggleCollapse = useCallback(() => {
     const next = !collapsed;
     setCollapsed(next);
@@ -181,6 +224,7 @@ export function DmAtmospherePanel({
   const hasActiveAnything = hasActiveAudio;
 
   const TABS: { id: Tab; label: string; icon: string }[] = [
+    { id: "favorites", label: t("tab_favorites"), icon: "⭐" },
     { id: "ambient", label: t("dm_ambient_section"), icon: "🔥" },
     { id: "music", label: t("dm_music_section"), icon: "🎵" },
     { id: "sfx", label: "SFX", icon: "⚔️" },
@@ -323,6 +367,14 @@ export function DmAtmospherePanel({
           </div>
 
           <div className="p-4 max-h-[60vh] overflow-y-auto">
+            {/* === FAVORITOS TAB === */}
+            {activeTab === "favorites" && (
+              <AudioFavoritesBar
+                onPlaySound={handlePlayForBar}
+                cooldownId={cooldownId}
+              />
+            )}
+
             {/* === AMBIENTE TAB === */}
             {activeTab === "ambient" && (
               <div className="grid grid-cols-3 gap-2">
@@ -333,17 +385,30 @@ export function DmAtmospherePanel({
                       key={preset.id}
                       type="button"
                       onClick={() => handleAmbientToggle(preset.id)}
-                      className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                      className={`group/atm relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
                         isActive
                           ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
                           : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
                       }`}
                     >
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => handleToggleFavorite(preset.id, e)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleToggleFavorite(preset.id, e as unknown as React.MouseEvent); }}
+                        className={`absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full transition-all z-10 ${
+                          isFavorite(preset.id)
+                            ? "text-gold"
+                            : "text-transparent group-hover/atm:text-muted-foreground/40"
+                        }`}
+                      >
+                        <Star className={`w-3 h-3 ${isFavorite(preset.id) ? "fill-gold" : ""}`} />
+                      </span>
                       <span className="text-lg leading-none">{preset.icon}</span>
                       <span className="text-[10px] leading-tight text-center truncate w-full">
                         {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
                       </span>
-                      {isActive && (
+                      {isActive && !isFavorite(preset.id) && (
                         <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       )}
                     </button>
@@ -362,17 +427,30 @@ export function DmAtmospherePanel({
                       key={preset.id}
                       type="button"
                       onClick={() => handleAmbientToggle(preset.id)}
-                      className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                      className={`group/mus relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
                         isActive
                           ? "bg-amber-500/15 border border-amber-500/30 text-amber-400"
                           : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
                       }`}
                     >
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => handleToggleFavorite(preset.id, e)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleToggleFavorite(preset.id, e as unknown as React.MouseEvent); }}
+                        className={`absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full transition-all z-10 ${
+                          isFavorite(preset.id)
+                            ? "text-gold"
+                            : "text-transparent group-hover/mus:text-muted-foreground/40"
+                        }`}
+                      >
+                        <Star className={`w-3 h-3 ${isFavorite(preset.id) ? "fill-gold" : ""}`} />
+                      </span>
                       <span className="text-lg leading-none">{preset.icon}</span>
                       <span className="text-[10px] leading-tight text-center truncate w-full">
                         {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
                       </span>
-                      {isActive && (
+                      {isActive && !isFavorite(preset.id) && (
                         <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                       )}
                     </button>
@@ -392,12 +470,25 @@ export function DmAtmospherePanel({
                       type="button"
                       disabled={isCooling}
                       onClick={() => handleSfxPlay(preset.id)}
-                      className={`relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
+                      className={`group/sfx relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-sm transition-all min-h-[60px] ${
                         isCooling
                           ? "bg-white/[0.03] text-muted-foreground/40 cursor-not-allowed"
                           : "bg-white/[0.06] text-foreground active:bg-white/[0.12] hover:bg-white/[0.08]"
                       }`}
                     >
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => handleToggleFavorite(preset.id, e)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleToggleFavorite(preset.id, e as unknown as React.MouseEvent); }}
+                        className={`absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full transition-all z-10 ${
+                          isFavorite(preset.id)
+                            ? "text-gold"
+                            : "text-transparent group-hover/sfx:text-muted-foreground/40"
+                        }`}
+                      >
+                        <Star className={`w-3 h-3 ${isFavorite(preset.id) ? "fill-gold" : ""}`} />
+                      </span>
                       <span className="text-lg leading-none">{preset.icon}</span>
                       <span className="text-[10px] leading-tight text-center truncate w-full">
                         {t(preset.name_key.replace("audio.", "") as Parameters<typeof t>[0])}
