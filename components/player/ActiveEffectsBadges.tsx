@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import {
   Shield,
   Cookie,
@@ -38,7 +37,6 @@ interface ActiveEffectsBadgesProps {
 }
 
 export function ActiveEffectsBadges({ characterId }: ActiveEffectsBadgesProps) {
-  const t = useTranslations("player_hq.active_effects");
   const { effects, loading } = useActiveEffects(characterId);
 
   if (loading || effects.length === 0) return null;
@@ -55,7 +53,7 @@ export function ActiveEffectsBadges({ characterId }: ActiveEffectsBadgesProps) {
       <div className="flex items-center gap-1.5">
         <Sparkles className="w-3 h-3 text-amber-400" />
         <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider">
-          {t("title")}
+          Active Effects
         </span>
       </div>
       <div className="flex flex-wrap gap-1">
