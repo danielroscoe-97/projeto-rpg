@@ -11,7 +11,7 @@ import { join } from "path";
 const DATA_DIR = join(process.cwd(), "data", "srd");
 
 function toSlug(name: string): string {
-  return name.toLowerCase().replace(/[''""]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[''""]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 const WORD_DICT: Record<string, string> = {

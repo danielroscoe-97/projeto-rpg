@@ -1920,7 +1920,7 @@
     "name_pt": "Lâmina de Disaster"
   },
   "bones-of-the-earth": {
-    "name_pt": "Ossos de o Terra"
+    "name_pt": "Ossos do Terra"
   },
   "booming-blade": {
     "name_pt": "Booming Lâmina"
@@ -2004,7 +2004,7 @@
     "name_pt": "Sopro de Dragon"
   },
   "dream-of-the-blue-veil": {
-    "name_pt": "Sonho de o Blue Véu"
+    "name_pt": "Sonho do Blue Véu"
   },
   "druid-grove": {
     "name_pt": "Druid Bosque"
@@ -2361,7 +2361,7 @@
     "name_pt": "Otherworldly Guise de Tasha"
   },
   "temple-of-the-gods": {
-    "name_pt": "Temple de o Gods"
+    "name_pt": "Temple do Gods"
   },
   "temporal-shunt": {
     "name_pt": "Temporal Shunt"
@@ -2476,5 +2476,8 @@
   },
   "yolandes-regal-presence": {
     "name_pt": "Regal Presence de Yolande"
+  },
+  "sylunes-viper": {
+    "name_pt": "Syluné's Viper"
   }
 }

@@ -3,7 +3,7 @@
     "name_pt": "All-Purpose Ferramenta +1"
   },
   "1-amulet-of-the-devout": {
-    "name_pt": "Amuleto de o Devout +1"
+    "name_pt": "Amuleto do Devout +1"
   },
   "1-arcane-grimoire": {
     "name_pt": "Arcane Grimoire +1"
@@ -24,10 +24,10 @@
     "name_pt": "Rhythm-Maker's Drum +1"
   },
   "1-rod-of-the-pact-keeper": {
-    "name_pt": "Bastão de o Pact Keeper +1"
+    "name_pt": "Bastão do Pact Keeper +1"
   },
   "1-wand-of-the-war-mage": {
-    "name_pt": "Varinha de o War Mage +1"
+    "name_pt": "Varinha do War Mage +1"
   },
   "1-wraps-of-unarmed-power": {
     "name_pt": "Wraps de Unarmed Poder +1"
@@ -39,7 +39,7 @@
     "name_pt": "All-Purpose Ferramenta +2"
   },
   "2-amulet-of-the-devout": {
-    "name_pt": "Amuleto de o Devout +2"
+    "name_pt": "Amuleto do Devout +2"
   },
   "2-arcane-grimoire": {
     "name_pt": "Arcane Grimoire +2"
@@ -60,10 +60,10 @@
     "name_pt": "Rhythm-Maker's Drum +2"
   },
   "2-rod-of-the-pact-keeper": {
-    "name_pt": "Bastão de o Pact Keeper +2"
+    "name_pt": "Bastão do Pact Keeper +2"
   },
   "2-wand-of-the-war-mage": {
-    "name_pt": "Varinha de o War Mage +2"
+    "name_pt": "Varinha do War Mage +2"
   },
   "2-wraps-of-unarmed-power": {
     "name_pt": "Wraps de Unarmed Poder +2"
@@ -75,7 +75,7 @@
     "name_pt": "All-Purpose Ferramenta +3"
   },
   "3-amulet-of-the-devout": {
-    "name_pt": "Amuleto de o Devout +3"
+    "name_pt": "Amuleto do Devout +3"
   },
   "3-arcane-grimoire": {
     "name_pt": "Arcane Grimoire +3"
@@ -96,10 +96,10 @@
     "name_pt": "Rhythm-Maker's Drum +3"
   },
   "3-rod-of-the-pact-keeper": {
-    "name_pt": "Bastão de o Pact Keeper +3"
+    "name_pt": "Bastão do Pact Keeper +3"
   },
   "3-wand-of-the-war-mage": {
-    "name_pt": "Varinha de o War Mage +3"
+    "name_pt": "Varinha do War Mage +3"
   },
   "3-wraps-of-unarmed-power": {
     "name_pt": "Wraps de Unarmed Poder +3"
@@ -219,16 +219,16 @@
     "name_pt": "Amuleto de Proteção de Turning"
   },
   "amulet-of-the-black-skull": {
-    "name_pt": "Amuleto de o Black Skull"
+    "name_pt": "Amuleto do Black Skull"
   },
   "amulet-of-the-drunkard": {
-    "name_pt": "Amuleto de o Drunkard"
+    "name_pt": "Amuleto do Drunkard"
   },
   "amulet-of-the-inferno": {
-    "name_pt": "Amuleto de o Inferno"
+    "name_pt": "Amuleto do Inferno"
   },
   "amulet-of-the-planes": {
-    "name_pt": "Amuleto de o Planes"
+    "name_pt": "Amuleto do Planes"
   },
   "animated-shield": {
     "name_pt": "Animado Escudo"
@@ -351,7 +351,7 @@
     "name_pt": "Machado Beak"
   },
   "axe-of-the-dwarvish-lords": {
-    "name_pt": "Machado de o Dwarvish Lords"
+    "name_pt": "Machado do Dwarvish Lords"
   },
   "azorius-guild-signet": {
     "name_pt": "Azorius Guild Signet"
@@ -381,7 +381,7 @@
     "name_pt": "Mochila Parachute"
   },
   "badge-of-the-watch": {
-    "name_pt": "Badge de o Watch"
+    "name_pt": "Badge do Watch"
   },
   "bag-of-beans": {
     "name_pt": "Bolsa de Beans"
@@ -432,7 +432,7 @@
     "name_pt": "Bandore"
   },
   "banner-of-the-krig-rune": {
-    "name_pt": "Banner de o Krig Rune"
+    "name_pt": "Banner do Krig Rune"
   },
   "barking-box": {
     "name_pt": "Barking Caixa"
@@ -609,10 +609,10 @@
     "name_pt": "Blood Fury Tattoo"
   },
   "blood-of-the-lycanthrope": {
-    "name_pt": "Blood de o Lycanthrope"
+    "name_pt": "Blood do Lycanthrope"
   },
   "blood-of-the-lycanthrope-antidote": {
-    "name_pt": "Blood de o Lycanthrope Antidote"
+    "name_pt": "Blood do Lycanthrope Antidote"
   },
   "blood-spear": {
     "name_pt": "Blood Lança"
@@ -708,10 +708,10 @@
     "name_pt": "Botas de Striding e Springing"
   },
   "boots-of-the-winding-path": {
-    "name_pt": "Botas de o Winding Path"
+    "name_pt": "Botas do Winding Path"
   },
   "boots-of-the-winterlands": {
-    "name_pt": "Botas de o Winterlands"
+    "name_pt": "Botas do Winterlands"
   },
   "borderlands-tabard": {
     "name_pt": "Borderlands Tabard"
@@ -801,7 +801,7 @@
     "name_pt": "Broche de Shielding"
   },
   "brooch-of-the-elements": {
-    "name_pt": "Broche de o Elements"
+    "name_pt": "Broche do Elements"
   },
   "broom-of-flying": {
     "name_pt": "Broom de Voo"
@@ -813,7 +813,7 @@
     "name_pt": "Bullseye Lanterna"
   },
   "bundle-of-sheet-music-representing-the-lost-dirges-of-a-famous-composer": {
-    "name_pt": "Bundle de sheet music representing o lost dirges de a famous composer"
+    "name_pt": "Bundle de sheet music representing o lost dirges da famous composer"
   },
   "burglars-pack": {
     "name_pt": "Mochila de Burglar"
@@ -852,7 +852,7 @@
     "name_pt": "Vela de Invocation"
   },
   "candle-of-the-deep": {
-    "name_pt": "Vela de o Deep"
+    "name_pt": "Vela do Deep"
   },
   "canian-fork": {
     "name_pt": "Canian Fork"
@@ -873,7 +873,7 @@
     "name_pt": "Capa de Enlargement"
   },
   "cape-of-the-mountebank": {
-    "name_pt": "Capa de o Mountebank"
+    "name_pt": "Capa do Mountebank"
   },
   "card-sharps-deck": {
     "name_pt": "Carta Sharp's Baralho"
@@ -1026,10 +1026,10 @@
     "name_pt": "Cittern"
   },
   "claw-of-the-wyrm-rune": {
-    "name_pt": "Garra de o Wyrm Rune"
+    "name_pt": "Garra do Wyrm Rune"
   },
   "claws-of-the-umber-hulk": {
-    "name_pt": "Claws de o Umber Hulk"
+    "name_pt": "Claws do Umber Hulk"
   },
   "cleansing-stone": {
     "name_pt": "Cleansing Pedra"
@@ -1059,10 +1059,10 @@
     "name_pt": "Manto de Proteção"
   },
   "cloak-of-the-bat": {
-    "name_pt": "Manto de o Bat"
+    "name_pt": "Manto do Bat"
   },
   "cloak-of-the-manta-ray": {
-    "name_pt": "Manto de o Manta Ray"
+    "name_pt": "Manto do Manta Ray"
   },
   "clockwork-amulet": {
     "name_pt": "Clockwork Amuleto"
@@ -1212,10 +1212,10 @@
     "name_pt": "Coroa de Lies"
   },
   "crown-of-the-forest": {
-    "name_pt": "Coroa de o Forest"
+    "name_pt": "Coroa do Forest"
   },
   "crown-of-the-wrath-bringer": {
-    "name_pt": "Coroa de o Wrath Bringer"
+    "name_pt": "Coroa do Wrath Bringer"
   },
   "crown-of-whirling-comets": {
     "name_pt": "Coroa de Whirling Comets"
@@ -1254,7 +1254,7 @@
     "name_pt": "Cuddly Strixhaven Mascot"
   },
   "cult-of-the-dragon-trinket": {
-    "name_pt": "Cult de o Dragão Trinket"
+    "name_pt": "Cult do Dragão Trinket"
   },
   "cultists-robe": {
     "name_pt": "Manto de Cultist"
@@ -1512,7 +1512,7 @@
     "name_pt": "Pó de Sneezing e Choking"
   },
   "dust-of-the-mummy": {
-    "name_pt": "Pó de o Mummy"
+    "name_pt": "Pó do Mummy"
   },
   "dwarven-plate": {
     "name_pt": "Anão Placas"
@@ -1767,7 +1767,7 @@
     "name_pt": "Olhos de Minute Seeing"
   },
   "eyes-of-the-eagle": {
-    "name_pt": "Olhos de o Eagle"
+    "name_pt": "Olhos do Eagle"
   },
   "eyescratch": {
     "name_pt": "Eyescratch"
@@ -1989,7 +1989,7 @@
     "name_pt": "Manoplas de Rage"
   },
   "gavel-of-the-venn-rune": {
-    "name_pt": "Gavel de o Venn Rune"
+    "name_pt": "Gavel do Venn Rune"
   },
   "gem-card": {
     "name_pt": "Gema Carta"
@@ -2352,10 +2352,10 @@
     "name_pt": "Elmo de Teleportação"
   },
   "helm-of-the-gods": {
-    "name_pt": "Elmo de o Gods"
+    "name_pt": "Elmo do Gods"
   },
   "helm-of-the-scavenger": {
-    "name_pt": "Elmo de o Scavenger"
+    "name_pt": "Elmo do Scavenger"
   },
   "helm-of-underwater-action": {
     "name_pt": "Elmo de Underwater Action"
@@ -2388,13 +2388,13 @@
     "name_pt": "Peles Armadura"
   },
   "hide-of-the-feral-guardian-awakened": {
-    "name_pt": "Peles de o Feral Guardian (Awakened)"
+    "name_pt": "Peles do Feral Guardian (Awakened)"
   },
   "hide-of-the-feral-guardian-dormant": {
-    "name_pt": "Peles de o Feral Guardian (Dormant)"
+    "name_pt": "Peles do Feral Guardian (Dormant)"
   },
   "hide-of-the-feral-guardian-exalted": {
-    "name_pt": "Peles de o Feral Guardian (Exalted)"
+    "name_pt": "Peles do Feral Guardian (Exalted)"
   },
   "hither-thither-staff": {
     "name_pt": "Hither-Thither Cajado"
@@ -2439,7 +2439,7 @@
     "name_pt": "Trompa de Silent Alarm"
   },
   "horn-of-the-endless-maze": {
-    "name_pt": "Trompa de o Endless Maze"
+    "name_pt": "Trompa do Endless Maze"
   },
   "horn-of-valhalla-brass": {
     "name_pt": "Trompa de Valhalla, Latão"
@@ -2460,7 +2460,7 @@
     "name_pt": "Horror Trinket"
   },
   "horseshoes-of-a-zephyr": {
-    "name_pt": "Horseshoes de a Zephyr"
+    "name_pt": "Horseshoes da Zephyr"
   },
   "horseshoes-of-speed": {
     "name_pt": "Horseshoes de Velocidade"
@@ -2550,7 +2550,7 @@
     "name_pt": "Key (Exalted) de Infiltrator"
   },
   "ingot-of-the-skold-rune": {
-    "name_pt": "Ingot de o Skold Rune"
+    "name_pt": "Ingot do Skold Rune"
   },
   "ink": {
     "name_pt": "Ink"
@@ -2577,25 +2577,25 @@
     "name_pt": "Instrumento de Scribing"
   },
   "instrument-of-the-bards-anstruth-harp": {
-    "name_pt": "Instrumento de o Bards, Anstruth Harp"
+    "name_pt": "Instrumento do Bards, Anstruth Harp"
   },
   "instrument-of-the-bards-canaith-mandolin": {
-    "name_pt": "Instrumento de o Bards, Canaith Mandolin"
+    "name_pt": "Instrumento do Bards, Canaith Mandolin"
   },
   "instrument-of-the-bards-cli-lyre": {
-    "name_pt": "Instrumento de o Bards, Cli Lyre"
+    "name_pt": "Instrumento do Bards, Cli Lyre"
   },
   "instrument-of-the-bards-doss-lute": {
-    "name_pt": "Instrumento de o Bards, Doss Lute"
+    "name_pt": "Instrumento do Bards, Doss Lute"
   },
   "instrument-of-the-bards-fochlucan-bandore": {
-    "name_pt": "Instrumento de o Bards, Fochlucan Bandore"
+    "name_pt": "Instrumento do Bards, Fochlucan Bandore"
   },
   "instrument-of-the-bards-mac-fuirmidh-cittern": {
-    "name_pt": "Instrumento de o Bards, Mac-Fuirmidh Cittern"
+    "name_pt": "Instrumento do Bards, Mac-Fuirmidh Cittern"
   },
   "instrument-of-the-bards-ollamh-harp": {
-    "name_pt": "Instrumento de o Bards, Ollamh Harp"
+    "name_pt": "Instrumento do Bards, Ollamh Harp"
   },
   "ioun-stone-of-vitality": {
     "name_pt": "Ioun Pedra de Vitality"
@@ -2946,7 +2946,7 @@
     "name_pt": "Arco Longo"
   },
   "longbow-of-the-healing-hearth": {
-    "name_pt": "Arco Longo de o Cura Hearth"
+    "name_pt": "Arco Longo do Cura Hearth"
   },
   "longhorn": {
     "name_pt": "Longhorn"
@@ -3012,13 +3012,13 @@
     "name_pt": "Maça de Terror"
   },
   "mace-of-the-black-crown-awakened": {
-    "name_pt": "Maça de o Black Coroa (Awakened)"
+    "name_pt": "Maça do Black Coroa (Awakened)"
   },
   "mace-of-the-black-crown-dormant": {
-    "name_pt": "Maça de o Black Coroa (Dormant)"
+    "name_pt": "Maça do Black Coroa (Dormant)"
   },
   "mace-of-the-black-crown-exalted": {
-    "name_pt": "Maça de o Black Coroa (Exalted)"
+    "name_pt": "Maça do Black Coroa (Exalted)"
   },
   "macuahuitl": {
     "name_pt": "Macuahuitl"
@@ -3081,10 +3081,10 @@
     "name_pt": "Mask de Changed Appearance"
   },
   "mask-of-the-beast": {
-    "name_pt": "Mask de o Besta"
+    "name_pt": "Mask do Besta"
   },
   "mask-of-the-dragon-queen": {
-    "name_pt": "Mask de o Dragão Queen"
+    "name_pt": "Mask do Dragão Queen"
   },
   "masons-tools": {
     "name_pt": "Ferramentas de Mason"
@@ -3132,19 +3132,19 @@
     "name_pt": "Medal de Muscle"
   },
   "medal-of-the-conch": {
-    "name_pt": "Medal de o Conch"
+    "name_pt": "Medal do Conch"
   },
   "medal-of-the-horizonback": {
-    "name_pt": "Medal de o Horizonback"
+    "name_pt": "Medal do Horizonback"
   },
   "medal-of-the-maze": {
-    "name_pt": "Medal de o Maze"
+    "name_pt": "Medal do Maze"
   },
   "medal-of-the-meat-pie": {
-    "name_pt": "Medal de o Meat Pie"
+    "name_pt": "Medal do Meat Pie"
   },
   "medal-of-the-wetlands": {
-    "name_pt": "Medal de o Wetlands"
+    "name_pt": "Medal do Wetlands"
   },
   "medal-of-wit": {
     "name_pt": "Medal de Wit"
@@ -3222,7 +3222,7 @@
     "name_pt": "Espelho de Reflected Pasts"
   },
   "mirror-of-the-past": {
-    "name_pt": "Espelho de o Past"
+    "name_pt": "Espelho do Past"
   },
   "mistral-mantle": {
     "name_pt": "Mistral Manto"
@@ -3438,7 +3438,7 @@
     "name_pt": "Opala"
   },
   "opal-of-the-ild-rune": {
-    "name_pt": "Opala de o Ild Rune"
+    "name_pt": "Opala do Ild Rune"
   },
   "orb": {
     "name_pt": "Orbe"
@@ -3483,10 +3483,10 @@
     "name_pt": "Orbe de Skoraeus"
   },
   "orb-of-the-stein-rune": {
-    "name_pt": "Orbe de o Stein Rune"
+    "name_pt": "Orbe do Stein Rune"
   },
   "orb-of-the-veil": {
-    "name_pt": "Orbe de o Veil"
+    "name_pt": "Orbe do Veil"
   },
   "orb-of-time": {
     "name_pt": "Orbe de Time"
@@ -3501,13 +3501,13 @@
     "name_pt": "Orcus Estatueta"
   },
   "order-of-the-gauntlet-trinket": {
-    "name_pt": "Order de o Manopla Trinket"
+    "name_pt": "Order do Manopla Trinket"
   },
   "ornithopter-of-flying": {
     "name_pt": "Ornithopter de Voo"
   },
   "orrery-of-the-wanderer": {
-    "name_pt": "Orrery de o Wanderer"
+    "name_pt": "Orrery do Wanderer"
   },
   "orzhov-guild-signet": {
     "name_pt": "Orzhov Guild Signet"
@@ -3597,7 +3597,7 @@
     "name_pt": "Pérola de Morto-vivo Detection"
   },
   "pennant-of-the-vind-rune": {
-    "name_pt": "Pennant de o Vind Rune"
+    "name_pt": "Pennant do Vind Rune"
   },
   "pepper": {
     "name_pt": "Pepper"
@@ -3657,7 +3657,7 @@
     "name_pt": "Pipes de Pestilence"
   },
   "pipes-of-the-sewers": {
-    "name_pt": "Pipes de o Sewers"
+    "name_pt": "Pipes do Sewers"
   },
   "pirates-cutlass": {
     "name_pt": "Cutlass de Pirate"
@@ -4047,7 +4047,7 @@
     "name_pt": "Bordão"
   },
   "quarterstaff-of-the-acrobat": {
-    "name_pt": "Bordão de o Acrobat"
+    "name_pt": "Bordão do Acrobat"
   },
   "quartz": {
     "name_pt": "Quartz"
@@ -4260,13 +4260,13 @@
     "name_pt": "Anel de Temporal Salvation"
   },
   "ring-of-the-copycat": {
-    "name_pt": "Anel de o Copycat"
+    "name_pt": "Anel do Copycat"
   },
   "ring-of-the-orator": {
-    "name_pt": "Anel de o Orator"
+    "name_pt": "Anel do Orator"
   },
   "ring-of-the-ram": {
-    "name_pt": "Anel de o Ram"
+    "name_pt": "Anel do Ram"
   },
   "ring-of-three-wishes": {
     "name_pt": "Anel de Três Wishes"
@@ -4317,7 +4317,7 @@
     "name_pt": "Manto de Summer"
   },
   "robe-of-the-archmagi": {
-    "name_pt": "Manto de o Archmagi"
+    "name_pt": "Manto do Archmagi"
   },
   "robe-of-useful-items": {
     "name_pt": "Manto de Useful Items"
@@ -4359,7 +4359,7 @@
     "name_pt": "Bastão de Seven Parts"
   },
   "rod-of-the-vonindod": {
-    "name_pt": "Bastão de o Vonindod"
+    "name_pt": "Bastão do Vonindod"
   },
   "rogue-card": {
     "name_pt": "Rogue Carta"
@@ -4389,7 +4389,7 @@
     "name_pt": "Rubi"
   },
   "ruby-of-the-war-mage": {
-    "name_pt": "Rubi de o War Mage"
+    "name_pt": "Rubi do War Mage"
   },
   "ruby-rod-of-asmodeus": {
     "name_pt": "Rubi Bastão de Asmodeus"
@@ -4431,7 +4431,7 @@
     "name_pt": "Saco"
   },
   "saddle-of-the-cavalier": {
-    "name_pt": "Saddle de o Cavalier"
+    "name_pt": "Saddle do Cavalier"
   },
   "saddlebags": {
     "name_pt": "Saddlebags"
@@ -4584,7 +4584,7 @@
     "name_pt": "Pergaminho de Tarrasque Summoning"
   },
   "scroll-of-the-comet": {
-    "name_pt": "Pergaminho de o Comet"
+    "name_pt": "Pergaminho do Comet"
   },
   "scroll-of-titan-summoning-animal-lord": {
     "name_pt": "Pergaminho de Titan Summoning (Animal Lord)"
@@ -4662,7 +4662,7 @@
     "name_pt": "Shard"
   },
   "shard-of-the-ise-rune": {
-    "name_pt": "Shard de o Ise Rune"
+    "name_pt": "Shard do Ise Rune"
   },
   "shard-of-xeluan": {
     "name_pt": "Shard de Xeluan"
@@ -4713,22 +4713,22 @@
     "name_pt": "Escudo de Shouting"
   },
   "shield-of-the-blazing-dreadnought": {
-    "name_pt": "Escudo de o Blazing Dreadnought"
+    "name_pt": "Escudo do Blazing Dreadnought"
   },
   "shield-of-the-cavalier": {
-    "name_pt": "Escudo de o Cavalier"
+    "name_pt": "Escudo do Cavalier"
   },
   "shield-of-the-hidden-lord": {
-    "name_pt": "Escudo de o Hidden Lord"
+    "name_pt": "Escudo do Hidden Lord"
   },
   "shield-of-the-silver-dragon": {
-    "name_pt": "Escudo de o Prata Dragão"
+    "name_pt": "Escudo do Prata Dragão"
   },
   "shield-of-the-tortoise": {
-    "name_pt": "Escudo de o Tortoise"
+    "name_pt": "Escudo do Tortoise"
   },
   "shield-of-the-uven-rune": {
-    "name_pt": "Escudo de o Uven Rune"
+    "name_pt": "Escudo do Uven Rune"
   },
   "shiftweave": {
     "name_pt": "Shiftweave"
@@ -5184,25 +5184,25 @@
     "name_pt": "Cajado de Swarming Insects"
   },
   "staff-of-the-adder": {
-    "name_pt": "Cajado de o Adder"
+    "name_pt": "Cajado do Adder"
   },
   "staff-of-the-forgotten-one": {
-    "name_pt": "Cajado de o Forgotten One"
+    "name_pt": "Cajado do Forgotten One"
   },
   "staff-of-the-ivory-claw": {
-    "name_pt": "Cajado de o Marfim Garra"
+    "name_pt": "Cajado do Marfim Garra"
   },
   "staff-of-the-magi": {
-    "name_pt": "Cajado de o Magi"
+    "name_pt": "Cajado do Magi"
   },
   "staff-of-the-python": {
-    "name_pt": "Cajado de o Python"
+    "name_pt": "Cajado do Python"
   },
   "staff-of-the-rooted-hills": {
-    "name_pt": "Cajado de o Rooted Hills"
+    "name_pt": "Cajado do Rooted Hills"
   },
   "staff-of-the-woodlands": {
-    "name_pt": "Cajado de o Woodlands"
+    "name_pt": "Cajado do Woodlands"
   },
   "staff-of-thunder-and-lightning": {
     "name_pt": "Cajado de Trovão e Relâmpago"
@@ -5355,7 +5355,7 @@
     "name_pt": "Espada de Kas"
   },
   "sword-of-the-paruns": {
-    "name_pt": "Espada de o Paruns"
+    "name_pt": "Espada do Paruns"
   },
   "sword-of-zariel": {
     "name_pt": "Espada de Zariel"
@@ -5370,7 +5370,7 @@
     "name_pt": "Talismã de Pure Good"
   },
   "talisman-of-the-sphere": {
-    "name_pt": "Talismã de o Esfera"
+    "name_pt": "Talismã do Esfera"
   },
   "talisman-of-ultimate-evil": {
     "name_pt": "Talismã de Ultimate Evil"
@@ -5514,10 +5514,10 @@
     "name_pt": "Tomo de Strahd"
   },
   "tome-of-the-dragon": {
-    "name_pt": "Tomo de o Dragão"
+    "name_pt": "Tomo do Dragão"
   },
   "tome-of-the-stilled-tongue": {
-    "name_pt": "Tomo de o Stilled Tongue"
+    "name_pt": "Tomo do Stilled Tongue"
   },
   "tome-of-understanding": {
     "name_pt": "Tomo de Understanding"
@@ -5832,13 +5832,13 @@
     "name_pt": "Wildspace Orrery"
   },
   "will-of-the-talon-awakened": {
-    "name_pt": "Will de o Talon (Awakened)"
+    "name_pt": "Will do Talon (Awakened)"
   },
   "will-of-the-talon-dormant": {
-    "name_pt": "Will de o Talon (Dormant)"
+    "name_pt": "Will do Talon (Dormant)"
   },
   "will-of-the-talon-exalted": {
-    "name_pt": "Will de o Talon (Exalted)"
+    "name_pt": "Will do Talon (Exalted)"
   },
   "willowshade-oil": {
     "name_pt": "Willowshade Óleo"
@@ -5889,13 +5889,13 @@
     "name_pt": "de Madeira Cajado"
   },
   "wreath-of-the-prism-awakened": {
-    "name_pt": "Wreath de o Prisma (Awakened)"
+    "name_pt": "Wreath do Prisma (Awakened)"
   },
   "wreath-of-the-prism-dormant": {
-    "name_pt": "Wreath de o Prisma (Dormant)"
+    "name_pt": "Wreath do Prisma (Dormant)"
   },
   "wreath-of-the-prism-exalted": {
-    "name_pt": "Wreath de o Prisma (Exalted)"
+    "name_pt": "Wreath do Prisma (Exalted)"
   },
   "wrought-iron-tower": {
     "name_pt": "Wrought-Iron Tower"

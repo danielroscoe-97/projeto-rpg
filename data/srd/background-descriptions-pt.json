@@ -1,0 +1,437 @@
+{
+  "aberrant-heir": {
+    "name_pt": "Aberrante Herdeiro"
+  },
+  "acolyte": {
+    "name_pt": "Acólito"
+  },
+  "anthropologist": {
+    "name_pt": "Antropólogo"
+  },
+  "archaeologist": {
+    "name_pt": "Arqueólogo"
+  },
+  "artisan": {
+    "name_pt": "Artesão"
+  },
+  "astral-drifter": {
+    "name_pt": "Astral Drifter"
+  },
+  "athlete": {
+    "name_pt": "Atleta"
+  },
+  "azorius-functionary": {
+    "name_pt": "Azorius Functionary"
+  },
+  "baldurs-gate-acolyte": {
+    "name_pt": "Baldur's Portal Acólito"
+  },
+  "baldurs-gate-charlatan": {
+    "name_pt": "Baldur's Portal Charlatão"
+  },
+  "baldurs-gate-criminal": {
+    "name_pt": "Baldur's Portal Criminoso"
+  },
+  "baldurs-gate-entertainer": {
+    "name_pt": "Baldur's Portal Artista"
+  },
+  "baldurs-gate-folk-hero": {
+    "name_pt": "Herói Baldur's Portal Herói"
+  },
+  "baldurs-gate-guild-artisan": {
+    "name_pt": "Artesão Baldur's Portal Guilda"
+  },
+  "baldurs-gate-hermit": {
+    "name_pt": "Baldur's Portal Eremita"
+  },
+  "baldurs-gate-noble": {
+    "name_pt": "Baldur's Portal Nobre"
+  },
+  "baldurs-gate-outlander": {
+    "name_pt": "Baldur's Portal Forasteiro"
+  },
+  "baldurs-gate-sage": {
+    "name_pt": "Baldur's Portal Sábio"
+  },
+  "baldurs-gate-sailor": {
+    "name_pt": "Baldur's Portal Marinheiro"
+  },
+  "baldurs-gate-soldier": {
+    "name_pt": "Baldur's Portal Soldado"
+  },
+  "baldurs-gate-urchin": {
+    "name_pt": "Baldur's Portal Órfão"
+  },
+  "boros-legionnaire": {
+    "name_pt": "Boros Legionnaire"
+  },
+  "carouser": {
+    "name_pt": "Carouser"
+  },
+  "celebrity-adventurers-scion": {
+    "name_pt": "Celebrity Adventurer's Scion"
+  },
+  "charlatan": {
+    "name_pt": "Charlatão"
+  },
+  "chondathan-freebooter": {
+    "name_pt": "Chondathan Freebooter"
+  },
+  "city-watch": {
+    "name_pt": "Cidade Watch"
+  },
+  "clan-crafter": {
+    "name_pt": "Clã Artífice"
+  },
+  "cloistered-scholar": {
+    "name_pt": "Cloistered Erudito"
+  },
+  "cobalt-scholar-sage": {
+    "name_pt": "Cobalt Erudito (Sage)"
+  },
+  "courtier": {
+    "name_pt": "Cortesão"
+  },
+  "criminal": {
+    "name_pt": "Criminoso"
+  },
+  "custom-background": {
+    "name_pt": "Custom Background"
+  },
+  "dead-magic-dweller": {
+    "name_pt": "Dead Magic Dweller"
+  },
+  "dimir-operative": {
+    "name_pt": "Dimir Operative"
+  },
+  "dragon-cultist": {
+    "name_pt": "Dragão Cultista"
+  },
+  "emerald-enclave-caretaker": {
+    "name_pt": "Emerald Enclave Caretaker"
+  },
+  "entertainer": {
+    "name_pt": "Artista"
+  },
+  "faceless": {
+    "name_pt": "Faceless"
+  },
+  "faction-agent": {
+    "name_pt": "Agente Facção"
+  },
+  "failed-merchant": {
+    "name_pt": "Fracassado Mercador"
+  },
+  "far-traveler": {
+    "name_pt": "Distante Viajante"
+  },
+  "farmer": {
+    "name_pt": "Fazendeiro"
+  },
+  "feylost": {
+    "name_pt": "Feylost"
+  },
+  "fisher": {
+    "name_pt": "Fisher"
+  },
+  "flaming-fist-mercenary": {
+    "name_pt": "Flaming Fist Mercenary"
+  },
+  "folk-hero": {
+    "name_pt": "Herói Herói"
+  },
+  "gambler": {
+    "name_pt": "Apostador"
+  },
+  "gate-warden": {
+    "name_pt": "Portal Warden"
+  },
+  "genie-touched": {
+    "name_pt": "Genie Touched"
+  },
+  "giant-foundling": {
+    "name_pt": "Giant Foundling"
+  },
+  "golgari-agent": {
+    "name_pt": "Agente Golgari"
+  },
+  "grinner": {
+    "name_pt": "Grinner"
+  },
+  "gruul-anarch": {
+    "name_pt": "Gruul Anarch"
+  },
+  "guard": {
+    "name_pt": "Guarda"
+  },
+  "guide": {
+    "name_pt": "Guide"
+  },
+  "guild-artisan": {
+    "name_pt": "Artesão Guilda"
+  },
+  "harper": {
+    "name_pt": "Harper"
+  },
+  "haunted-one": {
+    "name_pt": "Assombrado One"
+  },
+  "hermit": {
+    "name_pt": "Eremita"
+  },
+  "house-agent": {
+    "name_pt": "Agente Casa"
+  },
+  "house-cannith-heir": {
+    "name_pt": "Casa Cannith Herdeiro"
+  },
+  "house-deneith-heir": {
+    "name_pt": "Casa Deneith Herdeiro"
+  },
+  "house-ghallanda-heir": {
+    "name_pt": "Casa Ghallanda Herdeiro"
+  },
+  "house-jorasco-heir": {
+    "name_pt": "Casa Jorasco Herdeiro"
+  },
+  "house-kundarak-heir": {
+    "name_pt": "Casa Kundarak Herdeiro"
+  },
+  "house-lyrandar-heir": {
+    "name_pt": "Casa Lyrandar Herdeiro"
+  },
+  "house-medani-heir": {
+    "name_pt": "Casa Medani Herdeiro"
+  },
+  "house-orien-heir": {
+    "name_pt": "Casa Orien Herdeiro"
+  },
+  "house-phiarlan-heir": {
+    "name_pt": "Casa Phiarlan Herdeiro"
+  },
+  "house-sivis-heir": {
+    "name_pt": "Casa Sivis Herdeiro"
+  },
+  "house-tharashk-heir": {
+    "name_pt": "Casa Tharashk Herdeiro"
+  },
+  "house-thuranni-heir": {
+    "name_pt": "Casa Thuranni Herdeiro"
+  },
+  "house-vadalis-heir": {
+    "name_pt": "Casa Vadalis Herdeiro"
+  },
+  "ice-fisher": {
+    "name_pt": "Ice Fisher"
+  },
+  "inheritor": {
+    "name_pt": "Inheritor"
+  },
+  "initiate": {
+    "name_pt": "Iniciado"
+  },
+  "initiate-dissenter": {
+    "name_pt": "Iniciado (Dissenter)"
+  },
+  "inquisitive": {
+    "name_pt": "Inquisitive"
+  },
+  "inquisitor": {
+    "name_pt": "Inquisitor"
+  },
+  "investigator": {
+    "name_pt": "Investigador"
+  },
+  "izzet-engineer": {
+    "name_pt": "Izzet Engineer"
+  },
+  "knight-of-solamnia": {
+    "name_pt": "Cavaleiro de Solamnia"
+  },
+  "knight-of-the-gauntlet": {
+    "name_pt": "Cavaleiro do Gauntlet"
+  },
+  "knight-of-the-order": {
+    "name_pt": "Cavaleiro do Ordem"
+  },
+  "lords-alliance-vassal": {
+    "name_pt": "Lords' Alliance Vassal"
+  },
+  "lorehold-student": {
+    "name_pt": "Lorehold Student"
+  },
+  "lorwyn-expert": {
+    "name_pt": "Lorwyn Expert"
+  },
+  "luxonborn-acolyte": {
+    "name_pt": "Luxonborn (Acolyte)"
+  },
+  "mage-of-high-sorcery": {
+    "name_pt": "Mage de High Sorcery"
+  },
+  "marine": {
+    "name_pt": "Marinheiro"
+  },
+  "mercenary-veteran": {
+    "name_pt": "Mercenary Veteran"
+  },
+  "merchant": {
+    "name_pt": "Mercador"
+  },
+  "moonwell-pilgrim": {
+    "name_pt": "Moonwell Peregrino"
+  },
+  "mulhorandi-tomb-raider": {
+    "name_pt": "Mulhorandi Tomb Raider"
+  },
+  "myriad-operative-criminal": {
+    "name_pt": "Myriad Operative (Criminal)"
+  },
+  "mythalkeeper": {
+    "name_pt": "Mythalkeeper"
+  },
+  "noble": {
+    "name_pt": "Nobre"
+  },
+  "orzhov-representative": {
+    "name_pt": "Orzhov Representative"
+  },
+  "outlander": {
+    "name_pt": "Forasteiro"
+  },
+  "plaintiff": {
+    "name_pt": "Plaintiff"
+  },
+  "planar-philosopher": {
+    "name_pt": "Planar Philosopher"
+  },
+  "prismari-student": {
+    "name_pt": "Prismari Student"
+  },
+  "purple-dragon-squire": {
+    "name_pt": "Purple Dragão Squire"
+  },
+  "quandrix-student": {
+    "name_pt": "Quandrix Student"
+  },
+  "rakdos-cultist": {
+    "name_pt": "Rakdos Cultista"
+  },
+  "rashemi-wanderer": {
+    "name_pt": "Rashemi Errante"
+  },
+  "revelry-pirate-sailor": {
+    "name_pt": "Revelry Pirata (Sailor)"
+  },
+  "rewarded": {
+    "name_pt": "Rewarded"
+  },
+  "rival-intern": {
+    "name_pt": "Rival Intern"
+  },
+  "ruined": {
+    "name_pt": "Arruinado"
+  },
+  "rune-carver": {
+    "name_pt": "Rune Carver"
+  },
+  "sage": {
+    "name_pt": "Sábio"
+  },
+  "sailor": {
+    "name_pt": "Marinheiro"
+  },
+  "scribe": {
+    "name_pt": "Escriba"
+  },
+  "selesnya-initiate": {
+    "name_pt": "Iniciado Selesnya"
+  },
+  "shadowmasters-exile": {
+    "name_pt": "Shadowmasters Exilado"
+  },
+  "shadowmoor-expert": {
+    "name_pt": "Shadowmoor Expert"
+  },
+  "shipwright": {
+    "name_pt": "Shipwright"
+  },
+  "silverquill-student": {
+    "name_pt": "Silverquill Student"
+  },
+  "simic-scientist": {
+    "name_pt": "Simic Scientist"
+  },
+  "smuggler": {
+    "name_pt": "Contrabandista"
+  },
+  "soldier": {
+    "name_pt": "Soldado"
+  },
+  "spellfire-initiate": {
+    "name_pt": "Iniciado Spellfire"
+  },
+  "urban-bounty-hunter": {
+    "name_pt": "Urbano Recompensa Caçador"
+  },
+  "urchin": {
+    "name_pt": "Órfão"
+  },
+  "uthgardt-tribe-member": {
+    "name_pt": "Uthgardt Tribe Member"
+  },
+  "vampire-devotee": {
+    "name_pt": "Vampire Devotee"
+  },
+  "vampire-survivor": {
+    "name_pt": "Vampire Sobrevivente"
+  },
+  "variant-city-watch-investigator": {
+    "name_pt": "Variant Cidade Watch (Investigator)"
+  },
+  "variant-criminal-spy": {
+    "name_pt": "Variant Criminoso (Spy)"
+  },
+  "variant-entertainer-gladiator": {
+    "name_pt": "Variant Artista (Gladiator)"
+  },
+  "variant-guild-artisan-guild-merchant": {
+    "name_pt": "Variant Guilda Artesão (Guild Merchant)"
+  },
+  "variant-noble-knight": {
+    "name_pt": "Variant Nobre (Knight)"
+  },
+  "variant-noble-retainers": {
+    "name_pt": "Variant Nobre (Retainers)"
+  },
+  "variant-sailor-pirate": {
+    "name_pt": "Variant Marinheiro (Pirate)"
+  },
+  "vizier": {
+    "name_pt": "Vizier"
+  },
+  "vizier-dissenter": {
+    "name_pt": "Vizier (Dissenter)"
+  },
+  "volstrucker-agent": {
+    "name_pt": "Agente Volstrucker"
+  },
+  "waterdhavian-noble": {
+    "name_pt": "Waterdhavian Nobre"
+  },
+  "wayfarer": {
+    "name_pt": "Viajante"
+  },
+  "wildspacer": {
+    "name_pt": "Wildspacer"
+  },
+  "witchlight-hand": {
+    "name_pt": "Witchlight Hand"
+  },
+  "witherbloom-student": {
+    "name_pt": "Witherbloom Student"
+  },
+  "zhentarim-mercenary": {
+    "name_pt": "Zhentarim Mercenary"
+  }
+}
