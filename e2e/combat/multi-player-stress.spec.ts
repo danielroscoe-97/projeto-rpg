@@ -113,41 +113,27 @@ async function dismissTourIfVisible(dmPage: Page) {
  * Returns the new page (caller must update their reference).
  */
 async function simulateTabClose(
-  browser: Browser,
+  _browser: Browser,
   oldContext: BrowserContext,
   joinUrl: string
 ): Promise<{ context: BrowserContext; page: Page }> {
-  // Copy localStorage from old context before closing
+  // Real tab close: sessionStorage dies, but cookies + localStorage survive.
+  // In Playwright, closing a BrowserContext kills everything (cookies too).
+  // Instead: close the page (tab) and open a new one in the SAME context.
   const oldPage = oldContext.pages()[0];
-  const localStorageData = await oldPage.evaluate(() => {
-    const data: Record<string, string> = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) data[key] = localStorage.getItem(key) ?? "";
-    }
-    return data;
-  });
 
-  // Close old context (simulates closing the tab — sessionStorage dies)
-  await oldContext.close().catch(() => {});
+  // Clear sessionStorage to simulate tab close (sessionStorage is per-tab)
+  await oldPage.evaluate(() => sessionStorage.clear());
 
-  // Create new context (simulates opening a new tab)
-  const newContext = await browser.newContext();
-  const newPage = await newContext.newPage();
+  // Close the tab
+  await oldPage.close();
 
-  // Restore localStorage (survives tab close in real browsers)
-  await newPage.goto(joinUrl);
+  // Open a new tab in the same context (preserves cookies + localStorage)
+  const newPage = await oldContext.newPage();
+  await newPage.goto(joinUrl, { timeout: 30_000 });
   await newPage.waitForLoadState("domcontentloaded");
-  await newPage.evaluate((data) => {
-    for (const [key, value] of Object.entries(data)) {
-      localStorage.setItem(key, value);
-    }
-  }, localStorageData);
 
-  // Reload to trigger reconnection with restored localStorage
-  await newPage.reload({ timeout: 30_000 });
-
-  return { context: newContext, page: newPage };
+  return { context: oldContext, page: newPage };
 }
 
 /**
@@ -377,14 +363,30 @@ test.describe.serial("Multi-player combat — real session simulation", () => {
     p2Context = result.context;
     p2Page = result.page;
 
-    // The lobby may show a "Voltar" (Return) button for the recognized player.
-    // Click it if visible to complete the 1-click reconnection.
-    const returnBtn = p2Page.locator("button").filter({ hasText: /Voltar|Return/i }).first();
-    if (await returnBtn.isVisible({ timeout: 10_000 }).catch(() => false)) {
-      await returnBtn.click();
+    // The lobby shows a "Voltar →" button for recognized players.
+    // Use the exact data-testid from PlayerLobby: rejoin-{playerName}
+    const rejoinBtn = p2Page.locator('[data-testid="rejoin-Elara"]');
+    if (await rejoinBtn.isVisible({ timeout: 15_000 }).catch(() => false)) {
+      await rejoinBtn.click();
+      await p2Page.waitForTimeout(3_000);
+
+      // DM may need to accept the rejoin request
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const acceptBtn = dmPage.locator("button").filter({ hasText: /Aceitar.*Elara|Accept.*Elara/i }).first();
+        if (await acceptBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          await acceptBtn.click();
+          break;
+        }
+        // Also check generic accept button
+        const anyAccept = dmPage.locator("button").filter({ hasText: /^Aceitar$|^Accept$/i }).first();
+        if (await anyAccept.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await anyAccept.click();
+          break;
+        }
+      }
     }
 
-    // Player should now see the player-view (auto or 1-click reconnect)
+    // Player should now see the player-view
     await expect(p2Page.locator('[data-testid="player-view"]')).toBeVisible({ timeout: 45_000 });
     await expect(p2Page.locator('[data-testid="player-initiative-board"]')).toBeVisible({ timeout: EXTENDED_WAIT });
     // Player 1 unaffected
@@ -452,19 +454,13 @@ test.describe.serial("Multi-player combat — real session simulation", () => {
     p1Context = result.context;
     p1Page = result.page;
 
-    // Player should see lobby form, return button, or player-view
+    // Player should see lobby form or player-view
     const lobbyOrView = p1Page.locator(
       '[data-testid="lobby-name"], [data-testid="player-view"]'
     );
-    const returnBtn = p1Page.locator("button").filter({ hasText: /Voltar|Return/i }).first();
-    await expect(lobbyOrView.or(returnBtn).first()).toBeVisible({ timeout: 45_000 });
+    await expect(lobbyOrView.first()).toBeVisible({ timeout: 45_000 });
 
-    // If "Voltar" (Return) button visible, click it for 1-click reconnect
-    if (await returnBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await returnBtn.click();
-    }
-
-    // If lobby form appeared, re-register
+    // If lobby form appeared, re-register (L3 = no auth, can't use rejoin button)
     const lobbyName = p1Page.locator('[data-testid="lobby-name"]');
     if (await lobbyName.isVisible({ timeout: 3_000 }).catch(() => false)) {
       // Player lost all state — must rejoin with same name
