@@ -2598,6 +2598,8 @@
   "compendium": {
     "title": "Compêndio",
     "subtitle": "Guia de Referência SRD 5e",
+    "nav_dashboard": "Dashboard",
+    "nav_home": "Página Inicial",
     "tab_monsters": "Monstros",
     "tab_spells": "Magias",
     "tab_conditions": "Condições",

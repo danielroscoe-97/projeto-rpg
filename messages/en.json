@@ -2598,6 +2598,8 @@
   "compendium": {
     "title": "Compendium",
     "subtitle": "SRD 5e Reference",
+    "nav_dashboard": "Dashboard",
+    "nav_home": "Pocket DM Home",
     "tab_monsters": "Monsters",
     "tab_spells": "Spells",
     "tab_conditions": "Conditions",

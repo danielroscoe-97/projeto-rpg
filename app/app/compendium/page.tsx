@@ -51,21 +51,20 @@ function CompendiumContent() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-2 mb-2">
           <Link
             href="/app/dashboard"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-2 -ml-2"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors min-h-[36px] px-2.5 py-1 -ml-2 rounded-md hover:bg-white/[0.06]"
           >
-            <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
-            <span className="hidden sm:inline">{t("nav_dashboard")}</span>
+            <LayoutDashboard className="w-3.5 h-3.5" aria-hidden="true" />
+            {t("nav_dashboard")}
           </Link>
-          <span className="text-muted-foreground/40">/</span>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-2"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors min-h-[36px] px-2.5 py-1 rounded-md hover:bg-white/[0.06]"
           >
-            <Home className="w-4 h-4" aria-hidden="true" />
-            <span className="hidden sm:inline">{t("nav_home")}</span>
+            <Home className="w-3.5 h-3.5" aria-hidden="true" />
+            {t("nav_home")}
           </Link>
         </div>
         <h1 className="font-display text-3xl font-bold text-gold tracking-wide">

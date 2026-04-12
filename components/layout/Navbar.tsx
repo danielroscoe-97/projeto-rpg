@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, X, LayoutDashboard, Home } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -197,6 +197,25 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, mini
               </button>
             </div>
             <div className="flex flex-col gap-1">
+              {/* Quick home links */}
+              <Link
+                href={brandHref}
+                className="text-muted-foreground font-medium px-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center gap-2"
+                onClick={() => setMobileOpen(false)}
+              >
+                <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
+                {t("dashboard")}
+              </Link>
+              <div className="border-t border-white/[0.06] mt-2 pt-2">
+                <Link
+                  href="/"
+                  className="text-muted-foreground font-medium px-4 py-3 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] flex items-center gap-2"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Home className="w-4 h-4" aria-hidden="true" />
+                  {t("brand")}
+                </Link>
+              </div>
               {links.map((link) =>
                 link.children ? (
                   <div key={link.label?.toString()}>
