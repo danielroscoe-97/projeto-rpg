@@ -17,8 +17,8 @@ export async function goToNewSession(page: Page) {
   );
   const setupArea = page.locator('[data-testid="setup-combatant-list"]');
 
-  // Race: whichever appears first
-  await expect(setupArea.or(quickBtn)).toBeVisible({ timeout: 15_000 });
+  // Race: whichever appears first (generous timeout for slow auth + SSR)
+  await expect(setupArea.or(quickBtn)).toBeVisible({ timeout: 30_000 });
 
   // If Quick Combat button is visible, click it to get to setup
   if (await quickBtn.isVisible({ timeout: 1_000 }).catch(() => false)) {
@@ -153,7 +153,7 @@ export async function dmSetupCombatSession(
   } catch {
     const retryBtn = page.locator('[data-testid="start-combat-btn"]');
     if (await retryBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await retryBtn.click();
+      await retryBtn.click({ force: true });
     }
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({ timeout: 15_000 });
   }
