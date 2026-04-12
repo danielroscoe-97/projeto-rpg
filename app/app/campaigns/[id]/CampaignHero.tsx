@@ -13,6 +13,7 @@ import { InvitePlayerDialog } from "@/components/campaign/InvitePlayerDialog";
 import { SessionPlanner } from "@/components/campaign/SessionPlanner";
 import { NextSessionCard } from "@/components/campaign/NextSessionCard";
 import { CampaignHealthBadge } from "@/components/campaign/CampaignHealthBadge";
+import { CampaignActiveEffects } from "@/components/campaign/CampaignActiveEffects";
 import { useCampaignMembershipListener } from "@/hooks/use-campaign-membership-listener";
 import { calculateCampaignHealth } from "@/lib/utils/campaign-health";
 import type { PlayerCharacter } from "@/lib/types/database";
@@ -179,6 +180,12 @@ export function CampaignHero({
         activeSessionName={activeSessionName}
         onOpenCombat={() => setCombatOpen(true)}
         onInvite={() => setInviteOpen(true)}
+      />
+
+      {/* Active Effects overview — shows when any character has active effects */}
+      <CampaignActiveEffects
+        campaignId={campaignId}
+        characters={characters}
       />
 
       {/* Contextual Quick Actions — adapt based on campaign state */}

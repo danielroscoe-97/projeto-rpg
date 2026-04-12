@@ -13,6 +13,9 @@ interface RestResetPanelProps {
   /** Additional reset sources (e.g., abilities) */
   additionalResetByType?: (types: string[]) => Promise<number>;
   additionalCountByResetType?: (types: string[]) => number;
+  /** Dismiss all active effects on long rest */
+  onDismissAllEffects?: () => Promise<number>;
+  activeEffectCount?: number;
 }
 
 export function RestResetPanel({
@@ -22,6 +25,8 @@ export function RestResetPanel({
   onSpellSlotsReset,
   additionalResetByType,
   additionalCountByResetType,
+  onDismissAllEffects,
+  activeEffectCount = 0,
 }: RestResetPanelProps) {
   const t = useTranslations("player_hq.resources");
   // I-09 fix: use ref to avoid stale closure
@@ -67,6 +72,8 @@ export function RestResetPanel({
           onSpellSlotsReset(reset);
         }
         count += usedSlotCount;
+        // Dismiss all active spell effects on long rest
+        count += (await onDismissAllEffects?.()) ?? 0;
         navigator.vibrate?.([100, 50, 100]);
       } else {
         count = await resetByType(["dawn"]);
@@ -78,7 +85,7 @@ export function RestResetPanel({
         toast.success(t("reset_success", { count }));
       }
     },
-    [resetByType, spellSlots, usedSlotCount, onSpellSlotsReset, t]
+    [resetByType, spellSlots, usedSlotCount, onSpellSlotsReset, onDismissAllEffects, t]
   );
 
   return (
@@ -108,7 +115,7 @@ export function RestResetPanel({
       <button
         type="button"
         onClick={() => handleRest("long")}
-        disabled={longRestCount === 0 && usedSlotCount === 0}
+        disabled={longRestCount === 0 && usedSlotCount === 0 && activeEffectCount === 0}
         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-medium transition-all min-h-[44px] ${
           confirming === "long"
             ? "border-amber-400 bg-amber-400/10 text-amber-400"
@@ -118,9 +125,9 @@ export function RestResetPanel({
       >
         <Moon className="w-3.5 h-3.5" />
         {confirming === "long" ? t("reset_confirm") : t("long_rest")}
-        {(longRestCount > 0 || usedSlotCount > 0) && (
+        {(longRestCount > 0 || usedSlotCount > 0 || activeEffectCount > 0) && (
           <span className="bg-amber-400/20 text-amber-400 px-1.5 py-0.5 rounded-full text-[10px]">
-            {longRestCount + usedSlotCount}
+            {longRestCount + usedSlotCount + activeEffectCount}
           </span>
         )}
       </button>

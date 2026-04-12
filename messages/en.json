@@ -345,7 +345,11 @@
     "invite_tab_link": "Via Link",
     "invite_tab_email": "Via E-mail",
     "join_with_character": "Join with this character",
-    "level_value": "Level {level}"
+    "level_value": "Level {level}",
+    "active_effects": {
+      "title": "Active Effects",
+      "no_effects": "No active effects"
+    }
   },
   "joinCampaign": {
     "error_invalid_link": "Invalid or expired link.",
@@ -1010,6 +1014,33 @@
       "spell_slots_edit_max": "Edit max slots",
       "use_one": "Use one",
       "restore_one": "Restore one"
+    },
+    "active_effects": {
+      "title": "Active Effects",
+      "empty": "No active effects",
+      "add": "Add Effect",
+      "dismiss": "Dismiss",
+      "dismiss_confirm": "Dismiss {name}?",
+      "concentration": "Concentration",
+      "concentration_warning": "You already have {name} active (concentration). Adding this will dismiss it. Continue?",
+      "confirm": "Continue",
+      "cancel": "Cancel",
+      "until_dispelled": "Until dispelled",
+      "duration": "Duration",
+      "duration_custom_placeholder": "Minutes (custom)",
+      "quantity": "x{count}",
+      "quantity_label": "Quantity",
+      "type": "Type",
+      "type_spell": "Spell",
+      "type_consumable": "Consumable",
+      "type_potion": "Potion",
+      "type_item": "Item",
+      "type_other": "Other",
+      "name": "Name",
+      "source": "Source",
+      "notes": "Notes",
+      "notes_placeholder": "e.g. Cast start of Day 3, ~2h used",
+      "spell_level": "Spell Level"
     },
     "spells": {
       "title": "My Spells",

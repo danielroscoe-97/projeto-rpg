@@ -20,6 +20,7 @@ import { TurnPushNotification } from "@/components/player/TurnPushNotification";
 import { PlayerCompendiumBrowser } from "@/components/player/PlayerCompendiumBrowser";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
+import { ActiveEffectsBadges } from "@/components/player/ActiveEffectsBadges";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
@@ -216,6 +217,8 @@ interface PlayerInitiativeBoardProps {
   onSelfConditionToggle?: (combatantId: string, condition: string) => void;
   /** Callback when player toggles their own reaction */
   onToggleReaction?: (combatantId: string) => void;
+  /** Player's character ID for active effects display */
+  characterId?: string;
 }
 
 export function PlayerInitiativeBoard({
@@ -245,6 +248,7 @@ export function PlayerInitiativeBoard({
   onLongRest,
   onSelfConditionToggle,
   onToggleReaction,
+  characterId,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const tc = useTranslations("combat");
@@ -783,6 +787,12 @@ export function PlayerInitiativeBoard({
                       onLongRest={onLongRest}
                       collapsible={false}
                     />
+                  </div>
+                )}
+                {/* Active Effects badges — read-only during combat */}
+                {characterId && (
+                  <div className="mt-3">
+                    <ActiveEffectsBadges characterId={characterId} />
                   </div>
                 )}
                 {pc.conditions.length > 0 && (

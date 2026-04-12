@@ -1140,6 +1140,50 @@ export interface Database {
           updated_at?: string;
         };
       };
+      character_active_effects: {
+        Row: {
+          id: string;
+          player_character_id: string;
+          name: string;
+          effect_type: "spell" | "consumable" | "potion" | "item" | "other";
+          spell_level: number | null;
+          is_concentration: boolean;
+          duration_minutes: number | null;
+          quantity: number;
+          notes: string | null;
+          source: string | null;
+          cast_by: string | null;
+          is_active: boolean;
+          dismissed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          player_character_id: string;
+          name: string;
+          effect_type?: "spell" | "consumable" | "potion" | "item" | "other";
+          spell_level?: number | null;
+          is_concentration?: boolean;
+          duration_minutes?: number | null;
+          quantity?: number;
+          notes?: string | null;
+          source?: string | null;
+          cast_by?: string | null;
+          is_active?: boolean;
+        };
+        Update: {
+          name?: string;
+          effect_type?: "spell" | "consumable" | "potion" | "item" | "other";
+          spell_level?: number | null;
+          is_concentration?: boolean;
+          duration_minutes?: number | null;
+          quantity?: number;
+          notes?: string | null;
+          source?: string | null;
+          is_active?: boolean;
+          dismissed_at?: string | null;
+        };
+      };
     };
     Enums: {
       ruleset_version: RulesetVersion;
@@ -1196,3 +1240,7 @@ export type CharacterAbilityInsert = Database["public"]["Tables"]["character_abi
 export type CharacterAbilityUpdate = Database["public"]["Tables"]["character_abilities"]["Update"];
 export type AbilityType = CharacterAbility["ability_type"];
 export type Currency = { cp: number; sp: number; ep: number; gp: number; pp: number };
+export type ActiveEffect = Database["public"]["Tables"]["character_active_effects"]["Row"];
+export type ActiveEffectInsert = Database["public"]["Tables"]["character_active_effects"]["Insert"];
+export type ActiveEffectUpdate = Database["public"]["Tables"]["character_active_effects"]["Update"];
+export type EffectType = ActiveEffect["effect_type"];

@@ -345,7 +345,11 @@
     "invite_tab_link": "Via Link",
     "invite_tab_email": "Via E-mail",
     "join_with_character": "Entrar com este personagem",
-    "level_value": "Nível {level}"
+    "level_value": "Nível {level}",
+    "active_effects": {
+      "title": "Efeitos Ativos",
+      "no_effects": "Nenhum efeito ativo"
+    }
   },
   "joinCampaign": {
     "error_invalid_link": "Link inválido ou expirado.",
@@ -1010,6 +1014,33 @@
       "spell_slots_edit_max": "Editar máximo",
       "use_one": "Usar um",
       "restore_one": "Restaurar um"
+    },
+    "active_effects": {
+      "title": "Efeitos Ativos",
+      "empty": "Nenhum efeito ativo",
+      "add": "Adicionar Efeito",
+      "dismiss": "Remover",
+      "dismiss_confirm": "Remover {name}?",
+      "concentration": "Concentração",
+      "concentration_warning": "Você já tem {name} ativo (concentração). Adicionar isso vai remover o efeito atual. Continuar?",
+      "confirm": "Continuar",
+      "cancel": "Cancelar",
+      "until_dispelled": "Até ser dissipado",
+      "duration": "Duração",
+      "duration_custom_placeholder": "Minutos (personalizado)",
+      "quantity": "x{count}",
+      "quantity_label": "Quantidade",
+      "type": "Tipo",
+      "type_spell": "Magia",
+      "type_consumable": "Consumível",
+      "type_potion": "Poção",
+      "type_item": "Item",
+      "type_other": "Outro",
+      "name": "Nome",
+      "source": "Origem",
+      "notes": "Notas",
+      "notes_placeholder": "Ex: Castado início do Dia 3, ~2h usadas",
+      "spell_level": "Nível da Magia"
     },
     "spells": {
       "title": "Minhas Magias",

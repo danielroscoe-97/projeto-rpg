@@ -2446,6 +2446,7 @@ export function PlayerJoinClient({
           isLoadingAudioUrls={isLoadingAudioUrls}
           registeredName={registeredName}
           effectiveTokenId={effectiveTokenId}
+          characterId={prefilledCharacters?.find((c) => c.name === registeredName)?.id}
           sessionId={sessionId}
           hpDelta={hpDelta}
           deathSaveResolution={deathSaveResolution}

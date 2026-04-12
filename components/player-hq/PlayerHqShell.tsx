@@ -21,8 +21,10 @@ import { PlayerMindMap } from "./PlayerMindMap";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 import { useCharacterAbilities } from "@/lib/hooks/useCharacterAbilities";
+import { useActiveEffects } from "@/lib/hooks/useActiveEffects";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { AbilitiesSection } from "./AbilitiesSection";
+import { ActiveEffectsPanel } from "./ActiveEffectsPanel";
 import { AttunementSection } from "./AttunementSection";
 import { ProficienciesSection } from "./ProficienciesSection";
 import { CharacterPdfExport } from "./CharacterPdfExport";
@@ -141,6 +143,7 @@ export function PlayerHqShell({
   // C-01 fix: Single instance of useResourceTrackers, shared by RestResetPanel + ResourceTrackerList
   const resourceHook = useResourceTrackers(characterId);
   const abilitiesHook = useCharacterAbilities(characterId);
+  const activeEffectsHook = useActiveEffects(characterId);
 
   const { notifications } = useNotifications(userId);
 
@@ -291,10 +294,27 @@ export function PlayerHqShell({
             onSpellSlotsReset={updateSpellSlots}
             additionalResetByType={abilitiesHook.resetByType}
             additionalCountByResetType={abilitiesHook.countByResetType}
+            onDismissAllEffects={activeEffectsHook.dismissAll}
+            activeEffectCount={activeEffectsHook.effects.length}
           />
           <SpellSlotsHq
             spellSlots={character.spell_slots}
             onUpdateSpellSlots={updateSpellSlots}
+          />
+          <ActiveEffectsPanel
+            effects={activeEffectsHook.effects}
+            loading={activeEffectsHook.loading}
+            onAdd={activeEffectsHook.addEffect}
+            onUpdate={activeEffectsHook.updateEffect}
+            onDismiss={activeEffectsHook.dismissEffect}
+            onDecrementQuantity={activeEffectsHook.decrementQuantity}
+            onIncrementQuantity={activeEffectsHook.incrementQuantity}
+            concentrationConflictName={activeEffectsHook.getConcentrationConflict()?.name}
+            onDismissConcentration={
+              activeEffectsHook.getConcentrationConflict()
+                ? () => activeEffectsHook.dismissEffect(activeEffectsHook.getConcentrationConflict()!.id)
+                : undefined
+            }
           />
           <ResourceTrackerList
             trackers={resourceHook.trackers}
