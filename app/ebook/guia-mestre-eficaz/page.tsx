@@ -8,7 +8,7 @@ import { EbookCTA } from "@/components/blog/EbookCTA";
 export const metadata: Metadata = {
   title: "Guia do Mestre Eficaz no Combate — E-book Gratuito",
   description:
-    "E-book gratuito com 5 capitulos praticos para transformar seus combates de D&D 5e. Iniciativa automatica, HP em tempo real e mais.",
+    "E-book gratuito com 5 capítulos práticos para transformar seus combates de D&D 5e. Iniciativa automática, HP em tempo real e mais.",
   keywords: [
     "guia mestre D&D",
     "e-book D&D 5e",
@@ -23,7 +23,7 @@ const CHAPTERS = [
     number: "01",
     title: "Pare de Anotar Iniciativa",
     description:
-      "Gere o QR Code, mande no WhatsApp ou Discord. Cada jogador coloca a propria iniciativa — zero papel, zero 'quanto voce tirou?'.",
+      "Gere o QR Code, mande no WhatsApp ou Discord. Cada jogador coloca a própria iniciativa. Zero papel, zero 'quanto você tirou?'.",
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
@@ -44,9 +44,9 @@ const CHAPTERS = [
   },
   {
     number: "03",
-    title: "Combate Rapido, Nao Combate Lento",
+    title: "Combate Rápido, Não Combate Lento",
     description:
-      "Turno automatico, ordem de iniciativa visual, indicador de turno claro. Sem ficar perguntando 'de quem e a vez?'. O ritmo nao para.",
+      "Turno automático, ordem de iniciativa visual, indicador de turno claro. Sem ficar perguntando 'de quem é a vez?'. O ritmo não para.",
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
@@ -55,9 +55,9 @@ const CHAPTERS = [
   },
   {
     number: "04",
-    title: "Transparencia Gera Imersao",
+    title: "Transparência Gera Imersão",
     description:
-      "Quando o jogador VE que ta com 8 HP e Poisoned, ele SENTE o perigo. Nao precisa o mestre narrar — a tensao e visual e imediata.",
+      "Quando o jogador VÊ que tá com 8 HP e Poisoned, ele SENTE o perigo. Não precisa o mestre narrar. A tensão é visual e imediata.",
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
@@ -69,7 +69,7 @@ const CHAPTERS = [
     number: "05",
     title: "Do Zero ao Combate em 60 Segundos",
     description:
-      "Busca o monstro no compendium, adiciona ao combate, rola iniciativa, comeca. Sem preparacao de 30 minutos. Improvisar encontros nunca foi tao facil.",
+      "Busca o monstro no compêndio, adiciona ao combate, rola iniciativa, começa. Sem preparação de 30 minutos. Improvisar encontros nunca foi tão fácil.",
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -88,7 +88,7 @@ export default function EbookPage() {
           { href: "/blog", label: "Blog" },
           { href: "/monstros", label: "Monstros" },
           { href: "/magias", label: "Magias" },
-          { href: "/pricing", label: "Precos" },
+          { href: "/pricing", label: "Preços" },
         ]}
         rightSlot={<BlogNavAuthSlot />}
       />
@@ -112,8 +112,8 @@ export default function EbookPage() {
               Guia do Mestre Eficaz no Combate
             </h1>
             <p className="text-foreground/60 text-lg leading-relaxed max-w-xl mx-auto">
-              5 capitulos praticos para transformar seus combates de D&D 5e —
-              da iniciativa automatica ao HP em tempo real.
+              5 capítulos práticos para transformar seus combates de D&D 5e.
+              Da iniciativa automática ao HP em tempo real.
             </p>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function EbookPage() {
           <div className="flex items-center gap-3 mb-8">
             <div className="flex-1 h-px bg-gradient-to-r from-white/[0.06] to-transparent" />
             <span className="text-[10px] text-muted-foreground/50 uppercase tracking-widest">
-              O que voce vai aprender
+              O que você vai aprender
             </span>
             <div className="flex-1 h-px bg-gradient-to-l from-white/[0.06] to-transparent" />
           </div>

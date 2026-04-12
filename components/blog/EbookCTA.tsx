@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 interface EbookCTAProps {
@@ -27,7 +28,6 @@ export function EbookCTA({ variant = "inline" }: EbookCTAProps) {
         setSubmitted(true);
       }
     } catch {
-      // Fallback: direct download anyway
       setSubmitted(true);
     } finally {
       setLoading(false);
@@ -60,45 +60,64 @@ export function EbookCTA({ variant = "inline" }: EbookCTAProps) {
 
   if (variant === "banner") {
     return (
-      <div className="my-12 p-8 sm:p-10 rounded-xl border border-gold/25 bg-gradient-to-br from-gold/[0.06] via-purple-500/[0.02] to-transparent relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-gold/[0.06] rounded-full blur-[100px]" aria-hidden="true" />
-        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold/50 via-gold/20 to-transparent rounded-l-xl" />
+      <div className="my-12 rounded-xl border border-gold/20 relative overflow-hidden">
+        {/* Background with monster art */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#13131E] via-[#1A1A28] to-[#13131E]" />
+        <div className="absolute inset-0 bg-[image:linear-gradient(rgba(212,168,83,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(212,168,83,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="absolute right-0 top-0 bottom-0 w-[280px] opacity-[0.08] pointer-events-none">
+          <Image
+            src="/art/blog/combat-hp-panel.png"
+            alt=""
+            fill
+            className="object-cover object-left"
+            unoptimized
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#13131E] via-[#13131E]/80 to-transparent" />
+        </div>
 
-        <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
-          <div className="flex-1">
-            <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gold/70 bg-gold/[0.08] px-3 py-1 rounded-full mb-4">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-              </svg>
-              E-book Gratuito
-            </span>
-            <h3 className="font-display text-xl sm:text-2xl text-gold mb-2">
-              Guia do Mestre Eficaz no Combate
-            </h3>
-            <p className="text-foreground/60 text-sm leading-relaxed max-w-lg">
-              5 capitulos praticos para transformar seus combates de D&D 5e.
-              Da iniciativa automatica ao HP em tempo real — tudo correlacionado
-              com ferramentas que funcionam na mesa.
-            </p>
+        {/* Content */}
+        <div className="relative p-8 sm:p-10">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-8">
+            <div className="flex-1">
+              <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[3px] text-gold/70 bg-gold/[0.08] border border-gold/15 px-3 py-1.5 rounded mb-5">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                </svg>
+                E-book Gratuito
+              </span>
+              <h3 className="font-display text-2xl sm:text-[28px] text-gold mb-3 leading-tight">
+                Guia do Mestre Eficaz no Combate
+              </h3>
+              <p className="text-foreground/55 text-[15px] leading-relaxed max-w-lg mb-1">
+                5 capítulos práticos para transformar seus combates de D&D 5e.
+                Iniciativa automática, HP em tempo real, condições rastreadas.
+              </p>
+              <p className="text-foreground/35 text-xs">
+                PDF gratuito &middot; 11 páginas &middot; Ilustrado com screenshots do app
+              </p>
+            </div>
+
+            <div className="shrink-0 lg:w-72 w-full">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  required
+                  className="h-12 px-4 rounded-lg bg-white/[0.05] border border-white/[0.1] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/40 transition-colors w-full"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="h-12 bg-gold text-surface-primary font-semibold rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200 text-sm whitespace-nowrap disabled:opacity-50 w-full"
+                >
+                  {loading ? "Enviando..." : "Baixar Grátis"}
+                </button>
+              </form>
+            </div>
           </div>
-
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 shrink-0 lg:w-auto w-full">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu@email.com"
-              required
-              className="h-11 px-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/30 transition-colors w-full sm:w-64"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="h-11 bg-gold text-surface-primary font-semibold px-6 rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200 text-sm whitespace-nowrap disabled:opacity-50"
-            >
-              {loading ? "Enviando..." : "Baixar Gratis"}
-            </button>
-          </form>
         </div>
       </div>
     );
@@ -116,7 +135,7 @@ export function EbookCTA({ variant = "inline" }: EbookCTAProps) {
           <span className="text-xs font-bold uppercase tracking-wider text-gold/80">E-book Gratuito</span>
         </div>
         <p className="text-sm text-foreground/80 mb-4 leading-relaxed">
-          Quer um guia completo? Baixe o <strong className="text-gold">Guia do Mestre Eficaz no Combate</strong> — 5 capitulos praticos com tudo que voce precisa pra transformar seus combates.
+          Quer um guia completo? Baixe o <strong className="text-gold">Guia do Mestre Eficaz no Combate</strong>. 5 capítulos práticos com tudo que você precisa pra transformar seus combates.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
           <input
