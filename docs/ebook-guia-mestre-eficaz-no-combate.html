@@ -6,7 +6,7 @@
 <title>Guia do Mestre Eficaz no Combate — Pocket DM</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  @page { size: A4; margin: 0; }
+  @page { size: A4 portrait; margin: 0; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
@@ -19,13 +19,15 @@
   /* ─── Page ─── */
   .page {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
+    max-height: 297mm;
     margin: 0 auto;
-    padding: 50px 60px;
+    padding: 45px 55px;
     background: #0d0d14;
     position: relative;
     overflow: hidden;
     page-break-after: always;
+    page-break-inside: avoid;
   }
   .page::before {
     content: '';
@@ -50,7 +52,7 @@
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
     text-align: center;
-    min-height: calc(297mm - 100px);
+    height: calc(297mm - 90px);
   }
   .cover-monster {
     position: absolute;
@@ -219,6 +221,9 @@
   }
   .screenshot img {
     width: 100%; height: auto; display: block;
+    max-height: 240px;
+    object-fit: contain;
+    background: #0a0a0f;
   }
   .screenshot-caption {
     background: rgba(255,255,255,0.03);
@@ -301,7 +306,17 @@
 
   @media print {
     body { background: #0d0d14; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page { margin: 0; box-shadow: none; }
+    .page {
+      margin: 0; box-shadow: none;
+      width: 100%; height: 100vh;
+      min-height: unset;
+      page-break-after: always;
+      page-break-inside: avoid;
+      overflow: hidden;
+    }
+    .chapter-hero { overflow: hidden !important; }
+    .chapter-hero::after { display: none; }
+    .screenshot img { max-height: 220px; object-fit: contain; }
     .export-instructions { display: none; }
   }
 
@@ -809,11 +824,13 @@
   1. Abra este arquivo no Chrome<br>
   2. Ctrl+P (Print)<br>
   3. Destino: "Salvar como PDF"<br>
-  4. Layout: Retrato<br>
-  5. Margens: Nenhuma<br>
-  6. Marque "Graficos de plano de fundo"<br>
-  7. Salve como: <code>public/ebooks/guia-mestre-eficaz-no-combate.pdf</code><br>
-  8. <strong>IMPORTANTE: Mostre ao Dani_ para aprovacao antes de disponibilizar!</strong><br><br>
+  4. Layout: <strong>Retrato</strong><br>
+  5. Páginas: <strong>Todas</strong><br>
+  6. Páginas por folha: <strong>1</strong><br>
+  7. Margens: <strong>Nenhuma</strong><br>
+  8. Marque <strong>"Gráficos de segundo plano"</strong> (ESSENCIAL!)<br>
+  9. Salve como: <code>public/ebooks/guia-mestre-eficaz-no-combate.pdf</code><br>
+  10. Deve gerar <strong>8 páginas</strong> (Capa + Intro + 5 Caps + Resumo)<br><br>
   <strong>Imagens usadas neste e-book:</strong><br>
   - Capa: ancient-red-dragon.png + owlbear.png (monster art)<br>
   - Cap 1: goblin.png (hero) + QR Code screenshot (qa-screenshots/06-share-link-qr-code.png)<br>
