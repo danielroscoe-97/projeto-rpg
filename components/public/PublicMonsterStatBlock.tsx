@@ -18,6 +18,7 @@ import {
   translateSpeed,
 } from "@/lib/i18n/dnd-terms-ptbr";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
+import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
 import "@/styles/stat-card-5e.css";
 
 // ── Known terms for internal linking ──────────────────────────────────
@@ -95,6 +96,7 @@ const STAT_LABELS = {
     senses: "Senses",
     languages: "Languages",
     challenge: "Challenge",
+    source: "Source",
     actions: "Actions",
     reactions: "Reactions",
     legendaryActions: "Legendary Actions",
@@ -115,6 +117,7 @@ const STAT_LABELS = {
     senses: "Sentidos",
     languages: "Idiomas",
     challenge: "Nível de Desafio",
+    source: "Fonte",
     actions: "Ações",
     reactions: "Reações",
     legendaryActions: "Ações Lendárias",
@@ -355,6 +358,22 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           {monster.cr}
           {monster.xp ? ` (${monster.xp.toLocaleString()} XP)` : ""}
         </p>
+        {monster.source && (
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.source}</strong>{" "}
+            <span
+              className={
+                getSourceCategory(monster.source, monster.is_srd) === "srd"
+                  ? "text-emerald-400"
+                  : getSourceCategory(monster.source, monster.is_srd) === "community"
+                    ? "text-orange-400"
+                    : "text-[var(--5e-text-muted)]"
+              }
+            >
+              {getSourceName(monster.source)}
+            </span>
+          </p>
+        )}
       </div>
 
       {/* Special abilities */}

@@ -6,6 +6,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { DiceText } from "@/components/dice/DiceText";
 import { MonsterToken } from "@/components/srd/MonsterToken";
+import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
 import "@/styles/stat-card-5e.css";
 
 // ---------------------------------------------------------------------------
@@ -380,6 +381,29 @@ export function MonsterStatBlock({
       {monster.senses && <PropLine label="Senses" value={monster.senses} />}
       {monster.languages && <PropLine label="Languages" value={monster.languages} />}
       <PropLine label="CR" value={crDisplay} />
+      {monster.source && (
+        <p className="prop-line">
+          <span className="prop-label">Source </span>
+          <span className="prop-value">
+            <span
+              className={
+                getSourceCategory(monster.source, monster.is_srd) === "srd"
+                  ? "text-emerald-400"
+                  : getSourceCategory(monster.source, monster.is_srd) === "community"
+                    ? "text-orange-400"
+                    : "text-[var(--5e-text-muted)]"
+              }
+            >
+              {getSourceName(monster.source)}
+            </span>
+            {monster.ruleset_version && (
+              <span className="ml-1.5 text-[10px] opacity-60">
+                ({monster.ruleset_version})
+              </span>
+            )}
+          </span>
+        </p>
+      )}
 
       {/* Sections */}
       <SectionBlock
