@@ -21,6 +21,18 @@ if (!Sentry.getClient()) {
       }),
     ],
     beforeSend(event) {
+      // Drop noisy errors that are expected during normal multi-tab / reconnect operation
+      try {
+        const msg = event.exception?.values?.[0]?.value ?? "";
+        if (
+          /lock.*stolen|lock.*released|Lock broken/i.test(msg) ||
+          /AbortError/i.test(event.exception?.values?.[0]?.type ?? "") ||
+          /CHANNEL_ERROR/i.test(msg)
+        ) {
+          return null; // Drop event entirely
+        }
+      } catch { /* never let filtering crash the pipeline */ }
+
       // BUG-008: Scrub PII with safe regex — guard against null/non-string values
       try {
         if (event.exception?.values) {

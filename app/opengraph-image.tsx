@@ -12,10 +12,10 @@ export default async function OgImage() {
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000");
 
-  // Cinzel 700 font
+  // Cinzel 700 font — must use .ttf (Satori/next-og does NOT support woff2)
   let cinzelData: ArrayBuffer | null = null;
   try {
-    const res = await fetch(new URL("/fonts/cinzel-latin-700-normal.woff2", baseUrl));
+    const res = await fetch(new URL("/fonts/cinzel-latin-700-normal.ttf", baseUrl));
     if (res.ok) cinzelData = await res.arrayBuffer();
   } catch { /* fallback to Georgia */ }
 

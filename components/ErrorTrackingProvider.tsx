@@ -36,6 +36,20 @@ export function ErrorTrackingProvider() {
 
     function handleUnhandledRejection(event: PromiseRejectionEvent) {
       const error = event.reason;
+      const msg = error?.message ?? String(error ?? "");
+
+      // Suppress noisy errors that are expected during normal operation:
+      // - Auth lock contention: multiple tabs or rapid auth calls fight over navigator.locks
+      // - AbortError: request cancelled by navigation, tab close, or component unmount
+      // - CHANNEL_ERROR: Supabase Realtime channel reconnecting after network hiccup
+      if (
+        /lock.*stolen|lock.*released|Lock broken/i.test(msg) ||
+        (error?.name === "AbortError") ||
+        /CHANNEL_ERROR/i.test(msg)
+      ) {
+        return;
+      }
+
       captureError(error, {
         component: "GlobalErrorHandler",
         action: "unhandledrejection",
@@ -43,7 +57,7 @@ export function ErrorTrackingProvider() {
         skipSentry: true,
         extra: {
           type: typeof error,
-          message: error?.message ?? String(error),
+          message: msg,
         },
       });
     }
