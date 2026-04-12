@@ -21,6 +21,15 @@ const CATEGORY_COLORS: Record<BlogCategory, string> = {
   devlog: "text-gold",
 };
 
+const CATEGORY_GLOW: Record<BlogCategory, string> = {
+  tutorial: "hover:shadow-[0_0_25px_rgba(96,165,250,0.25)] hover:border-blue-500/30",
+  guia: "hover:shadow-[0_0_25px_rgba(52,211,153,0.25)] hover:border-emerald-500/30",
+  lista: "hover:shadow-[0_0_25px_rgba(251,191,36,0.25)] hover:border-amber-500/30",
+  comparativo: "hover:shadow-[0_0_25px_rgba(192,132,252,0.25)] hover:border-purple-500/30",
+  build: "hover:shadow-[0_0_25px_rgba(251,113,133,0.25)] hover:border-rose-500/30",
+  devlog: "hover:shadow-[0_0_25px_rgba(212,168,83,0.25)] hover:border-gold/30",
+};
+
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("pt-BR", {
     day: "numeric",
@@ -69,7 +78,7 @@ function LargeCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 overflow-hidden h-full"
+      className={`group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-300 overflow-hidden h-full ${CATEGORY_GLOW[post.category]}`}
     >
       <div className="relative w-full aspect-[16/9] overflow-hidden">
         {post.image && (
@@ -77,7 +86,7 @@ function LargeCard({ post }: { post: BlogPost }) {
             src={post.image}
             alt={post.title}
             fill
-            className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+            className="object-cover transition-transform duration-500"
             sizes="(max-width: 640px) 100vw, 50vw"
           />
         )}
@@ -112,7 +121,7 @@ function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col h-full rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 overflow-hidden"
+      className={`group flex flex-col h-full rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-300 overflow-hidden ${CATEGORY_GLOW[post.category]}`}
     >
       <div className="relative w-full aspect-[16/10] overflow-hidden">
         {post.image && (
@@ -120,7 +129,7 @@ function PostCard({ post }: { post: BlogPost }) {
             src={post.image}
             alt={post.title}
             fill
-            className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+            className="object-cover transition-transform duration-500"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         )}
