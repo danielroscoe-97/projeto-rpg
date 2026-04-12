@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useContentAccess } from "@/lib/hooks/use-content-access";
 import { PublicMonsterGrid, type MonsterEntry } from "./PublicMonsterGrid";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
+import { useSrdStore } from "@/lib/stores/srd-store";
+import { setFullDataMode } from "@/lib/srd/srd-mode";
 import { toSlug } from "@/lib/utils/monster";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -53,6 +55,13 @@ export function CompendiumMonsterHydrator({
   useEffect(() => {
     if (isLoading || !canAccess || fetchedRef.current) return;
     fetchedRef.current = true;
+
+    // Ensure SRD store is in full mode so floating cards can resolve all monsters
+    const storeMode = useSrdStore.getState().loadedMode;
+    if (storeMode !== "full") {
+      setFullDataMode(true);
+      useSrdStore.getState().initializeSrd();
+    }
 
     Promise.all([
       fetch("/api/srd/full/monsters-2014.json").then((r) =>
