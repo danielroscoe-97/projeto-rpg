@@ -40,7 +40,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -78,8 +78,8 @@ test.describe("J9 — DM vs Player Visibility", () => {
       playerPage.locator('[data-testid="player-view"]')
     ).toBeVisible();
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J9.2 — Player ve seu proprio HP exato mas nao o dos monstros", async ({
@@ -94,7 +94,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -119,8 +119,8 @@ test.describe("J9 — DM vs Player Visibility", () => {
     const seesMonsterExactHP = playerBody!.includes("/ 93");
     expect(seesMonsterExactHP).toBe(false);
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J9.3 — DM ve controles (next turn, HP adjust), Player nao ve controles DM", async ({
@@ -136,7 +136,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -170,8 +170,8 @@ test.describe("J9 — DM vs Player Visibility", () => {
     // At most 1 (their own)
     expect(playerHpCount).toBeLessThanOrEqual(1);
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J9.4 — Condicoes aplicadas pelo DM aparecem no player view", async ({
@@ -186,7 +186,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -237,8 +237,8 @@ test.describe("J9 — DM vs Player Visibility", () => {
       }
     }
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J9.5 — Dois players simultaneos veem a mesma visao consistente", async ({
@@ -253,7 +253,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -288,7 +288,7 @@ test.describe("J9 — DM vs Player Visibility", () => {
     expect(p1Body!.includes("/ 200")).toBe(false);
     expect(p2Body!.includes("/ 200")).toBe(false);
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
     await p1Context.close();
     await p2Context.close();
   });

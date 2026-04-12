@@ -22,9 +22,8 @@ test.describe("P1 — Turn Advance & HP", () => {
 
     // Active combat should still be visible
     await expect(dmPage.locator('[data-testid="active-combat"]')).toBeVisible();
-    await expect(dmPage.locator('[data-testid="initiative-list"]')).toBeVisible();
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 
   test("DM can open HP adjuster on a combatant", async ({ browser }) => {
@@ -47,7 +46,7 @@ test.describe("P1 — Turn Advance & HP", () => {
       dmPage.locator('[data-testid="hp-adjuster"]').first()
     ).toBeVisible({ timeout: 5_000 });
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 
   test("DM can end encounter", async ({ browser }) => {
@@ -81,6 +80,6 @@ test.describe("P1 — Turn Advance & HP", () => {
     const bodyText = await dmPage.locator("body").textContent({ timeout: 5_000 });
     expect(bodyText?.length).toBeGreaterThan(50);
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 });

@@ -35,7 +35,7 @@ test.describe("J2 — Player Recebe o Link", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -103,8 +103,8 @@ test.describe("J2 — Player Recebe o Link", () => {
     expect(pageContent).toBeTruthy();
     expect(pageContent!.length).toBeGreaterThan(10);
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J2.4 — Player recebe notificacao visual quando e seu turno", async ({
@@ -121,7 +121,7 @@ test.describe("J2 — Player Recebe o Link", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -155,8 +155,8 @@ test.describe("J2 — Player Recebe o Link", () => {
     await expect(playerView).toBeVisible({ timeout: 15_000 });
     await expect(playerPage.getByText("Thorin").first()).toBeVisible({ timeout: 10_000 });
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J2.6 — Link invalido mostra erro amigavel (nao 500)", async ({
@@ -191,7 +191,7 @@ test.describe("J2 — Player Recebe o Link", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -242,7 +242,7 @@ test.describe("J2 — Player Recebe o Link", () => {
     });
     expect(hasOverflow).toBe(false);
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
     await mobileContext.close();
   });
 });
