@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="35%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#D4A853" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="280" rx="450" ry="280" fill="url(#glow)"/>
+  <!-- Grid pattern -->
+  <g opacity="0.03" stroke="#fff" stroke-width="1">
+    <line x1="0" y1="100" x2="1200" y2="100"/><line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/><line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="630"/><line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/><line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+  <!-- Gold accent lines -->
+  <rect x="0" y="610" width="1200" height="2" fill="url(#gold-line)"/>
+  <rect x="0" y="18" width="1200" height="1" fill="url(#gold-line)" opacity="0.5"/>
+  <!-- Crossed swords -->
+  <g transform="translate(600,260)" opacity="0.85">
+    <g transform="rotate(-35)">
+      <rect x="-8" y="-140" width="16" height="200" rx="3" fill="#D4A853" opacity="0.2"/>
+      <rect x="-4" y="-140" width="8" height="200" rx="2" fill="#D4A853" opacity="0.35"/>
+      <rect x="-30" y="50" width="60" height="12" rx="3" fill="#D4A853" opacity="0.3"/>
+      <circle cx="0" cy="65" r="8" fill="#D4A853" opacity="0.25"/>
+    </g>
+    <g transform="rotate(35)">
+      <rect x="-8" y="-140" width="16" height="200" rx="3" fill="#3b82f6" opacity="0.2"/>
+      <rect x="-4" y="-140" width="8" height="200" rx="2" fill="#3b82f6" opacity="0.35"/>
+      <rect x="-30" y="50" width="60" height="12" rx="3" fill="#3b82f6" opacity="0.3"/>
+      <circle cx="0" cy="65" r="8" fill="#3b82f6" opacity="0.25"/>
+    </g>
+  </g>
+  <!-- D20 die -->
+  <g transform="translate(600,270)" opacity="0.6">
+    <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="none" stroke="#D4A853" stroke-width="2"/>
+    <polygon points="0,-60 52,-30 0,0" fill="#D4A853" opacity="0.06"/>
+    <polygon points="52,-30 52,30 0,0" fill="#D4A853" opacity="0.04"/>
+    <text x="0" y="8" text-anchor="middle" font-family="serif" font-size="28" fill="#D4A853" opacity="0.5">20</text>
+  </g>
+  <!-- Initiative numbers -->
+  <g font-family="serif" font-size="18" fill="#3b82f6" opacity="0.25">
+    <text x="380" y="200">1</text><text x="420" y="160">2</text>
+    <text x="780" y="200">3</text><text x="820" y="160">4</text>
+    <text x="380" y="400">5</text><text x="820" y="400">6</text>
+  </g>
+  <!-- Corner ornaments -->
+  <g stroke="#D4A853" stroke-width="1.5" fill="none" opacity="0.2">
+    <path d="M30,30 L30,60 M30,30 L60,30"/>
+    <path d="M1170,30 L1170,60 M1170,30 L1140,30"/>
+    <path d="M30,600 L30,570 M30,600 L60,600"/>
+    <path d="M1170,600 L1170,570 M1170,600 L1140,600"/>
+  </g>
+</svg>

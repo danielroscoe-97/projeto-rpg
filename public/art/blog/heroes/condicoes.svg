@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="35%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#D4A853" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="280" rx="450" ry="280" fill="url(#glow)"/>
+  <rect x="0" y="610" width="1200" height="2" fill="url(#gold-line)"/>
+  <rect x="0" y="18" width="1200" height="1" fill="url(#gold-line)" opacity="0.5"/>
+  <!-- Condition icons in a 5x3 grid -->
+  <!-- Row 1 -->
+  <!-- Blinded (eye with X) -->
+  <g transform="translate(300,180)" opacity="0.55">
+    <ellipse cx="0" cy="0" rx="22" ry="14" fill="none" stroke="#10b981" stroke-width="2"/>
+    <circle cx="0" cy="0" r="6" fill="#10b981" opacity="0.2"/>
+    <line x1="-16" y1="-12" x2="16" y2="12" stroke="#ef4444" stroke-width="2.5" opacity="0.6"/>
+  </g>
+  <!-- Charmed (heart) -->
+  <g transform="translate(480,180)" opacity="0.55">
+    <path d="M0,14 C-20,-8 -24,-22 -12,-26 C-4,-28 0,-20 0,-16 C0,-20 4,-28 12,-26 C24,-22 20,-8 0,14Z" fill="#ec4899" opacity="0.25" stroke="#ec4899" stroke-width="1.5"/>
+  </g>
+  <!-- Frightened (ghost) -->
+  <g transform="translate(660,180)" opacity="0.55">
+    <path d="M-14,16 L-14,-8 C-14,-22 14,-22 14,-8 L14,16 L8,10 L2,16 L-4,10 L-10,16Z" fill="#a855f7" opacity="0.2" stroke="#a855f7" stroke-width="1.5"/>
+    <circle cx="-5" cy="-6" r="3" fill="#a855f7" opacity="0.4"/>
+    <circle cx="5" cy="-6" r="3" fill="#a855f7" opacity="0.4"/>
+  </g>
+  <!-- Poisoned (skull) -->
+  <g transform="translate(840,180)" opacity="0.55">
+    <circle cx="0" cy="-6" r="18" fill="none" stroke="#22c55e" stroke-width="2"/>
+    <circle cx="-6" cy="-8" r="4" fill="#22c55e" opacity="0.3"/>
+    <circle cx="6" cy="-8" r="4" fill="#22c55e" opacity="0.3"/>
+    <path d="M-4,4 L0,8 L4,4" fill="none" stroke="#22c55e" stroke-width="1.5" opacity="0.4"/>
+  </g>
+  <!-- Row 2 -->
+  <!-- Stunned (stars) -->
+  <g transform="translate(360,300)" opacity="0.55">
+    <polygon points="0,-20 5,-8 18,-8 8,2 12,16 0,8 -12,16 -8,2 -18,-8 -5,-8" fill="#f59e0b" opacity="0.2" stroke="#f59e0b" stroke-width="1.5"/>
+  </g>
+  <!-- Prone (arrow down) -->
+  <g transform="translate(540,300)" opacity="0.55">
+    <path d="M0,-20 L0,16 M-14,4 L0,20 L14,4" fill="none" stroke="#D4A853" stroke-width="2.5"/>
+  </g>
+  <!-- Restrained (chains) -->
+  <g transform="translate(720,300)" opacity="0.55">
+    <circle cx="-10" cy="0" r="14" fill="none" stroke="#94a3b8" stroke-width="2"/>
+    <circle cx="10" cy="0" r="14" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  </g>
+  <!-- Row 3 -->
+  <!-- Paralyzed (lightning) -->
+  <g transform="translate(420,420)" opacity="0.55">
+    <path d="M4,-24 L-8,0 L2,0 L-4,24 L12,-2 L2,-2Z" fill="#eab308" opacity="0.3" stroke="#eab308" stroke-width="1.5"/>
+  </g>
+  <!-- Invisible (dotted circle) -->
+  <g transform="translate(600,420)" opacity="0.55">
+    <circle cx="0" cy="0" r="18" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6,4"/>
+    <text x="0" y="6" text-anchor="middle" font-family="serif" font-size="16" fill="#60a5fa" opacity="0.5">?</text>
+  </g>
+  <!-- Petrified (diamond) -->
+  <g transform="translate(780,420)" opacity="0.55">
+    <rect x="-16" y="-16" width="32" height="32" rx="2" fill="#94a3b8" opacity="0.15" stroke="#94a3b8" stroke-width="2" transform="rotate(45)"/>
+  </g>
+  <!-- Large "15" watermark -->
+  <text x="600" y="340" text-anchor="middle" font-family="serif" font-size="200" fill="#10b981" opacity="0.025">15</text>
+  <!-- Corner ornaments -->
+  <g stroke="#D4A853" stroke-width="1.5" fill="none" opacity="0.2">
+    <path d="M30,30 L30,60 M30,30 L60,30"/>
+    <path d="M1170,30 L1170,60 M1170,30 L1140,30"/>
+    <path d="M30,600 L30,570 M30,600 L60,600"/>
+    <path d="M1170,600 L1170,570 M1170,600 L1140,600"/>
+  </g>
+</svg>

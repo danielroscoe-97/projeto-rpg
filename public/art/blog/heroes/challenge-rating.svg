@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="35%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#D4A853" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="270" rx="450" ry="280" fill="url(#glow)"/>
+  <rect x="0" y="610" width="1200" height="2" fill="url(#gold-line)"/>
+  <rect x="0" y="18" width="1200" height="1" fill="url(#gold-line)" opacity="0.5"/>
+  <!-- CR badge (large, central) -->
+  <g transform="translate(600,240)" opacity="0.7">
+    <circle cx="0" cy="0" r="80" fill="#10b981" opacity="0.04" stroke="#10b981" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="65" fill="none" stroke="#D4A853" stroke-width="1" opacity="0.2"/>
+    <text x="0" y="-10" text-anchor="middle" font-family="serif" font-size="18" fill="#10b981" opacity="0.5" letter-spacing="4">CHALLENGE</text>
+    <text x="0" y="18" text-anchor="middle" font-family="serif" font-size="18" fill="#10b981" opacity="0.5" letter-spacing="4">RATING</text>
+    <text x="0" y="50" text-anchor="middle" font-family="serif" font-size="32" fill="#D4A853" opacity="0.5" font-weight="bold">CR</text>
+  </g>
+  <!-- Difficulty tiers -->
+  <g transform="translate(600,400)" font-family="monospace" font-size="12" opacity="0.4">
+    <g transform="translate(-200,0)">
+      <rect x="-35" y="-10" width="70" height="20" rx="4" fill="#22c55e" opacity="0.15" stroke="#22c55e" stroke-width="1"/>
+      <text x="0" y="4" text-anchor="middle" fill="#22c55e">Easy</text>
+    </g>
+    <g transform="translate(-65,0)">
+      <rect x="-40" y="-10" width="80" height="20" rx="4" fill="#f59e0b" opacity="0.15" stroke="#f59e0b" stroke-width="1"/>
+      <text x="0" y="4" text-anchor="middle" fill="#f59e0b">Medium</text>
+    </g>
+    <g transform="translate(70,0)">
+      <rect x="-30" y="-10" width="60" height="20" rx="4" fill="#f97316" opacity="0.15" stroke="#f97316" stroke-width="1"/>
+      <text x="0" y="4" text-anchor="middle" fill="#f97316">Hard</text>
+    </g>
+    <g transform="translate(200,0)">
+      <rect x="-35" y="-10" width="70" height="20" rx="4" fill="#ef4444" opacity="0.15" stroke="#ef4444" stroke-width="1"/>
+      <text x="0" y="4" text-anchor="middle" fill="#ef4444">Deadly</text>
+    </g>
+  </g>
+  <!-- XP numbers floating -->
+  <g font-family="monospace" font-size="13" fill="#D4A853" opacity="0.12">
+    <text x="200" y="190">25 XP</text>
+    <text x="900" y="180">1,800 XP</text>
+    <text x="250" y="380">450 XP</text>
+    <text x="880" y="400">5,900 XP</text>
+    <text x="180" y="280">100 XP</text>
+    <text x="940" y="300">2,300 XP</text>
+  </g>
+  <!-- Corner ornaments -->
+  <g stroke="#D4A853" stroke-width="1.5" fill="none" opacity="0.2">
+    <path d="M30,30 L30,60 M30,30 L60,30"/>
+    <path d="M1170,30 L1170,60 M1170,30 L1140,30"/>
+    <path d="M30,600 L30,570 M30,600 L60,600"/>
+    <path d="M1170,600 L1170,570 M1170,600 L1140,600"/>
+  </g>
+</svg>

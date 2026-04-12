@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="35%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#D4A853" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="280" rx="450" ry="280" fill="url(#glow)"/>
+  <rect x="0" y="610" width="1200" height="2" fill="url(#gold-line)"/>
+  <rect x="0" y="18" width="1200" height="1" fill="url(#gold-line)" opacity="0.5"/>
+  <!-- Lightning bolt (speed) -->
+  <g transform="translate(600,270)" opacity="0.7">
+    <path d="M20,-120 L-30,10 L10,10 L-20,120 L50,-20 L10,-20Z" fill="#D4A853" opacity="0.12" stroke="#D4A853" stroke-width="2.5"/>
+  </g>
+  <!-- Clock circle around lightning -->
+  <g transform="translate(600,270)" opacity="0.4">
+    <circle cx="0" cy="0" r="130" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="8,12"/>
+    <!-- Clock ticks -->
+    <g stroke="#D4A853" stroke-width="2" opacity="0.5">
+      <line x1="0" y1="-140" x2="0" y2="-130"/>
+      <line x1="0" y1="130" x2="0" y2="140"/>
+      <line x1="-140" y1="0" x2="-130" y2="0"/>
+      <line x1="130" y1="0" x2="140" y2="0"/>
+    </g>
+    <!-- Clock hands -->
+    <line x1="0" y1="0" x2="0" y2="-80" stroke="#D4A853" stroke-width="3" opacity="0.3"/>
+    <line x1="0" y1="0" x2="50" y2="30" stroke="#D4A853" stroke-width="2" opacity="0.25"/>
+    <circle cx="0" cy="0" r="5" fill="#D4A853" opacity="0.3"/>
+  </g>
+  <!-- Speed lines -->
+  <g stroke="#3b82f6" stroke-width="1" opacity="0.15">
+    <line x1="150" y1="200" x2="350" y2="200"/>
+    <line x1="120" y1="260" x2="380" y2="260"/>
+    <line x1="150" y1="320" x2="350" y2="320"/>
+    <line x1="850" y1="200" x2="1050" y2="200"/>
+    <line x1="820" y1="260" x2="1080" y2="260"/>
+    <line x1="850" y1="320" x2="1050" y2="320"/>
+  </g>
+  <!-- "10" watermark -->
+  <text x="600" y="480" text-anchor="middle" font-family="serif" font-size="100" fill="#3b82f6" opacity="0.03">10</text>
+  <!-- Corner ornaments -->
+  <g stroke="#D4A853" stroke-width="1.5" fill="none" opacity="0.2">
+    <path d="M30,30 L30,60 M30,30 L60,30"/>
+    <path d="M1170,30 L1170,60 M1170,30 L1140,30"/>
+    <path d="M30,600 L30,570 M30,600 L60,600"/>
+    <path d="M1170,600 L1170,570 M1170,600 L1140,600"/>
+  </g>
+</svg>

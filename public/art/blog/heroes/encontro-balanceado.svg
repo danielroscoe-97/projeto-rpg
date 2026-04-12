@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="35%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#D4A853" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="270" rx="450" ry="280" fill="url(#glow)"/>
+  <rect x="0" y="610" width="1200" height="2" fill="url(#gold-line)"/>
+  <rect x="0" y="18" width="1200" height="1" fill="url(#gold-line)" opacity="0.5"/>
+  <!-- Balance scale -->
+  <g transform="translate(600,280)" opacity="0.7">
+    <!-- Center post -->
+    <rect x="-4" y="-100" width="8" height="200" fill="#D4A853" opacity="0.2"/>
+    <polygon points="0,-110 10,-95 -10,-95" fill="#D4A853" opacity="0.3"/>
+    <!-- Base -->
+    <rect x="-50" y="95" width="100" height="10" rx="4" fill="#D4A853" opacity="0.15"/>
+    <!-- Beam (slightly tilted) -->
+    <line x1="-160" y1="-65" x2="160" y2="-75" stroke="#D4A853" stroke-width="3" opacity="0.3"/>
+    <!-- Left pan — players (blue) -->
+    <g transform="translate(-160,-65)">
+      <line x1="0" y1="0" x2="0" y2="50" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+      <line x1="-30" y1="0" x2="30" y2="0" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+      <line x1="-30" y1="0" x2="-40" y2="50" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+      <line x1="30" y1="0" x2="40" y2="50" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+      <ellipse cx="0" cy="55" rx="45" ry="10" fill="#3b82f6" opacity="0.1" stroke="#3b82f6" stroke-width="1.5" opacity="0.3"/>
+      <!-- Player tokens -->
+      <circle cx="-15" cy="40" r="8" fill="#3b82f6" opacity="0.2" stroke="#3b82f6" stroke-width="1"/>
+      <circle cx="10" cy="38" r="8" fill="#3b82f6" opacity="0.2" stroke="#3b82f6" stroke-width="1"/>
+    </g>
+    <!-- Right pan — monsters (red) -->
+    <g transform="translate(160,-75)">
+      <line x1="0" y1="0" x2="0" y2="50" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
+      <line x1="-30" y1="0" x2="30" y2="0" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
+      <line x1="-30" y1="0" x2="-40" y2="50" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
+      <line x1="30" y1="0" x2="40" y2="50" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
+      <ellipse cx="0" cy="55" rx="45" ry="10" fill="#ef4444" opacity="0.1" stroke="#ef4444" stroke-width="1.5" opacity="0.3"/>
+      <!-- Monster token -->
+      <circle cx="0" cy="35" r="12" fill="#ef4444" opacity="0.2" stroke="#ef4444" stroke-width="1"/>
+    </g>
+  </g>
+  <!-- XP numbers floating -->
+  <g font-family="monospace" font-size="14" fill="#D4A853" opacity="0.15">
+    <text x="250" y="180">400 XP</text>
+    <text x="880" y="200">700 XP</text>
+    <text x="300" y="460">Easy</text>
+    <text x="850" y="440">Deadly</text>
+  </g>
+  <!-- Corner ornaments -->
+  <g stroke="#D4A853" stroke-width="1.5" fill="none" opacity="0.2">
+    <path d="M30,30 L30,60 M30,30 L60,30"/>
+    <path d="M1170,30 L1170,60 M1170,30 L1140,30"/>
+    <path d="M30,600 L30,570 M30,600 L60,600"/>
+    <path d="M1170,600 L1170,570 M1170,600 L1140,600"/>
+  </g>
+</svg>

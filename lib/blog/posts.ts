@@ -61,7 +61,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Usar um Combat Tracker na Mesa de D&D 5e | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/combat-active.png",
+    image: "/art/blog/heroes/combat-tracker.svg",
   },
   {
     slug: "ferramentas-essenciais-mestre-dnd-5e",
@@ -79,7 +79,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "5 Ferramentas Essenciais para Mestres de D&D 5e | Pocket DM",
     category: "lista",
-    image: "/art/blog/combat-setup.png",
+    image: "/art/blog/heroes/5-ferramentas.svg",
   },
   {
     slug: "combat-tracker-vs-vtt-diferenca",
@@ -97,7 +97,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Combat Tracker vs VTT — Qual a Diferença? | Pocket DM",
     category: "comparativo",
-    image: "/art/blog/combat-with-monsters.png",
+    image: "/art/blog/heroes/tracker-vs-vtt.svg",
   },
   {
     slug: "guia-condicoes-dnd-5e",
@@ -116,7 +116,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Guia Completo de Condições D&D 5e | Pocket DM",
     category: "guia",
-    image: "/art/blog/combat-conditions.png",
+    image: "/art/blog/heroes/condicoes.svg",
   },
   {
     slug: "como-agilizar-combate-dnd-5e",
@@ -134,7 +134,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Agilizar o Combate no D&D 5e | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/combat-hp-panel.png",
+    image: "/art/blog/heroes/agilizar-combate.svg",
   },
   {
     slug: "como-usar-pocket-dm-tutorial",
@@ -154,7 +154,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Usar o Pocket DM — Tutorial Completo | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/monster-search.png",
+    image: "/art/blog/heroes/tutorial-pocket-dm.svg",
   },
   {
     slug: "como-montar-encontro-balanceado-dnd-5e",
@@ -176,7 +176,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Como Montar um Encontro Balanceado no D&D 5e | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/combat-with-monsters.png",
+    image: "/art/blog/heroes/encontro-balanceado.svg",
   },
   {
     slug: "como-mestrar-dnd-primeira-vez",
@@ -197,7 +197,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Como Mestrar D&D pela Primeira Vez — Guia Completo | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/combat-tracker-empty.png",
+    image: "/art/blog/heroes/primeira-vez-dm.svg",
   },
   {
     slug: "musica-ambiente-para-rpg",
@@ -219,7 +219,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Música Ambiente para RPG — Trilha Sonora para Cada Cena | Pocket DM",
     category: "guia",
-    image: "/art/blog/spells-index.png",
+    image: "/art/blog/heroes/musica-ambiente.svg",
   },
   {
     slug: "melhores-monstros-dnd-5e",
@@ -241,7 +241,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "10 Monstros que Todo Mestre de D&D Deveria Usar | Pocket DM",
     category: "lista",
-    image: "/art/blog/bestiary-index.png",
+    image: "/art/blog/heroes/melhores-monstros.svg",
   },
   {
     slug: "guia-challenge-rating-dnd-5e",
@@ -263,7 +263,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Guia de Challenge Rating — Como Calcular a Dificuldade | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/ancient-red-dragon.png",
+    image: "/art/blog/heroes/challenge-rating.svg",
   },
   {
     slug: "teatro-da-mente-vs-grid-dnd-5e",
@@ -284,7 +284,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Teatro da Mente vs Grid — Qual Estilo de Combate? | Pocket DM",
     category: "comparativo",
-    image: "/art/blog/bestiary-index.png",
+    image: "/art/blog/heroes/teatro-vs-grid.svg",
   },
   {
     slug: "build-half-elf-order-cleric-divine-soul-sorcerer",
@@ -354,7 +354,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Guia do Mestre Eficaz no Combate — E-book Gratuito | Pocket DM",
     category: "guia",
-    image: "/art/blog/combat-active.png",
+    image: "/art/blog/heroes/ebook-guia-mestre.svg",
   },
   {
     slug: "como-gerenciar-hp-dnd-5e",
@@ -371,7 +371,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Gerenciar HP no D&D 5e sem Planilha | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/combat-hp-panel.png",
+    image: "/art/blog/heroes/gerenciar-hp.svg",
   },
   {
     slug: "7-erros-mestre-combate-dnd",
@@ -388,7 +388,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "7 Erros que Mestres Cometem no Combate de D&D | Pocket DM",
     category: "lista",
-    image: "/art/blog/combat-conditions.png",
+    image: "/art/blog/heroes/7-erros-combate.svg",
   },
   {
     slug: "iniciativa-dnd-5e-regras-variantes",
@@ -406,7 +406,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Iniciativa D&D 5e: Regras, Variantes e Como Automatizar | Pocket DM",
     category: "guia",
-    image: "/art/blog/combat-hp-panel.png",
+    image: "/art/blog/heroes/iniciativa.svg",
   },
 ];
 

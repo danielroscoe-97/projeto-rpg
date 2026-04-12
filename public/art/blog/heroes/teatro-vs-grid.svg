@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <radialGradient id="glow-l" cx="30%" cy="45%" r="28%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow-r" cx="70%" cy="45%" r="28%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#D4A853" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="600" height="630" fill="url(#glow-l)"/>
+  <rect x="600" y="0" width="600" height="630" fill="url(#glow-r)"/>
+  <line x1="600" y1="80" x2="600" y2="550" stroke="#D4A853" stroke-width="1" opacity="0.2"/>
+  <text x="600" y="320" text-anchor="middle" font-family="serif" font-size="24" fill="#D4A853" opacity="0.5">VS</text>
+  <rect x="0" y="610" width="1200" height="2" fill="url(#gold-line)"/>
+  <rect x="0" y="18" width="1200" height="1" fill="url(#gold-line)" opacity="0.5"/>
+  <!-- Left: Theater of Mind (abstract, clouds, imagination) -->
+  <g transform="translate(300,270)" opacity="0.5">
+    <!-- Thought bubble / brain -->
+    <circle cx="0" cy="-20" r="50" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,6"/>
+    <circle cx="-30" cy="0" r="30" fill="none" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,5" opacity="0.6"/>
+    <circle cx="30" cy="5" r="25" fill="none" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,5" opacity="0.6"/>
+    <!-- Abstract shapes inside -->
+    <path d="M-15,-30 L0,-45 L15,-30" fill="none" stroke="#a855f7" stroke-width="1.5" opacity="0.4"/>
+    <circle cx="0" cy="-10" r="8" fill="#a855f7" opacity="0.1"/>
+    <!-- Sparkles -->
+    <g fill="#a855f7" opacity="0.3">
+      <circle cx="-60" cy="-50" r="2"/>
+      <circle cx="50" cy="-60" r="2.5"/>
+      <circle cx="-70" cy="30" r="1.5"/>
+      <circle cx="65" cy="40" r="2"/>
+    </g>
+  </g>
+  <text x="300" y="430" text-anchor="middle" font-family="serif" font-size="14" fill="#a855f7" opacity="0.4" letter-spacing="3">TEATRO DA MENTE</text>
+  <!-- Right: Grid (structured, squares, measurements) -->
+  <g transform="translate(900,270)" opacity="0.5">
+    <!-- Battle grid -->
+    <g stroke="#3b82f6" stroke-width="1" opacity="0.3">
+      <rect x="-75" y="-75" width="150" height="150" fill="none" stroke-width="2"/>
+      <line x1="-75" y1="-25" x2="75" y2="-25"/>
+      <line x1="-75" y1="25" x2="75" y2="25"/>
+      <line x1="-25" y1="-75" x2="-25" y2="75"/>
+      <line x1="25" y1="-75" x2="25" y2="75"/>
+    </g>
+    <!-- Tokens on grid -->
+    <circle cx="0" cy="0" r="18" fill="#3b82f6" opacity="0.15" stroke="#3b82f6" stroke-width="2" opacity="0.5"/>
+    <circle cx="-50" cy="-50" r="14" fill="#22c55e" opacity="0.15" stroke="#22c55e" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="50" cy="50" r="14" fill="#ef4444" opacity="0.15" stroke="#ef4444" stroke-width="1.5" opacity="0.5"/>
+    <!-- Movement arrow -->
+    <path d="M0,0 L30,-30" fill="none" stroke="#D4A853" stroke-width="1.5" opacity="0.4" stroke-dasharray="4,3"/>
+    <polygon points="30,-30 22,-25 25,-32" fill="#D4A853" opacity="0.4"/>
+    <!-- "30ft" label -->
+    <text x="35" y="-15" font-family="monospace" font-size="9" fill="#3b82f6" opacity="0.4">30ft</text>
+  </g>
+  <text x="900" y="430" text-anchor="middle" font-family="serif" font-size="14" fill="#3b82f6" opacity="0.4" letter-spacing="3">GRID</text>
+  <!-- Corner ornaments -->
+  <g stroke="#D4A853" stroke-width="1.5" fill="none" opacity="0.2">
+    <path d="M30,30 L30,60 M30,30 L60,30"/>
+    <path d="M1170,30 L1170,60 M1170,30 L1140,30"/>
+    <path d="M30,600 L30,570 M30,600 L60,600"/>
+    <path d="M1170,600 L1170,570 M1170,600 L1140,600"/>
+  </g>
+</svg>

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="35%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#D4A853" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="270" rx="450" ry="280" fill="url(#glow)"/>
+  <rect x="0" y="610" width="1200" height="2" fill="url(#gold-line)"/>
+  <rect x="0" y="18" width="1200" height="1" fill="url(#gold-line)" opacity="0.5"/>
+  <!-- Heart icon -->
+  <g transform="translate(600,180)" opacity="0.6">
+    <path d="M0,35 C-50,-15 -60,-40 -35,-50 C-15,-57 0,-40 0,-30 C0,-40 15,-57 35,-50 C60,-40 50,-15 0,35Z" fill="#ef4444" opacity="0.15" stroke="#ef4444" stroke-width="2.5"/>
+    <text x="0" y="8" text-anchor="middle" font-family="serif" font-size="22" fill="#ef4444" opacity="0.5">HP</text>
+  </g>
+  <!-- HP Tier bars -->
+  <g transform="translate(600,320)" opacity="0.7">
+    <!-- LIGHT -->
+    <rect x="-200" y="-40" width="400" height="18" rx="4" fill="#3b82f6" opacity="0.08"/>
+    <rect x="-200" y="-40" width="340" height="18" rx="4" fill="#22c55e" opacity="0.25"/>
+    <text x="-210" y="-27" text-anchor="end" font-family="monospace" font-size="10" fill="#22c55e" opacity="0.5">LIGHT</text>
+    <text x="210" y="-27" font-family="monospace" font-size="10" fill="#22c55e" opacity="0.4">85%</text>
+    <!-- MODERATE -->
+    <rect x="-200" y="-12" width="400" height="18" rx="4" fill="#3b82f6" opacity="0.08"/>
+    <rect x="-200" y="-12" width="240" height="18" rx="4" fill="#f59e0b" opacity="0.25"/>
+    <text x="-210" y="1" text-anchor="end" font-family="monospace" font-size="10" fill="#f59e0b" opacity="0.5">MODERATE</text>
+    <text x="210" y="1" font-family="monospace" font-size="10" fill="#f59e0b" opacity="0.4">60%</text>
+    <!-- HEAVY -->
+    <rect x="-200" y="16" width="400" height="18" rx="4" fill="#3b82f6" opacity="0.08"/>
+    <rect x="-200" y="16" width="140" height="18" rx="4" fill="#f97316" opacity="0.25"/>
+    <text x="-210" y="29" text-anchor="end" font-family="monospace" font-size="10" fill="#f97316" opacity="0.5">HEAVY</text>
+    <text x="210" y="29" font-family="monospace" font-size="10" fill="#f97316" opacity="0.4">35%</text>
+    <!-- CRITICAL -->
+    <rect x="-200" y="44" width="400" height="18" rx="4" fill="#3b82f6" opacity="0.08"/>
+    <rect x="-200" y="44" width="40" height="18" rx="4" fill="#ef4444" opacity="0.3"/>
+    <text x="-210" y="57" text-anchor="end" font-family="monospace" font-size="10" fill="#ef4444" opacity="0.5">CRITICAL</text>
+    <text x="210" y="57" font-family="monospace" font-size="10" fill="#ef4444" opacity="0.4">10%</text>
+  </g>
+  <!-- Corner ornaments -->
+  <g stroke="#D4A853" stroke-width="1.5" fill="none" opacity="0.2">
+    <path d="M30,30 L30,60 M30,30 L60,30"/>
+    <path d="M1170,30 L1170,60 M1170,30 L1140,30"/>
+    <path d="M30,600 L30,570 M30,600 L60,600"/>
+    <path d="M1170,600 L1170,570 M1170,600 L1140,600"/>
+  </g>
+</svg>
