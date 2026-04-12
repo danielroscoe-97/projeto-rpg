@@ -193,6 +193,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
+  // ── E-books ──────────────────────────────────────────────────────
+  const ebookPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/ebook/guia-mestre-eficaz`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.9 },
+  ];
+
   // ── Blog ─────────────────────────────────────────────────────────
   const blogIndex: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
@@ -209,6 +214,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...compendiumEN,
     ...compendiumPT,
     ...legalPages,
+    ...ebookPages,
     ...blogIndex,
     ...blogPages,
     ...monsterPagesEN,

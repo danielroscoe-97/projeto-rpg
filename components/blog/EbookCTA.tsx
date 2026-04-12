@@ -26,9 +26,23 @@ export function EbookCTA({ variant = "inline" }: EbookCTAProps) {
       });
       if (res.ok) {
         setSubmitted(true);
+        // Auto-start PDF download
+        const a = document.createElement("a");
+        a.href = "/ebooks/guia-mestre-eficaz-no-combate.pdf";
+        a.download = "guia-mestre-eficaz-no-combate.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
     } catch {
+      // Still show download even if API fails — the PDF is a static file
       setSubmitted(true);
+      const a = document.createElement("a");
+      a.href = "/ebooks/guia-mestre-eficaz-no-combate.pdf";
+      a.download = "guia-mestre-eficaz-no-combate.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } finally {
       setLoading(false);
     }
@@ -39,19 +53,22 @@ export function EbookCTA({ variant = "inline" }: EbookCTAProps) {
       <div className="my-10 p-8 rounded-xl border border-gold/30 bg-gradient-to-br from-gold/[0.08] to-transparent text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-gold/[0.06] rounded-full blur-[80px]" aria-hidden="true" />
         <div className="relative">
-          <p className="font-display text-xl text-gold mb-3">Download pronto!</p>
-          <p className="text-muted-foreground text-sm mb-6">
-            Clique abaixo para baixar o Guia do Mestre Eficaz no Combate.
+          <svg className="w-10 h-10 text-gold mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <p className="font-display text-xl text-gold mb-2">Seu download começou!</p>
+          <p className="text-muted-foreground text-sm mb-5">
+            O PDF já tá baixando. Também enviamos pro seu email como backup.
           </p>
           <Link
             href="/ebooks/guia-mestre-eficaz-no-combate.pdf"
-            target="_blank"
-            className="inline-flex items-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-3 rounded-lg hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-200 text-sm"
+            download
+            className="inline-flex items-center gap-2 text-gold/80 hover:text-gold text-sm transition-colors underline underline-offset-4 decoration-gold/30 hover:decoration-gold/60"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            Baixar PDF
+            Download não iniciou? Clique aqui
           </Link>
         </div>
       </div>

@@ -243,26 +243,32 @@ No final: "Compilei essas dicas num e-book de 11 páginas.
 
 ## 6. Calendário de Execução
 
-### Semana 1 — Fundação
-- [ ] Exportar PDF do e-book e subir em public/ebooks/
-- [ ] Testar fluxo completo (email → download)
+### Semana 1 — Fundação (CONCLUÍDA 2026-04-12)
+- [x] Exportar PDF do e-book e subir em public/ebooks/
+- [x] Auto-download no submit (+ fallback "Download não iniciou?")
+- [x] SEO completo na LP (metadata, OG, Twitter, JSON-LD, sitemap)
+- [x] Email 1 imediato via Resend (fire-and-forget no lead capture)
+- [x] Cron de nurturing D+3/D+7/D+14 (Vercel cron, 10h UTC)
+- [x] 3 blog posts SEO publicados (HP, 7 Erros, Iniciativa)
+- [x] 2 carrosseis Instagram criados (5 Erros + Antes vs Depois)
+- [x] 7 posts de comunidade rascunhados (Reddit, Facebook, Discord, Twitter)
+- [ ] Testar fluxo completo em produção (email → download → email nurturing)
 - [ ] Atualizar bio do Instagram com link do e-book
 - [ ] Atualizar Linktree
-- [ ] Post no Instagram: Carrossel "5 Erros que Travam seu Combate"
+- [ ] Exportar PNGs dos carrosseis e postar no Instagram
 
 ### Semana 2 — Comunidades
-- [ ] Post no r/rpg_brasil (conteúdo + link)
-- [ ] Post em 2 grupos de Facebook (RPG Brasil, D&D Brasil)
+- [ ] Post no r/rpg_brasil (rascunho pronto em docs/social-media/community-posts-drafts.md)
+- [ ] Post em 2 grupos de Facebook (rascunho pronto)
 - [ ] Post no Instagram: Carrossel "Antes vs Depois"
 - [ ] Stories com poll + CTA do e-book
-- [ ] Escrever blog post "7 Erros que Mestres Cometem no Combate"
+- [ ] Post no r/monsteraday sobre Monster-a-Day (rascunho pronto)
 
 ### Semana 3 — Expansão
-- [ ] Post no r/DMAcademy em inglês
-- [ ] Reel "60 segundos pra montar um combate"
-- [ ] Thread no Twitter/X com os 5 princípios
-- [ ] Publicar blog post "Como Gerenciar HP sem Planilha"
-- [ ] Configurar sequência de nurturing (email)
+- [ ] Post no r/DMAcademy em inglês (rascunho pronto)
+- [ ] Reel "60 segundos pra montar um combate" (screen recording)
+- [ ] Thread no Twitter/X com os 5 princípios (rascunho pronto PT + EN)
+- [ ] Posts no Discord (rascunho pronto)
 
 ### Semana 4 — Ads (se orgânico validar)
 - [ ] Criar 3 criativos (estático, carrossel, vídeo)

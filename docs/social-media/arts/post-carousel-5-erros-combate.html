@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Carousel — 5 Erros que Travam seu Combate</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .slide-label {
+    font-family: 'JetBrains Mono', monospace;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: -30px;
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ===== SLIDE 1 — CAPA ===== */
+  .slide-1 {
+    background: #13131E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+  }
+  .slide-1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 50% 30%, rgba(192,57,43,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 800px 300px at 50% 90%, rgba(192,57,43,0.03) 0%, transparent 70%);
+  }
+  .slide-1::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1.5px solid rgba(192,57,43,0.15);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 10px 28px;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .tag-red {
+    color: #C0392B;
+    background: rgba(192,57,43,0.1);
+    border: 1px solid rgba(192,57,43,0.3);
+  }
+  .tag-gold {
+    color: #D4A853;
+    background: rgba(212,168,83,0.1);
+    border: 1px solid rgba(212,168,83,0.3);
+  }
+
+  .slide-1 .number {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 200px;
+    color: #C0392B;
+    line-height: 1;
+    margin-top: 30px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 80px rgba(192,57,43,0.3);
+  }
+  .slide-1 .subtitle {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 42px;
+    color: #F5F0E8;
+    text-align: center;
+    line-height: 1.3;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .slide-1 .subtitle em {
+    font-style: normal;
+    color: #C0392B;
+  }
+  .slide-1 .sub2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 26px;
+    color: #9896A0;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Swipe indicator */
+  .swipe {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #9896A0;
+    font-size: 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    z-index: 2;
+    opacity: 0.7;
+  }
+  .swipe svg { width: 20px; height: 20px; }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    opacity: 0.18;
+    z-index: 2;
+  }
+  .watermark-big {
+    width: 120px;
+    height: 120px;
+    opacity: 0.9;
+    position: relative;
+    bottom: auto;
+    right: auto;
+  }
+
+  /* Page dots */
+  .dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(152,150,160,0.3);
+  }
+  .dot.active {
+    background: #D4A853;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  /* Handle */
+  .handle {
+    position: absolute;
+    bottom: 48px;
+    left: 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    color: rgba(212,168,83,0.5);
+    z-index: 2;
+  }
+
+  /* ===== SLIDES 2-6 — CONTENT ===== */
+  .slide-content {
+    background: #1A1A28;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 80px 140px;
+  }
+  .slide-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #C0392B, transparent);
+  }
+
+  .error-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    color: #C0392B;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .error-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 36px;
+    color: #D4A853;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .error-body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 24px;
+    color: #C8C6C0;
+    line-height: 1.55;
+  }
+  .error-body strong {
+    color: #F5F0E8;
+    font-weight: 600;
+  }
+
+  .tip-box {
+    margin-top: auto;
+    padding: 20px 24px;
+    background: rgba(46,204,113,0.08);
+    border-left: 4px solid #2ECC71;
+    border-radius: 0 8px 8px 0;
+  }
+  .tip-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    color: #2ECC71;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .tip-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px;
+    color: #F5F0E8;
+    line-height: 1.45;
+  }
+
+  /* ===== SLIDE 7 — CTA ===== */
+  .slide-cta {
+    background: #13131E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px;
+    text-align: center;
+  }
+  .slide-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 700px 500px at 50% 50%, rgba(212,168,83,0.07) 0%, transparent 70%);
+  }
+  .slide-cta::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1.5px solid rgba(212,168,83,0.15);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .cta-save {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 44px;
+    color: #F5F0E8;
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+  }
+  .cta-save em {
+    font-style: normal;
+    color: #D4A853;
+  }
+
+  .cta-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 28px;
+    color: #9896A0;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;
+    max-width: 700px;
+  }
+
+  .cta-button {
+    margin-top: 50px;
+    padding: 22px 60px;
+    background: linear-gradient(180deg, #E8C87A 0%, #D4A853 50%, #B8903D 100%);
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #13131E;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 40px rgba(212,168,83,0.3);
+  }
+
+  .cta-handle {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px;
+    color: rgba(212,168,83,0.6);
+    margin-top: 30px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Decorative elements */
+  .corner-ornament {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-color: rgba(212,168,83,0.2);
+    border-style: solid;
+    z-index: 2;
+  }
+  .corner-tl { top: 30px; left: 30px; border-width: 2px 0 0 2px; }
+  .corner-tr { top: 30px; right: 30px; border-width: 2px 2px 0 0; }
+  .corner-bl { bottom: 30px; left: 30px; border-width: 0 0 2px 2px; }
+  .corner-br { bottom: 30px; right: 30px; border-width: 0 2px 2px 0; }
+
+  /* Separator */
+  .sep {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4A853, transparent);
+    margin: 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SLIDE 1 — CAPA ===== -->
+<p class="slide-label">Slide 1 / 7 — Capa</p>
+<div class="slide slide-1">
+  <div class="corner-ornament corner-tl"></div>
+  <div class="corner-ornament corner-tr"></div>
+  <div class="corner-ornament corner-bl"></div>
+  <div class="corner-ornament corner-br"></div>
+
+  <div class="tag tag-red">Combate D&D</div>
+
+  <div class="number">5</div>
+  <div class="subtitle">erros que <em>TRAVAM</em><br>seu combate</div>
+  <div class="sub2">deslize pra ver cada um</div>
+
+  <div class="swipe">
+    deslize
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </div>
+
+  <div class="handle">@pocket.dm</div>
+
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg1)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg1)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 2 — ERRO #1 ===== -->
+<p class="slide-label">Slide 2 / 7 — Erro #1</p>
+<div class="slide slide-content">
+  <div class="error-num">Erro #1</div>
+  <div class="error-title">Anotar iniciativa<br>no papel</div>
+  <div class="error-body">
+    Folha de caderno, post-it, guardanapo.<br><br>
+    Toda rodada alguem pergunta a ordem. O mestre <strong>relembra cinco vezes</strong>. A folha cai no chao, o cafe derruba tudo.<br><br>
+    A iniciativa e <strong>a espinha do combate</strong>. Se ela e fragil, tudo trava.
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">DICA</div>
+    <div class="tip-text">Distribua: <strong>cada jogador registra a propria</strong> no celular. O tracker organiza automaticamente.</div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg2)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg2)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 3 — ERRO #2 ===== -->
+<p class="slide-label">Slide 3 / 7 — Erro #2</p>
+<div class="slide slide-content">
+  <div class="error-num">Erro #2</div>
+  <div class="error-title">So o mestre ve o HP</div>
+  <div class="error-body">
+    Os jogadores atacam no escuro.<br><br>
+    Nao sabem se o monstro esta <strong>quase morto</strong> ou se ainda tem metade da vida. Gastam magia atoa. Usam cura cedo demais. Fogem quando estavam ganhando.<br><br>
+    Sem informacao, <strong>nao existe decisao tatica</strong>.
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">DICA</div>
+    <div class="tip-text"><strong>HP visivel = decisoes taticas reais.</strong><br>Barras coloridas mostram o estado sem revelar numeros exatos.</div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg3" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg3)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg3)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 4 — ERRO #3 ===== -->
+<p class="slide-label">Slide 4 / 7 — Erro #3</p>
+<div class="slide slide-content">
+  <div class="error-num">Erro #3</div>
+  <div class="error-title">"De quem e a vez?"<br>toda rodada</div>
+  <div class="error-body">
+    Essa frase <strong>mata o ritmo</strong>.<br><br>
+    Cada vez que alguem pergunta, o combate para. O mestre confere a lista, reconta, corrige. O jogador que deveria agir estava no celular.<br><br>
+    Tempo perdido: <strong>2 a 5 minutos por rodada</strong>.
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">DICA</div>
+    <div class="tip-text"><strong>Ordem de iniciativa visivel pra todos.</strong><br>Na tela do mestre e no celular de cada jogador.</div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg4" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg4)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg4)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 5 — ERRO #4 ===== -->
+<p class="slide-label">Slide 5 / 7 — Erro #4</p>
+<div class="slide slide-content">
+  <div class="error-num">Erro #4</div>
+  <div class="error-title">Calcular tudo<br>na hora</div>
+  <div class="error-body">
+    Dano, bonus, CA, resistencia, condicao.<br><br>
+    O mestre vira uma <strong>calculadora humana</strong> em vez de narrador. Pega o livro, confere a tabela, soma o modificador, subtrai a resistencia...<br><br>
+    Enquanto isso, <strong>4 jogadores esperam</strong>.
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">DICA</div>
+    <div class="tip-text"><strong>Deixe o sistema calcular, voce narra.</strong><br>HP, dano e condicoes atualizados em tempo real.</div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg5" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg5)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg5)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 6 — ERRO #5 ===== -->
+<p class="slide-label">Slide 6 / 7 — Erro #5</p>
+<div class="slide slide-content">
+  <div class="error-num">Erro #5</div>
+  <div class="error-title">Improvisar encontro<br>demora 15 min</div>
+  <div class="error-body">
+    Os jogadores resolvem lutar contra um monstro que voce <strong>nao tinha preparado</strong>.<br><br>
+    Voce abre o livro, procura stats, anota HP, calcula CR, escolhe habilidades...<br><br>
+    <strong>15 minutos depois</strong>, a empolgacao ja morreu.
+  </div>
+  <div class="tip-box">
+    <div class="tip-label">DICA</div>
+    <div class="tip-text"><strong>Compendio com 1.100+ monstros, 1 clique.</strong><br>Busca, seleciona, joga no combate. Sem folhear livro.</div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg6" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg6)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg6)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 7 — CTA ===== -->
+<p class="slide-label">Slide 7 / 7 — CTA</p>
+<div class="slide slide-cta">
+  <div class="corner-ornament corner-tl"></div>
+  <div class="corner-ornament corner-tr"></div>
+  <div class="corner-ornament corner-bl"></div>
+  <div class="corner-ornament corner-br"></div>
+
+  <svg class="watermark watermark-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg7" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg7)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg7)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+
+  <div class="sep"></div>
+
+  <div class="cta-save">Guia gratuito pra resolver<br><em>TUDO isso</em></div>
+
+  <div class="cta-sub">E-book com 5 capitulos praticos.<br>Do setup ao combate perfeito.</div>
+
+  <div class="cta-button">LINK NA BIO</div>
+
+  <div class="cta-handle">@pocket.dm</div>
+</div>
+
+</body>
+</html>

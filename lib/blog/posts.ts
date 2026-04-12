@@ -356,6 +356,58 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "guia",
     image: "/art/blog/combat-hp-panel.png",
   },
+  {
+    slug: "como-gerenciar-hp-dnd-5e",
+    title: "Como Gerenciar HP no D&D 5e sem Planilha",
+    description:
+      "Guia prático para mestres que querem rastrear HP no D&D 5e sem papel, planilha ou anotação manual. Descubra como barras visuais com tiers de dano (LIGHT, MODERATE, HEAVY, CRITICAL) aceleram o combate de 60 pra 25 minutos.",
+    date: "2026-04-12",
+    readingTime: "8 min",
+    keywords: [
+      "gerenciar hp dnd",
+      "hp tracker dnd",
+      "rastrear hp D&D 5e",
+      "HP sem planilha D&D",
+    ],
+    ogTitle: "Como Gerenciar HP no D&D 5e sem Planilha | Pocket DM",
+    category: "tutorial",
+    image: "/art/blog/combat-hp-panel.png",
+  },
+  {
+    slug: "7-erros-mestre-combate-dnd",
+    title: "7 Erros que Mestres Cometem no Combate de D&D",
+    description:
+      "Os 7 erros mais comuns que mestres de D&D 5e cometem durante o combate — e como corrigir cada um. Da iniciativa no papel ao combate sem ferramenta digital, aprenda a transformar combates lentos em encontros memoráveis.",
+    date: "2026-04-12",
+    readingTime: "10 min",
+    keywords: [
+      "erros mestre dnd",
+      "combate lento dnd",
+      "erros comuns mestre RPG",
+      "melhorar combate D&D",
+    ],
+    ogTitle: "7 Erros que Mestres Cometem no Combate de D&D | Pocket DM",
+    category: "lista",
+    image: "/art/blog/combat-active.png",
+  },
+  {
+    slug: "iniciativa-dnd-5e-regras-variantes",
+    title: "Iniciativa D&D 5e: Regras, Variantes e Como Automatizar",
+    description:
+      "Guia completo de iniciativa no D&D 5e: regras oficiais (PHB), variantes populares (Popcorn, Side, Speed Factor), problemas do método manual e como automatizar com QR Code. Inclui dica anti-metagame para a 1a rodada.",
+    date: "2026-04-12",
+    readingTime: "9 min",
+    keywords: [
+      "iniciativa dnd 5e",
+      "como rolar iniciativa dnd",
+      "regras iniciativa D&D",
+      "variantes iniciativa RPG",
+      "iniciativa automática D&D",
+    ],
+    ogTitle: "Iniciativa D&D 5e: Regras, Variantes e Como Automatizar | Pocket DM",
+    category: "guia",
+    image: "/art/blog/combat-setup.png",
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {

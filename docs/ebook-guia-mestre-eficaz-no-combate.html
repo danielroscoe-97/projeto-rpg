@@ -19,12 +19,13 @@
   /* ─── Page ─── */
   .page {
     width: 210mm;
+    min-height: 297mm;
     margin: 0 auto;
     padding: 50px 55px;
     background: #0d0d14;
     position: relative;
     page-break-after: always;
-    page-break-inside: auto;
+    page-break-inside: avoid;
   }
   .page::before {
     content: '';
@@ -303,11 +304,34 @@
   }
 
   @media print {
-    body { background: #0d0d14; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page { margin: 0; box-shadow: none; }
+    html, body {
+      margin: 0; padding: 0;
+      background: #0d0d14;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page {
+      width: 210mm;
+      height: 297mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      margin: 0;
+      padding: 50px 55px;
+      overflow: hidden;
+      box-shadow: none;
+      page-break-after: always;
+      page-break-before: auto;
+      page-break-inside: avoid;
+    }
+    .page:last-of-type {
+      page-break-after: avoid;
+    }
     .chapter-hero { overflow: hidden !important; }
     .chapter-hero::after { display: none; }
-    .export-instructions { display: none; }
+    .export-instructions { display: none !important; }
+    .screenshot, .highlight, .pocket-dm-box, .compare {
+      page-break-inside: avoid;
+    }
   }
 
   .export-instructions {
@@ -839,7 +863,7 @@
   7. Margens: <strong>Nenhuma</strong><br>
   8. Marque <strong>"Gráficos de segundo plano"</strong> (ESSENCIAL!)<br>
   9. Salve como: <code>public/ebooks/guia-mestre-eficaz-no-combate.pdf</code><br>
-  10. Deve gerar <strong>8 páginas</strong> (Capa + Intro + 5 Caps + Resumo)<br><br>
+  10. Deve gerar <strong>11 páginas</strong> (Capa + Intro + Cap1×2 + Cap2×2 + Cap3 + Cap4 + Cap5×2 + Resumo)<br><br>
   <strong>Imagens usadas neste e-book:</strong><br>
   - Capa: ancient-red-dragon.png + owlbear.png (monster art)<br>
   - Cap 1: goblin.png (hero) + QR Code screenshot (qa-screenshots/06-share-link-qr-code.png)<br>

@@ -22,6 +22,9 @@ import {
   BlogPost14,
   BlogPost15,
   BlogPost16,
+  BlogPost17,
+  BlogPost18,
+  BlogPost19,
 } from "@/components/blog/BlogPostContent";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
@@ -81,6 +84,9 @@ const CONTENT_MAP: Record<string, React.ComponentType> = {
   "build-half-elf-order-cleric-divine-soul-sorcerer-en": BlogPost14,
   "diario-de-aventura": BlogPost15,
   "guia-mestre-eficaz-combate-dnd-5e": BlogPost16,
+  "como-gerenciar-hp-dnd-5e": BlogPost17,
+  "7-erros-mestre-combate-dnd": BlogPost18,
+  "iniciativa-dnd-5e-regras-variantes": BlogPost19,
 };
 
 export const revalidate = 86400;

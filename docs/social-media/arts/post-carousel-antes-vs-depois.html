@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Carousel — Antes vs Depois: Combate de D&D</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .slide-label {
+    font-family: 'JetBrains Mono', monospace;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: -30px;
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ===== SLIDE 1 — CAPA (split design) ===== */
+  .slide-cover {
+    display: flex;
+    flex-direction: row;
+  }
+  .slide-cover .cover-half {
+    width: 540px;
+    height: 1080px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .cover-before {
+    background: #13131E;
+  }
+  .cover-before::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 400px 500px at 50% 50%, rgba(192,57,43,0.08) 0%, transparent 70%);
+  }
+  .cover-after {
+    background: #13131E;
+  }
+  .cover-after::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 400px 500px at 50% 50%, rgba(46,204,113,0.08) 0%, transparent 70%);
+  }
+  .cover-divider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 5%, rgba(212,168,83,0.3) 30%, rgba(212,168,83,0.3) 70%, transparent 95%);
+    z-index: 3;
+  }
+  .cover-half .cover-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 30px;
+  }
+  .cover-before .cover-label {
+    color: #C0392B;
+  }
+  .cover-after .cover-label {
+    color: #2ECC71;
+  }
+  .cover-half .cover-icon {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 30px;
+  }
+  .cover-before .cover-icon {
+    background: rgba(192,57,43,0.12);
+    border: 2px solid rgba(192,57,43,0.3);
+  }
+  .cover-after .cover-icon {
+    background: rgba(46,204,113,0.12);
+    border: 2px solid rgba(46,204,113,0.3);
+  }
+  .cover-icon svg {
+    width: 56px;
+    height: 56px;
+  }
+
+  /* Overlay content on top of split */
+  .cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1080px;
+    height: 1080px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 10px 28px;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .tag-gold {
+    color: #D4A853;
+    background: rgba(212,168,83,0.15);
+    border: 1px solid rgba(212,168,83,0.3);
+  }
+
+  .cover-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 52px;
+    color: #F5F0E8;
+    text-align: center;
+    line-height: 1.3;
+    margin-top: 20px;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+  }
+  .cover-title em {
+    font-style: normal;
+    color: #D4A853;
+  }
+
+  /* Swipe indicator */
+  .swipe {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #9896A0;
+    font-size: 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    z-index: 5;
+    opacity: 0.7;
+  }
+  .swipe svg { width: 20px; height: 20px; }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    opacity: 0.18;
+    z-index: 5;
+  }
+  .watermark-big {
+    width: 120px;
+    height: 120px;
+    opacity: 0.9;
+    position: relative;
+    bottom: auto;
+    right: auto;
+  }
+
+  /* Page dots */
+  .dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(152,150,160,0.3);
+  }
+  .dot.active {
+    background: #D4A853;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  /* Handle */
+  .handle {
+    position: absolute;
+    bottom: 48px;
+    left: 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    color: rgba(212,168,83,0.5);
+    z-index: 5;
+  }
+
+  /* ===== SLIDES 2-4 — COMPARE CONTENT ===== */
+  .slide-compare {
+    background: #1A1A28;
+    display: flex;
+    flex-direction: row;
+  }
+  .slide-compare::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #C0392B 0%, #C0392B 50%, #2ECC71 50%, #2ECC71 100%);
+    z-index: 2;
+  }
+
+  .compare-col {
+    width: 540px;
+    height: 1080px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 50px 140px;
+    position: relative;
+  }
+  .compare-bad {
+    background: rgba(192,57,43,0.04);
+  }
+  .compare-bad::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 400px 400px at 50% 50%, rgba(192,57,43,0.05) 0%, transparent 70%);
+  }
+  .compare-good {
+    background: rgba(46,204,113,0.04);
+  }
+  .compare-good::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 400px 400px at 50% 50%, rgba(46,204,113,0.05) 0%, transparent 70%);
+  }
+
+  .compare-divider {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: calc(100% - 180px);
+    background: linear-gradient(180deg, transparent, rgba(212,168,83,0.2) 20%, rgba(212,168,83,0.2) 80%, transparent);
+    z-index: 2;
+  }
+
+  .compare-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .compare-bad .compare-tag {
+    color: #C0392B;
+  }
+  .compare-good .compare-tag {
+    color: #2ECC71;
+  }
+
+  .compare-icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+  }
+  .compare-bad .compare-icon-circle {
+    background: rgba(192,57,43,0.12);
+    border: 2px solid rgba(192,57,43,0.25);
+  }
+  .compare-good .compare-icon-circle {
+    background: rgba(46,204,113,0.12);
+    border: 2px solid rgba(46,204,113,0.25);
+  }
+  .compare-icon-circle svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .compare-quote {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.3;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .compare-bad .compare-quote {
+    color: #C0392B;
+  }
+  .compare-good .compare-quote {
+    color: #2ECC71;
+  }
+
+  .compare-body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px;
+    line-height: 1.55;
+    position: relative;
+    z-index: 1;
+  }
+  .compare-bad .compare-body {
+    color: #9896A0;
+  }
+  .compare-good .compare-body {
+    color: #C8C6C0;
+  }
+  .compare-body strong {
+    color: #F5F0E8;
+    font-weight: 600;
+  }
+
+  /* ===== SLIDE 5 — CTA ===== */
+  .slide-cta {
+    background: #13131E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px;
+    text-align: center;
+  }
+  .slide-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 700px 500px at 50% 50%, rgba(212,168,83,0.07) 0%, transparent 70%);
+  }
+  .slide-cta::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1.5px solid rgba(212,168,83,0.15);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .cta-save {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 52px;
+    color: #F5F0E8;
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+  }
+  .cta-save em {
+    font-style: normal;
+    color: #D4A853;
+  }
+
+  .cta-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 28px;
+    color: #9896A0;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;
+    max-width: 700px;
+  }
+
+  .cta-button {
+    margin-top: 50px;
+    padding: 22px 60px;
+    background: linear-gradient(180deg, #E8C87A 0%, #D4A853 50%, #B8903D 100%);
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #13131E;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 40px rgba(212,168,83,0.3);
+  }
+
+  .cta-handle {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px;
+    color: rgba(212,168,83,0.6);
+    margin-top: 30px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Decorative elements */
+  .corner-ornament {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-color: rgba(212,168,83,0.2);
+    border-style: solid;
+    z-index: 5;
+  }
+  .corner-tl { top: 30px; left: 30px; border-width: 2px 0 0 2px; }
+  .corner-tr { top: 30px; right: 30px; border-width: 2px 2px 0 0; }
+  .corner-bl { bottom: 30px; left: 30px; border-width: 0 0 2px 2px; }
+  .corner-br { bottom: 30px; right: 30px; border-width: 0 2px 2px 0; }
+
+  /* Separator */
+  .sep {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4A853, transparent);
+    margin: 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SLIDE 1 — CAPA (split) ===== -->
+<p class="slide-label">Slide 1 / 5 — Capa</p>
+<div class="slide slide-cover">
+  <div class="corner-ornament corner-tl"></div>
+  <div class="corner-ornament corner-tr"></div>
+  <div class="corner-ornament corner-bl"></div>
+  <div class="corner-ornament corner-br"></div>
+
+  <div class="cover-half cover-before">
+    <div class="cover-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="cover-label">Antes</div>
+  </div>
+
+  <div class="cover-divider"></div>
+
+  <div class="cover-half cover-after">
+    <div class="cover-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2ECC71" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="cover-label">Depois</div>
+  </div>
+
+  <div class="cover-overlay">
+    <div class="tag tag-gold">Comparativo</div>
+    <div class="cover-title">Seu combate<br>de <em>D&D</em></div>
+  </div>
+
+  <div class="swipe">
+    deslize
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </div>
+
+  <div class="handle">@pocket.dm</div>
+
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg1)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg1)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 2 — HP ===== -->
+<p class="slide-label">Slide 2 / 5 — HP</p>
+<div class="slide slide-compare">
+  <div class="compare-col compare-bad">
+    <div class="compare-tag">Antes</div>
+    <div class="compare-icon-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="compare-quote">"Quanto de HP voce tem?"</div>
+    <div class="compare-body">
+      Jogador pergunta pro mestre.<br><br>
+      Mestre procura no papel.<br><br>
+      Ninguem sabe o estado real do combate. <strong>Decisoes no escuro.</strong>
+    </div>
+  </div>
+
+  <div class="compare-divider"></div>
+
+  <div class="compare-col compare-good">
+    <div class="compare-tag">Depois</div>
+    <div class="compare-icon-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2ECC71" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="compare-quote">HP visivel em tempo real</div>
+    <div class="compare-body">
+      <strong>Barras coloridas</strong> no celular de cada jogador.<br><br>
+      Verde, amarelo, vermelho. Todo mundo sabe quem precisa de cura. <strong>Decisoes taticas reais.</strong>
+    </div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg2)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg2)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 3 — TURNO ===== -->
+<p class="slide-label">Slide 3 / 5 — Turno</p>
+<div class="slide slide-compare">
+  <div class="compare-col compare-bad">
+    <div class="compare-tag">Antes</div>
+    <div class="compare-icon-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="compare-quote">"De quem e a vez?"</div>
+    <div class="compare-body">
+      Toda rodada a mesma pergunta.<br><br>
+      Mestre confere a lista, corrige a ordem, repete o nome. <strong>Ritmo quebrado a cada 30 segundos.</strong>
+    </div>
+  </div>
+
+  <div class="compare-divider"></div>
+
+  <div class="compare-col compare-good">
+    <div class="compare-tag">Depois</div>
+    <div class="compare-icon-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2ECC71" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="compare-quote">Turno automatico com indicador visual</div>
+    <div class="compare-body">
+      <strong>Destaque dourado</strong> no combatente ativo.<br><br>
+      Proximo turno visivel pra todos. Jogador ja se prepara antes da vez. <strong>Zero interrupcao.</strong>
+    </div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg3" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg3)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg3)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 4 — SETUP ===== -->
+<p class="slide-label">Slide 4 / 5 — Setup</p>
+<div class="slide slide-compare">
+  <div class="compare-col compare-bad">
+    <div class="compare-tag">Antes</div>
+    <div class="compare-icon-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="compare-quote">"Perai, deixa eu anotar..."</div>
+    <div class="compare-body">
+      Nome, classe, HP, CA, iniciativa.<br><br>
+      Cada jogador dita, mestre anota num por um. <strong>10 minutos antes de comecar.</strong>
+    </div>
+  </div>
+
+  <div class="compare-divider"></div>
+
+  <div class="compare-col compare-good">
+    <div class="compare-tag">Depois</div>
+    <div class="compare-icon-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2ECC71" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="compare-quote">QR Code no celular, 20 segundos</div>
+    <div class="compare-body">
+      Jogador escaneia, <strong>entra na sessao</strong>.<br><br>
+      Nome e dados ja preenchidos. Sem ditado, sem anotacao. <strong>Combate comeca na hora.</strong>
+    </div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="handle">@pocket.dm</div>
+  <svg class="watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg4" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg4)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg4)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+</div>
+
+<!-- ===== SLIDE 5 — CTA ===== -->
+<p class="slide-label">Slide 5 / 5 — CTA</p>
+<div class="slide slide-cta">
+  <div class="corner-ornament corner-tl"></div>
+  <div class="corner-ornament corner-tr"></div>
+  <div class="corner-ornament corner-bl"></div>
+  <div class="corner-ornament corner-br"></div>
+
+  <svg class="watermark watermark-big" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="wg5" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient></defs><g stroke="url(#wg5)" stroke-linejoin="round" fill="none"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216M256 110l80 216M256 410l-80-84M256 410l80-84" opacity=".5"/></g><path fill="url(#wg5)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+
+  <div class="sep"></div>
+
+  <div class="cta-save">Teste agora.<br><em>Gratuito.</em></div>
+
+  <div class="cta-sub">Combat tracker para D&D 5e.<br>Sem instalar, sem cadastro obrigatorio.</div>
+
+  <div class="cta-button">LINK NA BIO</div>
+
+  <div class="cta-handle">@pocket.dm</div>
+</div>
+
+</body>
+</html>

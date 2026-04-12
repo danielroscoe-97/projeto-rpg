@@ -4946,3 +4946,555 @@ export function BlogPost16() {
     </>
   );
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   BLOG POST 17 — Como Gerenciar HP no D&D 5e sem Planilha
+   ═══════════════════════════════════════════════════════════════════ */
+export function BlogPost17() {
+  return (
+    <>
+      <P>
+        Se você ainda anota HP num caderno ou naquela planilha do Google com 15
+        colunas, eu te entendo. Fiz isso por anos. Funcionava quando o encontro
+        tinha 3 goblins. Mas aí veio aquela sessão com 8 criaturas, 5 jogadores
+        e um dragão com resistência a fogo. Eu errei a conta do HP duas vezes,
+        matei um monstro que ainda tava vivo, e o combate durou quase uma hora.
+        Foi a última vez que usei papel.
+      </P>
+
+      <Img src="/art/blog/combat-hp-panel.png" alt="Pocket DM — painel de HP com barras visuais e tiers de dano em combate ativo" />
+
+      <H2>Por que planilhas de HP não funcionam?</H2>
+      <P>
+        Planilha parece a solução óbvia. Mas ela tem uns problemas que só
+        aparecem quando a mesa esquenta:
+      </P>
+      <Ul>
+        <Li>
+          Você erra conta. Sério. Subtrai 14, subtrai 7, subtrai 22... em algum
+          momento a matemática escorrega. Mestres no r/DMAcademy relatam erros
+          em 1 a cada 4 encontros.
+        </Li>
+        <Li>
+          Cada ataque te tira da narração. Você tá descrevendo a garra do ogre
+          rasgando a armadura e de repente precisa achar a célula B7, subtrair
+          13, conferir se morreu. Mata o clima.
+        </Li>
+        <Li>
+          Os jogadores ficam no escuro. Ninguém sabe se o monstro tá quase
+          morrendo ou com HP cheio. Aí vem a pergunta de sempre: &quot;como ele
+          tá?&quot;. Toda. Rodada.
+        </Li>
+        <Li>
+          HP temporário vira pesadelo. Aquele Armor of Agathys com HP temp,
+          mais a resistência a frio, mais o dano normal... vira uma sopa de
+          parênteses e asteriscos que ninguém entende.
+        </Li>
+      </Ul>
+
+      <Tip linkHref="/try" linkText="Testar o Pocket DM">
+        No Pocket DM, cada monstro tem uma barra de HP que muda de cor conforme
+        apanha. Você só digita o dano. Sem conta, sem erro, sem planilha.
+      </Tip>
+
+      <H2>Como rastrear HP no D&D 5e sem enlouquecer?</H2>
+      <P>
+        Resposta curta: usa um tracker digital com barras visuais. Resposta
+        longa: o segredo não é só automatizar a conta, é mostrar a informação de
+        um jeito que todo mundo na mesa entenda num relance.
+      </P>
+      <P>
+        O melhor sistema que eu encontrei pra isso são os tiers de dano. Em vez
+        de mostrar &quot;o goblin tem 4 HP&quot;, você mostra uma barra vermelha
+        piscando. O jogador sabe que tá quase. Não precisa do número.
+      </P>
+
+      <H3>Os 4 tiers de dano: LIGHT, MODERATE, HEAVY, CRITICAL</H3>
+      <P>
+        A barra de HP é dividida em 4 faixas. Cada uma tem uma cor e manda uma
+        mensagem clara:
+      </P>
+      <Ul>
+        <Li>
+          LIGHT (acima de 70%) — barra verde. A criatura mal sentiu. O combate
+          ainda tá no começo.
+        </Li>
+        <Li>
+          MODERATE (40-70%) — barra amarela. Já apanhou bastante. Hora de
+          considerar focar fogo pra derrubar logo.
+        </Li>
+        <Li>
+          HEAVY (10-40%) — barra laranja. Visivelmente ferido. Monstros
+          inteligentes começam a cogitar fuga. Um ou dois golpes bons resolvem.
+        </Li>
+        <Li>
+          CRITICAL (abaixo de 10%) — barra vermelha. Um golpe mata. Gasta o
+          ataque pra finalizar ou muda de alvo?
+        </Li>
+      </Ul>
+      <P>
+        Esses limiares (70%, 40%, 10%) n��o são números aleatórios. São os pontos
+        do combate onde as decisões táticas mudam. E quando o jogador VÊ a barra
+        mudando de cor, ele sente a pressão sem você precisar descrever nada.
+      </P>
+
+      <EbookCTA variant="inline" />
+
+      <H2>O que muda quando os jogadores veem o HP?</H2>
+      <P>
+        Parece loucura, né? &quot;Mostrar HP pros jogadores?&quot; Mas escuta:
+        você não mostra o número. Mostra a faixa de cor. E isso muda tudo.
+      </P>
+      <P>
+        O Barbarian vê que o Ogre tá na faixa laranja. Ele sabe que um Reckless
+        Attack pode finalizar. Não precisa perguntar. O Cleric vê que o Fighter
+        tá vermelho. Cura na hora, sem esperar a vez pra perguntar &quot;quanto
+        de HP você tem?&quot;.
+      </P>
+      <P>
+        Mesas que usam barras visuais de HP reportam combates 40-50% mais
+        rápidos. Não porque rola menos dado, mas porque ninguém para pra
+        perguntar nada. A informação tá ali, na tela, em tempo real.
+      </P>
+
+      <Img src="/art/blog/combat-conditions.png" alt="Pocket DM — condições e HP visíveis para todos os jogadores durante o combate" />
+
+      <H2>Como funciona no Pocket DM?</H2>
+      <P>
+        O{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink> já faz tudo isso
+        automaticamente. O fluxo é esse:
+      </P>
+      <Ul>
+        <Li>
+          Adiciona os monstros do{" "}
+          <ProdLink href="/monstros">compêndio</ProdLink>. O HP máximo já vem
+          preenchido do stat block oficial.
+        </Li>
+        <Li>
+          No combate, digita o dano. A barra atualiza na hora com a cor do tier
+          certo.
+        </Li>
+        <Li>
+          Os jogadores veem tudo no celular via QR Code. Acabou o &quot;como ele
+          tá?&quot;.
+        </Li>
+        <Li>
+          HP temporário fica separado, com indicação visual própria. Sem
+          confusão.
+        </Li>
+        <Li>
+          Cura? Digita o valor positivo. A barra sobe. Simples.
+        </Li>
+      </Ul>
+
+      <Tip>
+        Montar um combate inteiro no Pocket DM leva menos de 60 segundos. Tenta
+        fazer isso numa planilha.
+      </Tip>
+
+      <H2>E se eu quiser esconder o HP dos jogadores?</H2>
+      <P>
+        Entendo quem prefere manter segredo. Mas pensa no tradeoff: seus
+        jogadores perdem informação tática e ficam mais passivos. O meio-termo
+        que funciona é mostrar as faixas de cor sem mostrar o número exato. O
+        jogador sabe que o monstro tá &quot;mal&quot;, mas não sabe se faltam 3
+        ou 30 HP.
+      </P>
+      <P>
+        Essa é a recomendação de mestres experientes no{" "}
+        <ExtLink href="https://www.reddit.com/r/DMAcademy/">r/DMAcademy</ExtLink>{" "}
+        e nos livros do{" "}
+        <ExtLink href="https://slyflourish.com/sharing_hit_points.html">Sly Flourish</ExtLink>.
+        Transparência não mata a tensão. Mata a burocracia.
+      </P>
+
+      <H2>Resumo: 3 passos pra sair do papel</H2>
+      <Ul>
+        <Li>
+          Larga o caderno e a planilha. A economia de tempo começa aqui.
+        </Li>
+        <Li>
+          Usa um tracker com barras visuais e tiers de dano. Seus jogadores vão
+          tomar decisões melhores quando virem o campo de batalha.
+        </Li>
+        <Li>
+          Compartilha o combate via QR Code. Cada jogador acompanha no celular.
+          Zero papel, zero pergunta, zero espera.
+        </Li>
+      </Ul>
+      <P>
+        O combate médio cai de 60 pra 25 minutos. Os jogadores ficam engajados.
+        Você foca em narrar em vez de calcular. Pra mais dicas, leia nosso{" "}
+        <IntLink slug="como-agilizar-combate-dnd-5e">guia de 10 dicas pra agilizar combate</IntLink>{" "}
+        e o{" "}
+        <IntLink slug="guia-condicoes-dnd-5e">guia completo de condições</IntLink>.
+      </P>
+
+      <EbookCTA variant="inline" />
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BLOG POST 18 — 7 Erros que Mestres Cometem no Combate de D&D
+   ═══════════════════════════════════════════════════════════════════ */
+export function BlogPost18() {
+  return (
+    <>
+      <P>
+        Sabe aquele combate que começou empolgante e 40 minutos depois metade da
+        mesa tá no celular? Quase nunca é culpa do sistema. Na maioria das vezes,
+        são uns erros de processo que a gente nem percebe que tá cometendo. Erros
+        que transformam um encontro de 20 minutos numa maratona de 1 hora.
+      </P>
+      <P>
+        Aqui estão os 7 mais comuns. Pra cada um, tem uma solução prática que
+        você aplica na próxima sessão.
+      </P>
+
+      <Img src="/art/blog/combat-active.png" alt="Pocket DM — combate ativo com iniciativa visual e barras de HP" />
+
+      <H2>Erro #1: Anotar iniciativa no papel</H2>
+      <P>
+        &quot;Quanto você tirou? 14? E você? 18? Peraí, o ranger tirou
+        quanto?&quot; Esse ritual leva 3 a 5 minutos por encontro. Em sessões
+        com 3 combates, são 15 minutos perdidos só em setup. Dá pra rolar uma
+        cena narrativa inteira nesse tempo.
+      </P>
+      <P>
+        A solução: distribui. No{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink>, cada jogador coloca a
+        própria iniciativa pelo celular via QR Code. A ordem aparece na tela de
+        todo mundo em segundos. Acabou o &quot;quanto você tirou?&quot;.
+      </P>
+
+      <H2>Erro #2: Só o mestre vê o HP</H2>
+      <P>
+        Quando só você sabe o HP, os jogadores ficam cegos. Não sabem se focam
+        fogo no ogre ferido ou trocam pro goblin intacto. Aí vem a pergunta de
+        sempre: &quot;como ele tá?&quot;. Toda rodada. Isso mata o ritmo e a
+        tensão.
+      </P>
+      <P>
+        Mostra barras de HP com faixas de cor. Verde, amarelo, laranja, vermelho.
+        O jogador sabe que o monstro tá mal sem saber o número exato. Decisões
+        táticas na hora. Sem pergunta. Tem mais sobre isso no nosso{" "}
+        <IntLink slug="como-gerenciar-hp-dnd-5e">guia de HP visual</IntLink>.
+      </P>
+
+      <H2>Erro #3: Ninguém sabe de quem é a vez</H2>
+      <P>
+        &quot;Sua vez.&quot; &quot;Eu? Ah, peraí, deixa eu ver...&quot; Sem
+        indicação visual de quem tá agindo, todo turno começa com 10 segundos de
+        confusão. Multiplica por 30 turnos num combate e são 5 minutos jogados
+        fora. E o pior: quem tá &quot;longe&quot; da vez desliga e vai pro
+        Instagram.
+      </P>
+      <P>
+        Usa um tracker que destaque o turno atual e mostre quem é o próximo.
+        Quando o jogador vê que é o próximo, ele já começa a planejar. O avanço
+        automático elimina aquela pausa entre ações.
+      </P>
+
+      <H2>Erro #4: Calcular tudo na hora</H2>
+      <P>
+        Você tá narrando a investida do ogre e de repente para pra rolar 2d8+4,
+        somar, verificar resistência, subtrair do HP, anotar. Cada cálculo leva
+        10 a 20 segundos. Com 6 monstros por rodada, são 2 minutos de
+        matemática pura. Ninguém tá jogando. Todo mundo tá esperando você fazer
+        conta.
+      </P>
+      <P>
+        Usa dano médio. Tá ali no stat block, o número antes dos parênteses. O
+        Ogre faz 2d8+4? Usa 13. Pronto. O{" "}
+        <ExtLink href="https://slyflourish.com/tips_to_speed_up_combat.html">Sly Flourish</ExtLink>{" "}
+        estima que menos de 10% dos mestres usam dano fixo, mas os que usam
+        cortam o combate em 20-30%.
+      </P>
+
+      <EbookCTA variant="inline" />
+
+      <H2>Erro #5: Esquecer condições</H2>
+      <P>
+        O Wizard gasta um slot de 2o nível pra lançar Hold Person. O goblin fica
+        Paralyzed. Duas rodadas depois, ninguém lembra. O goblin continua
+        agindo normalmente. O Wizard se sente ignorado. Você percebe 3 turnos
+        depois. Constrangedor e injusto com o jogador que investiu o recurso.
+      </P>
+      <P>
+        Rastreia condições visualmente, do lado do HP. No Pocket DM, condições
+        aparecem como badges na ficha do combatente. Todo mundo vê quem tá
+        Poisoned, Stunned ou Prone. Referência rápida no nosso{" "}
+        <IntLink slug="guia-condicoes-dnd-5e">guia completo de condições</IntLink>.
+      </P>
+
+      <H2>Erro #6: Preparar demais</H2>
+      <P>
+        Você passa 2 horas montando um encontro com terrain dinâmico, 4 tipos de
+        monstros e um plano tático elaborado. Na mesa, o Wizard solta Fireball
+        na rodada 1 e elimina metade. Todo aquele preparo virou pó. E a
+        frustração te faz preparar ainda mais da próxima vez, num ciclo vicioso.
+      </P>
+      <P>
+        O método{" "}
+        <ExtLink href="https://slyflourish.com/returnofthelazydm/">Lazy DM</ExtLink>{" "}
+        resolve: prepara o mínimo (monstros + motivação) e improvisa o resto. O{" "}
+        <ProdLink href="/monstros">compêndio do Pocket DM</ProdLink> tem 1.100+
+        monstros prontos. Busca, adiciona, começa. 2 minutos de prep em vez de 2
+        horas. Mais sobre isso no{" "}
+        <IntLink slug="como-montar-encontro-balanceado-dnd-5e">guia de encontros balanceados</IntLink>.
+      </P>
+
+      <H2>Erro #7: Fazer tudo na mão</H2>
+      <P>
+        HP no caderno. Iniciativa na cabeça. Condições na memória. Stat blocks em
+        5 abas de PDF. Cada tarefa dessas é pequena, mas juntas viram uma carga
+        mental que compete direto com a narração e a improvisação. Resultado: um
+        mestre sobrecarregado que não faz nenhuma dessas coisas bem.
+      </P>
+      <P>
+        Um{" "}
+        <ProdLink href="/try">combat tracker</ProdLink> não substitui você. Ele
+        te libera pra ser mestre. Automatiza o mecânico (iniciativa, HP, turno,
+        condições) e te deixa focar no humano: narrar, improvisar, reagir. Veja
+        nosso{" "}
+        <IntLink slug="como-usar-combat-tracker-dnd-5e">guia de combat tracker</IntLink>{" "}
+        pra ver como funciona na prática.
+      </P>
+
+      <Img src="/art/blog/combat-setup.png" alt="Pocket DM — setup de combate com monstros do compêndio SRD" />
+
+      <Tip linkHref="/try" linkText="Testar o Pocket DM">
+        Os erros 1, 2, 3, 5 e 7 somem automaticamente com um tracker que tem HP
+        visual, iniciativa automática e rastreamento de condições. O Pocket DM
+        faz tudo de graça. Sem cadastro, sem download.
+      </Tip>
+
+      <H2>Resumo: 7 erros, 7 soluções</H2>
+      <P>
+        Cada erro desses adiciona 5 a 10 minutos no combate. Corrige todos e o
+        encontro cai pela metade: de 60 pra 25-30 minutos. A maioria das
+        soluções nem precisa de tecnologia: dano fixo, menos tipos de monstro,
+        monstros que fogem. Mas as que precisam de ferramenta ficam muito mais
+        fáceis com um tracker digital. O ponto não é depender de tecnologia. É
+        te liberar pra focar na história em vez de fazer burocracia.
+      </P>
+
+      <EbookCTA variant="inline" />
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BLOG POST 19 — Iniciativa D&D 5e: Regras, Variantes e Como Automatizar
+   ═══════════════════════════════════════════════════════════════════ */
+export function BlogPost19() {
+  return (
+    <>
+      <P>
+        Iniciativa é a primeira coisa que acontece em todo combate de D&D 5e. E
+        também é o momento mais chato. &quot;Quanto você tirou? 14. E você? 18.
+        Peraí, o ranger tirou quanto? Deixa eu anotar...&quot; São 3 a 5 minutos
+        que poderiam ser o primeiro golpe da batalha.
+      </P>
+      <P>
+        Nesse guia, vou cobrir as regras oficiais, as variantes que a comunidade
+        inventou, e como você elimina esse gargalo de vez.
+      </P>
+
+      <Img src="/art/blog/combat-setup.png" alt="Pocket DM — setup de combate com iniciativa e ordem de turnos" />
+
+      <H2>Como funciona a iniciativa no D&D 5e?</H2>
+      <P>
+        As regras do Player&apos;s Handbook (PHB, capítulo 9) são simples:
+      </P>
+      <Ul>
+        <Li>
+          Todo mundo rola 1d20 e soma o modificador de Destreza. É um ability
+          check normal.
+        </Li>
+        <Li>
+          O mestre ordena do maior pro menor. Quem tirou mais alto age primeiro.
+        </Li>
+        <Li>
+          Empate entre jogador e monstro? O mestre decide. Entre dois jogadores?
+          Eles escolhem entre si.
+        </Li>
+        <Li>
+          A ordem fica fixa o combate inteiro. Não muda entre rodadas.
+        </Li>
+      </Ul>
+      <P>
+        Tem features que mexem nisso: Barbarian com Feral Instinct tem vantagem
+        na rolagem, Bard com Jack of All Trades soma metade da proficiência, e
+        o feat Alert dá +5. Rogues, Rangers e Monks quase sempre agem cedo
+        porque vivem de Destreza alta.
+      </P>
+
+      <Tip>
+        Leve isso em conta na composição dos monstros. Criaturas lentas (Zombies,
+        Golems) precisam de número pra compensar agir por último. Um Zombie
+        sozinho contra um grupo com alta DEX nem chega a atacar.
+      </Tip>
+
+      <H2>Por que a iniciativa manual trava a mesa?</H2>
+      <P>
+        O sistema é elegante. O problema é juntar 5 jogadores falando números ao
+        mesmo tempo enquanto você anota, ordena e confere se não esqueceu
+        ninguém. Na prática:
+      </P>
+      <Ul>
+        <Li>
+          3 combates por sessão = 10 a 15 minutos só de setup de iniciativa. É
+          quase uma cena inteira de roleplay jogada fora.
+        </Li>
+        <Li>
+          Erros de ordenação. Você pula alguém, ou coloca na posição errada.
+          Quando percebe no turno 3, a correção vira discussão.
+        </Li>
+        <Li>
+          Enquanto você anota, os jogadores esperam. Celulares saem.
+          Conversas paralelas começam. O clima da cena que levou ao combate
+          evapora.
+        </Li>
+        <Li>
+          6 goblins = rola 6 vezes ou usa grupo? Se rola 6, o setup dobra. Se
+          agrupa, precisa anotar separado.
+        </Li>
+      </Ul>
+
+      <H2>Quais as variantes de iniciativa?</H2>
+      <P>
+        A comunidade de D&D inventou uns sistemas alternativos ao longo dos anos.
+        As 3 mais populares:
+      </P>
+
+      <H3>Popcorn Initiative</H3>
+      <P>
+        Quem agiu escolhe quem age em seguida. Pode ser aliado ou inimigo. A
+        ordem muda toda rodada, o que cria uns momentos táticos legais
+        (&quot;passo pro Cleric curar antes do dragão atacar&quot;). O problema
+        é que grupos otimizados encadeiam turnos pra dominar. Funciona melhor em
+        mesas narrativas com jogadores que não vão abusar.
+      </P>
+
+      <H3>Side Initiative</H3>
+      <P>
+        Cada lado rola 1d20 sem modificador. Quem tirar mais, age primeiro. Todo
+        mundo do lado vencedor age na ordem que quiser. Ultra-rápido: 2 rolagens
+        e acabou. O porém é que personagens com DEX alta (Rogues, Monks) perdem
+        a vantagem que investiram. Ótimo pra encontros aleatórios e one-shots
+        onde ninguém quer perder tempo.
+      </P>
+
+      <H3>Speed Factor Initiative (DMG)</H3>
+      <P>
+        Variante oficial do Dungeon Master&apos;s Guide. Todo turno, todo mundo
+        rola iniciativa de novo, com modificadores baseados na ação escolhida.
+        Armas pesadas penalizam, leves dão bônus. Realista? Sim. Praticável?
+        Não. Multiplica o problema que tenta resolver. Pouquíssimos mestres usam
+        mais de uma sessão.
+      </P>
+
+      <EbookCTA variant="inline" />
+
+      <H2>Como automatizar a iniciativa com QR Code?</H2>
+      <P>
+        A melhor solução é tirar o gargalo do caminho. No{" "}
+        <ProdLink href="/try">Pocket DM</ProdLink>, funciona assim:
+      </P>
+      <Ul>
+        <Li>
+          Você cria o encontro e adiciona os monstros do{" "}
+          <ProdLink href="/monstros">compêndio</ProdLink>. HP e stats já vêm
+          preenchidos.
+        </Li>
+        <Li>
+          Manda o QR Code no grupo do WhatsApp ou Discord. Cada jogador escaneia
+          e coloca a própria iniciativa pelo celular.
+        </Li>
+        <Li>
+          A ordem aparece na tela de todo mundo automaticamente. Empates
+          resolvidos. Zero anotação.
+        </Li>
+        <Li>
+          Você clica &quot;Iniciar Combate&quot; e o primeiro turno começa. Setup
+          inteiro em menos de 60 segundos.
+        </Li>
+      </Ul>
+      <P>
+        60 segundos vs 3 a 5 minutos. Em 3 combates por sessão, são quase 15
+        minutos de roleplay que você recupera. Não é pouco.
+      </P>
+
+      <Img src="/art/blog/combat-hp-panel.png" alt="Pocket DM — combate em andamento com ordem de iniciativa e HP visível" />
+
+      <H2>Dica anti-metagame: esconde a ordem na 1a rodada</H2>
+      <P>
+        Essa é uma técnica que eu uso sempre. Na primeira rodada, não mostra a
+        ordem completa pros jogadores. Só mostra de quem é a vez agora e quem é
+        o próximo. Por quê?
+      </P>
+      <P>
+        Porque quando o Fighter vê que o mago inimigo age logo depois dele, ele
+        se posiciona pra bloquear. Faz sentido tacticamente, mas o personagem
+        não teria como saber disso. É metagame puro. A partir da rodada 2, a
+        ordem já é conhecida (o combate &quot;revelou&quot; quem é mais rápido)
+        e faz sentido mostrar.
+      </P>
+
+      <Tip>
+        Essa regra de &quot;rodada 1 oculta&quot; funciona melhor em mesas que
+        curtem imersão. Se sua mesa é mais tática e competitiva, mostra a ordem
+        completa desde o início. Ambos são válidos.
+      </Tip>
+
+      <H2>Iniciativa em grupo: quando usar</H2>
+      <P>
+        6 goblins no mapa. Rola iniciativa 6 vezes? Não. Rola uma vez pro tipo
+        de criatura e todos do mesmo tipo agem na mesma posição. 6 goblins = 1
+        rolagem, todos agem juntos.
+      </P>
+      <P>
+        Vantagem: menos rolagens, setup mais rápido. Desvantagem: 6 ataques
+        seguidos do mesmo monstro pode ser longo. Pra resolver, rola todos os
+        ataques de uma vez e aplica os danos simultaneamente.
+      </P>
+
+      <H2>Resumo: qual método usar?</H2>
+      <Ul>
+        <Li>
+          RAW (1d20 + DEX): funciona pra qualquer mesa, mas é lento com muita
+          criatura. Automatiza com um tracker.
+        </Li>
+        <Li>
+          Popcorn: dinâmico e divertido, mas requer jogadores maduros. Ótimo pra
+          mesas de roleplay.
+        </Li>
+        <Li>
+          Side Initiative: ultra-rápido, mas penaliza builds de DEX alta. Bom
+          pra encontros aleatórios.
+        </Li>
+        <Li>
+          Speed Factor: realista mas impraticável. Experimenta uma vez por
+          curiosidade e depois volta pro RAW.
+        </Li>
+        <Li>
+          Automatizado (QR Code): o melhor dos mundos. Mantém a rolagem
+          individual, elimina o setup manual e funciona com qualquer variante.
+        </Li>
+      </Ul>
+      <P>
+        O princípio é simples: iniciativa existe pra organizar o combate, não pra
+        atrasar. Se o processo de determinar a ordem tá demorando mais que 60
+        segundos, muda o método. Pra mais dicas, leia nosso{" "}
+        <IntLink slug="como-agilizar-combate-dnd-5e">guia de 10 dicas pra agilizar combate</IntLink>{" "}
+        e o{" "}
+        <IntLink slug="7-erros-mestre-combate-dnd">artigo sobre os 7 erros mais comuns</IntLink>.
+      </P>
+
+      <EbookCTA variant="inline" />
+    </>
+  );
+}

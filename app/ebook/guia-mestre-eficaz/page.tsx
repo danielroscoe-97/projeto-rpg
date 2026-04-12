@@ -5,17 +5,58 @@ import { Footer } from "@/components/marketing/Footer";
 import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
 import { EbookCTA } from "@/components/blog/EbookCTA";
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+
 export const metadata: Metadata = {
-  title: "Guia do Mestre Eficaz no Combate — E-book Gratuito",
+  title: "Guia do Mestre Eficaz no Combate — E-book Gratuito D&D 5e",
   description:
-    "E-book gratuito com 5 capítulos práticos para transformar seus combates de D&D 5e. Iniciativa automática, HP em tempo real e mais.",
+    "E-book gratuito com 5 capítulos práticos para transformar seus combates de D&D 5e. Iniciativa automática, HP em tempo real, encontros em 60 segundos. Baixe o PDF agora.",
   keywords: [
     "guia mestre D&D",
-    "e-book D&D 5e",
+    "e-book D&D 5e gratuito",
     "combat tracker guia",
     "como mestrar combate D&D",
     "Pocket DM guia",
+    "combate rápido D&D 5e",
+    "iniciativa automática D&D",
+    "HP em tempo real D&D",
+    "guia mestre eficaz combate",
+    "dicas combate D&D 5e",
   ],
+  alternates: {
+    canonical: "/ebook/guia-mestre-eficaz",
+    languages: {
+      "pt-BR": "/ebook/guia-mestre-eficaz",
+    },
+  },
+  openGraph: {
+    title: "Guia do Mestre Eficaz no Combate — E-book Gratuito",
+    description:
+      "5 capítulos práticos para transformar seus combates de D&D 5e. De 60 pra 25 minutos por combate. Baixe grátis.",
+    url: "/ebook/guia-mestre-eficaz",
+    siteName: "Pocket DM",
+    type: "website",
+    locale: "pt_BR",
+    images: [
+      {
+        url: "/art/blog/combat-hp-panel.png",
+        width: 1200,
+        height: 630,
+        alt: "Guia do Mestre Eficaz no Combate — Pocket DM",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Guia do Mestre Eficaz no Combate — E-book Gratuito D&D 5e",
+    description:
+      "5 capítulos práticos para transformar seus combates de D&D 5e. Baixe o PDF gratuito.",
+    images: ["/art/blog/combat-hp-panel.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const CHAPTERS = [
@@ -79,8 +120,97 @@ const CHAPTERS = [
 ];
 
 export default function EbookPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: "Guia do Mestre Eficaz no Combate",
+    description:
+      "E-book gratuito com 5 capítulos práticos para transformar seus combates de D&D 5e.",
+    author: {
+      "@type": "Organization",
+      name: "Pocket DM",
+      url: BASE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Pocket DM",
+      url: BASE_URL,
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/icons/icon-192.png` },
+    },
+    inLanguage: "pt-BR",
+    genre: "Role-Playing Games",
+    numberOfPages: 11,
+    bookFormat: "https://schema.org/EBook",
+    isAccessibleForFree: true,
+    url: `${BASE_URL}/ebook/guia-mestre-eficaz`,
+    image: `${BASE_URL}/art/blog/combat-hp-panel.png`,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "BRL",
+      availability: "https://schema.org/InStock",
+    },
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Como agilizar o combate no D&D 5e?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Distribua a iniciativa (cada jogador registra a própria via QR Code), torne o HP visível pra todos, use indicador visual de turno e automatize condições. O combate médio cai de 60 pra 25 minutos.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "O que é o Guia do Mestre Eficaz no Combate?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Um e-book gratuito de 11 páginas com 5 capítulos práticos para mestres de D&D 5e. Cobre iniciativa automática, HP em tempo real, combate rápido, transparência tática e improvisação de encontros em 60 segundos.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "O e-book é gratuito?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sim, o PDF é 100% gratuito. Basta informar seu email para receber o link de download imediato.",
+        },
+      },
+    ],
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Blog", item: `${BASE_URL}/blog` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Guia do Mestre Eficaz no Combate",
+        item: `${BASE_URL}/ebook/guia-mestre-eficaz`,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <Navbar
         brand="Pocket DM"
         brandHref="/"
