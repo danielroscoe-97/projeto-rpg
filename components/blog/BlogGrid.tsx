@@ -46,7 +46,7 @@ function FeaturedCard({ post }: { post: BlogPost }) {
       className="group block mb-12"
     >
       {/* Image — large, rounded, prominent */}
-      <div className="relative w-full aspect-[2.2/1] rounded-2xl overflow-hidden mb-5">
+      <div className="relative w-full aspect-[3/1] rounded-2xl overflow-hidden mb-5">
         {post.image && (
           <Image
             src={post.image}
@@ -86,10 +86,10 @@ function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col h-full"
+      className="group flex flex-col h-full rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 overflow-hidden"
     >
-      {/* Image — rounded, clean */}
-      <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-surface-primary/50">
+      {/* Image */}
+      <div className="relative w-full aspect-[16/10] overflow-hidden">
         {post.image && (
           <Image
             src={post.image}
@@ -101,8 +101,8 @@ function PostCard({ post }: { post: BlogPost }) {
         )}
       </div>
 
-      {/* Text — below image */}
-      <div className="flex flex-col flex-1">
+      {/* Text */}
+      <div className="flex flex-col flex-1 p-4">
         <div className="flex items-center gap-3 mb-2">
           <span className={`text-[10px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[post.category]}`}>
             {BLOG_CATEGORIES[post.category]}
@@ -178,7 +178,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
   return (
     <div>
       {/* ─── Search + Filters ─── */}
-      <div className="sticky top-[64px] z-20 -mx-6 px-6 py-4 bg-background/80 backdrop-blur-xl border-b border-white/[0.04] mb-10">
+      <div className="sticky top-[64px] z-20 -mx-6 px-6 py-4 backdrop-blur-xl border-b border-white/[0.04] mb-10" style={{ backgroundColor: "hsl(233 26% 10% / 0.85)" }}>
         <div className="relative mb-3">
           <svg
             className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/25 pointer-events-none"
