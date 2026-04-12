@@ -33,7 +33,7 @@ import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
 import { CATEGORY_CTA } from "@/lib/blog/feature-links";
 import { EbookCTA } from "@/components/blog/EbookCTA";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
@@ -294,61 +294,46 @@ export default async function BlogPostPage({
               </div>
             )}
 
-            {/* Proxima Aventura — Related posts */}
+            {/* Proxima Aventura — Related posts (Notion style) */}
             {relatedPosts.length > 0 && (
-              <div className="mt-10 pt-8 border-t border-white/[0.06]">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-1 h-5 rounded-full bg-gold/50" />
-                  <h2 className="font-display text-lg text-gold/80">
-                    Proxima Aventura
-                  </h2>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-3">
+              <div className="mt-14 pt-10 border-t border-white/[0.06]">
+                <h2 className="font-display text-xl text-foreground mb-6">
+                  Continue lendo
+                </h2>
+                <div className="grid gap-6 sm:grid-cols-3">
                   {relatedPosts.map((rp) => (
                     <Link
                       key={rp.slug}
                       href={`/blog/${rp.slug}`}
-                      className="group rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-gold/20 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden"
+                      className="group"
                     >
-                      <div className="relative w-full aspect-[16/9] overflow-hidden">
-                        {rp.image ? (
+                      <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-3">
+                        {rp.image && (
                           <Image
                             src={rp.image}
                             alt={rp.title}
                             fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
                             sizes="(max-width: 640px) 100vw, 33vw"
                           />
-                        ) : (
-                          <div className={`absolute inset-0 bg-gradient-to-br ${
-                            rp.category === "tutorial" ? "from-blue-900/40 via-blue-950/20 to-surface-primary/90" :
-                            rp.category === "guia" ? "from-emerald-900/40 via-emerald-950/20 to-surface-primary/90" :
-                            rp.category === "lista" ? "from-amber-900/40 via-amber-950/20 to-surface-primary/90" :
-                            rp.category === "comparativo" ? "from-purple-900/40 via-purple-950/20 to-surface-primary/90" :
-                            rp.category === "build" ? "from-rose-900/40 via-rose-950/20 to-surface-primary/90" :
-                            "from-gold/20 via-yellow-950/20 to-surface-primary/90"
-                          }`} />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                        <span className={`absolute top-3 left-3 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                          rp.category === "tutorial" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
-                          rp.category === "guia" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                          rp.category === "lista" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" :
-                          rp.category === "comparativo" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
-                          rp.category === "build" ? "bg-rose-500/20 text-rose-300 border-rose-500/30" :
-                          "bg-gold/20 text-gold border-gold/30"
-                        }`}>
-                          {BLOG_CATEGORIES[rp.category]}
-                        </span>
                       </div>
-                      <div className="p-4">
-                        <p className="text-sm font-medium text-foreground/90 group-hover:text-gold transition-colors leading-snug line-clamp-2">
-                          {rp.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground/50 mt-2">
-                          {rp.readingTime} de leitura
-                        </p>
-                      </div>
+                      <span className={`text-[10px] font-semibold uppercase tracking-widest ${
+                        rp.category === "tutorial" ? "text-blue-400" :
+                        rp.category === "guia" ? "text-emerald-400" :
+                        rp.category === "lista" ? "text-amber-400" :
+                        rp.category === "comparativo" ? "text-purple-400" :
+                        rp.category === "build" ? "text-rose-400" :
+                        "text-gold"
+                      }`}>
+                        {BLOG_CATEGORIES[rp.category]}
+                      </span>
+                      <p className="text-sm text-foreground/90 group-hover:text-gold transition-colors leading-snug mt-1.5 line-clamp-2">
+                        {rp.title}
+                      </p>
+                      <p className="text-[11px] text-foreground/30 mt-1.5">
+                        {rp.readingTime}
+                      </p>
                     </Link>
                   ))}
                 </div>

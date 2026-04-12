@@ -39,36 +39,18 @@ export default function BlogIndexPage() {
       />
 
       <main className="flex-1 pt-[72px]">
-        {/* Hero */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gold/[0.03] rounded-full blur-[120px]" />
-          </div>
-
-          <div className="relative max-w-5xl mx-auto px-6 pt-16 pb-8">
-            <div className="flex items-center gap-3 mb-4">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/art/brand/logo-icon.svg"
-                alt=""
-                width={36}
-                height={36}
-                className="opacity-90 drop-shadow-[0_0_12px_rgba(212,168,83,0.3)]"
-                aria-hidden="true"
-              />
-              <h1 className="font-display text-3xl md:text-4xl text-gold tracking-tight">
-                Blog
-              </h1>
-            </div>
-            <p className="text-foreground/50 max-w-lg text-[15px] leading-relaxed">
-              Guias, tutoriais e referências para mestres de D&D 5e. Conteúdo
-              prático para melhorar suas sessões presenciais.
-            </p>
-          </div>
+        {/* Header — minimal Notion-style */}
+        <div className="max-w-5xl mx-auto px-6 pt-16 pb-2">
+          <h1 className="font-display text-4xl md:text-5xl text-foreground tracking-tight mb-3">
+            Blog
+          </h1>
+          <p className="text-foreground/40 max-w-lg text-[15px] leading-relaxed">
+            Guias, tutoriais e referências para mestres de D&D 5e.
+          </p>
         </div>
 
         {/* Blog grid with filters */}
-        <div className="max-w-5xl mx-auto px-6 pb-20">
+        <div className="max-w-5xl mx-auto px-6 pb-24">
           <BlogGrid posts={BLOG_POSTS} />
         </div>
       </main>

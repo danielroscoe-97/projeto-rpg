@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Blog Hero Images — Visual Only (No Text)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+  }
+  .label {
+    font-family: monospace;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: -30px;
+  }
+  .hero {
+    width: 1280px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    border-radius: 0;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0d0d14 0%, #13131E 40%, #1A1A28 100%);
+  }
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 60%, transparent 20%, rgba(0,0,0,0.5) 100%);
+    z-index: 1;
+  }
+  .hero-art {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 720px;
+    height: 720px;
+    object-fit: contain;
+    object-position: center bottom;
+    opacity: 0.35;
+    filter: saturate(0.6) brightness(0.9);
+    z-index: 0;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,168,83,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,168,83,0.02) 1px, transparent 1px);
+    background-size: 80px 80px;
+    z-index: 0;
+  }
+  /* Subtle gold glow in center */
+  .hero-glow {
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    width: 600px;
+    height: 400px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse, rgba(212,168,83,0.06) 0%, transparent 70%);
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1: diario-de-aventura -->
+<p class="label">diario-de-aventura.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #171520 40%, #1a1828 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/ancient-red-dragon.png" alt="" style="opacity: 0.3; width: 800px; height: 800px; right: -40px; bottom: -100px;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 2: combat-tracker -->
+<p class="label">combat-tracker.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/death-knight.png" alt="">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 3: 5-ferramentas -->
+<p class="label">5-ferramentas.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/owlbear.png" alt="" style="opacity: 0.4;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 4: tracker-vs-vtt -->
+<p class="label">tracker-vs-vtt.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #141320 40%, #1a1528 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/chimera.png" alt="">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 5: condicoes -->
+<p class="label">condicoes.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/medusa.png" alt="" style="opacity: 0.38;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 6: agilizar-combate -->
+<p class="label">agilizar-combate.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/vampire.png" alt="" style="opacity: 0.38;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 7: tutorial-pocket-dm -->
+<p class="label">tutorial-pocket-dm.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/troll.png" alt="" style="opacity: 0.38;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 8: encounter-building -->
+<p class="label">encounter-building.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/ancient-red-dragon.png" alt="">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 9: first-time-dm -->
+<p class="label">first-time-dm.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/goblin.png" alt="" style="opacity: 0.45; width: 600px; height: 600px;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 10: ambient-music -->
+<p class="label">ambient-music.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #141420 40%, #1a1528 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/lich.png" alt="" style="opacity: 0.35;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 11: melhores-monstros -->
+<p class="label">melhores-monstros.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/tarrasque.png" alt="" style="opacity: 0.4; width: 800px; height: 800px; right: -60px; bottom: -80px;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 12: challenge-rating -->
+<p class="label">challenge-rating.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/hydra.png" alt="" style="opacity: 0.38;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 13: theater-vs-grid -->
+<p class="label">theater-vs-grid.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/minotaur.png" alt="" style="opacity: 0.4;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 14: cleric-sorcerer-build -->
+<p class="label">cleric-sorcerer-build.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #1a1318 40%, #201520 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow" style="left: 55%;"></div>
+  <img class="hero-art" src="../arts/assets/capa-barsavi-portrait.png" alt="" style="opacity: 0.45; right: 40px; bottom: -60px; width: 550px; height: 700px; object-fit: cover; filter: saturate(0.8) brightness(0.95);">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 15: cleric-sorcerer-build-en -->
+<p class="label">cleric-sorcerer-build-en.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #1a1318 40%, #201520 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow" style="left: 55%;"></div>
+  <img class="hero-art" src="../arts/assets/capa-barsavi-portrait.png" alt="" style="opacity: 0.45; right: 40px; bottom: -60px; width: 550px; height: 700px; object-fit: cover; filter: saturate(0.8) brightness(0.95);">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 16: ebook-guia-mestre-eficaz -->
+<p class="label">ebook-guia-mestre-eficaz.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #151520 40%, #1a1a28 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/kraken.png" alt="" style="opacity: 0.3; width: 780px; height: 780px; right: -40px; bottom: -80px;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 17: gerenciar-hp -->
+<p class="label">gerenciar-hp.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/oni.png" alt="" style="opacity: 0.4;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 18: 7-erros-combate -->
+<p class="label">7-erros-combate.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/flameskull.png" alt="" style="opacity: 0.45; width: 600px; height: 600px;">
+  <div class="hero-vignette"></div>
+</div>
+
+<!-- 19: iniciativa -->
+<p class="label">iniciativa.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <img class="hero-art" src="../arts/assets/werewolf.png" alt="" style="opacity: 0.4;">
+  <div class="hero-vignette"></div>
+</div>
+
+</body>
+</html>
