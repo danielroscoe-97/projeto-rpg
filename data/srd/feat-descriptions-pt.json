@@ -1,0 +1,650 @@
+{
+  "aberrant-dragonmark": {
+    "name_pt": "Aberrante Marca do Dragão"
+  },
+  "ability-score-improvement": {
+    "name_pt": "Habilidade Atributo Melhoria"
+  },
+  "actor": {
+    "name_pt": "Ator"
+  },
+  "adept-of-the-black-robes": {
+    "name_pt": "Adepto of the Black Robes"
+  },
+  "adept-of-the-red-robes": {
+    "name_pt": "Adepto of the Red Robes"
+  },
+  "adept-of-the-white-robes": {
+    "name_pt": "Adepto of the White Robes"
+  },
+  "agent-of-order": {
+    "name_pt": "Agent of Order"
+  },
+  "alert": {
+    "name_pt": "Alerta"
+  },
+  "archery": {
+    "name_pt": "Archery"
+  },
+  "artificer-initiate": {
+    "name_pt": "Artificer Iniciado"
+  },
+  "athlete": {
+    "name_pt": "Atleta"
+  },
+  "baleful-scion": {
+    "name_pt": "Baleful Scion"
+  },
+  "blessed-warrior": {
+    "name_pt": "Blessed Warrior"
+  },
+  "blind-fighting": {
+    "name_pt": "Blind Luta"
+  },
+  "bloodlust": {
+    "name_pt": "Bloodlust"
+  },
+  "bomber": {
+    "name_pt": "Bomber"
+  },
+  "boon-of-blazing-dawn": {
+    "name_pt": "Boon of Blazing Dawn"
+  },
+  "boon-of-bloodshed": {
+    "name_pt": "Boon of Bloodshed"
+  },
+  "boon-of-bountiful-health": {
+    "name_pt": "Boon of Bountiful Health"
+  },
+  "boon-of-combat-prowess": {
+    "name_pt": "Boon of Combate Prowess"
+  },
+  "boon-of-communication": {
+    "name_pt": "Boon of Communication"
+  },
+  "boon-of-desperate-resilience": {
+    "name_pt": "Boon of Desperate Resilience"
+  },
+  "boon-of-dimensional-travel": {
+    "name_pt": "Boon of Dimensional Travel"
+  },
+  "boon-of-energy-resistance": {
+    "name_pt": "Boon of Energy Resistance"
+  },
+  "boon-of-exquisite-radiance": {
+    "name_pt": "Boon of Exquisite Radiance"
+  },
+  "boon-of-fate": {
+    "name_pt": "Boon of Fate"
+  },
+  "boon-of-fluid-forms": {
+    "name_pt": "Boon of Fluid Forms"
+  },
+  "boon-of-fortitude": {
+    "name_pt": "Boon of Fortitude"
+  },
+  "boon-of-fortunes-favor": {
+    "name_pt": "Boon of Fortune's Favor"
+  },
+  "boon-of-irresistible-offense": {
+    "name_pt": "Boon of Irresistible Offense"
+  },
+  "boon-of-looming-shadows": {
+    "name_pt": "Boon of Looming Shadows"
+  },
+  "boon-of-misty-escape": {
+    "name_pt": "Boon of Misty Escape"
+  },
+  "boon-of-poison-mastery": {
+    "name_pt": "Boon of Poison Mastery"
+  },
+  "boon-of-recovery": {
+    "name_pt": "Boon of Recovery"
+  },
+  "boon-of-revelry": {
+    "name_pt": "Boon of Revelry"
+  },
+  "boon-of-siberys": {
+    "name_pt": "Boon of Siberys"
+  },
+  "boon-of-skill": {
+    "name_pt": "Boon of Skill"
+  },
+  "boon-of-speed": {
+    "name_pt": "Boon of Speed"
+  },
+  "boon-of-spell-recall": {
+    "name_pt": "Boon of Magia Recall"
+  },
+  "boon-of-terror": {
+    "name_pt": "Boon of Terror"
+  },
+  "boon-of-the-bright-sun": {
+    "name_pt": "Boon of the Bright Sun"
+  },
+  "boon-of-the-furious-storm": {
+    "name_pt": "Boon of the Furious Storm"
+  },
+  "boon-of-the-night-spirit": {
+    "name_pt": "Boon of the Night Spirit"
+  },
+  "boon-of-the-soul-drinker": {
+    "name_pt": "Boon of the Soul Drinker"
+  },
+  "boon-of-truesight": {
+    "name_pt": "Boon of Truesight"
+  },
+  "bountiful-luck": {
+    "name_pt": "Bountiful Luck"
+  },
+  "cartomancer": {
+    "name_pt": "Cartomancer"
+  },
+  "charger": {
+    "name_pt": "Investidor"
+  },
+  "chef": {
+    "name_pt": "Chef"
+  },
+  "child-of-the-sun": {
+    "name_pt": "Child of the Sun"
+  },
+  "cloying-mists": {
+    "name_pt": "Cloying Mists"
+  },
+  "cohort-of-chaos": {
+    "name_pt": "Cohort of Chaos"
+  },
+  "cold-caster": {
+    "name_pt": "Cold Conjurador"
+  },
+  "crafter": {
+    "name_pt": "Crafter"
+  },
+  "crossbow-expert": {
+    "name_pt": "Besta Especialista"
+  },
+  "crusher": {
+    "name_pt": "Esmagador"
+  },
+  "cult-of-the-dragon-initiate": {
+    "name_pt": "Cult of the Dragão Iniciado"
+  },
+  "defense": {
+    "name_pt": "Defesa"
+  },
+  "defensive-duelist": {
+    "name_pt": "Defensive Duelist"
+  },
+  "delicious-pain": {
+    "name_pt": "Delicious Pain"
+  },
+  "divinely-favored": {
+    "name_pt": "Divinely Favored"
+  },
+  "dragon-fear": {
+    "name_pt": "Dragão Fear"
+  },
+  "dragon-hide": {
+    "name_pt": "Dragão Hide"
+  },
+  "dragonscarred": {
+    "name_pt": "Dragonscarred"
+  },
+  "drow-high-magic": {
+    "name_pt": "Drow High Mágico"
+  },
+  "druidic-warrior": {
+    "name_pt": "Druidic Warrior"
+  },
+  "dual-wielder": {
+    "name_pt": "Duplo Portador"
+  },
+  "dueling": {
+    "name_pt": "Dueling"
+  },
+  "dungeon-delver": {
+    "name_pt": "Dungeon Delver"
+  },
+  "durable": {
+    "name_pt": "Durável"
+  },
+  "dwarven-fortitude": {
+    "name_pt": "Dwarven Fortitude"
+  },
+  "eldritch-adept": {
+    "name_pt": "Eldritch Adepto"
+  },
+  "elemental-adept": {
+    "name_pt": "Elemental Adepto"
+  },
+  "elven-accuracy": {
+    "name_pt": "Elven Accuracy"
+  },
+  "ember-of-the-fire-giant": {
+    "name_pt": "Ember of the Fire Giant"
+  },
+  "emerald-enclave-fledgling": {
+    "name_pt": "Emerald Enclave Fledgling"
+  },
+  "enclave-magic": {
+    "name_pt": "Enclave Mágico"
+  },
+  "fade-away": {
+    "name_pt": "Fade Away"
+  },
+  "fairy-trickster": {
+    "name_pt": "Fairy Trickster"
+  },
+  "fey-teleportation": {
+    "name_pt": "Feérico Teleportation"
+  },
+  "fey-touched": {
+    "name_pt": "Feérico Tocado"
+  },
+  "fighting-initiate": {
+    "name_pt": "Luta Iniciado"
+  },
+  "flames-of-phlegethos": {
+    "name_pt": "Flames of Phlegethos"
+  },
+  "fury-of-the-frost-giant": {
+    "name_pt": "Fury of the Frost Giant"
+  },
+  "genie-magic": {
+    "name_pt": "Genie Mágico"
+  },
+  "gift-of-the-chromatic-dragon": {
+    "name_pt": "Gift of the Chromatic Dragão"
+  },
+  "gift-of-the-gem-dragon": {
+    "name_pt": "Gift of the Gem Dragão"
+  },
+  "gift-of-the-metallic-dragon": {
+    "name_pt": "Gift of the Metallic Dragão"
+  },
+  "grappler": {
+    "name_pt": "Agarrador"
+  },
+  "great-weapon-fighting": {
+    "name_pt": "Grande Arma Luta"
+  },
+  "great-weapon-master": {
+    "name_pt": "Grande Arma Mestre"
+  },
+  "greater-aberrant-mark": {
+    "name_pt": "Greater Aberrante Mark"
+  },
+  "greater-mark-of-detection": {
+    "name_pt": "Greater Mark of Detection"
+  },
+  "greater-mark-of-finding": {
+    "name_pt": "Greater Mark of Finding"
+  },
+  "greater-mark-of-handling": {
+    "name_pt": "Greater Mark of Handling"
+  },
+  "greater-mark-of-healing": {
+    "name_pt": "Greater Mark of Healing"
+  },
+  "greater-mark-of-hospitality": {
+    "name_pt": "Greater Mark of Hospitality"
+  },
+  "greater-mark-of-making": {
+    "name_pt": "Greater Mark of Making"
+  },
+  "greater-mark-of-passage": {
+    "name_pt": "Greater Mark of Passage"
+  },
+  "greater-mark-of-scribing": {
+    "name_pt": "Greater Mark of Scribing"
+  },
+  "greater-mark-of-sentinel": {
+    "name_pt": "Greater Mark of Sentinela"
+  },
+  "greater-mark-of-shadow": {
+    "name_pt": "Greater Mark of Sombra"
+  },
+  "greater-mark-of-storm": {
+    "name_pt": "Greater Mark of Storm"
+  },
+  "greater-mark-of-warding": {
+    "name_pt": "Greater Mark of Warding"
+  },
+  "guile-of-the-cloud-giant": {
+    "name_pt": "Guile of the Cloud Giant"
+  },
+  "gunner": {
+    "name_pt": "Atirador"
+  },
+  "harper-agent": {
+    "name_pt": "Harper Agent"
+  },
+  "harper-teamwork": {
+    "name_pt": "Harper Teamwork"
+  },
+  "healer": {
+    "name_pt": "Curandeiro"
+  },
+  "heavily-armored": {
+    "name_pt": "Heavily Armored"
+  },
+  "heavy-armor-master": {
+    "name_pt": "Pesado Armadura Mestre"
+  },
+  "infernal-constitution": {
+    "name_pt": "Infernal Constitution"
+  },
+  "initiate-of-high-sorcery": {
+    "name_pt": "Iniciado of High Sorcery"
+  },
+  "inspiring-leader": {
+    "name_pt": "Inspirador Leader"
+  },
+  "interception": {
+    "name_pt": "Interception"
+  },
+  "keen-mind": {
+    "name_pt": "Perspicaz Mind"
+  },
+  "keenness-of-the-stone-giant": {
+    "name_pt": "Keenness of the Stone Giant"
+  },
+  "knight-of-the-crown": {
+    "name_pt": "Knight of the Crown"
+  },
+  "knight-of-the-rose": {
+    "name_pt": "Knight of the Rose"
+  },
+  "knight-of-the-sword": {
+    "name_pt": "Knight of the Sword"
+  },
+  "light-bringer": {
+    "name_pt": "Light Bringer"
+  },
+  "lightly-armored": {
+    "name_pt": "Levemente Armored"
+  },
+  "linguist": {
+    "name_pt": "Linguist"
+  },
+  "lordly-resolve": {
+    "name_pt": "Lordly Resolve"
+  },
+  "lords-alliance-agent": {
+    "name_pt": "Lords' Alliance Agent"
+  },
+  "love-bites": {
+    "name_pt": "Love Bites"
+  },
+  "lucky": {
+    "name_pt": "Sortudo"
+  },
+  "mage-slayer": {
+    "name_pt": "Mago Matador"
+  },
+  "magic-initiate": {
+    "name_pt": "Mágico Iniciado"
+  },
+  "mark-of-detection": {
+    "name_pt": "Mark of Detection"
+  },
+  "mark-of-finding": {
+    "name_pt": "Mark of Finding"
+  },
+  "mark-of-handling": {
+    "name_pt": "Mark of Handling"
+  },
+  "mark-of-healing": {
+    "name_pt": "Mark of Healing"
+  },
+  "mark-of-hospitality": {
+    "name_pt": "Mark of Hospitality"
+  },
+  "mark-of-making": {
+    "name_pt": "Mark of Making"
+  },
+  "mark-of-passage": {
+    "name_pt": "Mark of Passage"
+  },
+  "mark-of-scribing": {
+    "name_pt": "Mark of Scribing"
+  },
+  "mark-of-sentinel": {
+    "name_pt": "Mark of Sentinela"
+  },
+  "mark-of-shadow": {
+    "name_pt": "Mark of Sombra"
+  },
+  "mark-of-storm": {
+    "name_pt": "Mark of Storm"
+  },
+  "mark-of-warding": {
+    "name_pt": "Mark of Warding"
+  },
+  "martial-adept": {
+    "name_pt": "Marcial Adepto"
+  },
+  "martial-weapon-training": {
+    "name_pt": "Marcial Arma Treinamento"
+  },
+  "medium-armor-master": {
+    "name_pt": "Médio Armadura Mestre"
+  },
+  "metamagic-adept": {
+    "name_pt": "Metamagia Adepto"
+  },
+  "mobile": {
+    "name_pt": "Móvel"
+  },
+  "moderately-armored": {
+    "name_pt": "Moderately Armored"
+  },
+  "mounted-combatant": {
+    "name_pt": "Montado Combatant"
+  },
+  "musician": {
+    "name_pt": "Musician"
+  },
+  "mythal-touched": {
+    "name_pt": "Mythal Tocado"
+  },
+  "observant": {
+    "name_pt": "Observador"
+  },
+  "orcish-fury": {
+    "name_pt": "Orcish Fury"
+  },
+  "orders-resilience": {
+    "name_pt": "Order's Resilience"
+  },
+  "outlands-envoy": {
+    "name_pt": "Outlands Envoy"
+  },
+  "piercer": {
+    "name_pt": "Perfurador"
+  },
+  "planar-wanderer": {
+    "name_pt": "Planar Wanderer"
+  },
+  "poisoner": {
+    "name_pt": "Envenenador"
+  },
+  "polearm-master": {
+    "name_pt": "Polearm Mestre"
+  },
+  "potent-dragonmark": {
+    "name_pt": "Potent Marca do Dragão"
+  },
+  "prodigy": {
+    "name_pt": "Prodígio"
+  },
+  "protection": {
+    "name_pt": "Protection"
+  },
+  "purple-dragon-commandant": {
+    "name_pt": "Purple Dragão Commandant"
+  },
+  "purple-dragon-rook": {
+    "name_pt": "Purple Dragão Rook"
+  },
+  "putrefy": {
+    "name_pt": "Putrefy"
+  },
+  "quicksmithing": {
+    "name_pt": "Quicksmithing"
+  },
+  "rebuke": {
+    "name_pt": "Rebuke"
+  },
+  "resilient": {
+    "name_pt": "Resiliente"
+  },
+  "revenant-blade": {
+    "name_pt": "Revenant Blade"
+  },
+  "righteous-heritor": {
+    "name_pt": "Righteous Heritor"
+  },
+  "ritual-caster": {
+    "name_pt": "Ritual Conjurador"
+  },
+  "rune-shaper": {
+    "name_pt": "Rune Shaper"
+  },
+  "savage-attacker": {
+    "name_pt": "Selvagem Atacante"
+  },
+  "scion-of-the-outer-planes": {
+    "name_pt": "Scion of the Outer Planes"
+  },
+  "second-chance": {
+    "name_pt": "Second Chance"
+  },
+  "sentinel": {
+    "name_pt": "Sentinela"
+  },
+  "servo-crafting": {
+    "name_pt": "Servo Crafting"
+  },
+  "shadow-touched": {
+    "name_pt": "Sombra Tocado"
+  },
+  "shadowmoor-hexer": {
+    "name_pt": "Shadowmoor Hexer"
+  },
+  "sharpshooter": {
+    "name_pt": "Atirador Preciso"
+  },
+  "shield-master": {
+    "name_pt": "Escudo Mestre"
+  },
+  "skill-expert": {
+    "name_pt": "Skill Especialista"
+  },
+  "skilled": {
+    "name_pt": "Habilidoso"
+  },
+  "skulker": {
+    "name_pt": "Espreitador"
+  },
+  "slasher": {
+    "name_pt": "Cortante"
+  },
+  "soul-of-the-storm-giant": {
+    "name_pt": "Soul of the Storm Giant"
+  },
+  "speedy": {
+    "name_pt": "Speedy"
+  },
+  "spell-sniper": {
+    "name_pt": "Magia Sniper"
+  },
+  "spellfire-adept": {
+    "name_pt": "Spellfire Adepto"
+  },
+  "spellfire-spark": {
+    "name_pt": "Spellfire Spark"
+  },
+  "squat-nimbleness": {
+    "name_pt": "Squat Nimbleness"
+  },
+  "squire-of-solamnia": {
+    "name_pt": "Squire of Solamnia"
+  },
+  "street-justice": {
+    "name_pt": "Street Justice"
+  },
+  "strike-of-the-giants": {
+    "name_pt": "Strike of the Giants"
+  },
+  "strixhaven-initiate": {
+    "name_pt": "Strixhaven Iniciado"
+  },
+  "strixhaven-mascot": {
+    "name_pt": "Strixhaven Mascot"
+  },
+  "svirfneblin-magic": {
+    "name_pt": "Svirfneblin Mágico"
+  },
+  "tavern-brawler": {
+    "name_pt": "Taverna Brigador"
+  },
+  "telekinetic": {
+    "name_pt": "Telecinético"
+  },
+  "telepathic": {
+    "name_pt": "Telepático"
+  },
+  "thrown-weapon-fighting": {
+    "name_pt": "Thrown Arma Luta"
+  },
+  "tireless-reveler": {
+    "name_pt": "Tireless Reveler"
+  },
+  "tough": {
+    "name_pt": "Resistente"
+  },
+  "treacherous-allure": {
+    "name_pt": "Treacherous Allure"
+  },
+  "two-weapon-fighting": {
+    "name_pt": "Two-Weapon Luta"
+  },
+  "tyro-of-the-gauntlet": {
+    "name_pt": "Tyro of the Gauntlet"
+  },
+  "unarmed-fighting": {
+    "name_pt": "Unarmed Luta"
+  },
+  "vampire-hunter": {
+    "name_pt": "Vampire Hunter"
+  },
+  "vampire-touched": {
+    "name_pt": "Vampire Tocado"
+  },
+  "vampires-plaything": {
+    "name_pt": "Vampire's Plaything"
+  },
+  "vampiric-exultation": {
+    "name_pt": "Vampiric Exultation"
+  },
+  "vigor-of-the-hill-giant": {
+    "name_pt": "Vigor of the Hill Giant"
+  },
+  "war-caster": {
+    "name_pt": "Guerra Conjurador"
+  },
+  "weapon-master": {
+    "name_pt": "Arma Mestre"
+  },
+  "wood-elf-magic": {
+    "name_pt": "Wood Elf Mágico"
+  },
+  "zhentarim-ruffian": {
+    "name_pt": "Zhentarim Ruffian"
+  },
+  "zhentarim-tactics": {
+    "name_pt": "Zhentarim Tactics"
+  }
+}

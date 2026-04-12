@@ -1,0 +1,5957 @@
+{
+  "1-all-purpose-tool": {
+    "name_pt": "All-Purpose Ferramenta +1"
+  },
+  "1-amulet-of-the-devout": {
+    "name_pt": "Amuleto de o Devout +1"
+  },
+  "1-arcane-grimoire": {
+    "name_pt": "Arcane Grimoire +1"
+  },
+  "1-bloodwell-vial": {
+    "name_pt": "Bloodwell Frasco +1"
+  },
+  "1-dragonhide-belt": {
+    "name_pt": "Dragonhide Cinto +1"
+  },
+  "1-fate-dealers-deck": {
+    "name_pt": "Fate Dealer's Baralho +1"
+  },
+  "1-moon-sickle": {
+    "name_pt": "Moon Sickle +1"
+  },
+  "1-rhythm-makers-drum": {
+    "name_pt": "Rhythm-Maker's Drum +1"
+  },
+  "1-rod-of-the-pact-keeper": {
+    "name_pt": "Bastão de o Pact Keeper +1"
+  },
+  "1-wand-of-the-war-mage": {
+    "name_pt": "Varinha de o War Mage +1"
+  },
+  "1-wraps-of-unarmed-power": {
+    "name_pt": "Wraps de Unarmed Poder +1"
+  },
+  "1-wraps-of-unarmed-prowess": {
+    "name_pt": "Wraps de Unarmed Prowess +1"
+  },
+  "2-all-purpose-tool": {
+    "name_pt": "All-Purpose Ferramenta +2"
+  },
+  "2-amulet-of-the-devout": {
+    "name_pt": "Amuleto de o Devout +2"
+  },
+  "2-arcane-grimoire": {
+    "name_pt": "Arcane Grimoire +2"
+  },
+  "2-bloodwell-vial": {
+    "name_pt": "Bloodwell Frasco +2"
+  },
+  "2-dragonhide-belt": {
+    "name_pt": "Dragonhide Cinto +2"
+  },
+  "2-fate-dealers-deck": {
+    "name_pt": "Fate Dealer's Baralho +2"
+  },
+  "2-moon-sickle": {
+    "name_pt": "Moon Sickle +2"
+  },
+  "2-rhythm-makers-drum": {
+    "name_pt": "Rhythm-Maker's Drum +2"
+  },
+  "2-rod-of-the-pact-keeper": {
+    "name_pt": "Bastão de o Pact Keeper +2"
+  },
+  "2-wand-of-the-war-mage": {
+    "name_pt": "Varinha de o War Mage +2"
+  },
+  "2-wraps-of-unarmed-power": {
+    "name_pt": "Wraps de Unarmed Poder +2"
+  },
+  "2-wraps-of-unarmed-prowess": {
+    "name_pt": "Wraps de Unarmed Prowess +2"
+  },
+  "3-all-purpose-tool": {
+    "name_pt": "All-Purpose Ferramenta +3"
+  },
+  "3-amulet-of-the-devout": {
+    "name_pt": "Amuleto de o Devout +3"
+  },
+  "3-arcane-grimoire": {
+    "name_pt": "Arcane Grimoire +3"
+  },
+  "3-bloodwell-vial": {
+    "name_pt": "Bloodwell Frasco +3"
+  },
+  "3-dragonhide-belt": {
+    "name_pt": "Dragonhide Cinto +3"
+  },
+  "3-fate-dealers-deck": {
+    "name_pt": "Fate Dealer's Baralho +3"
+  },
+  "3-moon-sickle": {
+    "name_pt": "Moon Sickle +3"
+  },
+  "3-rhythm-makers-drum": {
+    "name_pt": "Rhythm-Maker's Drum +3"
+  },
+  "3-rod-of-the-pact-keeper": {
+    "name_pt": "Bastão de o Pact Keeper +3"
+  },
+  "3-wand-of-the-war-mage": {
+    "name_pt": "Varinha de o War Mage +3"
+  },
+  "3-wraps-of-unarmed-power": {
+    "name_pt": "Wraps de Unarmed Poder +3"
+  },
+  "3-wraps-of-unarmed-prowess": {
+    "name_pt": "Wraps de Unarmed Prowess +3"
+  },
+  "abacus": {
+    "name_pt": "Abacus"
+  },
+  "abracadabrus": {
+    "name_pt": "Abracadabrus"
+  },
+  "accounting-and-valuation-of-all-things": {
+    "name_pt": "Accounting e Valuation de Todos Things"
+  },
+  "acid": {
+    "name_pt": "Ácido"
+  },
+  "acid-vial": {
+    "name_pt": "Ácido (vial)"
+  },
+  "acid-absorbing-tattoo": {
+    "name_pt": "Ácido Absorbing Tattoo"
+  },
+  "adamantine-bar": {
+    "name_pt": "Adamantina Bar"
+  },
+  "adjustable-stilts": {
+    "name_pt": "Adjustable Stilts"
+  },
+  "adventurers-ring": {
+    "name_pt": "Anel de Adventurer"
+  },
+  "adze-of-annam": {
+    "name_pt": "Adze de Annam"
+  },
+  "aerenal-trinket": {
+    "name_pt": "Aerenal Trinket"
+  },
+  "airship": {
+    "name_pt": "Airship"
+  },
+  "akmon-hammer-of-purphoros": {
+    "name_pt": "Akmon, Martelo de Purphoros"
+  },
+  "alchemical-compendium": {
+    "name_pt": "Alchemical Compendium"
+  },
+  "alchemists-doom": {
+    "name_pt": "Doom de Alchemist"
+  },
+  "alchemists-fire": {
+    "name_pt": "Fogo de Alchemist"
+  },
+  "alchemists-fire-flask": {
+    "name_pt": "Fogo (flask) de Alchemist"
+  },
+  "alchemists-supplies": {
+    "name_pt": "Supplies de Alchemist"
+  },
+  "alchemy-jug": {
+    "name_pt": "Alchemy Jarra"
+  },
+  "alchemy-jug-blue": {
+    "name_pt": "Alchemy Jarra (Blue)"
+  },
+  "alchemy-jug-orange": {
+    "name_pt": "Alchemy Jarra (Orange)"
+  },
+  "ale-gallon": {
+    "name_pt": "Ale (gallon)"
+  },
+  "ale-mug": {
+    "name_pt": "Ale (mug)"
+  },
+  "alexandrite": {
+    "name_pt": "Alexandrite"
+  },
+  "amber": {
+    "name_pt": "Amber"
+  },
+  "amber-runestone": {
+    "name_pt": "Amber Runestone"
+  },
+  "amethyst": {
+    "name_pt": "Ametista"
+  },
+  "amethyst-lodestone": {
+    "name_pt": "Ametista Lodestone"
+  },
+  "amulet": {
+    "name_pt": "Amuleto"
+  },
+  "amulet-of-appearance": {
+    "name_pt": "Amuleto de Appearance"
+  },
+  "amulet-of-betrayal": {
+    "name_pt": "Amuleto de Betrayal"
+  },
+  "amulet-of-dinosaur-feathers-sun-empire": {
+    "name_pt": "Amuleto de dinosaur feathers (Sun Empire)"
+  },
+  "amulet-of-duplicity": {
+    "name_pt": "Amuleto de Duplicity"
+  },
+  "amulet-of-harmony": {
+    "name_pt": "Amuleto de Harmony"
+  },
+  "amulet-of-health": {
+    "name_pt": "Amuleto de Health"
+  },
+  "amulet-of-proof-against-detection-and-location": {
+    "name_pt": "Amuleto de Proof contra Detection e Location"
+  },
+  "amulet-of-protection-from-turning": {
+    "name_pt": "Amuleto de Proteção de Turning"
+  },
+  "amulet-of-the-black-skull": {
+    "name_pt": "Amuleto de o Black Skull"
+  },
+  "amulet-of-the-drunkard": {
+    "name_pt": "Amuleto de o Drunkard"
+  },
+  "amulet-of-the-inferno": {
+    "name_pt": "Amuleto de o Inferno"
+  },
+  "amulet-of-the-planes": {
+    "name_pt": "Amuleto de o Planes"
+  },
+  "animated-shield": {
+    "name_pt": "Animado Escudo"
+  },
+  "antigravity-belt": {
+    "name_pt": "Antigravity Cinto"
+  },
+  "antimatter-rifle": {
+    "name_pt": "Antimatter Rifle"
+  },
+  "antitoxin": {
+    "name_pt": "Antitoxin"
+  },
+  "antitoxin-vial": {
+    "name_pt": "Antitoxin (vial)"
+  },
+  "apparatus-of-kwalish": {
+    "name_pt": "Apparatus de Kwalish"
+  },
+  "aquamarine": {
+    "name_pt": "Aquamarine"
+  },
+  "arcanaloths-music-box": {
+    "name_pt": "Music Caixa de Arcanaloth"
+  },
+  "arcane-battery": {
+    "name_pt": "Arcane Battery"
+  },
+  "arcane-cannon": {
+    "name_pt": "Arcane Cannon"
+  },
+  "arcane-propulsion-arm": {
+    "name_pt": "Arcane Propulsion Arm"
+  },
+  "argonnessen-trinket": {
+    "name_pt": "Argonnessen Trinket"
+  },
+  "armor-of-acid-resistance": {
+    "name_pt": "Armadura de Ácido Resistência"
+  },
+  "armor-of-cold-resistance": {
+    "name_pt": "Armadura de Frio Resistência"
+  },
+  "armor-of-fire-resistance": {
+    "name_pt": "Armadura de Fogo Resistência"
+  },
+  "armor-of-force-resistance": {
+    "name_pt": "Armadura de Força Resistência"
+  },
+  "armor-of-invulnerability": {
+    "name_pt": "Armadura de Invulnerability"
+  },
+  "armor-of-lightning-resistance": {
+    "name_pt": "Armadura de Relâmpago Resistência"
+  },
+  "armor-of-necrotic-resistance": {
+    "name_pt": "Armadura de Necrótico Resistência"
+  },
+  "armor-of-poison-resistance": {
+    "name_pt": "Armadura de Veneno Resistência"
+  },
+  "armor-of-psychic-resistance": {
+    "name_pt": "Armadura de Psíquico Resistência"
+  },
+  "armor-of-radiant-resistance": {
+    "name_pt": "Armadura de Radiante Resistência"
+  },
+  "armor-of-thunder-resistance": {
+    "name_pt": "Armadura de Trovão Resistência"
+  },
+  "armor-of-vulnerability-bludgeoning": {
+    "name_pt": "Armadura de Vulnerability (Bludgeoning)"
+  },
+  "armor-of-vulnerability-piercing": {
+    "name_pt": "Armadura de Vulnerability (Piercing)"
+  },
+  "armor-of-vulnerability-slashing": {
+    "name_pt": "Armadura de Vulnerability (Slashing)"
+  },
+  "arrow": {
+    "name_pt": "Arrow"
+  },
+  "arrow-catching-shield": {
+    "name_pt": "Arrow-Catching Escudo"
+  },
+  "arrows-20": {
+    "name_pt": "Arrows (20)"
+  },
+  "ascendant-dragon-vessel": {
+    "name_pt": "Ascendant Dragão Vessel"
+  },
+  "ascendant-dragon-touched-focus": {
+    "name_pt": "Ascendant Dragon-Touched Focus"
+  },
+  "ascendant-dragons-wrath-weapon": {
+    "name_pt": "Ascendant Dragon's Wrath Weapon"
+  },
+  "ascendant-scaled-ornament": {
+    "name_pt": "Ascendant Scaled Ornament"
+  },
+  "assassins-blood": {
+    "name_pt": "Blood de Assassin"
+  },
+  "astral-shard": {
+    "name_pt": "Astral Shard"
+  },
+  "astromancy-archive": {
+    "name_pt": "Astromancy Archive"
+  },
+  "atlas-of-endless-horizons": {
+    "name_pt": "Atlas de Endless Horizons"
+  },
+  "automatic-pistol": {
+    "name_pt": "Automatic Pistol"
+  },
+  "automatic-rifle": {
+    "name_pt": "Automatic Rifle"
+  },
+  "axe-beak": {
+    "name_pt": "Machado Beak"
+  },
+  "axe-of-the-dwarvish-lords": {
+    "name_pt": "Machado de o Dwarvish Lords"
+  },
+  "azorius-guild-signet": {
+    "name_pt": "Azorius Guild Signet"
+  },
+  "azorius-keyrune": {
+    "name_pt": "Azorius Keyrune"
+  },
+  "azuredge": {
+    "name_pt": "Azuredge"
+  },
+  "azurite": {
+    "name_pt": "Azurite"
+  },
+  "baba-yagas-dancing-broom": {
+    "name_pt": "Baba Yaga's Dançante Broom"
+  },
+  "baba-yagas-mortar-and-pestle": {
+    "name_pt": "Baba Yaga's Mortar e Pestle"
+  },
+  "baba-yagas-pestle": {
+    "name_pt": "Baba Yaga's Pestle"
+  },
+  "backpack": {
+    "name_pt": "Mochila"
+  },
+  "backpack-parachute": {
+    "name_pt": "Mochila Parachute"
+  },
+  "badge-of-the-watch": {
+    "name_pt": "Badge de o Watch"
+  },
+  "bag-of-beans": {
+    "name_pt": "Bolsa de Beans"
+  },
+  "bag-of-devouring": {
+    "name_pt": "Bolsa de Devouring"
+  },
+  "bag-of-holding": {
+    "name_pt": "Bolsa de Holding"
+  },
+  "bag-of-tricks-gray": {
+    "name_pt": "Bolsa de Tricks, Gray"
+  },
+  "bag-of-tricks-rust": {
+    "name_pt": "Bolsa de Tricks, Rust"
+  },
+  "bag-of-tricks-tan": {
+    "name_pt": "Bolsa de Tricks, Tan"
+  },
+  "bagpipes": {
+    "name_pt": "Bagpipes"
+  },
+  "balance-card": {
+    "name_pt": "Balance Carta"
+  },
+  "balance-of-harmony": {
+    "name_pt": "Balance de Harmony"
+  },
+  "baleful-talon": {
+    "name_pt": "Baleful Talon"
+  },
+  "ball-bearing": {
+    "name_pt": "Ball Bearing"
+  },
+  "ball-bearings": {
+    "name_pt": "Ball Bearings"
+  },
+  "ball-bearings-bag-of-1-000": {
+    "name_pt": "Ball Bearings (bag de 1,000)"
+  },
+  "balloon-pack": {
+    "name_pt": "Balloon Mochila"
+  },
+  "banded-agate": {
+    "name_pt": "Banded Agate"
+  },
+  "bandore": {
+    "name_pt": "Bandore"
+  },
+  "banner-of-the-krig-rune": {
+    "name_pt": "Banner de o Krig Rune"
+  },
+  "barking-box": {
+    "name_pt": "Barking Caixa"
+  },
+  "barrel": {
+    "name_pt": "Barrel"
+  },
+  "barrier-peaks-trinket": {
+    "name_pt": "Barrier Peaks Trinket"
+  },
+  "barrier-tattoo-large": {
+    "name_pt": "Barrier Tattoo (Large)"
+  },
+  "barrier-tattoo-medium": {
+    "name_pt": "Barrier Tattoo (Medium)"
+  },
+  "barrier-tattoo-small": {
+    "name_pt": "Barrier Tattoo (Small)"
+  },
+  "basic-fishing-equipment": {
+    "name_pt": "Basic Fishing Equipment"
+  },
+  "basic-poison": {
+    "name_pt": "Basic Veneno"
+  },
+  "basic-poison-vial": {
+    "name_pt": "Basic Veneno (vial)"
+  },
+  "basket": {
+    "name_pt": "Basket"
+  },
+  "battering-shield": {
+    "name_pt": "Battering Escudo"
+  },
+  "battle-standard-of-infernal-power": {
+    "name_pt": "Battle Standard de Infernal Poder"
+  },
+  "battleaxe": {
+    "name_pt": "Machado de Batalha"
+  },
+  "bead-of-force": {
+    "name_pt": "Bead de Força"
+  },
+  "bead-of-nourishment": {
+    "name_pt": "Bead de Nourishment"
+  },
+  "bead-of-refreshment": {
+    "name_pt": "Bead de Refreshment"
+  },
+  "bedroll": {
+    "name_pt": "Bedroll"
+  },
+  "bejeweled-gold-bracelet": {
+    "name_pt": "Bejeweled Ouro bracelet"
+  },
+  "bejeweled-ivory-drinking-horn-with-gold-filigree": {
+    "name_pt": "Bejeweled Marfim drinking Trompa com Ouro filigree"
+  },
+  "bejeweled-ivory-drinking-horn-with-gold-inlay-brazen-coalition": {
+    "name_pt": "Bejeweled Marfim drinking Trompa com Ouro inlay (Brazen Coalition)"
+  },
+  "belashyrras-beholder-crown": {
+    "name_pt": "Beholder Coroa de Belashyrra"
+  },
+  "bell": {
+    "name_pt": "Bell"
+  },
+  "bell-branch": {
+    "name_pt": "Bell Branch"
+  },
+  "belt-of-cloud-giant-strength": {
+    "name_pt": "Cinto de Cloud Gigante Força"
+  },
+  "belt-of-dwarvenkind": {
+    "name_pt": "Cinto de Dwarvenkind"
+  },
+  "belt-of-fire-giant-strength": {
+    "name_pt": "Cinto de Fogo Gigante Força"
+  },
+  "belt-of-frost-giant-strength": {
+    "name_pt": "Cinto de Gelo Gigante Força"
+  },
+  "belt-of-hill-giant-strength": {
+    "name_pt": "Cinto de Hill Gigante Força"
+  },
+  "belt-of-stone-giant-strength": {
+    "name_pt": "Cinto de Pedra Gigante Força"
+  },
+  "belt-of-storm-giant-strength": {
+    "name_pt": "Cinto de Tempestade Gigante Força"
+  },
+  "bigbys-beneficent-bracelet": {
+    "name_pt": "Beneficent Bracelet de Bigby"
+  },
+  "birdpipes": {
+    "name_pt": "Birdpipes"
+  },
+  "bit-and-bridle": {
+    "name_pt": "Bit e bridle"
+  },
+  "bizas-breath": {
+    "name_pt": "Breath de Biza"
+  },
+  "black-chromatic-rose": {
+    "name_pt": "Black Chromatic Rose"
+  },
+  "black-crystal-tablet": {
+    "name_pt": "Black Cristal Tablet"
+  },
+  "black-dragon-mask": {
+    "name_pt": "Black Dragão Mask"
+  },
+  "black-dragon-scale-mail": {
+    "name_pt": "Black Dragão Escamas Malha"
+  },
+  "black-ghost-orchid-seed": {
+    "name_pt": "Black Ghost Orchid Seed"
+  },
+  "black-opal": {
+    "name_pt": "Black Opala"
+  },
+  "black-pearl": {
+    "name_pt": "Black Pérola"
+  },
+  "black-sap": {
+    "name_pt": "Black Sap"
+  },
+  "black-sapphire": {
+    "name_pt": "Black Safira"
+  },
+  "black-velvet-mask-stitched-with-silver-thread": {
+    "name_pt": "Black velvet mask stitched com Prata thread"
+  },
+  "blackrazor": {
+    "name_pt": "Blackrazor"
+  },
+  "blackstaff": {
+    "name_pt": "Blackstaff"
+  },
+  "blade-of-avernus": {
+    "name_pt": "Blade de Avernus"
+  },
+  "blade-of-broken-mirrors-awakened": {
+    "name_pt": "Blade de Broken Mirrors (Awakened)"
+  },
+  "blade-of-broken-mirrors-dormant": {
+    "name_pt": "Blade de Broken Mirrors (Dormant)"
+  },
+  "blade-of-broken-mirrors-exalted": {
+    "name_pt": "Blade de Broken Mirrors (Exalted)"
+  },
+  "blanket": {
+    "name_pt": "Blanket"
+  },
+  "blast-scepter": {
+    "name_pt": "Blast Scepter"
+  },
+  "blasted-goggles": {
+    "name_pt": "Blasted Goggles"
+  },
+  "blasting-powder": {
+    "name_pt": "Blasting Pó"
+  },
+  "blight-ichor": {
+    "name_pt": "Blight Ichor"
+  },
+  "block-and-tackle": {
+    "name_pt": "Block e Tackle"
+  },
+  "blod-stone": {
+    "name_pt": "Blod Pedra"
+  },
+  "blood-fury-tattoo": {
+    "name_pt": "Blood Fury Tattoo"
+  },
+  "blood-of-the-lycanthrope": {
+    "name_pt": "Blood de o Lycanthrope"
+  },
+  "blood-of-the-lycanthrope-antidote": {
+    "name_pt": "Blood de o Lycanthrope Antidote"
+  },
+  "blood-spear": {
+    "name_pt": "Blood Lança"
+  },
+  "bloodaxe": {
+    "name_pt": "Bloodaxe"
+  },
+  "bloodrage-greataxe": {
+    "name_pt": "Bloodrage Machado Grande"
+  },
+  "bloodstone": {
+    "name_pt": "Bloodstone"
+  },
+  "blowgun": {
+    "name_pt": "Zarabatana"
+  },
+  "blowgun-needle": {
+    "name_pt": "Zarabatana Needle"
+  },
+  "blowgun-needles-50": {
+    "name_pt": "Zarabatana Needles (50)"
+  },
+  "blue-chromatic-rose": {
+    "name_pt": "Blue Chromatic Rose"
+  },
+  "blue-dragon-mask": {
+    "name_pt": "Blue Dragão Mask"
+  },
+  "blue-dragon-scale-mail": {
+    "name_pt": "Blue Dragão Escamas Malha"
+  },
+  "blue-quartz": {
+    "name_pt": "Blue Quartz"
+  },
+  "blue-sapphire": {
+    "name_pt": "Blue Safira"
+  },
+  "blue-spinel": {
+    "name_pt": "Blue Spinel"
+  },
+  "bob": {
+    "name_pt": "Bob"
+  },
+  "bobbing-lily-pad": {
+    "name_pt": "Bobbing Lily Pad"
+  },
+  "bolt": {
+    "name_pt": "Bolt"
+  },
+  "bolts-20": {
+    "name_pt": "Bolts (20)"
+  },
+  "bomb": {
+    "name_pt": "Bomb"
+  },
+  "bombard": {
+    "name_pt": "Bombard"
+  },
+  "bonecounter": {
+    "name_pt": "Bonecounter"
+  },
+  "book": {
+    "name_pt": "Livro"
+  },
+  "book-of-exalted-deeds": {
+    "name_pt": "Livro de Exalted Deeds"
+  },
+  "book-of-vile-darkness": {
+    "name_pt": "Livro de Vile Escuridão"
+  },
+  "book-of-vile-darkness-variant": {
+    "name_pt": "Livro de Vile Escuridão (Variant)"
+  },
+  "bookmark": {
+    "name_pt": "Bookmark"
+  },
+  "boomerang-shield": {
+    "name_pt": "Boomerang Escudo"
+  },
+  "boots-of-elvenkind": {
+    "name_pt": "Botas de Elvenkind"
+  },
+  "boots-of-false-tracks": {
+    "name_pt": "Botas de False Tracks"
+  },
+  "boots-of-levitation": {
+    "name_pt": "Botas de Levitation"
+  },
+  "boots-of-speed": {
+    "name_pt": "Botas de Velocidade"
+  },
+  "boots-of-striding-and-springing": {
+    "name_pt": "Botas de Striding e Springing"
+  },
+  "boots-of-the-winding-path": {
+    "name_pt": "Botas de o Winding Path"
+  },
+  "boots-of-the-winterlands": {
+    "name_pt": "Botas de o Winterlands"
+  },
+  "borderlands-tabard": {
+    "name_pt": "Borderlands Tabard"
+  },
+  "boros-guild-signet": {
+    "name_pt": "Boros Guild Signet"
+  },
+  "boros-keyrune": {
+    "name_pt": "Boros Keyrune"
+  },
+  "bottle-of-boundless-coffee": {
+    "name_pt": "Garrafa de Boundless Coffee"
+  },
+  "bottle-stopper-cork-embossed-with-gold-leaf-and-set-with-amethysts": {
+    "name_pt": "Garrafa stopper cork embossed com Ouro leaf e set com amethysts"
+  },
+  "bottled-breath": {
+    "name_pt": "Bottled Breath"
+  },
+  "bowl-of-commanding-water-elementals": {
+    "name_pt": "Bowl de Commanding Água Elementals"
+  },
+  "box-of-turquoise-animal-figurines": {
+    "name_pt": "Caixa de turquoise animal figurines"
+  },
+  "bracelet-of-rock-magic": {
+    "name_pt": "Bracelet de Rock Magic"
+  },
+  "bracer-of-flying-daggers": {
+    "name_pt": "Bracer de Voo Daggers"
+  },
+  "bracers-of-archery": {
+    "name_pt": "Braçadeiras de Archery"
+  },
+  "bracers-of-asmodeus": {
+    "name_pt": "Braçadeiras de Asmodeus"
+  },
+  "bracers-of-celerity": {
+    "name_pt": "Braçadeiras de Celerity"
+  },
+  "bracers-of-defense": {
+    "name_pt": "Braçadeiras de Defense"
+  },
+  "brass-dragon-scale-mail": {
+    "name_pt": "Latão Dragão Escamas Malha"
+  },
+  "brass-mug-with-jade-inlay": {
+    "name_pt": "Latão mug com Jade inlay"
+  },
+  "brazier-of-commanding-fire-elementals": {
+    "name_pt": "Brazier de Commanding Fogo Elementals"
+  },
+  "bread-loaf": {
+    "name_pt": "Bread (loaf)"
+  },
+  "breastplate": {
+    "name_pt": "Couraça"
+  },
+  "breastplate-of-balance": {
+    "name_pt": "Couraça de Balance"
+  },
+  "breathing-bubble": {
+    "name_pt": "Breathing Bubble"
+  },
+  "brewers-supplies": {
+    "name_pt": "Supplies de Brewer"
+  },
+  "bridle-of-capturing": {
+    "name_pt": "Bridle de Capturing"
+  },
+  "bright-fungal-cloak": {
+    "name_pt": "Bright Fungal Manto"
+  },
+  "bronze-crown": {
+    "name_pt": "Bronze Coroa"
+  },
+  "bronze-dragon-scale-mail": {
+    "name_pt": "Bronze Dragão Escamas Malha"
+  },
+  "bronze-spyglass-brazen-coalition": {
+    "name_pt": "Bronze Luneta (Brazen Coalition)"
+  },
+  "brooch-of-living-essence": {
+    "name_pt": "Broche de Living Essence"
+  },
+  "brooch-of-shielding": {
+    "name_pt": "Broche de Shielding"
+  },
+  "brooch-of-the-elements": {
+    "name_pt": "Broche de o Elements"
+  },
+  "broom-of-flying": {
+    "name_pt": "Broom de Voo"
+  },
+  "bucket": {
+    "name_pt": "Bucket"
+  },
+  "bullseye-lantern": {
+    "name_pt": "Bullseye Lanterna"
+  },
+  "bundle-of-sheet-music-representing-the-lost-dirges-of-a-famous-composer": {
+    "name_pt": "Bundle de sheet music representing o lost dirges de a famous composer"
+  },
+  "burglars-pack": {
+    "name_pt": "Mochila de Burglar"
+  },
+  "burnt-othur-fumes": {
+    "name_pt": "Burnt Othur Fumes"
+  },
+  "butchers-bib": {
+    "name_pt": "Bib de Butcher"
+  },
+  "calimemnon-crystal": {
+    "name_pt": "Calimemnon Cristal"
+  },
+  "calligraphers-supplies": {
+    "name_pt": "Supplies de Calligrapher"
+  },
+  "caltrop": {
+    "name_pt": "Caltrop"
+  },
+  "caltrops": {
+    "name_pt": "Caltrops"
+  },
+  "caltrops-bag-of-20": {
+    "name_pt": "Caltrops (bag de 20)"
+  },
+  "camel": {
+    "name_pt": "Camel"
+  },
+  "candle": {
+    "name_pt": "Vela"
+  },
+  "candle-mace": {
+    "name_pt": "Vela Maça"
+  },
+  "candle-of-invocation": {
+    "name_pt": "Vela de Invocation"
+  },
+  "candle-of-the-deep": {
+    "name_pt": "Vela de o Deep"
+  },
+  "canian-fork": {
+    "name_pt": "Canian Fork"
+  },
+  "canoe": {
+    "name_pt": "Canoe"
+  },
+  "canvas-1-sq-yd": {
+    "name_pt": "Canvas (1 sq. yd.)"
+  },
+  "cap-of-vanishing": {
+    "name_pt": "Cap de Vanishing"
+  },
+  "cap-of-water-breathing": {
+    "name_pt": "Cap de Água Breathing"
+  },
+  "cape-of-enlargement": {
+    "name_pt": "Capa de Enlargement"
+  },
+  "cape-of-the-mountebank": {
+    "name_pt": "Capa de o Mountebank"
+  },
+  "card-sharps-deck": {
+    "name_pt": "Carta Sharp's Baralho"
+  },
+  "carnelian": {
+    "name_pt": "Carnelian"
+  },
+  "carpenters-tools": {
+    "name_pt": "Ferramentas de Carpenter"
+  },
+  "carpet-of-flying-3-ft-5-ft": {
+    "name_pt": "Carpet de Flying, 3 ft. × 5 ft."
+  },
+  "carpet-of-flying-4-ft-6-ft": {
+    "name_pt": "Carpet de Flying, 4 ft. × 6 ft."
+  },
+  "carpet-of-flying-5-ft-7-ft": {
+    "name_pt": "Carpet de Flying, 5 ft. × 7 ft."
+  },
+  "carpet-of-flying-6-ft-9-ft": {
+    "name_pt": "Carpet de Flying, 6 ft. × 9 ft."
+  },
+  "carriage": {
+    "name_pt": "Carriage"
+  },
+  "carrion-crawler-mucus": {
+    "name_pt": "Carrion Crawler Mucus"
+  },
+  "cart": {
+    "name_pt": "Cart"
+  },
+  "cartographers-map-case": {
+    "name_pt": "Mapa Estojo de Cartographer"
+  },
+  "cartographers-tools": {
+    "name_pt": "Ferramentas de Cartographer"
+  },
+  "carved-bone-statuette": {
+    "name_pt": "Carved Osso statuette"
+  },
+  "carved-harp-of-exotic-wood-with-ivory-inlay-and-zircon-gems": {
+    "name_pt": "Carved harp de exotic Madeira com Marfim inlay e zircon gems"
+  },
+  "carved-ivory-statuette": {
+    "name_pt": "Carved Marfim statuette"
+  },
+  "carved-jade-statuette-river-heralds": {
+    "name_pt": "Carved Jade statuette (River Heralds)"
+  },
+  "carved-wooden-harp-with-ivory-inlay-and-zircon-gems": {
+    "name_pt": "Carved de Madeira harp com Marfim inlay e zircon gems"
+  },
+  "catapult-munition": {
+    "name_pt": "Catapult Munition"
+  },
+  "cauldron-of-plenty": {
+    "name_pt": "Cauldron de Plenty"
+  },
+  "cauldron-of-rebirth": {
+    "name_pt": "Cauldron de Rebirth"
+  },
+  "censer-of-controlling-air-elementals": {
+    "name_pt": "Censer de Controlling Ar Elementals"
+  },
+  "ceremonial-electrum-dagger-with-a-black-pearl-in-the-pommel": {
+    "name_pt": "Ceremonial electrum Adaga com a black Pérola in o pommel"
+  },
+  "ceremonial-gold-armor-with-black-pearls": {
+    "name_pt": "Ceremonial Ouro Armadura com black pearls"
+  },
+  "ceremonial-silver-dagger-with-gold-pommel-and-black-pearl-legion-of-dusk": {
+    "name_pt": "Ceremonial Prata Adaga com Ouro pommel e black Pérola (Legion de Dusk)"
+  },
+  "chain": {
+    "name_pt": "Corrente"
+  },
+  "chain-10-feet": {
+    "name_pt": "Corrente (10 feet)"
+  },
+  "chain-mail": {
+    "name_pt": "Corrente Malha"
+  },
+  "chain-shirt": {
+    "name_pt": "Corrente Shirt"
+  },
+  "chalcedony": {
+    "name_pt": "Chalcedony"
+  },
+  "chalk-1-piece": {
+    "name_pt": "Chalk (1 piece)"
+  },
+  "chariot": {
+    "name_pt": "Chariot"
+  },
+  "charlatans-die": {
+    "name_pt": "Die de Charlatan"
+  },
+  "charm-of-plant-command": {
+    "name_pt": "Charm de Plant Comando"
+  },
+  "charred-wand-of-magic-missiles": {
+    "name_pt": "Charred Varinha de Magic Missiles"
+  },
+  "cheese-wedge": {
+    "name_pt": "Cheese (wedge)"
+  },
+  "chest": {
+    "name_pt": "Baú"
+  },
+  "chest-of-preserving": {
+    "name_pt": "Baú de Preserving"
+  },
+  "chicken": {
+    "name_pt": "Chicken"
+  },
+  "chime-of-exile": {
+    "name_pt": "Chime de Exile"
+  },
+  "chime-of-opening": {
+    "name_pt": "Chime de Opening"
+  },
+  "chip-of-creation": {
+    "name_pt": "Chip de Creation"
+  },
+  "chronolometer": {
+    "name_pt": "Chronolometer"
+  },
+  "chrysoberyl": {
+    "name_pt": "Chrysoberyl"
+  },
+  "chrysoprase": {
+    "name_pt": "Chrysoprase"
+  },
+  "chunk-of-meat": {
+    "name_pt": "Chunk de Meat"
+  },
+  "cinnamon": {
+    "name_pt": "Cinnamon"
+  },
+  "circlet-of-blasting": {
+    "name_pt": "Diadema de Blasting"
+  },
+  "circlet-of-human-perfection": {
+    "name_pt": "Diadema de Human Perfection"
+  },
+  "citrine": {
+    "name_pt": "Citrine"
+  },
+  "cittern": {
+    "name_pt": "Cittern"
+  },
+  "claw-of-the-wyrm-rune": {
+    "name_pt": "Garra de o Wyrm Rune"
+  },
+  "claws-of-the-umber-hulk": {
+    "name_pt": "Claws de o Umber Hulk"
+  },
+  "cleansing-stone": {
+    "name_pt": "Cleansing Pedra"
+  },
+  "climbers-kit": {
+    "name_pt": "Kit de Climber"
+  },
+  "cloak-of-arachnida": {
+    "name_pt": "Manto de Arachnida"
+  },
+  "cloak-of-billowing": {
+    "name_pt": "Manto de Billowing"
+  },
+  "cloak-of-displacement": {
+    "name_pt": "Manto de Displacement"
+  },
+  "cloak-of-elvenkind": {
+    "name_pt": "Manto de Elvenkind"
+  },
+  "cloak-of-invisibility": {
+    "name_pt": "Manto de Invisibilidade"
+  },
+  "cloak-of-many-fashions": {
+    "name_pt": "Manto de Muitos Fashions"
+  },
+  "cloak-of-protection": {
+    "name_pt": "Manto de Proteção"
+  },
+  "cloak-of-the-bat": {
+    "name_pt": "Manto de o Bat"
+  },
+  "cloak-of-the-manta-ray": {
+    "name_pt": "Manto de o Manta Ray"
+  },
+  "clockwork-amulet": {
+    "name_pt": "Clockwork Amuleto"
+  },
+  "clockwork-dog": {
+    "name_pt": "Clockwork Dog"
+  },
+  "cloth-of-gold-vestments": {
+    "name_pt": "Cloth-of-gold vestments"
+  },
+  "cloth-of-gold-vestments-legion-of-dusk": {
+    "name_pt": "Cloth-of-gold vestments (Legion de Dusk)"
+  },
+  "clothes-of-mending": {
+    "name_pt": "Clothes de Mending"
+  },
+  "clothing-cold-weather": {
+    "name_pt": "Clothing, Frio weather"
+  },
+  "cloves": {
+    "name_pt": "Cloves"
+  },
+  "club": {
+    "name_pt": "Clava"
+  },
+  "cobblers-tools": {
+    "name_pt": "Ferramentas de Cobbler"
+  },
+  "coiling-grasp-tattoo": {
+    "name_pt": "Coiling Grasp Tattoo"
+  },
+  "coin-of-decisionry": {
+    "name_pt": "Coin de Decisionry"
+  },
+  "coin-of-delving": {
+    "name_pt": "Coin de Delving"
+  },
+  "cold-absorbing-tattoo": {
+    "name_pt": "Frio Absorbing Tattoo"
+  },
+  "comet-card": {
+    "name_pt": "Comet Carta"
+  },
+  "command-amulet": {
+    "name_pt": "Comando Amuleto"
+  },
+  "common-clothes": {
+    "name_pt": "Comum Clothes"
+  },
+  "common-glamerweave": {
+    "name_pt": "Comum Glamerweave"
+  },
+  "common-wine-bottle": {
+    "name_pt": "Comum Wine (bottle)"
+  },
+  "common-wine-pitcher": {
+    "name_pt": "Comum Wine (pitcher)"
+  },
+  "component-pouch": {
+    "name_pt": "Component Bolsa"
+  },
+  "concertina": {
+    "name_pt": "Concertina"
+  },
+  "conch-of-safe-rest": {
+    "name_pt": "Conch de Safe Rest"
+  },
+  "conch-of-teleportation": {
+    "name_pt": "Conch de Teleportação"
+  },
+  "concussion-grenade": {
+    "name_pt": "Concussion Grenade"
+  },
+  "condensed-order": {
+    "name_pt": "Condensed Order"
+  },
+  "constantoris-portrait": {
+    "name_pt": "Portrait de Constantori"
+  },
+  "cooks-utensils": {
+    "name_pt": "Utensils de Cook"
+  },
+  "copper": {
+    "name_pt": "Cobre"
+  },
+  "copper-cp": {
+    "name_pt": "Cobre (cp)"
+  },
+  "copper-alms-coin": {
+    "name_pt": "Cobre Alms-Coin"
+  },
+  "copper-chalice-with-silver-filigree": {
+    "name_pt": "Cobre chalice com Prata filigree"
+  },
+  "copper-dragon-scale-mail": {
+    "name_pt": "Cobre Dragão Escamas Malha"
+  },
+  "copper-stein-with-silver-filigree-brazen-coalition": {
+    "name_pt": "Cobre stein com Prata filigree (Brazen Coalition)"
+  },
+  "copper-zib": {
+    "name_pt": "Cobre Zib"
+  },
+  "coral": {
+    "name_pt": "Coral"
+  },
+  "costume": {
+    "name_pt": "Costume"
+  },
+  "costume-clothes": {
+    "name_pt": "Costume Clothes"
+  },
+  "cotton-cloth-1-sq-yd": {
+    "name_pt": "Cotton Cloth (1 sq. yd.)"
+  },
+  "covered-wagon": {
+    "name_pt": "Covered Wagon"
+  },
+  "cow": {
+    "name_pt": "Cow"
+  },
+  "cracked-driftglobe": {
+    "name_pt": "Cracked Driftglobe"
+  },
+  "crampons": {
+    "name_pt": "Crampons"
+  },
+  "crook-of-rao": {
+    "name_pt": "Crook de Rao"
+  },
+  "crossbow-bolt": {
+    "name_pt": "Besta Bolt"
+  },
+  "crossbow-bolt-case": {
+    "name_pt": "Besta Bolt Estojo"
+  },
+  "crossbow-bolts-20": {
+    "name_pt": "Besta Bolts (20)"
+  },
+  "crowbar": {
+    "name_pt": "Crowbar"
+  },
+  "crown-of-horns": {
+    "name_pt": "Coroa de Horns"
+  },
+  "crown-of-lies": {
+    "name_pt": "Coroa de Lies"
+  },
+  "crown-of-the-forest": {
+    "name_pt": "Coroa de o Forest"
+  },
+  "crown-of-the-wrath-bringer": {
+    "name_pt": "Coroa de o Wrath Bringer"
+  },
+  "crown-of-whirling-comets": {
+    "name_pt": "Coroa de Whirling Comets"
+  },
+  "crusaders-shortsword": {
+    "name_pt": "Espada Curta de Crusader"
+  },
+  "crystal": {
+    "name_pt": "Cristal"
+  },
+  "crystal-ball": {
+    "name_pt": "Cristal Ball"
+  },
+  "crystal-ball-of-mind-reading": {
+    "name_pt": "Cristal Ball de Mind Reading"
+  },
+  "crystal-ball-of-telepathy": {
+    "name_pt": "Cristal Ball de Telepathy"
+  },
+  "crystal-ball-of-true-seeing": {
+    "name_pt": "Cristal Ball de True Seeing"
+  },
+  "crystalline-chronicle": {
+    "name_pt": "Crystalline Chronicle"
+  },
+  "cube-of-force": {
+    "name_pt": "Cubo de Força"
+  },
+  "cube-of-summoning": {
+    "name_pt": "Cubo de Summoning"
+  },
+  "cubic-gate": {
+    "name_pt": "Cubic Gate"
+  },
+  "cuddly-strixhaven-mascot": {
+    "name_pt": "Cuddly Strixhaven Mascot"
+  },
+  "cult-of-the-dragon-trinket": {
+    "name_pt": "Cult de o Dragão Trinket"
+  },
+  "cultists-robe": {
+    "name_pt": "Manto de Cultist"
+  },
+  "cursed-luckstone": {
+    "name_pt": "Amaldiçoado Luckstone"
+  },
+  "daerns-instant-fortress": {
+    "name_pt": "Instant Fortress de Daern"
+  },
+  "dagger": {
+    "name_pt": "Adaga"
+  },
+  "dagger-of-blindsight": {
+    "name_pt": "Adaga de Blindsight"
+  },
+  "dagger-of-guitar-solos": {
+    "name_pt": "Adaga de Guitar Solos"
+  },
+  "dagger-of-venom": {
+    "name_pt": "Adaga de Venom"
+  },
+  "damselfly-ship": {
+    "name_pt": "Damselfly Ship"
+  },
+  "dancing-monkey-fruit": {
+    "name_pt": "Dançante Monkey Fruit"
+  },
+  "danoths-visor-awakened": {
+    "name_pt": "Visor (Awakened) de Danoth"
+  },
+  "danoths-visor-dormant": {
+    "name_pt": "Visor (Dormant) de Danoth"
+  },
+  "danoths-visor-exalted": {
+    "name_pt": "Visor (Exalted) de Danoth"
+  },
+  "daouds-wondrous-lanthorn": {
+    "name_pt": "Wondrous Lanthorn de Daoud"
+  },
+  "dark-shard-amulet": {
+    "name_pt": "Dark Shard Amuleto"
+  },
+  "dart": {
+    "name_pt": "Dart"
+  },
+  "dawnbringer": {
+    "name_pt": "Dawnbringer"
+  },
+  "deathdance": {
+    "name_pt": "Deathdance"
+  },
+  "decanter-of-endless-water": {
+    "name_pt": "Decanter de Endless Água"
+  },
+  "deck-of-dimensions": {
+    "name_pt": "Baralho de Dimensions"
+  },
+  "deck-of-illusions": {
+    "name_pt": "Baralho de Illusions"
+  },
+  "deck-of-many-more-things": {
+    "name_pt": "Baralho de Muitos More Things"
+  },
+  "deck-of-many-things": {
+    "name_pt": "Baralho de Muitos Things"
+  },
+  "deck-of-miscellany": {
+    "name_pt": "Baralho de Miscellany"
+  },
+  "deck-of-oracles": {
+    "name_pt": "Baralho de Oracles"
+  },
+  "deck-of-several-things": {
+    "name_pt": "Baralho de Several Things"
+  },
+  "deck-of-wild-cards": {
+    "name_pt": "Baralho de Wild Cartas"
+  },
+  "deck-of-wonder": {
+    "name_pt": "Baralho de Wonder"
+  },
+  "dekella-bident-of-thassa": {
+    "name_pt": "Dekella, Bident de Thassa"
+  },
+  "delvers-claws": {
+    "name_pt": "Claws de Delver"
+  },
+  "demon-armor": {
+    "name_pt": "Demônio Armadura"
+  },
+  "demonomicon-of-iggwilv": {
+    "name_pt": "Demonomicon de Iggwilv"
+  },
+  "desert-clothing": {
+    "name_pt": "Desert Clothing"
+  },
+  "detailed-life-sized-dragonborn-skull-cast-in-electrum": {
+    "name_pt": "Detailed, life-sized dragonborn skull cast in electrum"
+  },
+  "devastation-orb-of-air": {
+    "name_pt": "Devastation Orbe de Ar"
+  },
+  "devastation-orb-of-earth": {
+    "name_pt": "Devastation Orbe de Terra"
+  },
+  "devastation-orb-of-fire": {
+    "name_pt": "Devastation Orbe de Fogo"
+  },
+  "devastation-orb-of-water": {
+    "name_pt": "Devastation Orbe de Água"
+  },
+  "devil-mask": {
+    "name_pt": "Diabo Mask"
+  },
+  "devlins-staff-of-striking": {
+    "name_pt": "Cajado de Striking de Devlin"
+  },
+  "devotees-censer": {
+    "name_pt": "Censer de Devotee"
+  },
+  "diamond": {
+    "name_pt": "Diamante"
+  },
+  "dice-set": {
+    "name_pt": "Dice Set"
+  },
+  "dimensional-loop": {
+    "name_pt": "Dimensional Loop"
+  },
+  "dimensional-shackles": {
+    "name_pt": "Dimensional Shackles"
+  },
+  "dimir-guild-signet": {
+    "name_pt": "Dimir Guild Signet"
+  },
+  "dimir-keyrune": {
+    "name_pt": "Dimir Keyrune"
+  },
+  "diplomats-pack": {
+    "name_pt": "Mochila de Diplomat"
+  },
+  "disguise-kit": {
+    "name_pt": "Disguise Kit"
+  },
+  "dispelling-stone": {
+    "name_pt": "Dispelling Pedra"
+  },
+  "docent": {
+    "name_pt": "Docent"
+  },
+  "documancy-satchel": {
+    "name_pt": "Documancy Satchel"
+  },
+  "dodecahedron-of-doom": {
+    "name_pt": "Dodecahedron de Doom"
+  },
+  "dogsled": {
+    "name_pt": "Dogsled"
+  },
+  "donjon-card": {
+    "name_pt": "Donjon Carta"
+  },
+  "donjons-sundering-sphere": {
+    "name_pt": "Sundering Esfera de Donjon"
+  },
+  "donkey": {
+    "name_pt": "Donkey"
+  },
+  "double-bladed-scimitar": {
+    "name_pt": "Double-Bladed Cimitarra"
+  },
+  "dowsing-dagger": {
+    "name_pt": "Dowsing Adaga"
+  },
+  "draakhorn": {
+    "name_pt": "Draakhorn"
+  },
+  "draconic-longsword": {
+    "name_pt": "Draconic Espada Longa"
+  },
+  "draft-horse": {
+    "name_pt": "Draft Horse"
+  },
+  "dragon": {
+    "name_pt": "Dragão"
+  },
+  "dragon-sensing-longsword": {
+    "name_pt": "Dragão Sensing Espada Longa"
+  },
+  "dragon-thighbone-club": {
+    "name_pt": "Dragão Thighbone Clava"
+  },
+  "dragons-blood": {
+    "name_pt": "Blood de Dragon"
+  },
+  "dragonchess-set": {
+    "name_pt": "Dragonchess Set"
+  },
+  "dragongleam": {
+    "name_pt": "Dragongleam"
+  },
+  "dragonguard": {
+    "name_pt": "Dragonguard"
+  },
+  "dragonstaff-of-ahghairon": {
+    "name_pt": "Dragonstaff de Ahghairon"
+  },
+  "dragontooth-dagger": {
+    "name_pt": "Dragontooth Adaga"
+  },
+  "dread-helm": {
+    "name_pt": "Dread Elmo"
+  },
+  "dreamlily": {
+    "name_pt": "Dreamlily"
+  },
+  "driftglobe": {
+    "name_pt": "Driftglobe"
+  },
+  "drow-poison": {
+    "name_pt": "Drow Veneno"
+  },
+  "drown": {
+    "name_pt": "Drown"
+  },
+  "drum": {
+    "name_pt": "Drum"
+  },
+  "dulcimer": {
+    "name_pt": "Dulcimer"
+  },
+  "dungeoneers-pack": {
+    "name_pt": "Mochila de Dungeoneer"
+  },
+  "duplicitous-manuscript": {
+    "name_pt": "Duplicitous Manuscript"
+  },
+  "duskcrusher": {
+    "name_pt": "Duskcrusher"
+  },
+  "dust-of-corrosion": {
+    "name_pt": "Pó de Corrosion"
+  },
+  "dust-of-deliciousness": {
+    "name_pt": "Pó de Deliciousness"
+  },
+  "dust-of-disappearance": {
+    "name_pt": "Pó de Disappearance"
+  },
+  "dust-of-dryness": {
+    "name_pt": "Pó de Dryness"
+  },
+  "dust-of-sneezing-and-choking": {
+    "name_pt": "Pó de Sneezing e Choking"
+  },
+  "dust-of-the-mummy": {
+    "name_pt": "Pó de o Mummy"
+  },
+  "dwarven-plate": {
+    "name_pt": "Anão Placas"
+  },
+  "dwarven-thrower": {
+    "name_pt": "Anão Thrower"
+  },
+  "dynamite-stick": {
+    "name_pt": "Dynamite (stick)"
+  },
+  "dyrrns-tentacle-whip": {
+    "name_pt": "Tentacle Chicote de Dyrrn"
+  },
+  "eagle-whistle": {
+    "name_pt": "Eagle Whistle"
+  },
+  "ear-horn-of-hearing": {
+    "name_pt": "Ear Trompa de Hearing"
+  },
+  "earring-of-message": {
+    "name_pt": "Earring de Message"
+  },
+  "earworm": {
+    "name_pt": "Earworm"
+  },
+  "efreeti-bottle": {
+    "name_pt": "Efreeti Garrafa"
+  },
+  "efreeti-chain": {
+    "name_pt": "Efreeti Corrente"
+  },
+  "elder-cartographers-glossography": {
+    "name_pt": "Elder Cartographer's Glossography"
+  },
+  "eldritch-claw-tattoo": {
+    "name_pt": "Eldritch Garra Tattoo"
+  },
+  "eldritch-staff": {
+    "name_pt": "Eldritch Cajado"
+  },
+  "electrum-ep": {
+    "name_pt": "Electrum (ep)"
+  },
+  "electrum-50-zib-coin": {
+    "name_pt": "Electrum 50-Zib Coin"
+  },
+  "elemental-essence-shard": {
+    "name_pt": "Elemental Essence Shard"
+  },
+  "elemental-essence-shard-air": {
+    "name_pt": "Elemental Essence Shard (Air)"
+  },
+  "elemental-essence-shard-earth": {
+    "name_pt": "Elemental Essence Shard (Earth)"
+  },
+  "elemental-essence-shard-fire": {
+    "name_pt": "Elemental Essence Shard (Fire)"
+  },
+  "elemental-essence-shard-water": {
+    "name_pt": "Elemental Essence Shard (Water)"
+  },
+  "elemental-gem-blue-sapphire": {
+    "name_pt": "Elemental Gem, Blue Safira"
+  },
+  "elemental-gem-emerald": {
+    "name_pt": "Elemental Gem, Esmeralda"
+  },
+  "elemental-gem-red-corundum": {
+    "name_pt": "Elemental Gem, Red Corundum"
+  },
+  "elemental-gem-yellow-diamond": {
+    "name_pt": "Elemental Gem, Yellow Diamante"
+  },
+  "elephant": {
+    "name_pt": "Elephant"
+  },
+  "elixir-of-health": {
+    "name_pt": "Elixir de Health"
+  },
+  "elven-chain": {
+    "name_pt": "Élfico Corrente"
+  },
+  "elven-thrower": {
+    "name_pt": "Élfico Thrower"
+  },
+  "elven-trinket": {
+    "name_pt": "Élfico Trinket"
+  },
+  "emblem": {
+    "name_pt": "Emblem"
+  },
+  "embroidered-glove-set-with-jewel-chips": {
+    "name_pt": "Embroidered glove set com jewel chips"
+  },
+  "embroidered-silk-and-velvet-mantle-set-with-numerous-moonstones": {
+    "name_pt": "Embroidered silk e velvet Manto set com numerous moonstones"
+  },
+  "embroidered-silk-handkerchief": {
+    "name_pt": "Embroidered silk handkerchief"
+  },
+  "emerald": {
+    "name_pt": "Esmeralda"
+  },
+  "emerald-enclave-trinket": {
+    "name_pt": "Esmeralda Enclave Trinket"
+  },
+  "emerald-pen": {
+    "name_pt": "Esmeralda Pen"
+  },
+  "enchanted-three-dragon-ante-set": {
+    "name_pt": "Encantado Three-Dragon Ante Set"
+  },
+  "enduring-spellbook": {
+    "name_pt": "Enduring Spellbook"
+  },
+  "energy-cell": {
+    "name_pt": "Energy Cell"
+  },
+  "enspelled-armor-cantrip": {
+    "name_pt": "Enspelled Armadura (Cantrip)"
+  },
+  "enspelled-armor-level-1": {
+    "name_pt": "Enspelled Armadura (Level 1)"
+  },
+  "enspelled-armor-level-2": {
+    "name_pt": "Enspelled Armadura (Level 2)"
+  },
+  "enspelled-armor-level-3": {
+    "name_pt": "Enspelled Armadura (Level 3)"
+  },
+  "enspelled-armor-level-4": {
+    "name_pt": "Enspelled Armadura (Level 4)"
+  },
+  "enspelled-armor-level-5": {
+    "name_pt": "Enspelled Armadura (Level 5)"
+  },
+  "enspelled-armor-level-6": {
+    "name_pt": "Enspelled Armadura (Level 6)"
+  },
+  "enspelled-armor-level-7": {
+    "name_pt": "Enspelled Armadura (Level 7)"
+  },
+  "enspelled-armor-level-8": {
+    "name_pt": "Enspelled Armadura (Level 8)"
+  },
+  "enspelled-staff-cantrip": {
+    "name_pt": "Enspelled Cajado (Cantrip)"
+  },
+  "enspelled-staff-level-1": {
+    "name_pt": "Enspelled Cajado (Level 1)"
+  },
+  "enspelled-staff-level-2": {
+    "name_pt": "Enspelled Cajado (Level 2)"
+  },
+  "enspelled-staff-level-3": {
+    "name_pt": "Enspelled Cajado (Level 3)"
+  },
+  "enspelled-staff-level-4": {
+    "name_pt": "Enspelled Cajado (Level 4)"
+  },
+  "enspelled-staff-level-5": {
+    "name_pt": "Enspelled Cajado (Level 5)"
+  },
+  "enspelled-staff-level-6": {
+    "name_pt": "Enspelled Cajado (Level 6)"
+  },
+  "enspelled-staff-level-7": {
+    "name_pt": "Enspelled Cajado (Level 7)"
+  },
+  "enspelled-staff-level-8": {
+    "name_pt": "Enspelled Cajado (Level 8)"
+  },
+  "enspelled-weapon-cantrip": {
+    "name_pt": "Enspelled Weapon (Cantrip)"
+  },
+  "enspelled-weapon-level-1": {
+    "name_pt": "Enspelled Weapon (Level 1)"
+  },
+  "enspelled-weapon-level-2": {
+    "name_pt": "Enspelled Weapon (Level 2)"
+  },
+  "enspelled-weapon-level-3": {
+    "name_pt": "Enspelled Weapon (Level 3)"
+  },
+  "enspelled-weapon-level-4": {
+    "name_pt": "Enspelled Weapon (Level 4)"
+  },
+  "enspelled-weapon-level-5": {
+    "name_pt": "Enspelled Weapon (Level 5)"
+  },
+  "enspelled-weapon-level-6": {
+    "name_pt": "Enspelled Weapon (Level 6)"
+  },
+  "enspelled-weapon-level-7": {
+    "name_pt": "Enspelled Weapon (Level 7)"
+  },
+  "enspelled-weapon-level-8": {
+    "name_pt": "Enspelled Weapon (Level 8)"
+  },
+  "entertainers-pack": {
+    "name_pt": "Mochila de Entertainer"
+  },
+  "ephixis-bow-of-nylea": {
+    "name_pt": "Ephixis, Arco de Nylea"
+  },
+  "ersatz-eye": {
+    "name_pt": "Ersatz Olho"
+  },
+  "essence-of-ether": {
+    "name_pt": "Essence de Ether"
+  },
+  "euryale-card": {
+    "name_pt": "Euryale Carta"
+  },
+  "euryales-aegis": {
+    "name_pt": "Aegis de Euryale"
+  },
+  "everbright-lantern": {
+    "name_pt": "Everbright Lanterna"
+  },
+  "eversmoking-bottle": {
+    "name_pt": "Eversmoking Garrafa"
+  },
+  "exotic-saddle": {
+    "name_pt": "Exotic Saddle"
+  },
+  "explorers-pack": {
+    "name_pt": "Mochila de Explorer"
+  },
+  "explosive-seed": {
+    "name_pt": "Explosive Seed"
+  },
+  "eye-agate": {
+    "name_pt": "Olho Agate"
+  },
+  "eye-of-vecna": {
+    "name_pt": "Olho de Vecna"
+  },
+  "eye-patch-decorated-with-tiny-blue-sapphires-and-moonstones": {
+    "name_pt": "Olho patch decorated com tiny blue sapphires e moonstones"
+  },
+  "eye-patch-with-a-mock-eye-set-in-blue-sapphire-and-moonstone": {
+    "name_pt": "Olho patch com a mock Olho set in blue Safira e moonstone"
+  },
+  "eye-patch-with-a-mock-eye-set-in-blue-sapphire-and-moonstone-brazen-coalition": {
+    "name_pt": "Olho patch com a mock Olho set in blue Safira e moonstone (Brazen Coalition)"
+  },
+  "eyes-of-charming": {
+    "name_pt": "Olhos de Charming"
+  },
+  "eyes-of-minute-seeing": {
+    "name_pt": "Olhos de Minute Seeing"
+  },
+  "eyes-of-the-eagle": {
+    "name_pt": "Olhos de o Eagle"
+  },
+  "eyescratch": {
+    "name_pt": "Eyescratch"
+  },
+  "fabulist-gem": {
+    "name_pt": "Fabulist Gema"
+  },
+  "faerie-dust": {
+    "name_pt": "Faerie Pó"
+  },
+  "failed-experiment-wand": {
+    "name_pt": "Failed Experiment Varinha"
+  },
+  "falkirs-helm-of-pigheadedness": {
+    "name_pt": "Elmo de Pigheadedness de Falkir"
+  },
+  "fane-eater": {
+    "name_pt": "Fane-Eater"
+  },
+  "far-gear": {
+    "name_pt": "Far Gear"
+  },
+  "far-realm-shard": {
+    "name_pt": "Far Realm Shard"
+  },
+  "fargab": {
+    "name_pt": "Fargab"
+  },
+  "fate-cutter-shears": {
+    "name_pt": "Fate Cutter Shears"
+  },
+  "fates-card": {
+    "name_pt": "Fates Carta"
+  },
+  "feather-of-diatryma-summoning": {
+    "name_pt": "Pena de Diatryma Summoning"
+  },
+  "feather-token": {
+    "name_pt": "Pena Símbolo"
+  },
+  "feathered-mantle-with-emerald-clasp-sun-empire": {
+    "name_pt": "Feathered Manto com Esmeralda clasp (Sun Empire)"
+  },
+  "feed-per-day": {
+    "name_pt": "Feed (per day)"
+  },
+  "feywild-shard": {
+    "name_pt": "Feywild Shard"
+  },
+  "feywild-trinket": {
+    "name_pt": "Feywild Trinket"
+  },
+  "ffolk-sailing-ship": {
+    "name_pt": "Ffolk Sailing Ship"
+  },
+  "figurine-of-wondrous-power-bronze-griffon": {
+    "name_pt": "Estatueta de Wondrous Power, Bronze Griffon"
+  },
+  "figurine-of-wondrous-power-ebony-fly": {
+    "name_pt": "Estatueta de Wondrous Power, Ebony Fly"
+  },
+  "figurine-of-wondrous-power-golden-lions": {
+    "name_pt": "Estatueta de Wondrous Power, Dourado Lions"
+  },
+  "figurine-of-wondrous-power-ivory-goats": {
+    "name_pt": "Estatueta de Wondrous Power, Marfim Goats"
+  },
+  "figurine-of-wondrous-power-marble-elephant": {
+    "name_pt": "Estatueta de Wondrous Power, Marble Elephant"
+  },
+  "figurine-of-wondrous-power-obsidian-steed": {
+    "name_pt": "Estatueta de Wondrous Power, Obsidiana Steed"
+  },
+  "figurine-of-wondrous-power-onyx-dog": {
+    "name_pt": "Estatueta de Wondrous Power, Onyx Dog"
+  },
+  "figurine-of-wondrous-power-serpentine-owl": {
+    "name_pt": "Estatueta de Wondrous Power, Serpentine Owl"
+  },
+  "figurine-of-wondrous-power-silver-raven": {
+    "name_pt": "Estatueta de Wondrous Power, Prata Raven"
+  },
+  "finders-goggles": {
+    "name_pt": "Goggles de Finder"
+  },
+  "fine-clothes": {
+    "name_pt": "Fine Clothes"
+  },
+  "fine-gold-chain-set-with-a-fire-opal": {
+    "name_pt": "Fine Ouro Corrente set com a Fogo Opala"
+  },
+  "fine-gold-chain-with-fire-opals-legion-of-dusk": {
+    "name_pt": "Fine Ouro Corrente com Fogo opals (Legion de Dusk)"
+  },
+  "fine-robe-with-dinosaur-feathers-and-silver-embroidery-sun-empire": {
+    "name_pt": "Fine Manto com dinosaur feathers e Prata embroidery (Sun Empire)"
+  },
+  "fine-steel-rapier-with-gold-filigree-hilt-legion-of-dusk": {
+    "name_pt": "Fine Aço Rapieira com Ouro filigree hilt (Legion de Dusk)"
+  },
+  "fine-wine-bottle": {
+    "name_pt": "Fine Wine (bottle)"
+  },
+  "finely-articulated-jade-glove-river-heralds": {
+    "name_pt": "Finely articulated Jade glove (River Heralds)"
+  },
+  "fire-absorbing-tattoo": {
+    "name_pt": "Fogo Absorbing Tattoo"
+  },
+  "fire-opal": {
+    "name_pt": "Fogo Opala"
+  },
+  "firearm-bullet": {
+    "name_pt": "Firearm Bullet"
+  },
+  "firearm-bullets-10": {
+    "name_pt": "Firearm Bullets (10)"
+  },
+  "fish-suit": {
+    "name_pt": "Fish Suit"
+  },
+  "fishing-tackle": {
+    "name_pt": "Fishing Tackle"
+  },
+  "flail": {
+    "name_pt": "Mangual"
+  },
+  "flail-of-tiamat": {
+    "name_pt": "Mangual de Tiamat"
+  },
+  "flame-tongue-shortsword-of-greed": {
+    "name_pt": "Flame Tongue Espada Curta de Greed"
+  },
+  "flames-card": {
+    "name_pt": "Flames Carta"
+  },
+  "flask": {
+    "name_pt": "Frasco"
+  },
+  "flayer-slayer": {
+    "name_pt": "Flayer Slayer"
+  },
+  "flensing-claws-huge": {
+    "name_pt": "Flensing Claws (Huge)"
+  },
+  "flensing-claws-large": {
+    "name_pt": "Flensing Claws (Large)"
+  },
+  "flensing-claws-medium": {
+    "name_pt": "Flensing Claws (Medium)"
+  },
+  "flensing-claws-small": {
+    "name_pt": "Flensing Claws (Small)"
+  },
+  "flour": {
+    "name_pt": "Flour"
+  },
+  "flute": {
+    "name_pt": "Flute"
+  },
+  "flying-chariot": {
+    "name_pt": "Voo Chariot"
+  },
+  "flying-citadel-helm": {
+    "name_pt": "Voo Citadel Elmo"
+  },
+  "flying-fish-ship": {
+    "name_pt": "Voo Fish Ship"
+  },
+  "flying-snake": {
+    "name_pt": "Voo Snake"
+  },
+  "folding-boat": {
+    "name_pt": "Folding Boat"
+  },
+  "fool-card": {
+    "name_pt": "Fool Carta"
+  },
+  "force-absorbing-tattoo": {
+    "name_pt": "Força Absorbing Tattoo"
+  },
+  "forgery-kit": {
+    "name_pt": "Forgery Kit"
+  },
+  "fork-of-eddy-summoning": {
+    "name_pt": "Fork de Eddy Summoning"
+  },
+  "fragmentation-grenade": {
+    "name_pt": "Fragmentation Grenade"
+  },
+  "frostfell-and-everice-trinket": {
+    "name_pt": "Frostfell e Everice Trinket"
+  },
+  "fulminating-treatise": {
+    "name_pt": "Fulminating Treatise"
+  },
+  "galders-bubble-pipe": {
+    "name_pt": "Bubble Pipe de Galder"
+  },
+  "galley": {
+    "name_pt": "Galley"
+  },
+  "garb-of-light-and-shadow": {
+    "name_pt": "Garb de Luz e Sombra"
+  },
+  "garnet": {
+    "name_pt": "Garnet"
+  },
+  "gate-warden-trinket": {
+    "name_pt": "Gate Warden Trinket"
+  },
+  "gauntlets-of-flaming-fury": {
+    "name_pt": "Manoplas de Flamejante Fury"
+  },
+  "gauntlets-of-ogre-power": {
+    "name_pt": "Manoplas de Ogre Poder"
+  },
+  "gauntlets-of-rage": {
+    "name_pt": "Manoplas de Rage"
+  },
+  "gavel-of-the-venn-rune": {
+    "name_pt": "Gavel de o Venn Rune"
+  },
+  "gem-card": {
+    "name_pt": "Gema Carta"
+  },
+  "gem-of-brightness": {
+    "name_pt": "Gema de Brightness"
+  },
+  "gem-of-seeing": {
+    "name_pt": "Gema de Seeing"
+  },
+  "genie-robe": {
+    "name_pt": "Genie Manto"
+  },
+  "ghost-lantern": {
+    "name_pt": "Ghost Lanterna"
+  },
+  "ghost-step-tattoo": {
+    "name_pt": "Ghost Step Tattoo"
+  },
+  "giant-trinket": {
+    "name_pt": "Gigante Trinket"
+  },
+  "gilded-royal-coach-or-funeral-barge": {
+    "name_pt": "Gilded royal coach ou funeral barge"
+  },
+  "ginger": {
+    "name_pt": "Ginger"
+  },
+  "glaive": {
+    "name_pt": "Glaive"
+  },
+  "glamoured-studded-leather": {
+    "name_pt": "Glamoured Cravejado Couro"
+  },
+  "glass-bottle": {
+    "name_pt": "Vidro Garrafa"
+  },
+  "glassblowers-tools": {
+    "name_pt": "Ferramentas de Glassblower"
+  },
+  "glaur": {
+    "name_pt": "Glaur"
+  },
+  "gloves-of-missile-snaring": {
+    "name_pt": "Luvas de Missile Snaring"
+  },
+  "gloves-of-soul-catching": {
+    "name_pt": "Luvas de Soul Catching"
+  },
+  "gloves-of-swimming-and-climbing": {
+    "name_pt": "Luvas de Natação e Escalada"
+  },
+  "gloves-of-thievery": {
+    "name_pt": "Luvas de Thievery"
+  },
+  "glowrune-pigment": {
+    "name_pt": "Glowrune Pigment"
+  },
+  "gnomengarde-grenade": {
+    "name_pt": "Gnomengarde Grenade"
+  },
+  "goat": {
+    "name_pt": "Goat"
+  },
+  "goggles-of-night": {
+    "name_pt": "Goggles de Night"
+  },
+  "goggles-of-object-reading": {
+    "name_pt": "Goggles de Object Reading"
+  },
+  "gold": {
+    "name_pt": "Ouro"
+  },
+  "gold-gp": {
+    "name_pt": "Ouro (gp)"
+  },
+  "gold-5-zino-coin": {
+    "name_pt": "Ouro 5-Zino Coin"
+  },
+  "gold-bar-5-pound": {
+    "name_pt": "Ouro Bar (5-pound)"
+  },
+  "gold-basin-with-rubies-legion-of-dusk": {
+    "name_pt": "Ouro basin com rubies (Legion de Dusk)"
+  },
+  "gold-bird-cage-with-electrum-filigree": {
+    "name_pt": "Ouro bird cage com electrum filigree"
+  },
+  "gold-birdcage-with-electrum-filigree": {
+    "name_pt": "Ouro birdcage com electrum filigree"
+  },
+  "gold-bracelet": {
+    "name_pt": "Ouro bracelet"
+  },
+  "gold-canary-figurine-of-wondrous-power": {
+    "name_pt": "Ouro Canary Estatueta de Wondrous Poder"
+  },
+  "gold-chalice-legion-of-dusk": {
+    "name_pt": "Ouro chalice (Legion de Dusk)"
+  },
+  "gold-chalice-set-with-emeralds-legion-of-dusk": {
+    "name_pt": "Ouro chalice set com emeralds (Legion de Dusk)"
+  },
+  "gold-circlet-set-with-four-aquamarines": {
+    "name_pt": "Ouro Diadema set com four aquamarines"
+  },
+  "gold-comb-shaped-like-a-dragon-with-red-garnets-as-eyes": {
+    "name_pt": "Ouro comb shaped like a Dragão com red garnets as eyes"
+  },
+  "gold-cup-set-with-emeralds": {
+    "name_pt": "Ouro cup set com emeralds"
+  },
+  "gold-dragon-comb-set-with-red-garnets-as-eyes": {
+    "name_pt": "Ouro Dragão comb set com red garnets as eyes"
+  },
+  "gold-dragon-scale-mail": {
+    "name_pt": "Ouro Dragão Escamas Malha"
+  },
+  "gold-idol": {
+    "name_pt": "Ouro idol"
+  },
+  "gold-jewelry-box-with-platinum-filigree": {
+    "name_pt": "Ouro jewelry Caixa com Platina filigree"
+  },
+  "gold-jewelry-box-with-platinum-filigree-brazen-coalition": {
+    "name_pt": "Ouro jewelry Caixa com Platina filigree (Brazen Coalition)"
+  },
+  "gold-locket-with-a-painted-portrait-inside": {
+    "name_pt": "Ouro locket com a painted portrait inside"
+  },
+  "gold-locket-with-a-painted-portrait-inside-legion-of-dusk": {
+    "name_pt": "Ouro locket com a painted portrait inside (Legion de Dusk)"
+  },
+  "gold-music-box": {
+    "name_pt": "Ouro music Caixa"
+  },
+  "gold-music-box-brazen-coalition": {
+    "name_pt": "Ouro music Caixa (Brazen Coalition)"
+  },
+  "gold-pendant-with-black-onyx-legion-of-dusk": {
+    "name_pt": "Ouro Pingente com black onyx (Legion de Dusk)"
+  },
+  "gold-ring-set-with-bloodstones": {
+    "name_pt": "Ouro Anel set com bloodstones"
+  },
+  "gold-ring-with-turquoise-legion-of-dusk": {
+    "name_pt": "Ouro Anel com turquoise (Legion de Dusk)"
+  },
+  "gold-statuette-set-with-rubies": {
+    "name_pt": "Ouro statuette set com rubies"
+  },
+  "gold-zino": {
+    "name_pt": "Ouro Zino"
+  },
+  "gold-plated-ceremonial-helmet-and-pauldrons-legion-of-dusk": {
+    "name_pt": "Gold-plated ceremonial Capacete e pauldrons (Legion de Dusk)"
+  },
+  "gold-plated-sextant-with-topaz-brazen-coalition": {
+    "name_pt": "Gold-plated sextant com topaz (Brazen Coalition)"
+  },
+  "golgari-guild-signet": {
+    "name_pt": "Golgari Guild Signet"
+  },
+  "golgari-keyrune": {
+    "name_pt": "Golgari Keyrune"
+  },
+  "goose-egg-trinket": {
+    "name_pt": "Goose Egg Trinket"
+  },
+  "grappling-hook": {
+    "name_pt": "Grappling Hook"
+  },
+  "grasping-whip": {
+    "name_pt": "Grasping Chicote"
+  },
+  "gravenhollow-compass-ring": {
+    "name_pt": "Gravenhollow Bússola Anel"
+  },
+  "greataxe": {
+    "name_pt": "Machado Grande"
+  },
+  "greatclub": {
+    "name_pt": "Clava Grande"
+  },
+  "greater-silver-sword": {
+    "name_pt": "Maior Prata Espada"
+  },
+  "greatsword": {
+    "name_pt": "Montante"
+  },
+  "green-chromatic-rose": {
+    "name_pt": "Green Chromatic Rose"
+  },
+  "green-copper-ewer": {
+    "name_pt": "Green Cobre Ewer"
+  },
+  "green-dragon-mask": {
+    "name_pt": "Green Dragão Mask"
+  },
+  "green-dragon-scale-mail": {
+    "name_pt": "Green Dragão Escamas Malha"
+  },
+  "grenade-launcher": {
+    "name_pt": "Grenade Launcher"
+  },
+  "grimoire-infinitus-awakened": {
+    "name_pt": "Grimoire Infinitus (Awakened)"
+  },
+  "grimoire-infinitus-dormant": {
+    "name_pt": "Grimoire Infinitus (Dormant)"
+  },
+  "grimoire-infinitus-exalted": {
+    "name_pt": "Grimoire Infinitus (Exalted)"
+  },
+  "grovelthrash-awakened": {
+    "name_pt": "Grovelthrash (Awakened)"
+  },
+  "grovelthrash-dormant": {
+    "name_pt": "Grovelthrash (Dormant)"
+  },
+  "grovelthrash-exalted": {
+    "name_pt": "Grovelthrash (Exalted)"
+  },
+  "gruul-guild-signet": {
+    "name_pt": "Gruul Guild Signet"
+  },
+  "gruul-keyrune": {
+    "name_pt": "Gruul Keyrune"
+  },
+  "guardian-emblem": {
+    "name_pt": "Guardian Emblem"
+  },
+  "gulthias-staff": {
+    "name_pt": "Gulthias Cajado"
+  },
+  "gunpowder-keg": {
+    "name_pt": "Gunpowder (keg)"
+  },
+  "gunpowder-powder-horn": {
+    "name_pt": "Gunpowder (powder horn)"
+  },
+  "gunpowder-horn": {
+    "name_pt": "Gunpowder Trompa"
+  },
+  "gurts-greataxe": {
+    "name_pt": "Machado Grande de Gurt"
+  },
+  "hag-eye": {
+    "name_pt": "Hag Olho"
+  },
+  "halberd": {
+    "name_pt": "Alabarda"
+  },
+  "half-plate-armor": {
+    "name_pt": "Half Placas Armadura"
+  },
+  "hammer": {
+    "name_pt": "Martelo"
+  },
+  "hammer-of-runic-focus": {
+    "name_pt": "Martelo de Runic Focus"
+  },
+  "hammer-of-thunderbolts": {
+    "name_pt": "Martelo de Thunderbolts"
+  },
+  "hammerhead-ship": {
+    "name_pt": "Hammerhead Ship"
+  },
+  "hammock-of-worlds": {
+    "name_pt": "Hammock de Worlds"
+  },
+  "hand-crossbow": {
+    "name_pt": "Mão Besta"
+  },
+  "hand-drum": {
+    "name_pt": "Mão Drum"
+  },
+  "hand-of-vecna": {
+    "name_pt": "Mão de Vecna"
+  },
+  "handaxe": {
+    "name_pt": "Machadinha"
+  },
+  "handheld-mirror-set-in-a-painted-wooden-frame": {
+    "name_pt": "Handheld Espelho set in a painted de Madeira frame"
+  },
+  "harbor-moon": {
+    "name_pt": "Harbor Moon"
+  },
+  "harkons-bite": {
+    "name_pt": "Bite de Harkon"
+  },
+  "harp-of-gilded-plenty": {
+    "name_pt": "Harp de Gilded Plenty"
+  },
+  "harper-pin": {
+    "name_pt": "Harper Pin"
+  },
+  "harper-trinket": {
+    "name_pt": "Harper Trinket"
+  },
+  "hat-of-disguise": {
+    "name_pt": "Hat de Disguise"
+  },
+  "hat-of-many-spells": {
+    "name_pt": "Hat de Muitos Spells"
+  },
+  "hat-of-vermin": {
+    "name_pt": "Hat de Vermin"
+  },
+  "hat-of-vortexes": {
+    "name_pt": "Hat de Vortexes"
+  },
+  "hat-of-wizardry": {
+    "name_pt": "Hat de Wizardry"
+  },
+  "hazirawn": {
+    "name_pt": "Hazirawn"
+  },
+  "headband-of-intellect": {
+    "name_pt": "Faixa de Intellect"
+  },
+  "healers-kit": {
+    "name_pt": "Kit de Healer"
+  },
+  "heart-weavers-primer": {
+    "name_pt": "Heart Weaver's Primer"
+  },
+  "heartstone": {
+    "name_pt": "Heartstone"
+  },
+  "heavy-crossbow": {
+    "name_pt": "Heavy Besta"
+  },
+  "hell-hound-cloak": {
+    "name_pt": "Hell Hound Manto"
+  },
+  "helm-of-awareness": {
+    "name_pt": "Elmo de Awareness"
+  },
+  "helm-of-brilliance": {
+    "name_pt": "Elmo de Brilliance"
+  },
+  "helm-of-comprehending-languages": {
+    "name_pt": "Elmo de Comprehending Languages"
+  },
+  "helm-of-devil-command": {
+    "name_pt": "Elmo de Diabo Comando"
+  },
+  "helm-of-disjunction": {
+    "name_pt": "Elmo de Disjunction"
+  },
+  "helm-of-perfect-potential": {
+    "name_pt": "Elmo de Perfect Potential"
+  },
+  "helm-of-telepathy": {
+    "name_pt": "Elmo de Telepathy"
+  },
+  "helm-of-teleportation": {
+    "name_pt": "Elmo de Teleportação"
+  },
+  "helm-of-the-gods": {
+    "name_pt": "Elmo de o Gods"
+  },
+  "helm-of-the-scavenger": {
+    "name_pt": "Elmo de o Scavenger"
+  },
+  "helm-of-underwater-action": {
+    "name_pt": "Elmo de Underwater Action"
+  },
+  "hematite": {
+    "name_pt": "Hematite"
+  },
+  "hempen-rope-50-feet": {
+    "name_pt": "Hempen Corda (50 feet)"
+  },
+  "herbalism-kit": {
+    "name_pt": "Herbalism Kit"
+  },
+  "heretic": {
+    "name_pt": "Heretic"
+  },
+  "hew": {
+    "name_pt": "Hew"
+  },
+  "hewards-handy-haversack": {
+    "name_pt": "Handy Haversack de Heward"
+  },
+  "hewards-handy-spice-pouch": {
+    "name_pt": "Handy Spice Bolsa de Heward"
+  },
+  "hewards-hireling-armor": {
+    "name_pt": "Hireling Armadura de Heward"
+  },
+  "hide-armor": {
+    "name_pt": "Peles Armadura"
+  },
+  "hide-of-the-feral-guardian-awakened": {
+    "name_pt": "Peles de o Feral Guardian (Awakened)"
+  },
+  "hide-of-the-feral-guardian-dormant": {
+    "name_pt": "Peles de o Feral Guardian (Dormant)"
+  },
+  "hide-of-the-feral-guardian-exalted": {
+    "name_pt": "Peles de o Feral Guardian (Exalted)"
+  },
+  "hither-thither-staff": {
+    "name_pt": "Hither-Thither Cajado"
+  },
+  "hollys-handy-haversack": {
+    "name_pt": "Handy Haversack de Holly"
+  },
+  "holy-symbol-of-ravenkind": {
+    "name_pt": "Sagrado Symbol de Ravenkind"
+  },
+  "holy-water": {
+    "name_pt": "Sagrado Água"
+  },
+  "holy-water-flask": {
+    "name_pt": "Sagrado Água (flask)"
+  },
+  "hooded-lantern": {
+    "name_pt": "Hooded Lanterna"
+  },
+  "hook-of-fishers-delight": {
+    "name_pt": "Hook de Fisher's Delight"
+  },
+  "hooked-shortspear": {
+    "name_pt": "Hooked Shortspear"
+  },
+  "hoopak": {
+    "name_pt": "Hoopak"
+  },
+  "horizon-puzzle-cube": {
+    "name_pt": "Horizon Puzzle Cubo"
+  },
+  "horn": {
+    "name_pt": "Trompa"
+  },
+  "horn-of-beckoning-death": {
+    "name_pt": "Trompa de Beckoning Death"
+  },
+  "horn-of-blasting": {
+    "name_pt": "Trompa de Blasting"
+  },
+  "horn-of-silent-alarm": {
+    "name_pt": "Trompa de Silent Alarm"
+  },
+  "horn-of-the-endless-maze": {
+    "name_pt": "Trompa de o Endless Maze"
+  },
+  "horn-of-valhalla-brass": {
+    "name_pt": "Trompa de Valhalla, Latão"
+  },
+  "horn-of-valhalla-bronze": {
+    "name_pt": "Trompa de Valhalla, Bronze"
+  },
+  "horn-of-valhalla-iron": {
+    "name_pt": "Trompa de Valhalla, Ferro"
+  },
+  "horn-of-valhalla-silver": {
+    "name_pt": "Trompa de Valhalla, Prata"
+  },
+  "horned-ring": {
+    "name_pt": "Horned Anel"
+  },
+  "horror-trinket": {
+    "name_pt": "Horror Trinket"
+  },
+  "horseshoes-of-a-zephyr": {
+    "name_pt": "Horseshoes de a Zephyr"
+  },
+  "horseshoes-of-speed": {
+    "name_pt": "Horseshoes de Velocidade"
+  },
+  "hourglass": {
+    "name_pt": "Hourglass"
+  },
+  "house-of-cards": {
+    "name_pt": "House de Cartas"
+  },
+  "hunk-of-cheese": {
+    "name_pt": "Hunk de Cheese"
+  },
+  "hunters-coat": {
+    "name_pt": "Coat de Hunter"
+  },
+  "hunting-rifle": {
+    "name_pt": "Hunting Rifle"
+  },
+  "hunting-trap": {
+    "name_pt": "Hunting Trap"
+  },
+  "icewind-dale-trinket": {
+    "name_pt": "Icewind Dale Trinket"
+  },
+  "icon-of-ravenloft": {
+    "name_pt": "Icon de Ravenloft"
+  },
+  "iggwilvs-cauldron": {
+    "name_pt": "Cauldron de Iggwilv"
+  },
+  "iggwilvs-horn": {
+    "name_pt": "Trompa de Iggwilv"
+  },
+  "illuminators-tattoo": {
+    "name_pt": "Tattoo de Illuminator"
+  },
+  "illusionists-bracers": {
+    "name_pt": "Braçadeiras de Illusionist"
+  },
+  "imbued-wood-fernian-ash": {
+    "name_pt": "Imbued Madeira (Fernian Ash)"
+  },
+  "imbued-wood-irian-rosewood": {
+    "name_pt": "Imbued Madeira (Irian Rosewood)"
+  },
+  "imbued-wood-kythrian-manchineel": {
+    "name_pt": "Imbued Madeira (Kythrian Manchineel)"
+  },
+  "imbued-wood-lamannian-oak": {
+    "name_pt": "Imbued Madeira (Lamannian Oak)"
+  },
+  "imbued-wood-mabaran-ebony": {
+    "name_pt": "Imbued Madeira (Mabaran Ebony)"
+  },
+  "imbued-wood-risian-pine": {
+    "name_pt": "Imbued Madeira (Risian Pine)"
+  },
+  "imbued-wood-shavarran-birch": {
+    "name_pt": "Imbued Madeira (Shavarran Birch)"
+  },
+  "imbued-wood-xorian-wenge": {
+    "name_pt": "Imbued Madeira (Xorian Wenge)"
+  },
+  "immovable-rod": {
+    "name_pt": "Immovable Bastão"
+  },
+  "infernal-amulet": {
+    "name_pt": "Infernal Amuleto"
+  },
+  "infernal-plate-armor": {
+    "name_pt": "Infernal Placas Armadura"
+  },
+  "infernal-puzzle-box": {
+    "name_pt": "Infernal Puzzle Caixa"
+  },
+  "infernal-tack": {
+    "name_pt": "Infernal Tack"
+  },
+  "infiltrators-key-awakened": {
+    "name_pt": "Key (Awakened) de Infiltrator"
+  },
+  "infiltrators-key-dormant": {
+    "name_pt": "Key (Dormant) de Infiltrator"
+  },
+  "infiltrators-key-exalted": {
+    "name_pt": "Key (Exalted) de Infiltrator"
+  },
+  "ingot-of-the-skold-rune": {
+    "name_pt": "Ingot de o Skold Rune"
+  },
+  "ink": {
+    "name_pt": "Ink"
+  },
+  "ink-1-ounce-bottle": {
+    "name_pt": "Ink (1-ounce bottle)"
+  },
+  "ink-pen": {
+    "name_pt": "Ink Pen"
+  },
+  "insect-repellent-block-of-incense": {
+    "name_pt": "Insect Repellent (block de incense)"
+  },
+  "insect-repellent-greasy-salve": {
+    "name_pt": "Insect Repellent (greasy salve)"
+  },
+  "insignia-of-claws": {
+    "name_pt": "Insignia de Claws"
+  },
+  "instrument-of-illusions": {
+    "name_pt": "Instrumento de Illusions"
+  },
+  "instrument-of-scribing": {
+    "name_pt": "Instrumento de Scribing"
+  },
+  "instrument-of-the-bards-anstruth-harp": {
+    "name_pt": "Instrumento de o Bards, Anstruth Harp"
+  },
+  "instrument-of-the-bards-canaith-mandolin": {
+    "name_pt": "Instrumento de o Bards, Canaith Mandolin"
+  },
+  "instrument-of-the-bards-cli-lyre": {
+    "name_pt": "Instrumento de o Bards, Cli Lyre"
+  },
+  "instrument-of-the-bards-doss-lute": {
+    "name_pt": "Instrumento de o Bards, Doss Lute"
+  },
+  "instrument-of-the-bards-fochlucan-bandore": {
+    "name_pt": "Instrumento de o Bards, Fochlucan Bandore"
+  },
+  "instrument-of-the-bards-mac-fuirmidh-cittern": {
+    "name_pt": "Instrumento de o Bards, Mac-Fuirmidh Cittern"
+  },
+  "instrument-of-the-bards-ollamh-harp": {
+    "name_pt": "Instrumento de o Bards, Ollamh Harp"
+  },
+  "ioun-stone-of-vitality": {
+    "name_pt": "Ioun Pedra de Vitality"
+  },
+  "ioun-stone-absorption": {
+    "name_pt": "Ioun Stone, Absorção"
+  },
+  "ioun-stone-agility": {
+    "name_pt": "Ioun Stone, Agility"
+  },
+  "ioun-stone-awareness": {
+    "name_pt": "Ioun Stone, Awareness"
+  },
+  "ioun-stone-fortitude": {
+    "name_pt": "Ioun Stone, Fortitude"
+  },
+  "ioun-stone-greater-absorption": {
+    "name_pt": "Ioun Stone, Maior Absorção"
+  },
+  "ioun-stone-historical-knowledge": {
+    "name_pt": "Ioun Stone, Historical Knowledge"
+  },
+  "ioun-stone-insight": {
+    "name_pt": "Ioun Stone, Insight"
+  },
+  "ioun-stone-intellect": {
+    "name_pt": "Ioun Stone, Intellect"
+  },
+  "ioun-stone-language-knowledge": {
+    "name_pt": "Ioun Stone, Language Knowledge"
+  },
+  "ioun-stone-leadership": {
+    "name_pt": "Ioun Stone, Leadership"
+  },
+  "ioun-stone-mastery": {
+    "name_pt": "Ioun Stone, Mastery"
+  },
+  "ioun-stone-natural-knowledge": {
+    "name_pt": "Ioun Stone, Natural Knowledge"
+  },
+  "ioun-stone-protection": {
+    "name_pt": "Ioun Stone, Proteção"
+  },
+  "ioun-stone-regeneration": {
+    "name_pt": "Ioun Stone, Regeneração"
+  },
+  "ioun-stone-religious-knowledge": {
+    "name_pt": "Ioun Stone, Religious Knowledge"
+  },
+  "ioun-stone-reserve": {
+    "name_pt": "Ioun Stone, Reserve"
+  },
+  "ioun-stone-self-preservation": {
+    "name_pt": "Ioun Stone, Self-Preservation"
+  },
+  "ioun-stone-strength": {
+    "name_pt": "Ioun Stone, Força"
+  },
+  "ioun-stone-supreme-intellect": {
+    "name_pt": "Ioun Stone, Supremo Intellect"
+  },
+  "ioun-stone-sustenance": {
+    "name_pt": "Ioun Stone, Sustenance"
+  },
+  "iron": {
+    "name_pt": "Ferro"
+  },
+  "iron-ball": {
+    "name_pt": "Ferro Ball"
+  },
+  "iron-bands-of-bilarro": {
+    "name_pt": "Ferro Bands de Bilarro"
+  },
+  "iron-flask": {
+    "name_pt": "Ferro Frasco"
+  },
+  "iron-pot": {
+    "name_pt": "Ferro Pot"
+  },
+  "iron-spike": {
+    "name_pt": "Ferro Spike"
+  },
+  "iron-spikes": {
+    "name_pt": "Ferro Spikes"
+  },
+  "iron-spikes-10": {
+    "name_pt": "Ferro Spikes (10)"
+  },
+  "ironfang": {
+    "name_pt": "Ironfang"
+  },
+  "ivanas-whisper": {
+    "name_pt": "Whisper de Ivana"
+  },
+  "izzet-guild-signet": {
+    "name_pt": "Izzet Guild Signet"
+  },
+  "izzet-keyrune": {
+    "name_pt": "Izzet Keyrune"
+  },
+  "jacinth": {
+    "name_pt": "Jacinth"
+  },
+  "jade": {
+    "name_pt": "Jade"
+  },
+  "jade-bowl-river-heralds": {
+    "name_pt": "Jade bowl (River Heralds)"
+  },
+  "jade-breastplate-river-heralds": {
+    "name_pt": "Jade Couraça (River Heralds)"
+  },
+  "jade-game-board-with-gold-playing-pieces": {
+    "name_pt": "Jade game board com Ouro playing pieces"
+  },
+  "jade-game-board-with-solid-gold-playing-pieces": {
+    "name_pt": "Jade game board com solid Ouro playing pieces"
+  },
+  "jade-headpiece-river-heralds": {
+    "name_pt": "Jade headpiece (River Heralds)"
+  },
+  "jade-serpent-staff": {
+    "name_pt": "Jade Serpent Cajado"
+  },
+  "jade-sword-with-amber-river-heralds": {
+    "name_pt": "Jade Espada com amber (River Heralds)"
+  },
+  "jade-totem-with-diamond-eyes-river-heralds": {
+    "name_pt": "Jade totem com Diamante eyes (River Heralds)"
+  },
+  "jakarions-staff-of-frost": {
+    "name_pt": "Cajado de Gelo de Jakarion"
+  },
+  "jasper": {
+    "name_pt": "Jasper"
+  },
+  "javelin": {
+    "name_pt": "Dardo"
+  },
+  "javelin-of-backbiting": {
+    "name_pt": "Dardo de Backbiting"
+  },
+  "javelin-of-lightning": {
+    "name_pt": "Dardo de Relâmpago"
+  },
+  "jester-card": {
+    "name_pt": "Jester Carta"
+  },
+  "jesters-mask": {
+    "name_pt": "Mask de Jester"
+  },
+  "jet": {
+    "name_pt": "Jet"
+  },
+  "jewel-of-three-prayers-awakened": {
+    "name_pt": "Jewel de Três Prayers (Awakened)"
+  },
+  "jewel-of-three-prayers-dormant": {
+    "name_pt": "Jewel de Três Prayers (Dormant)"
+  },
+  "jewel-of-three-prayers-exalted": {
+    "name_pt": "Jewel de Três Prayers (Exalted)"
+  },
+  "jeweled-anklet": {
+    "name_pt": "Jeweled anklet"
+  },
+  "jeweled-anklet-brazen-coalition": {
+    "name_pt": "Jeweled anklet (Brazen Coalition)"
+  },
+  "jeweled-gold-crown": {
+    "name_pt": "Jeweled Ouro Coroa"
+  },
+  "jeweled-platinum-ring": {
+    "name_pt": "Jeweled Platina Anel"
+  },
+  "jewelers-tools": {
+    "name_pt": "Ferramentas de Jeweler"
+  },
+  "jug": {
+    "name_pt": "Jarra"
+  },
+  "junky-1-dagger": {
+    "name_pt": "Junky +1 Adaga"
+  },
+  "kagonesti-forest-shroud": {
+    "name_pt": "Kagonesti Forest Shroud"
+  },
+  "keelboat": {
+    "name_pt": "Keelboat"
+  },
+  "keg-of-alchemists-fire": {
+    "name_pt": "Keg de Alchemist's Fogo"
+  },
+  "keoghtoms-ointment": {
+    "name_pt": "Ointment de Keoghtom"
+  },
+  "key-card": {
+    "name_pt": "Key Carta"
+  },
+  "keycharm": {
+    "name_pt": "Keycharm"
+  },
+  "keystone-of-creation": {
+    "name_pt": "Keystone de Creation"
+  },
+  "khrusor-spear-of-heliod": {
+    "name_pt": "Khrusor, Lança de Heliod"
+  },
+  "khyber-trinket": {
+    "name_pt": "Khyber Trinket"
+  },
+  "knaves-eye-patch": {
+    "name_pt": "Olho Patch de Knave"
+  },
+  "knife-of-stolen-resistance": {
+    "name_pt": "Knife de Stolen Resistência"
+  },
+  "knight-card": {
+    "name_pt": "Knight Carta"
+  },
+  "korolnor-scepter": {
+    "name_pt": "Korolnor Scepter"
+  },
+  "kyrzins-ooze": {
+    "name_pt": "Ooze de Kyrzin"
+  },
+  "ladder": {
+    "name_pt": "Ladder"
+  },
+  "ladder-10-foot": {
+    "name_pt": "Ladder (10-foot)"
+  },
+  "lamp": {
+    "name_pt": "Lamparina"
+  },
+  "lamprey-ship": {
+    "name_pt": "Lamprey Ship"
+  },
+  "lance": {
+    "name_pt": "Lança de Justa"
+  },
+  "lantern-of-revealing": {
+    "name_pt": "Lanterna de Revealing"
+  },
+  "lantern-of-tracking": {
+    "name_pt": "Lanterna de Tracking"
+  },
+  "lapis-lazuli": {
+    "name_pt": "Lapis Lazuli"
+  },
+  "large-gold-bracelet": {
+    "name_pt": "Large Ouro bracelet"
+  },
+  "large-gold-bracelet-legion-of-dusk": {
+    "name_pt": "Large Ouro bracelet (Legion de Dusk)"
+  },
+  "large-jade-totem-river-heralds": {
+    "name_pt": "Large Jade totem (River Heralds)"
+  },
+  "large-well-made-tapestry": {
+    "name_pt": "Large well-made tapestry"
+  },
+  "large-well-made-tapestry-legion-of-dusk": {
+    "name_pt": "Large well-made tapestry (Legion de Dusk)"
+  },
+  "laser-pistol": {
+    "name_pt": "Laser Pistol"
+  },
+  "laser-rifle": {
+    "name_pt": "Laser Rifle"
+  },
+  "lash-of-immolation": {
+    "name_pt": "Lash de Immolation"
+  },
+  "lash-of-shadows-awakened": {
+    "name_pt": "Lash de Shadows (Awakened)"
+  },
+  "lash-of-shadows-dormant": {
+    "name_pt": "Lash de Shadows (Dormant)"
+  },
+  "lash-of-shadows-exalted": {
+    "name_pt": "Lash de Shadows (Exalted)"
+  },
+  "leather-armor": {
+    "name_pt": "Couro Armadura"
+  },
+  "leather-golem-armor": {
+    "name_pt": "Couro Golem Armadura"
+  },
+  "leatherworkers-tools": {
+    "name_pt": "Ferramentas de Leatherworker"
+  },
+  "lesser-hammock-of-worlds": {
+    "name_pt": "Menor Hammock de Worlds"
+  },
+  "libram-of-souls-and-flesh": {
+    "name_pt": "Libram de Souls e Flesh"
+  },
+  "lifewell-tattoo": {
+    "name_pt": "Lifewell Tattoo"
+  },
+  "light-crossbow": {
+    "name_pt": "Luz Besta"
+  },
+  "light-hammer": {
+    "name_pt": "Luz Martelo"
+  },
+  "light-repeating-crossbow": {
+    "name_pt": "Luz Repeating Besta"
+  },
+  "lightbringer": {
+    "name_pt": "Lightbringer"
+  },
+  "lightning-absorbing-tattoo": {
+    "name_pt": "Relâmpago Absorbing Tattoo"
+  },
+  "linen-1-sq-yd": {
+    "name_pt": "Linen (1 sq. yd.)"
+  },
+  "living-gloves": {
+    "name_pt": "Living Luvas"
+  },
+  "living-loot-satchel": {
+    "name_pt": "Living Loot Satchel"
+  },
+  "living-ship": {
+    "name_pt": "Living Ship"
+  },
+  "loadstone": {
+    "name_pt": "Loadstone"
+  },
+  "loaf-of-bread": {
+    "name_pt": "Loaf de Bread"
+  },
+  "lock": {
+    "name_pt": "Lock"
+  },
+  "lock-of-trickery": {
+    "name_pt": "Lock de Trickery"
+  },
+  "locking-spellbook": {
+    "name_pt": "Locking Spellbook"
+  },
+  "lolths-sting": {
+    "name_pt": "Sting de Lolth"
+  },
+  "longbow": {
+    "name_pt": "Arco Longo"
+  },
+  "longbow-of-the-healing-hearth": {
+    "name_pt": "Arco Longo de o Cura Hearth"
+  },
+  "longhorn": {
+    "name_pt": "Longhorn"
+  },
+  "longship": {
+    "name_pt": "Longship"
+  },
+  "longsword": {
+    "name_pt": "Espada Longa"
+  },
+  "lords-ensemble": {
+    "name_pt": "Ensemble de Lord"
+  },
+  "lords-alliance-trinket": {
+    "name_pt": "Lords' Alliance Trinket"
+  },
+  "lorehold-primer": {
+    "name_pt": "Lorehold Primer"
+  },
+  "lorehold-trinket": {
+    "name_pt": "Lorehold Trinket"
+  },
+  "lost-crown-of-besilmer": {
+    "name_pt": "Lost Coroa de Besilmer"
+  },
+  "lubas-tarokka-of-souls": {
+    "name_pt": "Tarokka de Souls de Luba"
+  },
+  "lucent-destroyer": {
+    "name_pt": "Lucent Destroyer"
+  },
+  "luminous-war-pick": {
+    "name_pt": "Luminous War Pick"
+  },
+  "lute": {
+    "name_pt": "Lute"
+  },
+  "lute-crafted-of-exotic-wood-with-mother-of-pearl-inlay-and-zircon-gems-brazen-coalition": {
+    "name_pt": "Lute crafted de exotic Madeira com mother-of-pearl inlay e zircon gems (Brazen Coalition)"
+  },
+  "lute-of-thunderous-thumping": {
+    "name_pt": "Lute de Thunderous Thumping"
+  },
+  "luxon-beacon": {
+    "name_pt": "Luxon Beacon"
+  },
+  "lyre": {
+    "name_pt": "Lyre"
+  },
+  "lyre-of-building": {
+    "name_pt": "Lyre de Building"
+  },
+  "mace": {
+    "name_pt": "Maça"
+  },
+  "mace-of-disruption": {
+    "name_pt": "Maça de Disruption"
+  },
+  "mace-of-smiting": {
+    "name_pt": "Maça de Smiting"
+  },
+  "mace-of-terror": {
+    "name_pt": "Maça de Terror"
+  },
+  "mace-of-the-black-crown-awakened": {
+    "name_pt": "Maça de o Black Coroa (Awakened)"
+  },
+  "mace-of-the-black-crown-dormant": {
+    "name_pt": "Maça de o Black Coroa (Dormant)"
+  },
+  "mace-of-the-black-crown-exalted": {
+    "name_pt": "Maça de o Black Coroa (Exalted)"
+  },
+  "macuahuitl": {
+    "name_pt": "Macuahuitl"
+  },
+  "maddgoths-helm": {
+    "name_pt": "Elmo de Maddgoth"
+  },
+  "magen-handbell": {
+    "name_pt": "Magen Handbell"
+  },
+  "magnifying-glass": {
+    "name_pt": "Magnifying Vidro"
+  },
+  "malachite": {
+    "name_pt": "Malachite"
+  },
+  "malice": {
+    "name_pt": "Malice"
+  },
+  "manacles": {
+    "name_pt": "Manacles"
+  },
+  "manifold-tool": {
+    "name_pt": "Manifold Ferramenta"
+  },
+  "mantle-of-spell-resistance": {
+    "name_pt": "Manto de Spell Resistência"
+  },
+  "manual-of-bodily-health": {
+    "name_pt": "Manual de Bodily Health"
+  },
+  "manual-of-clay-golems": {
+    "name_pt": "Manual de Clay Golems"
+  },
+  "manual-of-flesh-golems": {
+    "name_pt": "Manual de Flesh Golems"
+  },
+  "manual-of-gainful-exercise": {
+    "name_pt": "Manual de Gainful Exercise"
+  },
+  "manual-of-iron-golems": {
+    "name_pt": "Manual de Ferro Golems"
+  },
+  "manual-of-quickness-of-action": {
+    "name_pt": "Manual de Quickness de Action"
+  },
+  "manual-of-stone-golems": {
+    "name_pt": "Manual de Pedra Golems"
+  },
+  "map": {
+    "name_pt": "Mapa"
+  },
+  "map-or-scroll-case": {
+    "name_pt": "Mapa ou Pergaminho Estojo"
+  },
+  "marble-font-with-gold-inlay-legion-of-dusk": {
+    "name_pt": "Marble font com Ouro inlay (Legion de Dusk)"
+  },
+  "mask-of-changed-appearance": {
+    "name_pt": "Mask de Changed Appearance"
+  },
+  "mask-of-the-beast": {
+    "name_pt": "Mask de o Besta"
+  },
+  "mask-of-the-dragon-queen": {
+    "name_pt": "Mask de o Dragão Queen"
+  },
+  "masons-tools": {
+    "name_pt": "Ferramentas de Mason"
+  },
+  "masque-charm": {
+    "name_pt": "Masque Charm"
+  },
+  "masquerade-tattoo": {
+    "name_pt": "Masquerade Tattoo"
+  },
+  "masters-amulet": {
+    "name_pt": "Amuleto de Master"
+  },
+  "masterpiece-painting-in-mahogany-frame-with-gold-inlay-legion-of-dusk": {
+    "name_pt": "Masterpiece painting in mahogany frame com Ouro inlay (Legion de Dusk)"
+  },
+  "mastiff": {
+    "name_pt": "Mastiff"
+  },
+  "mastix-whip-of-erebos": {
+    "name_pt": "Mastix, Chicote de Erebos"
+  },
+  "matalotok": {
+    "name_pt": "Matalotok"
+  },
+  "matchless-pipe": {
+    "name_pt": "Matchless Pipe"
+  },
+  "maul": {
+    "name_pt": "Malho"
+  },
+  "mechanical-wonder-domestic": {
+    "name_pt": "Mechanical Wonder (Domestic)"
+  },
+  "mechanical-wonder-flying": {
+    "name_pt": "Mechanical Wonder (Flying)"
+  },
+  "mechanical-wonder-gyrocopter": {
+    "name_pt": "Mechanical Wonder (Gyrocopter)"
+  },
+  "mechanical-wonder-mobility": {
+    "name_pt": "Mechanical Wonder (Mobility)"
+  },
+  "medal-of-muscle": {
+    "name_pt": "Medal de Muscle"
+  },
+  "medal-of-the-conch": {
+    "name_pt": "Medal de o Conch"
+  },
+  "medal-of-the-horizonback": {
+    "name_pt": "Medal de o Horizonback"
+  },
+  "medal-of-the-maze": {
+    "name_pt": "Medal de o Maze"
+  },
+  "medal-of-the-meat-pie": {
+    "name_pt": "Medal de o Meat Pie"
+  },
+  "medal-of-the-wetlands": {
+    "name_pt": "Medal de o Wetlands"
+  },
+  "medal-of-wit": {
+    "name_pt": "Medal de Wit"
+  },
+  "medallion-of-thoughts": {
+    "name_pt": "Medalhão de Thoughts"
+  },
+  "menga-leaves-1-ounce": {
+    "name_pt": "Menga leaves (1 ounce)"
+  },
+  "merchants-scale": {
+    "name_pt": "Escamas de Merchant"
+  },
+  "mess-kit": {
+    "name_pt": "Mess Kit"
+  },
+  "midnight-tears": {
+    "name_pt": "Midnight Tears"
+  },
+  "mighty-servant-of-leuk-o": {
+    "name_pt": "Mighty Servant de Leuk-o"
+  },
+  "military-saddle": {
+    "name_pt": "Military Saddle"
+  },
+  "mimir": {
+    "name_pt": "Mimir"
+  },
+  "mind-crystal-careful": {
+    "name_pt": "Mind Cristal (Careful)"
+  },
+  "mind-crystal-distant": {
+    "name_pt": "Mind Cristal (Distant)"
+  },
+  "mind-crystal-empowered": {
+    "name_pt": "Mind Cristal (Empowered)"
+  },
+  "mind-crystal-extended": {
+    "name_pt": "Mind Cristal (Extended)"
+  },
+  "mind-crystal-heightened": {
+    "name_pt": "Mind Cristal (Heightened)"
+  },
+  "mind-crystal-quickened": {
+    "name_pt": "Mind Cristal (Quickened)"
+  },
+  "mind-crystal-subtle": {
+    "name_pt": "Mind Cristal (Subtle)"
+  },
+  "mind-flayer-skull": {
+    "name_pt": "Mind Flayer Skull"
+  },
+  "mind-lash": {
+    "name_pt": "Mind Lash"
+  },
+  "mind-sharpener": {
+    "name_pt": "Mind Sharpener"
+  },
+  "mindblasting-cap": {
+    "name_pt": "Mindblasting Cap"
+  },
+  "mindguard-crown": {
+    "name_pt": "Mindguard Coroa"
+  },
+  "miners-pick": {
+    "name_pt": "Pick de Miner"
+  },
+  "mirror": {
+    "name_pt": "Espelho"
+  },
+  "mirror-of-life-trapping": {
+    "name_pt": "Espelho de Life Trapping"
+  },
+  "mirror-of-reflected-pasts": {
+    "name_pt": "Espelho de Reflected Pasts"
+  },
+  "mirror-of-the-past": {
+    "name_pt": "Espelho de o Past"
+  },
+  "mistral-mantle": {
+    "name_pt": "Mistral Manto"
+  },
+  "mizzium-apparatus": {
+    "name_pt": "Mizzium Apparatus"
+  },
+  "mizzium-mortar": {
+    "name_pt": "Mizzium Mortar"
+  },
+  "modern-bullet": {
+    "name_pt": "Modern Bullet"
+  },
+  "modern-bullets-10": {
+    "name_pt": "Modern Bullets (10)"
+  },
+  "monster-camouflage": {
+    "name_pt": "Monster Camouflage"
+  },
+  "monster-hunters-pack": {
+    "name_pt": "Monster Hunter's Mochila"
+  },
+  "moodmark-paint": {
+    "name_pt": "Moodmark Paint"
+  },
+  "moon-card": {
+    "name_pt": "Moon Carta"
+  },
+  "moonblade": {
+    "name_pt": "Moonblade"
+  },
+  "moonstone": {
+    "name_pt": "Moonstone"
+  },
+  "moorbounder": {
+    "name_pt": "Moorbounder"
+  },
+  "morningstar": {
+    "name_pt": "Estrela da Manhã"
+  },
+  "moss-agate": {
+    "name_pt": "Moss Agate"
+  },
+  "mournland-trinket": {
+    "name_pt": "Mournland Trinket"
+  },
+  "mudslick-tower": {
+    "name_pt": "Mudslick Tower"
+  },
+  "mule": {
+    "name_pt": "Mule"
+  },
+  "mummy-rot-antidote": {
+    "name_pt": "Mummy Rot Antidote"
+  },
+  "murgaxors-elixir-of-life": {
+    "name_pt": "Elixir de Life de Murgaxor"
+  },
+  "murgaxors-orb": {
+    "name_pt": "Orbe de Murgaxor"
+  },
+  "muroosa-balm": {
+    "name_pt": "Muroosa Bálsamo"
+  },
+  "musket": {
+    "name_pt": "Musket"
+  },
+  "mystery-key": {
+    "name_pt": "Mystery Key"
+  },
+  "mythallar-bracelet": {
+    "name_pt": "Mythallar Bracelet"
+  },
+  "mythallar-cloak": {
+    "name_pt": "Mythallar Manto"
+  },
+  "narycrash": {
+    "name_pt": "Narycrash"
+  },
+  "natures-mantle": {
+    "name_pt": "Manto de Nature"
+  },
+  "nautiloid": {
+    "name_pt": "Nautiloid"
+  },
+  "navigation-orb": {
+    "name_pt": "Navigation Orbe"
+  },
+  "navigators-tools": {
+    "name_pt": "Ferramentas de Navigator"
+  },
+  "necklace-of-adaptation": {
+    "name_pt": "Colar de Adaptation"
+  },
+  "necklace-of-electrum-medallions-with-red-and-blue-tourmalines-brazen-coalition": {
+    "name_pt": "Colar de electrum medallions com red e blue tourmalines (Brazen Coalition)"
+  },
+  "necklace-of-fireballs": {
+    "name_pt": "Colar de Fireballs"
+  },
+  "necklace-of-jade-and-pink-pearls-river-heralds": {
+    "name_pt": "Colar de Jade e pink pearls (River Heralds)"
+  },
+  "necklace-of-prayer-beads": {
+    "name_pt": "Colar de Prayer Beads"
+  },
+  "necklace-string-of-small-pink-pearls": {
+    "name_pt": "Colar string de small pink pearls"
+  },
+  "necrotic-absorbing-tattoo": {
+    "name_pt": "Necrótico Absorbing Tattoo"
+  },
+  "needle": {
+    "name_pt": "Needle"
+  },
+  "needle-of-mending": {
+    "name_pt": "Needle de Mending"
+  },
+  "needler-pistol": {
+    "name_pt": "Needler Pistol"
+  },
+  "needles-50": {
+    "name_pt": "Needles (50)"
+  },
+  "nepenthe": {
+    "name_pt": "Nepenthe"
+  },
+  "net": {
+    "name_pt": "Rede"
+  },
+  "nether-scroll-of-azumar": {
+    "name_pt": "Nether Pergaminho de Azumar"
+  },
+  "netherese-ring-of-protection": {
+    "name_pt": "Netherese Anel de Proteção"
+  },
+  "nib": {
+    "name_pt": "Nib"
+  },
+  "night-caller": {
+    "name_pt": "Night Caller"
+  },
+  "nightbringer": {
+    "name_pt": "Nightbringer"
+  },
+  "nightfall-pearl": {
+    "name_pt": "Nightfall Pérola"
+  },
+  "nightspider": {
+    "name_pt": "Nightspider"
+  },
+  "nikos-mace": {
+    "name_pt": "Maça de Niko"
+  },
+  "nimblewright-detector": {
+    "name_pt": "Nimblewright Detector"
+  },
+  "nimbus-coronet": {
+    "name_pt": "Nimbus Coronet"
+  },
+  "nolzurs-marvelous-pigments": {
+    "name_pt": "Marvelous Pigments de Nolzur"
+  },
+  "norlander-longship": {
+    "name_pt": "Norlander Longship"
+  },
+  "oathbow": {
+    "name_pt": "Oathbow"
+  },
+  "obsidian": {
+    "name_pt": "Obsidiana"
+  },
+  "obsidian-flint-dragon-plate": {
+    "name_pt": "Obsidiana Flint Dragão Placas"
+  },
+  "obsidian-statuette-with-gold-fittings-and-inlay": {
+    "name_pt": "Obsidiana statuette com Ouro fittings e inlay"
+  },
+  "obviators-lenses": {
+    "name_pt": "Lenses de Obviator"
+  },
+  "occultant-abacus": {
+    "name_pt": "Occultant Abacus"
+  },
+  "oil": {
+    "name_pt": "Óleo"
+  },
+  "oil-flask": {
+    "name_pt": "Óleo (flask)"
+  },
+  "oil-of-etherealness": {
+    "name_pt": "Óleo de Etherealness"
+  },
+  "oil-of-sharpness": {
+    "name_pt": "Óleo de Sharpness"
+  },
+  "oil-of-slipperiness": {
+    "name_pt": "Óleo de Slipperiness"
+  },
+  "oil-of-taggit": {
+    "name_pt": "Óleo de Taggit"
+  },
+  "old-masterpiece-painting": {
+    "name_pt": "Old masterpiece painting"
+  },
+  "olisuba-leaf": {
+    "name_pt": "Olisuba Leaf"
+  },
+  "onyx": {
+    "name_pt": "Onyx"
+  },
+  "opal": {
+    "name_pt": "Opala"
+  },
+  "opal-of-the-ild-rune": {
+    "name_pt": "Opala de o Ild Rune"
+  },
+  "orb": {
+    "name_pt": "Orbe"
+  },
+  "orb-of-damara": {
+    "name_pt": "Orbe de Damara"
+  },
+  "orb-of-direction": {
+    "name_pt": "Orbe de Direction"
+  },
+  "orb-of-dragonkind": {
+    "name_pt": "Orbe de Dragonkind"
+  },
+  "orb-of-gonging": {
+    "name_pt": "Orbe de Gonging"
+  },
+  "orb-of-shielding-fernian-basalt": {
+    "name_pt": "Orbe de Shielding (Fernian Basalt)"
+  },
+  "orb-of-shielding-irian-quartz": {
+    "name_pt": "Orbe de Shielding (Irian Quartz)"
+  },
+  "orb-of-shielding-kythrian-skarn": {
+    "name_pt": "Orbe de Shielding (Kythrian Skarn)"
+  },
+  "orb-of-shielding-lamannian-flint": {
+    "name_pt": "Orbe de Shielding (Lamannian Flint)"
+  },
+  "orb-of-shielding-mabaran-obsidian": {
+    "name_pt": "Orbe de Shielding (Mabaran Obsidian)"
+  },
+  "orb-of-shielding-risian-shale": {
+    "name_pt": "Orbe de Shielding (Risian Shale)"
+  },
+  "orb-of-shielding-shavarran-chert": {
+    "name_pt": "Orbe de Shielding (Shavarran Chert)"
+  },
+  "orb-of-shielding-xorian-marble": {
+    "name_pt": "Orbe de Shielding (Xorian Marble)"
+  },
+  "orb-of-skoraeus": {
+    "name_pt": "Orbe de Skoraeus"
+  },
+  "orb-of-the-stein-rune": {
+    "name_pt": "Orbe de o Stein Rune"
+  },
+  "orb-of-the-veil": {
+    "name_pt": "Orbe de o Veil"
+  },
+  "orb-of-time": {
+    "name_pt": "Orbe de Time"
+  },
+  "orc-stone": {
+    "name_pt": "Orc Pedra"
+  },
+  "orcsplitter": {
+    "name_pt": "Orcsplitter"
+  },
+  "orcus-figurine": {
+    "name_pt": "Orcus Estatueta"
+  },
+  "order-of-the-gauntlet-trinket": {
+    "name_pt": "Order de o Manopla Trinket"
+  },
+  "ornithopter-of-flying": {
+    "name_pt": "Ornithopter de Voo"
+  },
+  "orrery-of-the-wanderer": {
+    "name_pt": "Orrery de o Wanderer"
+  },
+  "orzhov-guild-signet": {
+    "name_pt": "Orzhov Guild Signet"
+  },
+  "orzhov-keyrune": {
+    "name_pt": "Orzhov Keyrune"
+  },
+  "outer-essence-shard": {
+    "name_pt": "Outer Essence Shard"
+  },
+  "outer-essence-shard-chaotic": {
+    "name_pt": "Outer Essence Shard (Chaotic)"
+  },
+  "outer-essence-shard-evil": {
+    "name_pt": "Outer Essence Shard (Evil)"
+  },
+  "outer-essence-shard-good": {
+    "name_pt": "Outer Essence Shard (Good)"
+  },
+  "outer-essence-shard-lawful": {
+    "name_pt": "Outer Essence Shard (Lawful)"
+  },
+  "oversized-longbow": {
+    "name_pt": "Oversized Arco Longo"
+  },
+  "ox": {
+    "name_pt": "Ox"
+  },
+  "pack-saddle": {
+    "name_pt": "Mochila Saddle"
+  },
+  "padded-armor": {
+    "name_pt": "Acolchoada Armadura"
+  },
+  "painted-gold-childs-sarcophagus": {
+    "name_pt": "Painted Ouro child's sarcophagus"
+  },
+  "painted-gold-war-mask": {
+    "name_pt": "Painted Ouro war mask"
+  },
+  "painters-supplies": {
+    "name_pt": "Supplies de Painter"
+  },
+  "pair-of-engraved-bone-dice": {
+    "name_pt": "Pair de engraved Osso dice"
+  },
+  "pair-of-engraved-bone-dice-brazen-coalition": {
+    "name_pt": "Pair de engraved Osso dice (Brazen Coalition)"
+  },
+  "pale-tincture": {
+    "name_pt": "Pale Tincture"
+  },
+  "pan-flute": {
+    "name_pt": "Pan Flute"
+  },
+  "paper": {
+    "name_pt": "Paper"
+  },
+  "paper-one-sheet": {
+    "name_pt": "Paper (one sheet)"
+  },
+  "paper-bird": {
+    "name_pt": "Paper Bird"
+  },
+  "paralysis-pistol": {
+    "name_pt": "Paralysis Pistol"
+  },
+  "parchment": {
+    "name_pt": "Parchment"
+  },
+  "parchment-one-sheet": {
+    "name_pt": "Parchment (one sheet)"
+  },
+  "pariahs-shield": {
+    "name_pt": "Escudo de Pariah"
+  },
+  "pathfinders-greataxe": {
+    "name_pt": "Machado Grande de Pathfinder"
+  },
+  "pearl": {
+    "name_pt": "Pérola"
+  },
+  "pearl-of-power": {
+    "name_pt": "Pérola de Poder"
+  },
+  "pearl-of-undead-detection": {
+    "name_pt": "Pérola de Morto-vivo Detection"
+  },
+  "pennant-of-the-vind-rune": {
+    "name_pt": "Pennant de o Vind Rune"
+  },
+  "pepper": {
+    "name_pt": "Pepper"
+  },
+  "peregrine-mask": {
+    "name_pt": "Peregrine Mask"
+  },
+  "perfume": {
+    "name_pt": "Perfume"
+  },
+  "perfume-vial": {
+    "name_pt": "Perfume (vial)"
+  },
+  "perfume-of-bewitching": {
+    "name_pt": "Perfume de Bewitching"
+  },
+  "periapt-of-health": {
+    "name_pt": "Periaptro de Health"
+  },
+  "periapt-of-proof-against-poison": {
+    "name_pt": "Periaptro de Proof contra Veneno"
+  },
+  "periapt-of-wound-closure": {
+    "name_pt": "Periaptro de Wound Closure"
+  },
+  "peridot": {
+    "name_pt": "Peridot"
+  },
+  "petrified-grung-egg": {
+    "name_pt": "Petrified Grung Egg"
+  },
+  "pewter-mug-with-green-spinels-brazen-coalition": {
+    "name_pt": "Pewter mug com green spinels (Brazen Coalition)"
+  },
+  "philter-of-love": {
+    "name_pt": "Filtro de Love"
+  },
+  "piercer": {
+    "name_pt": "Piercer"
+  },
+  "pig": {
+    "name_pt": "Pig"
+  },
+  "pike": {
+    "name_pt": "Pique"
+  },
+  "pipe-of-remembrance": {
+    "name_pt": "Pipe de Remembrance"
+  },
+  "pipe-of-smoke-monsters": {
+    "name_pt": "Pipe de Smoke Monsters"
+  },
+  "pipes-of-haunting": {
+    "name_pt": "Pipes de Haunting"
+  },
+  "pipes-of-pestilence": {
+    "name_pt": "Pipes de Pestilence"
+  },
+  "pipes-of-the-sewers": {
+    "name_pt": "Pipes de o Sewers"
+  },
+  "pirates-cutlass": {
+    "name_pt": "Cutlass de Pirate"
+  },
+  "pistol": {
+    "name_pt": "Pistol"
+  },
+  "pitcher": {
+    "name_pt": "Pitcher"
+  },
+  "piton": {
+    "name_pt": "Piton"
+  },
+  "piwafwi-cloak-of-elvenkind": {
+    "name_pt": "Piwafwi (Cloak de Elvenkind)"
+  },
+  "piwafwi-of-fire-resistance": {
+    "name_pt": "Piwafwi de Fogo Resistência"
+  },
+  "pixie-dust": {
+    "name_pt": "Pixie Pó"
+  },
+  "planar-key": {
+    "name_pt": "Planar Key"
+  },
+  "planar-philosopher-trinket": {
+    "name_pt": "Planar Philosopher Trinket"
+  },
+  "planecallers-codex": {
+    "name_pt": "Codex de Planecaller"
+  },
+  "plate-armor": {
+    "name_pt": "Placas Armadura"
+  },
+  "plate-armor-of-etherealness": {
+    "name_pt": "Placas Armadura de Etherealness"
+  },
+  "plate-of-knights-fellowship": {
+    "name_pt": "Placas de Knight's Fellowship"
+  },
+  "platinum": {
+    "name_pt": "Platina"
+  },
+  "platinum-pp": {
+    "name_pt": "Platina (pp)"
+  },
+  "platinum-10-zino-coin": {
+    "name_pt": "Platina 10-Zino Coin"
+  },
+  "platinum-100-zino-coin": {
+    "name_pt": "Platina 100-Zino Coin"
+  },
+  "platinum-bracelet-set-with-a-sapphire": {
+    "name_pt": "Platina bracelet set com a Safira"
+  },
+  "platinum-bracelet-set-with-an-emerald": {
+    "name_pt": "Platina bracelet set com an Esmeralda"
+  },
+  "platinum-headdress-with-topaz-sun-symbol-sun-empire": {
+    "name_pt": "Platina headdress com topaz sun symbol (Sun Empire)"
+  },
+  "platinum-ring-with-yellow-sapphire-sun-empire": {
+    "name_pt": "Platina Anel com yellow Safira (Sun Empire)"
+  },
+  "platinum-scarf": {
+    "name_pt": "Platina Scarf"
+  },
+  "platinum-staff-topped-with-amber-sun-empire": {
+    "name_pt": "Platina Cajado topped com amber (Sun Empire)"
+  },
+  "playing-card-set": {
+    "name_pt": "Playing Carta Set"
+  },
+  "playing-cards": {
+    "name_pt": "Playing Cartas"
+  },
+  "poison-absorbing-tattoo": {
+    "name_pt": "Veneno Absorbing Tattoo"
+  },
+  "poison-soaked-kukri": {
+    "name_pt": "Veneno Soaked Kukri"
+  },
+  "poisoners-kit": {
+    "name_pt": "Kit de Poisoner"
+  },
+  "pole": {
+    "name_pt": "Pole"
+  },
+  "pole-10-foot": {
+    "name_pt": "Pole (10-foot)"
+  },
+  "pole-of-angling": {
+    "name_pt": "Pole de Angling"
+  },
+  "pole-of-collapsing": {
+    "name_pt": "Pole de Collapsing"
+  },
+  "pony": {
+    "name_pt": "Pony"
+  },
+  "portable-hole": {
+    "name_pt": "Portable Hole"
+  },
+  "portable-ram": {
+    "name_pt": "Portable Ram"
+  },
+  "portal-compass": {
+    "name_pt": "Portal Bússola"
+  },
+  "portfolio-keeper": {
+    "name_pt": "Portfolio Keeper"
+  },
+  "pot-of-awakening": {
+    "name_pt": "Pot de Awakening"
+  },
+  "potion-of-acid-resistance": {
+    "name_pt": "Poção de Ácido Resistência"
+  },
+  "potion-of-advantage": {
+    "name_pt": "Poção de Advantage"
+  },
+  "potion-of-animal-friendship": {
+    "name_pt": "Poção de Animal Friendship"
+  },
+  "potion-of-aqueous-form": {
+    "name_pt": "Poção de Aqueous Form"
+  },
+  "potion-of-clairvoyance": {
+    "name_pt": "Poção de Clairvoyance"
+  },
+  "potion-of-climbing": {
+    "name_pt": "Poção de Escalada"
+  },
+  "potion-of-cloud-giant-strength": {
+    "name_pt": "Poção de Cloud Gigante Força"
+  },
+  "potion-of-cold-resistance": {
+    "name_pt": "Poção de Frio Resistência"
+  },
+  "potion-of-comprehension": {
+    "name_pt": "Poção de Comprehension"
+  },
+  "potion-of-diminution": {
+    "name_pt": "Poção de Diminution"
+  },
+  "potion-of-dragons-majesty": {
+    "name_pt": "Poção de Dragon's Majesty"
+  },
+  "potion-of-fire-breath": {
+    "name_pt": "Poção de Fogo Breath"
+  },
+  "potion-of-fire-giant-strength": {
+    "name_pt": "Poção de Fogo Gigante Força"
+  },
+  "potion-of-fire-resistance": {
+    "name_pt": "Poção de Fogo Resistência"
+  },
+  "potion-of-flying": {
+    "name_pt": "Poção de Voo"
+  },
+  "potion-of-force-resistance": {
+    "name_pt": "Poção de Força Resistência"
+  },
+  "potion-of-frost-giant-strength": {
+    "name_pt": "Poção de Gelo Gigante Força"
+  },
+  "potion-of-gaseous-form": {
+    "name_pt": "Poção de Gaseous Form"
+  },
+  "potion-of-giant-size": {
+    "name_pt": "Poção de Gigante Size"
+  },
+  "potion-of-greater-healing": {
+    "name_pt": "Poção de Maior Cura"
+  },
+  "potion-of-greater-invisibility": {
+    "name_pt": "Poção de Maior Invisibilidade"
+  },
+  "potion-of-growth": {
+    "name_pt": "Poção de Growth"
+  },
+  "potion-of-healing": {
+    "name_pt": "Poção de Cura"
+  },
+  "potion-of-heroism": {
+    "name_pt": "Poção de Heroism"
+  },
+  "potion-of-hill-giant-strength": {
+    "name_pt": "Poção de Hill Gigante Força"
+  },
+  "potion-of-invisibility": {
+    "name_pt": "Poção de Invisibilidade"
+  },
+  "potion-of-invulnerability": {
+    "name_pt": "Poção de Invulnerability"
+  },
+  "potion-of-lightning-resistance": {
+    "name_pt": "Poção de Relâmpago Resistência"
+  },
+  "potion-of-longevity": {
+    "name_pt": "Poção de Longevity"
+  },
+  "potion-of-maximum-power": {
+    "name_pt": "Poção de Maximum Poder"
+  },
+  "potion-of-mind-control-beast": {
+    "name_pt": "Poção de Mind Controle (beast)"
+  },
+  "potion-of-mind-control-humanoid": {
+    "name_pt": "Poção de Mind Controle (humanoid)"
+  },
+  "potion-of-mind-control-monster": {
+    "name_pt": "Poção de Mind Controle (monster)"
+  },
+  "potion-of-mind-reading": {
+    "name_pt": "Poção de Mind Reading"
+  },
+  "potion-of-necrotic-resistance": {
+    "name_pt": "Poção de Necrótico Resistência"
+  },
+  "potion-of-poison": {
+    "name_pt": "Poção de Veneno"
+  },
+  "potion-of-poison-resistance": {
+    "name_pt": "Poção de Veneno Resistência"
+  },
+  "potion-of-polychromy": {
+    "name_pt": "Poção de Polychromy"
+  },
+  "potion-of-possibility": {
+    "name_pt": "Poção de Possibility"
+  },
+  "potion-of-psionic-fortitude": {
+    "name_pt": "Poção de Psionic Fortitude"
+  },
+  "potion-of-psychic-resistance": {
+    "name_pt": "Poção de Psíquico Resistência"
+  },
+  "potion-of-pugilism": {
+    "name_pt": "Poção de Pugilism"
+  },
+  "potion-of-radiant-resistance": {
+    "name_pt": "Poção de Radiante Resistência"
+  },
+  "potion-of-speed": {
+    "name_pt": "Poção de Velocidade"
+  },
+  "potion-of-stone-giant-strength": {
+    "name_pt": "Poção de Pedra Gigante Força"
+  },
+  "potion-of-storm-giant-strength": {
+    "name_pt": "Poção de Tempestade Gigante Força"
+  },
+  "potion-of-superior-healing": {
+    "name_pt": "Poção de Superior Cura"
+  },
+  "potion-of-supreme-healing": {
+    "name_pt": "Poção de Supremo Cura"
+  },
+  "potion-of-thunder-resistance": {
+    "name_pt": "Poção de Trovão Resistência"
+  },
+  "potion-of-vitality": {
+    "name_pt": "Poção de Vitality"
+  },
+  "potion-of-watchful-rest": {
+    "name_pt": "Poção de Watchful Rest"
+  },
+  "potion-of-water-breathing": {
+    "name_pt": "Poção de Água Breathing"
+  },
+  "potters-tools": {
+    "name_pt": "Ferramentas de Potter"
+  },
+  "pouch": {
+    "name_pt": "Bolsa"
+  },
+  "powered-armor": {
+    "name_pt": "Powered Armadura"
+  },
+  "prehistoric-figurine-of-wondrous-power-carnelian-triceratops": {
+    "name_pt": "Prehistoric Estatueta de Wondrous Power, Carnelian Triceratops"
+  },
+  "prehistoric-figurine-of-wondrous-power-jasper-tyrannosaurus-rex": {
+    "name_pt": "Prehistoric Estatueta de Wondrous Power, Jasper Tyrannosaurus Rex"
+  },
+  "prehistoric-figurine-of-wondrous-power-kyanite-pteranodon": {
+    "name_pt": "Prehistoric Estatueta de Wondrous Power, Kyanite Pteranodon"
+  },
+  "prehistoric-figurine-of-wondrous-power-pyrite-plesiosaurus": {
+    "name_pt": "Prehistoric Estatueta de Wondrous Power, Pyrite Plesiosaurus"
+  },
+  "prespra": {
+    "name_pt": "Prespra"
+  },
+  "pressure-capsule": {
+    "name_pt": "Pressure Capsule"
+  },
+  "pride-silk": {
+    "name_pt": "Pride Silk"
+  },
+  "pride-silk-outfit": {
+    "name_pt": "Pride Silk Outfit"
+  },
+  "priests-pack": {
+    "name_pt": "Mochila de Priest"
+  },
+  "primal-amulet": {
+    "name_pt": "Primal Amuleto"
+  },
+  "prismari-primer": {
+    "name_pt": "Prismari Primer"
+  },
+  "prismari-trinket": {
+    "name_pt": "Prismari Trinket"
+  },
+  "prismatic-well": {
+    "name_pt": "Prismatic Well"
+  },
+  "professor-orb": {
+    "name_pt": "Professor Orbe"
+  },
+  "professor-skant": {
+    "name_pt": "Professor Skant"
+  },
+  "propeller-helm": {
+    "name_pt": "Propeller Elmo"
+  },
+  "prosthetic-limb": {
+    "name_pt": "Prosthetic Limb"
+  },
+  "protective-verses": {
+    "name_pt": "Protective Verses"
+  },
+  "prying-blade": {
+    "name_pt": "Prying Blade"
+  },
+  "psi-crystal": {
+    "name_pt": "Psi Cristal"
+  },
+  "psychic-absorbing-tattoo": {
+    "name_pt": "Psíquico Absorbing Tattoo"
+  },
+  "psychic-blade": {
+    "name_pt": "Psíquico Blade"
+  },
+  "purple-dragon-knight-trinket": {
+    "name_pt": "Purple Dragão Knight Trinket"
+  },
+  "purple-worm-poison": {
+    "name_pt": "Purple Worm Veneno"
+  },
+  "puzzle-card": {
+    "name_pt": "Puzzle Carta"
+  },
+  "pyroconverger": {
+    "name_pt": "Pyroconverger"
+  },
+  "pyxis-of-pandemonium": {
+    "name_pt": "Pyxis de Pandemonium"
+  },
+  "quaals-feather-token-anchor": {
+    "name_pt": "Pena Token, Anchor de Quaal"
+  },
+  "quaals-feather-token-bird": {
+    "name_pt": "Pena Token, Bird de Quaal"
+  },
+  "quaals-feather-token-fan": {
+    "name_pt": "Pena Token, Fan de Quaal"
+  },
+  "quaals-feather-token-swan-boat": {
+    "name_pt": "Pena Token, Swan Boat de Quaal"
+  },
+  "quaals-feather-token-tree": {
+    "name_pt": "Pena Token, Tree de Quaal"
+  },
+  "quaals-feather-token-whip": {
+    "name_pt": "Pena Token, Chicote de Quaal"
+  },
+  "quandrix-primer": {
+    "name_pt": "Quandrix Primer"
+  },
+  "quandrix-trinket": {
+    "name_pt": "Quandrix Trinket"
+  },
+  "quarterstaff": {
+    "name_pt": "Bordão"
+  },
+  "quarterstaff-of-the-acrobat": {
+    "name_pt": "Bordão de o Acrobat"
+  },
+  "quartz": {
+    "name_pt": "Quartz"
+  },
+  "quiver": {
+    "name_pt": "Aljava"
+  },
+  "quiver-of-ehlonna": {
+    "name_pt": "Aljava de Ehlonna"
+  },
+  "radiance": {
+    "name_pt": "Radiance"
+  },
+  "radiant-absorbing-tattoo": {
+    "name_pt": "Radiante Absorbing Tattoo"
+  },
+  "rain-catcher": {
+    "name_pt": "Rain Catcher"
+  },
+  "rakdos-guild-signet": {
+    "name_pt": "Rakdos Guild Signet"
+  },
+  "rakdos-keyrune": {
+    "name_pt": "Rakdos Keyrune"
+  },
+  "rakdos-riteknife": {
+    "name_pt": "Rakdos Riteknife"
+  },
+  "ranseur-of-torture": {
+    "name_pt": "Ranseur de Torture"
+  },
+  "rapier": {
+    "name_pt": "Rapieira"
+  },
+  "rations": {
+    "name_pt": "Rations"
+  },
+  "rations-1-day": {
+    "name_pt": "Rations (1 day)"
+  },
+  "reapers-scream": {
+    "name_pt": "Scream de Reaper"
+  },
+  "red-chromatic-rose": {
+    "name_pt": "Red Chromatic Rose"
+  },
+  "red-dragon-mask": {
+    "name_pt": "Red Dragão Mask"
+  },
+  "red-dragon-scale-mail": {
+    "name_pt": "Red Dragão Escamas Malha"
+  },
+  "red-wizard-blade": {
+    "name_pt": "Red Wizard Blade"
+  },
+  "red-wizard-trinket": {
+    "name_pt": "Red Wizard Trinket"
+  },
+  "reincarnation-dust": {
+    "name_pt": "Reincarnation Pó"
+  },
+  "reliquary": {
+    "name_pt": "Reliquary"
+  },
+  "reliquary-of-dawn": {
+    "name_pt": "Reliquary de Dawn"
+  },
+  "reliquary-of-twilight": {
+    "name_pt": "Reliquary de Twilight"
+  },
+  "renaissance-bullet": {
+    "name_pt": "Renaissance Bullet"
+  },
+  "renaissance-bullets-10": {
+    "name_pt": "Renaissance Bullets (10)"
+  },
+  "repulsion-shield": {
+    "name_pt": "Repulsion Escudo"
+  },
+  "reszur": {
+    "name_pt": "Reszur"
+  },
+  "revelers-concertina": {
+    "name_pt": "Concertina de Reveler"
+  },
+  "revolver": {
+    "name_pt": "Revolver"
+  },
+  "rhodochrosite": {
+    "name_pt": "Rhodochrosite"
+  },
+  "riding-horse": {
+    "name_pt": "Riding Horse"
+  },
+  "riding-saddle": {
+    "name_pt": "Riding Saddle"
+  },
+  "ring-mail": {
+    "name_pt": "Anel Malha"
+  },
+  "ring-of-acid-resistance": {
+    "name_pt": "Anel de Ácido Resistência"
+  },
+  "ring-of-air-elemental-command": {
+    "name_pt": "Anel de Ar Elemental Comando"
+  },
+  "ring-of-amity": {
+    "name_pt": "Anel de Amity"
+  },
+  "ring-of-animal-influence": {
+    "name_pt": "Anel de Animal Influence"
+  },
+  "ring-of-cold-resistance": {
+    "name_pt": "Anel de Frio Resistência"
+  },
+  "ring-of-collecting": {
+    "name_pt": "Anel de Collecting"
+  },
+  "ring-of-djinni-summoning": {
+    "name_pt": "Anel de Djinni Summoning"
+  },
+  "ring-of-earth-elemental-command": {
+    "name_pt": "Anel de Terra Elemental Comando"
+  },
+  "ring-of-elemental-command-air": {
+    "name_pt": "Anel de Elemental Comando (Air)"
+  },
+  "ring-of-elemental-command-earth": {
+    "name_pt": "Anel de Elemental Comando (Earth)"
+  },
+  "ring-of-elemental-command-fire": {
+    "name_pt": "Anel de Elemental Comando (Fire)"
+  },
+  "ring-of-elemental-command-water": {
+    "name_pt": "Anel de Elemental Comando (Water)"
+  },
+  "ring-of-evasion": {
+    "name_pt": "Anel de Evasion"
+  },
+  "ring-of-feather-falling": {
+    "name_pt": "Anel de Pena Falling"
+  },
+  "ring-of-fire-elemental-command": {
+    "name_pt": "Anel de Fogo Elemental Comando"
+  },
+  "ring-of-fire-resistance": {
+    "name_pt": "Anel de Fogo Resistência"
+  },
+  "ring-of-force-resistance": {
+    "name_pt": "Anel de Força Resistência"
+  },
+  "ring-of-free-action": {
+    "name_pt": "Anel de Free Action"
+  },
+  "ring-of-invisibility": {
+    "name_pt": "Anel de Invisibilidade"
+  },
+  "ring-of-jumping": {
+    "name_pt": "Anel de Jumping"
+  },
+  "ring-of-lightning-resistance": {
+    "name_pt": "Anel de Relâmpago Resistência"
+  },
+  "ring-of-mind-shielding": {
+    "name_pt": "Anel de Mind Shielding"
+  },
+  "ring-of-necrotic-resistance": {
+    "name_pt": "Anel de Necrótico Resistência"
+  },
+  "ring-of-obscuring": {
+    "name_pt": "Anel de Obscuring"
+  },
+  "ring-of-poison-resistance": {
+    "name_pt": "Anel de Veneno Resistência"
+  },
+  "ring-of-protection": {
+    "name_pt": "Anel de Proteção"
+  },
+  "ring-of-psychic-resistance": {
+    "name_pt": "Anel de Psíquico Resistência"
+  },
+  "ring-of-puzzlers-wit": {
+    "name_pt": "Anel de Puzzler's Wit"
+  },
+  "ring-of-radiant-resistance": {
+    "name_pt": "Anel de Radiante Resistência"
+  },
+  "ring-of-red-fury": {
+    "name_pt": "Anel de Red Fury"
+  },
+  "ring-of-regeneration": {
+    "name_pt": "Anel de Regeneração"
+  },
+  "ring-of-shooting-stars": {
+    "name_pt": "Anel de Shooting Stars"
+  },
+  "ring-of-spell-storing": {
+    "name_pt": "Anel de Spell Storing"
+  },
+  "ring-of-spell-turning": {
+    "name_pt": "Anel de Spell Turning"
+  },
+  "ring-of-swimming": {
+    "name_pt": "Anel de Natação"
+  },
+  "ring-of-telekinesis": {
+    "name_pt": "Anel de Telekinesis"
+  },
+  "ring-of-temporal-salvation": {
+    "name_pt": "Anel de Temporal Salvation"
+  },
+  "ring-of-the-copycat": {
+    "name_pt": "Anel de o Copycat"
+  },
+  "ring-of-the-orator": {
+    "name_pt": "Anel de o Orator"
+  },
+  "ring-of-the-ram": {
+    "name_pt": "Anel de o Ram"
+  },
+  "ring-of-three-wishes": {
+    "name_pt": "Anel de Três Wishes"
+  },
+  "ring-of-thunder-resistance": {
+    "name_pt": "Anel de Trovão Resistência"
+  },
+  "ring-of-treachery": {
+    "name_pt": "Anel de Treachery"
+  },
+  "ring-of-truth-telling": {
+    "name_pt": "Anel de Truth Telling"
+  },
+  "ring-of-warmth": {
+    "name_pt": "Anel de Warmth"
+  },
+  "ring-of-water-elemental-command": {
+    "name_pt": "Anel de Água Elemental Comando"
+  },
+  "ring-of-water-walking": {
+    "name_pt": "Anel de Água Walking"
+  },
+  "ring-of-winter": {
+    "name_pt": "Anel de Winter"
+  },
+  "ring-of-x-ray-vision": {
+    "name_pt": "Anel de X-ray Vision"
+  },
+  "rival-coin": {
+    "name_pt": "Rival Coin"
+  },
+  "robe": {
+    "name_pt": "Manto"
+  },
+  "robe-of-eyes": {
+    "name_pt": "Manto de Eyes"
+  },
+  "robe-of-scintillating-colors": {
+    "name_pt": "Manto de Scintillating Colors"
+  },
+  "robe-of-serpents": {
+    "name_pt": "Manto de Serpents"
+  },
+  "robe-of-stars": {
+    "name_pt": "Manto de Stars"
+  },
+  "robe-of-summer": {
+    "name_pt": "Manto de Summer"
+  },
+  "robe-of-the-archmagi": {
+    "name_pt": "Manto de o Archmagi"
+  },
+  "robe-of-useful-items": {
+    "name_pt": "Manto de Useful Items"
+  },
+  "robes": {
+    "name_pt": "Mantos"
+  },
+  "robot-controller": {
+    "name_pt": "Robot Controller"
+  },
+  "rod": {
+    "name_pt": "Bastão"
+  },
+  "rod-of-absorption": {
+    "name_pt": "Bastão de Absorção"
+  },
+  "rod-of-alertness": {
+    "name_pt": "Bastão de Alertness"
+  },
+  "rod-of-hellish-flames": {
+    "name_pt": "Bastão de Hellish Flames"
+  },
+  "rod-of-lordly-might": {
+    "name_pt": "Bastão de Lordly Might"
+  },
+  "rod-of-resurrection": {
+    "name_pt": "Bastão de Resurrection"
+  },
+  "rod-of-retribution": {
+    "name_pt": "Bastão de Retribution"
+  },
+  "rod-of-rulership": {
+    "name_pt": "Bastão de Rulership"
+  },
+  "rod-of-security": {
+    "name_pt": "Bastão de Security"
+  },
+  "rod-of-seven-parts": {
+    "name_pt": "Bastão de Seven Parts"
+  },
+  "rod-of-the-vonindod": {
+    "name_pt": "Bastão de o Vonindod"
+  },
+  "rogue-card": {
+    "name_pt": "Rogue Carta"
+  },
+  "rogues-mantle": {
+    "name_pt": "Manto de Rogue"
+  },
+  "rope": {
+    "name_pt": "Corda"
+  },
+  "rope-of-climbing": {
+    "name_pt": "Corda de Escalada"
+  },
+  "rope-of-entanglement": {
+    "name_pt": "Corda de Entanglement"
+  },
+  "rope-of-mending": {
+    "name_pt": "Corda de Mending"
+  },
+  "rotor-of-return": {
+    "name_pt": "Rotor de Return"
+  },
+  "rowboat": {
+    "name_pt": "Rowboat"
+  },
+  "ruby": {
+    "name_pt": "Rubi"
+  },
+  "ruby-of-the-war-mage": {
+    "name_pt": "Rubi de o War Mage"
+  },
+  "ruby-rod-of-asmodeus": {
+    "name_pt": "Rubi Bastão de Asmodeus"
+  },
+  "ruby-weave-gem": {
+    "name_pt": "Rubi Weave Gema"
+  },
+  "ruidium-shield": {
+    "name_pt": "Ruidium Escudo"
+  },
+  "ruin-card": {
+    "name_pt": "Ruin Carta"
+  },
+  "ruins-wake-awakened": {
+    "name_pt": "Wake (Awakened) de Ruin"
+  },
+  "ruins-wake-dormant": {
+    "name_pt": "Wake (Dormant) de Ruin"
+  },
+  "ruins-wake-exalted": {
+    "name_pt": "Wake (Exalted) de Ruin"
+  },
+  "ruinblade": {
+    "name_pt": "Ruinblade"
+  },
+  "ruinous-flail": {
+    "name_pt": "Ruinous Mangual"
+  },
+  "ruinstone": {
+    "name_pt": "Ruinstone"
+  },
+  "rusted-hulk": {
+    "name_pt": "Rusted Hulk"
+  },
+  "ryath-root": {
+    "name_pt": "Ryath Root"
+  },
+  "sack": {
+    "name_pt": "Saco"
+  },
+  "saddle-of-the-cavalier": {
+    "name_pt": "Saddle de o Cavalier"
+  },
+  "saddlebags": {
+    "name_pt": "Saddlebags"
+  },
+  "saffron": {
+    "name_pt": "Saffron"
+  },
+  "sage-card": {
+    "name_pt": "Sage Carta"
+  },
+  "sages-mirror": {
+    "name_pt": "Espelho de Sage"
+  },
+  "sages-signet-bear": {
+    "name_pt": "Signet (Bear) de Sage"
+  },
+  "sages-signet-hart": {
+    "name_pt": "Signet (Hart) de Sage"
+  },
+  "sages-signet-lion": {
+    "name_pt": "Signet (Lion) de Sage"
+  },
+  "sages-signet-serpent": {
+    "name_pt": "Signet (Serpent) de Sage"
+  },
+  "sages-signet-songbird": {
+    "name_pt": "Signet (Songbird) de Sage"
+  },
+  "sages-signet-wolf": {
+    "name_pt": "Signet (Wolf) de Sage"
+  },
+  "sailing-ship": {
+    "name_pt": "Sailing Ship"
+  },
+  "saint-markovias-thighbone": {
+    "name_pt": "Saint Markovia's Thighbone"
+  },
+  "salt": {
+    "name_pt": "Salt"
+  },
+  "sanctum-amulet": {
+    "name_pt": "Sanctum Amuleto"
+  },
+  "sapphire-buckler": {
+    "name_pt": "Safira Buckler"
+  },
+  "sardonyx": {
+    "name_pt": "Sardonyx"
+  },
+  "sarlona-trinket": {
+    "name_pt": "Sarlona Trinket"
+  },
+  "scale-mail": {
+    "name_pt": "Escamas Malha"
+  },
+  "scarab-of-protection": {
+    "name_pt": "Scarab de Proteção"
+  },
+  "scholars-pack": {
+    "name_pt": "Mochila de Scholar"
+  },
+  "scimitar": {
+    "name_pt": "Cimitarra"
+  },
+  "scimitar-of-speed": {
+    "name_pt": "Cimitarra de Velocidade"
+  },
+  "scissors-of-shadow-snipping": {
+    "name_pt": "Scissors de Sombra Snipping"
+  },
+  "scorpion-armor": {
+    "name_pt": "Scorpion Armadura"
+  },
+  "scorpion-ship": {
+    "name_pt": "Scorpion Ship"
+  },
+  "scourge-of-shadow": {
+    "name_pt": "Scourge de Sombra"
+  },
+  "scribes-pen": {
+    "name_pt": "Pen de Scribe"
+  },
+  "scroll-of-protection-aberrations": {
+    "name_pt": "Pergaminho de Proteção (Aberrations)"
+  },
+  "scroll-of-protection-beasts": {
+    "name_pt": "Pergaminho de Proteção (Beasts)"
+  },
+  "scroll-of-protection-celestials": {
+    "name_pt": "Pergaminho de Proteção (Celestials)"
+  },
+  "scroll-of-protection-constructs": {
+    "name_pt": "Pergaminho de Proteção (Constructs)"
+  },
+  "scroll-of-protection-dragons": {
+    "name_pt": "Pergaminho de Proteção (Dragons)"
+  },
+  "scroll-of-protection-elementals": {
+    "name_pt": "Pergaminho de Proteção (Elementals)"
+  },
+  "scroll-of-protection-fey": {
+    "name_pt": "Pergaminho de Proteção (Fey)"
+  },
+  "scroll-of-protection-fiends": {
+    "name_pt": "Pergaminho de Proteção (Fiends)"
+  },
+  "scroll-of-protection-giants": {
+    "name_pt": "Pergaminho de Proteção (Giants)"
+  },
+  "scroll-of-protection-humanoids": {
+    "name_pt": "Pergaminho de Proteção (Humanoids)"
+  },
+  "scroll-of-protection-monstrosities": {
+    "name_pt": "Pergaminho de Proteção (Monstrosities)"
+  },
+  "scroll-of-protection-oozes": {
+    "name_pt": "Pergaminho de Proteção (Oozes)"
+  },
+  "scroll-of-protection-plants": {
+    "name_pt": "Pergaminho de Proteção (Plants)"
+  },
+  "scroll-of-protection-undead": {
+    "name_pt": "Pergaminho de Proteção (Undead)"
+  },
+  "scroll-of-protection-from-aberrations": {
+    "name_pt": "Pergaminho de Proteção de Aberrations"
+  },
+  "scroll-of-protection-from-beasts": {
+    "name_pt": "Pergaminho de Proteção de Beasts"
+  },
+  "scroll-of-protection-from-celestials": {
+    "name_pt": "Pergaminho de Proteção de Celestials"
+  },
+  "scroll-of-protection-from-elementals": {
+    "name_pt": "Pergaminho de Proteção de Elementals"
+  },
+  "scroll-of-protection-from-fey": {
+    "name_pt": "Pergaminho de Proteção de Fey"
+  },
+  "scroll-of-protection-from-fiends": {
+    "name_pt": "Pergaminho de Proteção de Fiends"
+  },
+  "scroll-of-protection-from-plants": {
+    "name_pt": "Pergaminho de Proteção de Plants"
+  },
+  "scroll-of-protection-from-undead": {
+    "name_pt": "Pergaminho de Proteção de Morto-vivo"
+  },
+  "scroll-of-tarrasque-summoning": {
+    "name_pt": "Pergaminho de Tarrasque Summoning"
+  },
+  "scroll-of-the-comet": {
+    "name_pt": "Pergaminho de o Comet"
+  },
+  "scroll-of-titan-summoning-animal-lord": {
+    "name_pt": "Pergaminho de Titan Summoning (Animal Lord)"
+  },
+  "scroll-of-titan-summoning-blob-of-annihilation": {
+    "name_pt": "Pergaminho de Titan Summoning (Blob de Annihilation)"
+  },
+  "scroll-of-titan-summoning-colossus": {
+    "name_pt": "Pergaminho de Titan Summoning (Colossus)"
+  },
+  "scroll-of-titan-summoning-elemental-cataclysm": {
+    "name_pt": "Pergaminho de Titan Summoning (Elemental Cataclysm)"
+  },
+  "scroll-of-titan-summoning-empyrean": {
+    "name_pt": "Pergaminho de Titan Summoning (Empyrean)"
+  },
+  "scroll-of-titan-summoning-kraken": {
+    "name_pt": "Pergaminho de Titan Summoning (Kraken)"
+  },
+  "scroll-of-titan-summoning-tarrasque": {
+    "name_pt": "Pergaminho de Titan Summoning (Tarrasque)"
+  },
+  "sealing-wax": {
+    "name_pt": "Sealing Wax"
+  },
+  "secondhand-steal-trinket": {
+    "name_pt": "Secondhand Steal Trinket"
+  },
+  "seeker-dart": {
+    "name_pt": "Seeker Dart"
+  },
+  "sekolahian-worshiping-statuette": {
+    "name_pt": "Sekolahian Worshiping Statuette"
+  },
+  "selesnya-guild-signet": {
+    "name_pt": "Selesnya Guild Signet"
+  },
+  "selesnya-keyrune": {
+    "name_pt": "Selesnya Keyrune"
+  },
+  "semiautomatic-pistol": {
+    "name_pt": "Semiautomatic Pistol"
+  },
+  "sending-stone": {
+    "name_pt": "Sending Pedra"
+  },
+  "sending-stones": {
+    "name_pt": "Sending Stones"
+  },
+  "sensory-stone": {
+    "name_pt": "Sensory Pedra"
+  },
+  "sentinel-shield": {
+    "name_pt": "Sentinel Escudo"
+  },
+  "serpent-scale-armor": {
+    "name_pt": "Serpent Escamas Armadura"
+  },
+  "serpent-venom": {
+    "name_pt": "Serpent Venom"
+  },
+  "serpents-fang": {
+    "name_pt": "Presa de Serpent"
+  },
+  "set-of-gold-nesting-dolls": {
+    "name_pt": "Set de Ouro nesting dolls"
+  },
+  "shadowfell-brand-tattoo": {
+    "name_pt": "Shadowfell Brand Tattoo"
+  },
+  "shadowfell-shard": {
+    "name_pt": "Shadowfell Shard"
+  },
+  "shard": {
+    "name_pt": "Shard"
+  },
+  "shard-of-the-ise-rune": {
+    "name_pt": "Shard de o Ise Rune"
+  },
+  "shard-of-xeluan": {
+    "name_pt": "Shard de Xeluan"
+  },
+  "shard-solitaire-black-sapphire": {
+    "name_pt": "Shard Solitaire (Black Sapphire)"
+  },
+  "shard-solitaire-diamond": {
+    "name_pt": "Shard Solitaire (Diamond)"
+  },
+  "shard-solitaire-jacinth": {
+    "name_pt": "Shard Solitaire (Jacinth)"
+  },
+  "shard-solitaire-rainbow-pearl": {
+    "name_pt": "Shard Solitaire (Rainbow Pearl)"
+  },
+  "shard-solitaire-ruby": {
+    "name_pt": "Shard Solitaire (Ruby)"
+  },
+  "shatterspike": {
+    "name_pt": "Shatterspike"
+  },
+  "shatterstick": {
+    "name_pt": "Shatterstick"
+  },
+  "shawm": {
+    "name_pt": "Shawm"
+  },
+  "sheep": {
+    "name_pt": "Sheep"
+  },
+  "shield": {
+    "name_pt": "Escudo"
+  },
+  "shield-guardian-amulet": {
+    "name_pt": "Escudo Guardian Amuleto"
+  },
+  "shield-of-expression": {
+    "name_pt": "Escudo de Expression"
+  },
+  "shield-of-far-sight": {
+    "name_pt": "Escudo de Far Sight"
+  },
+  "shield-of-missile-attraction": {
+    "name_pt": "Escudo de Missile Attraction"
+  },
+  "shield-of-shouting": {
+    "name_pt": "Escudo de Shouting"
+  },
+  "shield-of-the-blazing-dreadnought": {
+    "name_pt": "Escudo de o Blazing Dreadnought"
+  },
+  "shield-of-the-cavalier": {
+    "name_pt": "Escudo de o Cavalier"
+  },
+  "shield-of-the-hidden-lord": {
+    "name_pt": "Escudo de o Hidden Lord"
+  },
+  "shield-of-the-silver-dragon": {
+    "name_pt": "Escudo de o Prata Dragão"
+  },
+  "shield-of-the-tortoise": {
+    "name_pt": "Escudo de o Tortoise"
+  },
+  "shield-of-the-uven-rune": {
+    "name_pt": "Escudo de o Uven Rune"
+  },
+  "shiftweave": {
+    "name_pt": "Shiftweave"
+  },
+  "shortbow": {
+    "name_pt": "Arco Curto"
+  },
+  "shortsword": {
+    "name_pt": "Espada Curta"
+  },
+  "shotgun": {
+    "name_pt": "Shotgun"
+  },
+  "shovel": {
+    "name_pt": "Shovel"
+  },
+  "shrieking-greaves": {
+    "name_pt": "Shrieking Greaves"
+  },
+  "shrike-ship": {
+    "name_pt": "Shrike Ship"
+  },
+  "sickle": {
+    "name_pt": "Sickle"
+  },
+  "signal-whistle": {
+    "name_pt": "Signal Whistle"
+  },
+  "signet-ring": {
+    "name_pt": "Signet Anel"
+  },
+  "silk": {
+    "name_pt": "Silk"
+  },
+  "silk-1-sq-yd": {
+    "name_pt": "Silk (1 sq. yd.)"
+  },
+  "silk-robe-with-gold-embroidery": {
+    "name_pt": "Silk Manto com Ouro embroidery"
+  },
+  "silk-rope-50-feet": {
+    "name_pt": "Silk Corda (50 feet)"
+  },
+  "silk-vestments-with-gold-embroidery": {
+    "name_pt": "Silk vestments com Ouro embroidery"
+  },
+  "silken-spite-awakened": {
+    "name_pt": "Silken Spite (Awakened)"
+  },
+  "silken-spite-dormant": {
+    "name_pt": "Silken Spite (Dormant)"
+  },
+  "silken-spite-exalted": {
+    "name_pt": "Silken Spite (Exalted)"
+  },
+  "silver": {
+    "name_pt": "Prata"
+  },
+  "silver-sp": {
+    "name_pt": "Prata (sp)"
+  },
+  "silver-25-zib-coin": {
+    "name_pt": "Prata 25-Zib Coin"
+  },
+  "silver-and-gold-brooch": {
+    "name_pt": "Prata e Ouro Broche"
+  },
+  "silver-bar-2-pound": {
+    "name_pt": "Prata Bar (2-pound)"
+  },
+  "silver-bar-5-pound": {
+    "name_pt": "Prata Bar (5-pound)"
+  },
+  "silver-chalice-set-with-moonstones": {
+    "name_pt": "Prata chalice set com moonstones"
+  },
+  "silver-dragon-scale-mail": {
+    "name_pt": "Prata Dragão Escamas Malha"
+  },
+  "silver-ewer": {
+    "name_pt": "Prata ewer"
+  },
+  "silver-headdress-with-amber-and-red-coral-feathers-sun-empire": {
+    "name_pt": "Prata headdress com amber e red-coral feathers (Sun Empire)"
+  },
+  "silver-medallion-sun-empire": {
+    "name_pt": "Prata Medalhão (Sun Empire)"
+  },
+  "silver-necklace-with-a-gemstone-pendant": {
+    "name_pt": "Prata Colar com a gemstone Pingente"
+  },
+  "silver-necklace-with-an-amber-pendant-sun-empire": {
+    "name_pt": "Prata Colar com an amber Pingente (Sun Empire)"
+  },
+  "silver-shoulder-piece-with-amber-and-garnet-sun-empire": {
+    "name_pt": "Prata shoulder piece com amber e garnet (Sun Empire)"
+  },
+  "silver-sword": {
+    "name_pt": "Prata Espada"
+  },
+  "silver-plated-steel-longsword-with-jet-set-in-hilt": {
+    "name_pt": "Silver-plated Aço Espada Longa com jet set in hilt"
+  },
+  "silverquill-primer": {
+    "name_pt": "Silverquill Primer"
+  },
+  "silverquill-trinket": {
+    "name_pt": "Silverquill Trinket"
+  },
+  "simic-guild-signet": {
+    "name_pt": "Simic Guild Signet"
+  },
+  "simic-keyrune": {
+    "name_pt": "Simic Keyrune"
+  },
+  "sinda-berries-10": {
+    "name_pt": "Sinda berries (10)"
+  },
+  "siren-song-lyre": {
+    "name_pt": "Siren Song Lyre"
+  },
+  "skull-card": {
+    "name_pt": "Skull Carta"
+  },
+  "skull-helm": {
+    "name_pt": "Skull Elmo"
+  },
+  "skull-of-selfish-knowledge": {
+    "name_pt": "Skull de Selfish Knowledge"
+  },
+  "skyblinder-staff": {
+    "name_pt": "Skyblinder Cajado"
+  },
+  "skyship": {
+    "name_pt": "Skyship"
+  },
+  "sled": {
+    "name_pt": "Sled"
+  },
+  "sled-dog": {
+    "name_pt": "Sled Dog"
+  },
+  "sledgehammer": {
+    "name_pt": "Sledgehammer"
+  },
+  "sleep-grenade": {
+    "name_pt": "Sleep Grenade"
+  },
+  "sling": {
+    "name_pt": "Funda"
+  },
+  "sling-bullet": {
+    "name_pt": "Funda Bullet"
+  },
+  "sling-bullets-20": {
+    "name_pt": "Funda Bullets (20)"
+  },
+  "sling-bullets-of-althemone": {
+    "name_pt": "Funda Bullets de Althemone"
+  },
+  "sling-of-giant-felling": {
+    "name_pt": "Funda de Gigante Felling"
+  },
+  "slippers-of-spider-climbing": {
+    "name_pt": "Slippers de Spider Escalada"
+  },
+  "slumbering-dragon-vessel": {
+    "name_pt": "Slumbering Dragão Vessel"
+  },
+  "slumbering-dragon-touched-focus": {
+    "name_pt": "Slumbering Dragon-Touched Focus"
+  },
+  "slumbering-dragons-wrath-weapon": {
+    "name_pt": "Slumbering Dragon's Wrath Weapon"
+  },
+  "slumbering-scaled-ornament": {
+    "name_pt": "Slumbering Scaled Ornament"
+  },
+  "small-gold-bracelet": {
+    "name_pt": "Small Ouro bracelet"
+  },
+  "small-gold-idol": {
+    "name_pt": "Small Ouro idol"
+  },
+  "small-gold-statuette-set-with-rubies": {
+    "name_pt": "Small Ouro statuette set com rubies"
+  },
+  "small-mirror-set-in-a-painted-wooden-frame": {
+    "name_pt": "Small Espelho set in a painted de Madeira frame"
+  },
+  "smiths-tools": {
+    "name_pt": "Ferramentas de Smith"
+  },
+  "smoke-grenade": {
+    "name_pt": "Smoke Grenade"
+  },
+  "smokepowder": {
+    "name_pt": "Smokepowder"
+  },
+  "snicker-snack": {
+    "name_pt": "Snicker-Snack"
+  },
+  "snowshoes": {
+    "name_pt": "Snowshoes"
+  },
+  "soap": {
+    "name_pt": "Soap"
+  },
+  "songhorn": {
+    "name_pt": "Songhorn"
+  },
+  "soothsalts": {
+    "name_pt": "Soothsalts"
+  },
+  "sorcerous-spyglass": {
+    "name_pt": "Sorcerous Luneta"
+  },
+  "soul-bag": {
+    "name_pt": "Soul Bolsa"
+  },
+  "soul-coin": {
+    "name_pt": "Soul Coin"
+  },
+  "sovereign-glue": {
+    "name_pt": "Sovereign Glue"
+  },
+  "space-galleon": {
+    "name_pt": "Space Galleon"
+  },
+  "spaceship-trinket": {
+    "name_pt": "Spaceship Trinket"
+  },
+  "speaking-stone": {
+    "name_pt": "Speaking Pedra"
+  },
+  "speaking-stones": {
+    "name_pt": "Speaking Stones"
+  },
+  "spear": {
+    "name_pt": "Lança"
+  },
+  "spear-of-backbiting": {
+    "name_pt": "Lança de Backbiting"
+  },
+  "spell-bottle": {
+    "name_pt": "Spell Garrafa"
+  },
+  "spell-gem-amber": {
+    "name_pt": "Spell Gema (Amber)"
+  },
+  "spell-gem-bloodstone": {
+    "name_pt": "Spell Gema (Bloodstone)"
+  },
+  "spell-gem-diamond": {
+    "name_pt": "Spell Gema (Diamond)"
+  },
+  "spell-gem-jade": {
+    "name_pt": "Spell Gema (Jade)"
+  },
+  "spell-gem-lapis-lazuli": {
+    "name_pt": "Spell Gema (Lapis lazuli)"
+  },
+  "spell-gem-obsidian": {
+    "name_pt": "Spell Gema (Obsidian)"
+  },
+  "spell-gem-quartz": {
+    "name_pt": "Spell Gema (Quartz)"
+  },
+  "spell-gem-ruby": {
+    "name_pt": "Spell Gema (Ruby)"
+  },
+  "spell-gem-star-ruby": {
+    "name_pt": "Spell Gema (Star ruby)"
+  },
+  "spell-gem-topaz": {
+    "name_pt": "Spell Gema (Topaz)"
+  },
+  "spell-scroll-1st-level": {
+    "name_pt": "Spell Pergaminho (1st Level)"
+  },
+  "spell-scroll-2nd-level": {
+    "name_pt": "Spell Pergaminho (2nd Level)"
+  },
+  "spell-scroll-3rd-level": {
+    "name_pt": "Spell Pergaminho (3rd Level)"
+  },
+  "spell-scroll-4th-level": {
+    "name_pt": "Spell Pergaminho (4th Level)"
+  },
+  "spell-scroll-5th-level": {
+    "name_pt": "Spell Pergaminho (5th Level)"
+  },
+  "spell-scroll-6th-level": {
+    "name_pt": "Spell Pergaminho (6th Level)"
+  },
+  "spell-scroll-7th-level": {
+    "name_pt": "Spell Pergaminho (7th Level)"
+  },
+  "spell-scroll-8th-level": {
+    "name_pt": "Spell Pergaminho (8th Level)"
+  },
+  "spell-scroll-9th-level": {
+    "name_pt": "Spell Pergaminho (9th Level)"
+  },
+  "spell-scroll-cantrip": {
+    "name_pt": "Spell Pergaminho (Cantrip)"
+  },
+  "spell-scroll-level-1": {
+    "name_pt": "Spell Pergaminho (Level 1)"
+  },
+  "spell-scroll-level-2": {
+    "name_pt": "Spell Pergaminho (Level 2)"
+  },
+  "spell-scroll-level-3": {
+    "name_pt": "Spell Pergaminho (Level 3)"
+  },
+  "spell-scroll-level-4": {
+    "name_pt": "Spell Pergaminho (Level 4)"
+  },
+  "spell-scroll-level-5": {
+    "name_pt": "Spell Pergaminho (Level 5)"
+  },
+  "spell-scroll-level-6": {
+    "name_pt": "Spell Pergaminho (Level 6)"
+  },
+  "spell-scroll-level-7": {
+    "name_pt": "Spell Pergaminho (Level 7)"
+  },
+  "spell-scroll-level-8": {
+    "name_pt": "Spell Pergaminho (Level 8)"
+  },
+  "spell-scroll-level-9": {
+    "name_pt": "Spell Pergaminho (Level 9)"
+  },
+  "spell-refueling-ring": {
+    "name_pt": "Spell-Refueling Anel"
+  },
+  "spellbook": {
+    "name_pt": "Spellbook"
+  },
+  "spellguard-shield": {
+    "name_pt": "Spellguard Escudo"
+  },
+  "spelljamming-helm": {
+    "name_pt": "Spelljamming Elmo"
+  },
+  "spellshard": {
+    "name_pt": "Spellshard"
+  },
+  "spellwrought-tattoo-1st-level": {
+    "name_pt": "Spellwrought Tattoo (1st Level)"
+  },
+  "spellwrought-tattoo-2nd-level": {
+    "name_pt": "Spellwrought Tattoo (2nd Level)"
+  },
+  "spellwrought-tattoo-3rd-level": {
+    "name_pt": "Spellwrought Tattoo (3rd Level)"
+  },
+  "spellwrought-tattoo-4th-level": {
+    "name_pt": "Spellwrought Tattoo (4th Level)"
+  },
+  "spellwrought-tattoo-5th-level": {
+    "name_pt": "Spellwrought Tattoo (5th Level)"
+  },
+  "spellwrought-tattoo-cantrip": {
+    "name_pt": "Spellwrought Tattoo (Cantrip)"
+  },
+  "sphere-of-annihilation": {
+    "name_pt": "Esfera de Annihilation"
+  },
+  "spider-staff": {
+    "name_pt": "Spider Cajado"
+  },
+  "spies-murmur": {
+    "name_pt": "Spies' Murmur"
+  },
+  "spiked-armor": {
+    "name_pt": "Spiked Armadura"
+  },
+  "spiked-shield": {
+    "name_pt": "Spiked Escudo"
+  },
+  "spindle-of-fate": {
+    "name_pt": "Spindle de Fate"
+  },
+  "spinel": {
+    "name_pt": "Spinel"
+  },
+  "spirit-board": {
+    "name_pt": "Spirit Board"
+  },
+  "splint-armor": {
+    "name_pt": "Splint Armadura"
+  },
+  "sprig-of-mistletoe": {
+    "name_pt": "Sprig de Mistletoe"
+  },
+  "spyglass": {
+    "name_pt": "Luneta"
+  },
+  "spyglass-of-clairvoyance": {
+    "name_pt": "Luneta de Clairvoyance"
+  },
+  "squid-ship": {
+    "name_pt": "Squid Ship"
+  },
+  "stabling-per-day": {
+    "name_pt": "Stabling (per day)"
+  },
+  "staff": {
+    "name_pt": "Cajado"
+  },
+  "staff-of-adornment": {
+    "name_pt": "Cajado de Adornment"
+  },
+  "staff-of-birdcalls": {
+    "name_pt": "Cajado de Birdcalls"
+  },
+  "staff-of-charming": {
+    "name_pt": "Cajado de Charming"
+  },
+  "staff-of-defense": {
+    "name_pt": "Cajado de Defense"
+  },
+  "staff-of-dunamancy": {
+    "name_pt": "Cajado de Dunamancy"
+  },
+  "staff-of-fate": {
+    "name_pt": "Cajado de Fate"
+  },
+  "staff-of-fire": {
+    "name_pt": "Cajado de Fogo"
+  },
+  "staff-of-flowers": {
+    "name_pt": "Cajado de Flowers"
+  },
+  "staff-of-frost": {
+    "name_pt": "Cajado de Gelo"
+  },
+  "staff-of-healing": {
+    "name_pt": "Cajado de Cura"
+  },
+  "staff-of-power": {
+    "name_pt": "Cajado de Poder"
+  },
+  "staff-of-ruling": {
+    "name_pt": "Cajado de Ruling"
+  },
+  "staff-of-striking": {
+    "name_pt": "Cajado de Striking"
+  },
+  "staff-of-swarming-insects": {
+    "name_pt": "Cajado de Swarming Insects"
+  },
+  "staff-of-the-adder": {
+    "name_pt": "Cajado de o Adder"
+  },
+  "staff-of-the-forgotten-one": {
+    "name_pt": "Cajado de o Forgotten One"
+  },
+  "staff-of-the-ivory-claw": {
+    "name_pt": "Cajado de o Marfim Garra"
+  },
+  "staff-of-the-magi": {
+    "name_pt": "Cajado de o Magi"
+  },
+  "staff-of-the-python": {
+    "name_pt": "Cajado de o Python"
+  },
+  "staff-of-the-rooted-hills": {
+    "name_pt": "Cajado de o Rooted Hills"
+  },
+  "staff-of-the-woodlands": {
+    "name_pt": "Cajado de o Woodlands"
+  },
+  "staff-of-thunder-and-lightning": {
+    "name_pt": "Cajado de Trovão e Relâmpago"
+  },
+  "staff-of-withering": {
+    "name_pt": "Cajado de Withering"
+  },
+  "star-card": {
+    "name_pt": "Star Carta"
+  },
+  "star-moth": {
+    "name_pt": "Star Moth"
+  },
+  "star-rose-quartz": {
+    "name_pt": "Star rose quartz"
+  },
+  "star-ruby": {
+    "name_pt": "Star Rubi"
+  },
+  "star-sapphire": {
+    "name_pt": "Star Safira"
+  },
+  "statuette-of-augury": {
+    "name_pt": "Statuette de Augury"
+  },
+  "statuette-of-saint-markovia": {
+    "name_pt": "Statuette de Saint Markovia"
+  },
+  "steel": {
+    "name_pt": "Aço"
+  },
+  "steel-mirror": {
+    "name_pt": "Aço Espelho"
+  },
+  "stirring-dragon-vessel": {
+    "name_pt": "Stirring Dragão Vessel"
+  },
+  "stirring-dragon-touched-focus": {
+    "name_pt": "Stirring Dragon-Touched Focus"
+  },
+  "stirring-dragons-wrath-weapon": {
+    "name_pt": "Stirring Dragon's Wrath Weapon"
+  },
+  "stirring-scaled-ornament": {
+    "name_pt": "Stirring Scaled Ornament"
+  },
+  "stone-of-controlling-earth-elementals": {
+    "name_pt": "Pedra de Controlling Terra Elementals"
+  },
+  "stone-of-creation": {
+    "name_pt": "Pedra de Creation"
+  },
+  "stone-of-golorr": {
+    "name_pt": "Pedra de Golorr"
+  },
+  "stone-of-good-luck": {
+    "name_pt": "Pedra de Good Luck"
+  },
+  "stone-of-ill-luck": {
+    "name_pt": "Pedra de Ill Luck"
+  },
+  "stonebreakers-breastplate": {
+    "name_pt": "Couraça de Stonebreaker"
+  },
+  "stonemaker-war-pick": {
+    "name_pt": "Stonemaker War Pick"
+  },
+  "stonespeaker-crystal": {
+    "name_pt": "Stonespeaker Cristal"
+  },
+  "stonkys-ring": {
+    "name_pt": "Anel de Stonky"
+  },
+  "storm-boomerang": {
+    "name_pt": "Tempestade Boomerang"
+  },
+  "stormgirdle-awakened": {
+    "name_pt": "Stormgirdle (Awakened)"
+  },
+  "stormgirdle-dormant": {
+    "name_pt": "Stormgirdle (Dormant)"
+  },
+  "stormgirdle-exalted": {
+    "name_pt": "Stormgirdle (Exalted)"
+  },
+  "string": {
+    "name_pt": "String"
+  },
+  "strixhaven-pennant": {
+    "name_pt": "Strixhaven Pennant"
+  },
+  "studded-leather-armor": {
+    "name_pt": "Cravejado Couro Armadura"
+  },
+  "sun": {
+    "name_pt": "Sun"
+  },
+  "sun-amulet-on-a-beaded-chain-sun-empire": {
+    "name_pt": "Sun Amuleto on a beaded Corrente (Sun Empire)"
+  },
+  "sun-blade": {
+    "name_pt": "Sun Blade"
+  },
+  "sun-card": {
+    "name_pt": "Sun Carta"
+  },
+  "sun-staff": {
+    "name_pt": "Sun Cajado"
+  },
+  "sunforger": {
+    "name_pt": "Sunforger"
+  },
+  "sunsword": {
+    "name_pt": "Sunsword"
+  },
+  "survival-mantle": {
+    "name_pt": "Survival Manto"
+  },
+  "sword-of-answering": {
+    "name_pt": "Espada de Answering"
+  },
+  "sword-of-answering-answerer": {
+    "name_pt": "Espada de Answering (Answerer)"
+  },
+  "sword-of-answering-back-talker": {
+    "name_pt": "Espada de Answering (Back Talker)"
+  },
+  "sword-of-answering-concluder": {
+    "name_pt": "Espada de Answering (Concluder)"
+  },
+  "sword-of-answering-last-quip": {
+    "name_pt": "Espada de Answering (Last Quip)"
+  },
+  "sword-of-answering-rebutter": {
+    "name_pt": "Espada de Answering (Rebutter)"
+  },
+  "sword-of-answering-replier": {
+    "name_pt": "Espada de Answering (Replier)"
+  },
+  "sword-of-answering-retorter": {
+    "name_pt": "Espada de Answering (Retorter)"
+  },
+  "sword-of-answering-scather": {
+    "name_pt": "Espada de Answering (Scather)"
+  },
+  "sword-of-answering-squelcher": {
+    "name_pt": "Espada de Answering (Squelcher)"
+  },
+  "sword-of-kas": {
+    "name_pt": "Espada de Kas"
+  },
+  "sword-of-the-paruns": {
+    "name_pt": "Espada de o Paruns"
+  },
+  "sword-of-zariel": {
+    "name_pt": "Espada de Zariel"
+  },
+  "tablet-of-reawakening": {
+    "name_pt": "Tablet de Reawakening"
+  },
+  "talarith": {
+    "name_pt": "Talarith"
+  },
+  "talisman-of-pure-good": {
+    "name_pt": "Talismã de Pure Good"
+  },
+  "talisman-of-the-sphere": {
+    "name_pt": "Talismã de o Esfera"
+  },
+  "talisman-of-ultimate-evil": {
+    "name_pt": "Talismã de Ultimate Evil"
+  },
+  "talking-doll": {
+    "name_pt": "Talking Doll"
+  },
+  "talons-card": {
+    "name_pt": "Talons Carta"
+  },
+  "tangler-grenade": {
+    "name_pt": "Tangler Grenade"
+  },
+  "tankard": {
+    "name_pt": "Tankard"
+  },
+  "tankard-of-plenty": {
+    "name_pt": "Tankard de Plenty"
+  },
+  "tankard-of-sobriety": {
+    "name_pt": "Tankard de Sobriety"
+  },
+  "tantan": {
+    "name_pt": "Tantan"
+  },
+  "taol": {
+    "name_pt": "Taol"
+  },
+  "tashas-creeping-keelboat": {
+    "name_pt": "Creeping Keelboat de Tasha"
+  },
+  "tearulai": {
+    "name_pt": "Tearulai"
+  },
+  "teeth-of-dahlver-nar": {
+    "name_pt": "Teeth de Dahlver-Nar"
+  },
+  "tej": {
+    "name_pt": "Tej"
+  },
+  "teleportation-tablet": {
+    "name_pt": "Teleportação Tablet"
+  },
+  "teleporter-ring": {
+    "name_pt": "Teleporter Anel"
+  },
+  "telescopic-transporter": {
+    "name_pt": "Telescopic Transporter"
+  },
+  "tent": {
+    "name_pt": "Tent"
+  },
+  "tentacle-rod": {
+    "name_pt": "Tentacle Bastão"
+  },
+  "thayan-spell-tattoo": {
+    "name_pt": "Thayan Spell Tattoo"
+  },
+  "the-bloody-end-awakened": {
+    "name_pt": "o Bloody End (Awakened)"
+  },
+  "the-bloody-end-dormant": {
+    "name_pt": "o Bloody End (Dormant)"
+  },
+  "the-bloody-end-exalted": {
+    "name_pt": "o Bloody End (Exalted)"
+  },
+  "the-codicil-of-white": {
+    "name_pt": "o Codicil de White"
+  },
+  "the-incantations-of-iriolarthas": {
+    "name_pt": "o Incantations de Iriolarthas"
+  },
+  "the-infernal-machine-of-lum-the-mad": {
+    "name_pt": "o Infernal Machine de Lum o Mad"
+  },
+  "theki-root": {
+    "name_pt": "Theki Root"
+  },
+  "thelarr": {
+    "name_pt": "Thelarr"
+  },
+  "thermal-cube": {
+    "name_pt": "Thermal Cubo"
+  },
+  "thessaltoxin": {
+    "name_pt": "Thessaltoxin"
+  },
+  "thessaltoxin-antidote": {
+    "name_pt": "Thessaltoxin Antidote"
+  },
+  "thieves-tools": {
+    "name_pt": "Thieves' Ferramentas"
+  },
+  "three-dragon-ante-set": {
+    "name_pt": "Three-Dragon Ante Set"
+  },
+  "throne-card": {
+    "name_pt": "Throne Carta"
+  },
+  "thunder-absorbing-tattoo": {
+    "name_pt": "Trovão Absorbing Tattoo"
+  },
+  "thunderbuss": {
+    "name_pt": "Thunderbuss"
+  },
+  "thunderous-greatclub": {
+    "name_pt": "Thunderous Clava Grande"
+  },
+  "tidecaller-trident": {
+    "name_pt": "Tidecaller Tridente"
+  },
+  "tiger-eye": {
+    "name_pt": "Tiger Olho"
+  },
+  "timepiece-of-travel": {
+    "name_pt": "Timepiece de Travel"
+  },
+  "tinderbox": {
+    "name_pt": "Tinderbox"
+  },
+  "tinderstrike": {
+    "name_pt": "Tinderstrike"
+  },
+  "tinkers-tools": {
+    "name_pt": "Ferramentas de Tinker"
+  },
+  "tiny-jade-figurine-river-heralds": {
+    "name_pt": "Tiny Jade Estatueta (River Heralds)"
+  },
+  "tocken": {
+    "name_pt": "Tocken"
+  },
+  "tome-of-clear-thought": {
+    "name_pt": "Tomo de Clear Thought"
+  },
+  "tome-of-leadership-and-influence": {
+    "name_pt": "Tomo de Leadership e Influence"
+  },
+  "tome-of-strahd": {
+    "name_pt": "Tomo de Strahd"
+  },
+  "tome-of-the-dragon": {
+    "name_pt": "Tomo de o Dragão"
+  },
+  "tome-of-the-stilled-tongue": {
+    "name_pt": "Tomo de o Stilled Tongue"
+  },
+  "tome-of-understanding": {
+    "name_pt": "Tomo de Understanding"
+  },
+  "topaz": {
+    "name_pt": "Topaz"
+  },
+  "topaz-annihilator": {
+    "name_pt": "Topaz Annihilator"
+  },
+  "torch": {
+    "name_pt": "Tocha"
+  },
+  "torpor": {
+    "name_pt": "Torpor"
+  },
+  "totem": {
+    "name_pt": "Totem"
+  },
+  "tourmaline": {
+    "name_pt": "Tourmaline"
+  },
+  "travel-alchemical-kit": {
+    "name_pt": "Travel Alchemical Kit"
+  },
+  "travelers-clothes": {
+    "name_pt": "Clothes de Traveler"
+  },
+  "treasure-chest-crafted-of-exotic-wood-with-gold-fittings-and-opals-brazen-coalition": {
+    "name_pt": "Treasure Baú crafted de exotic Madeira com Ouro fittings e opals (Brazen Coalition)"
+  },
+  "trident": {
+    "name_pt": "Tridente"
+  },
+  "trident-of-fish-command": {
+    "name_pt": "Tridente de Fish Comando"
+  },
+  "trinket": {
+    "name_pt": "Trinket"
+  },
+  "true-ice-shards-dagger": {
+    "name_pt": "True-Ice Shards (Dagger)"
+  },
+  "true-ice-shards-rapier": {
+    "name_pt": "True-Ice Shards (Rapier)"
+  },
+  "truth-serum": {
+    "name_pt": "Truth Serum"
+  },
+  "turquoise": {
+    "name_pt": "Turquoise"
+  },
+  "turtle-ship": {
+    "name_pt": "Turtle Ship"
+  },
+  "two-birds-sling": {
+    "name_pt": "Two-Birds Funda"
+  },
+  "two-person-tent": {
+    "name_pt": "Two-Person Tent"
+  },
+  "tyrant-ship": {
+    "name_pt": "Tyrant Ship"
+  },
+  "ulcrun": {
+    "name_pt": "Ulcrun"
+  },
+  "unbreakable-arrow": {
+    "name_pt": "Unbreakable Arrow"
+  },
+  "uncommon-glamerweave": {
+    "name_pt": "Incomum Glamerweave"
+  },
+  "universal-solvent": {
+    "name_pt": "Universal Solvent"
+  },
+  "vanquishers-banner": {
+    "name_pt": "Banner de Vanquisher"
+  },
+  "vanraks-mithral-shirt": {
+    "name_pt": "Mithral Shirt de Vanrak"
+  },
+  "velvet-doublet-with-gold-buttons-legion-of-dusk": {
+    "name_pt": "Velvet doublet com Ouro buttons (Legion de Dusk)"
+  },
+  "ventilating-lungs": {
+    "name_pt": "Ventilating Lungs"
+  },
+  "verminshroud-awakened": {
+    "name_pt": "Verminshroud (Awakened)"
+  },
+  "verminshroud-dormant": {
+    "name_pt": "Verminshroud (Dormant)"
+  },
+  "verminshroud-exalted": {
+    "name_pt": "Verminshroud (Exalted)"
+  },
+  "veterans-cane": {
+    "name_pt": "Cane de Veteran"
+  },
+  "vial": {
+    "name_pt": "Frasco"
+  },
+  "vial-of-greed": {
+    "name_pt": "Frasco de Greed"
+  },
+  "vial-of-stardust": {
+    "name_pt": "Frasco de Stardust"
+  },
+  "vial-of-thought-capture": {
+    "name_pt": "Frasco de Thought Capture"
+  },
+  "viol": {
+    "name_pt": "Viol"
+  },
+  "void-card": {
+    "name_pt": "Void Carta"
+  },
+  "voidwalker-armor": {
+    "name_pt": "Voidwalker Armadura"
+  },
+  "voting-kit": {
+    "name_pt": "Voting Kit"
+  },
+  "vox-seeker": {
+    "name_pt": "Vox Seeker"
+  },
+  "voyager-staff": {
+    "name_pt": "Voyager Cajado"
+  },
+  "wagon": {
+    "name_pt": "Wagon"
+  },
+  "wakened-dragon-vessel": {
+    "name_pt": "Wakened Dragão Vessel"
+  },
+  "wakened-dragon-touched-focus": {
+    "name_pt": "Wakened Dragon-Touched Focus"
+  },
+  "wakened-dragons-wrath-weapon": {
+    "name_pt": "Wakened Dragon's Wrath Weapon"
+  },
+  "wakened-scaled-ornament": {
+    "name_pt": "Wakened Scaled Ornament"
+  },
+  "wand": {
+    "name_pt": "Varinha"
+  },
+  "wand-of-binding": {
+    "name_pt": "Varinha de Binding"
+  },
+  "wand-of-conducting": {
+    "name_pt": "Varinha de Conducting"
+  },
+  "wand-of-enemy-detection": {
+    "name_pt": "Varinha de Enemy Detection"
+  },
+  "wand-of-entangle": {
+    "name_pt": "Varinha de Entangle"
+  },
+  "wand-of-fear": {
+    "name_pt": "Varinha de Fear"
+  },
+  "wand-of-fireballs": {
+    "name_pt": "Varinha de Fireballs"
+  },
+  "wand-of-lightning-bolts": {
+    "name_pt": "Varinha de Relâmpago Bolts"
+  },
+  "wand-of-magic-detection": {
+    "name_pt": "Varinha de Magic Detection"
+  },
+  "wand-of-magic-missiles": {
+    "name_pt": "Varinha de Magic Missiles"
+  },
+  "wand-of-orcus": {
+    "name_pt": "Varinha de Orcus"
+  },
+  "wand-of-paralysis": {
+    "name_pt": "Varinha de Paralysis"
+  },
+  "wand-of-polymorph": {
+    "name_pt": "Varinha de Polymorph"
+  },
+  "wand-of-pyrotechnics": {
+    "name_pt": "Varinha de Pyrotechnics"
+  },
+  "wand-of-scowls": {
+    "name_pt": "Varinha de Scowls"
+  },
+  "wand-of-secrets": {
+    "name_pt": "Varinha de Secrets"
+  },
+  "wand-of-smiles": {
+    "name_pt": "Varinha de Smiles"
+  },
+  "wand-of-viscid-globs": {
+    "name_pt": "Varinha de Viscid Globs"
+  },
+  "wand-of-web": {
+    "name_pt": "Varinha de Web"
+  },
+  "wand-of-winter": {
+    "name_pt": "Varinha de Winter"
+  },
+  "wand-of-wonder": {
+    "name_pt": "Varinha de Wonder"
+  },
+  "wand-sheath": {
+    "name_pt": "Varinha Sheath"
+  },
+  "war-horn-of-valor": {
+    "name_pt": "War Trompa de Valor"
+  },
+  "war-pick": {
+    "name_pt": "War Pick"
+  },
+  "wargong": {
+    "name_pt": "Wargong"
+  },
+  "warhammer": {
+    "name_pt": "Martelo de Guerra"
+  },
+  "warhorse": {
+    "name_pt": "Warhorse"
+  },
+  "warm-fungal-clothing": {
+    "name_pt": "Warm Fungal Clothing"
+  },
+  "warriors-passkey": {
+    "name_pt": "Passkey de Warrior"
+  },
+  "warship": {
+    "name_pt": "Warship"
+  },
+  "wasp-ship": {
+    "name_pt": "Wasp Ship"
+  },
+  "watchful-helm": {
+    "name_pt": "Watchful Elmo"
+  },
+  "waterskin": {
+    "name_pt": "Waterskin"
+  },
+  "wave": {
+    "name_pt": "Wave"
+  },
+  "wayfarers-boots": {
+    "name_pt": "Botas de Wayfarer"
+  },
+  "waythe": {
+    "name_pt": "Waythe"
+  },
+  "weavers-tools": {
+    "name_pt": "Ferramentas de Weaver"
+  },
+  "weird-tank": {
+    "name_pt": "Weird Tank"
+  },
+  "well-of-many-worlds": {
+    "name_pt": "Well de Muitos Worlds"
+  },
+  "well-made-tapestry-that-is-10-feet-by-10-feet": {
+    "name_pt": "Well-made tapestry that is 10 feet by 10 feet"
+  },
+  "whaleboat": {
+    "name_pt": "Whaleboat"
+  },
+  "wheat": {
+    "name_pt": "Wheat"
+  },
+  "wheel-of-stars": {
+    "name_pt": "Wheel de Stars"
+  },
+  "wheel-of-wind-and-water": {
+    "name_pt": "Wheel de Vento e Água"
+  },
+  "whelm": {
+    "name_pt": "Whelm"
+  },
+  "whetstone": {
+    "name_pt": "Whetstone"
+  },
+  "whip": {
+    "name_pt": "Chicote"
+  },
+  "whisper-jar": {
+    "name_pt": "Whisper Jarro"
+  },
+  "whistle-stick": {
+    "name_pt": "Whistle-Stick"
+  },
+  "white-chromatic-rose": {
+    "name_pt": "White Chromatic Rose"
+  },
+  "white-dragon-cape": {
+    "name_pt": "White Dragão Capa"
+  },
+  "white-dragon-mask": {
+    "name_pt": "White Dragão Mask"
+  },
+  "white-dragon-scale-mail": {
+    "name_pt": "White Dragão Escamas Malha"
+  },
+  "white-ghost-orchid-seed": {
+    "name_pt": "White Ghost Orchid Seed"
+  },
+  "wildroot": {
+    "name_pt": "Wildroot"
+  },
+  "wildspace-orrery": {
+    "name_pt": "Wildspace Orrery"
+  },
+  "will-of-the-talon-awakened": {
+    "name_pt": "Will de o Talon (Awakened)"
+  },
+  "will-of-the-talon-dormant": {
+    "name_pt": "Will de o Talon (Dormant)"
+  },
+  "will-of-the-talon-exalted": {
+    "name_pt": "Will de o Talon (Exalted)"
+  },
+  "willowshade-oil": {
+    "name_pt": "Willowshade Óleo"
+  },
+  "wind-fan": {
+    "name_pt": "Vento Fan"
+  },
+  "windskiff": {
+    "name_pt": "Windskiff"
+  },
+  "windvane": {
+    "name_pt": "Windvane"
+  },
+  "winged-boots": {
+    "name_pt": "Winged Botas"
+  },
+  "wings-of-flying": {
+    "name_pt": "Wings de Voo"
+  },
+  "wingwear": {
+    "name_pt": "Wingwear"
+  },
+  "winter-camouflage": {
+    "name_pt": "Winter Camouflage"
+  },
+  "winters-dark-bite": {
+    "name_pt": "Dark Bite de Winter"
+  },
+  "witchlight-vane": {
+    "name_pt": "Witchlight Vane"
+  },
+  "witchlight-watch": {
+    "name_pt": "Witchlight Watch"
+  },
+  "witherbloom-primer": {
+    "name_pt": "Witherbloom Primer"
+  },
+  "witherbloom-trinket": {
+    "name_pt": "Witherbloom Trinket"
+  },
+  "woodcarvers-tools": {
+    "name_pt": "Ferramentas de Woodcarver"
+  },
+  "woodcutters-axe": {
+    "name_pt": "Machado de Woodcutter"
+  },
+  "wooden-staff": {
+    "name_pt": "de Madeira Cajado"
+  },
+  "wreath-of-the-prism-awakened": {
+    "name_pt": "Wreath de o Prisma (Awakened)"
+  },
+  "wreath-of-the-prism-dormant": {
+    "name_pt": "Wreath de o Prisma (Dormant)"
+  },
+  "wreath-of-the-prism-exalted": {
+    "name_pt": "Wreath de o Prisma (Exalted)"
+  },
+  "wrought-iron-tower": {
+    "name_pt": "Wrought-Iron Tower"
+  },
+  "wukka-nut": {
+    "name_pt": "Wukka Nut"
+  },
+  "wyllows-staff-of-flowers": {
+    "name_pt": "Cajado de Flowers de Wyllow"
+  },
+  "wyrmreaver-gauntlets": {
+    "name_pt": "Wyrmreaver Manoplas"
+  },
+  "wyrmskull-throne": {
+    "name_pt": "Wyrmskull Throne"
+  },
+  "wyvern-poison": {
+    "name_pt": "Wyvern Veneno"
+  },
+  "xendrik-trinket": {
+    "name_pt": "Xen'drik Trinket"
+  },
+  "yahcha": {
+    "name_pt": "Yahcha"
+  },
+  "yarting": {
+    "name_pt": "Yarting"
+  },
+  "yellow-death": {
+    "name_pt": "Yellow Death"
+  },
+  "yellow-sapphire": {
+    "name_pt": "Yellow Safira"
+  },
+  "yester-hill-axe": {
+    "name_pt": "Yester Hill Machado"
+  },
+  "yew-wand": {
+    "name_pt": "Yew Varinha"
+  },
+  "yklwa": {
+    "name_pt": "Yklwa"
+  },
+  "ythryn-mythallar": {
+    "name_pt": "Ythryn Mythallar"
+  },
+  "zabou": {
+    "name_pt": "Zabou"
+  },
+  "zhentarim-trinket": {
+    "name_pt": "Zhentarim Trinket"
+  },
+  "zircon": {
+    "name_pt": "Zircon"
+  },
+  "zulkoon": {
+    "name_pt": "Zulkoon"
+  }
+}
