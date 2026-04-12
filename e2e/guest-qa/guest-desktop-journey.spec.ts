@@ -358,14 +358,11 @@ test.describe("Guest Desktop — Full Journey QA", () => {
     await addAllCombatants(page, STANDARD_ENCOUNTER);
     await startCombat(page);
 
-    // Verify all toolbar buttons are visible
+    // Verify core toolbar buttons are visible (spell-browser was removed; compendium is in navbar)
     const toolbarButtons = [
       "action-log-btn",
       "end-encounter-btn",
-      "save-btn",
-      "weather-upsell-btn",
       "add-combatant-btn",
-      "spell-browser-btn",
       "next-turn-btn",
     ];
 

@@ -215,45 +215,59 @@ export async function playerJoinCombat(
   await expect(submitBtn).toBeVisible({ timeout: 3_000 });
   await submitBtn.click();
 
-  // DM accepts the late-join request via Sonner toast action button.
-  // The toast renders inside [data-sonner-toaster] with text "Aceitar" (pt-BR) or "Accept" (en).
-  // In production, realtime broadcasts have higher latency — the toast may take
-  // longer to appear or may auto-dismiss before we click it.  We retry up to 3
-  // times with increasing wait windows to handle both cases.
-  const toastSelector = '[data-sonner-toaster] button';
-  const toastTextRe = /Aceitar|Accept/;
-  let toastClicked = false;
+  // DM accepts the late-join request.
+  // The UI may show: (1) inline "Aceitar {name}" button in initiative list,
+  // (2) generic "Aceitar/Accept" button, or (3) Sonner toast button.
+  // We try all strategies with retries, matching the robust dmAcceptPlayer helper.
+  await dmPage.waitForTimeout(5_000);
 
-  for (let attempt = 0; attempt < 3 && !toastClicked; attempt++) {
-    const timeout = attempt === 0 ? 30_000 : 15_000;
-    try {
-      const toastAcceptBtn = dmPage
-        .locator(toastSelector)
-        .filter({ hasText: toastTextRe })
-        .first();
-      await expect(toastAcceptBtn).toBeVisible({ timeout });
-      await toastAcceptBtn.click();
-      toastClicked = true;
-    } catch {
-      // Toast may have auto-dismissed or not appeared yet.
-      // Small pause before retry to let the next broadcast/toast arrive.
-      if (attempt < 2) {
-        await dmPage.waitForTimeout(2_000);
-      }
+  let accepted = false;
+  for (let attempt = 0; attempt < 6 && !accepted; attempt++) {
+    // Strategy 1: Inline "Aceitar {name}" button
+    const inlineBtn = dmPage
+      .locator("button")
+      .filter({ hasText: new RegExp(`Aceitar.*${playerName}|Accept.*${playerName}`, "i") })
+      .first();
+    if (await inlineBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await inlineBtn.click();
+      accepted = true;
+      break;
     }
+
+    // Strategy 2: Any "Aceitar/Accept" button
+    const anyAcceptBtn = dmPage
+      .locator("button")
+      .filter({ hasText: /^Aceitar$|^Accept$/i })
+      .first();
+    if (await anyAcceptBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await anyAcceptBtn.click();
+      accepted = true;
+      break;
+    }
+
+    // Strategy 3: Sonner toast button
+    const toastBtn = dmPage
+      .locator("[data-sonner-toaster] button")
+      .filter({ hasText: /Aceitar|Accept/i })
+      .first();
+    if (await toastBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await toastBtn.click();
+      accepted = true;
+      break;
+    }
+
+    await dmPage.waitForTimeout(3_000);
   }
 
-  if (!toastClicked) {
-    // Last-resort: the toast may have been accepted automatically or the
-    // combatant was added via polling.  Check if the player-view already
-    // appeared (which means approval happened through another path).
+  if (!accepted) {
+    // Last-resort: check if the player-view already appeared
     const alreadyJoined = await playerPage
       .locator('[data-testid="player-view"]')
       .isVisible({ timeout: 5_000 })
       .catch(() => false);
     if (!alreadyJoined) {
       throw new Error(
-        "DM approval toast was never visible after 3 attempts — late-join failed"
+        `DM could not find accept button for player "${playerName}" after 6 attempts`
       );
     }
   }

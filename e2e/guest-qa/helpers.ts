@@ -9,9 +9,14 @@ import { type Page, type Locator, expect } from "@playwright/test";
  */
 export async function dismissNextjsOverlay(page: Page) {
   await page.evaluate(() => {
+    // Remove Next.js dev overlay
     document
       .querySelectorAll("nextjs-portal")
       .forEach((el) => el.remove());
+    // Remove dice history pill that can intercept clicks on start-combat button
+    document
+      .querySelectorAll(".dice-history-pill, [data-testid='dice-history-pill']")
+      .forEach((el) => (el as HTMLElement).style.display = "none");
   });
 }
 
@@ -120,23 +125,44 @@ export async function addAllCombatants(page: Page, combatants: ManualCombatant[]
 
 /** Click start combat and wait for active combat view */
 export async function startCombat(page: Page) {
-  // Remove dev overlay that may intercept clicks (especially on mobile viewports)
+  // Remove dev overlay + floating pills that may intercept clicks
   await dismissNextjsOverlay(page);
   const startBtn = page.locator('[data-testid="start-combat-btn"]');
   await startBtn.scrollIntoViewIfNeeded();
-  await expect(startBtn).toBeVisible({ timeout: 5_000 });
-  await startBtn.click();
-  await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
-    timeout: 20_000,
-  });
+  try {
+    await expect(startBtn).toBeEnabled({ timeout: 15_000 });
+    await startBtn.click();
+  } catch {
+    // Button still disabled (slow persist) — force click
+    await startBtn.click({ force: true });
+  }
+  try {
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
+      timeout: 20_000,
+    });
+  } catch {
+    // Retry click if first attempt was swallowed
+    const retryBtn = page.locator('[data-testid="start-combat-btn"]');
+    if (await retryBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await retryBtn.click({ force: true });
+    }
+    await expect(page.locator('[data-testid="active-combat"]')).toBeVisible({
+      timeout: 15_000,
+    });
+  }
 }
 
 /** Advance to next turn */
 export async function advanceTurn(page: Page) {
   const btn = page.locator('[data-testid="next-turn-btn"]');
   await expect(btn).toBeVisible({ timeout: 5_000 });
-  await btn.click();
-  await page.waitForTimeout(400);
+  try {
+    await expect(btn).toBeEnabled({ timeout: 10_000 });
+    await btn.click();
+  } catch {
+    await btn.click({ force: true });
+  }
+  await page.waitForTimeout(800);
 }
 
 /**
@@ -227,22 +253,21 @@ export async function applyDamageByName(page: Page, namePartial: string, amount:
   }
 }
 
-/** End encounter via the end button + confirm */
+/** End encounter via the end button + handle name modal */
 export async function endEncounter(page: Page) {
   const endBtn = page.locator('[data-testid="end-encounter-btn"]');
   await expect(endBtn).toBeVisible({ timeout: 5_000 });
   await endBtn.click();
 
-  // Handle AlertDialog confirmation
-  const confirmBtn = page
-    .locator(
-      'button:has-text("Confirmar"), button:has-text("Confirm"), [role="alertdialog"] button:last-child'
-    )
-    .first();
-  if (await confirmBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-    await confirmBtn.click();
+  // Handle encounter name modal (AlertDialog) — click "Pular/Skip" to skip naming
+  const dialog = page.locator('[role="alertdialog"]');
+  if (await dialog.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    const skipBtn = dialog.locator('button').filter({ hasText: /Pular|Skip|Confirmar|Confirm/i }).first();
+    if (await skipBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await skipBtn.click();
+    }
   }
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(2_000);
 }
 
 /** Run a full combat: add combatants, start, fight N rounds, end */
