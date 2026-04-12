@@ -11,7 +11,7 @@ if (!Sentry.getClient()) {
         if (event.exception?.values) {
           for (const ex of event.exception.values) {
             if (typeof ex.value === "string") {
-              ex.value = ex.value.replace(/[^\s@]+@[^\s@]+\.[^\s@]+/g, "[email]");
+              ex.value = ex.value.replace(/\b[\w.+-]+@[\w-]+\.[\w.-]+\b/g, "[email]");
               ex.value = ex.value.replace(/eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*/g, "[token]");
             }
           }
@@ -19,7 +19,7 @@ if (!Sentry.getClient()) {
         if (event.breadcrumbs) {
           for (const bc of event.breadcrumbs) {
             if (typeof bc.message === "string") {
-              bc.message = bc.message.replace(/[^\s@]+@[^\s@]+\.[^\s@]+/g, "[email]");
+              bc.message = bc.message.replace(/\b[\w.+-]+@[\w-]+\.[\w.-]+\b/g, "[email]");
             }
           }
         }
