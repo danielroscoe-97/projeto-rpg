@@ -117,8 +117,8 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         if (currentUserId && notesRes.data) {
           const playerUserIds = [...new Set(
             notesRes.data
-              .filter((n) => n.user_id !== currentUserId)
-              .map((n) => n.user_id)
+              .filter((n: { user_id: string | null }) => n.user_id !== currentUserId)
+              .map((n: { user_id: string | null }) => n.user_id)
               .filter(Boolean)
           )];
           if (playerUserIds.length > 0) {

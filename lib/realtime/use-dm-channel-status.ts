@@ -29,7 +29,7 @@ export function useDmChannelStatus(sessionId: string | null): ConnectionStatus {
     // The actual broadcast channel is managed by broadcast.ts singleton.
     const ch = supabase.channel(`dm-status:${sessionId}`);
 
-    ch.subscribe((s) => {
+    ch.subscribe((s: string) => {
       if (s === "SUBSCRIBED") {
         setStatus("connected");
       } else if (s === "CLOSED" || s === "CHANNEL_ERROR") {

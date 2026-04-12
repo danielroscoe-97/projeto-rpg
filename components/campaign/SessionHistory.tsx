@@ -343,7 +343,7 @@ export function SessionHistory({ campaignId, isOwner }: SessionHistoryProps) {
     }
 
     // 2. Fetch encounters for all sessions in a single query
-    const sessionIds = sessionsData.map((s) => s.id);
+    const sessionIds = sessionsData.map((s: { id: string }) => s.id);
     const { data: encountersData, error: encountersError } = await supabase
       .from("encounters")
       .select("id, session_id, name, round_number, is_active")
@@ -367,7 +367,7 @@ export function SessionHistory({ campaignId, isOwner }: SessionHistoryProps) {
     }
 
     // 3. Merge
-    return sessionsData.map((s) => ({
+    return sessionsData.map((s: Record<string, unknown>) => ({
       id: s.id as string,
       name: s.name as string,
       description: s.description as string | null,

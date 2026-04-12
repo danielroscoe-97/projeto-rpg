@@ -100,7 +100,7 @@ export function useContentAccess(): ContentAccess {
   useEffect(() => {
     mountedRef.current = true;
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: { data: { user: { id: string } | null } }) => {
       if (!mountedRef.current) return;
       setUserId(user?.id ?? null);
       setAuthChecked(true);

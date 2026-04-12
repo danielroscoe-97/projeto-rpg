@@ -48,7 +48,7 @@ export function PlayerSharedNotes({ campaignId, userId }: PlayerSharedNotesProps
       .eq("campaign_id", campaignId)
       .eq("is_shared", true)
       .order("updated_at", { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: { id: string; title: string; content: string; updated_at: string }[] | null; error: { message: string } | null }) => {
         if (error) {
           captureError(error, {
             component: "PlayerSharedNotes",
@@ -74,7 +74,7 @@ export function PlayerSharedNotes({ campaignId, userId }: PlayerSharedNotesProps
       .eq("user_id", userId)
       .eq("is_shared", false)
       .order("updated_at", { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: { id: string; content: string; updated_at: string }[] | null; error: { message: string } | null }) => {
         if (error) {
           captureError(error, {
             component: "PlayerSharedNotes",

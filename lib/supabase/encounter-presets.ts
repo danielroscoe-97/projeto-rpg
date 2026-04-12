@@ -14,7 +14,7 @@ export async function fetchEncounterPresets(campaignId: string): Promise<Encount
   if (error) throw new Error(error.message);
   if (!presets || presets.length === 0) return [];
 
-  const presetIds = presets.map((p) => p.id);
+  const presetIds = presets.map((p: { id: string }) => p.id);
   const { data: creatures, error: crErr } = await supabase
     .from("encounter_preset_creatures")
     .select("id, preset_id, monster_slug, name, cr, quantity, source, sort_order")
@@ -31,7 +31,7 @@ export async function fetchEncounterPresets(campaignId: string): Promise<Encount
     creaturesByPreset.set(c.preset_id, list);
   }
 
-  return presets.map((p) => ({
+  return presets.map((p: { id: string; selected_members: unknown }) => ({
     ...p,
     selected_members: p.selected_members ?? [],
     creatures: creaturesByPreset.get(p.id) ?? [],

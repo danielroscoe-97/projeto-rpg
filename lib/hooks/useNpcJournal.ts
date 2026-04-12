@@ -172,7 +172,7 @@ export function useNpcJournal(characterId: string, campaignId: string) {
         .from("player_npc_notes")
         .update(updates)
         .eq("id", npcId)
-        .then(({ error }) => { if (error) console.error("Flush failed:", error); });
+        .then(({ error }: { error: { message: string } | null }) => { if (error) console.error("Flush failed:", error); });
     });
     pendingRef.current = {};
   }, [supabase]);

@@ -93,7 +93,7 @@ export function useCharacterStatus(characterId: string | null) {
           table: "player_characters",
           filter: `id=eq.${characterId}`,
         },
-        (payload) => {
+        (payload: { new: Record<string, unknown>; old: Record<string, unknown>; eventType: string }) => {
           setCharacter((prev) =>
             prev ? { ...prev, ...(payload.new as Partial<CharacterStatus>) } : prev
           );

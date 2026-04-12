@@ -117,7 +117,7 @@ export function PlayerDrawer({ campaignId, open, onClose }: PlayerDrawerProps) {
       .select("*")
       .eq("campaign_id", campaignId)
       .order("name", { ascending: true })
-      .then(({ data }) => {
+      .then(({ data }: { data: PlayerCharacter[] | null }) => {
         if (!cancelled) {
           setCharacters(data ?? []);
           setLoading(false);

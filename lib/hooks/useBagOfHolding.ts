@@ -34,9 +34,9 @@ export function useBagOfHolding(campaignId: string, userId: string) {
       ]);
 
       const requests = requestsData ?? [];
-      const enriched: BagItem[] = (inventoryData ?? []).map((item) => ({
+      const enriched: BagItem[] = (inventoryData ?? []).map((item: PartyInventoryItem) => ({
         ...item,
-        pending_request: requests.find((r) => r.item_id === item.id),
+        pending_request: requests.find((r: InventoryRemovalRequest) => r.item_id === item.id),
       }));
 
       setItems(enriched);
@@ -57,7 +57,7 @@ export function useBagOfHolding(campaignId: string, userId: string) {
           table: "party_inventory_items",
           filter: `campaign_id=eq.${campaignId}`,
         },
-        (payload) => {
+        (payload: { eventType: string; new: Record<string, unknown>; old: Record<string, unknown> }) => {
           if (payload.eventType === "INSERT") {
             const newItem = payload.new as PartyInventoryItem;
             setItems((prev) => {

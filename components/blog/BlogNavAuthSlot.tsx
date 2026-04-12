@@ -32,7 +32,7 @@ export function BlogNavAuthSlot() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then((result) => {
+    supabase.auth.getSession().then((result: { data: { session: { user: { is_anonymous?: boolean; user_metadata?: Record<string, unknown>; email?: string } } | null } }) => {
       const session = result.data?.session;
       if (session?.user && !session.user.is_anonymous) {
         setAuth({

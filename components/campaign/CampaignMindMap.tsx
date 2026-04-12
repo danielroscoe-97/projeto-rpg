@@ -417,7 +417,7 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
             { campaign_id: campaignId, node_key: `group:${key}`, x: 0, y: 0, is_collapsed: isCollapsed },
             { onConflict: "campaign_id,node_key" }
           )
-          .then(({ error }) => {
+          .then(({ error }: { error: { message: string } | null }) => {
             if (error) console.warn("[MindMap] Collapse save failed:", error.message);
           });
 

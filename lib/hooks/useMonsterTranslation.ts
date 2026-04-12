@@ -6,10 +6,10 @@ type SectionMap = Record<string, string>;
 
 interface MonsterTranslations {
   name?: string;
-  special_abilities: SectionMap;
-  actions: SectionMap;
-  reactions: SectionMap;
-  legendary_actions: SectionMap;
+  special_abilities?: SectionMap;
+  actions?: SectionMap;
+  reactions?: SectionMap;
+  legendary_actions?: SectionMap;
   lair_actions?: SectionMap;
   regional_effects?: SectionMap;
 }

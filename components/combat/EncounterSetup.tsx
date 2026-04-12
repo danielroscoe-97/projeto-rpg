@@ -183,7 +183,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
     });
 
     channel
-      .on("broadcast", { event: "player:joined" }, ({ payload }) => {
+      .on("broadcast", { event: "player:joined" }, ({ payload }: { payload: { id?: string; name?: string; hp?: number; ac?: number; initiative?: number | null } }) => {
         if (!payload.name || !payload.id) return;
         const currentCombatants = useCombatStore.getState().combatants;
         // Avoid duplicate — use token ID, not name (two players could share a name)

@@ -31,7 +31,7 @@ export function useNotifications(userId: string | null) {
 
       const items = data ?? [];
       setNotifications(items);
-      setUnreadCount(items.filter((n) => !n.read_at).length);
+      setUnreadCount(items.filter((n: PlayerNotification) => !n.read_at).length);
       setLoading(false);
     };
     fetchData();
@@ -51,7 +51,7 @@ export function useNotifications(userId: string | null) {
           table: "player_notifications",
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: { new: Record<string, unknown>; old: Record<string, unknown>; eventType: string }) => {
           const newNotif = payload.new as PlayerNotification;
           setNotifications((prev) => [newNotif, ...prev].slice(0, 50));
           setUnreadCount((prev) => prev + 1);

@@ -42,7 +42,7 @@ export function PublicNavAuthSlot({ locale = "en" }: Props) {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: { user: { is_anonymous?: boolean; user_metadata?: Record<string, unknown>; email?: string } } | null } }) => {
       if (session?.user && !session.user.is_anonymous) {
         setAuth({
           loggedIn: true,

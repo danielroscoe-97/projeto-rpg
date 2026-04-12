@@ -5,6 +5,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "type-check": "tsc --noEmit",
     "analyze": "ANALYZE=true next build",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -24,7 +25,8 @@
     "test:e2e:ui": "playwright test --ui",
     "e2e:visual": "playwright test e2e/visual --project=desktop-chrome",
     "e2e:visual:update": "playwright test e2e/visual --project=desktop-chrome --update-snapshots",
-    "e2e:a11y": "playwright test e2e/a11y --project=desktop-chrome"
+    "e2e:a11y": "playwright test e2e/a11y --project=desktop-chrome",
+    "e2e:load": "playwright test e2e/combat/load-test-concurrent-players.spec.ts --project=desktop-chrome"
   },
   "dependencies": {
     "@dagrejs/dagre": "^3.0.0",

@@ -64,7 +64,7 @@ export function PlayerLinkDropdown({
       .from("player_characters")
       .select("id, name, max_hp, ac, spell_save_dc")
       .eq("campaign_id", campaignId)
-      .then(({ data }) => {
+      .then(({ data }: { data: PlayerCharacterOption[] | null }) => {
         setCharacters((data as PlayerCharacterOption[]) ?? []);
         setLoaded(true);
       });

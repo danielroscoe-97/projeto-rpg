@@ -32,7 +32,7 @@ export function subscribeToCampaignMembers(
         table: "campaign_members",
         filter: `campaign_id=eq.${campaignId}`,
       },
-      async (payload) => {
+      async (payload: { new: Record<string, unknown>; old: Record<string, unknown>; eventType: string }) => {
         const newMember = payload.new as {
           campaign_id: string;
           user_id: string;

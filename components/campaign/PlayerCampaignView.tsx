@@ -203,7 +203,7 @@ export function PlayerCampaignView({
           table: "player_characters",
           filter: `campaign_id=eq.${campaignId}`,
         },
-        (payload) => {
+        (payload: { new: Record<string, unknown>; old: Record<string, unknown>; eventType: string }) => {
           const updated = payload.new as { id: string; name: string; current_hp: number; max_hp: number };
           setCompanions((prev) =>
             prev.map((c) =>
@@ -239,7 +239,7 @@ export function PlayerCampaignView({
         setHasMore(false);
         return;
       }
-      const sessionIds = sessions.map((s) => s.id);
+      const sessionIds = sessions.map((s: { id: string }) => s.id);
       const { data: encounters } = await supabase
         .from("encounters")
         .select("id, name, round_number, difficulty_rating, updated_at")
@@ -248,7 +248,7 @@ export function PlayerCampaignView({
         .order("updated_at", { ascending: false })
         .range(combatHistory.length, combatHistory.length + PAGE_SIZE - 1);
 
-      const newEntries = (encounters ?? []).map((e) => ({
+      const newEntries = (encounters ?? []).map((e: { id: string; name: string | null; round_number: number | null; difficulty_rating: string | null; updated_at: string }) => ({
         id: e.id,
         name: e.name ?? "Encounter",
         round_number: e.round_number ?? 0,
@@ -263,7 +263,7 @@ export function PlayerCampaignView({
           const { data: voteRows } = await supabase
             .from("encounter_votes")
             .select("encounter_id, vote")
-            .in("encounter_id", newEntries.map((e) => e.id))
+            .in("encounter_id", newEntries.map((e: { id: string }) => e.id))
             .eq("user_id", user.id);
           if (voteRows) {
             const newVotes: Record<string, number> = {};

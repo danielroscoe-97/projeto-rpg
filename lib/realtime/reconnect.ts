@@ -28,12 +28,12 @@ export async function fetchSessionSnapshot(
   const { data: rawCombatants } = await supabase
     .from("combatants")
     .select(
-      "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id"
+      "id, name, current_hp, max_hp, temp_hp, ac, spell_save_dc, initiative, initiative_order, conditions, ruleset_version, is_defeated, is_hidden, is_player, monster_id, display_name, monster_group_id, group_order, dm_notes, player_notes, player_character_id"
     )
     .eq("encounter_id", encounterId)
     .order("initiative_order", { ascending: true });
 
-  const combatants: Combatant[] = (rawCombatants ?? []).map((row) => ({
+  const combatants: Combatant[] = (rawCombatants ?? []).map((row: Record<string, unknown>) => ({
     id: row.id,
     name: row.name,
     current_hp: row.current_hp,
@@ -46,7 +46,7 @@ export async function fetchSessionSnapshot(
     conditions: row.conditions ?? [],
     ruleset_version: row.ruleset_version ?? null,
     is_defeated: row.is_defeated ?? false,
-    is_hidden: (row as Record<string, unknown>).is_hidden as boolean ?? false,
+    is_hidden: (row.is_hidden as boolean) ?? false,
     is_player: row.is_player ?? false,
     monster_id: row.monster_id ?? null,
     token_url: null,

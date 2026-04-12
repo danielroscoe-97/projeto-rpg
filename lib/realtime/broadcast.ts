@@ -75,7 +75,7 @@ export function getDmChannel(sessionId: string): RealtimeChannel {
     });
   });
   currentSessionId = sessionId;
-  return channel;
+  return channel!;
 }
 
 /** Wait for the DM channel to be subscribed. Resolves immediately if already subscribed. */

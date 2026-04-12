@@ -44,11 +44,12 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastSt
 
     channel
       .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState<{ id: string; name: string; joined_at: number }>();
-        const allPresent = Object.values(state).flat();
+        type PresenceEntry = { id: string; name: string; joined_at: number };
+        const state = channel.presenceState() as Record<string, PresenceEntry[]>;
+        const allPresent: PresenceEntry[] = Object.values(state).flat();
 
         // Deduplicate by player ID (handles multi-device connections)
-        const deduped = new Map<string, { id: string; name: string; joined_at: number }>();
+        const deduped = new Map<string, PresenceEntry>();
         for (const p of allPresent) {
           const existing = deduped.get(p.id);
           if (!existing || p.joined_at > existing.joined_at) {

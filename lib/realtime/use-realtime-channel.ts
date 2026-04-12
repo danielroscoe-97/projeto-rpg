@@ -16,6 +16,12 @@ interface UseRealtimeChannelOptions {
 /**
  * Subscribe to a session's Realtime channel (player-side, read-only).
  * Returns connection status for UI indicators.
+ *
+ * SCOPE NOTE: This hook covers 10 core combat broadcast events used by
+ * smaller DM-side components. PlayerJoinClient subscribes to the full set
+ * of 28+ event types directly on the channel because it needs fine-grained
+ * control (sequence numbers, circuit breaker, lobby fallback). This split
+ * is intentional — do not expand this hook to cover all events.
  */
 export function useRealtimeChannel({
   sessionId,
@@ -67,12 +73,12 @@ export function useRealtimeChannel({
     ];
 
     for (const eventType of eventTypes) {
-      ch.on("broadcast", { event: eventType }, (msg) => {
+      ch.on("broadcast", { event: eventType }, (msg: { event: string; payload: unknown }) => {
         onEventRef.current(msg.payload as RealtimeEvent);
       });
     }
 
-    ch.subscribe((status) => {
+    ch.subscribe((status: string) => {
       if (status === "SUBSCRIBED") {
         setStatus("connected");
         disconnectedAtRef.current = null;

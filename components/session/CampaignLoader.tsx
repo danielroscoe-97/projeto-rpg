@@ -45,7 +45,7 @@ export function CampaignLoader({ onLoad }: Props) {
       setFetchError(t("load_campaigns_error"));
     } else {
       setCampaigns(
-        data?.map((c) => ({
+        data?.map((c: { id: string; name: string; player_characters: unknown }) => ({
           id: c.id,
           name: c.name,
           player_count:

@@ -18,6 +18,27 @@ import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
 import { persistPlayerIdentity, loadPlayerIdentity, clearPlayerIdentity } from "@/lib/player-identity-storage";
 import type { PlayerAudioFile } from "@/lib/types/audio";
+import type {
+  SanitizedStateSync,
+  SanitizedCombatantAdd,
+  SanitizedStatsUpdate,
+  SanitizedInitiativeReorder,
+  RealtimeTurnAdvance,
+  RealtimeConditionChange,
+  RealtimeReactionToggle,
+  RealtimeDefeatedChange,
+  RealtimeCombatantRemove,
+  RealtimeVersionSwitch,
+  RealtimeLateJoinResponse,
+  RealtimeSessionRevoked,
+  RealtimeAudioPlay,
+  RealtimeAmbientStart,
+  RealtimeLoopStop,
+  RealtimeCombatStats,
+  RealtimeCombatRecap,
+  RealtimeSessionPollResults,
+  RealtimePlayerNotesUpdate,
+} from "@/lib/types/realtime";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { AudioUnlockBanner } from "@/components/audio/AudioUnlockBanner";
 import type { CombatantStats } from "@/lib/utils/combat-stats";
@@ -372,19 +393,19 @@ export function PlayerJoinClient({
             new Promise<never>((_, reject) =>
               setTimeout(() => reject(new Error("Auth timeout")), ms)
             ),
-          ]);
+          ]) as Promise<T>;
 
         // STEP 1: Resolve auth (getSession or signInAnonymously)
         const {
           data: { session },
-        } = await withTimeout(supabase.auth.getSession(), 8000);
+        } = await withTimeout(supabase.auth.getSession(), 8000) as { data: { session: import("@supabase/supabase-js").Session | null } };
 
         let userId: string;
         if (!session) {
           const { data, error: authError } = await withTimeout(
             supabase.auth.signInAnonymously(),
             10000
-          );
+          ) as { data: { user: import("@supabase/supabase-js").User | null }; error: Error | null };
           if (authError) throw new Error(`anon-auth: ${authError.message}`);
           if (!data.user) throw new Error("anon-auth: no user returned");
           userId = data.user.id;
@@ -873,7 +894,7 @@ export function PlayerJoinClient({
       });
 
       channel
-        .on("broadcast", { event: "session:state_sync" }, ({ payload }) => {
+        .on("broadcast", { event: "session:state_sync" }, ({ payload }: { payload: SanitizedStateSync & { _seq?: number } }) => {
           // DESYNC-FIX-2: state_sync is the full truth — ALWAYS reset sequence counter.
           // After DM refresh, _broadcastSeq resets to 0. If we only update lastSeqRef when
           // seq > 0, the player keeps the old high-water mark (e.g. 50) and drops all new
@@ -914,7 +935,7 @@ export function PlayerJoinClient({
             }
           }
         })
-        .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:turn_advance" }, ({ payload }: { payload: RealtimeTurnAdvance & { _seq?: number } }) => {
           // Discard out-of-order turn advances using broadcast sequence number
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
@@ -935,7 +956,7 @@ export function PlayerJoinClient({
           if (payload.round_number !== undefined) setRound(payload.round_number);
           setNextCombatantId(payload.next_combatant_id ?? null);
         })
-        .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:hp_update" }, ({ payload }: { payload: { combatant_id: string; current_hp?: number; temp_hp?: number; max_hp?: number; hp_status?: string; hp_percentage?: number; death_saves?: { successes: number; failures: number }; _seq?: number } }) => {
           // Discard out-of-order HP updates using broadcast sequence number
           const hpSeq = typeof payload._seq === "number" ? payload._seq : 0;
           if (hpSeq > 0 && hpSeq <= lastSeqRef.current) return;
@@ -1013,7 +1034,7 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:condition_change" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:condition_change" }, ({ payload }: { payload: RealtimeConditionChange & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1032,7 +1053,7 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:reaction_toggle" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:reaction_toggle" }, ({ payload }: { payload: RealtimeReactionToggle & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1046,7 +1067,7 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:defeated_change" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:defeated_change" }, ({ payload }: { payload: RealtimeDefeatedChange & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1060,7 +1081,7 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:combatant_add" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:combatant_add" }, ({ payload }: { payload: SanitizedCombatantAdd & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1107,7 +1128,7 @@ export function PlayerJoinClient({
             }
           }
         })
-        .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }: { payload: RealtimeCombatantRemove & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1115,7 +1136,7 @@ export function PlayerJoinClient({
             updateCombatants((prev) => prev.filter((c) => c.id !== payload.combatant_id));
           }
         })
-        .on("broadcast", { event: "combat:version_switch" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:version_switch" }, ({ payload }: { payload: RealtimeVersionSwitch & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1129,7 +1150,7 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:stats_update" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:stats_update" }, ({ payload }: { payload: SanitizedStatsUpdate & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1145,7 +1166,21 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:player_notes_update" }, ({ payload }: { payload: RealtimePlayerNotesUpdate & { _seq?: number } }) => {
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
+          if (payload.combatant_id) {
+            updateCombatants((prev) =>
+              prev.map((c) =>
+                c.id === payload.combatant_id
+                  ? { ...c, player_notes: payload.player_notes }
+                  : c
+              )
+            );
+          }
+        })
+        .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }: { payload: SanitizedInitiativeReorder & { _seq?: number } }) => {
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1156,7 +1191,7 @@ export function PlayerJoinClient({
             updateTurnIndex(payload.current_turn_index);
           }
         })
-        .on("broadcast", { event: "combat:late_join_response" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:late_join_response" }, ({ payload }: { payload: RealtimeLateJoinResponse }) => {
           if (payload.request_id !== lateJoinRequestIdRef.current) return;
           // Clear timeouts since DM responded
           if (lateJoinTimeoutRef.current) {
@@ -1193,7 +1228,7 @@ export function PlayerJoinClient({
           }
         })
         // combat:rejoin_response removed — rejoin is now always auto-approve (John's simplification)
-        .on("broadcast", { event: "combat:session_revoked" }, ({ payload }) => {
+        .on("broadcast", { event: "combat:session_revoked" }, ({ payload }: { payload: RealtimeSessionRevoked }) => {
           // If our token was revoked (another device took over), disconnect gracefully
           if (payload.revoked_token_id === effectiveTokenId) {
             clearPlayerIdentity(sessionId);
@@ -1205,21 +1240,17 @@ export function PlayerJoinClient({
             sessionRevokedTimerRef.current = setTimeout(() => setSessionRevokedBanner(false), 5000);
           }
         })
-        .on("broadcast", { event: "player:joined" }, ({ payload }) => {
-          if (payload.id && payload.name) {
+        .on("broadcast", { event: "player:joined" }, ({ payload }: { payload: { id?: string; name?: string } }) => {
+          const joinedId = payload.id;
+          const joinedName = payload.name;
+          if (joinedId && joinedName) {
             setJoinedPlayers((prev) => {
-              if (prev.some((p) => p.id === payload.id)) return prev;
-              return [...prev, { id: payload.id, name: payload.name }];
+              if (prev.some((p) => p.id === joinedId)) return prev;
+              return [...prev, { id: joinedId, name: joinedName }];
             });
           }
         })
-        // WEATHER_DISABLED:
-        // .on("broadcast", { event: "session:weather_change" }, ({ payload }) => {
-        //   if (payload.effect !== undefined) {
-        //     setWeatherEffect(payload.effect);
-        //   }
-        // })
-        .on("broadcast", { event: "audio:play_sound" }, ({ payload }) => {
+        .on("broadcast", { event: "audio:play_sound" }, ({ payload }: { payload: RealtimeAudioPlay }) => {
           // DM played an SFX — play it on the player side too
           if (payload.sound_id && payload.source) {
             useAudioStore.getState().playSound(
@@ -1230,7 +1261,7 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "audio:ambient_start" }, ({ payload }) => {
+        .on("broadcast", { event: "audio:ambient_start" }, ({ payload }: { payload: RealtimeAmbientStart }) => {
           // DM started ambient/music — play it on the player side (looped)
           if (payload.sound_id) {
             useAudioStore.getState().playAmbient(payload.sound_id);
@@ -1240,7 +1271,7 @@ export function PlayerJoinClient({
           // DM stopped all ambient/music — stop all on the player side
           useAudioStore.getState().stopAmbient();
         })
-        .on("broadcast", { event: "audio:loop_stop" }, ({ payload }) => {
+        .on("broadcast", { event: "audio:loop_stop" }, ({ payload }: { payload: RealtimeLoopStop }) => {
           // DM stopped a single loop — stop just that one on the player side
           if (payload.sound_id) {
             useAudioStore.getState().stopLoop(payload.sound_id);
@@ -1256,20 +1287,7 @@ export function PlayerJoinClient({
         .on("broadcast", { event: "chat:dm_postit" }, () => {
           // Delegated to DmPostit component — no action here
         })
-        // NOTE: DM currently signals start via session:state_sync, not combat:started.
-        // Kept as defensive handler in case the event is added in the future.
-        .on("broadcast", { event: "combat:started" }, ({ payload }) => {
-          setActive(true);
-          setCombatStatsData(null);
-          setCombatRecapReport(null);
-          setShowPoll(false);
-          setAwaitingSessionEnd(false);
-          if (payload?.encounter_id) {
-            setCurrentEncounterId(payload.encounter_id);
-            fetchFullState(payload.encounter_id);
-          }
-        })
-        .on("broadcast", { event: "session:combat_stats" }, ({ payload }) => {
+        .on("broadcast", { event: "session:combat_stats" }, ({ payload }: { payload: RealtimeCombatStats }) => {
           // C.15: DM ended combat — show leaderboard + poll before session:ended
           if (payload.stats && payload.encounter_name) {
             combatStatsActiveRef.current = true; // P1.02: mark poll flow as active
@@ -1281,13 +1299,13 @@ export function PlayerJoinClient({
             });
           }
         })
-        .on("broadcast", { event: "session:combat_recap" }, ({ payload }) => {
+        .on("broadcast", { event: "session:combat_recap" }, ({ payload }: { payload: RealtimeCombatRecap }) => {
           // B6: Full combat recap from DM — player sees "Spotify Wrapped" experience
           if (payload.report) {
             setCombatRecapReport(payload.report as CombatReport);
           }
         })
-        .on("broadcast", { event: "session:poll_results" }, ({ payload }) => {
+        .on("broadcast", { event: "session:poll_results" }, ({ payload }: { payload: RealtimeSessionPollResults }) => {
           // C.15-B: DM broadcast aggregate poll results — show to player in awaiting screen
           // Validate payload shape at runtime — broadcast payloads are untyped
           const avg = typeof payload?.avg === "number" ? payload.avg : null;
@@ -1327,7 +1345,7 @@ export function PlayerJoinClient({
             }
           }, 500);
         })
-        .subscribe((status) => {
+        .subscribe((status: string) => {
           if (status === "SUBSCRIBED") {
             setDebouncedConnectionStatus("connected");
             disconnectedAtRef.current = null;
@@ -1861,7 +1879,7 @@ export function PlayerJoinClient({
       const ch = supabase.channel(`presence:${sessionId}`, {
         config: { presence: { key: sessionId } },
       });
-      ch.subscribe(async (status) => {
+      ch.subscribe(async (status: string) => {
         if (status === "SUBSCRIBED") {
           await ch.track({
             id: effectiveTokenId,

@@ -11,10 +11,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 const isDev = process.env.NODE_ENV !== "production";
 
 const nextConfig: NextConfig = {
-  // Skip build-time type checking — 70 pre-existing implicit-any errors from
-  // untyped Supabase query responses. The code is correct; the fix is generating
-  // Supabase DB types (supabase gen types). Until then, tsc runs in CI only.
-  typescript: { ignoreBuildErrors: true },
   // Ensure data/srd/ JSON bundles are included in serverless function bundles.
   // readFileSync with dynamic paths isn't always traced by Vercel NFT.
   outputFileTracingIncludes: {

@@ -232,10 +232,10 @@ export async function persistEndEncounter(
       .eq("encounter_id", encounterId)
       .not("player_character_id", "is", null);
 
-    const linked = (playerCombatants ?? []).filter((c) => c.player_character_id);
+    const linked = (playerCombatants ?? []).filter((c: { player_character_id: string | null }) => c.player_character_id);
     if (linked.length > 0) {
       await Promise.all(
-        linked.map(async (c) => {
+        linked.map(async (c: { player_character_id: string | null; current_hp: number; max_hp: number; temp_hp: number; ac: number; conditions: string[] }) => {
           // conditions is TEXT[] in combatants but JSONB in player_characters — both are flat string arrays
           const { error: syncErr } = await supabase
             .from("player_characters")

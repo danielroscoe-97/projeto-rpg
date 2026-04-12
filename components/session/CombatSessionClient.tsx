@@ -978,7 +978,7 @@ export function CombatSessionClient({
               .from("combatants")
               .update({ session_token_id: req.senderTokenId })
               .eq("id", matchingCombatant.id)
-              .then(({ error }) => {
+              .then(({ error }: { error: { message: string } | null }) => {
                 if (error) console.error("[CombatSession] Failed to persist token link:", error.message);
               });
           });

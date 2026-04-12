@@ -147,7 +147,7 @@ export function usePlayerNotes(characterId: string, campaignId: string) {
         .from("player_journal_entries")
         .update(updates)
         .eq("id", entryId)
-        .then(({ error }) => { if (error) console.error("Flush failed:", error); });
+        .then(({ error }: { error: { message: string } | null }) => { if (error) console.error("Flush failed:", error); });
     });
     pendingRef.current = {};
   }, [supabase]);

@@ -41,6 +41,18 @@ jobs:
         if: steps.check.outputs.skip != 'true'
         run: npm ci
 
+      - name: Type check
+        if: steps.check.outputs.skip != 'true'
+        run: npm run type-check
+
+      - name: Lint
+        if: steps.check.outputs.skip != 'true'
+        run: npm run lint
+
+      - name: Unit tests
+        if: steps.check.outputs.skip != 'true'
+        run: npm test -- --ci --passWithNoTests
+
       - name: Install Playwright browsers
         if: steps.check.outputs.skip != 'true'
         run: npx playwright install --with-deps chromium
