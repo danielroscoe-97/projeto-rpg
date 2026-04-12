@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Smartphone, BarChart3 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
@@ -11,6 +12,9 @@ import { LpPricingSection } from "@/components/marketing/LpPricingSection";
 import { LandingLoggedInNav } from "@/components/marketing/LandingLoggedInNav";
 import { LandingAuthRecovery } from "@/components/marketing/LandingAuthRecovery";
 import { createClient } from "@/lib/supabase/server";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TFunc = (key: string) => string;
 
 import { Button } from "@/components/ui/button";
 import { RuneCircle, QuestPath, TorchGlow, FireTrail } from "@/components/ui/rpg";
@@ -131,7 +135,7 @@ export const metadata = {
 };
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
-function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
+function HeroSection({ isLoggedIn, t }: { isLoggedIn: boolean; t: TFunc }) {
   return (
     <section data-section="hero" className="relative min-h-dvh flex items-center justify-center px-6 pt-[72px] overflow-hidden">
       {/* Background photo */}
@@ -165,7 +169,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] -translate-x-full" />
             <div className="relative flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse" />
-              <span className="font-display font-bold text-emerald-300 text-[11px] tracking-[0.22em] uppercase leading-none">Open Beta</span>
+              <span className="font-display font-bold text-emerald-300 text-[11px] tracking-[0.22em] uppercase leading-none">{t("open_beta")}</span>
             </div>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -177,27 +181,27 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             height={96}
           />
           <span className="font-display text-gold text-lg sm:text-xl tracking-[0.15em] uppercase font-bold">Pocket DM</span>
-          <span className="text-gold/40 text-xs sm:text-sm italic font-light tracking-[0.15em] -mt-1">Master your table.</span>
+          <span className="text-gold/40 text-xs sm:text-sm italic font-light tracking-[0.15em] -mt-1">{t("tagline")}</span>
         </div>
 
         {/* Live badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-xs text-muted-foreground animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          SRD 5.1 &amp; 5.2 Compendium — 2014 &amp; 2024 Rules
+          {t("live_badge")}
         </div>
 
         {/* Headline */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-foreground leading-[1.1] tracking-tight animate-fade-in-up">
-          Domine o combate.
+          {t("hero_headline_1")}
           <br />
           <span className="text-gold drop-shadow-[0_0_20px_rgba(212,168,83,0.3)]">
-            Abandone o papel.
+            {t("hero_headline_2")}
           </span>
         </h1>
 
         {/* Subheading */}
         <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          O combat tracker definitivo para D&D 5e. Iniciativa, HP e condições em tempo real — tudo no celular dos seus jogadores.
+          {t("hero_subheading")}
         </p>
 
         {/* CTAs */}
@@ -207,7 +211,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             href={isLoggedIn ? "/app/session/new?quick=true" : "/try"}
             className="group relative overflow-hidden w-full py-3 bg-gold/[0.08] text-foreground font-semibold text-lg rounded-lg border border-gold/25 shadow-[0_0_20px_rgba(212,168,83,0.08)] hover:bg-gold/[0.14] hover:border-gold/40 hover:text-gold hover:shadow-[0_0_24px_rgba(212,168,83,0.15)] transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
           >
-            {isLoggedIn ? "Combate Rápido" : "Testar Grátis"}
+            {isLoggedIn ? t("cta_quick_combat") : t("cta_try_free")}
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
 
@@ -218,7 +222,7 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
               className="group relative overflow-hidden w-full px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5 btn-shimmer"
             >
               <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-              Ir para o Dashboard
+              {t("cta_go_dashboard")}
               <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
             </Link>
           ) : (
@@ -228,14 +232,14 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
                 className="group relative overflow-hidden flex-1 px-6 py-3 bg-gold text-surface-primary font-semibold text-sm rounded-lg hover:shadow-gold-glow hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[44px] inline-flex items-center justify-center gap-1.5 btn-shimmer"
               >
                 <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-                Salvar minhas campanhas
+                {t("cta_save_campaigns")}
               </Link>
               <Link
                 href="/auth/login"
                 className="group px-6 py-3 bg-white/[0.04] text-muted-foreground font-medium text-sm rounded-lg border border-white/[0.07] hover:bg-white/[0.08] hover:text-foreground transition-all duration-[200ms] min-h-[44px] inline-flex items-center gap-1.5"
               >
                 <UserIcon className="w-3.5 h-3.5 opacity-60 group-hover:opacity-90 transition-opacity duration-200" />
-                Já tenho conta
+                {t("cta_have_account")}
               </Link>
             </div>
           )}
@@ -245,8 +249,8 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         {/* Stats strip */}
         <div className="flex items-center justify-center gap-0 pt-1 animate-fade-in" style={{ animationDelay: "0.35s" }}>
           {[
-            { value: 1100, label: "monstros" },
-            { value: 600, label: "magias" },
+            { value: 1100, label: t("stat_monsters") },
+            { value: 600, label: t("stat_spells") },
           ].map((stat, i) => (
             <React.Fragment key={stat.label}>
               {i > 0 && <div className="w-px h-7 bg-white/[0.08] mx-5" />}
@@ -260,8 +264,8 @@ function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
           ))}
           <div className="w-px h-7 bg-white/[0.08] mx-5" />
           <div className="text-center">
-            <div className="text-gold font-mono font-bold text-sm leading-none">R$ 0</div>
-            <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">pra começar</div>
+            <div className="text-gold font-mono font-bold text-sm leading-none">{t("stat_price")}</div>
+            <div className="text-muted-foreground text-[10px] mt-0.5 tracking-wide uppercase">{t("stat_price_label")}</div>
           </div>
         </div>
 
@@ -287,54 +291,48 @@ function SectionDivider() {
 }
 
 // ── Features ─────────────────────────────────────────────────────────────────
-function FeaturesSection() {
+function FeaturesSection({ t }: { t: TFunc }) {
   const features: { icon: React.ComponentType<{ className?: string }>; tag: string | null; title: string; description: string; hoverAnim: string }[] = [
     {
       icon: D20Icon,
       tag: null,
-      title: "Combat Tracker Completo",
-      description:
-        "Iniciativa automática, HP com temp HP, 13 condições D&D, derrota, adicionar/remover combatentes no meio do combate.",
+      title: t("feature_1_title"),
+      description: t("feature_1_description"),
       hoverAnim: "icon-anim-roll",
     },
     {
       icon: Smartphone,
-      tag: "Popular",
-      title: "Player View em Tempo Real",
-      description:
-        "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem fricção. Tudo atualiza ao vivo.",
+      tag: t("feature_2_tag"),
+      title: t("feature_2_title"),
+      description: t("feature_2_description"),
       hoverAnim: "icon-anim-buzz",
     },
     {
       icon: SparkleIcon,
       tag: null,
-      title: "Oráculo de Magias & Monstros",
-      description:
-        "Bestiário SRD completo + monstros do compêndio Monster a Day. Stat blocks inline, descrições de magia em modal. Funciona offline.",
+      title: t("feature_3_title"),
+      description: t("feature_3_description"),
       hoverAnim: "icon-anim-sparkle",
     },
     {
       icon: D8Icon,
-      tag: "Único",
-      title: "Regras 2014 & 2024",
-      description:
-        "Alterne entre as versões de regras por monstro instantaneamente, no meio do combate, sem reiniciar o encontro.",
+      tag: t("feature_4_tag"),
+      title: t("feature_4_title"),
+      description: t("feature_4_description"),
       hoverAnim: "icon-anim-flip",
     },
     {
       icon: D6Icon,
       tag: null,
-      title: "Salvar & Retomar",
-      description:
-        "Fechou o navegador? Sem problema. O encontro persiste automaticamente. Retome de onde parou.",
+      title: t("feature_5_title"),
+      description: t("feature_5_description"),
       hoverAnim: "icon-anim-bounce",
     },
     {
       icon: BarChart3,
-      tag: "Novo",
-      title: "Dados da Comunidade",
-      description:
-        "Cada combate alimenta nosso banco de dados. Em breve: tier lists de spells, CR accuracy e balanceamento baseados em sessões reais.",
+      tag: t("feature_6_tag"),
+      title: t("feature_6_title"),
+      description: t("feature_6_description"),
       hoverAnim: "icon-anim-swing",
     },
   ];
@@ -357,11 +355,10 @@ function FeaturesSection() {
       <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-8 md:mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
-            Tudo o que o Mestre precisa
+            {t("features_heading")}
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto hidden md:block">
-            De iniciativa a pontos de vida, de condições a oráculo de magias.
-            Uma ferramenta focada no que importa.
+            {t("features_subheading")}
           </p>
         </div>
 
@@ -577,43 +574,43 @@ function CompendiumBadgeIcon({ type }: { type: "monsters" | "spells" | "classes"
   }
 }
 
-function CompendiumShowcaseSection() {
+function CompendiumShowcaseSection({ t }: { t: TFunc }) {
   const cards: { title: string; count: number; suffix: string; description: string; href: string; mockup: "monsters" | "spells" | "classes" | "races"; borderHover: string; gradient: string }[] = [
     {
-      title: "Monstros",
+      title: t("compendium_monsters_title"),
       count: 1100,
       suffix: "+",
-      description: "Stat blocks prontos para combate — SRD 5.1, SRD 2024 e Monster-a-Day",
+      description: t("compendium_monsters_description"),
       href: "/monstros",
       mockup: "monsters",
       borderHover: "hover:border-red-500/30",
       gradient: "from-red-500/20 via-orange-500/10 to-transparent",
     },
     {
-      title: "Magias",
+      title: t("compendium_spells_title"),
       count: 600,
       suffix: "+",
-      description: "Todas as magias SRD com filtros por nível, escola e classe",
+      description: t("compendium_spells_description"),
       href: "/magias",
       mockup: "spells",
       borderHover: "hover:border-purple-500/30",
       gradient: "from-purple-500/20 via-violet-500/10 to-transparent",
     },
     {
-      title: "Classes",
+      title: t("compendium_classes_title"),
       count: 12,
       suffix: "",
-      description: "Hit dice, habilidades, subclasses e proficiências de cada classe SRD",
+      description: t("compendium_classes_description"),
       href: "/classes",
       mockup: "classes",
       borderHover: "hover:border-gold/30",
       gradient: "from-amber-500/20 via-gold/10 to-transparent",
     },
     {
-      title: "Raças",
+      title: t("compendium_races_title"),
       count: 9,
       suffix: "",
-      description: "Traços raciais, bônus de atributo e habilidades especiais",
+      description: t("compendium_races_description"),
       href: "/racas",
       mockup: "races",
       borderHover: "hover:border-emerald-500/30",
@@ -653,13 +650,13 @@ function CompendiumShowcaseSection() {
         {/* Heading */}
         <div className="text-center mb-8 md:mb-14 animate-fade-in relative">
           <span className="inline-block text-[10px] md:text-xs font-semibold uppercase tracking-widest text-gold/80 bg-gold/10 border border-gold/20 rounded-full px-3 py-1 mb-3 md:mb-4">
-            100% Gratuito
+            {t("compendium_badge")}
           </span>
           <h2 className="text-2xl md:text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
-            Compêndio SRD 5e
+            {t("compendium_heading")}
           </h2>
           <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-            Consulte monstros, magias, classes e raças direto na mesa — tudo licenciado e gratuito.
+            {t("compendium_subheading")}
           </p>
         </div>
 
@@ -717,7 +714,7 @@ function CompendiumShowcaseSection() {
 
                   {/* Arrow CTA */}
                   <div className="mt-2 flex items-center gap-1 text-gold/60 group-hover:text-gold text-xs transition-colors">
-                    <span>Explorar</span>
+                    <span>{t("compendium_explore")}</span>
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -731,26 +728,26 @@ function CompendiumShowcaseSection() {
 }
 
 // ── Social Proof ─────────────────────────────────────────────────────────────
-function SocialProofSection() {
+function SocialProofSection({ t }: { t: TFunc }) {
   const testimonials = [
     {
-      quote: "Na sessão passada, um combate de 8 criaturas que levava 40 minutos no papel levou 15 com o Pocket DM. Meus jogadores ficam no celular acompanhando HP e turnos ao vivo.",
-      author: "Mestre há 8 anos",
-      role: "Campanha semanal, 5 jogadores",
+      quote: t("testimonial_1_quote"),
+      author: t("testimonial_1_author"),
+      role: t("testimonial_1_role"),
       icon: "🛡️",
       accent: "from-amber-500/20 to-amber-700/10",
     },
     {
-      quote: "Eu pagava $5/mês no Roll20 só pelo tracker e odiava a lentidão. Pocket DM é grátis e resolve em 30 segundos o que demorava 5 minutos. Não volto.",
-      author: "DM veterano",
-      role: "Migrou do Roll20",
+      quote: t("testimonial_2_quote"),
+      author: t("testimonial_2_author"),
+      role: t("testimonial_2_role"),
       icon: "⚔️",
       accent: "from-red-500/20 to-red-700/10",
     },
     {
-      quote: "Sou mestra nova e o oráculo de magias me salvou. Consulto stat blocks e spells no meio do combate sem perder o ritmo — os jogadores nem percebem.",
-      author: "Mestra iniciante",
-      role: "Primeira campanha DMando",
+      quote: t("testimonial_3_quote"),
+      author: t("testimonial_3_author"),
+      role: t("testimonial_3_role"),
       icon: "✨",
       accent: "from-purple-500/20 to-purple-700/10",
     },
@@ -765,16 +762,16 @@ function SocialProofSection() {
       <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-6 md:mb-14 animate-fade-in">
           <h2 className="text-2xl md:text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
-            O que mestres estão dizendo
+            {t("social_proof_heading")}
           </h2>
           <p className="text-muted-foreground text-sm hidden md:block">
-            Feedback real de quem usa na mesa toda semana.
+            {t("social_proof_subheading")}
           </p>
         </div>
 
         {/* Desktop: 3-column grid */}
         <div className="hidden md:grid md:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
+          {testimonials.map((tm, i) => (
             <div
               key={i}
               className="relative bg-card border border-border rounded-xl p-6 h-full flex flex-col animate-fade-in-up hover:border-gold/30 transition-colors duration-300"
@@ -782,19 +779,19 @@ function SocialProofSection() {
             >
               {/* RPG class icon + quote mark */}
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.accent} flex items-center justify-center text-lg border border-white/[0.08]`}>
-                  {t.icon}
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${tm.accent} flex items-center justify-center text-lg border border-white/[0.08]`}>
+                  {tm.icon}
                 </div>
                 <svg width="24" height="18" viewBox="0 0 32 24" fill="none" className="text-gold/25 shrink-0" aria-hidden="true">
                   <path d="M0 24V14.4C0 5.33 5.33 1.07 12 0l1.33 3.73C8.53 5.07 7.07 8.53 6.93 12H12v12H0zm18 0V14.4C18 5.33 23.33 1.07 30 0l1.33 3.73C26.53 5.07 25.07 8.53 24.93 12H30v12H18z" fill="currentColor" />
                 </svg>
               </div>
               <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
-                &ldquo;{t.quote}&rdquo;
+                &ldquo;{tm.quote}&rdquo;
               </p>
               <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                <p className="text-sm font-medium text-foreground">{t.author}</p>
-                <p className="text-xs text-muted-foreground">{t.role}</p>
+                <p className="text-sm font-medium text-foreground">{tm.author}</p>
+                <p className="text-xs text-muted-foreground">{tm.role}</p>
               </div>
             </div>
           ))}
@@ -803,22 +800,22 @@ function SocialProofSection() {
         {/* Mobile: horizontal scroll-snap carousel */}
         <div className="md:hidden">
           <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scrollbar-hide">
-            {testimonials.map((t, i) => (
+            {testimonials.map((tm, i) => (
               <div
                 key={i}
                 className="relative bg-card border border-border rounded-xl p-5 flex flex-col snap-center shrink-0 w-[85vw] max-w-[320px]"
               >
                 <div className="flex items-center gap-2.5 mb-3">
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${t.accent} flex items-center justify-center text-sm border border-white/[0.08]`}>
-                    {t.icon}
+                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${tm.accent} flex items-center justify-center text-sm border border-white/[0.08]`}>
+                    {tm.icon}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground leading-tight">{t.author}</p>
-                    <p className="text-[10px] text-muted-foreground">{t.role}</p>
+                    <p className="text-sm font-medium text-foreground leading-tight">{tm.author}</p>
+                    <p className="text-[10px] text-muted-foreground">{tm.role}</p>
                   </div>
                 </div>
                 <p className="text-foreground/80 text-sm leading-relaxed flex-1 italic">
-                  &ldquo;{t.quote}&rdquo;
+                  &ldquo;{tm.quote}&rdquo;
                 </p>
               </div>
             ))}
@@ -839,33 +836,32 @@ function SocialProofSection() {
 }
 
 // ── How It Works ──────────────────────────────────────────────────────────────
-function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
+function HowItWorksSection({ isLoggedIn, t }: { isLoggedIn: boolean; t: TFunc }) {
   const TOTAL_STEPS = 4;
   const steps = [
     {
       step: 1,
-      title: "Crie o Encontro",
-      description: "Busque no compendium completo, adicione NPCs custom, carregue sua campanha salva.",
-      time: "~1 min",
+      title: t("step_1_title"),
+      description: t("step_1_description"),
+      time: t("step_1_time"),
     },
     {
       step: 2,
-      title: "Role Iniciativa",
-      description: "Insira os valores, ordene automaticamente, resolva empates com dragndrop.",
-      time: "~30 seg",
+      title: t("step_2_title"),
+      description: t("step_2_description"),
+      time: t("step_2_time"),
     },
     {
       step: 3,
-      title: "Compartilhe o Link",
-      description: "Gere o link da sessão. Jogadores entram pelo celular — sem conta pra eles.",
-      time: "~10 seg",
+      title: t("step_3_title"),
+      description: t("step_3_description"),
+      time: t("step_3_time"),
     },
     {
       step: 4,
-      title: "Mestre o Combate",
-      description:
-        "Avance turnos, aplique dano e gerencie condições. Seus jogadores veem as atualizações ao vivo.",
-      time: "ao vivo",
+      title: t("step_4_title"),
+      description: t("step_4_description"),
+      time: t("step_4_time"),
     },
   ];
 
@@ -886,9 +882,9 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
       <div className="relative max-w-6xl mx-auto">
         <div className="text-center mb-8 md:mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-2 md:mb-4">
-            Como funciona
+            {t("how_it_works_heading")}
           </h2>
-          <p className="text-muted-foreground">4 passos. 3 minutos. Zero setup.</p>
+          <p className="text-muted-foreground">{t("how_it_works_subheading")}</p>
         </div>
 
         {/* Desktop: horizontal flow */}
@@ -1009,12 +1005,12 @@ function HowItWorksSection({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div className="text-center mt-12">
           <Button variant="gold" size="lg" asChild>
             <Link href={isLoggedIn ? "/app/dashboard" : "/try"}>
-              {isLoggedIn ? "Ir para o Dashboard" : "Testar Combat Tracker — Grátis"}
+              {isLoggedIn ? t("cta_go_dashboard") : t("how_it_works_cta")}
             </Link>
           </Button>
           {!isLoggedIn && (
             <p className="text-muted-foreground text-sm mt-3">
-              Sem conta necessária
+              {t("no_account_needed")}
             </p>
           )}
         </div>
@@ -1065,7 +1061,7 @@ function CompCell({ val, highlight }: { val: CellValue; highlight?: boolean }) {
   );
 }
 
-function ComparisonSection() {
+function ComparisonSection({ t }: { t: TFunc }) {
   const rows: {
     icon: string;
     feature: string;
@@ -1077,60 +1073,60 @@ function ComparisonSection() {
   }[] = [
       {
         icon: "⚔️",
-        feature: "Combat tracker",
-        roll20: { type: "partial", label: "Pesado" },
-        beyond: { type: "partial", label: "Básico" },
-        pocketdm: { type: "check", label: "Otimizado" },
+        feature: t("comparison_row_1_feature"),
+        roll20: { type: "partial", label: t("comparison_row_1_roll20") },
+        beyond: { type: "partial", label: t("comparison_row_1_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_1_pocketdm") },
       },
       {
         icon: "📱",
-        feature: "Player view no celular",
-        roll20: { type: "cross", label: "App + conta" },
-        beyond: { type: "cross", label: "Indisponível" },
-        pocketdm: { type: "check", label: "Link direto, zero conta" },
+        feature: t("comparison_row_2_feature"),
+        roll20: { type: "cross", label: t("comparison_row_2_roll20") },
+        beyond: { type: "cross", label: t("comparison_row_2_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_2_pocketdm") },
       },
       {
         icon: "🎯",
-        feature: "Foco na mesa física",
-        roll20: { type: "cross", label: "Online-first" },
-        beyond: { type: "cross", label: "Digital-first" },
-        pocketdm: { type: "check", label: "Pro presencial" },
+        feature: t("comparison_row_3_feature"),
+        roll20: { type: "cross", label: t("comparison_row_3_roll20") },
+        beyond: { type: "cross", label: t("comparison_row_3_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_3_pocketdm") },
       },
       {
         icon: "📚",
-        feature: "Bestiário + Magias",
+        feature: t("comparison_row_4_feature"),
         featureTooltip: "SRD completo 2014 + 2024",
-        roll20: { type: "partial", label: "Módulo pago" },
-        beyond: { type: "partial", label: "Pago" },
-        pocketdm: { type: "check", label: "Grátis e atualizado" },
+        roll20: { type: "partial", label: t("comparison_row_4_roll20") },
+        beyond: { type: "partial", label: t("comparison_row_4_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_4_pocketdm") },
       },
       {
         icon: "📊",
-        feature: "Dados da comunidade",
-        roll20: { type: "cross", label: "Sem dados" },
-        beyond: { type: "cross", label: "Sem dados" },
-        pocketdm: { type: "check", label: "Contribuição ativa" },
+        feature: t("comparison_row_5_feature"),
+        roll20: { type: "cross", label: t("comparison_row_5_roll20") },
+        beyond: { type: "cross", label: t("comparison_row_5_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_5_pocketdm") },
       },
       {
         icon: "📶",
-        feature: "Funciona offline",
-        roll20: { type: "cross", label: "Online obrigatório" },
-        beyond: { type: "cross", label: "Online obrigatório" },
-        pocketdm: { type: "check", label: "Compêndio offline" },
+        feature: t("comparison_row_6_feature"),
+        roll20: { type: "cross", label: t("comparison_row_6_roll20") },
+        beyond: { type: "cross", label: t("comparison_row_6_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_6_pocketdm") },
       },
       {
         icon: "⏱️",
-        feature: "Setup do combate",
-        roll20: { type: "cross", label: "5–10 min" },
-        beyond: { type: "partial", label: "3–5 min" },
-        pocketdm: { type: "check", label: "< 1 minuto" },
+        feature: t("comparison_row_7_feature"),
+        roll20: { type: "cross", label: t("comparison_row_7_roll20") },
+        beyond: { type: "partial", label: t("comparison_row_7_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_7_pocketdm") },
       },
       {
         icon: "💰",
-        feature: "Preço",
-        roll20: { type: "cross", label: "$5–50/mês" },
-        beyond: { type: "cross", label: "$6/mês" },
-        pocketdm: { type: "check", label: "Comece grátis" },
+        feature: t("comparison_row_8_feature"),
+        roll20: { type: "cross", label: t("comparison_row_8_roll20") },
+        beyond: { type: "cross", label: t("comparison_row_8_beyond") },
+        pocketdm: { type: "check", label: t("comparison_row_8_pocketdm") },
         knockout: true,
       },
     ];
@@ -1145,10 +1141,10 @@ function ComparisonSection() {
       <div className="relative max-w-4xl mx-auto">
         <div className="text-center mb-14 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl font-display text-foreground mb-4">
-            Feito para a mesa, não para a tela
+            {t("comparison_heading")}
           </h2>
           <p className="text-muted-foreground text-sm max-w-lg mx-auto leading-relaxed">
-            VTTs são para o online. Quem mestra <span className="text-foreground font-medium">presencialmente</span> merece algo pensado pra isso.
+            {t("comparison_subheading_prefix")} <span className="text-foreground font-medium">{t("comparison_subheading_emphasis")}</span> {t("comparison_subheading_suffix")}
           </p>
         </div>
 
@@ -1167,12 +1163,12 @@ function ComparisonSection() {
             <div className="px-7 py-4 border-b border-white/[0.10]" />
             <div className="px-6 py-4 text-center border-b border-l border-white/[0.10] flex items-center justify-center">
               <span className="text-[11px] font-semibold text-white/50 uppercase tracking-widest">
-                Roll20 / Foundry
+                {t("comparison_col_roll20")}
               </span>
             </div>
             <div className="px-6 py-4 text-center border-b border-l border-white/[0.10] flex items-center justify-center">
               <span className="text-[11px] font-semibold text-white/50 uppercase tracking-widest">
-                D&amp;D Beyond
+                {t("comparison_col_beyond")}
               </span>
             </div>
             {/* Pocket DM header — gold gradient with glow */}
@@ -1192,7 +1188,7 @@ function ComparisonSection() {
                 Pocket DM
               </span>
               <span className="text-[9px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-gold/20 text-gold border border-gold/30 shadow-[0_0_12px_rgba(212,168,83,0.15)]">
-                Feito pra sua mesa
+                {t("comparison_pocketdm_badge")}
               </span>
             </div>
           </div>
@@ -1241,23 +1237,23 @@ function ComparisonSection() {
           {[
             {
               icon: "💰",
-              title: "Comece grátis",
-              description: "Roll20 cobra $5–50/mês. D&D Beyond $6/mês. Pocket DM é grátis.",
+              title: t("comparison_mobile_1_title"),
+              description: t("comparison_mobile_1_description"),
             },
             {
               icon: "📱",
-              title: "Player view sem conta",
-              description: "Gere um link. Jogadores abrem no celular. Sem app, sem conta.",
+              title: t("comparison_mobile_2_title"),
+              description: t("comparison_mobile_2_description"),
             },
             {
               icon: "📊",
-              title: "Dados da comunidade",
-              description: "Tier lists de spells e balanceamento de combate gerados por sessões reais. Nenhum concorrente tem.",
+              title: t("comparison_mobile_3_title"),
+              description: t("comparison_mobile_3_description"),
             },
             {
               icon: "⏱️",
-              title: "Setup em < 1 minuto",
-              description: "Busque monstros, adicione ao combate e role iniciativa. Tudo em menos de 60 segundos.",
+              title: t("comparison_mobile_4_title"),
+              description: t("comparison_mobile_4_description"),
             },
           ].map((item) => (
             <div
@@ -1279,7 +1275,7 @@ function ComparisonSection() {
 
         <div className="mt-7 text-center">
           <p className="text-xs text-white/50 italic">
-            Desenvolvido por mestres para mestres. Não viemos para substituir o seu VTT, mas para libertar sua mesa.
+            {t("comparison_footer")}
           </p>
         </div>
       </div>
@@ -1288,22 +1284,22 @@ function ComparisonSection() {
 }
 
 // ── Beyond Combat ────────────────────────────────────────────────────────────
-function BeyondCombatSection() {
+function BeyondCombatSection({ t }: { t: TFunc }) {
   const pillars = [
     {
       icon: "📊",
-      title: "Tier Lists de Spells",
-      description: "Rankings gerados por uso real em combate, não teoria.",
+      title: t("beyond_1_title"),
+      description: t("beyond_1_description"),
     },
     {
       icon: "⚖️",
-      title: "Balanceamento de CR",
-      description: "Quão letal é cada monstro na prática? Os dados respondem.",
+      title: t("beyond_2_title"),
+      description: t("beyond_2_description"),
     },
     {
       icon: "🧪",
-      title: "Metodologia Aberta",
-      description: "Dados anonimizados, análise transparente, comunidade que contribui.",
+      title: t("beyond_3_title"),
+      description: t("beyond_3_description"),
     },
   ];
 
@@ -1317,14 +1313,13 @@ function BeyondCombatSection() {
         <div className="text-center mb-8 md:mb-12 animate-fade-in">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-[11px] font-semibold uppercase tracking-wider mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-            Em desenvolvimento
+            {t("beyond_combat_badge")}
           </span>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-foreground mb-3">
-            Além do combate
+            {t("beyond_combat_heading")}
           </h2>
           <p className="text-muted-foreground text-sm md:text-base max-w-lg mx-auto leading-relaxed">
-            Cada sessão no Pocket DM alimenta uma base de dados que vai
-            transformar como a comunidade entende D&D 5e.
+            {t("beyond_combat_subheading")}
           </p>
         </div>
 
@@ -1350,11 +1345,11 @@ function BeyondCombatSection() {
             href="/methodology"
             className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-gold/30 bg-gold/[0.06] text-gold font-semibold text-sm hover:bg-gold/[0.12] hover:border-gold/50 transition-all duration-200 min-h-[44px]"
           >
-            Conhecer a Metodologia
+            {t("beyond_cta")}
             <ArrowRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
           <p className="text-muted-foreground text-xs mt-2">
-            Como coletamos e analisamos os dados de combate
+            {t("beyond_cta_subtitle")}
           </p>
         </div>
       </div>
@@ -1363,7 +1358,7 @@ function BeyondCombatSection() {
 }
 
 // ── Final CTA ─────────────────────────────────────────────────────────────────
-function FinalCtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
+function FinalCtaSection({ isLoggedIn, t }: { isLoggedIn: boolean; t: TFunc }) {
   return (
     <section data-section="final-cta" className="py-10 md:py-24 px-4 md:px-6 relative overflow-hidden">
       {/* Ambient glow */}
@@ -1373,13 +1368,13 @@ function FinalCtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
 
       <div className="relative max-w-2xl mx-auto text-center space-y-4 md:space-y-6 animate-fade-in-up">
         <h2 className="text-2xl md:text-3xl sm:text-4xl font-display text-foreground">
-          Pronto para mestrar{" "}
-          <span className="text-gold drop-shadow-[0_0_16px_rgba(212,168,83,0.4)]">melhor</span>?
+          {t("final_cta_heading_prefix")}{" "}
+          <span className="text-gold drop-shadow-[0_0_16px_rgba(212,168,83,0.4)]">{t("final_cta_heading_accent")}</span>?
         </h2>
         <p className="text-muted-foreground text-sm md:text-lg hidden md:block">
           {isLoggedIn
-            ? "Acesse o dashboard e gerencie suas campanhas."
-            : "Crie sua conta em segundos e transforme sua próxima sessão."}
+            ? t("final_cta_subheading_logged_in")
+            : t("final_cta_subheading_logged_out")}
         </p>
 
         <div className="flex flex-col items-center gap-3 pt-2">
@@ -1388,14 +1383,14 @@ function FinalCtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
             className="group relative overflow-hidden inline-flex items-center gap-2.5 px-8 md:px-10 py-3 md:py-4 bg-gold text-surface-primary font-semibold text-base md:text-lg rounded-lg hover:shadow-gold-glow-lg hover:-translate-y-[2px] active:translate-y-0 transition-all duration-[200ms] min-h-[48px] md:min-h-[52px] btn-shimmer"
           >
             <SparkleIcon className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-            {isLoggedIn ? "Ir para o Dashboard" : "Começar Agora — é Grátis"}
+            {isLoggedIn ? t("cta_go_dashboard") : t("cta_start_now_free")}
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
           <Link
             href={isLoggedIn ? "/app/session/new?quick=true" : "/try"}
             className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1 min-h-[44px]"
           >
-            {isLoggedIn ? "Combate Rápido" : "Testar sem conta"}
+            {isLoggedIn ? t("cta_quick_combat") : t("cta_try_no_account")}
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -1406,6 +1401,7 @@ function FinalCtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default async function LandingPage() {
+  const t = await getTranslations("landing") as unknown as TFunc;
   let isLoggedIn = false;
   let displayName = "";
   let authFailed = false;
@@ -1457,8 +1453,7 @@ export default async function LandingPage() {
     sameAs: [
       "https://www.instagram.com/pocket.dm",
     ],
-    description:
-      "Rastreador de combate e ferramentas para mestres de D&D 5e. Combat tracker gratuito para RPG presencial.",
+    description: t("meta_description"),
   };
 
   const jsonLdWebApplication = {
@@ -1473,8 +1468,7 @@ export default async function LandingPage() {
       price: "0",
       priceCurrency: "BRL",
     },
-    description:
-      "Combat tracker gratuito para D&D 5e. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores.",
+    description: t("meta_description"),
     featureList: [
       "Rastreador de iniciativa em tempo real",
       "Gerenciamento de HP e condições",
@@ -1491,42 +1485,42 @@ export default async function LandingPage() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "O que é um combat tracker para D&D 5e?",
+        name: t("faq_1_question"),
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Um combat tracker é uma ferramenta digital que ajuda o mestre de RPG a gerenciar combates — rastreando iniciativa, HP, condições e turnos de cada personagem e monstro. O Pocket DM faz tudo isso em tempo real no celular dos jogadores.",
+          text: t("faq_1_answer"),
         },
       },
       {
         "@type": "Question",
-        name: "O Pocket DM é gratuito?",
+        name: t("faq_2_question"),
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Sim! O Pocket DM tem um modo gratuito completo que permite gerenciar combates, usar o bestiário SRD completo (incluindo monstros do compêndio Monster a Day) e o catálogo completo de magias SRD. Sem necessidade de cadastro para começar.",
+          text: t("faq_2_answer"),
         },
       },
       {
         "@type": "Question",
-        name: "Preciso instalar alguma coisa?",
+        name: t("faq_3_question"),
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Não. O Pocket DM funciona direto no navegador do celular ou computador. O mestre compartilha um link e os jogadores acessam instantaneamente — sem app, sem download, sem cadastro.",
+          text: t("faq_3_answer"),
         },
       },
       {
         "@type": "Question",
-        name: "O Pocket DM funciona para mesa presencial?",
+        name: t("faq_4_question"),
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Sim! O Pocket DM foi projetado especificamente para mesas presenciais. O mestre gerencia o combate na tela enquanto cada jogador acompanha no próprio celular em tempo real.",
+          text: t("faq_4_answer"),
         },
       },
       {
         "@type": "Question",
-        name: "Quais sistemas de RPG são suportados?",
+        name: t("faq_5_question"),
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Atualmente o Pocket DM é otimizado para D&D 5e (Dungeons & Dragons 5ª Edição), incluindo bestiário SRD completo, monstros do compêndio Monster a Day, magias e regras de condições.",
+          text: t("faq_5_answer"),
         },
       },
     ],
@@ -1554,12 +1548,12 @@ export default async function LandingPage() {
         brand="Pocket DM"
         brandHref="/"
         links={[
-          { href: "#features", label: "Features" },
-          { href: "#como-funciona", label: "Como Funciona" },
-          { href: "#comparativo", label: "Comparativo" },
-          { href: "#compendio", label: "Compêndio" },
-          { href: "#alem-do-combate", label: "Metodologia" },
-          { href: "#precos", label: "Preços" },
+          { href: "#features", label: t("nav_features") },
+          { href: "#como-funciona", label: t("nav_how_it_works") },
+          { href: "#comparativo", label: t("nav_comparison") },
+          { href: "#compendio", label: t("nav_compendium") },
+          { href: "#alem-do-combate", label: t("nav_methodology") },
+          { href: "#precos", label: t("nav_pricing") },
         ]}
         rightSlot={
           isLoggedIn ? (
@@ -1571,35 +1565,35 @@ export default async function LandingPage() {
                 className="group text-muted-foreground hover:text-foreground transition-all duration-[200ms] min-h-[44px] inline-flex items-center gap-1.5 text-sm"
               >
                 <UserIcon className="w-3.5 h-3.5 opacity-60 group-hover:opacity-90 transition-opacity duration-200" />
-                Login
+                {t("nav_login")}
               </Link>
               <Link
                 href="/auth/sign-up"
                 className="group bg-gold text-surface-primary font-semibold px-4 rounded-lg min-h-[44px] inline-flex items-center gap-1.5 text-sm hover:shadow-gold-glow hover:-translate-y-[1px] active:translate-y-0 transition-all duration-[200ms]"
               >
                 <SparkleIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:scale-125 transition-all duration-200" />
-                Começar Grátis
+                {t("cta_primary")}
               </Link>
             </>
           )
         }
       />
 
-      <HeroSection isLoggedIn={isLoggedIn} />
+      <HeroSection isLoggedIn={isLoggedIn} t={t} />
       <SectionDivider />
-      <FeaturesSection />
+      <FeaturesSection t={t} />
       <SectionDivider />
-      <HowItWorksSection isLoggedIn={isLoggedIn} />
+      <HowItWorksSection isLoggedIn={isLoggedIn} t={t} />
       <SectionDivider />
-      <ComparisonSection />
+      <ComparisonSection t={t} />
       <SectionDivider />
-      <CompendiumShowcaseSection />
-      <SocialProofSection />
+      <CompendiumShowcaseSection t={t} />
+      <SocialProofSection t={t} />
       <SectionDivider />
-      <BeyondCombatSection />
+      <BeyondCombatSection t={t} />
       <SectionDivider />
       <LpPricingSection isLoggedIn={isLoggedIn} />
-      <FinalCtaSection isLoggedIn={isLoggedIn} />
+      <FinalCtaSection isLoggedIn={isLoggedIn} t={t} />
 
       <LandingPageTracker />
       <Footer />

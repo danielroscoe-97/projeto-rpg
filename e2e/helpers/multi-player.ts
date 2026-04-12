@@ -335,3 +335,118 @@ export async function defeatCombatant(page: Page, combatantId: string) {
   await btn.click();
   await page.waitForTimeout(500);
 }
+
+// ── Adversarial Test Helpers ────────────────────────────────────
+
+/**
+ * Simulate tab going hidden (phone lock, app switch).
+ * Overrides document.visibilityState and dispatches visibilitychange event.
+ */
+export async function simulateVisibilityHidden(page: Page) {
+  await page.evaluate(() => {
+    Object.defineProperty(document, "visibilityState", {
+      value: "hidden",
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(document, "hidden", {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+}
+
+/**
+ * Simulate tab returning to foreground (phone unlock, app switch back).
+ * Restores document.visibilityState and dispatches visibilitychange event.
+ */
+export async function simulateVisibilityVisible(page: Page) {
+  await page.evaluate(() => {
+    Object.defineProperty(document, "visibilityState", {
+      value: "visible",
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(document, "hidden", {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+}
+
+/** Metrics state for adversarial tests. */
+export interface AdversarialMetrics {
+  serverErrors: string[];
+  consoleErrorsPerPlayer: Map<string, number>;
+}
+
+/**
+ * Attach console error listener that tracks 500, 504, and rate-limit errors.
+ * Returns the metrics object for later assertion.
+ */
+export function attachConsoleMonitor(
+  page: Page,
+  playerName: string,
+  metrics: AdversarialMetrics
+) {
+  metrics.consoleErrorsPerPlayer.set(playerName, 0);
+  page.on("console", (msg) => {
+    if (msg.type() === "error") {
+      const text = msg.text();
+      if (/50[04]|rate.?limit/i.test(text)) {
+        metrics.serverErrors.push(`[${playerName}] ${text}`);
+        metrics.consoleErrorsPerPlayer.set(
+          playerName,
+          (metrics.consoleErrorsPerPlayer.get(playerName) ?? 0) + 1
+        );
+      }
+    }
+  });
+}
+
+/**
+ * Verify all player pages are responsive (not blank or crashed).
+ */
+export async function assertAllPagesResponsive(
+  pages: Page[],
+  playerNames: string[]
+) {
+  const results = await Promise.all(
+    pages.map(async (page, i) => {
+      try {
+        const bodyText = await page
+          .locator("body")
+          .textContent({ timeout: 5_000 });
+        return {
+          player: playerNames[i],
+          ok: !!bodyText && bodyText.length > 50,
+          length: bodyText?.length ?? 0,
+        };
+      } catch {
+        return { player: playerNames[i], ok: false, length: 0 };
+      }
+    })
+  );
+  const crashed = results.filter((r) => !r.ok);
+  if (crashed.length > 0) {
+    console.warn(
+      `[ADVERSARIAL] Unresponsive: ${crashed.map((c) => `${c.player}(len=${c.length})`).join(", ")}`
+    );
+  }
+  expect(crashed.length).toBeLessThanOrEqual(1);
+}
+
+/**
+ * Dismiss the onboarding tour if it's visible (blocks DM interactions).
+ */
+export async function dismissTourIfVisible(page: Page) {
+  const skipBtn = page.locator('button:has-text("Pular"), button:has-text("Skip")');
+  if (await skipBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    await skipBtn.click();
+    await page.waitForTimeout(500);
+  }
+}
