@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { BLOG_POSTS, BLOG_CATEGORIES, getPostBySlug } from "@/lib/blog/posts";
-import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
+import { BlogNavbar } from "@/components/blog/BlogNavbar";
 import {
   BlogPost1,
   BlogPost2,
@@ -32,6 +31,7 @@ import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
 import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
 import { CATEGORY_CTA } from "@/lib/blog/feature-links";
 import { EbookCTA } from "@/components/blog/EbookCTA";
+
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
@@ -173,17 +173,7 @@ export default async function BlogPostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
       />
-      <Navbar
-        brand="Pocket DM"
-        brandHref="/"
-        links={[
-          { href: "/blog", label: "Blog" },
-          { href: "/monstros", label: "Monstros" },
-          { href: "/magias", label: "Magias" },
-          { href: "/pricing", label: "Preços" },
-        ]}
-        rightSlot={<BlogNavAuthSlot />}
-      />
+      <BlogNavbar />
 
       <main className="flex-1 pt-[72px]">
         {/* Hero header with glow */}
@@ -331,7 +321,7 @@ export default async function BlogPostPage({
                       <p className="text-sm text-foreground/90 group-hover:text-gold transition-colors leading-snug mt-1.5 line-clamp-2">
                         {rp.title}
                       </p>
-                      <p className="text-[11px] text-foreground/30 mt-1.5">
+                      <p className="text-[11px] text-foreground/45 mt-1.5">
                         {rp.readingTime}
                       </p>
                     </Link>

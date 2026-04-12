@@ -13,6 +13,7 @@ test.describe("P2 — Soundboard", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Monster", hp: "30", ac: "14", init: "10" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {
@@ -43,6 +44,7 @@ test.describe("P2 — Soundboard", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Goblin", hp: "7", ac: "15", init: "10" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {
@@ -88,6 +90,7 @@ test.describe("P2 — Soundboard", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Skeleton", hp: "13", ac: "13", init: "5" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {

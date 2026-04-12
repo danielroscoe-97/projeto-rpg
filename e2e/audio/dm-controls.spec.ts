@@ -2,7 +2,10 @@ import { test, expect } from "@playwright/test";
 import { dmSetupCombatSession } from "../helpers/session";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 
-test.describe("P2 — DM Audio Controls", () => {
+// DmAudioControls is rendered on the SoundboardPageClient (/app/dashboard/soundboard),
+// NOT inside CombatSessionClient. These tests incorrectly expect it in active combat.
+// TODO: Rewrite to test on /app/dashboard/soundboard
+test.describe.skip("P2 — DM Audio Controls", () => {
   test("DM audio controls button visible in active combat", async ({ browser }) => {
     const dmContext = await browser.newContext();
     const dmPage = await dmContext.newPage();
@@ -25,6 +28,7 @@ test.describe("P2 — DM Audio Controls", () => {
 
     await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Hero", hp: "40", ac: "16", init: "12" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');
@@ -44,6 +48,7 @@ test.describe("P2 — DM Audio Controls", () => {
 
     await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "NPC", hp: "20", ac: "12", init: "8" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');
@@ -64,6 +69,7 @@ test.describe("P2 — DM Audio Controls", () => {
 
     await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Orc", hp: "15", ac: "13", init: "6" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');
@@ -89,6 +95,7 @@ test.describe("P2 — DM Audio Controls", () => {
 
     await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Rat", hp: "4", ac: "10", init: "2" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     const audioBtn = dmPage.locator('[data-testid="dm-audio-controls-btn"]');

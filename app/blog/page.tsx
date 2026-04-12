@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { BlogGrid } from "@/components/blog/BlogGrid";
-import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
+import { BlogNavbar } from "@/components/blog/BlogNavbar";
 
 export const metadata: Metadata = {
   title: "Blog — Dicas para Mestres de D&D 5e",
@@ -26,31 +25,21 @@ export const metadata: Metadata = {
 export default function BlogIndexPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar
-        brand="Pocket DM"
-        brandHref="/"
-        links={[
-          { href: "/blog", label: "Blog" },
-          { href: "/monstros", label: "Monstros" },
-          { href: "/magias", label: "Magias" },
-          { href: "/pricing", label: "Preços" },
-        ]}
-        rightSlot={<BlogNavAuthSlot />}
-      />
+      <BlogNavbar />
 
       <main className="flex-1 pt-[72px]">
-        {/* Header — minimal Notion-style */}
-        <div className="max-w-5xl mx-auto px-6 pt-16 pb-2">
+        {/* Header + Quick Nav */}
+        <div className="max-w-6xl mx-auto px-6 pt-14 pb-2">
           <h1 className="font-display text-4xl md:text-5xl text-foreground tracking-tight mb-3">
             Blog
           </h1>
-          <p className="text-foreground/40 max-w-lg text-[15px] leading-relaxed">
+          <p className="text-foreground/60 max-w-lg text-lg leading-relaxed">
             Guias, tutoriais e referências para mestres de D&D 5e.
           </p>
         </div>
 
-        {/* Blog grid with filters */}
-        <div className="max-w-5xl mx-auto px-6 pb-24">
+        {/* Blog grid */}
+        <div className="max-w-6xl mx-auto px-6 pb-24">
           <BlogGrid posts={BLOG_POSTS} />
         </div>
       </main>

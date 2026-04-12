@@ -377,7 +377,14 @@ test.describe.serial("Multi-player combat — real session simulation", () => {
     p2Context = result.context;
     p2Page = result.page;
 
-    // Player should auto-reconnect via localStorage → player-view
+    // The lobby may show a "Voltar" (Return) button for the recognized player.
+    // Click it if visible to complete the 1-click reconnection.
+    const returnBtn = p2Page.locator("button").filter({ hasText: /Voltar|Return/i }).first();
+    if (await returnBtn.isVisible({ timeout: 10_000 }).catch(() => false)) {
+      await returnBtn.click();
+    }
+
+    // Player should now see the player-view (auto or 1-click reconnect)
     await expect(p2Page.locator('[data-testid="player-view"]')).toBeVisible({ timeout: 45_000 });
     await expect(p2Page.locator('[data-testid="player-initiative-board"]')).toBeVisible({ timeout: EXTENDED_WAIT });
     // Player 1 unaffected
@@ -445,11 +452,17 @@ test.describe.serial("Multi-player combat — real session simulation", () => {
     p1Context = result.context;
     p1Page = result.page;
 
-    // Player should see lobby form (no stored identity to reconnect from)
+    // Player should see lobby form, return button, or player-view
     const lobbyOrView = p1Page.locator(
       '[data-testid="lobby-name"], [data-testid="player-view"]'
     );
-    await expect(lobbyOrView.first()).toBeVisible({ timeout: 45_000 });
+    const returnBtn = p1Page.locator("button").filter({ hasText: /Voltar|Return/i }).first();
+    await expect(lobbyOrView.or(returnBtn).first()).toBeVisible({ timeout: 45_000 });
+
+    // If "Voltar" (Return) button visible, click it for 1-click reconnect
+    if (await returnBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await returnBtn.click();
+    }
 
     // If lobby form appeared, re-register
     const lobbyName = p1Page.locator('[data-testid="lobby-name"]');

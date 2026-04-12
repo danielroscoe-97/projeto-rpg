@@ -12,6 +12,7 @@ test.describe("Audio Favorites — Player", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Goblin", hp: "7", ac: "15", init: "5" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {
@@ -100,6 +101,7 @@ test.describe("Audio Favorites — Player", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Skeleton", hp: "13", ac: "13", init: "5" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {
@@ -148,6 +150,7 @@ test.describe("Audio Favorites — DM", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Dragon", hp: "200", ac: "18", init: "20" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {
@@ -184,6 +187,7 @@ test.describe("Audio Favorites — DM", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Orc", hp: "15", ac: "13", init: "8" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {
@@ -239,6 +243,7 @@ test.describe("Audio Favorites — DM", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Wolf", hp: "11", ac: "13", init: "12" },
+      { name: "Dummy", hp: "1", ac: "10", init: "1" },
     ]);
 
     if (!token) {
