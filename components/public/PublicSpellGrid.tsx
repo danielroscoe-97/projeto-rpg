@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { FilterChips } from "@/components/public/shared/FilterChips";
 import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
 import { CollapseSection } from "@/components/public/shared/CollapseSection";
@@ -141,7 +142,7 @@ export function PublicSpellGrid({ spells, basePath = "/spells", locale = "en", l
     langPt = "Português",
     editionAll = "Both",
   } = labels;
-  const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
+  const [descLang, setDescLang] = useLocalePreference(locale);
   const [editionFilter, setEditionFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<number | null>(null);

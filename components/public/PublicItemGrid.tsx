@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
 import { CollapseSection } from "@/components/public/shared/CollapseSection";
 
@@ -171,7 +172,7 @@ interface PublicItemGridProps {
 /* ── Component ── */
 
 export function PublicItemGrid({ items, locale = "en" }: PublicItemGridProps) {
-  const [descLang, setDescLang] = useState<Locale>(locale);
+  const [descLang, setDescLang] = useLocalePreference(locale);
   const l = LABELS[descLang];
 
   const [query, setQuery] = useState("");

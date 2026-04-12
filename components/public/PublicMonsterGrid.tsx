@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, type MouseEvent } from "react";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import Link from "next/link";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
@@ -73,7 +74,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
     monsters: monstersLabel = "monsters",
     filters: filtersLabel = "Filters",
   } = labels;
-  const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
+  const [descLang, setDescLang] = useLocalePreference(locale);
   const isPt = descLang === "pt-BR";
   const displayName = (m: MonsterEntry) => cleanDisplayName(isPt ? (m.namePt ?? m.name) : (m.nameEn ?? m.name));
   const subtitleName = (m: MonsterEntry) => {

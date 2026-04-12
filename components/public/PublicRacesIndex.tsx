@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { SrdInitialCircle, SrdIconRuler, SrdIconBoot } from "./SrdIcons";
 import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { FilterChips } from "@/components/public/shared/FilterChips";
 import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
 import { CollapseSection } from "@/components/public/shared/CollapseSection";
@@ -213,7 +214,7 @@ const LABELS = {
 export function PublicRacesIndex({ locale = "en", linkPrefix }: PublicRacesIndexProps) {
   const [filter, setFilter] = useState<AbilityFilter>("all");
   const [query, setQuery] = useState("");
-  const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
+  const [descLang, setDescLang] = useLocalePreference(locale);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const isPt = descLang === "pt-BR";

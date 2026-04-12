@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
 import {
   SrdIconEye,
@@ -200,7 +201,7 @@ export function PublicConditionsGrid({ conditions, locale = "en" }: PublicCondit
   const [filter, setFilter] = useState<CategoryFilter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
+  const [descLang, setDescLang] = useLocalePreference(locale);
   const L = LABELS[locale];
 
   // Filter only core conditions (not diseases/statuses)

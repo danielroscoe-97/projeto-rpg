@@ -1888,5 +1888,593 @@
     "name_pt": "Zona da Verdade",
     "description": "Você cria uma zona mágica que protege contra mentiras em uma esfera de 15-foot de raio centrada em um ponto à sua escolha dentro do alcance. Até a magia terminar, uma criatura que entrar na área da magia pela primeira vez em um turno ou começar seu turno nela deve realizar um saving throw de Carisma. Em uma falha, a criatura não pode proferir uma mentira deliberada enquanto estiver no raio. Você sabe se cada criatura teve sucesso ou falhou no saving throw.\n\nUma criatura afetada está ciente da magia e pode, portanto, evitar responder perguntas às quais normalmente responderia com uma mentira. Tal criatura pode permanecer evasiva em suas respostas desde que se mantenha dentro dos limites da verdade.",
     "higher_levels": null
+  },
+  "abi-dalzims-horrid-wilting": {
+    "name_pt": "Abi-Dalzim's Horrid Wilting"
+  },
+  "absorb-elements": {
+    "name_pt": "Absorb Elements"
+  },
+  "aganazzars-scorcher": {
+    "name_pt": "Scorcher de Aganazzar"
+  },
+  "air-bubble": {
+    "name_pt": "Ar Bubble"
+  },
+  "alustriels-mooncloak": {
+    "name_pt": "Mooncloak de Alustriel"
+  },
+  "antagonize": {
+    "name_pt": "Antagonize"
+  },
+  "ashardalons-stride": {
+    "name_pt": "Stride de Ashardalon"
+  },
+  "backlash": {
+    "name_pt": "Backlash"
+  },
+  "beast-bond": {
+    "name_pt": "Besta Bond"
+  },
+  "blade-of-disaster": {
+    "name_pt": "Lâmina de Disaster"
+  },
+  "bones-of-the-earth": {
+    "name_pt": "Ossos de o Terra"
+  },
+  "booming-blade": {
+    "name_pt": "Booming Lâmina"
+  },
+  "borrowed-knowledge": {
+    "name_pt": "Borrowed Knowledge"
+  },
+  "cacophonic-shield": {
+    "name_pt": "Cacophonic Escudo"
+  },
+  "catapult": {
+    "name_pt": "Catapult"
+  },
+  "catnap": {
+    "name_pt": "Catnap"
+  },
+  "cause-fear": {
+    "name_pt": "Cause Medo"
+  },
+  "ceremony": {
+    "name_pt": "Ceremony"
+  },
+  "chaos-bolt": {
+    "name_pt": "Caos Raio"
+  },
+  "charm-monster": {
+    "name_pt": "Encantar Monster"
+  },
+  "conjure-constructs": {
+    "name_pt": "Conjurar Construtos"
+  },
+  "control-flames": {
+    "name_pt": "Control Chamas"
+  },
+  "control-winds": {
+    "name_pt": "Control Winds"
+  },
+  "create-bonfire": {
+    "name_pt": "Criar Bonfire"
+  },
+  "create-homunculus": {
+    "name_pt": "Criar Homunculus"
+  },
+  "create-magen": {
+    "name_pt": "Criar Magen"
+  },
+  "create-spelljamming-helm": {
+    "name_pt": "Criar Spelljamming Helm"
+  },
+  "crown-of-stars": {
+    "name_pt": "Coroa de Stars"
+  },
+  "danse-macabre": {
+    "name_pt": "Danse Macabre"
+  },
+  "dark-star": {
+    "name_pt": "Dark Star"
+  },
+  "dawn": {
+    "name_pt": "Dawn"
+  },
+  "death-armor": {
+    "name_pt": "Morte Armadura"
+  },
+  "deryans-helpful-homunculi": {
+    "name_pt": "Helpful Homunculi de Deryan"
+  },
+  "dirge": {
+    "name_pt": "Dirge"
+  },
+  "distort-value": {
+    "name_pt": "Distort Value"
+  },
+  "doomtide": {
+    "name_pt": "Doomtide"
+  },
+  "draconic-transformation": {
+    "name_pt": "Draconic Transformation"
+  },
+  "dragons-breath": {
+    "name_pt": "Sopro de Dragon"
+  },
+  "dream-of-the-blue-veil": {
+    "name_pt": "Sonho de o Blue Véu"
+  },
+  "druid-grove": {
+    "name_pt": "Druid Bosque"
+  },
+  "dust-devil": {
+    "name_pt": "Poeira Diabo"
+  },
+  "earth-tremor": {
+    "name_pt": "Terra Tremor"
+  },
+  "earthbind": {
+    "name_pt": "Earthbind"
+  },
+  "elemental-bane": {
+    "name_pt": "Elemental Perdição"
+  },
+  "elminsters-effulgent-spheres": {
+    "name_pt": "Effulgent Spheres de Elminster"
+  },
+  "elminsters-elusion": {
+    "name_pt": "Elusion de Elminster"
+  },
+  "encode-thoughts": {
+    "name_pt": "Encode Thoughts"
+  },
+  "enemies-abound": {
+    "name_pt": "Enemies Abound"
+  },
+  "enervation": {
+    "name_pt": "Enervation"
+  },
+  "erupting-earth": {
+    "name_pt": "Erupting Terra"
+  },
+  "far-step": {
+    "name_pt": "Far Step"
+  },
+  "fast-friends": {
+    "name_pt": "Fast Friends"
+  },
+  "find-greater-steed": {
+    "name_pt": "Encontrar Maior Corcel"
+  },
+  "fizbans-platinum-shield": {
+    "name_pt": "Platinum Escudo de Fizban"
+  },
+  "flame-arrows": {
+    "name_pt": "Chama Arrows"
+  },
+  "flock-of-familiars": {
+    "name_pt": "Flock de Familiars"
+  },
+  "fortunes-favor": {
+    "name_pt": "Favor de Fortune"
+  },
+  "frost-fingers": {
+    "name_pt": "Gelo Fingers"
+  },
+  "frostbite": {
+    "name_pt": "Frostbite"
+  },
+  "galders-speedy-courier": {
+    "name_pt": "Speedy Courier de Galder"
+  },
+  "galders-tower": {
+    "name_pt": "Tower de Galder"
+  },
+  "gate-seal": {
+    "name_pt": "Portal Selo"
+  },
+  "gift-of-alacrity": {
+    "name_pt": "Gift de Alacrity"
+  },
+  "gift-of-gab": {
+    "name_pt": "Gift de Gab"
+  },
+  "gravity-fissure": {
+    "name_pt": "Gravity Fissure"
+  },
+  "gravity-sinkhole": {
+    "name_pt": "Gravity Sinkhole"
+  },
+  "green-flame-blade": {
+    "name_pt": "Green-Flame Lâmina"
+  },
+  "guardian-of-nature": {
+    "name_pt": "Guardião de Nature"
+  },
+  "gust": {
+    "name_pt": "Gust"
+  },
+  "healing-spirit": {
+    "name_pt": "Cura Espírito"
+  },
+  "holy-star-of-mystra": {
+    "name_pt": "Sagrado Star de Mystra"
+  },
+  "holy-weapon": {
+    "name_pt": "Sagrado Weapon"
+  },
+  "homunculus-servant": {
+    "name_pt": "Homunculus Servo"
+  },
+  "ice-knife": {
+    "name_pt": "Gelo Knife"
+  },
+  "illusory-dragon": {
+    "name_pt": "Illusory Dragão"
+  },
+  "immolation": {
+    "name_pt": "Immolation"
+  },
+  "immovable-object": {
+    "name_pt": "Immovable Object"
+  },
+  "incite-greed": {
+    "name_pt": "Incite Greed"
+  },
+  "infernal-calling": {
+    "name_pt": "Infernal Calling"
+  },
+  "infestation": {
+    "name_pt": "Infestation"
+  },
+  "intellect-fortress": {
+    "name_pt": "Intellect Fortress"
+  },
+  "investiture-of-flame": {
+    "name_pt": "Investiture de Chama"
+  },
+  "investiture-of-ice": {
+    "name_pt": "Investiture de Gelo"
+  },
+  "investiture-of-stone": {
+    "name_pt": "Investiture de Pedra"
+  },
+  "investiture-of-wind": {
+    "name_pt": "Investiture de Vento"
+  },
+  "invulnerability": {
+    "name_pt": "Invulnerability"
+  },
+  "jims-glowing-coin": {
+    "name_pt": "Glowing Coin de Jim"
+  },
+  "jims-magic-missile": {
+    "name_pt": "Mágico Míssil de Jim"
+  },
+  "kinetic-jaunt": {
+    "name_pt": "Kinetic Jaunt"
+  },
+  "laerals-silver-lance": {
+    "name_pt": "Prata Lance de Laeral"
+  },
+  "life-transference": {
+    "name_pt": "Vida Transference"
+  },
+  "lightning-lure": {
+    "name_pt": "Relâmpago Lure"
+  },
+  "linked-glyphs": {
+    "name_pt": "Linked Glyphs"
+  },
+  "maddening-darkness": {
+    "name_pt": "Maddening Escuridão"
+  },
+  "maelstrom": {
+    "name_pt": "Maelstrom"
+  },
+  "magic-stone": {
+    "name_pt": "Mágico Pedra"
+  },
+  "magnify-gravity": {
+    "name_pt": "Magnify Gravity"
+  },
+  "mass-polymorph": {
+    "name_pt": "Polymorph em Massa"
+  },
+  "maximilians-earthen-grasp": {
+    "name_pt": "Earthen Grasp de Maximilian"
+  },
+  "melfs-minute-meteors": {
+    "name_pt": "Minute Meteors de Melf"
+  },
+  "mental-prison": {
+    "name_pt": "Mental Prisão"
+  },
+  "mighty-fortress": {
+    "name_pt": "Mighty Fortress"
+  },
+  "mind-sliver": {
+    "name_pt": "Mente Sliver"
+  },
+  "mind-spike": {
+    "name_pt": "Mente Spike"
+  },
+  "mold-earth": {
+    "name_pt": "Mold Terra"
+  },
+  "motivational-speech": {
+    "name_pt": "Motivational Speech"
+  },
+  "nathairs-mischief": {
+    "name_pt": "Mischief de Nathair"
+  },
+  "negative-energy-flood": {
+    "name_pt": "Negative Energy Flood"
+  },
+  "power-word-pain": {
+    "name_pt": "Poder Palavra Pain"
+  },
+  "primal-savagery": {
+    "name_pt": "Primal Savagery"
+  },
+  "primordial-ward": {
+    "name_pt": "Primordial Proteção"
+  },
+  "psychic-scream": {
+    "name_pt": "Psíquico Scream"
+  },
+  "pulse-wave": {
+    "name_pt": "Pulse Onda"
+  },
+  "pyrotechnics": {
+    "name_pt": "Pyrotechnics"
+  },
+  "raulothims-psychic-lance": {
+    "name_pt": "Psíquico Lance de Raulothim"
+  },
+  "ravenous-void": {
+    "name_pt": "Ravenous Void"
+  },
+  "reality-break": {
+    "name_pt": "Reality Break"
+  },
+  "rimes-binding-ice": {
+    "name_pt": "Binding Gelo de Rime"
+  },
+  "sapping-sting": {
+    "name_pt": "Sapping Sting"
+  },
+  "scatter": {
+    "name_pt": "Scatter"
+  },
+  "shadow-blade": {
+    "name_pt": "Sombra Lâmina"
+  },
+  "shadow-of-moil": {
+    "name_pt": "Sombra de Moil"
+  },
+  "shape-water": {
+    "name_pt": "Shape Água"
+  },
+  "sickening-radiance": {
+    "name_pt": "Sickening Radiance"
+  },
+  "silvery-barbs": {
+    "name_pt": "Silvery Barbs"
+  },
+  "simbuls-synostodweomer": {
+    "name_pt": "Synostodweomer de Simbul"
+  },
+  "skill-empowerment": {
+    "name_pt": "Skill Empowerment"
+  },
+  "skywrite": {
+    "name_pt": "Skywrite"
+  },
+  "snare": {
+    "name_pt": "Snare"
+  },
+  "snillocs-snowball-swarm": {
+    "name_pt": "Snowball Swarm de Snilloc"
+  },
+  "songals-elemental-suffusion": {
+    "name_pt": "Elemental Suffusion de Songal"
+  },
+  "soul-cage": {
+    "name_pt": "Alma Gaiola"
+  },
+  "spellfire-flare": {
+    "name_pt": "Spellfire Flare"
+  },
+  "spellfire-storm": {
+    "name_pt": "Spellfire Tempestade"
+  },
+  "spirit-of-death": {
+    "name_pt": "Espírito de Morte"
+  },
+  "spirit-shroud": {
+    "name_pt": "Espírito Shroud"
+  },
+  "spray-of-cards": {
+    "name_pt": "Spray de Cards"
+  },
+  "steel-wind-strike": {
+    "name_pt": "Aço Vento Strike"
+  },
+  "storm-sphere": {
+    "name_pt": "Tempestade Esfera"
+  },
+  "summon-aberration": {
+    "name_pt": "Invocar Aberração"
+  },
+  "summon-beast": {
+    "name_pt": "Invocar Besta"
+  },
+  "summon-celestial": {
+    "name_pt": "Invocar Celestial"
+  },
+  "summon-construct": {
+    "name_pt": "Invocar Construto"
+  },
+  "summon-draconic-spirit": {
+    "name_pt": "Invocar Draconic Espírito"
+  },
+  "summon-elemental": {
+    "name_pt": "Invocar Elemental"
+  },
+  "summon-fey": {
+    "name_pt": "Invocar Fada"
+  },
+  "summon-fiend": {
+    "name_pt": "Invocar Demônio"
+  },
+  "summon-greater-demon": {
+    "name_pt": "Invocar Maior Demônio"
+  },
+  "summon-lesser-demons": {
+    "name_pt": "Invocar Menor Demons"
+  },
+  "summon-shadowspawn": {
+    "name_pt": "Invocar Shadowspawn"
+  },
+  "summon-undead": {
+    "name_pt": "Invocar Morto-vivo"
+  },
+  "sword-burst": {
+    "name_pt": "Sword Explosão"
+  },
+  "sylun-s-viper": {
+    "name_pt": "Syluné's Viper"
+  },
+  "synaptic-static": {
+    "name_pt": "Synaptic Static"
+  },
+  "tashas-caustic-brew": {
+    "name_pt": "Caustic Brew de Tasha"
+  },
+  "tashas-mind-whip": {
+    "name_pt": "Mente Whip de Tasha"
+  },
+  "tashas-otherworldly-guise": {
+    "name_pt": "Otherworldly Guise de Tasha"
+  },
+  "temple-of-the-gods": {
+    "name_pt": "Temple de o Gods"
+  },
+  "temporal-shunt": {
+    "name_pt": "Temporal Shunt"
+  },
+  "tensers-transformation": {
+    "name_pt": "Transformation de Tenser"
+  },
+  "tether-essence": {
+    "name_pt": "Tether Essence"
+  },
+  "thunder-step": {
+    "name_pt": "Trovão Step"
+  },
+  "thunderclap": {
+    "name_pt": "Thunderclap"
+  },
+  "tidal-wave": {
+    "name_pt": "Tidal Onda"
+  },
+  "time-ravage": {
+    "name_pt": "Tempo Ravage"
+  },
+  "tiny-servant": {
+    "name_pt": "Minúsculo Servo"
+  },
+  "toll-the-dead": {
+    "name_pt": "Toll o Dead"
+  },
+  "transmute-rock": {
+    "name_pt": "Transmute Rocha"
+  },
+  "vitriolic-sphere": {
+    "name_pt": "Vitriolic Esfera"
+  },
+  "vortex-warp": {
+    "name_pt": "Vórtice Warp"
+  },
+  "wall-of-light": {
+    "name_pt": "Muralha de Luz"
+  },
+  "wall-of-sand": {
+    "name_pt": "Muralha de Areia"
+  },
+  "wall-of-water": {
+    "name_pt": "Muralha de Água"
+  },
+  "wardaway": {
+    "name_pt": "Wardaway"
+  },
+  "warding-wind": {
+    "name_pt": "Warding Vento"
+  },
+  "warp-sense": {
+    "name_pt": "Warp Sense"
+  },
+  "watery-sphere": {
+    "name_pt": "Watery Esfera"
+  },
+  "whirlwind": {
+    "name_pt": "Redemoinho"
+  },
+  "wither-and-bloom": {
+    "name_pt": "Wither e Bloom"
+  },
+  "word-of-radiance": {
+    "name_pt": "Palavra de Radiance"
+  },
+  "wrath-of-nature": {
+    "name_pt": "Wrath de Nature"
+  },
+  "wristpocket": {
+    "name_pt": "Wristpocket"
+  },
+  "zephyr-strike": {
+    "name_pt": "Zephyr Strike"
+  },
+  "arcane-vigor": {
+    "name_pt": "Arcano Vigor"
+  },
+  "befuddlement": {
+    "name_pt": "Befuddlement"
+  },
+  "divine-smite": {
+    "name_pt": "Divino Smite"
+  },
+  "elementalism": {
+    "name_pt": "Elementalism"
+  },
+  "fount-of-moonlight": {
+    "name_pt": "Fount de Moonlight"
+  },
+  "jallarzis-storm-of-radiance": {
+    "name_pt": "Tempestade de Radiance de Jallarzi"
+  },
+  "power-word-fortify": {
+    "name_pt": "Poder Palavra Fortify"
+  },
+  "shining-smite": {
+    "name_pt": "Shining Smite"
+  },
+  "sorcerous-burst": {
+    "name_pt": "Sorcerous Explosão"
+  },
+  "starry-wisp": {
+    "name_pt": "Starry Wisp"
+  },
+  "summon-dragon": {
+    "name_pt": "Invocar Dragão"
+  },
+  "tashas-bubbling-cauldron": {
+    "name_pt": "Bubbling Cauldron de Tasha"
+  },
+  "yolandes-regal-presence": {
+    "name_pt": "Regal Presence de Yolande"
   }
 }

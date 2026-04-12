@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+
 type Locale = "en" | "pt-BR";
 
 interface LanguageToggleProps {
@@ -8,7 +10,19 @@ interface LanguageToggleProps {
   size?: "sm" | "md";
 }
 
+/**
+ * Language toggle button (EN / PT).
+ * Persists the choice to localStorage + NEXT_LOCALE cookie
+ * so all pages remember the preference.
+ */
 export function LanguageToggle({ locale, onToggle, size = "sm" }: LanguageToggleProps) {
+  const [, persist] = useLocalePreference(locale);
+
+  const handleToggle = (l: Locale) => {
+    persist(l);   // save to localStorage + cookie
+    onToggle(l);  // update parent state
+  };
+
   const isSm = size === "sm";
   const px = isSm ? "px-2" : "px-3";
   const py = isSm ? "py-0.5" : "py-1.5";
@@ -18,7 +32,7 @@ export function LanguageToggle({ locale, onToggle, size = "sm" }: LanguageToggle
     <div className="flex items-center rounded-md border border-white/[0.08] overflow-hidden">
       <button
         type="button"
-        onClick={() => onToggle("en")}
+        onClick={() => handleToggle("en")}
         className={`${px} ${py} ${text} font-medium transition-colors ${
           locale === "en"
             ? "bg-gold text-gray-950"
@@ -29,7 +43,7 @@ export function LanguageToggle({ locale, onToggle, size = "sm" }: LanguageToggle
       </button>
       <button
         type="button"
-        onClick={() => onToggle("pt-BR")}
+        onClick={() => handleToggle("pt-BR")}
         className={`${px} ${py} ${text} font-medium transition-colors ${
           locale === "pt-BR"
             ? "bg-gold text-gray-950"

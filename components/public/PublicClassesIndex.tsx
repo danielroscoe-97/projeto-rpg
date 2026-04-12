@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { SrdClass } from "@/lib/types/srd-class";
 import { SrdClassIcon } from "./SrdIcons";
 import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { FilterChips } from "@/components/public/shared/FilterChips";
 import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
 import { CollapseSection } from "@/components/public/shared/CollapseSection";
@@ -75,7 +76,7 @@ interface PublicClassesIndexProps {
 export function PublicClassesIndex({ classes, locale = "en", linkPrefix = "/classes" }: PublicClassesIndexProps) {
   const [filter, setFilter] = useState<RoleFilter>("all");
   const [query, setQuery] = useState("");
-  const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
+  const [descLang, setDescLang] = useLocalePreference(locale);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const isPt = descLang === "pt-BR";
