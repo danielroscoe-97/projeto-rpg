@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
@@ -307,33 +308,44 @@ export default async function BlogPostPage({
                     <Link
                       key={rp.slug}
                       href={`/blog/${rp.slug}`}
-                      className="group rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300 overflow-hidden"
+                      className="group rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-gold/20 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden"
                     >
-                      {rp.image && (
-                        <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/20">
-                          <img
+                      <div className="relative w-full aspect-[16/9] overflow-hidden">
+                        {rp.image ? (
+                          <Image
                             src={rp.image}
                             alt={rp.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            sizes="(max-width: 640px) 100vw, 33vw"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                          <span className={`absolute top-3 left-3 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                            rp.category === "tutorial" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
-                            rp.category === "guia" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                            rp.category === "lista" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" :
-                            rp.category === "comparativo" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
-                            rp.category === "build" ? "bg-rose-500/20 text-rose-300 border-rose-500/30" :
-                            "bg-gold/20 text-gold border-gold/30"
-                          }`}>
-                            {BLOG_CATEGORIES[rp.category]}
-                          </span>
-                        </div>
-                      )}
+                        ) : (
+                          <div className={`absolute inset-0 bg-gradient-to-br ${
+                            rp.category === "tutorial" ? "from-blue-900/40 via-blue-950/20 to-surface-primary/90" :
+                            rp.category === "guia" ? "from-emerald-900/40 via-emerald-950/20 to-surface-primary/90" :
+                            rp.category === "lista" ? "from-amber-900/40 via-amber-950/20 to-surface-primary/90" :
+                            rp.category === "comparativo" ? "from-purple-900/40 via-purple-950/20 to-surface-primary/90" :
+                            rp.category === "build" ? "from-rose-900/40 via-rose-950/20 to-surface-primary/90" :
+                            "from-gold/20 via-yellow-950/20 to-surface-primary/90"
+                          }`} />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                        <span className={`absolute top-3 left-3 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+                          rp.category === "tutorial" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
+                          rp.category === "guia" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                          rp.category === "lista" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" :
+                          rp.category === "comparativo" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
+                          rp.category === "build" ? "bg-rose-500/20 text-rose-300 border-rose-500/30" :
+                          "bg-gold/20 text-gold border-gold/30"
+                        }`}>
+                          {BLOG_CATEGORIES[rp.category]}
+                        </span>
+                      </div>
                       <div className="p-4">
-                        <p className="text-sm font-medium text-foreground group-hover:text-gold transition-colors leading-snug line-clamp-2">
+                        <p className="text-sm font-medium text-foreground/90 group-hover:text-gold transition-colors leading-snug line-clamp-2">
                           {rp.title}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-2">
+                        <p className="text-xs text-muted-foreground/50 mt-2">
                           {rp.readingTime} de leitura
                         </p>
                       </div>

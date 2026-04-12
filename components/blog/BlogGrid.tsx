@@ -21,6 +21,15 @@ const CATEGORY_COLORS: Record<BlogCategory, string> = {
   devlog: "bg-gold/15 text-gold border-gold/25",
 };
 
+const CATEGORY_GRADIENT: Record<BlogCategory, string> = {
+  tutorial: "from-blue-900/40 via-blue-950/20 to-surface-primary/90",
+  guia: "from-emerald-900/40 via-emerald-950/20 to-surface-primary/90",
+  lista: "from-amber-900/40 via-amber-950/20 to-surface-primary/90",
+  comparativo: "from-purple-900/40 via-purple-950/20 to-surface-primary/90",
+  build: "from-rose-900/40 via-rose-950/20 to-surface-primary/90",
+  devlog: "from-gold/20 via-yellow-950/20 to-surface-primary/90",
+};
+
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("pt-BR", {
     day: "numeric",
@@ -70,36 +79,36 @@ function PortalSection({
   onFilter: (cat: BlogCategory | null) => void;
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 flex flex-col">
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col hover:border-white/[0.10] transition-colors duration-300">
       <button
         type="button"
         onClick={() => onFilter(filterCategory)}
-        className="flex items-center gap-2 mb-3 group"
+        className="flex items-center gap-2.5 mb-4 group"
       >
-        <span className="text-base">{icon}</span>
+        <span className="text-lg">{icon}</span>
         <h2 className={`font-display text-sm tracking-wide ${accentClass} group-hover:brightness-125 transition-all`}>
           {title}
         </h2>
-        <svg className="w-3 h-3 ml-auto text-muted-foreground/40 group-hover:text-foreground/60 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="w-3.5 h-3.5 ml-auto text-muted-foreground/30 group-hover:text-foreground/60 group-hover:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>
-      <div className="flex-1 space-y-1">
+      <div className="flex-1 space-y-0.5">
         {posts.map((post) => (
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="group/item flex items-start gap-2 py-1.5 px-2 -mx-2 rounded-lg hover:bg-white/[0.04] transition-colors"
+            className="group/item flex items-start gap-2.5 py-2 px-2.5 -mx-2.5 rounded-lg hover:bg-white/[0.04] transition-colors"
           >
-            <span className="text-gold/30 text-[8px] mt-[6px] shrink-0">&#9670;</span>
+            <span className="text-gold/25 text-[7px] mt-[7px] shrink-0">&#9670;</span>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] text-foreground/75 group-hover/item:text-gold leading-snug transition-colors line-clamp-2">
+              <p className="text-[13px] text-foreground/70 group-hover/item:text-gold leading-snug transition-colors line-clamp-2">
                 {post.title}
               </p>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] text-muted-foreground/50">{post.readingTime}</span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[10px] text-muted-foreground/40">{post.readingTime}</span>
                 {getPostLang(post.slug) === "en" && (
-                  <span className="text-[8px] font-bold text-sky-400/60">EN</span>
+                  <span className="text-[8px] font-bold text-sky-400/50">EN</span>
                 )}
               </div>
             </div>
@@ -110,26 +119,55 @@ function PortalSection({
   );
 }
 
-/* ─── Compact Post Row (for grid below portal) ────────────── */
-function PostRow({ post }: { post: BlogPost }) {
+/* ─── Featured Post (hero card for pinned) ───────────────── */
+function FeaturedCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex items-center gap-3 py-3 px-3 -mx-3 rounded-lg hover:bg-white/[0.03] transition-colors border-b border-white/[0.03] last:border-b-0"
+      className="group relative block rounded-xl border border-white/[0.08] overflow-hidden mb-8 hover:border-gold/25 transition-all duration-500"
     >
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
+      <div className="relative w-full aspect-[21/9] sm:aspect-[21/8] overflow-hidden">
+        {post.image ? (
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
+            sizes="100vw"
+            priority
+          />
+        ) : (
+          <div className={`absolute inset-0 bg-gradient-to-br ${CATEGORY_GRADIENT[post.category]}`} />
+        )}
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+      </div>
+
+      {/* Content overlay */}
+      <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
+        <div className="flex items-center gap-2.5 mb-3">
           <CategoryBadge category={post.category} />
           <LangBadge slug={post.slug} />
+          <span className="text-[11px] text-white/50 ml-1">{post.readingTime}</span>
         </div>
-        <h3 className="text-[14px] text-foreground/80 group-hover:text-gold transition-colors leading-snug">
+        <h2 className="font-display text-xl sm:text-2xl md:text-3xl text-white group-hover:text-gold transition-colors duration-300 leading-tight max-w-2xl">
           {post.title}
-        </h3>
+        </h2>
+        <p className="text-sm text-white/60 mt-2 max-w-xl leading-relaxed line-clamp-2 hidden sm:block">
+          {post.description}
+        </p>
       </div>
-      <div className="shrink-0 text-right">
-        <span className="text-[11px] text-muted-foreground">{post.readingTime}</span>
-        <p className="text-[10px] text-muted-foreground/50">{formatDate(post.date)}</p>
-      </div>
+
+      {/* Pinned badge */}
+      {post.pinned && (
+        <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold/20 border border-gold/30 backdrop-blur-sm">
+          <svg className="w-3 h-3 text-gold" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+          <span className="text-[10px] font-semibold text-gold uppercase tracking-wider">Destaque</span>
+        </div>
+      )}
     </Link>
   );
 }
@@ -139,31 +177,44 @@ function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300 h-full overflow-hidden"
+      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-gold/20 hover:bg-white/[0.04] transition-all duration-300 h-full overflow-hidden"
     >
-      {post.image && (
-        <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/20">
+      {/* Image area */}
+      <div className="relative w-full aspect-[16/9] overflow-hidden">
+        {post.image ? (
           <Image
             src={post.image}
             alt={post.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        ) : (
+          <div className={`absolute inset-0 bg-gradient-to-br ${CATEGORY_GRADIENT[post.category]}`} />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+        {/* Category badge on image */}
+        <div className="absolute top-3 left-3">
+          <CategoryBadge category={post.category} />
         </div>
-      )}
+
+        {/* Date on image */}
+        <div className="absolute bottom-3 right-3">
+          <span className="text-[10px] text-white/50 font-medium">{formatDate(post.date)}</span>
+        </div>
+      </div>
+
+      {/* Text area */}
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-2">
-          <CategoryBadge category={post.category} />
           <LangBadge slug={post.slug} />
-          <span className="text-[10px] text-muted-foreground ml-auto">{post.readingTime}</span>
+          <span className="text-[10px] text-muted-foreground/50 ml-auto">{post.readingTime}</span>
         </div>
-        <h3 className="font-display text-[14px] text-foreground group-hover:text-gold transition-colors duration-200 mb-1.5 leading-snug flex-1">
+        <h3 className="font-display text-[15px] text-foreground/90 group-hover:text-gold transition-colors duration-200 mb-2 leading-snug flex-1">
           {post.title}
         </h3>
-        <p className="text-[11px] text-foreground/45 leading-relaxed line-clamp-2">
+        <p className="text-[12px] text-foreground/40 leading-relaxed line-clamp-2">
           {post.description}
         </p>
       </div>
@@ -233,13 +284,17 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
 
   const hasFilters = !!(query || activeCategory || langFilter !== "all");
 
+  // Separate pinned/featured from regular posts
+  const featuredPost = !hasFilters ? sorted.find((p) => p.pinned) : undefined;
+  const regularPosts = featuredPost ? sorted.filter((p) => p !== featuredPost) : sorted;
+
   return (
     <div>
-      {/* ─── Search + Filters (sticky on mobile) ─── */}
-      <div className="sticky top-[64px] z-20 -mx-6 px-6 py-3 bg-[#0a0a0f]/95 backdrop-blur-md border-b border-white/[0.04] mb-6">
+      {/* ─── Search + Filters (sticky) ─── */}
+      <div className="sticky top-[64px] z-20 -mx-6 px-6 py-3 bg-background/95 backdrop-blur-md border-b border-white/[0.06] mb-8">
         <div className="relative mb-3">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 pointer-events-none"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -256,7 +311,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar artigos..."
-            className="w-full h-10 pl-9 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/30 transition-colors"
+            className="w-full h-10 pl-10 pr-4 rounded-lg bg-white/[0.05] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/30 focus:bg-white/[0.06] transition-all"
           />
         </div>
 
@@ -309,9 +364,12 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
         </div>
       </div>
 
+      {/* ─── Featured Post ─── */}
+      {featuredPost && <FeaturedCard post={featuredPost} />}
+
       {/* ─── Wiki Portal ─── */}
       {!hasFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
           <PortalSection
             title="Artigos & Guias"
             icon="📜"
@@ -341,7 +399,7 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
 
       {/* Results count when filtered */}
       {hasFilters && (
-        <p className="text-xs text-muted-foreground mb-3">
+        <p className="text-xs text-muted-foreground mb-4">
           {sorted.length} {sorted.length === 1 ? "artigo encontrado" : "artigos encontrados"}
           {activeCategory && ` em ${BLOG_CATEGORIES[activeCategory]}`}
           <button
@@ -355,12 +413,12 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
       )}
 
       {sorted.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-16">
           <p className="text-muted-foreground text-sm">Nenhum artigo encontrado.</p>
           <button
             type="button"
             onClick={() => { setQuery(""); setActiveCategory(null); setLangFilter("all"); }}
-            className="mt-2 text-gold text-sm hover:underline"
+            className="mt-3 text-gold text-sm hover:underline"
           >
             Limpar filtros
           </button>
@@ -368,15 +426,15 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
       ) : (
         <>
           {/* ─── Todos os Posts ─── */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-white/[0.06] to-transparent" />
-            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-widest">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px bg-gradient-to-r from-white/[0.08] to-transparent" />
+            <span className="text-[10px] text-muted-foreground/40 uppercase tracking-widest font-medium">
               {hasFilters ? "Resultados" : "Todos os artigos"}
             </span>
-            <div className="flex-1 h-px bg-gradient-to-l from-white/[0.06] to-transparent" />
+            <div className="flex-1 h-px bg-gradient-to-l from-white/[0.08] to-transparent" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {sorted.map((post) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {regularPosts.map((post) => (
               <PostCard key={post.slug} post={post} />
             ))}
           </div>

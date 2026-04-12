@@ -176,7 +176,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Como Montar um Encontro Balanceado no D&D 5e | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/encounter-building.png",
+    image: "/art/blog/combat-with-monsters.png",
   },
   {
     slug: "como-mestrar-dnd-primeira-vez",
@@ -197,7 +197,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Como Mestrar D&D pela Primeira Vez — Guia Completo | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/first-time-dm.png",
+    image: "/art/blog/combat-tracker-empty.png",
   },
   {
     slug: "musica-ambiente-para-rpg",
@@ -219,7 +219,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Música Ambiente para RPG — Trilha Sonora para Cada Cena | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/ambient-music.png",
+    image: "/art/blog/spells-index.png",
   },
   {
     slug: "melhores-monstros-dnd-5e",
@@ -263,7 +263,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Guia de Challenge Rating — Como Calcular a Dificuldade | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/challenge-rating.png",
+    image: "/art/blog/heroes/ancient-red-dragon.png",
   },
   {
     slug: "teatro-da-mente-vs-grid-dnd-5e",
@@ -284,7 +284,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Teatro da Mente vs Grid — Qual Estilo de Combate? | Pocket DM",
     category: "comparativo",
-    image: "/art/blog/heroes/theater-vs-grid.png",
+    image: "/art/blog/bestiary-index.png",
   },
   {
     slug: "build-half-elf-order-cleric-divine-soul-sorcerer",
@@ -354,7 +354,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Guia do Mestre Eficaz no Combate — E-book Gratuito | Pocket DM",
     category: "guia",
-    image: "/art/blog/combat-hp-panel.png",
+    image: "/art/blog/combat-active.png",
   },
   {
     slug: "como-gerenciar-hp-dnd-5e",
@@ -388,7 +388,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "7 Erros que Mestres Cometem no Combate de D&D | Pocket DM",
     category: "lista",
-    image: "/art/blog/combat-active.png",
+    image: "/art/blog/combat-conditions.png",
   },
   {
     slug: "iniciativa-dnd-5e-regras-variantes",
@@ -406,7 +406,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Iniciativa D&D 5e: Regras, Variantes e Como Automatizar | Pocket DM",
     category: "guia",
-    image: "/art/blog/combat-setup.png",
+    image: "/art/blog/combat-hp-panel.png",
   },
 ];
 
