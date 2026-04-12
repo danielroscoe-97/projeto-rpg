@@ -8,6 +8,7 @@ import { useSrdStore } from "@/lib/stores/srd-store";
 import { setFullDataMode } from "@/lib/srd/srd-mode";
 import { mergeImportedMonsters } from "@/lib/srd/srd-search";
 import { toSlug } from "@/lib/utils/monster";
+import { setHeroMonsterCount } from "@/lib/stores/monster-count-store";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 
@@ -81,6 +82,7 @@ export function CompendiumMonsterHydrator({
         // immediately — no need to wait for the SRD store's deferred phases
         mergeImportedMonsters(all);
         setFullMonsters(all);
+        setHeroMonsterCount(all.length);
       })
       .catch(() => {
         // Fetch failed — stay with SSR data

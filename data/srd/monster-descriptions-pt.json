@@ -11129,7 +11129,8 @@
     "special_abilities": {},
     "actions": {},
     "reactions": {},
-    "legendary_actions": {}
+    "legendary_actions": {},
+    "name": "Beholder"
   },
   "death-tyrant": {
     "lair_actions": {
@@ -11146,7 +11147,8 @@
     "special_abilities": {},
     "actions": {},
     "reactions": {},
-    "legendary_actions": {}
+    "legendary_actions": {},
+    "name": "Morte Tyrant"
   },
   "vampire-infernalist": {
     "regional_effects": {
@@ -11159,7 +11161,8 @@
     "special_abilities": {},
     "actions": {},
     "reactions": {},
-    "legendary_actions": {}
+    "legendary_actions": {},
+    "name": "Vampiro Infernalist"
   },
   "vampire-neonate": {
     "regional_effects": {
@@ -11172,7 +11175,8 @@
     "special_abilities": {},
     "actions": {},
     "reactions": {},
-    "legendary_actions": {}
+    "legendary_actions": {},
+    "name": "Vampiro Neonate"
   },
   "vampire-spellcaster": {
     "regional_effects": {
@@ -11185,7 +11189,8 @@
     "special_abilities": {},
     "actions": {},
     "reactions": {},
-    "legendary_actions": {}
+    "legendary_actions": {},
+    "name": "Vampiro Spellcaster"
   },
   "vampire-warden": {
     "regional_effects": {
@@ -11198,7 +11203,8 @@
     "special_abilities": {},
     "actions": {},
     "reactions": {},
-    "legendary_actions": {}
+    "legendary_actions": {},
+    "name": "Vampiro Guardião"
   },
   "vampire-warrior": {
     "regional_effects": {
@@ -11211,6 +11217,9988 @@
     "special_abilities": {},
     "actions": {},
     "reactions": {},
-    "legendary_actions": {}
+    "legendary_actions": {},
+    "name": "Vampiro Guerreiro"
+  },
+  "the-demogorgon": {
+    "name": "The Demogorgon"
+  },
+  "aarakocra": {
+    "name": "Aarakocra"
+  },
+  "aarakocra-simulacrum": {
+    "name": "Aarakocra Simulacrum"
+  },
+  "aarakocra-spelljammer": {
+    "name": "Aarakocra Spelljammer"
+  },
+  "aartuk-elder": {
+    "name": "Aartuk Ancião"
+  },
+  "aartuk-starhorror": {
+    "name": "Aartuk Starhorror"
+  },
+  "aartuk-weedling": {
+    "name": "Aartuk Weedling"
+  },
+  "aberrant-spirit": {
+    "name": "Espírito Aberrant"
+  },
+  "aberrant-zealot": {
+    "name": "Aberrant Zealot"
+  },
+  "aberrant-zealot-tentacled": {
+    "name": "Aberrant Zealot (Tentacled)"
+  },
+  "abhorrent-overlord": {
+    "name": "Abhorrent Overlord"
+  },
+  "abigor": {
+    "name": "Abigor"
+  },
+  "abjurer": {
+    "name": "Abjurador"
+  },
+  "abjurer-wizard": {
+    "name": "Abjurador Mago"
+  },
+  "aboleth-spawn": {
+    "name": "Cria de Aboleth"
+  },
+  "abyssal-chicken": {
+    "name": "Abissal Galinha"
+  },
+  "abyssal-wretch": {
+    "name": "Abissal Miserável"
+  },
+  "acererak": {
+    "name": "Acererak"
+  },
+  "achaierai": {
+    "name": "Achaierai"
+  },
+  "acidic-mist-apparition": {
+    "name": "Acidic Névoa Apparition"
+  },
+  "adult-amethyst-dragon": {
+    "name": "Dragão Ametista Adulto"
+  },
+  "adult-amonkhet-dragon": {
+    "name": "Dragão Amonkhet Adulto"
+  },
+  "adult-blue-dracolich": {
+    "name": "Dracolich Azul Adulto"
+  },
+  "adult-crystal-dragon": {
+    "name": "Dragão Cristal Adulto"
+  },
+  "adult-deep-dragon": {
+    "name": "Dragão Profundo Adulto"
+  },
+  "adult-emerald-dragon": {
+    "name": "Dragão Esmeralda Adulto"
+  },
+  "adult-kruthik": {
+    "name": "Kruthik Adulto"
+  },
+  "adult-lunar-dragon": {
+    "name": "Dragão Lunar Adulto"
+  },
+  "adult-moonstone-dragon": {
+    "name": "Dragão Moonstone Adulto"
+  },
+  "adult-oblex": {
+    "name": "Oblex Adulto"
+  },
+  "adult-red-dracolich": {
+    "name": "Dracolich Vermelho Adulto"
+  },
+  "adult-sapphire-dragon": {
+    "name": "Dragão Safira Adulto"
+  },
+  "adult-solar-dragon": {
+    "name": "Dragão Solar Adulto"
+  },
+  "adult-spirit-dragon": {
+    "name": "Dragão Espírito Adulto"
+  },
+  "adult-time-dragon": {
+    "name": "Dragão Temporal Adulto"
+  },
+  "adult-topaz-dragon": {
+    "name": "Dragão Topázio Adulto"
+  },
+  "advanced-detention-drone": {
+    "name": "Advanced Detention Drone"
+  },
+  "aegisaur": {
+    "name": "Aegisaur"
+  },
+  "aeorian-absorber": {
+    "name": "Aeorian Absorber"
+  },
+  "aeorian-nullifier": {
+    "name": "Aeorian Nullifier"
+  },
+  "aeorian-reverser": {
+    "name": "Aeorian Reverser"
+  },
+  "aerisi-kalinoth": {
+    "name": "Aerisi Kalinoth"
+  },
+  "aerosaur": {
+    "name": "Aerosaur"
+  },
+  "aerosaur-large": {
+    "name": "Aerosaur (Large)"
+  },
+  "aerosaur-small": {
+    "name": "Aerosaur (Small)"
+  },
+  "aeshma": {
+    "name": "Aeshma"
+  },
+  "affliction-devil-kocrachon": {
+    "name": "Diabo Aflição (Kocrachon)"
+  },
+  "afsoun-ghorbani": {
+    "name": "Afsoun Ghorbani"
+  },
+  "agathe-silverspoon": {
+    "name": "Agathe Silverspoon"
+  },
+  "agdon-longscarf": {
+    "name": "Agdon Longscarf"
+  },
+  "agony": {
+    "name": "Agonia"
+  },
+  "ahmaergo": {
+    "name": "Ahmaergo"
+  },
+  "air-elemental-myrmidon": {
+    "name": "Elemental do Ar Myrmidon"
+  },
+  "air-totem-elemental": {
+    "name": "Ar Totem Elemental"
+  },
+  "akroan-hoplite": {
+    "name": "Akroan Hoplite"
+  },
+  "alchaia": {
+    "name": "Al'chaia"
+  },
+  "alagarthas": {
+    "name": "Alagarthas"
+  },
+  "alastrah": {
+    "name": "Alastrah"
+  },
+  "alax-jadescales": {
+    "name": "Alax Jadescales"
+  },
+  "albino-dwarf-spirit-warrior": {
+    "name": "Albino Anão Espírito Guerreiro"
+  },
+  "albino-dwarf-warrior": {
+    "name": "Albino Anão Guerreiro"
+  },
+  "aldani-lobsterfolk": {
+    "name": "Aldani (Lobsterfolk)"
+  },
+  "alhoon": {
+    "name": "Alhoon"
+  },
+  "aljanor-keenblade": {
+    "name": "Aljanor Keenblade"
+  },
+  "alkilith": {
+    "name": "Alkilith"
+  },
+  "allip": {
+    "name": "Allip"
+  },
+  "allowak-abominable-yeti": {
+    "name": "Allowak Abominable Yeti"
+  },
+  "allowak-yeti": {
+    "name": "Allowak Yeti"
+  },
+  "almiraj": {
+    "name": "Almiraj"
+  },
+  "aloysia-telfan": {
+    "name": "Aloysia Telfan"
+  },
+  "alseid": {
+    "name": "Alseid"
+  },
+  "altisaur": {
+    "name": "Altisaur"
+  },
+  "alustriel-silverhand": {
+    "name": "Alustriel Silverhand"
+  },
+  "alyxian-aboleth": {
+    "name": "Alyxian Aboleth"
+  },
+  "alyxian-the-absolved": {
+    "name": "Alyxian, o Absolved"
+  },
+  "alyxian-the-callous": {
+    "name": "Alyxian, o Callous"
+  },
+  "alyxian-the-dispossessed": {
+    "name": "Alyxian, o Dispossessed"
+  },
+  "alyxian-the-hunter": {
+    "name": "Alyxian, o Caçador"
+  },
+  "alyxian-the-tormented": {
+    "name": "Alyxian, o Atormentado"
+  },
+  "amanisha-manivarshi": {
+    "name": "Amanisha Manivarshi"
+  },
+  "amarith-coppervein": {
+    "name": "Amarith Coppervein"
+  },
+  "amber-golem": {
+    "name": "Golem de Âmbar"
+  },
+  "ambitious-assassin": {
+    "name": "Ambitious Assassino"
+  },
+  "amble": {
+    "name": "Amble"
+  },
+  "ambush-drake": {
+    "name": "Draco Emboscada"
+  },
+  "amelia-ghallen": {
+    "name": "Amelia Ghallen"
+  },
+  "amethyst-dragon-wyrmling": {
+    "name": "Filhote de Ametista Dragão"
+  },
+  "amethyst-greatwyrm": {
+    "name": "Ametista Greatwyrm"
+  },
+  "ameyali": {
+    "name": "Ameyali"
+  },
+  "amidor-the-dandelion": {
+    "name": "Amidor, o Dandelion"
+  },
+  "ammalia-cassalanter": {
+    "name": "Ammalia Cassalanter"
+  },
+  "ammit": {
+    "name": "Ammit"
+  },
+  "amnizu": {
+    "name": "Amnizu"
+  },
+  "amonkhet-dragon-wyrmling": {
+    "name": "Filhote de Amonkhet Dragão"
+  },
+  "amonkhet-hydra": {
+    "name": "Amonkhet Hidra"
+  },
+  "amonkhet-mummy": {
+    "name": "Amonkhet Múmia"
+  },
+  "amonkhet-mummy-lord": {
+    "name": "Amonkhet Múmia Senhor"
+  },
+  "amonkhet-sphinx": {
+    "name": "Amonkhet Esfinge"
+  },
+  "amphisbaena": {
+    "name": "Amphisbaena"
+  },
+  "amrik-vanthampur": {
+    "name": "Amrik Vanthampur"
+  },
+  "amun-sa": {
+    "name": "Amun Sa"
+  },
+  "anacreda": {
+    "name": "Anacreda"
+  },
+  "anagwendol": {
+    "name": "Anagwendol"
+  },
+  "anarch": {
+    "name": "Anarch"
+  },
+  "anastrasya-karelova": {
+    "name": "Anastrasya Karelova"
+  },
+  "anchorite-of-talos": {
+    "name": "Anchorite of Talos"
+  },
+  "ancient-amethyst-dragon": {
+    "name": "Dragão Ametista Ancião"
+  },
+  "ancient-amonkhet-dragon": {
+    "name": "Dragão Amonkhet Ancião"
+  },
+  "ancient-crystal-dragon": {
+    "name": "Dragão Cristal Ancião"
+  },
+  "ancient-deep-crow": {
+    "name": "Profundo Corvo Ancião"
+  },
+  "ancient-deep-dragon": {
+    "name": "Dragão Profundo Ancião"
+  },
+  "ancient-dragon-turtle": {
+    "name": "Dragão Tartaruga Ancião"
+  },
+  "ancient-emerald-dragon": {
+    "name": "Dragão Esmeralda Ancião"
+  },
+  "ancient-lunar-dragon": {
+    "name": "Dragão Lunar Ancião"
+  },
+  "ancient-moonstone-dragon": {
+    "name": "Dragão Moonstone Ancião"
+  },
+  "ancient-sapphire-dragon": {
+    "name": "Dragão Safira Ancião"
+  },
+  "ancient-sea-serpent": {
+    "name": "Mar Serpente Ancião"
+  },
+  "ancient-solar-dragon": {
+    "name": "Dragão Solar Ancião"
+  },
+  "ancient-spirit-dragon": {
+    "name": "Dragão Espírito Ancião"
+  },
+  "ancient-time-dragon": {
+    "name": "Dragão Temporal Ancião"
+  },
+  "ancient-topaz-dragon": {
+    "name": "Dragão Topázio Ancião"
+  },
+  "andir-valmakos": {
+    "name": "Andir Valmakos"
+  },
+  "andras": {
+    "name": "Andras"
+  },
+  "android": {
+    "name": "Android"
+  },
+  "angel": {
+    "name": "Angel"
+  },
+  "angel-of-amonkhet": {
+    "name": "Angel of Amonkhet"
+  },
+  "angry-sorrowsworn": {
+    "name": "Angry Sorrowsworn"
+  },
+  "anhkolox": {
+    "name": "Anhkolox"
+  },
+  "animated-armor-detention-drone": {
+    "name": "Animado Armadura Detention Drone"
+  },
+  "animated-ballista": {
+    "name": "Animado Ballista"
+  },
+  "animated-breath": {
+    "name": "Animado Sopro"
+  },
+  "animated-broom": {
+    "name": "Animado Broom"
+  },
+  "animated-chained-library": {
+    "name": "Animado Chained Library"
+  },
+  "animated-coffin": {
+    "name": "Animado Coffin"
+  },
+  "animated-drow-statue": {
+    "name": "Animado Drow Estátua"
+  },
+  "animated-furniture": {
+    "name": "Animado Furniture"
+  },
+  "animated-glass-statue": {
+    "name": "Animado Vidro Estátua"
+  },
+  "animated-halberd": {
+    "name": "Animado Alabarda"
+  },
+  "animated-jade-serpent": {
+    "name": "Animado Jade Serpente"
+  },
+  "animated-knife": {
+    "name": "Animado Knife"
+  },
+  "animated-object-huge": {
+    "name": "Animado Object (Huge)"
+  },
+  "animated-object-large": {
+    "name": "Animado Object (Large)"
+  },
+  "animated-object-medium": {
+    "name": "Animado Object (Medium)"
+  },
+  "animated-object-small": {
+    "name": "Animado Object (Small)"
+  },
+  "animated-object-tiny": {
+    "name": "Animado Object (Tiny)"
+  },
+  "animated-staff": {
+    "name": "Animado Cajado"
+  },
+  "animated-statue-of-lolth": {
+    "name": "Animado Estátua of Lolth"
+  },
+  "animated-stove": {
+    "name": "Animado Stove"
+  },
+  "animated-table": {
+    "name": "Animado Table"
+  },
+  "animated-tile-chimera": {
+    "name": "Animado Tile Quimera"
+  },
+  "animated-tree": {
+    "name": "Animado Árvore"
+  },
+  "animated-wand": {
+    "name": "Animado Varinha"
+  },
+  "animatronic-allosaurus": {
+    "name": "Animatronic Allosaurus"
+  },
+  "ankylosaurus-zombie": {
+    "name": "Zumbi Ankylosaurus"
+  },
+  "annis-hag": {
+    "name": "Bruxa Annis"
+  },
+  "anointed": {
+    "name": "Anointed"
+  },
+  "anvilwrought-raptor": {
+    "name": "Anvilwrought Raptor"
+  },
+  "aphemia": {
+    "name": "Aphemia"
+  },
+  "apprentice": {
+    "name": "Apprentice"
+  },
+  "apprentice-wizard": {
+    "name": "Apprentice Mago"
+  },
+  "aquatic-ghoul": {
+    "name": "Aquatic Carniçal"
+  },
+  "aquatic-troll": {
+    "name": "Aquatic Troll"
+  },
+  "arabelle": {
+    "name": "Arabelle"
+  },
+  "aradrine-the-owl": {
+    "name": "Aradrine, a Coruja"
+  },
+  "aranea": {
+    "name": "Aranea"
+  },
+  "arasta": {
+    "name": "Arasta"
+  },
+  "archaic": {
+    "name": "Archaic"
+  },
+  "archdruid": {
+    "name": "Archdruid"
+  },
+  "archduke-zariel-of-avernus": {
+    "name": "Archduke Zariel of Avernus"
+  },
+  "archer": {
+    "name": "Arqueiro"
+  },
+  "archfiend-of-ifnir": {
+    "name": "Archfiend of Ifnir"
+  },
+  "archon-of-boundaries": {
+    "name": "Archon of Boundaries"
+  },
+  "archon-of-falling-stars": {
+    "name": "Archon of Falling Stars"
+  },
+  "archon-of-redemption": {
+    "name": "Archon of Redemption"
+  },
+  "archon-of-the-triumvirate": {
+    "name": "Archon of the Triumvirate"
+  },
+  "arclight-phoenix": {
+    "name": "Arclight Phoenix"
+  },
+  "arcturia": {
+    "name": "Arcturia"
+  },
+  "argentia-skywright": {
+    "name": "Argentia Skywright"
+  },
+  "aribeth-de-tylmarande": {
+    "name": "Aribeth de Tylmarande"
+  },
+  "arkhan-the-cruel": {
+    "name": "Arkhan, o Cruel"
+  },
+  "arlo-kettletoe-levels-1-4": {
+    "name": "Arlo Kettletoe (Levels 1-4)"
+  },
+  "arlo-kettletoe-levels-5-8": {
+    "name": "Arlo Kettletoe (Levels 5-8)"
+  },
+  "arlo-kettletoe-levels-9-11": {
+    "name": "Arlo Kettletoe (Levels 9-11)"
+  },
+  "armanite": {
+    "name": "Armanite"
+  },
+  "armasaur": {
+    "name": "Armasaur"
+  },
+  "armored-saber-toothed-tiger": {
+    "name": "Blindado Saber-Toothed Tigre"
+  },
+  "arrant-quill": {
+    "name": "Arrant Quill"
+  },
+  "art-elemental-mascot": {
+    "name": "Elemental de Art Mascot"
+  },
+  "artus-cimber": {
+    "name": "Artus Cimber"
+  },
+  "aruk-thundercaller-thuunlakalaga": {
+    "name": "Aruk Thundercaller Thuunlakalaga"
+  },
+  "arveiaturace": {
+    "name": "Arveiaturace"
+  },
+  "ash-zombie": {
+    "name": "Zumbi Cinza"
+  },
+  "asha-vandree": {
+    "name": "Asha Vandree"
+  },
+  "ashann": {
+    "name": "Ashann"
+  },
+  "asharra": {
+    "name": "Asharra"
+  },
+  "ashdra": {
+    "name": "Ashdra"
+  },
+  "ashen-animated-armor": {
+    "name": "Ashen Animado Armadura"
+  },
+  "ashen-flying-sword": {
+    "name": "Ashen Voador Espada"
+  },
+  "ashen-heir-anarchist": {
+    "name": "Ashen Heir Anarchist"
+  },
+  "ashen-heir-assassin": {
+    "name": "Ashen Heir Assassino"
+  },
+  "ashen-heir-mage": {
+    "name": "Ashen Heir Mago"
+  },
+  "ashen-heir-veteran": {
+    "name": "Ashen Heir Veterano"
+  },
+  "ashen-knight": {
+    "name": "Ashen Cavaleiro"
+  },
+  "ashen-rider": {
+    "name": "Ashen Rider"
+  },
+  "ashen-shambling-mound": {
+    "name": "Ashen Shambling Mound"
+  },
+  "ashen-veteran": {
+    "name": "Ashen Veterano"
+  },
+  "ashen-warhorse": {
+    "name": "Ashen Warhorse"
+  },
+  "ashtyrranthor": {
+    "name": "Ashtyrranthor"
+  },
+  "asmodeus": {
+    "name": "Asmodeus"
+  },
+  "aspect-of-bahamut": {
+    "name": "Aspect of Bahamut"
+  },
+  "aspect-of-tiamat": {
+    "name": "Aspect of Tiamat"
+  },
+  "aspirant-of-the-comet": {
+    "name": "Aspirant of the Comet"
+  },
+  "assassin-bug": {
+    "name": "Assassino Bug"
+  },
+  "assassin-vine": {
+    "name": "Assassino Trepadeira"
+  },
+  "asteria": {
+    "name": "Asteria"
+  },
+  "asteroid-spider": {
+    "name": "Asteroid Aranha"
+  },
+  "astral-blight": {
+    "name": "Astral Praga"
+  },
+  "astral-dreadnought": {
+    "name": "Astral Dreadnought"
+  },
+  "astral-elf-aristocrat": {
+    "name": "Astral Elfo Aristocrat"
+  },
+  "astral-elf-commander": {
+    "name": "Astral Elfo Comandante"
+  },
+  "astral-elf-honor-guard": {
+    "name": "Astral Elfo Honor Guarda"
+  },
+  "astral-elf-star-priest": {
+    "name": "Astral Elfo Estrela Sacerdote"
+  },
+  "astral-elf-warrior": {
+    "name": "Astral Elfo Guerreiro"
+  },
+  "atash": {
+    "name": "Atash"
+  },
+  "athar-null": {
+    "name": "Athar Null"
+  },
+  "atiba-pa": {
+    "name": "Atiba-Pa"
+  },
+  "atropal": {
+    "name": "Atropal"
+  },
+  "augrek-brighthelm": {
+    "name": "Augrek Brighthelm"
+  },
+  "aunt-dellie": {
+    "name": "Aunt Dellie"
+  },
+  "aurak-draconian": {
+    "name": "Aurak Draconian"
+  },
+  "aurelia": {
+    "name": "Aurelia"
+  },
+  "auril-first-form": {
+    "name": "Auril (First Form)"
+  },
+  "auril-second-form": {
+    "name": "Auril (Second Form)"
+  },
+  "auril-third-form": {
+    "name": "Auril (Third Form)"
+  },
+  "aurinax": {
+    "name": "Aurinax"
+  },
+  "aurnozci": {
+    "name": "Aurnozci"
+  },
+  "aurochs": {
+    "name": "Aurochs"
+  },
+  "aurumach-rilmani": {
+    "name": "Aurumach Rilmani"
+  },
+  "aurumvorax": {
+    "name": "Aurumvorax"
+  },
+  "aurumvorax-den-leader": {
+    "name": "Aurumvorax Toca Leader"
+  },
+  "auspicia-dran": {
+    "name": "Auspicia Dran"
+  },
+  "autognome": {
+    "name": "Autognome"
+  },
+  "autumn-eladrin": {
+    "name": "Autumn Eladrin"
+  },
+  "avacyn": {
+    "name": "Avacyn"
+  },
+  "avarice": {
+    "name": "Avarice"
+  },
+  "avatar-of-baalzebul": {
+    "name": "Avatar of Baalzebul"
+  },
+  "avatar-of-death": {
+    "name": "Avatar of Morte"
+  },
+  "avi": {
+    "name": "Avi"
+  },
+  "avoral-guardinal": {
+    "name": "Avoral Guardinal"
+  },
+  "awa": {
+    "name": "Awa"
+  },
+  "awakened-brown-bear": {
+    "name": "Desperto Pardo Urso"
+  },
+  "awakened-elk": {
+    "name": "Desperto Alce"
+  },
+  "awakened-giant-wasp": {
+    "name": "Gigante de Desperto Vespa"
+  },
+  "awakened-rat": {
+    "name": "Desperto Rato"
+  },
+  "awakened-shrub-totem-elemental": {
+    "name": "Desperto Arbusto Totem Elemental"
+  },
+  "awakened-white-moose": {
+    "name": "Desperto Branco Moose"
+  },
+  "awakened-zurkhwood": {
+    "name": "Desperto Zurkhwood"
+  },
+  "awful-fisher": {
+    "name": "Awful Fisher"
+  },
+  "axe-of-mirabar-soldier": {
+    "name": "Machado of Mirabar Soldado"
+  },
+  "ayik-ur": {
+    "name": "Ayik Ur"
+  },
+  "ayo-jabe-tier-1": {
+    "name": "Ayo Jabe (Tier 1)"
+  },
+  "ayo-jabe-tier-2": {
+    "name": "Ayo Jabe (Tier 2)"
+  },
+  "ayo-jabe-tier-3": {
+    "name": "Ayo Jabe (Tier 3)"
+  },
+  "ayperobo-swarm": {
+    "name": "Ayperobo Enxame"
+  },
+  "aza-dowling": {
+    "name": "Aza Dowling"
+  },
+  "azaka-stormfang": {
+    "name": "Azaka Stormfang"
+  },
+  "azal": {
+    "name": "Azal"
+  },
+  "azbara-jos": {
+    "name": "Azbara Jos"
+  },
+  "azra-nir": {
+    "name": "Azra Nir"
+  },
+  "brohg": {
+    "name": "B'rohg"
+  },
+  "baalzebul": {
+    "name": "Baalzebul"
+  },
+  "baaz-draconian": {
+    "name": "Baaz Draconian"
+  },
+  "baba-lysaga": {
+    "name": "Baba Lysaga"
+  },
+  "baba-lysagas-creeping-hut": {
+    "name": "Baba Lysaga's Rastejante Hut"
+  },
+  "babau": {
+    "name": "Babau"
+  },
+  "bael": {
+    "name": "Bael"
+  },
+  "baernaloth": {
+    "name": "Baernaloth"
+  },
+  "bag-jelly": {
+    "name": "Bag Jelly"
+  },
+  "bag-of-nails": {
+    "name": "Bag of Nails"
+  },
+  "bak-mei": {
+    "name": "Bak Mei"
+  },
+  "bakaris-the-younger": {
+    "name": "Bakaris, o Younger"
+  },
+  "bakaris-uth-estide": {
+    "name": "Bakaris Uth Estide"
+  },
+  "bakunawa": {
+    "name": "Bakunawa"
+  },
+  "balhannoth": {
+    "name": "Balhannoth"
+  },
+  "baloth": {
+    "name": "Baloth"
+  },
+  "bandagh": {
+    "name": "Bandagh"
+  },
+  "banderhobb": {
+    "name": "Banderhobb"
+  },
+  "banrion": {
+    "name": "Banrion"
+  },
+  "baphomet": {
+    "name": "Baphomet"
+  },
+  "barachiel": {
+    "name": "Barachiel"
+  },
+  "barbatos": {
+    "name": "Barbatos"
+  },
+  "bard": {
+    "name": "Bardo"
+  },
+  "barghest": {
+    "name": "Barghest"
+  },
+  "bariaur-wanderer": {
+    "name": "Bariaur Wanderer"
+  },
+  "barkburr": {
+    "name": "Barkburr"
+  },
+  "barnacle-bess": {
+    "name": "Barnacle Bess"
+  },
+  "barnibus-blastwind": {
+    "name": "Barnibus Blastwind"
+  },
+  "baron-vargas-vallakovich": {
+    "name": "Barão Vargas Vallakovich"
+  },
+  "barovian-commoner": {
+    "name": "Barovian Plebeu"
+  },
+  "barovian-scout": {
+    "name": "Barovian Batedor"
+  },
+  "barovian-witch": {
+    "name": "Barovian Bruxa"
+  },
+  "barrowghast": {
+    "name": "Barrowghast"
+  },
+  "bastian-thermandar": {
+    "name": "Bastian Thermandar"
+  },
+  "battleforce-angel": {
+    "name": "Battleforce Angel"
+  },
+  "battlehammer-dwarf": {
+    "name": "Battlehammer Anão"
+  },
+  "bavlorna-blightstraw": {
+    "name": "Bavlorna Blightstraw"
+  },
+  "beanstalk-wurm": {
+    "name": "Beanstalk Wurm"
+  },
+  "beast-of-malar": {
+    "name": "Besta of Malar"
+  },
+  "beast-of-the-land": {
+    "name": "Besta of the Land"
+  },
+  "beast-of-the-sea": {
+    "name": "Besta of the Mar"
+  },
+  "beast-of-the-sky": {
+    "name": "Besta of the Céu"
+  },
+  "bebilith": {
+    "name": "Bebilith"
+  },
+  "becklin-uth-viharin": {
+    "name": "Becklin Uth Viharin"
+  },
+  "beholder-zombie": {
+    "name": "Zumbi Beholder"
+  },
+  "bel": {
+    "name": "Bel"
+  },
+  "belak-the-outcast": {
+    "name": "Belak, o Outcast"
+  },
+  "belashyrra": {
+    "name": "Belashyrra"
+  },
+  "beldora": {
+    "name": "Beldora"
+  },
+  "beledros-witherbloom": {
+    "name": "Beledros Witherbloom"
+  },
+  "belephaion": {
+    "name": "Belephaion"
+  },
+  "belial": {
+    "name": "Belial"
+  },
+  "bepis-honeymaker": {
+    "name": "Bepis Honeymaker"
+  },
+  "berbalang": {
+    "name": "Berbalang"
+  },
+  "berlain-shadowdusk": {
+    "name": "Berlain Shadowdusk"
+  },
+  "bestial-spirit": {
+    "name": "Espírito Bestial"
+  },
+  "beucephalus": {
+    "name": "Beucephalus"
+  },
+  "bhaal-ravager": {
+    "name": "Bhaal, Ravager"
+  },
+  "bhaal-slayer": {
+    "name": "Bhaal, Matador"
+  },
+  "bheur-hag": {
+    "name": "Bruxa Bheur"
+  },
+  "big-momma": {
+    "name": "Big Momma"
+  },
+  "big-water-slurpent": {
+    "name": "Big Água Slurpent"
+  },
+  "big-xorn": {
+    "name": "Big Xorn"
+  },
+  "biha-babir": {
+    "name": "Biha Babir"
+  },
+  "billy-beaver": {
+    "name": "Billy Beaver"
+  },
+  "biomancer": {
+    "name": "Biomancer"
+  },
+  "birdsquirrel": {
+    "name": "Birdsquirrel"
+  },
+  "bitter-breath": {
+    "name": "Bitter Sopro"
+  },
+  "bjornhild-solvigsdottir": {
+    "name": "Bjornhild Solvigsdottir"
+  },
+  "black-abishai": {
+    "name": "Negro Abishai"
+  },
+  "black-earth-guard": {
+    "name": "Negro Terra Guarda"
+  },
+  "black-earth-priest": {
+    "name": "Negro Terra Sacerdote"
+  },
+  "black-gauntlet-of-bane": {
+    "name": "Negro Gauntlet of Perdição"
+  },
+  "black-greatwyrm": {
+    "name": "Negro Greatwyrm"
+  },
+  "black-guard-drake": {
+    "name": "Draco Negro Guarda"
+  },
+  "black-rose-bearer": {
+    "name": "Negro Rosa Bearer"
+  },
+  "black-viper": {
+    "name": "Negro Viper"
+  },
+  "blackguard": {
+    "name": "Blackguard"
+  },
+  "blacktongue-bullywug": {
+    "name": "Blacktongue Bullywug"
+  },
+  "blade-lieutenant": {
+    "name": "Lâmina Lieutenant"
+  },
+  "blade-scout": {
+    "name": "Lâmina Batedor"
+  },
+  "blagothkus": {
+    "name": "Blagothkus"
+  },
+  "blaze": {
+    "name": "Blaze"
+  },
+  "blazebear": {
+    "name": "Blazebear"
+  },
+  "bleak-cabal-void-soother": {
+    "name": "Bleak Cabal Vazio Soother"
+  },
+  "blight-totem-elemental": {
+    "name": "Praga Totem Elemental"
+  },
+  "blind-artist": {
+    "name": "Blind Artist"
+  },
+  "blinded-troll": {
+    "name": "Blinded Troll"
+  },
+  "blindheim": {
+    "name": "Blindheim"
+  },
+  "blistercoil-weird": {
+    "name": "Blistercoil Weird"
+  },
+  "blood-drinker-vampire": {
+    "name": "Sangue Drinker Vampiro"
+  },
+  "blood-hunter": {
+    "name": "Sangue Caçador"
+  },
+  "blood-witch": {
+    "name": "Sangue Bruxa"
+  },
+  "blood-toll-harpy": {
+    "name": "Blood-Toll Harpia"
+  },
+  "bloodfray-giant": {
+    "name": "Gigante de Bloodfray"
+  },
+  "blue-abishai": {
+    "name": "Azul Abishai"
+  },
+  "blue-greatwyrm": {
+    "name": "Azul Greatwyrm"
+  },
+  "blue-guard-drake": {
+    "name": "Draco Azul Guarda"
+  },
+  "blue-slaad": {
+    "name": "Azul Slaad"
+  },
+  "blurg": {
+    "name": "Blurg"
+  },
+  "bluto-krogarov": {
+    "name": "Bluto Krogarov"
+  },
+  "bodak": {
+    "name": "Bodak"
+  },
+  "bodhi-irenicus": {
+    "name": "Bodhi Irenicus"
+  },
+  "bodytaker-plant": {
+    "name": "Bodytaker Planta"
+  },
+  "boggle": {
+    "name": "Boggle"
+  },
+  "bolbara": {
+    "name": "Bol'bara"
+  },
+  "bone-knight": {
+    "name": "Osso Cavaleiro"
+  },
+  "bone-naga-guardian": {
+    "name": "Osso Naga (Guardian)"
+  },
+  "bone-naga-spirit": {
+    "name": "Osso Naga (Spirit)"
+  },
+  "bone-roc": {
+    "name": "Osso Roc"
+  },
+  "bone-whelk": {
+    "name": "Osso Whelk"
+  },
+  "boneclaw": {
+    "name": "Boneclaw"
+  },
+  "boneless": {
+    "name": "Boneless"
+  },
+  "bonnie": {
+    "name": "Bonnie"
+  },
+  "boontu-monkey": {
+    "name": "Boontu Macaco"
+  },
+  "booyahg-booyahg-booyahg": {
+    "name": "Booyahg Booyahg Booyahg"
+  },
+  "booyahg-caster": {
+    "name": "Booyahg Caster"
+  },
+  "booyahg-slave-of-the-archfey": {
+    "name": "Booyahg Escravo of the Archfey"
+  },
+  "booyahg-slave-of-the-fiend": {
+    "name": "Booyahg Escravo of the Demônio"
+  },
+  "booyahg-slave-of-the-great-old-one": {
+    "name": "Booyahg Escravo of the Great Velho One"
+  },
+  "booyahg-whip": {
+    "name": "Booyahg Chicote"
+  },
+  "booyahg-wielder": {
+    "name": "Booyahg Wielder"
+  },
+  "borborygmos": {
+    "name": "Borborygmos"
+  },
+  "bore-worm": {
+    "name": "Bore Verme"
+  },
+  "borivik-windheim": {
+    "name": "Borivik Windheim"
+  },
+  "boromar-smuggler": {
+    "name": "Boromar Contrabandista"
+  },
+  "boromar-underboss": {
+    "name": "Boromar Underboss"
+  },
+  "borthak": {
+    "name": "Borthak"
+  },
+  "bosco-daggerhand": {
+    "name": "Bosco Daggerhand"
+  },
+  "boss-augustus": {
+    "name": "Chefe Augustus"
+  },
+  "boss-delour": {
+    "name": "Chefe Delour"
+  },
+  "boulderfoot-giant": {
+    "name": "Gigante de Boulderfoot"
+  },
+  "bozak-draconian": {
+    "name": "Bozak Draconian"
+  },
+  "brackish-trudge": {
+    "name": "Brackish Trudge"
+  },
+  "braelen-hatherhand": {
+    "name": "Braelen Hatherhand"
+  },
+  "brahma-lutier": {
+    "name": "Brahma Lutier"
+  },
+  "brain-breaker": {
+    "name": "Cérebro Breaker"
+  },
+  "brain-in-a-jar": {
+    "name": "Cérebro in a Jar"
+  },
+  "brain-in-iron": {
+    "name": "Cérebro in Ferro"
+  },
+  "brass-greatwyrm": {
+    "name": "de Latão Greatwyrm"
+  },
+  "braxat": {
+    "name": "Braxat"
+  },
+  "braxow": {
+    "name": "Braxow"
+  },
+  "breath-drinker": {
+    "name": "Sopro Drinker"
+  },
+  "bridesmaid-of-zuggtmoy": {
+    "name": "Bridesmaid of Zuggtmoy"
+  },
+  "brigganock": {
+    "name": "Brigganock"
+  },
+  "bristled-moorbounder": {
+    "name": "Bristled Moorbounder"
+  },
+  "broken-king-antigonos": {
+    "name": "Quebrado Rei Antigonos"
+  },
+  "brontodon": {
+    "name": "Brontodon"
+  },
+  "brontosaurus": {
+    "name": "Brontosaurus"
+  },
+  "bronze-greatwyrm": {
+    "name": "de Bronze Greatwyrm"
+  },
+  "bronze-sable": {
+    "name": "de Bronze Sable"
+  },
+  "bronze-scout": {
+    "name": "de Bronze Batedor"
+  },
+  "bronzefume": {
+    "name": "Bronzefume"
+  },
+  "broom-of-animated-attack": {
+    "name": "Broom of Animado Attack"
+  },
+  "brother-adramalech": {
+    "name": "Brother Adramalech"
+  },
+  "brother-morax": {
+    "name": "Brother Morax"
+  },
+  "brown-scavver": {
+    "name": "Pardo Scavver"
+  },
+  "bruna": {
+    "name": "Bruna"
+  },
+  "brusipha": {
+    "name": "Brusipha"
+  },
+  "buer": {
+    "name": "Buer"
+  },
+  "bugbear-chief": {
+    "name": "Bugbear Chefe"
+  },
+  "bugbear-gardener": {
+    "name": "Bugbear Gardener"
+  },
+  "bugbear-lieutenant": {
+    "name": "Bugbear Lieutenant"
+  },
+  "bulezau": {
+    "name": "Bulezau"
+  },
+  "bullywug": {
+    "name": "Bullywug"
+  },
+  "bullywug-croaker": {
+    "name": "Bullywug Croaker"
+  },
+  "bullywug-knight": {
+    "name": "Bullywug Cavaleiro"
+  },
+  "bullywug-royal": {
+    "name": "Bullywug Royal"
+  },
+  "buppido": {
+    "name": "Buppido"
+  },
+  "burney-the-barber": {
+    "name": "Burney, o Barber"
+  },
+  "burnished-hart": {
+    "name": "Burnished Hart"
+  },
+  "burrowshark": {
+    "name": "Burrowshark"
+  },
+  "buster-the-bear": {
+    "name": "Buster, o Urso"
+  },
+  "cackler": {
+    "name": "Cackler"
+  },
+  "cairnwight": {
+    "name": "Cairnwight"
+  },
+  "calcryx": {
+    "name": "Calcryx"
+  },
+  "caldron-magen": {
+    "name": "Caldron Magen"
+  },
+  "camlash": {
+    "name": "Camlash"
+  },
+  "campestri": {
+    "name": "Campestri"
+  },
+  "cannith-artificer": {
+    "name": "Cannith Artificer"
+  },
+  "canoloth": {
+    "name": "Canoloth"
+  },
+  "canopic-golem": {
+    "name": "Golem de Canopic"
+  },
+  "captain-hask": {
+    "name": "Capitão Hask"
+  },
+  "captain-nghathrod": {
+    "name": "Capitão N'ghathrod"
+  },
+  "captain-othelstan": {
+    "name": "Capitão Othelstan"
+  },
+  "captain-xendros": {
+    "name": "Capitão Xendros"
+  },
+  "caradoc": {
+    "name": "Caradoc"
+  },
+  "carnivorous-flower": {
+    "name": "Carnivorous Flor"
+  },
+  "carrion-crawler": {
+    "name": "Carrion Crawler"
+  },
+  "carrion-ogre": {
+    "name": "Carrion Ogro"
+  },
+  "carrion-stalker": {
+    "name": "Carrion Perseguidor"
+  },
+  "carrionette": {
+    "name": "Carrionette"
+  },
+  "cassiok-shadowdusk": {
+    "name": "Cassiok Shadowdusk"
+  },
+  "cat-skeleton": {
+    "name": "Esqueleto de Gato"
+  },
+  "category-1-krasis": {
+    "name": "Category 1 Krasis"
+  },
+  "category-2-krasis": {
+    "name": "Category 2 Krasis"
+  },
+  "category-3-krasis": {
+    "name": "Category 3 Krasis"
+  },
+  "catoblepas": {
+    "name": "Catoblepas"
+  },
+  "caustic-crawler": {
+    "name": "Caustic Crawler"
+  },
+  "cave-badger": {
+    "name": "Caverna Texugo"
+  },
+  "cave-bear": {
+    "name": "Caverna Urso"
+  },
+  "cave-fisher": {
+    "name": "Caverna Fisher"
+  },
+  "cavil-zaltobar": {
+    "name": "Cavil Zaltobar"
+  },
+  "celeste": {
+    "name": "Celeste"
+  },
+  "celestial-spirit": {
+    "name": "Espírito Celestial"
+  },
+  "centaur-mummy": {
+    "name": "Centauro Múmia"
+  },
+  "ceratops": {
+    "name": "Ceratops"
+  },
+  "cerodon": {
+    "name": "Cerodon"
+  },
+  "chamberlain-of-zuggtmoy": {
+    "name": "Chamberlain of Zuggtmoy"
+  },
+  "champion": {
+    "name": "Campeão"
+  },
+  "champion-of-gorm": {
+    "name": "Campeão of Gorm"
+  },
+  "champion-of-madarua": {
+    "name": "Campeão of Madarua"
+  },
+  "champion-of-usamigaras": {
+    "name": "Campeão of Usamigaras"
+  },
+  "changeling": {
+    "name": "Changeling"
+  },
+  "chaos-quadrapod": {
+    "name": "Caos Quadrapod"
+  },
+  "chardalyn-berserker": {
+    "name": "Chardalyn Berserker"
+  },
+  "chardalyn-dragon": {
+    "name": "Dragão Chardalyn"
+  },
+  "charmayne-daymore": {
+    "name": "Charmayne Daymore"
+  },
+  "chief-guh": {
+    "name": "Chefe Guh"
+  },
+  "chief-kartha-kaya": {
+    "name": "Chefe Kartha-Kaya"
+  },
+  "chief-nosnra": {
+    "name": "Chefe Nosnra"
+  },
+  "chimeric-baboon": {
+    "name": "Chimeric Babuíno"
+  },
+  "chimeric-cat": {
+    "name": "Chimeric Gato"
+  },
+  "chimeric-fox": {
+    "name": "Chimeric Raposa"
+  },
+  "chimeric-hare": {
+    "name": "Chimeric Lebre"
+  },
+  "chimeric-rat": {
+    "name": "Chimeric Rato"
+  },
+  "chimeric-weasel": {
+    "name": "Chimeric Doninha"
+  },
+  "chishinix": {
+    "name": "Chishinix"
+  },
+  "chishinix-head": {
+    "name": "Chishinix' Head"
+  },
+  "chitine": {
+    "name": "Chitine"
+  },
+  "choker": {
+    "name": "Choker"
+  },
+  "choldrith": {
+    "name": "Choldrith"
+  },
+  "chukka": {
+    "name": "Chukka"
+  },
+  "chupacabra": {
+    "name": "Chupacabra"
+  },
+  "chuul-spore-servant": {
+    "name": "Chuul Spore Servo"
+  },
+  "chwinga": {
+    "name": "Chwinga"
+  },
+  "chwinga-astronaut": {
+    "name": "Chwinga Astronaut"
+  },
+  "cinder-hulk": {
+    "name": "Cinder Hulk"
+  },
+  "cinderhild": {
+    "name": "Cinderhild"
+  },
+  "cipolla": {
+    "name": "Cipolla"
+  },
+  "citadel-spider": {
+    "name": "Citadel Aranha"
+  },
+  "clapperclaw-the-scarecrow": {
+    "name": "Clapperclaw, o Espantalho"
+  },
+  "claugiyliamatar": {
+    "name": "Claugiyliamatar"
+  },
+  "clawfoot": {
+    "name": "Clawfoot"
+  },
+  "clay-gladiator": {
+    "name": "Argila Gladiador"
+  },
+  "cloaker-mutate": {
+    "name": "Cloaker Mutate"
+  },
+  "clockwork-behir": {
+    "name": "Mecânico Behir"
+  },
+  "clockwork-bronze-scout": {
+    "name": "Mecânico de Bronze Batedor"
+  },
+  "clockwork-defender": {
+    "name": "Mecânico Defender"
+  },
+  "clockwork-horror": {
+    "name": "Mecânico Horror"
+  },
+  "clockwork-iron-cobra": {
+    "name": "Mecânico Ferro Cobra"
+  },
+  "clockwork-kraken": {
+    "name": "Mecânico Kraken"
+  },
+  "clockwork-mule": {
+    "name": "Mecânico Mula"
+  },
+  "clockwork-oaken-bolter": {
+    "name": "Mecânico Oaken Bolter"
+  },
+  "clockwork-observer": {
+    "name": "Mecânico Observer"
+  },
+  "clockwork-stone-defender": {
+    "name": "Mecânico Pedra Defender"
+  },
+  "clonk": {
+    "name": "Clonk"
+  },
+  "cloud-giant-destiny-gambler": {
+    "name": "Gigante de Nuvem Destiny Gambler"
+  },
+  "cloud-giant-ghost": {
+    "name": "Fantasma Nuvem Gigante"
+  },
+  "cloud-giant-noble": {
+    "name": "Gigante de Nuvem Nobre"
+  },
+  "cloud-giant-of-evil-air": {
+    "name": "Gigante de Nuvem of Evil Ar"
+  },
+  "cloud-giant-smiling-one": {
+    "name": "Gigante de Nuvem Smiling One"
+  },
+  "clovin-belview": {
+    "name": "Clovin Belview"
+  },
+  "clown": {
+    "name": "Clown"
+  },
+  "clystran": {
+    "name": "Clystran"
+  },
+  "coatl": {
+    "name": "Coatl"
+  },
+  "cog": {
+    "name": "Cog"
+  },
+  "cogwork-archivist": {
+    "name": "Cogwork Archivist"
+  },
+  "coldlight-walker": {
+    "name": "Coldlight Walker"
+  },
+  "colossus-of-akros": {
+    "name": "Colossus of Akros"
+  },
+  "combat-robot": {
+    "name": "Combat Robot"
+  },
+  "commodore-krux": {
+    "name": "Commodore Krux"
+  },
+  "conclave-dryad": {
+    "name": "Conclave Dríade"
+  },
+  "conjurer": {
+    "name": "Conjurador"
+  },
+  "conjurer-wizard": {
+    "name": "Conjurador Mago"
+  },
+  "conservatory-student": {
+    "name": "Conservatory Student"
+  },
+  "construct-animated-armor": {
+    "name": "Construto (Animated Armor)"
+  },
+  "construct-helmed-horror": {
+    "name": "Construto (Helmed Horror)"
+  },
+  "construct-modron": {
+    "name": "Construto (Modron)"
+  },
+  "construct-shield-guardian": {
+    "name": "Construto (Shield Guardian)"
+  },
+  "construct-spirit": {
+    "name": "Espírito Construto"
+  },
+  "constructed-commoner": {
+    "name": "Constructed Plebeu"
+  },
+  "copper-greatwyrm": {
+    "name": "de Cobre Greatwyrm"
+  },
+  "copper-stormforge": {
+    "name": "de Cobre Stormforge"
+  },
+  "coral": {
+    "name": "Coral"
+  },
+  "core-spawn-crawler": {
+    "name": "Core Cria Crawler"
+  },
+  "core-spawn-emissary": {
+    "name": "Core Cria Emissário"
+  },
+  "core-spawn-seer": {
+    "name": "Core Cria Vidente"
+  },
+  "core-spawn-worm": {
+    "name": "Core Cria Verme"
+  },
+  "cornelius-watson": {
+    "name": "Cornelius Watson"
+  },
+  "corpse-flower": {
+    "name": "Cadáver Flor"
+  },
+  "corrin-delmaco": {
+    "name": "Corrin Delmaco"
+  },
+  "corrupted-avatar-of-lurue": {
+    "name": "Corrompido Avatar of Lurue"
+  },
+  "corrupted-giant-shark": {
+    "name": "Gigante de Corrompido Tubarão"
+  },
+  "corrupted-rat": {
+    "name": "Corrompido Rato"
+  },
+  "corruption-devil-paeliryon": {
+    "name": "Diabo Corrupção (Paeliryon)"
+  },
+  "cosmic-horror": {
+    "name": "Cosmic Horror"
+  },
+  "cosmotronic-blastseeker": {
+    "name": "Cosmotronic Blastseeker"
+  },
+  "count-thullen": {
+    "name": "Conde Thullen"
+  },
+  "counterflux-blastseeker": {
+    "name": "Counterflux Blastseeker"
+  },
+  "countess-sansuri": {
+    "name": "Countess Sansuri"
+  },
+  "cow": {
+    "name": "Vaca"
+  },
+  "crab-folk": {
+    "name": "Caranguejo Folk"
+  },
+  "cradle-of-the-cloud-scion": {
+    "name": "Cradle of the Nuvem Scion"
+  },
+  "cradle-of-the-fire-scion": {
+    "name": "Cradle of the Fogo Scion"
+  },
+  "cradle-of-the-frost-scion": {
+    "name": "Cradle of the Gelo Scion"
+  },
+  "cradle-of-the-hill-scion": {
+    "name": "Cradle of the Colina Scion"
+  },
+  "cradle-of-the-stone-scion": {
+    "name": "Cradle of the Pedra Scion"
+  },
+  "cradle-of-the-storm-scion": {
+    "name": "Cradle of the Tempestade Scion"
+  },
+  "crag-cat": {
+    "name": "Crag Gato"
+  },
+  "cranium-rat": {
+    "name": "Cranium Rato"
+  },
+  "cranium-rat-squeaker": {
+    "name": "Cranium Rato Squeaker"
+  },
+  "cranium-rat-squeaker-swarm": {
+    "name": "Cranium Rato Squeaker Enxame"
+  },
+  "creeper": {
+    "name": "Creeper"
+  },
+  "creepy-doll": {
+    "name": "Creepy Boneca"
+  },
+  "cressaro": {
+    "name": "Cressaro"
+  },
+  "crimson-helmed-horror": {
+    "name": "Carmesim Encouraçado Horror"
+  },
+  "criosphinx": {
+    "name": "Criosphinx"
+  },
+  "crokektoeck": {
+    "name": "Crokek'toeck"
+  },
+  "crow": {
+    "name": "Corvo"
+  },
+  "crunch": {
+    "name": "Crunch"
+  },
+  "crushing-wave-priest": {
+    "name": "Crushing Onda Sacerdote"
+  },
+  "crushing-wave-reaver": {
+    "name": "Crushing Onda Reaver"
+  },
+  "cryonax": {
+    "name": "Cryonax"
+  },
+  "cryovain": {
+    "name": "Cryovain"
+  },
+  "crystal-battleaxe": {
+    "name": "Cristal Battleaxe"
+  },
+  "crystal-cave-merfolk": {
+    "name": "Cristal Caverna Tritão"
+  },
+  "crystal-dragon-wyrmling": {
+    "name": "Filhote de Cristal Dragão"
+  },
+  "crystal-golem": {
+    "name": "Golem de Cristal"
+  },
+  "crystal-greatwyrm": {
+    "name": "Cristal Greatwyrm"
+  },
+  "crystal-helm-nothic": {
+    "name": "Cristal Elmo Nothic"
+  },
+  "ctenmiir-the-vampire": {
+    "name": "Ctenmiir, o Vampiro"
+  },
+  "cudgel-ironsmile": {
+    "name": "Cudgel Ironsmile"
+  },
+  "cultist-of-bane": {
+    "name": "Cultista of Perdição"
+  },
+  "cultist-of-bhaal": {
+    "name": "Cultista of Bhaal"
+  },
+  "cultist-of-demogorgon": {
+    "name": "Cultista of Demogorgon"
+  },
+  "cultist-of-myrkul": {
+    "name": "Cultista of Myrkul"
+  },
+  "cuprilach-rilmani": {
+    "name": "Cuprilach Rilmani"
+  },
+  "curate": {
+    "name": "Curate"
+  },
+  "curran-corvalin": {
+    "name": "Curran Corvalin"
+  },
+  "cyclops": {
+    "name": "Ciclope"
+  },
+  "cyrus-belview": {
+    "name": "Cyrus Belview"
+  },
+  "daask-bruiser": {
+    "name": "Daask Bruiser"
+  },
+  "daask-raider": {
+    "name": "Daask Raider"
+  },
+  "dabus": {
+    "name": "Dabus"
+  },
+  "daemogoth": {
+    "name": "Daemogoth"
+  },
+  "daemogoth-titan": {
+    "name": "Daemogoth Titan"
+  },
+  "dagdra-deepforge": {
+    "name": "Dagdra Deepforge"
+  },
+  "dagryn": {
+    "name": "Dagryn"
+  },
+  "dalamar": {
+    "name": "Dalamar"
+  },
+  "damaged-flesh-golem": {
+    "name": "Golem de Danificado Carne"
+  },
+  "dancing-flame": {
+    "name": "Dancing Chama"
+  },
+  "dancing-item": {
+    "name": "Dancing Item"
+  },
+  "dandylion": {
+    "name": "Dandylion"
+  },
+  "danika-dorakova": {
+    "name": "Danika Dorakova"
+  },
+  "dankwood-duergar": {
+    "name": "Dankwood Duergar"
+  },
+  "dankwood-grung": {
+    "name": "Dankwood Grung"
+  },
+  "dankwood-hag": {
+    "name": "Bruxa Dankwood"
+  },
+  "darathra-shendrel": {
+    "name": "Darathra Shendrel"
+  },
+  "dardew": {
+    "name": "Dardew"
+  },
+  "darien": {
+    "name": "Darien"
+  },
+  "dark-tide-knight": {
+    "name": "Sombrio Maré Cavaleiro"
+  },
+  "darkling": {
+    "name": "Darkling"
+  },
+  "darkling-elder": {
+    "name": "Darkling Ancião"
+  },
+  "darkweaver": {
+    "name": "Darkweaver"
+  },
+  "darrett-highwater": {
+    "name": "Darrett Highwater"
+  },
+  "darz-helgar": {
+    "name": "Darz Helgar"
+  },
+  "davian-martikov": {
+    "name": "Davian Martikov"
+  },
+  "davil-starsong": {
+    "name": "Davil Starsong"
+  },
+  "dead-three-scion": {
+    "name": "Dead Three Scion"
+  },
+  "deadbark-dryad": {
+    "name": "Deadbark Dríade"
+  },
+  "deadstone-cleft-stone-giant": {
+    "name": "Deadstone Cleft Pedra Gigante"
+  },
+  "death-embrace": {
+    "name": "Morte Embrace"
+  },
+  "death-giant-reaper": {
+    "name": "Gigante da Morte Reaper"
+  },
+  "death-giant-shrouded-one": {
+    "name": "Gigante da Morte Shrouded One"
+  },
+  "death-kiss": {
+    "name": "Morte Kiss"
+  },
+  "death-slaad": {
+    "name": "Morte Slaad"
+  },
+  "deaths-head": {
+    "name": "Death's Head"
+  },
+  "deaths-head-of-bhaal": {
+    "name": "Death's Head of Bhaal"
+  },
+  "deathless-rider": {
+    "name": "Deathless Rider"
+  },
+  "deathlock": {
+    "name": "Deathlock"
+  },
+  "deathlock-mastermind": {
+    "name": "Deathlock Mastermind"
+  },
+  "deathlock-wight": {
+    "name": "Deathlock Corpo Seco"
+  },
+  "deathpact-angel": {
+    "name": "Deathpact Angel"
+  },
+  "deathwolf": {
+    "name": "Deathwolf"
+  },
+  "decapus": {
+    "name": "Decapus"
+  },
+  "decaton-modron": {
+    "name": "Decaton Modron"
+  },
+  "deck-defender": {
+    "name": "Deck Defender"
+  },
+  "deep-crow": {
+    "name": "Profundo Corvo"
+  },
+  "deep-dragon-wyrmling": {
+    "name": "Filhote de Profundo Dragão"
+  },
+  "deep-roth": {
+    "name": "Profundo Rothé"
+  },
+  "deep-scion": {
+    "name": "Profundo Scion"
+  },
+  "deep-spider": {
+    "name": "Profundo Aranha"
+  },
+  "deepking-horgar-steelshadow-v": {
+    "name": "Deepking Horgar Steelshadow V"
+  },
+  "deformed-duergar": {
+    "name": "Deformado Duergar"
+  },
+  "degloth": {
+    "name": "Degloth"
+  },
+  "deinonychus": {
+    "name": "Deinonychus"
+  },
+  "demelin": {
+    "name": "Demelin"
+  },
+  "demobat": {
+    "name": "Demobat"
+  },
+  "demodog": {
+    "name": "Demodog"
+  },
+  "demodragon": {
+    "name": "Demodragon"
+  },
+  "demogorgon": {
+    "name": "Demogorgon"
+  },
+  "demogorgon-spawn": {
+    "name": "Cria de Demogorgon"
+  },
+  "demon": {
+    "name": "Demônio"
+  },
+  "demon-ichor": {
+    "name": "Demônio Ichor"
+  },
+  "demonlord-of-ashmouth": {
+    "name": "Demonlord of Ashmouth"
+  },
+  "demos-magen": {
+    "name": "Demos Magen"
+  },
+  "dermot-wurder-tier-1": {
+    "name": "Dermot Wurder (Tier 1)"
+  },
+  "dermot-wurder-tier-2": {
+    "name": "Dermot Wurder (Tier 2)"
+  },
+  "dermot-wurder-tier-3": {
+    "name": "Dermot Wurder (Tier 3)"
+  },
+  "derro": {
+    "name": "Derro"
+  },
+  "derro-apprentice": {
+    "name": "Derro Apprentice"
+  },
+  "derro-raider": {
+    "name": "Derro Raider"
+  },
+  "derro-savant": {
+    "name": "Derro Savant"
+  },
+  "derwyth": {
+    "name": "Derwyth"
+  },
+  "deseyna-majarra": {
+    "name": "Deseyna Majarra"
+  },
+  "detached-shadow": {
+    "name": "Detached Sombrio"
+  },
+  "devil-dog": {
+    "name": "Diabo Cão"
+  },
+  "devkarin-lich": {
+    "name": "Devkarin Lich"
+  },
+  "devorastus": {
+    "name": "Devorastus"
+  },
+  "devourer": {
+    "name": "Devorador"
+  },
+  "dezmyr-shadowdusk": {
+    "name": "Dezmyr Shadowdusk"
+  },
+  "dhergoloth": {
+    "name": "Dhergoloth"
+  },
+  "diatryma": {
+    "name": "Diatryma"
+  },
+  "diderius": {
+    "name": "Diderius"
+  },
+  "dimetrodon": {
+    "name": "Dimetrodon"
+  },
+  "dining-table-mimic": {
+    "name": "Dining Table Mímico"
+  },
+  "dinosaur-skeleton": {
+    "name": "Esqueleto de Dinosaur"
+  },
+  "dire-corby": {
+    "name": "Corby Gigante"
+  },
+  "dire-troll": {
+    "name": "Troll Gigante"
+  },
+  "dirt-under-nails": {
+    "name": "Dirt-Under-Nails"
+  },
+  "disciple": {
+    "name": "Disciple"
+  },
+  "dispater": {
+    "name": "Dispater"
+  },
+  "displacer-beast": {
+    "name": "Displacer Besta"
+  },
+  "displacer-beast-kitten": {
+    "name": "Displacer Besta Kitten"
+  },
+  "displacer-fiend": {
+    "name": "Displacer Demônio"
+  },
+  "distended-corpse": {
+    "name": "Distended Cadáver"
+  },
+  "diva": {
+    "name": "Diva"
+  },
+  "diva-luma": {
+    "name": "Diva Luma"
+  },
+  "diviner": {
+    "name": "Adivinho"
+  },
+  "diviner-wizard": {
+    "name": "Adivinho Mago"
+  },
+  "djeneba": {
+    "name": "Djeneba"
+  },
+  "dohwar": {
+    "name": "Dohwar"
+  },
+  "dolgaunt": {
+    "name": "Dolgaunt"
+  },
+  "dolphin": {
+    "name": "Golfinho"
+  },
+  "dolphin-delighter": {
+    "name": "Golfinho Delighter"
+  },
+  "domestic-wonder": {
+    "name": "Domestic Wonder"
+  },
+  "don-jon-raskin": {
+    "name": "Don-Jon Raskin"
+  },
+  "donaar-blitzen": {
+    "name": "Donaar Blit'zen"
+  },
+  "donavich": {
+    "name": "Donavich"
+  },
+  "doomguard-doom-lord": {
+    "name": "Doomguard Perdição Senhor"
+  },
+  "doomguard-rot-blade": {
+    "name": "Doomguard Podridão Lâmina"
+  },
+  "doomwake-giant": {
+    "name": "Gigante de Doomwake"
+  },
+  "doric": {
+    "name": "Doric"
+  },
+  "doru": {
+    "name": "Doru"
+  },
+  "dr-cassee-dannell": {
+    "name": "Dr. Cassee Dannell"
+  },
+  "dracohydra": {
+    "name": "Dracohydra"
+  },
+  "draconian-dreadnought": {
+    "name": "Draconian Dreadnought"
+  },
+  "draconian-foot-soldier": {
+    "name": "Draconian Foot Soldado"
+  },
+  "draconian-infiltrator": {
+    "name": "Draconian Infiltrator"
+  },
+  "draconian-mage": {
+    "name": "Draconian Mago"
+  },
+  "draconian-mastermind": {
+    "name": "Draconian Mastermind"
+  },
+  "draconic-shard": {
+    "name": "Draconic Shard"
+  },
+  "draconic-spirit": {
+    "name": "Espírito Draconic"
+  },
+  "dracophage-subject": {
+    "name": "Dracophage Subject"
+  },
+  "draegloth": {
+    "name": "Draegloth"
+  },
+  "dragon": {
+    "name": "Dragão"
+  },
+  "dragon-army-dragonnel": {
+    "name": "Dragão Army Dragonnel"
+  },
+  "dragon-army-officer": {
+    "name": "Dragão Army Officer"
+  },
+  "dragon-army-soldier": {
+    "name": "Dragão Army Soldado"
+  },
+  "dragon-blessed": {
+    "name": "Dragão Abençoado"
+  },
+  "dragon-chosen": {
+    "name": "Dragão Escolhido"
+  },
+  "dragon-hunter": {
+    "name": "Dragão Caçador"
+  },
+  "dragon-speaker": {
+    "name": "Dragão Porta-Voz"
+  },
+  "dragon-tortoise": {
+    "name": "Dragão Tartaruga"
+  },
+  "dragon-turtle-wyrmling": {
+    "name": "Filhote de Dragão Tartaruga"
+  },
+  "dragonbait": {
+    "name": "Dragonbait"
+  },
+  "dragonblood-ooze": {
+    "name": "Dragonblood Gosma"
+  },
+  "dragonbone-golem": {
+    "name": "Golem de Dragonbone"
+  },
+  "dragonborn-of-bahamut": {
+    "name": "Draconato of Bahamut"
+  },
+  "dragonborn-of-sardior": {
+    "name": "Draconato of Sardior"
+  },
+  "dragonborn-of-tiamat": {
+    "name": "Draconato of Tiamat"
+  },
+  "dragonclaw": {
+    "name": "Dragonclaw"
+  },
+  "dragonfang": {
+    "name": "Dragonfang"
+  },
+  "dragonflesh-abomination": {
+    "name": "Dragonflesh Abomination"
+  },
+  "dragonflesh-grafter": {
+    "name": "Dragonflesh Grafter"
+  },
+  "dragonnel": {
+    "name": "Dragonnel"
+  },
+  "dragonpriest": {
+    "name": "Dragonpriest"
+  },
+  "dragonsoul": {
+    "name": "Dragonsoul"
+  },
+  "dragonwing": {
+    "name": "Dragonwing"
+  },
+  "drake-large": {
+    "name": "Draco (Large)"
+  },
+  "drake-small": {
+    "name": "Draco (Small)"
+  },
+  "drake-companion": {
+    "name": "Draco Companion"
+  },
+  "dralmorrer-borngray": {
+    "name": "Dralmorrer Borngray"
+  },
+  "drannin-splithelm": {
+    "name": "Drannin Splithelm"
+  },
+  "dread-doppelganger": {
+    "name": "Pavor Doppelgänger"
+  },
+  "dread-warrior": {
+    "name": "Pavor Guerreiro"
+  },
+  "dreaming-dark-infiltrator": {
+    "name": "Sonhador Sombrio Infiltrator"
+  },
+  "dreaming-dark-mindkiller": {
+    "name": "Sonhador Sombrio Mindkiller"
+  },
+  "drelnza": {
+    "name": "Drelnza"
+  },
+  "drevin": {
+    "name": "Drevin"
+  },
+  "drivvin-freth": {
+    "name": "Drivvin Freth"
+  },
+  "droki": {
+    "name": "Droki"
+  },
+  "drow-acolyte": {
+    "name": "Drow Acólito"
+  },
+  "drow-arachnomancer": {
+    "name": "Drow Arachnomancer"
+  },
+  "drow-assassin": {
+    "name": "Drow Assassino"
+  },
+  "drow-bandit": {
+    "name": "Drow Bandido"
+  },
+  "drow-commander": {
+    "name": "Drow Comandante"
+  },
+  "drow-commoner": {
+    "name": "Drow Plebeu"
+  },
+  "drow-cultist": {
+    "name": "Drow Cultista"
+  },
+  "drow-elite-warrior": {
+    "name": "Drow Elite Guerreiro"
+  },
+  "drow-elite-warrior-of-lolth": {
+    "name": "Drow Elite Guerreiro of Lolth"
+  },
+  "drow-favored-consort": {
+    "name": "Drow Favorecido Consort"
+  },
+  "drow-guard": {
+    "name": "Drow Guarda"
+  },
+  "drow-gunslinger": {
+    "name": "Drow Gunslinger"
+  },
+  "drow-house-captain": {
+    "name": "Drow House Capitão"
+  },
+  "drow-inquisitor": {
+    "name": "Drow Inquisidor"
+  },
+  "drow-mage": {
+    "name": "Drow Mago"
+  },
+  "drow-mage-of-lolth": {
+    "name": "Drow Mago of Lolth"
+  },
+  "drow-matron-mother": {
+    "name": "Drow Matron Mother"
+  },
+  "drow-noble": {
+    "name": "Drow Nobre"
+  },
+  "drow-of-lolth": {
+    "name": "Drow of Lolth"
+  },
+  "drow-priestess-of-lolth": {
+    "name": "Drow Priestess of Lolth"
+  },
+  "drow-scout": {
+    "name": "Drow Batedor"
+  },
+  "drow-shadowblade": {
+    "name": "Drow Shadowblade"
+  },
+  "drow-spore-servant": {
+    "name": "Drow Spore Servo"
+  },
+  "drow-spy": {
+    "name": "Drow Espião"
+  },
+  "drowned-ascetic": {
+    "name": "Drowned Ascetic"
+  },
+  "drowned-assassin": {
+    "name": "Drowned Assassino"
+  },
+  "drowned-blade": {
+    "name": "Drowned Lâmina"
+  },
+  "drowned-master": {
+    "name": "Drowned Mestre"
+  },
+  "drufi": {
+    "name": "Drufi"
+  },
+  "druid-of-the-old-ways": {
+    "name": "Druida of the Velho Ways"
+  },
+  "dryad-spirit": {
+    "name": "Espírito Dríade"
+  },
+  "duchess-brimskarda": {
+    "name": "Duchess Brimskarda"
+  },
+  "duergar-alchemist": {
+    "name": "Duergar Alquimista"
+  },
+  "duergar-darkhaft": {
+    "name": "Duergar Darkhaft"
+  },
+  "duergar-despot": {
+    "name": "Duergar Despot"
+  },
+  "duergar-hammerer": {
+    "name": "Duergar Hammerer"
+  },
+  "duergar-kavalrachni": {
+    "name": "Duergar Kavalrachni"
+  },
+  "duergar-keeper-of-the-flame": {
+    "name": "Duergar Guardião of the Chama"
+  },
+  "duergar-mind-master": {
+    "name": "Duergar Mente Mestre"
+  },
+  "duergar-screamer": {
+    "name": "Duergar Screamer"
+  },
+  "duergar-soulblade": {
+    "name": "Duergar Soulblade"
+  },
+  "duergar-spore-servant": {
+    "name": "Duergar Spore Servo"
+  },
+  "duergar-spy": {
+    "name": "Duergar Espião"
+  },
+  "duergar-stone-guard": {
+    "name": "Duergar Pedra Guarda"
+  },
+  "duergar-warlord": {
+    "name": "Duergar Senhor da Guerra"
+  },
+  "duergar-xarrorn": {
+    "name": "Duergar Xarrorn"
+  },
+  "duke-thalamra-vanthampur": {
+    "name": "Duque Thalamra Vanthampur"
+  },
+  "duke-zalto": {
+    "name": "Duque Zalto"
+  },
+  "dukha-bhatiyali": {
+    "name": "Dukha Bhatiyali"
+  },
+  "dullahan": {
+    "name": "Dullahan"
+  },
+  "dum-dum-goblin": {
+    "name": "Dum-Dum Goblin"
+  },
+  "dunbarrow-witch": {
+    "name": "Dunbarrow Bruxa"
+  },
+  "duodrone": {
+    "name": "Duodrone"
+  },
+  "durnan": {
+    "name": "Durnan"
+  },
+  "durnn": {
+    "name": "Durnn"
+  },
+  "durstan-rial": {
+    "name": "Durstan Rial"
+  },
+  "dusk-hag": {
+    "name": "Bruxa Dusk"
+  },
+  "duskwalker": {
+    "name": "Duskwalker"
+  },
+  "dust-hulk": {
+    "name": "Poeira Hulk"
+  },
+  "duvessa-shane": {
+    "name": "Duvessa Shane"
+  },
+  "dwarf": {
+    "name": "Anão"
+  },
+  "dwarf-skeleton": {
+    "name": "Esqueleto de Anão"
+  },
+  "dwarven-worker": {
+    "name": "Dwarven Worker"
+  },
+  "dybbuk": {
+    "name": "Dybbuk"
+  },
+  "dyrrn": {
+    "name": "Dyrrn"
+  },
+  "dzaan": {
+    "name": "Dzaan"
+  },
+  "dzaans-simulacrum": {
+    "name": "Dzaan's Simulacrum"
+  },
+  "earth-elemental-myrmidon": {
+    "name": "Elemental da Terra Myrmidon"
+  },
+  "earth-totem-elemental": {
+    "name": "Terra Totem Elemental"
+  },
+  "east-wind": {
+    "name": "East Vento"
+  },
+  "eater-of-hope": {
+    "name": "Eater of Hope"
+  },
+  "eater-of-knowledge": {
+    "name": "Eater of Knowledge"
+  },
+  "eblis": {
+    "name": "Eblis"
+  },
+  "ebonclaw": {
+    "name": "Ebonclaw"
+  },
+  "ebondeath": {
+    "name": "Ebondeath"
+  },
+  "echo-of-demogorgon": {
+    "name": "Echo of Demogorgon"
+  },
+  "edgin-darvis": {
+    "name": "Edgin Darvis"
+  },
+  "edwin-odesseiron": {
+    "name": "Edwin Odesseiron"
+  },
+  "egg-hunter-adult": {
+    "name": "Egg Caçador Adulto"
+  },
+  "egg-hunter-hatchling": {
+    "name": "Egg Caçador Filhote"
+  },
+  "eidolon": {
+    "name": "Eidolon"
+  },
+  "eigerons-ghost": {
+    "name": "Fantasma Eigeron's"
+  },
+  "eira": {
+    "name": "Eira"
+  },
+  "ekene-afa": {
+    "name": "Ekene-Afa"
+  },
+  "ekengarik": {
+    "name": "Ekengarik"
+  },
+  "eku": {
+    "name": "Eku"
+  },
+  "elaina-sartell": {
+    "name": "Elaina Sartell"
+  },
+  "elder-black-pudding": {
+    "name": "Negro Pudding Ancião"
+  },
+  "elder-brain": {
+    "name": "Cérebro Ancião"
+  },
+  "elder-brain-dragon": {
+    "name": "Dragão Cérebro Ancião"
+  },
+  "elder-dinosaur": {
+    "name": "Dinosaur Ancião"
+  },
+  "elder-dinosaur-etali-primal-storm": {
+    "name": "Dinosaur (Etali, Primal Storm) Ancião"
+  },
+  "elder-dinosaur-ghalta-primal-hunger": {
+    "name": "Dinosaur (Ghalta, Primal Hunger) Ancião"
+  },
+  "elder-dinosaur-nezahal-primal-tide": {
+    "name": "Dinosaur (Nezahal, Primal Tide) Ancião"
+  },
+  "elder-dinosaur-tetzimoc-primal-death": {
+    "name": "Dinosaur (Tetzimoc, Primal Death) Ancião"
+  },
+  "elder-dinosaur-zacama-primal-calamity": {
+    "name": "Dinosaur (Zacama, Primal Calamity) Ancião"
+  },
+  "elder-dinosaur-zetalpa-primal-dawn": {
+    "name": "Dinosaur (Zetalpa, Primal Dawn) Ancião"
+  },
+  "elder-giant-lizard": {
+    "name": "Gigante de Ancião Lagarto"
+  },
+  "elder-monastery-of-the-distressed-body-monk": {
+    "name": "Monastery of the Distressed Body Monge Ancião"
+  },
+  "elder-oblex": {
+    "name": "Oblex Ancião"
+  },
+  "elder-tempest": {
+    "name": "Tempest Ancião"
+  },
+  "eldeth-feldrun": {
+    "name": "Eldeth Feldrun"
+  },
+  "eldon-keyward": {
+    "name": "Eldon Keyward"
+  },
+  "eldritch-eddy": {
+    "name": "Eldritch Eddy"
+  },
+  "eldritch-horror-hatchling": {
+    "name": "Eldritch Horror Filhote"
+  },
+  "eldritch-lich": {
+    "name": "Eldritch Lich"
+  },
+  "elemental-spirit": {
+    "name": "Espírito Elemental"
+  },
+  "eliphas-adulare": {
+    "name": "Eliphas Adulare"
+  },
+  "elise": {
+    "name": "Elise"
+  },
+  "elister": {
+    "name": "Elister"
+  },
+  "elizar-dryflagon": {
+    "name": "Elizar Dryflagon"
+  },
+  "elkhorn": {
+    "name": "Elkhorn"
+  },
+  "elliach": {
+    "name": "Elliach"
+  },
+  "elok-jaharwon": {
+    "name": "Elok Jaharwon"
+  },
+  "elzerina-cassalanter": {
+    "name": "Elzerina Cassalanter"
+  },
+  "ember": {
+    "name": "Ember"
+  },
+  "emberhorn-minotaur": {
+    "name": "Emberhorn Minotauro"
+  },
+  "emberosa": {
+    "name": "Emberosa"
+  },
+  "embric": {
+    "name": "Embric"
+  },
+  "emerald-claw-commander": {
+    "name": "Esmeralda Garra Comandante"
+  },
+  "emerald-claw-knight": {
+    "name": "Esmeralda Garra Cavaleiro"
+  },
+  "emerald-dragon-wyrmling": {
+    "name": "Filhote de Esmeralda Dragão"
+  },
+  "emerald-enclave-scout": {
+    "name": "Esmeralda Enclave Batedor"
+  },
+  "emerald-greatwyrm": {
+    "name": "Esmeralda Greatwyrm"
+  },
+  "emil-toranescu": {
+    "name": "Emil Toranescu"
+  },
+  "emmek-frewn": {
+    "name": "Emmek Frewn"
+  },
+  "emo": {
+    "name": "Emo"
+  },
+  "emrakul": {
+    "name": "Emrakul"
+  },
+  "encephalon-cluster": {
+    "name": "Encephalon Cluster"
+  },
+  "encephalon-gemmule": {
+    "name": "Encephalon Gemmule"
+  },
+  "enchanter": {
+    "name": "Encantador"
+  },
+  "enchanter-wizard": {
+    "name": "Encantador Mago"
+  },
+  "enchanting-infiltrator": {
+    "name": "Enchanting Infiltrator"
+  },
+  "endelyn-moongrave": {
+    "name": "Endelyn Moongrave"
+  },
+  "ender-dragon": {
+    "name": "Dragão Ender"
+  },
+  "enderman": {
+    "name": "Enderman"
+  },
+  "engineer": {
+    "name": "Engineer"
+  },
+  "enhanced-medusa": {
+    "name": "Enhanced Medusa"
+  },
+  "enna-galakiir-levels-1-4": {
+    "name": "Enna Galakiir (Levels 1-4)"
+  },
+  "enna-galakiir-levels-5-8": {
+    "name": "Enna Galakiir (Levels 5-8)"
+  },
+  "enna-galakiir-levels-9-11": {
+    "name": "Enna Galakiir (Levels 9-11)"
+  },
+  "enormous-tentacle": {
+    "name": "Enormous Tentacle"
+  },
+  "envy": {
+    "name": "Inveja"
+  },
+  "eo-ashmajiir": {
+    "name": "Eo Ashmajiir"
+  },
+  "equinal-guardinal": {
+    "name": "Equinal Guardinal"
+  },
+  "eriflamme": {
+    "name": "Eriflamme"
+  },
+  "erky-timbers": {
+    "name": "Erky Timbers"
+  },
+  "ervan-soulfallen": {
+    "name": "Ervan Soulfallen"
+  },
+  "escher": {
+    "name": "Escher"
+  },
+  "esthetic": {
+    "name": "Esthetic"
+  },
+  "estia": {
+    "name": "Estia"
+  },
+  "eternal": {
+    "name": "Eternal"
+  },
+  "eternal-flame-guardian": {
+    "name": "Eternal Chama Guardião"
+  },
+  "eternal-flame-priest": {
+    "name": "Eternal Chama Sacerdote"
+  },
+  "ettin-ceremorph": {
+    "name": "Ettin Ceremorph"
+  },
+  "euryale": {
+    "name": "Euryale"
+  },
+  "evil-mage": {
+    "name": "Evil Mago"
+  },
+  "evoker": {
+    "name": "Evocador"
+  },
+  "evoker-wizard": {
+    "name": "Evocador Mago"
+  },
+  "exethanter": {
+    "name": "Exethanter"
+  },
+  "expeditious-messenger": {
+    "name": "Expeditious Messenger"
+  },
+  "expert": {
+    "name": "Expert"
+  },
+  "exul": {
+    "name": "Exul"
+  },
+  "eye-monger": {
+    "name": "Olho Monger"
+  },
+  "eye-of-fear-and-flame": {
+    "name": "Olho of Medo and Chama"
+  },
+  "eyedrake": {
+    "name": "Eyedrake"
+  },
+  "eyestalk-of-gzemnid": {
+    "name": "Eyestalk of Gzemnid"
+  },
+  "ezmerelda-davenir": {
+    "name": "Ezmerelda d'Avenir"
+  },
+  "ezzat": {
+    "name": "Ezzat"
+  },
+  "fyorl": {
+    "name": "F'yorl"
+  },
+  "factol-skall": {
+    "name": "Factol Skall"
+  },
+  "faerie-borrower": {
+    "name": "Faerie Borrower"
+  },
+  "faerie-dragon-blue": {
+    "name": "Faerie Dragão (Blue)"
+  },
+  "faerie-dragon-green": {
+    "name": "Faerie Dragão (Green)"
+  },
+  "faerie-dragon-indigo": {
+    "name": "Faerie Dragão (Indigo)"
+  },
+  "faerie-dragon-orange": {
+    "name": "Faerie Dragão (Orange)"
+  },
+  "faerie-dragon-red": {
+    "name": "Faerie Dragão (Red)"
+  },
+  "faerie-dragon-violet": {
+    "name": "Faerie Dragão (Violet)"
+  },
+  "faerie-dragon-yellow": {
+    "name": "Faerie Dragão (Yellow)"
+  },
+  "faerie-pathlighter": {
+    "name": "Faerie Pathlighter"
+  },
+  "faerie-pest": {
+    "name": "Faerie Pest"
+  },
+  "faerl": {
+    "name": "Faerl"
+  },
+  "fala-lefaliir": {
+    "name": "Fala Lefaliir"
+  },
+  "falcon": {
+    "name": "Falcon"
+  },
+  "falcon-the-hunter": {
+    "name": "Falcon, o Caçador"
+  },
+  "faldorn": {
+    "name": "Faldorn"
+  },
+  "false-lich": {
+    "name": "False Lich"
+  },
+  "farastu-demodand": {
+    "name": "Farastu Demodand"
+  },
+  "farastu-stalker": {
+    "name": "Farastu Perseguidor"
+  },
+  "farmer": {
+    "name": "Farmer"
+  },
+  "faroul": {
+    "name": "Faroul"
+  },
+  "farrow": {
+    "name": "Farrow"
+  },
+  "fastieth": {
+    "name": "Fastieth"
+  },
+  "fate-hag": {
+    "name": "Bruxa Fate"
+  },
+  "fated-shaker": {
+    "name": "Fated Shaker"
+  },
+  "fathomer": {
+    "name": "Fathomer"
+  },
+  "fazrian": {
+    "name": "Fazrian"
+  },
+  "feathergale-knight": {
+    "name": "Feathergale Cavaleiro"
+  },
+  "fel-ardra": {
+    "name": "Fel Ardra"
+  },
+  "felrekt-lafeen": {
+    "name": "Fel'rekt Lafeen"
+  },
+  "felbarren-dwarf": {
+    "name": "Felbarren Anão"
+  },
+  "felgolos": {
+    "name": "Felgolos"
+  },
+  "felidar": {
+    "name": "Felidar"
+  },
+  "female-steeder": {
+    "name": "Female Steeder"
+  },
+  "fennor": {
+    "name": "Fennor"
+  },
+  "fensir-devourer": {
+    "name": "Fensir Devorador"
+  },
+  "fensir-skirmisher": {
+    "name": "Fensir Skirmisher"
+  },
+  "fenthaza": {
+    "name": "Fenthaza"
+  },
+  "feonor": {
+    "name": "Feonor"
+  },
+  "feral-ashenwight": {
+    "name": "Feral Ashenwight"
+  },
+  "fernitha": {
+    "name": "Fernitha"
+  },
+  "ferocidon": {
+    "name": "Ferocidon"
+  },
+  "ferol-sal": {
+    "name": "Ferol Sal"
+  },
+  "ferrumach-rilmani": {
+    "name": "Ferrumach Rilmani"
+  },
+  "fewmaster-gholcag": {
+    "name": "Fewmaster Gholcag"
+  },
+  "fey-spirit": {
+    "name": "Espírito Fey"
+  },
+  "feyr": {
+    "name": "Feyr"
+  },
+  "fhenimore": {
+    "name": "Fhenimore"
+  },
+  "fidelio": {
+    "name": "Fidelio"
+  },
+  "fiendish-auger": {
+    "name": "Demoníaco Auger"
+  },
+  "fiendish-flesh-golem": {
+    "name": "Golem de Demoníaco Carne"
+  },
+  "fiendish-formian": {
+    "name": "Demoníaco Formian"
+  },
+  "fiendish-giant-spider": {
+    "name": "Gigante de Demoníaco Aranha"
+  },
+  "fiendish-icon": {
+    "name": "Demoníaco Icon"
+  },
+  "fiendish-orc": {
+    "name": "Demoníaco Orc"
+  },
+  "fiendish-spirit": {
+    "name": "Espírito Demoníaco"
+  },
+  "fierna": {
+    "name": "Fierna"
+  },
+  "figaro": {
+    "name": "Figaro"
+  },
+  "firbolg-primeval-warden": {
+    "name": "Firbolg Primeval Guardião"
+  },
+  "firbolg-wanderer": {
+    "name": "Firbolg Wanderer"
+  },
+  "fire-elemental-myrmidon": {
+    "name": "Elemental do Fogo Myrmidon"
+  },
+  "fire-giant-dreadnought": {
+    "name": "Gigante do Fogo Dreadnought"
+  },
+  "fire-giant-forgecaller": {
+    "name": "Gigante do Fogo Forgecaller"
+  },
+  "fire-giant-of-evil-fire": {
+    "name": "Gigante do Fogo of Evil Fogo"
+  },
+  "fire-giant-royal-headsman": {
+    "name": "Gigante do Fogo Royal Headsman"
+  },
+  "fire-giant-servant": {
+    "name": "Gigante do Fogo Servo"
+  },
+  "fire-guardian": {
+    "name": "Fogo Guardião"
+  },
+  "fire-hellion": {
+    "name": "Fogo Hellion"
+  },
+  "fire-kraken": {
+    "name": "Fogo Kraken"
+  },
+  "fire-snake": {
+    "name": "Fogo Serpente"
+  },
+  "firefist": {
+    "name": "Firefist"
+  },
+  "firegaunt": {
+    "name": "Firegaunt"
+  },
+  "firemane-angel": {
+    "name": "Firemane Angel"
+  },
+  "firenewt-warlock-of-imix": {
+    "name": "Firenewt Bruxo of Imix"
+  },
+  "firenewt-warrior": {
+    "name": "Firenewt Guerreiro"
+  },
+  "first-year-student": {
+    "name": "First-Year Student"
+  },
+  "fish": {
+    "name": "Fish"
+  },
+  "fist-of-bane": {
+    "name": "Fist of Perdição"
+  },
+  "five-armed-troll": {
+    "name": "Five-Armed Troll"
+  },
+  "flabbergast": {
+    "name": "Flabbergast"
+  },
+  "flail-snail": {
+    "name": "Mangual Caracol"
+  },
+  "flamewrath": {
+    "name": "Flamewrath"
+  },
+  "flapjack": {
+    "name": "Flapjack"
+  },
+  "flask-of-wine": {
+    "name": "Flask of Wine"
+  },
+  "fleecemane-lion": {
+    "name": "Fleecemane Leão"
+  },
+  "flesh-colossus": {
+    "name": "Carne Colossus"
+  },
+  "flesh-meld": {
+    "name": "Carne Meld"
+  },
+  "flight-alabaster-angel": {
+    "name": "Flight Alabaster Angel"
+  },
+  "flight-goldnight-angel": {
+    "name": "Flight Goldnight Angel"
+  },
+  "flight-of-moonsilver-angel": {
+    "name": "Flight of Moonsilver Angel"
+  },
+  "flimp-shagglecran": {
+    "name": "Flimp Shagglecran"
+  },
+  "flind": {
+    "name": "Flind"
+  },
+  "flitterstep-eidolon": {
+    "name": "Flitterstep Eidolon"
+  },
+  "flizzlebin": {
+    "name": "Flizzlebin"
+  },
+  "floon-blagmaar": {
+    "name": "Floon Blagmaar"
+  },
+  "flux-blastseeker": {
+    "name": "Flux Blastseeker"
+  },
+  "fluxcharger": {
+    "name": "Fluxcharger"
+  },
+  "flying-dagger": {
+    "name": "Voador Adaga"
+  },
+  "flying-horror": {
+    "name": "Voador Horror"
+  },
+  "flying-monkey": {
+    "name": "Voador Macaco"
+  },
+  "flying-rocking-horse": {
+    "name": "Voador Rocking Cavalo"
+  },
+  "flying-shield": {
+    "name": "Voador Escudo"
+  },
+  "flying-staff": {
+    "name": "Voador Cajado"
+  },
+  "flying-trident": {
+    "name": "Voador Tridente"
+  },
+  "flying-wand": {
+    "name": "Voador Varinha"
+  },
+  "flying-wonder": {
+    "name": "Voador Wonder"
+  },
+  "fog-giant": {
+    "name": "Gigante de Névoa"
+  },
+  "foghome": {
+    "name": "Foghome"
+  },
+  "fomorian-deep-crawler": {
+    "name": "Fomorian Profundo Crawler"
+  },
+  "fomorian-noble": {
+    "name": "Fomorian Nobre"
+  },
+  "fomorian-warlock-of-the-dark": {
+    "name": "Fomorian Bruxo of the Sombrio"
+  },
+  "forest-master": {
+    "name": "Floresta Mestre"
+  },
+  "foresworn": {
+    "name": "Foresworn"
+  },
+  "forge-fitzwilliam": {
+    "name": "Forge Fitzwilliam"
+  },
+  "forlarren": {
+    "name": "Forlarren"
+  },
+  "four-armed-gargoyle": {
+    "name": "Four-Armed Gárgula"
+  },
+  "four-armed-statue": {
+    "name": "Four-Armed Estátua"
+  },
+  "four-armed-troll": {
+    "name": "Four-Armed Troll"
+  },
+  "fox": {
+    "name": "Raposa"
+  },
+  "fractal-mascot": {
+    "name": "Fractal Mascot"
+  },
+  "fractine": {
+    "name": "Fractine"
+  },
+  "fragment-of-krokulmar": {
+    "name": "Fragment of Krokulmar"
+  },
+  "fraternity-of-order-law-bender": {
+    "name": "Fraternity of Ordem Law Bender"
+  },
+  "fraz-urbluu": {
+    "name": "Fraz-Urb'luu"
+  },
+  "frilled-deathspitter": {
+    "name": "Frilled Deathspitter"
+  },
+  "frody-dartwild": {
+    "name": "Frody Dartwild"
+  },
+  "froghemoth": {
+    "name": "Froghemoth"
+  },
+  "froghemoth-elder": {
+    "name": "Froghemoth Ancião"
+  },
+  "frontline-medic": {
+    "name": "Frontline Medic"
+  },
+  "frost-druid": {
+    "name": "Gelo Druida"
+  },
+  "frost-giant-everlasting-one": {
+    "name": "Gigante de Gelo Everlasting One"
+  },
+  "frost-giant-ice-shaper": {
+    "name": "Gigante de Gelo Gelo Shaper"
+  },
+  "frost-giant-of-evil-water": {
+    "name": "Gigante de Gelo of Evil Água"
+  },
+  "frost-giant-servant": {
+    "name": "Gigante de Gelo Servo"
+  },
+  "frost-giant-skeleton": {
+    "name": "Esqueleto de Gelo Gigante"
+  },
+  "frost-giant-zombie": {
+    "name": "Zumbi Gelo Gigante"
+  },
+  "frost-salamander": {
+    "name": "Gelo Salamandra"
+  },
+  "frost-worm": {
+    "name": "Gelo Verme"
+  },
+  "frostmourn": {
+    "name": "Frostmourn"
+  },
+  "frozen-golem": {
+    "name": "Golem de Congelado"
+  },
+  "frulam-mondath": {
+    "name": "Frulam Mondath"
+  },
+  "fume-drake": {
+    "name": "Draco Fume"
+  },
+  "fungal-servant": {
+    "name": "Fungal Servo"
+  },
+  "fury-of-kostchtchie": {
+    "name": "Fúria of Kostchtchie"
+  },
+  "gadabout": {
+    "name": "Gadabout"
+  },
+  "gadof-blinsky": {
+    "name": "Gadof Blinsky"
+  },
+  "gaj": {
+    "name": "Gaj"
+  },
+  "galazeth-prismari": {
+    "name": "Galazeth Prismari"
+  },
+  "galeokaerda": {
+    "name": "Galeokaerda"
+  },
+  "gallows-speaker": {
+    "name": "Gallows Porta-Voz"
+  },
+  "galsariad-ardyth-tier-1": {
+    "name": "Galsariad Ardyth (Tier 1)"
+  },
+  "galsariad-ardyth-tier-2": {
+    "name": "Galsariad Ardyth (Tier 2)"
+  },
+  "galsariad-ardyth-tier-3": {
+    "name": "Galsariad Ardyth (Tier 3)"
+  },
+  "galvan": {
+    "name": "Galvan"
+  },
+  "galvan-magen": {
+    "name": "Galvan Magen"
+  },
+  "galvanic-blastseeker": {
+    "name": "Galvanic Blastseeker"
+  },
+  "galvanice-weird": {
+    "name": "Galvanice Weird"
+  },
+  "gammon-xungoon": {
+    "name": "Gammon Xungoon"
+  },
+  "gar-shatterkeel": {
+    "name": "Gar Shatterkeel"
+  },
+  "gargantua": {
+    "name": "Gargantua"
+  },
+  "gargantuan-rug-of-smothering": {
+    "name": "Gargantuan Tapete of Smothering"
+  },
+  "garra": {
+    "name": "Garra"
+  },
+  "garret-levistusson": {
+    "name": "Garret Levistusson"
+  },
+  "gas-spore": {
+    "name": "Gas Spore"
+  },
+  "gash": {
+    "name": "Gash"
+  },
+  "gauth": {
+    "name": "Gauth"
+  },
+  "gazer": {
+    "name": "Gazer"
+  },
+  "gearbox": {
+    "name": "Gearbox"
+  },
+  "gearkeeper-construct": {
+    "name": "Gearkeeper Construto"
+  },
+  "geist": {
+    "name": "Geist"
+  },
+  "gem-stalker": {
+    "name": "Gema Perseguidor"
+  },
+  "geonid": {
+    "name": "Geonid"
+  },
+  "gertrube": {
+    "name": "Gertrube"
+  },
+  "gertruda": {
+    "name": "Gertruda"
+  },
+  "geryon": {
+    "name": "Geryon"
+  },
+  "ghald": {
+    "name": "Ghald"
+  },
+  "ghallanda-troubleshooter": {
+    "name": "Ghallanda Troubleshooter"
+  },
+  "ghazrim-duloc": {
+    "name": "Ghazrim DuLoc"
+  },
+  "ghelryn-foehammer": {
+    "name": "Ghelryn Foehammer"
+  },
+  "ghost-dragon": {
+    "name": "Dragão Fantasma"
+  },
+  "ghostblade-eidolon": {
+    "name": "Ghostblade Eidolon"
+  },
+  "giant": {
+    "name": "Gigante"
+  },
+  "giant-canary": {
+    "name": "Canary Gigante"
+  },
+  "giant-child": {
+    "name": "Child Gigante"
+  },
+  "giant-coral-snake": {
+    "name": "Coral Serpente Gigante"
+  },
+  "giant-corrupted-rat": {
+    "name": "Corrompido Rato Gigante"
+  },
+  "giant-crayfish": {
+    "name": "Crayfish Gigante"
+  },
+  "giant-dragonfly": {
+    "name": "Dragonfly Gigante"
+  },
+  "giant-fly": {
+    "name": "Mosca Gigante"
+  },
+  "giant-flying-spider": {
+    "name": "Voador Aranha Gigante"
+  },
+  "giant-four-armed-gargoyle": {
+    "name": "Four-Armed Gárgula Gigante"
+  },
+  "giant-goose": {
+    "name": "Goose Gigante"
+  },
+  "giant-ice-toad": {
+    "name": "Gelo Sapo Gigante"
+  },
+  "giant-lightning-eel": {
+    "name": "Relâmpago Enguia Gigante"
+  },
+  "giant-lynx": {
+    "name": "Lynx Gigante"
+  },
+  "giant-ox": {
+    "name": "Boi Gigante"
+  },
+  "giant-ram": {
+    "name": "Carneiro Gigante"
+  },
+  "giant-raven": {
+    "name": "Corvo Gigante"
+  },
+  "giant-riding-lizard": {
+    "name": "Riding Lagarto Gigante"
+  },
+  "giant-river-serpent": {
+    "name": "Rio Serpente Gigante"
+  },
+  "giant-rocktopus": {
+    "name": "Rocktopus Gigante"
+  },
+  "giant-sea-eel": {
+    "name": "Mar Enguia Gigante"
+  },
+  "giant-shark-skeleton": {
+    "name": "Esqueleto de Gigante Tubarão"
+  },
+  "giant-skeleton": {
+    "name": "Esqueleto de Gigante"
+  },
+  "giant-slug": {
+    "name": "Lesma Gigante"
+  },
+  "giant-snail": {
+    "name": "Caracol Gigante"
+  },
+  "giant-snapping-turtle": {
+    "name": "Snapping Tartaruga Gigante"
+  },
+  "giant-strider": {
+    "name": "Strider Gigante"
+  },
+  "giant-subterranean-lizard": {
+    "name": "Subterranean Lagarto Gigante"
+  },
+  "giant-swan": {
+    "name": "Swan Gigante"
+  },
+  "giant-tick": {
+    "name": "Tick Gigante"
+  },
+  "giant-walrus": {
+    "name": "Walrus Gigante"
+  },
+  "giant-whirlwyrm": {
+    "name": "Whirlwyrm Gigante"
+  },
+  "giant-white-moray-eel": {
+    "name": "Branco Moray Enguia Gigante"
+  },
+  "giant-zombie-constrictor-snake": {
+    "name": "Zumbi Constrictor Serpente Gigante"
+  },
+  "gibberling": {
+    "name": "Gibberling"
+  },
+  "gideon-lightward": {
+    "name": "Gideon Lightward"
+  },
+  "giff": {
+    "name": "Giff"
+  },
+  "giff-shipmate": {
+    "name": "Giff Shipmate"
+  },
+  "giff-shock-trooper": {
+    "name": "Giff Shock Trooper"
+  },
+  "giff-warlord": {
+    "name": "Giff Senhor da Guerra"
+  },
+  "gigant": {
+    "name": "Gigant"
+  },
+  "gildha-duhn": {
+    "name": "Gildha Duhn"
+  },
+  "gingerbrute": {
+    "name": "Gingerbrute"
+  },
+  "gingwatzim": {
+    "name": "Gingwatzim"
+  },
+  "girallon": {
+    "name": "Girallon"
+  },
+  "girallon-zombie": {
+    "name": "Zumbi Girallon"
+  },
+  "gisela": {
+    "name": "Gisela"
+  },
+  "gishath-suns-avatar": {
+    "name": "Gishath, Sun's Avatar"
+  },
+  "githyanki-buccaneer": {
+    "name": "Githyanki Buccaneer"
+  },
+  "githyanki-gish": {
+    "name": "Githyanki Gish"
+  },
+  "githyanki-kithrak": {
+    "name": "Githyanki Kith'rak"
+  },
+  "githyanki-knight": {
+    "name": "Githyanki Cavaleiro"
+  },
+  "githyanki-star-seer": {
+    "name": "Githyanki Estrela Vidente"
+  },
+  "githyanki-supreme-commander": {
+    "name": "Githyanki Supreme Comandante"
+  },
+  "githyanki-warrior": {
+    "name": "Githyanki Guerreiro"
+  },
+  "githyanki-xenomancer": {
+    "name": "Githyanki Xenomancer"
+  },
+  "githzerai-anarch": {
+    "name": "Githzerai Anarch"
+  },
+  "githzerai-enlightened": {
+    "name": "Githzerai Enlightened"
+  },
+  "githzerai-futurist": {
+    "name": "Githzerai Futurist"
+  },
+  "githzerai-monk": {
+    "name": "Githzerai Monge"
+  },
+  "githzerai-traveler": {
+    "name": "Githzerai Traveler"
+  },
+  "githzerai-uniter": {
+    "name": "Githzerai Uniter"
+  },
+  "githzerai-zerth": {
+    "name": "Githzerai Zerth"
+  },
+  "glabbagool": {
+    "name": "Glabbagool"
+  },
+  "glaive": {
+    "name": "Glaive"
+  },
+  "glass-pegasus": {
+    "name": "Vidro Pégaso"
+  },
+  "glasswork-golem": {
+    "name": "Golem de Glasswork"
+  },
+  "glasya": {
+    "name": "Glasya"
+  },
+  "gloam": {
+    "name": "Gloam"
+  },
+  "gloamwing": {
+    "name": "Gloamwing"
+  },
+  "gloine-nathair-nathair": {
+    "name": "Gloine Nathair-Nathair"
+  },
+  "gloom-weaver": {
+    "name": "Gloom Tecelão"
+  },
+  "gloomstalker": {
+    "name": "Gloomstalker"
+  },
+  "glyphic-shroomlight": {
+    "name": "Glyphic Shroomlight"
+  },
+  "glyster": {
+    "name": "Glyster"
+  },
+  "gnarlid": {
+    "name": "Gnarlid"
+  },
+  "gnoll-flesh-gnawer": {
+    "name": "Gnoll Carne Gnawer"
+  },
+  "gnoll-hunter": {
+    "name": "Gnoll Caçador"
+  },
+  "gnoll-vampire": {
+    "name": "Gnoll Vampiro"
+  },
+  "gnoll-warrior": {
+    "name": "Gnoll Guerreiro"
+  },
+  "gnoll-witherling": {
+    "name": "Gnoll Witherling"
+  },
+  "gnome-ceremorph": {
+    "name": "Gnomo Ceremorph"
+  },
+  "gnome-squidling": {
+    "name": "Gnomo Squidling"
+  },
+  "goblin-boss-archer": {
+    "name": "Goblin Chefe Arqueiro"
+  },
+  "goblin-commoner": {
+    "name": "Goblin Plebeu"
+  },
+  "goblin-gang-member": {
+    "name": "Goblin Gang Member"
+  },
+  "goblin-psi-brawler": {
+    "name": "Goblin Psi Brawler"
+  },
+  "goblin-psi-commander": {
+    "name": "Goblin Psi Comandante"
+  },
+  "goblin-warrior": {
+    "name": "Goblin Guerreiro"
+  },
+  "gold-greatwyrm": {
+    "name": "Dourado Greatwyrm"
+  },
+  "gold-forged-sentinel": {
+    "name": "Gold-Forged Sentinela"
+  },
+  "golden-stag": {
+    "name": "Dourado Cervo"
+  },
+  "golgari-shaman": {
+    "name": "Golgari Xamã"
+  },
+  "goliath-giant-kin": {
+    "name": "Golias Giant-Kin"
+  },
+  "goliath-warrior": {
+    "name": "Golias Guerreiro"
+  },
+  "goliath-werebear": {
+    "name": "Golias Werebear"
+  },
+  "gomazoa": {
+    "name": "Gomazoa"
+  },
+  "gondolo": {
+    "name": "Gondolo"
+  },
+  "goon": {
+    "name": "Goon"
+  },
+  "goon-balloon": {
+    "name": "Goon Balloon"
+  },
+  "goose-mother": {
+    "name": "Goose Mother"
+  },
+  "gorka-tharn": {
+    "name": "Gorka Tharn"
+  },
+  "gorthok-the-thunder-boar": {
+    "name": "Gorthok, o Trovão Javali"
+  },
+  "gorvan-ironheart": {
+    "name": "Gorvan Ironheart"
+  },
+  "gorzils-gang-troglodyte": {
+    "name": "Gorzil's Gang Troglodyte"
+  },
+  "grabstab": {
+    "name": "Grabstab"
+  },
+  "grandfather-oak": {
+    "name": "Grandfather Oak"
+  },
+  "grandfather-zitembe": {
+    "name": "Grandfather Zitembe"
+  },
+  "grandlejaw": {
+    "name": "Grandlejaw"
+  },
+  "grandolpha-muzgardt": {
+    "name": "Grandolpha Muzgardt"
+  },
+  "granite-juggernaut": {
+    "name": "Granite Juggernaut"
+  },
+  "gray-ooze-glob": {
+    "name": "Cinzento Gosma Glob"
+  },
+  "gray-render": {
+    "name": "Cinzento Render"
+  },
+  "gray-scavver": {
+    "name": "Cinzento Scavver"
+  },
+  "gray-slaad": {
+    "name": "Cinzento Slaad"
+  },
+  "grazzt": {
+    "name": "Graz'zt"
+  },
+  "grazilaxx": {
+    "name": "Grazilaxx"
+  },
+  "great-cat": {
+    "name": "Great Gato"
+  },
+  "great-chief-halric-bonesnapper": {
+    "name": "Great Chefe Halric Bonesnapper"
+  },
+  "great-kroom-purple-worm": {
+    "name": "Great Kroom, Púrpura Verme"
+  },
+  "great-ulfe": {
+    "name": "Great Ulfe"
+  },
+  "greater-death-dragon": {
+    "name": "Dragão Maior Morte"
+  },
+  "greater-shadow-horror": {
+    "name": "Sombrio Horror Maior"
+  },
+  "greater-star-spawn-emissary": {
+    "name": "Estrela Cria Emissário Maior"
+  },
+  "greater-tyrant-shadow": {
+    "name": "Tyrant Sombrio Maior"
+  },
+  "greater-zombie": {
+    "name": "Zumbi Maior"
+  },
+  "green-abishai": {
+    "name": "Verde Abishai"
+  },
+  "green-greatwyrm": {
+    "name": "Verde Greatwyrm"
+  },
+  "green-guard-drake": {
+    "name": "Draco Verde Guarda"
+  },
+  "green-slaad": {
+    "name": "Verde Slaad"
+  },
+  "gregir-fendelsohn-levels-1-4": {
+    "name": "Gregir Fendelsohn (Levels 1-4)"
+  },
+  "gregir-fendelsohn-levels-5-8": {
+    "name": "Gregir Fendelsohn (Levels 5-8)"
+  },
+  "gregir-fendelsohn-levels-9-11": {
+    "name": "Gregir Fendelsohn (Levels 9-11)"
+  },
+  "grell": {
+    "name": "Grell"
+  },
+  "grell-psychic": {
+    "name": "Grell Psíquico"
+  },
+  "gremishka": {
+    "name": "Gremishka"
+  },
+  "gremorlys-ghost": {
+    "name": "Fantasma Gremorly's"
+  },
+  "grenl": {
+    "name": "Grenl"
+  },
+  "grick-alpha": {
+    "name": "Grick Alpha"
+  },
+  "griffin": {
+    "name": "Griffin"
+  },
+  "griffin-type-1": {
+    "name": "Griffin (Tipo 1)"
+  },
+  "griffin-type-2": {
+    "name": "Griffin (Tipo 2)"
+  },
+  "griffon-cavalry-rider": {
+    "name": "Grifo Cavalry Rider"
+  },
+  "grim-champion-of-bloodshed": {
+    "name": "Grim Campeão of Bloodshed"
+  },
+  "grim-champion-of-desolation": {
+    "name": "Grim Campeão of Desolation"
+  },
+  "grim-champion-of-pestilence": {
+    "name": "Grim Campeão of Pestilence"
+  },
+  "grimzod-gargenhale": {
+    "name": "Grimzod Gargenhale"
+  },
+  "grinda-garloth": {
+    "name": "Grinda Garloth"
+  },
+  "grinning-cat": {
+    "name": "Grinning Gato"
+  },
+  "grippli-warrior": {
+    "name": "Grippli Guerreiro"
+  },
+  "grisdelfawr": {
+    "name": "Grisdelfawr"
+  },
+  "grisha": {
+    "name": "Grisha"
+  },
+  "groff": {
+    "name": "Groff"
+  },
+  "grotesque-tentacle": {
+    "name": "Grotesque Tentacle"
+  },
+  "grottenelle-stonecutter": {
+    "name": "Grottenelle Stonecutter"
+  },
+  "grumshar": {
+    "name": "Grum'shar"
+  },
+  "grumink-the-renegade": {
+    "name": "Grumink, a Renegade"
+  },
+  "grung": {
+    "name": "Grung"
+  },
+  "grung-elite-warrior": {
+    "name": "Grung Elite Guerreiro"
+  },
+  "grung-wildling": {
+    "name": "Grung Wildling"
+  },
+  "grunka": {
+    "name": "Grunka"
+  },
+  "grutha": {
+    "name": "Grutha"
+  },
+  "gryz-alakritos": {
+    "name": "Gryz Alakritos"
+  },
+  "guard-drake": {
+    "name": "Draco Guarda"
+  },
+  "guardian-giant": {
+    "name": "Gigante de Guardião"
+  },
+  "guardian-of-gorm": {
+    "name": "Guardião of Gorm"
+  },
+  "guardian-portrait": {
+    "name": "Guardião Portrait"
+  },
+  "guardian-wolf": {
+    "name": "Guardião Lobo"
+  },
+  "gundren-rockseeker": {
+    "name": "Gundren Rockseeker"
+  },
+  "gunvald-halraggson": {
+    "name": "Gunvald Halraggson"
+  },
+  "guthash": {
+    "name": "Guthash"
+  },
+  "gwyn-oresong": {
+    "name": "Gwyn Oresong"
+  },
+  "hadozee-explorer": {
+    "name": "Hadozee Explorer"
+  },
+  "hadozee-shipmate": {
+    "name": "Hadozee Shipmate"
+  },
+  "hadozee-warrior": {
+    "name": "Hadozee Guerreiro"
+  },
+  "hadrosaur": {
+    "name": "Hadrosaur"
+  },
+  "hadrosaurus": {
+    "name": "Hadrosaurus"
+  },
+  "hag-of-the-fetid-gaze": {
+    "name": "Hag of the Fetid Olhar"
+  },
+  "haint": {
+    "name": "Haint"
+  },
+  "halaster-blackcloak": {
+    "name": "Halaster Blackcloak"
+  },
+  "halaster-horror": {
+    "name": "Halaster Horror"
+  },
+  "halaster-puppet": {
+    "name": "Halaster Marionete"
+  },
+  "half-blue-dragon-gladiator": {
+    "name": "Meio-Azul Dragão Gladiador"
+  },
+  "half-green-dragon-assassin": {
+    "name": "Meio-Verde Dragão Assassino"
+  },
+  "half-ogre-ogrillon": {
+    "name": "Meio-Ogro (Ogrillon)"
+  },
+  "half-red-dragon-gladiator": {
+    "name": "Meio-Vermelho Dragão Gladiador"
+  },
+  "halog": {
+    "name": "Halog"
+  },
+  "hamadryad": {
+    "name": "Hamadryad"
+  },
+  "hamish-hewland": {
+    "name": "Hamish Hewland"
+  },
+  "hammerskull": {
+    "name": "Hammerskull"
+  },
+  "hands-of-havoc-fire-starter": {
+    "name": "Hands of Havoc Fogo Starter"
+  },
+  "hangry-otyugh": {
+    "name": "Hangry Otyugh"
+  },
+  "hanne-hallen": {
+    "name": "Hanne Hallen"
+  },
+  "hare": {
+    "name": "Lebre"
+  },
+  "harengon-brigand": {
+    "name": "Harengon Brigand"
+  },
+  "harengon-sniper": {
+    "name": "Harengon Sniper"
+  },
+  "harkina-hunt": {
+    "name": "Harkina Hunt"
+  },
+  "harmonium-captain": {
+    "name": "Harmonium Capitão"
+  },
+  "harmonium-peacekeeper": {
+    "name": "Harmonium Peacekeeper"
+  },
+  "harpy-matriarch": {
+    "name": "Harpia Matriarch"
+  },
+  "harrow-hawk": {
+    "name": "Harrow Falcão"
+  },
+  "harrow-hound": {
+    "name": "Harrow Cão"
+  },
+  "harshnag": {
+    "name": "Harshnag"
+  },
+  "harvester-devil": {
+    "name": "Diabo Harvester"
+  },
+  "hashalaq-quori": {
+    "name": "Hashalaq Quori"
+  },
+  "hashutu": {
+    "name": "Hashutu"
+  },
+  "hastain": {
+    "name": "Hastain"
+  },
+  "haungharassk": {
+    "name": "Haungharassk"
+  },
+  "hazvongel": {
+    "name": "Hazvongel"
+  },
+  "headless-body": {
+    "name": "Headless Body"
+  },
+  "headless-iron-golem": {
+    "name": "Golem de Headless Ferro"
+  },
+  "heartstabber-mosquito": {
+    "name": "Heartstabber Mosquito"
+  },
+  "hedrun-arnsfirth": {
+    "name": "Hedrun Arnsfirth"
+  },
+  "helga-ruvak": {
+    "name": "Helga Ruvak"
+  },
+  "hellcat-bezekira": {
+    "name": "Hellcat (Bezekira)"
+  },
+  "hellenhild": {
+    "name": "Hellenhild"
+  },
+  "hellenrae": {
+    "name": "Hellenrae"
+  },
+  "hellfire-engine": {
+    "name": "Hellfire Engine"
+  },
+  "hellion": {
+    "name": "Hellion"
+  },
+  "hellion-huge": {
+    "name": "Hellion (Huge)"
+  },
+  "hellion-large": {
+    "name": "Hellion (Large)"
+  },
+  "hellwasp": {
+    "name": "Hellwasp"
+  },
+  "hellwasp-grub": {
+    "name": "Hellwasp Grub"
+  },
+  "helmed-horror-detention-drone": {
+    "name": "Encouraçado Horror Detention Drone"
+  },
+  "hengar-aesnvaard": {
+    "name": "Hengar Aesnvaard"
+  },
+  "henrik-van-der-voort": {
+    "name": "Henrik van der Voort"
+  },
+  "heralds-of-dust-exorcist": {
+    "name": "Heralds of Poeira Exorcist"
+  },
+  "heralds-of-dust-remnant": {
+    "name": "Heralds of Poeira Remnant"
+  },
+  "hertilod": {
+    "name": "Hertilod"
+  },
+  "hester-barch": {
+    "name": "Hester Barch"
+  },
+  "hew-hackinstone": {
+    "name": "Hew Hackinstone"
+  },
+  "hexton-modron": {
+    "name": "Hexton Modron"
+  },
+  "hierophant-medusa": {
+    "name": "Hierophant Medusa"
+  },
+  "hierophant-of-the-comet": {
+    "name": "Hierophant of the Comet"
+  },
+  "high-fae-impostor": {
+    "name": "High Fae Impostor"
+  },
+  "high-fae-kindguard": {
+    "name": "High Fae Kindguard"
+  },
+  "high-fae-mage": {
+    "name": "High Fae Mago"
+  },
+  "high-fae-noble": {
+    "name": "High Fae Nobre"
+  },
+  "hill-giant-avalancher": {
+    "name": "Gigante da Colina Avalancher"
+  },
+  "hill-giant-sergeant": {
+    "name": "Gigante da Colina Sergeant"
+  },
+  "hill-giant-servant": {
+    "name": "Gigante da Colina Servo"
+  },
+  "hill-giant-subchief": {
+    "name": "Gigante da Colina Subchief"
+  },
+  "hill-giant-blorbo": {
+    "name": "Colina Giant, Blorbo"
+  },
+  "hippocamp": {
+    "name": "Hippocamp"
+  },
+  "hippopotamus": {
+    "name": "Hippopotamus"
+  },
+  "hjoldak-hollowhelm": {
+    "name": "Hjoldak Hollowhelm"
+  },
+  "hlam": {
+    "name": "Hlam"
+  },
+  "hoard-mimic": {
+    "name": "Hoard Mímico"
+  },
+  "hoard-scarab": {
+    "name": "Hoard Scarab"
+  },
+  "hobgoblin-devastator": {
+    "name": "Hobgoblin Devastator"
+  },
+  "hobgoblin-iron-shadow": {
+    "name": "Hobgoblin Ferro Sombrio"
+  },
+  "holga-kilgore": {
+    "name": "Holga Kilgore"
+  },
+  "hollow-dragon": {
+    "name": "Dragão Oco"
+  },
+  "hollyphant": {
+    "name": "Hollyphant"
+  },
+  "homarid": {
+    "name": "Homarid"
+  },
+  "homunculus-servant": {
+    "name": "Homúnculo Servo"
+  },
+  "honna": {
+    "name": "Honna"
+  },
+  "hook-horror": {
+    "name": "Hook Horror"
+  },
+  "hook-horror-spore-servant": {
+    "name": "Hook Horror Spore Servo"
+  },
+  "horizonback-tortoise": {
+    "name": "Horizonback Tartaruga"
+  },
+  "horncaller": {
+    "name": "Horncaller"
+  },
+  "horned-frog": {
+    "name": "Cornudo Sapo"
+  },
+  "horned-sister": {
+    "name": "Cornudo Sister"
+  },
+  "horrid-plant": {
+    "name": "Horrid Planta"
+  },
+  "host-of-herons-angel": {
+    "name": "Host of Herons Angel"
+  },
+  "hound-archon": {
+    "name": "Cão Archon"
+  },
+  "hound-of-ill-omen": {
+    "name": "Cão of Ill Omen"
+  },
+  "howler": {
+    "name": "Howler"
+  },
+  "howling-hatred-initiate": {
+    "name": "Uivante Hatred Initiate"
+  },
+  "howling-hatred-priest": {
+    "name": "Uivante Hatred Sacerdote"
+  },
+  "hrabbaz": {
+    "name": "Hrabbaz"
+  },
+  "hrigg-roundrook": {
+    "name": "Hrigg Roundrook"
+  },
+  "hrossk": {
+    "name": "Hrossk"
+  },
+  "huge-giant-crab": {
+    "name": "Gigante de Enorme Caranguejo"
+  },
+  "huge-gray-ooze": {
+    "name": "Enorme Cinzento Gosma"
+  },
+  "huge-ochre-jelly": {
+    "name": "Enorme Ochre Jelly"
+  },
+  "huge-polar-bear": {
+    "name": "Enorme Polar Urso"
+  },
+  "huge-stone-golem": {
+    "name": "Golem de Enorme Pedra"
+  },
+  "hulgaz": {
+    "name": "Hulgaz"
+  },
+  "hulil-lutan": {
+    "name": "Hulil Lutan"
+  },
+  "hulking-crab": {
+    "name": "Hulking Caranguejo"
+  },
+  "hulking-shadow": {
+    "name": "Hulking Sombrio"
+  },
+  "humanoid-mutate": {
+    "name": "Humanoid Mutate"
+  },
+  "hundred-handed-one": {
+    "name": "Hundred-Handed One"
+  },
+  "hungry-sorrowsworn": {
+    "name": "Hungry Sorrowsworn"
+  },
+  "hurda": {
+    "name": "Hurda"
+  },
+  "hurricane": {
+    "name": "Hurricane"
+  },
+  "husk-zombie": {
+    "name": "Zumbi Husk"
+  },
+  "hutijin": {
+    "name": "Hutijin"
+  },
+  "hybrid-brute": {
+    "name": "Hybrid Brutamontes"
+  },
+  "hybrid-flier": {
+    "name": "Hybrid Flier"
+  },
+  "hybrid-poisoner": {
+    "name": "Hybrid Poisoner"
+  },
+  "hybrid-shocker": {
+    "name": "Hybrid Shocker"
+  },
+  "hybrid-spy": {
+    "name": "Hybrid Espião"
+  },
+  "hydia-moonmusk": {
+    "name": "Hydia Moonmusk"
+  },
+  "hydroloth": {
+    "name": "Hydroloth"
+  },
+  "hypnos-magen": {
+    "name": "Hypnos Magen"
+  },
+  "hythonia": {
+    "name": "Hythonia"
+  },
+  "iarno-glasstaff-albrek": {
+    "name": "Iarno Glasstaff Albrek"
+  },
+  "iaseda": {
+    "name": "Iaseda"
+  },
+  "ice-piercer": {
+    "name": "Gelo Piercer"
+  },
+  "ice-spider": {
+    "name": "Gelo Aranha"
+  },
+  "ice-spider-queen": {
+    "name": "Gelo Aranha Rainha"
+  },
+  "ice-toad": {
+    "name": "Gelo Sapo"
+  },
+  "ice-troll": {
+    "name": "Gelo Troll"
+  },
+  "icewind-kobold": {
+    "name": "Icewind Kobold"
+  },
+  "icewind-kobold-zombie": {
+    "name": "Zumbi Icewind Kobold"
+  },
+  "icy-simulacrum": {
+    "name": "Icy Simulacrum"
+  },
+  "ifan-talroa": {
+    "name": "Ifan Talro'a"
+  },
+  "iggwilv-the-witch-queen": {
+    "name": "Iggwilv, a Bruxa Rainha"
+  },
+  "ignatius-inkblot": {
+    "name": "Ignatius Inkblot"
+  },
+  "ignia": {
+    "name": "Ignia"
+  },
+  "illithilich": {
+    "name": "Illithilich"
+  },
+  "illusionist": {
+    "name": "Ilusionista"
+  },
+  "illusionist-wizard": {
+    "name": "Ilusionista Mago"
+  },
+  "ilvara-mizzrym": {
+    "name": "Ilvara Mizzrym"
+  },
+  "imelda": {
+    "name": "Imelda"
+  },
+  "imix": {
+    "name": "Imix"
+  },
+  "immortal-lotus-monk": {
+    "name": "Immortal Lotus Monge"
+  },
+  "imoen": {
+    "name": "Imoen"
+  },
+  "imp-trickster": {
+    "name": "Diabrete Trickster"
+  },
+  "imperator-uthor": {
+    "name": "Imperator Uthor"
+  },
+  "incarnation-of-transience": {
+    "name": "Incarnation of Transience"
+  },
+  "incarnation-of-vibrance": {
+    "name": "Incarnation of Vibrance"
+  },
+  "incomplete-dragon-skeleton": {
+    "name": "Esqueleto de Incomplete Dragão"
+  },
+  "inda-malayuri": {
+    "name": "Inda Malayuri"
+  },
+  "indentured-spirit": {
+    "name": "Espírito Indentured"
+  },
+  "indrina-lamsensettle": {
+    "name": "Indrina Lamsensettle"
+  },
+  "infant-basilisk": {
+    "name": "Infant Basilisco"
+  },
+  "infant-hook-horror": {
+    "name": "Infant Hook Horror"
+  },
+  "infected-elder-brain": {
+    "name": "Infected Ancião Cérebro"
+  },
+  "infected-townsperson": {
+    "name": "Infected Townsperson"
+  },
+  "initiate-of-the-comet": {
+    "name": "Initiate of the Comet"
+  },
+  "inkling-mascot": {
+    "name": "Inkling Mascot"
+  },
+  "inquisitor-of-the-mind-fire": {
+    "name": "Inquisidor of the Mente Fogo"
+  },
+  "inquisitor-of-the-sword": {
+    "name": "Inquisidor of the Espada"
+  },
+  "inquisitor-of-the-tome": {
+    "name": "Inquisidor of the Tome"
+  },
+  "insight-acuere": {
+    "name": "Insight Acuere"
+  },
+  "inspired": {
+    "name": "Inspired"
+  },
+  "intellect-devourer": {
+    "name": "Intellect Devorador"
+  },
+  "intellect-snare": {
+    "name": "Intellect Snare"
+  },
+  "intelligent-black-pudding": {
+    "name": "Intelligent Negro Pudding"
+  },
+  "iona": {
+    "name": "Iona"
+  },
+  "irda-seeker": {
+    "name": "Irda Buscador"
+  },
+  "irda-veil-keeper": {
+    "name": "Irda Veil Guardião"
+  },
+  "ireena-kolyana": {
+    "name": "Ireena Kolyana"
+  },
+  "iriad": {
+    "name": "Iriad"
+  },
+  "irisoth": {
+    "name": "Irisoth"
+  },
+  "iron-cobra": {
+    "name": "Ferro Cobra"
+  },
+  "iron-consul": {
+    "name": "Ferro Consul"
+  },
+  "iron-defender": {
+    "name": "Ferro Defender"
+  },
+  "iron-spider": {
+    "name": "Ferro Aranha"
+  },
+  "ironscale-hydra": {
+    "name": "Ironscale Hidra"
+  },
+  "irvan-wastewalker-tier-1": {
+    "name": "Irvan Wastewalker (Tier 1)"
+  },
+  "irvan-wastewalker-tier-2": {
+    "name": "Irvan Wastewalker (Tier 2)"
+  },
+  "irvan-wastewalker-tier-3": {
+    "name": "Irvan Wastewalker (Tier 3)"
+  },
+  "isabela-folcarae": {
+    "name": "Isabela Folcarae"
+  },
+  "isarr-kronenstrom": {
+    "name": "Isarr Kronenstrom"
+  },
+  "isendraug": {
+    "name": "Isendraug"
+  },
+  "ishel": {
+    "name": "Ishel"
+  },
+  "ishvern": {
+    "name": "Ishvern"
+  },
+  "iskander": {
+    "name": "Iskander"
+  },
+  "ismark-kolyanovich": {
+    "name": "Ismark Kolyanovich"
+  },
+  "isolde": {
+    "name": "Isolde"
+  },
+  "isperia": {
+    "name": "Isperia"
+  },
+  "istarian-drone": {
+    "name": "Istarian Drone"
+  },
+  "istrid-horn": {
+    "name": "Istrid Chifre"
+  },
+  "ivlis": {
+    "name": "Ivlis"
+  },
+  "ixitxachitl": {
+    "name": "Ixitxachitl"
+  },
+  "ixitxachitl-cleric": {
+    "name": "Ixitxachitl Clérigo"
+  },
+  "iymrith": {
+    "name": "Iymrith"
+  },
+  "izek-strazni": {
+    "name": "Izek Strazni"
+  },
+  "jabberwock": {
+    "name": "Jabberwock"
+  },
+  "jacko": {
+    "name": "Jacko"
+  },
+  "jaculi": {
+    "name": "Jaculi"
+  },
+  "jade-giant-spider": {
+    "name": "Gigante de Jade Aranha"
+  },
+  "jade-statue": {
+    "name": "Jade Estátua"
+  },
+  "jade-tigress": {
+    "name": "Jade Tigress"
+  },
+  "jaheira": {
+    "name": "Jaheira"
+  },
+  "jalester-silvermane": {
+    "name": "Jalester Silvermane"
+  },
+  "jalynvyr-nirthinn": {
+    "name": "Jalynvyr Nir'Thinn"
+  },
+  "james-cryon": {
+    "name": "James Cryon"
+  },
+  "jamil-aalithiya": {
+    "name": "Jamil A'alithiya"
+  },
+  "jammer-leech": {
+    "name": "Jammer Sanguessuga"
+  },
+  "jamna-gleamsilver": {
+    "name": "Jamna Gleamsilver"
+  },
+  "jandar-chergoba": {
+    "name": "Jandar Chergoba"
+  },
+  "jarad-vod-savo": {
+    "name": "Jarad Vod Savo"
+  },
+  "jarazoun": {
+    "name": "Jarazoun"
+  },
+  "jarl-grugnur": {
+    "name": "Jarl Grugnur"
+  },
+  "jarl-storvald": {
+    "name": "Jarl Storvald"
+  },
+  "jarlaxle-baenre": {
+    "name": "Jarlaxle Baenre"
+  },
+  "jarund-elkhardt": {
+    "name": "Jarund Elkhardt"
+  },
+  "jasper-dimmerchasm": {
+    "name": "Jasper Dimmerchasm"
+  },
+  "jelayne": {
+    "name": "Jelayne"
+  },
+  "jenevere": {
+    "name": "Jenevere"
+  },
+  "jenks": {
+    "name": "Jenks"
+  },
+  "jermlaine": {
+    "name": "Jermlaine"
+  },
+  "jerot-galgin": {
+    "name": "Jerot Galgin"
+  },
+  "jessamine": {
+    "name": "Jessamine"
+  },
+  "jeyev-veldrews": {
+    "name": "Jeyev Veldrews"
+  },
+  "jiangshi": {
+    "name": "Jiangshi"
+  },
+  "jijibisha-manivarshi": {
+    "name": "Jijibisha Manivarshi"
+  },
+  "jim-darkmagic": {
+    "name": "Jim Darkmagic"
+  },
+  "jimjar": {
+    "name": "Jimjar"
+  },
+  "jingle-jangle": {
+    "name": "Jingle Jangle"
+  },
+  "jobal": {
+    "name": "Jobal"
+  },
+  "jon-irenicus": {
+    "name": "Jon Irenicus"
+  },
+  "jorasco-medic": {
+    "name": "Jorasco Medic"
+  },
+  "josbert-plum": {
+    "name": "Josbert Plum"
+  },
+  "joster-mareet": {
+    "name": "Joster Mareet"
+  },
+  "jot": {
+    "name": "Jot"
+  },
+  "juiblex": {
+    "name": "Juiblex"
+  },
+  "juliana": {
+    "name": "Juliana"
+  },
+  "junior-drow-priestess-of-lolth": {
+    "name": "Junior Drow Priestess of Lolth"
+  },
+  "juvenile-eldritch-horror": {
+    "name": "Juvenile Eldritch Horror"
+  },
+  "juvenile-hook-horror": {
+    "name": "Juvenile Hook Horror"
+  },
+  "juvenile-kraken": {
+    "name": "Juvenile Kraken"
+  },
+  "juvenile-mimic": {
+    "name": "Juvenile Mímico"
+  },
+  "kthriss-drowb": {
+    "name": "K'thriss Drow'b"
+  },
+  "ktulah": {
+    "name": "K'Tulah"
+  },
+  "kaaltar": {
+    "name": "Kaaltar"
+  },
+  "kaarghaz": {
+    "name": "Kaarghaz"
+  },
+  "kadroth": {
+    "name": "Kadroth"
+  },
+  "kaevja-cynavern": {
+    "name": "Kaevja Cynavern"
+  },
+  "kagain": {
+    "name": "Kagain"
+  },
+  "kakkuu-spyder-fiend": {
+    "name": "Kakkuu Spyder-Fiend"
+  },
+  "kal-the-crisp": {
+    "name": "Kal, o Crisp"
+  },
+  "kala-mabarin": {
+    "name": "Kala Mabarin"
+  },
+  "kalain": {
+    "name": "Kalain"
+  },
+  "kalaman-soldier": {
+    "name": "Kalaman Soldado"
+  },
+  "kalaraq-quori": {
+    "name": "Kalaraq Quori"
+  },
+  "kalashtar": {
+    "name": "Kalashtar"
+  },
+  "kalka-kylla": {
+    "name": "Kalka-Kylla"
+  },
+  "kamadan": {
+    "name": "Kamadan"
+  },
+  "kansaldi-fire-eyes": {
+    "name": "Kansaldi Fire-Eyes"
+  },
+  "kapak-draconian": {
+    "name": "Kapak Draconian"
+  },
+  "karas-chembryl": {
+    "name": "Karas Chembryl"
+  },
+  "karavarix": {
+    "name": "Karavarix"
+  },
+  "karkethzerethzerus-the-sable-despoiler": {
+    "name": "Karkethzerethzerus, o Sable Despoiler"
+  },
+  "karrnathi-undead-soldier": {
+    "name": "Karrnathi Morto-vivo Soldado"
+  },
+  "kas-the-betrayer": {
+    "name": "Kas, o Betrayer"
+  },
+  "kasem-aroon": {
+    "name": "Kasem Aroon"
+  },
+  "kasimir-velikov": {
+    "name": "Kasimir Velikov"
+  },
+  "kavil-mereshanter": {
+    "name": "Kavil Mereshanter"
+  },
+  "kavoda": {
+    "name": "Kavoda"
+  },
+  "kavu-predator": {
+    "name": "Kavu Predator"
+  },
+  "kaylan-renaudon": {
+    "name": "Kaylan Renaudon"
+  },
+  "kedjou-kamal": {
+    "name": "Kedjou Kamal"
+  },
+  "keeper-of-the-feather": {
+    "name": "Guardião of the Feather"
+  },
+  "keg-robot": {
+    "name": "Keg Robot"
+  },
+  "kelek": {
+    "name": "Kelek"
+  },
+  "kella-darkhope": {
+    "name": "Kella Darkhope"
+  },
+  "kellikilli": {
+    "name": "Kellikilli"
+  },
+  "kelpie": {
+    "name": "Kelpie"
+  },
+  "kelson-darktreader": {
+    "name": "Kelson Darktreader"
+  },
+  "kelubar-consul": {
+    "name": "Kelubar Consul"
+  },
+  "kelubar-demodand": {
+    "name": "Kelubar Demodand"
+  },
+  "kender-skirmisher": {
+    "name": "Kender Skirmisher"
+  },
+  "ker-arach": {
+    "name": "Ker-arach"
+  },
+  "keresta-delvingstone": {
+    "name": "Keresta Delvingstone"
+  },
+  "kettlesteam-the-kenku": {
+    "name": "Kettlesteam, o Kenku"
+  },
+  "kevetta-dolindar": {
+    "name": "Kevetta Dolindar"
+  },
+  "khai-kiroth": {
+    "name": "Khai Kiroth"
+  },
+  "khalessa-draga": {
+    "name": "Khalessa Draga"
+  },
+  "kharbek": {
+    "name": "Kharbek"
+  },
+  "khargra": {
+    "name": "Khargra"
+  },
+  "khaspere-drylund": {
+    "name": "Khaspere Drylund"
+  },
+  "ki-rin": {
+    "name": "Ki-rin"
+  },
+  "kianna": {
+    "name": "Kianna"
+  },
+  "kiddywidget": {
+    "name": "Kiddywidget"
+  },
+  "kieren": {
+    "name": "Kieren"
+  },
+  "killmoulis": {
+    "name": "Killmoulis"
+  },
+  "kindori": {
+    "name": "Kindori"
+  },
+  "king-hekaton": {
+    "name": "Rei Hekaton"
+  },
+  "king-jhaeros": {
+    "name": "Rei Jhaeros"
+  },
+  "king-of-feathers": {
+    "name": "Rei of Feathers"
+  },
+  "king-robbit-the-slimy": {
+    "name": "Rei Robbit the Slimy"
+  },
+  "king-snurre": {
+    "name": "Rei Snurre"
+  },
+  "kingsport": {
+    "name": "Kingsport"
+  },
+  "kiril-stoyanovich": {
+    "name": "Kiril Stoyanovich"
+  },
+  "kivan": {
+    "name": "Kivan"
+  },
+  "klauth": {
+    "name": "Klauth"
+  },
+  "knight-of-eldraine": {
+    "name": "Cavaleiro of Eldraine"
+  },
+  "knight-of-the-black-sword": {
+    "name": "Cavaleiro of the Negro Espada"
+  },
+  "knight-of-the-mithral-shield": {
+    "name": "Cavaleiro of the Mithral Escudo"
+  },
+  "knight-of-the-order": {
+    "name": "Cavaleiro of the Ordem"
+  },
+  "knucklehead-trout": {
+    "name": "Knucklehead Trout"
+  },
+  "koalinth": {
+    "name": "Koalinth"
+  },
+  "koalinth-sergeant": {
+    "name": "Koalinth Sergeant"
+  },
+  "kobold-commoner": {
+    "name": "Kobold Plebeu"
+  },
+  "kobold-dragonshield": {
+    "name": "Kobold Dragonshield"
+  },
+  "kobold-elite": {
+    "name": "Kobold Elite"
+  },
+  "kobold-inventor": {
+    "name": "Kobold Inventor"
+  },
+  "kobold-scale-sorcerer": {
+    "name": "Kobold Scale Feiticeiro"
+  },
+  "kobold-tinkerer": {
+    "name": "Kobold Tinkerer"
+  },
+  "kobold-underling": {
+    "name": "Kobold Underling"
+  },
+  "kobold-vampire-spawn": {
+    "name": "Cria de Kobold Vampiro"
+  },
+  "koh-tam": {
+    "name": "Koh Tam"
+  },
+  "koi-prawn": {
+    "name": "Koi Prawn"
+  },
+  "koldaan": {
+    "name": "Kol'daan"
+  },
+  "kolyarut": {
+    "name": "Kolyarut"
+  },
+  "kopoha": {
+    "name": "Kopoha"
+  },
+  "korex": {
+    "name": "Korex"
+  },
+  "koris": {
+    "name": "Koris"
+  },
+  "korred": {
+    "name": "Korred"
+  },
+  "kostchtchie": {
+    "name": "Kostchtchie"
+  },
+  "kozilek": {
+    "name": "Kozilek"
+  },
+  "kraken-priest": {
+    "name": "Kraken Sacerdote"
+  },
+  "kraul-death-priest": {
+    "name": "Kraul Morte Sacerdote"
+  },
+  "kraul-warrior": {
+    "name": "Kraul Guerreiro"
+  },
+  "krebbyg-masqilyr": {
+    "name": "Krebbyg Masq'il'yr"
+  },
+  "krell-grohlg": {
+    "name": "Krell Grohlg"
+  },
+  "krenko": {
+    "name": "Krenko"
+  },
+  "krull": {
+    "name": "Krull"
+  },
+  "kruthik-hive-lord": {
+    "name": "Kruthik Colmeia Senhor"
+  },
+  "kun-ahn-jun": {
+    "name": "Kun Ahn-Jun"
+  },
+  "kundarak-warden": {
+    "name": "Kundarak Guardião"
+  },
+  "kuo-toa": {
+    "name": "Kuo-toa"
+  },
+  "kuo-toa-archpriest": {
+    "name": "Kuo-toa Archpriest"
+  },
+  "kuo-toa-heretic": {
+    "name": "Kuo-toa Heretic"
+  },
+  "kuo-toa-marauder": {
+    "name": "Kuo-toa Marauder"
+  },
+  "kuo-toa-whip": {
+    "name": "Kuo-toa Chicote"
+  },
+  "kupalu": {
+    "name": "Kupalué"
+  },
+  "kurr": {
+    "name": "Kurr"
+  },
+  "kusa-xungoon": {
+    "name": "Kusa Xungoon"
+  },
+  "kwayoth": {
+    "name": "Kwayothé"
+  },
+  "kyrilla-accursed-gorgon": {
+    "name": "Kyrilla, Amaldiçoado Gorgon"
+  },
+  "kysh": {
+    "name": "Kysh"
+  },
+  "lacedon": {
+    "name": "Lacedon"
+  },
+  "lady-dre": {
+    "name": "Senhora Dre"
+  },
+  "lady-fiona-wachter": {
+    "name": "Senhora Fiona Wachter"
+  },
+  "lady-gondafrey": {
+    "name": "Senhora Gondafrey"
+  },
+  "lady-illmarrow": {
+    "name": "Senhora Illmarrow"
+  },
+  "lady-lydia-petrovna": {
+    "name": "Senhora Lydia Petrovna"
+  },
+  "laeral-silverhand": {
+    "name": "Laeral Silverhand"
+  },
+  "lahnis": {
+    "name": "Lahnis"
+  },
+  "laiba-nana-rosse": {
+    "name": "Laiba Nana Rosse"
+  },
+  "laleh-ghorbani": {
+    "name": "Laleh Ghorbani"
+  },
+  "lamai-tyenmo": {
+    "name": "Lamai Tyenmo"
+  },
+  "lampad": {
+    "name": "Lampad"
+  },
+  "langdedrosa-cyanwrath": {
+    "name": "Langdedrosa Cyanwrath"
+  },
+  "large-drake": {
+    "name": "Draco Grande"
+  },
+  "large-mimic": {
+    "name": "Grande Mímico"
+  },
+  "larva": {
+    "name": "Larva"
+  },
+  "laskilar": {
+    "name": "Laskilar"
+  },
+  "laurin-ophidas": {
+    "name": "Laurin Ophidas"
+  },
+  "lava-child": {
+    "name": "Lava Child"
+  },
+  "lawmage": {
+    "name": "Lawmage"
+  },
+  "layla-the-lizard": {
+    "name": "Layla, o Lagarto"
+  },
+  "laysa-matulin": {
+    "name": "Laysa Matulin"
+  },
+  "lazav": {
+    "name": "Lazav"
+  },
+  "leedara": {
+    "name": "Leedara"
+  },
+  "left-hand-of-manshoon": {
+    "name": "Left Hand of Manshoon"
+  },
+  "leonin-iconoclast": {
+    "name": "Leonin Iconoclast"
+  },
+  "leosin-erlanthar": {
+    "name": "Leosin Erlanthar"
+  },
+  "leprechaun": {
+    "name": "Leprechaun"
+  },
+  "lesser-death-dragon": {
+    "name": "Dragão Menor Morte"
+  },
+  "lesser-mummy-lord": {
+    "name": "Múmia Senhor Menor"
+  },
+  "lesser-star-spawn-emissary": {
+    "name": "Estrela Cria Emissário Menor"
+  },
+  "lesser-tyrant-shadow": {
+    "name": "Tyrant Sombrio Menor"
+  },
+  "leucrotta": {
+    "name": "Leucrotta"
+  },
+  "leviathan": {
+    "name": "Leviathan"
+  },
+  "levistus": {
+    "name": "Levistus"
+  },
+  "levna-drakehorn": {
+    "name": "Levna Drakehorn"
+  },
+  "lhammaruntosz": {
+    "name": "Lhammaruntosz"
+  },
+  "liara-portyr": {
+    "name": "Liara Portyr"
+  },
+  "lichen-lich": {
+    "name": "Lichen Lich"
+  },
+  "lief-lipsiege": {
+    "name": "Lief Lipsiege"
+  },
+  "lifecraft-elephant": {
+    "name": "Lifecraft Elefante"
+  },
+  "lifferlas": {
+    "name": "Lifferlas"
+  },
+  "light-devourer": {
+    "name": "Light Devorador"
+  },
+  "lightning-golem": {
+    "name": "Golem de Relâmpago"
+  },
+  "lightning-hulk": {
+    "name": "Relâmpago Hulk"
+  },
+  "linan-swift": {
+    "name": "Linan Swift"
+  },
+  "linvala": {
+    "name": "Linvala"
+  },
+  "liondrake": {
+    "name": "Liondrake"
+  },
+  "living-bigbys-hand": {
+    "name": "Vivo Bigby's Hand"
+  },
+  "living-blade-of-disaster": {
+    "name": "Vivo Lâmina of Disaster"
+  },
+  "living-burning-hands": {
+    "name": "Vivo Flamejante Hands"
+  },
+  "living-cloudkill": {
+    "name": "Vivo Cloudkill"
+  },
+  "living-demiplane": {
+    "name": "Vivo Demiplane"
+  },
+  "living-doll": {
+    "name": "Vivo Boneca"
+  },
+  "living-iron-statue": {
+    "name": "Vivo Ferro Estátua"
+  },
+  "living-lightning-bolt": {
+    "name": "Vivo Relâmpago Virote"
+  },
+  "living-portent": {
+    "name": "Vivo Portent"
+  },
+  "living-unseen-servant": {
+    "name": "Vivo Unseen Servo"
+  },
+  "lizard-king": {
+    "name": "Lagarto Rei"
+  },
+  "lizard-queen": {
+    "name": "Lagarto Rainha"
+  },
+  "lizardfolk-commoner": {
+    "name": "Povo-Lagarto Plebeu"
+  },
+  "lizardfolk-render": {
+    "name": "Povo-Lagarto Render"
+  },
+  "lizardfolk-scaleshield": {
+    "name": "Povo-Lagarto Scaleshield"
+  },
+  "lizardfolk-shaman": {
+    "name": "Povo-Lagarto Xamã"
+  },
+  "lizardfolk-subchief": {
+    "name": "Povo-Lagarto Subchief"
+  },
+  "lizardfolk-warden": {
+    "name": "Povo-Lagarto Guardião"
+  },
+  "loading-rig": {
+    "name": "Loading Rig"
+  },
+  "locathah": {
+    "name": "Locathah"
+  },
+  "locathah-hunter": {
+    "name": "Locathah Caçador"
+  },
+  "lohezet": {
+    "name": "Lohezet"
+  },
+  "lonely-sorrowsworn": {
+    "name": "Lonely Sorrowsworn"
+  },
+  "lonelywood-banshee": {
+    "name": "Lonelywood Banshee"
+  },
+  "lord-soth": {
+    "name": "Senhor Soth"
+  },
+  "lords-alliance-guard": {
+    "name": "Lords' Alliance Guarda"
+  },
+  "lords-alliance-spy": {
+    "name": "Lords' Alliance Espião"
+  },
+  "lorehold-apprentice": {
+    "name": "Lorehold Apprentice"
+  },
+  "lorehold-pledgemage": {
+    "name": "Lorehold Pledgemage"
+  },
+  "lorehold-professor-of-chaos": {
+    "name": "Lorehold Professor of Caos"
+  },
+  "lorehold-professor-of-order": {
+    "name": "Lorehold Professor of Ordem"
+  },
+  "lorry-wanwillow": {
+    "name": "Lorry Wanwillow"
+  },
+  "lorthuun": {
+    "name": "Lorthuun"
+  },
+  "lorwyn-giant": {
+    "name": "Gigante de Lorwyn"
+  },
+  "losser-mirklav": {
+    "name": "Losser Mirklav"
+  },
+  "lost-sorrowsworn": {
+    "name": "Lost Sorrowsworn"
+  },
+  "lothar": {
+    "name": "Lothar"
+  },
+  "loup-garou": {
+    "name": "Loup Garou"
+  },
+  "lowarnizel": {
+    "name": "Lowarnizel"
+  },
+  "lu-zhong-yin": {
+    "name": "Lu Zhong Yin"
+  },
+  "ludmilla-vilisevic": {
+    "name": "Ludmilla Vilisevic"
+  },
+  "lulu": {
+    "name": "Lulu"
+  },
+  "lumalia": {
+    "name": "Lumalia"
+  },
+  "lunar-dragon-wyrmling": {
+    "name": "Filhote de Lunar Dragão"
+  },
+  "lungtian": {
+    "name": "Lungtian"
+  },
+  "luvash": {
+    "name": "Luvash"
+  },
+  "lycanthropickle": {
+    "name": "Lycanthropickle"
+  },
+  "lynx-creatlach": {
+    "name": "Lynx Creatlach"
+  },
+  "lyra": {
+    "name": "Lyra"
+  },
+  "lyrandar-scion": {
+    "name": "Lyrandar Scion"
+  },
+  "lysan": {
+    "name": "Lysan"
+  },
+  "lyzandra-lyzzie-calderos": {
+    "name": "Lyzandra Lyzzie Calderos"
+  },
+  "macaw": {
+    "name": "Macaw"
+  },
+  "maccath-the-crimson": {
+    "name": "Maccath, o Carmesim"
+  },
+  "mad-golem": {
+    "name": "Golem de Mad"
+  },
+  "mad-maggie": {
+    "name": "Mad Maggie"
+  },
+  "mad-mary": {
+    "name": "Mad Mary"
+  },
+  "madam-eva": {
+    "name": "Madam Eva"
+  },
+  "madam-kulp": {
+    "name": "Madam Kulp"
+  },
+  "maddgoths-homunculus": {
+    "name": "Maddgoth's Homúnculo"
+  },
+  "maegera-the-dawn-titan": {
+    "name": "Maegera, o Dawn Titan"
+  },
+  "maegla-tarnlar": {
+    "name": "Maegla Tarnlar"
+  },
+  "maelephant": {
+    "name": "Maelephant"
+  },
+  "maelephant-nomad": {
+    "name": "Maelephant Nomad"
+  },
+  "mage-hunter": {
+    "name": "Mago Caçador"
+  },
+  "mage-of-usamigaras": {
+    "name": "Mago of Usamigaras"
+  },
+  "magewright": {
+    "name": "Magewright"
+  },
+  "maggie-keeneyes-tier-1": {
+    "name": "Maggie Keeneyes (Tier 1)"
+  },
+  "maggie-keeneyes-tier-2": {
+    "name": "Maggie Keeneyes (Tier 2)"
+  },
+  "maggie-keeneyes-tier-3": {
+    "name": "Maggie Keeneyes (Tier 3)"
+  },
+  "magister-umbero-zastro": {
+    "name": "Magister Umbero Zastro"
+  },
+  "magnifico": {
+    "name": "Magnifico"
+  },
+  "mahadi-the-rakshasa": {
+    "name": "Mahadi, a Rakshasa"
+  },
+  "majesto": {
+    "name": "Majesto"
+  },
+  "malaina-van-talstiv": {
+    "name": "Malaina van Talstiv"
+  },
+  "malaxxix": {
+    "name": "Malaxxix"
+  },
+  "male-steeder": {
+    "name": "Male Steeder"
+  },
+  "malformed-kraken": {
+    "name": "Malformed Kraken"
+  },
+  "malinia": {
+    "name": "Malinia"
+  },
+  "malivar": {
+    "name": "Malivar"
+  },
+  "mammon": {
+    "name": "Mammon"
+  },
+  "manafret-cherryport": {
+    "name": "Manafret Cherryport"
+  },
+  "manshoon": {
+    "name": "Manshoon"
+  },
+  "manshoon-simulacrum": {
+    "name": "Manshoon Simulacrum"
+  },
+  "manticore-heart-piercer": {
+    "name": "Manticore, Heart-Piercer"
+  },
+  "mantrap": {
+    "name": "Mantrap"
+  },
+  "marfulb": {
+    "name": "Marfulb"
+  },
+  "marisa": {
+    "name": "Marisa"
+  },
+  "markham-southwell": {
+    "name": "Markham Southwell"
+  },
+  "markos-delphi": {
+    "name": "Markos Delphi"
+  },
+  "marlos-urnrayle": {
+    "name": "Marlos Urnrayle"
+  },
+  "marta-moonshadow": {
+    "name": "Marta Moonshadow"
+  },
+  "martial-arts-adept": {
+    "name": "Martial Arts Adept"
+  },
+  "marut": {
+    "name": "Marut"
+  },
+  "mary-greymalkin": {
+    "name": "Mary Greymalkin"
+  },
+  "marzena-belview": {
+    "name": "Marzena Belview"
+  },
+  "maschin-i-bozorg": {
+    "name": "Maschin-i-Bozorg"
+  },
+  "master-of-cruelties": {
+    "name": "Mestre of Cruelties"
+  },
+  "master-of-souls": {
+    "name": "Mestre of Souls"
+  },
+  "master-refrum": {
+    "name": "Mestre Refrum"
+  },
+  "master-sage": {
+    "name": "Mestre Sage"
+  },
+  "master-thief": {
+    "name": "Mestre Thief"
+  },
+  "mattrim-threestrings-mereg": {
+    "name": "Mattrim Threestrings Mereg"
+  },
+  "maude": {
+    "name": "Maude"
+  },
+  "maurezhi": {
+    "name": "Maurezhi"
+  },
+  "maw-demon": {
+    "name": "Demônio Fauce"
+  },
+  "maw-of-sekolah": {
+    "name": "Fauce of Sekolah"
+  },
+  "maw-of-yeenoghu": {
+    "name": "Fauce of Yeenoghu"
+  },
+  "maxeene": {
+    "name": "Maxeene"
+  },
+  "meazel": {
+    "name": "Meazel"
+  },
+  "mechachimera": {
+    "name": "Mechachimera"
+  },
+  "mechanical-bird": {
+    "name": "Mecânico Bird"
+  },
+  "medani-inquisitive": {
+    "name": "Medani Inquisitive"
+  },
+  "meenlock": {
+    "name": "Meenlock"
+  },
+  "meera-raheer": {
+    "name": "Meera Raheer"
+  },
+  "meeseeks": {
+    "name": "Meeseeks"
+  },
+  "megapede": {
+    "name": "Megapede"
+  },
+  "melannor-fellbranch": {
+    "name": "Melannor Fellbranch"
+  },
+  "meletian-hoplite": {
+    "name": "Meletian Hoplite"
+  },
+  "melissara-shadowdusk": {
+    "name": "Melissara Shadowdusk"
+  },
+  "meloon-wardragon": {
+    "name": "Meloon Wardragon"
+  },
+  "memory-web": {
+    "name": "Memória Teia"
+  },
+  "mend-nets": {
+    "name": "Mend-nets"
+  },
+  "mennek-ariz": {
+    "name": "Mennek Ariz"
+  },
+  "mephistopheles": {
+    "name": "Mephistopheles"
+  },
+  "mercane": {
+    "name": "Mercane"
+  },
+  "mercenary-envoy": {
+    "name": "Mercenário Enviado"
+  },
+  "mercion": {
+    "name": "Mercion"
+  },
+  "mercykiller-bloodhound": {
+    "name": "Mercykiller Bloodhound"
+  },
+  "merfolk-salvager": {
+    "name": "Tritão Salvager"
+  },
+  "merfolk-scout": {
+    "name": "Tritão Batedor"
+  },
+  "meri": {
+    "name": "Meri"
+  },
+  "merregon": {
+    "name": "Merregon"
+  },
+  "merrenoloth": {
+    "name": "Merrenoloth"
+  },
+  "merrow-doublespeaker": {
+    "name": "Merrow Doublespeaker"
+  },
+  "merrow-extortionist": {
+    "name": "Merrow Extortionist"
+  },
+  "merrow-haranguer": {
+    "name": "Merrow Haranguer"
+  },
+  "merrow-shallowpriest": {
+    "name": "Merrow Shallowpriest"
+  },
+  "metal-wasp": {
+    "name": "Metal Vespa"
+  },
+  "metallic-peacekeeper": {
+    "name": "Metallic Peacekeeper"
+  },
+  "metallic-warbler": {
+    "name": "Metallic Warbler"
+  },
+  "mev-flintknapper": {
+    "name": "Mev Flintknapper"
+  },
+  "miasmorne": {
+    "name": "Miasmorne"
+  },
+  "mighty-servant-of-leuk-o": {
+    "name": "Mighty Servo of Leuk-o"
+  },
+  "miirym": {
+    "name": "Miirym"
+  },
+  "milivoj": {
+    "name": "Milivoj"
+  },
+  "mimic-chair": {
+    "name": "Mímico Chair"
+  },
+  "mind-drinker-vampire": {
+    "name": "Mente Drinker Vampiro"
+  },
+  "mind-flayer": {
+    "name": "Mente Flayer"
+  },
+  "mind-flayer-arcanist": {
+    "name": "Mente Flayer Arcanist"
+  },
+  "mind-flayer-clairvoyant": {
+    "name": "Mente Flayer Clairvoyant"
+  },
+  "mind-flayer-nothic": {
+    "name": "Mente Flayer Nothic"
+  },
+  "mind-flayer-prophet": {
+    "name": "Mente Flayer Profeta"
+  },
+  "mind-flayer-psion": {
+    "name": "Mente Flayer Psion"
+  },
+  "mind-mage": {
+    "name": "Mente Mago"
+  },
+  "minds-eye-matter-smith": {
+    "name": "Mind's Olho Matter Ferreiro"
+  },
+  "mindwitness": {
+    "name": "Mindwitness"
+  },
+  "minotaur-archaeologist": {
+    "name": "Minotauro Archaeologist"
+  },
+  "minotaur-infiltrator": {
+    "name": "Minotauro Infiltrator"
+  },
+  "minotaur-living-crystal-statue": {
+    "name": "Minotauro Vivo Cristal Estátua"
+  },
+  "minsc-and-boo": {
+    "name": "Minsc and Boo!"
+  },
+  "miraj-vizann": {
+    "name": "Miraj Vizann"
+  },
+  "miros-xelbrin": {
+    "name": "Miros Xelbrin"
+  },
+  "mirran": {
+    "name": "Mirran"
+  },
+  "mirror-shade": {
+    "name": "Espelho Shade"
+  },
+  "mirt": {
+    "name": "Mirt"
+  },
+  "mishka-belview": {
+    "name": "Mishka Belview"
+  },
+  "miska-the-wolf-spider": {
+    "name": "Miska the Wolf-Spider"
+  },
+  "mist-hulk": {
+    "name": "Névoa Hulk"
+  },
+  "mister-light": {
+    "name": "Mister Light"
+  },
+  "mister-threadneedle": {
+    "name": "Mister Threadneedle"
+  },
+  "mister-witch": {
+    "name": "Mister Bruxa"
+  },
+  "mite": {
+    "name": "Mite"
+  },
+  "mjenir": {
+    "name": "Mjenir"
+  },
+  "mobar": {
+    "name": "Mobar"
+  },
+  "modron-planar-incarnate": {
+    "name": "Modron Planar Incarnate"
+  },
+  "moghadam": {
+    "name": "Moghadam"
+  },
+  "molliver": {
+    "name": "Molliver"
+  },
+  "moloch": {
+    "name": "Moloch"
+  },
+  "molten-magma-roper": {
+    "name": "Molten Magma Roper"
+  },
+  "molydeus": {
+    "name": "Molydeus"
+  },
+  "monastery-of-the-distressed-body-grand-master": {
+    "name": "Monastery of the Distressed Body Grand Mestre"
+  },
+  "monastery-of-the-distressed-body-monk": {
+    "name": "Monastery of the Distressed Body Monge"
+  },
+  "monastic-high-curator": {
+    "name": "Monastic High Curator"
+  },
+  "monastic-infiltrator": {
+    "name": "Monastic Infiltrator"
+  },
+  "monastic-operative": {
+    "name": "Monastic Operative"
+  },
+  "mongrelfolk": {
+    "name": "Mongrelfolk"
+  },
+  "monodrone": {
+    "name": "Monodrone"
+  },
+  "monstrous-peryton": {
+    "name": "Monstrous Periton"
+  },
+  "montaron-and-the-laughing-skull": {
+    "name": "Montaron and the Risonho Crânio"
+  },
+  "moonlight-guardian": {
+    "name": "Moonlight Guardião"
+  },
+  "moonshark": {
+    "name": "Moonshark"
+  },
+  "moonstone-dragon-wyrmling": {
+    "name": "Filhote de Moonstone Dragão"
+  },
+  "moorbounder": {
+    "name": "Moorbounder"
+  },
+  "morak-urgray": {
+    "name": "Morak Ur'gray"
+  },
+  "mordakhesh": {
+    "name": "Mordakhesh"
+  },
+  "m-rg-n": {
+    "name": "Môrgæn"
+  },
+  "morgantha": {
+    "name": "Morgantha"
+  },
+  "morkoth": {
+    "name": "Morkoth"
+  },
+  "mormesk-the-wraith": {
+    "name": "Mormesk, o Aparição"
+  },
+  "morte": {
+    "name": "Morte"
+  },
+  "mortlock-vanthampur": {
+    "name": "Mortlock Vanthampur"
+  },
+  "morwena-veilmist": {
+    "name": "Morwena Veilmist"
+  },
+  "mossback-steward": {
+    "name": "Mossback Steward"
+  },
+  "mountain-goat": {
+    "name": "Montanha Cabra"
+  },
+  "mouth-of-grolantor": {
+    "name": "Mouth of Grolantor"
+  },
+  "mr-dory": {
+    "name": "Mr. Dory"
+  },
+  "mr-greystone": {
+    "name": "Mr. Greystone"
+  },
+  "mr-honeycutt": {
+    "name": "Mr. Honeycutt"
+  },
+  "mud-hulk": {
+    "name": "Lama Hulk"
+  },
+  "muiral": {
+    "name": "Muiral"
+  },
+  "murder-comet": {
+    "name": "Murder Comet"
+  },
+  "murgaxor": {
+    "name": "Murgaxor"
+  },
+  "musharib": {
+    "name": "Musharib"
+  },
+  "musteval-guardinal": {
+    "name": "Musteval Guardinal"
+  },
+  "mutated-drow": {
+    "name": "Mutante Drow"
+  },
+  "mwaxanar": {
+    "name": "Mwaxanaré"
+  },
+  "myla": {
+    "name": "Myla"
+  },
+  "myx-nargis-ruba": {
+    "name": "Myx Nargis Ruba"
+  },
+  "na": {
+    "name": "Na"
+  },
+  "nabassu": {
+    "name": "Nabassu"
+  },
+  "naergoth-bladelord": {
+    "name": "Naergoth Bladelord"
+  },
+  "naes-inuus": {
+    "name": "Naes Inuus"
+  },
+  "naevys-tharesso": {
+    "name": "Naevys Tharesso"
+  },
+  "nafas": {
+    "name": "Nafas"
+  },
+  "nafik": {
+    "name": "Nafik"
+  },
+  "nagpa": {
+    "name": "Nagpa"
+  },
+  "nahual": {
+    "name": "Nahual"
+  },
+  "naiad": {
+    "name": "Naiad"
+  },
+  "nanny-pupu": {
+    "name": "Nanny Pu'pu"
+  },
+  "narl-xibrindas": {
+    "name": "Nar'l Xibrindas"
+  },
+  "narbeck-horn": {
+    "name": "Narbeck Chifre"
+  },
+  "narrak": {
+    "name": "Narrak"
+  },
+  "narth-tezrin": {
+    "name": "Narth Tezrin"
+  },
+  "narthus": {
+    "name": "Narthus"
+  },
+  "narzugon": {
+    "name": "Narzugon"
+  },
+  "nass-lantomirs-ghost": {
+    "name": "Fantasma Nass Lantomir's"
+  },
+  "nat": {
+    "name": "Nat"
+  },
+  "nauk": {
+    "name": "Nauk"
+  },
+  "navid": {
+    "name": "Navid"
+  },
+  "naxa": {
+    "name": "Naxa"
+  },
+  "naxene-drathkala": {
+    "name": "Naxene Drathkala"
+  },
+  "necrichor": {
+    "name": "Necrichor"
+  },
+  "necro-alchemist": {
+    "name": "Necro-Alchemist"
+  },
+  "necromancer": {
+    "name": "Necromante"
+  },
+  "necromancer-wizard": {
+    "name": "Necromante Mago"
+  },
+  "necromite-of-myrkul": {
+    "name": "Necromite of Myrkul"
+  },
+  "necrotic-centipede": {
+    "name": "Necrótico Centopeia"
+  },
+  "nedylene": {
+    "name": "Nedylene"
+  },
+  "needle-lord": {
+    "name": "Needle Senhor"
+  },
+  "needle-spawn": {
+    "name": "Cria de Needle"
+  },
+  "neh-thalggu": {
+    "name": "Neh-thalggu"
+  },
+  "nellik": {
+    "name": "Nellik"
+  },
+  "nene": {
+    "name": "Nene"
+  },
+  "neo-otyugh": {
+    "name": "Neo-Otyugh"
+  },
+  "neogi": {
+    "name": "Neogi"
+  },
+  "neogi-hatchling": {
+    "name": "Neogi Filhote"
+  },
+  "neogi-hatchling-swarm": {
+    "name": "Neogi Filhote Enxame"
+  },
+  "neogi-master": {
+    "name": "Neogi Mestre"
+  },
+  "neogi-pirate": {
+    "name": "Neogi Pirata"
+  },
+  "neogi-void-hunter": {
+    "name": "Neogi Vazio Caçador"
+  },
+  "neothelid": {
+    "name": "Neothelid"
+  },
+  "nepartak": {
+    "name": "Nepartak"
+  },
+  "nereid": {
+    "name": "Nereid"
+  },
+  "nergaliid": {
+    "name": "Nergaliid"
+  },
+  "neronvain": {
+    "name": "Neronvain"
+  },
+  "nerozar-the-defeated": {
+    "name": "Nerozar, o Defeated"
+  },
+  "nester": {
+    "name": "Nester"
+  },
+  "nevermind-gnome-inventor": {
+    "name": "Nevermind Gnomo Inventor"
+  },
+  "nevermind-gnome-mastermind": {
+    "name": "Nevermind Gnomo Mastermind"
+  },
+  "nezznar-the-black-spider": {
+    "name": "Nezznar, a Negro Aranha"
+  },
+  "nezznar-the-spider": {
+    "name": "Nezznar, a Aranha"
+  },
+  "night-blade": {
+    "name": "Noturno Lâmina"
+  },
+  "night-scavver": {
+    "name": "Noturno Scavver"
+  },
+  "nightmare-beast": {
+    "name": "Pesadelo Besta"
+  },
+  "nightmare-haunt": {
+    "name": "Pesadelo Haunt"
+  },
+  "nightmare-shepherd": {
+    "name": "Pesadelo Shepherd"
+  },
+  "nightsea-chil-liren": {
+    "name": "Nightsea Chil-liren"
+  },
+  "nightveil-specter": {
+    "name": "Nightveil Espectro"
+  },
+  "nightwalker": {
+    "name": "Nightwalker"
+  },
+  "nihiloor": {
+    "name": "Nihiloor"
+  },
+  "nikolai-wachter": {
+    "name": "Nikolai Wachter"
+  },
+  "nilbog": {
+    "name": "Nilbog"
+  },
+  "niles-breakbone": {
+    "name": "Niles Breakbone"
+  },
+  "nimblewright": {
+    "name": "Nimblewright"
+  },
+  "nimblewright-guard": {
+    "name": "Nimblewright Guarda"
+  },
+  "nimblewright-hulk": {
+    "name": "Nimblewright Hulk"
+  },
+  "nimblewright-steed": {
+    "name": "Nimblewright Steed"
+  },
+  "nimir": {
+    "name": "Nimir"
+  },
+  "nimira": {
+    "name": "Nimira"
+  },
+  "nimuel": {
+    "name": "Nimuel"
+  },
+  "nine-fingers-keene": {
+    "name": "Nine-Fingers Keene"
+  },
+  "nintra-siotta": {
+    "name": "Nintra Siotta"
+  },
+  "niv-mizzet": {
+    "name": "Niv-Mizzet"
+  },
+  "nivix-cyclops": {
+    "name": "Nivix Ciclope"
+  },
+  "nixylanna-vidorant": {
+    "name": "Nixylanna Vidorant"
+  },
+  "noggle-ransacker": {
+    "name": "Noggle Ransacker"
+  },
+  "noggle-wild-mage": {
+    "name": "Noggle Selvagem Mago"
+  },
+  "nonaton-modron": {
+    "name": "Nonaton Modron"
+  },
+  "noori": {
+    "name": "Noori"
+  },
+  "norker": {
+    "name": "Norker"
+  },
+  "norker-war-leader": {
+    "name": "Norker Guerra Leader"
+  },
+  "nosferatu": {
+    "name": "Nosferatu"
+  },
+  "noska-urgray": {
+    "name": "Noska Ur'gray"
+  },
+  "nundro-rockseeker": {
+    "name": "Nundro Rockseeker"
+  },
+  "nupperibo": {
+    "name": "Nupperibo"
+  },
+  "nurvureem-the-dark-lady": {
+    "name": "Nurvureem, a Sombrio Senhora"
+  },
+  "nym": {
+    "name": "Nym"
+  },
+  "nyssa-otellion": {
+    "name": "Nyssa Otellion"
+  },
+  "nythalyn-henlifel": {
+    "name": "Nythalyn Henlifel"
+  },
+  "nyx-fleece-ram": {
+    "name": "Nyx-Fleece Carneiro"
+  },
+  "oak-truestrike": {
+    "name": "Oak Truestrike"
+  },
+  "oaken-bolter": {
+    "name": "Oaken Bolter"
+  },
+  "obaya-uday": {
+    "name": "Obaya Uday"
+  },
+  "oblex-spawn": {
+    "name": "Cria de Oblex"
+  },
+  "obliteros": {
+    "name": "Obliteros"
+  },
+  "obmi": {
+    "name": "Obmi"
+  },
+  "obzedat-ghost": {
+    "name": "Fantasma Obzedat"
+  },
+  "occult-extollant": {
+    "name": "Occult Extollant"
+  },
+  "occult-initiate": {
+    "name": "Occult Initiate"
+  },
+  "occult-silvertongue": {
+    "name": "Occult Silvertongue"
+  },
+  "oceanus": {
+    "name": "Oceanus"
+  },
+  "octon-modron": {
+    "name": "Octon Modron"
+  },
+  "oculorb": {
+    "name": "Oculorb"
+  },
+  "oddlewin": {
+    "name": "Oddlewin"
+  },
+  "ogre-battering-ram": {
+    "name": "Ogro Battering Carneiro"
+  },
+  "ogre-bolt-launcher": {
+    "name": "Ogro Virote Launcher"
+  },
+  "ogre-chain-brute": {
+    "name": "Ogro Corrente Brutamontes"
+  },
+  "ogre-channeler": {
+    "name": "Ogro Channeler"
+  },
+  "ogre-chitterlord": {
+    "name": "Ogro Chitterlord"
+  },
+  "ogre-goblin-hucker": {
+    "name": "Ogro Goblin Hucker"
+  },
+  "ogre-howdah": {
+    "name": "Ogro Howdah"
+  },
+  "ogre-lord-buhfal-ii": {
+    "name": "Ogro Senhor Buhfal II"
+  },
+  "ogre-skeleton": {
+    "name": "Esqueleto de Ogro"
+  },
+  "ogr-moch": {
+    "name": "Ogrémoch"
+  },
+  "oinoloth": {
+    "name": "Oinoloth"
+  },
+  "olara": {
+    "name": "Olara"
+  },
+  "old-croaker": {
+    "name": "Velho Croaker"
+  },
+  "old-troglodyte": {
+    "name": "Velho Troglodyte"
+  },
+  "olhydra": {
+    "name": "Olhydra"
+  },
+  "ollin": {
+    "name": "Ollin"
+  },
+  "omin-dran": {
+    "name": "Omin Dran"
+  },
+  "one-eyed-shiver": {
+    "name": "One-Eyed Shiver"
+  },
+  "oneirovore": {
+    "name": "Oneirovore"
+  },
+  "ontharr-frume": {
+    "name": "Ontharr Frume"
+  },
+  "ontharyx": {
+    "name": "Ontharyx"
+  },
+  "onyx": {
+    "name": "Onyx"
+  },
+  "ooze-master": {
+    "name": "Gosma Mestre"
+  },
+  "ooze-folk": {
+    "name": "Ooze-Folk"
+  },
+  "ophelia": {
+    "name": "Ophelia"
+  },
+  "oracle": {
+    "name": "Oráculo"
+  },
+  "oracle-of-strixhaven": {
+    "name": "Oráculo of Strixhaven"
+  },
+  "oracs-the-enduring": {
+    "name": "Oracs, o Enduring"
+  },
+  "orc-blade-of-ilneval": {
+    "name": "Orc Lâmina of Ilneval"
+  },
+  "orc-claw-of-luthic": {
+    "name": "Orc Garra of Luthic"
+  },
+  "orc-commoner": {
+    "name": "Orc Plebeu"
+  },
+  "orc-eye-of-gruumsh": {
+    "name": "Orc Olho of Gruumsh"
+  },
+  "orc-hand-of-yurtrus": {
+    "name": "Orc Hand of Yurtrus"
+  },
+  "orc-nurtured-one-of-yurtrus": {
+    "name": "Orc Nurtured One of Yurtrus"
+  },
+  "orc-red-fang-of-shargaas": {
+    "name": "Orc Vermelho Presa of Shargaas"
+  },
+  "orc-war-chief": {
+    "name": "Orc Guerra Chefe"
+  },
+  "orcus": {
+    "name": "Orcus"
+  },
+  "oread": {
+    "name": "Oread"
+  },
+  "oreioth": {
+    "name": "Oreioth"
+  },
+  "oren-yogilvy": {
+    "name": "Oren Yogilvy"
+  },
+  "orien-enforcer": {
+    "name": "Orien Enforcer"
+  },
+  "orinix": {
+    "name": "Orinix"
+  },
+  "oriq-blood-mage": {
+    "name": "Oriq Sangue Mago"
+  },
+  "oriq-recruiter": {
+    "name": "Oriq Recruiter"
+  },
+  "orlando": {
+    "name": "Orlando"
+  },
+  "orlekto": {
+    "name": "Orlekto"
+  },
+  "orog": {
+    "name": "Orog"
+  },
+  "orok": {
+    "name": "Orok"
+  },
+  "orond-gralhund": {
+    "name": "Orond Gralhund"
+  },
+  "orthon": {
+    "name": "Orthon"
+  },
+  "ortimay-swift-and-dark": {
+    "name": "Ortimay Swift and Sombrio"
+  },
+  "orvex-ocrammas": {
+    "name": "Orvex Ocrammas"
+  },
+  "orzhov-giant": {
+    "name": "Gigante de Orzhov"
+  },
+  "oshundo-the-alhoon": {
+    "name": "Oshundo, o Alhoon"
+  },
+  "osvaldo-cassalanter": {
+    "name": "Osvaldo Cassalanter"
+  },
+  "otherworldly-corrupter": {
+    "name": "Otherworldly Corrupter"
+  },
+  "othokent": {
+    "name": "Othokent"
+  },
+  "othovir": {
+    "name": "Othovir"
+  },
+  "ott-steeltoes": {
+    "name": "Ott Steeltoes"
+  },
+  "otto": {
+    "name": "Otto"
+  },
+  "otto-belview": {
+    "name": "Otto Belview"
+  },
+  "otyugh-mutate": {
+    "name": "Otyugh Mutate"
+  },
+  "oussa": {
+    "name": "Oussa"
+  },
+  "ox": {
+    "name": "Boi"
+  },
+  "oxen": {
+    "name": "Oxen"
+  },
+  "padraich": {
+    "name": "Padraich"
+  },
+  "pain-devil-excruciarch": {
+    "name": "Diabo Dor (Excruciarch)"
+  },
+  "paloma": {
+    "name": "Paloma"
+  },
+  "panopticus-wizard": {
+    "name": "Panopticus Mago"
+  },
+  "paper-bird": {
+    "name": "Paper Bird"
+  },
+  "paper-whirlwind": {
+    "name": "Paper Whirlwind"
+  },
+  "parasite-infested-behir": {
+    "name": "Parasite-infested Behir"
+  },
+  "pari": {
+    "name": "Pari"
+  },
+  "parriwimple": {
+    "name": "Parriwimple"
+  },
+  "parrot": {
+    "name": "Parrot"
+  },
+  "parson-pellinost": {
+    "name": "Parson Pellinost"
+  },
+  "parvaz": {
+    "name": "Parvaz"
+  },
+  "patrina-velikovna": {
+    "name": "Patrina Velikovna"
+  },
+  "pazrodine": {
+    "name": "Pazrodine"
+  },
+  "pazuzu": {
+    "name": "Pazuzu"
+  },
+  "peacock": {
+    "name": "Peacock"
+  },
+  "pech": {
+    "name": "Pech"
+  },
+  "peebles": {
+    "name": "Peebles"
+  },
+  "pelyious-avhoste": {
+    "name": "Pelyious Avhoste"
+  },
+  "pendragon-beestinger": {
+    "name": "Pendragon Beestinger"
+  },
+  "pentadrone": {
+    "name": "Pentadrone"
+  },
+  "perigee": {
+    "name": "Perigee"
+  },
+  "pest-mascot": {
+    "name": "Pest Mascot"
+  },
+  "pestilence-demon": {
+    "name": "Demônio Pestilence"
+  },
+  "phaerimm": {
+    "name": "Phaerimm"
+  },
+  "phaerimm-agent": {
+    "name": "Phaerimm Agent"
+  },
+  "phaerimm-elder": {
+    "name": "Phaerimm Ancião"
+  },
+  "phaerimm-hatchling": {
+    "name": "Phaerimm Filhote"
+  },
+  "phaerimm-scout": {
+    "name": "Phaerimm Batedor"
+  },
+  "phaia": {
+    "name": "Phaia"
+  },
+  "phantom-warrior": {
+    "name": "Fantasma Guerreiro"
+  },
+  "phantom-warrior-archer": {
+    "name": "Fantasma Guerreiro (Archer)"
+  },
+  "pharblex-spattergoo": {
+    "name": "Pharblex Spattergoo"
+  },
+  "phisarazu-spyder-fiend": {
+    "name": "Phisarazu Spyder-Fiend"
+  },
+  "phoenix": {
+    "name": "Phoenix"
+  },
+  "phoenix-anvil": {
+    "name": "Phoenix Anvil"
+  },
+  "phylaskia": {
+    "name": "Phylaskia"
+  },
+  "piccolo": {
+    "name": "Piccolo"
+  },
+  "pidlwick-ii": {
+    "name": "Pidlwick II"
+  },
+  "piercer": {
+    "name": "Piercer"
+  },
+  "pig": {
+    "name": "Porco"
+  },
+  "piggy-wiggle-butt": {
+    "name": "Piggy Wiggle Butt"
+  },
+  "piranha": {
+    "name": "Piranha"
+  },
+  "pirate-bosun": {
+    "name": "Pirata Bosun"
+  },
+  "pirate-captain": {
+    "name": "Pirata Capitão"
+  },
+  "pirate-deck-wizard": {
+    "name": "Pirata Deck Mago"
+  },
+  "pirate-first-mate": {
+    "name": "Pirata First Mate"
+  },
+  "piyarz": {
+    "name": "Piyarz"
+  },
+  "planar-incarnate": {
+    "name": "Planar Incarnate"
+  },
+  "plasmoid-boss": {
+    "name": "Plasmoid Chefe"
+  },
+  "plasmoid-explorer": {
+    "name": "Plasmoid Explorer"
+  },
+  "plasmoid-warrior": {
+    "name": "Plasmoid Guerreiro"
+  },
+  "play-by-play-generator": {
+    "name": "Play-by-Play Generator"
+  },
+  "podling": {
+    "name": "Podling"
+  },
+  "poison-weird": {
+    "name": "Veneno Weird"
+  },
+  "polar-serpent": {
+    "name": "Polar Serpente"
+  },
+  "pollenella-the-honeybee": {
+    "name": "Pollenella, o Honeybee"
+  },
+  "polukranos": {
+    "name": "Polukranos"
+  },
+  "porro": {
+    "name": "Porro"
+  },
+  "portentia-dran": {
+    "name": "Portentia Dran"
+  },
+  "portia-dzuth": {
+    "name": "Portia Dzuth"
+  },
+  "pow-ming": {
+    "name": "Pow Ming"
+  },
+  "pral": {
+    "name": "Pral"
+  },
+  "precognitive-mage": {
+    "name": "Precognitive Mago"
+  },
+  "preeta-kreepa": {
+    "name": "Preeta Kreepa"
+  },
+  "priest-of-osybus": {
+    "name": "Sacerdote of Osybus"
+  },
+  "prince-derendil": {
+    "name": "Príncipe Derendil"
+  },
+  "prince-kirina": {
+    "name": "Príncipe Kirina"
+  },
+  "prince-simbon": {
+    "name": "Príncipe Simbon"
+  },
+  "prince-xeleth": {
+    "name": "Príncipe Xeleth"
+  },
+  "princeps-kovik": {
+    "name": "Princeps Kovik"
+  },
+  "princess-ebonmire": {
+    "name": "Princesa Ebonmire"
+  },
+  "princess-serissa": {
+    "name": "Princesa Serissa"
+  },
+  "princess-xedalli": {
+    "name": "Princesa Xedalli"
+  },
+  "prismari-apprentice": {
+    "name": "Prismari Apprentice"
+  },
+  "prismari-pledgemage": {
+    "name": "Prismari Pledgemage"
+  },
+  "prismari-professor-of-expression": {
+    "name": "Prismari Professor of Expression"
+  },
+  "prismari-professor-of-perfection": {
+    "name": "Prismari Professor of Perfection"
+  },
+  "prisoner-13": {
+    "name": "Prisoner 13"
+  },
+  "prisoner-237": {
+    "name": "Prisoner 237"
+  },
+  "prolix-yusaf": {
+    "name": "Prolix Yusaf"
+  },
+  "prophetess-dran": {
+    "name": "Prophetess Dran"
+  },
+  "psionic-ashenwight": {
+    "name": "Psionic Ashenwight"
+  },
+  "psionic-shambling-mound": {
+    "name": "Psionic Shambling Mound"
+  },
+  "psurlon": {
+    "name": "Psurlon"
+  },
+  "psurlon-leader": {
+    "name": "Psurlon Leader"
+  },
+  "psurlon-ringer": {
+    "name": "Psurlon Ringer"
+  },
+  "pterafolk": {
+    "name": "Pterafolk"
+  },
+  "puppeteer-parasite": {
+    "name": "Puppeteer Parasite"
+  },
+  "purple-wormling": {
+    "name": "Púrpura Wormling"
+  },
+  "qawasha": {
+    "name": "Qawasha"
+  },
+  "quadrone": {
+    "name": "Quadrone"
+  },
+  "quadrone-detention-drone": {
+    "name": "Quadrone Detention Drone"
+  },
+  "quaggoth": {
+    "name": "Quaggoth"
+  },
+  "quaggoth-spore-servant": {
+    "name": "Quaggoth Spore Servo"
+  },
+  "quandrix-apprentice": {
+    "name": "Quandrix Apprentice"
+  },
+  "quandrix-pledgemage": {
+    "name": "Quandrix Pledgemage"
+  },
+  "quandrix-professor-of-substance": {
+    "name": "Quandrix Professor of Substance"
+  },
+  "quandrix-professor-of-theory": {
+    "name": "Quandrix Professor of Theory"
+  },
+  "quavilithku-spyder-fiend": {
+    "name": "Quavilithku Spyder-Fiend"
+  },
+  "queen-forfallen": {
+    "name": "Rainha Forfallen"
+  },
+  "queen-zanobis": {
+    "name": "Rainha Zanobis"
+  },
+  "quenthel-baenre": {
+    "name": "Quenthel Baenre"
+  },
+  "quetzalcoatlus": {
+    "name": "Quetzalcoatlus"
+  },
+  "quickling": {
+    "name": "Quickling"
+  },
+  "qunbraxel": {
+    "name": "Qunbraxel"
+  },
+  "r04m": {
+    "name": "R04M"
+  },
+  "rabbithead": {
+    "name": "Rabbithead"
+  },
+  "rack": {
+    "name": "Rack"
+  },
+  "radiant-idol": {
+    "name": "Radiante Ídolo"
+  },
+  "raegrin-mau": {
+    "name": "Raegrin Mau"
+  },
+  "raezil": {
+    "name": "Raezil"
+  },
+  "raggadragga": {
+    "name": "Raggadragga"
+  },
+  "raggnar-redtooth": {
+    "name": "Raggnar Redtooth"
+  },
+  "rahadin": {
+    "name": "Rahadin"
+  },
+  "rain": {
+    "name": "Chuva"
+  },
+  "rak-tulkhesh": {
+    "name": "Rak Tulkhesh"
+  },
+  "rakdos": {
+    "name": "Rakdos"
+  },
+  "rakdos-lampooner": {
+    "name": "Rakdos Lampooner"
+  },
+  "rakdos-performer-blade-juggler": {
+    "name": "Rakdos Performer, Lâmina Juggler"
+  },
+  "rakdos-performer-fire-eater": {
+    "name": "Rakdos Performer, Fogo Eater"
+  },
+  "rakdos-performer-high-wire-acrobat": {
+    "name": "Rakdos Performer, High-Wire Acrobat"
+  },
+  "raklupis-spyder-fiend": {
+    "name": "Raklupis Spyder-Fiend"
+  },
+  "ram-sugar": {
+    "name": "Carneiro Sugar"
+  },
+  "ramius": {
+    "name": "Ramius"
+  },
+  "ras-nsi": {
+    "name": "Ras Nsi"
+  },
+  "rath-modar": {
+    "name": "Rath Modar"
+  },
+  "raven-uth-vogler": {
+    "name": "Corvo Uth Vogler"
+  },
+  "razerblast": {
+    "name": "Razerblast"
+  },
+  "razorvine-blight": {
+    "name": "Razorvine Praga"
+  },
+  "reaper-of-bhaal": {
+    "name": "Reaper of Bhaal"
+  },
+  "reaper-spirit": {
+    "name": "Espírito Reaper"
+  },
+  "reckoner": {
+    "name": "Reckoner"
+  },
+  "red-abishai": {
+    "name": "Vermelho Abishai"
+  },
+  "red-greatwyrm": {
+    "name": "Vermelho Greatwyrm"
+  },
+  "red-guard-drake": {
+    "name": "Draco Vermelho Guarda"
+  },
+  "red-ruin": {
+    "name": "Vermelho Ruína"
+  },
+  "red-slaad": {
+    "name": "Vermelho Slaad"
+  },
+  "red-wizard": {
+    "name": "Vermelho Mago"
+  },
+  "redbrand-ruffian": {
+    "name": "Redbrand Ruffian"
+  },
+  "redbud": {
+    "name": "Redbud"
+  },
+  "redcap": {
+    "name": "Redcap"
+  },
+  "redtooth-werefox": {
+    "name": "Redtooth Werefox"
+  },
+  "reduced-threat-aboleth": {
+    "name": "Reduced-Threat Aboleth"
+  },
+  "reduced-threat-basilisk": {
+    "name": "Reduced-Threat Basilisco"
+  },
+  "reduced-threat-behir": {
+    "name": "Reduced-Threat Behir"
+  },
+  "reduced-threat-beholder": {
+    "name": "Beholder Reduced-Threat"
+  },
+  "reduced-threat-black-pudding": {
+    "name": "Reduced-Threat Negro Pudding"
+  },
+  "reduced-threat-carrion-crawler": {
+    "name": "Reduced-Threat Carrion Crawler"
+  },
+  "reduced-threat-clay-golem": {
+    "name": "Golem de Reduced-Threat Argila"
+  },
+  "reduced-threat-darkmantle": {
+    "name": "Reduced-Threat Darkmantle"
+  },
+  "reduced-threat-displacer-beast": {
+    "name": "Reduced-Threat Displacer Besta"
+  },
+  "reduced-threat-dragon-turtle": {
+    "name": "Reduced-Threat Dragão Tartaruga"
+  },
+  "reduced-threat-ettercap": {
+    "name": "Reduced-Threat Ettercap"
+  },
+  "reduced-threat-flesh-golem": {
+    "name": "Golem de Reduced-Threat Carne"
+  },
+  "reduced-threat-glabrezu": {
+    "name": "Reduced-Threat Glabrezu"
+  },
+  "reduced-threat-gray-ooze": {
+    "name": "Reduced-Threat Cinzento Gosma"
+  },
+  "reduced-threat-helmed-horror": {
+    "name": "Reduced-Threat Encouraçado Horror"
+  },
+  "reduced-threat-hezrou": {
+    "name": "Reduced-Threat Hezrou"
+  },
+  "reduced-threat-hook-horror": {
+    "name": "Reduced-Threat Hook Horror"
+  },
+  "reduced-threat-ochre-jelly": {
+    "name": "Reduced-Threat Ochre Jelly"
+  },
+  "reduced-threat-otyugh": {
+    "name": "Reduced-Threat Otyugh"
+  },
+  "reduced-threat-owlbear": {
+    "name": "Reduced-Threat Urso-coruja"
+  },
+  "reduced-threat-peryton": {
+    "name": "Reduced-Threat Periton"
+  },
+  "reduced-threat-remorhaz": {
+    "name": "Reduced-Threat Remorhaz"
+  },
+  "reduced-threat-stone-golem": {
+    "name": "Golem de Reduced-Threat Pedra"
+  },
+  "reduced-threat-vrock": {
+    "name": "Reduced-Threat Vrock"
+  },
+  "reduced-threat-wight": {
+    "name": "Reduced-Threat Corpo Seco"
+  },
+  "reduced-threat-wyvern": {
+    "name": "Wyvern Reduced-Threat"
+  },
+  "reflection": {
+    "name": "Reflection"
+  },
+  "refraction-of-ilvaash": {
+    "name": "Refraction of Ilvaash"
+  },
+  "regenerating-black-pudding": {
+    "name": "Regenerating Negro Pudding"
+  },
+  "reghed-chieftain": {
+    "name": "Reghed Chieftain"
+  },
+  "reghed-great-warrior": {
+    "name": "Reghed Great Guerreiro"
+  },
+  "reghed-shaman": {
+    "name": "Reghed Xamã"
+  },
+  "reghed-warrior": {
+    "name": "Reghed Guerreiro"
+  },
+  "regisaur": {
+    "name": "Regisaur"
+  },
+  "regular-orthoclath": {
+    "name": "Regular Orthoclath"
+  },
+  "reigar": {
+    "name": "Reigar"
+  },
+  "reindeer": {
+    "name": "Reindeer"
+  },
+  "relentless-impaler": {
+    "name": "Relentless Impaler"
+  },
+  "relentless-juggernaut": {
+    "name": "Relentless Juggernaut"
+  },
+  "relentless-slasher": {
+    "name": "Relentless Slasher"
+  },
+  "relic-sloth": {
+    "name": "Relic Preguiça"
+  },
+  "remallia-haventree": {
+    "name": "Remallia Haventree"
+  },
+  "renaer-neverember": {
+    "name": "Renaer Neverember"
+  },
+  "renwick": {
+    "name": "Renwick"
+  },
+  "replica-duodrone": {
+    "name": "Replica Duodrone"
+  },
+  "replica-monodrone": {
+    "name": "Replica Monodrone"
+  },
+  "replica-pentadrone": {
+    "name": "Replica Pentadrone"
+  },
+  "replica-quadrone": {
+    "name": "Replica Quadrone"
+  },
+  "replica-tridrone": {
+    "name": "Replica Tridrone"
+  },
+  "rerak": {
+    "name": "Rerak"
+  },
+  "retriever": {
+    "name": "Retriever"
+  },
+  "returned-drifter": {
+    "name": "Returned Drifter"
+  },
+  "returned-kakomantis": {
+    "name": "Returned Kakomantis"
+  },
+  "returned-palamnite": {
+    "name": "Returned Palamnite"
+  },
+  "returned-sentry": {
+    "name": "Returned Sentry"
+  },
+  "rezmir": {
+    "name": "Rezmir"
+  },
+  "rezran-snake-eyes-agrodro": {
+    "name": "Rezran Serpente Eyes Agrodro"
+  },
+  "rhundorth": {
+    "name": "Rhundorth"
+  },
+  "rictavio": {
+    "name": "Rictavio"
+  },
+  "riffel": {
+    "name": "Riffel"
+  },
+  "riffler": {
+    "name": "Riffler"
+  },
+  "rihuud": {
+    "name": "Rihuud"
+  },
+  "rilago": {
+    "name": "Rilago"
+  },
+  "rilly-june": {
+    "name": "Rilly June"
+  },
+  "rilsa-rael": {
+    "name": "Rilsa Rael"
+  },
+  "rime-hulk": {
+    "name": "Rime Hulk"
+  },
+  "rimmon": {
+    "name": "Rimmon"
+  },
+  "ringlerun": {
+    "name": "Ringlerun"
+  },
+  "rip-tide-priest": {
+    "name": "Rip Maré Sacerdote"
+  },
+  "rishaal-the-page-turner": {
+    "name": "Rishaal the Page-Turner"
+  },
+  "rishindar": {
+    "name": "Rishindar"
+  },
+  "river-mist": {
+    "name": "Rio Névoa"
+  },
+  "river-serpent": {
+    "name": "Rio Serpente"
+  },
+  "riverine": {
+    "name": "Riverine"
+  },
+  "rivibiddel": {
+    "name": "Rivibiddel"
+  },
+  "rock-gnome-recluse": {
+    "name": "Rocha Gnomo Recluse"
+  },
+  "ront": {
+    "name": "Ront"
+  },
+  "rool": {
+    "name": "Rool"
+  },
+  "rooster": {
+    "name": "Galo"
+  },
+  "rosavalda-rose-durst": {
+    "name": "Rosavalda Rosa Durst"
+  },
+  "rosie-beestinger": {
+    "name": "Rosie Beestinger"
+  },
+  "rot-troll": {
+    "name": "Podridão Troll"
+  },
+  "roth": {
+    "name": "Rothé"
+  },
+  "rotter": {
+    "name": "Rotter"
+  },
+  "rowboat-mimic": {
+    "name": "Rowboat Mímico"
+  },
+  "rubblebelt-stalker": {
+    "name": "Rubblebelt Perseguidor"
+  },
+  "ruidium-elephant": {
+    "name": "Ruidium Elefante"
+  },
+  "ruin-grinder": {
+    "name": "Ruína Grinder"
+  },
+  "ruin-spider": {
+    "name": "Ruína Aranha"
+  },
+  "rumpadump": {
+    "name": "Rumpadump"
+  },
+  "runara": {
+    "name": "Runara"
+  },
+  "runed-behir": {
+    "name": "Runed Behir"
+  },
+  "runic-colossus": {
+    "name": "Runic Colossus"
+  },
+  "rusted-behemoth": {
+    "name": "Rusted Behemoth"
+  },
+  "rusted-berserker": {
+    "name": "Rusted Berserker"
+  },
+  "rusted-wyrm": {
+    "name": "Rusted Wyrm"
+  },
+  "rutterkin": {
+    "name": "Rutterkin"
+  },
+  "ruxithid-the-chosen": {
+    "name": "Ruxithid, o Escolhido"
+  },
+  "rystia-zav": {
+    "name": "Rystia Zav"
+  },
+  "sabrina-kilgore-levels-1-4": {
+    "name": "Sabrina Kilgore (Levels 1-4)"
+  },
+  "sabrina-kilgore-levels-5-8": {
+    "name": "Sabrina Kilgore (Levels 5-8)"
+  },
+  "sabrina-kilgore-levels-9-11": {
+    "name": "Sabrina Kilgore (Levels 9-11)"
+  },
+  "sacred-statue": {
+    "name": "Sagrado Estátua"
+  },
+  "sacred-stone-monk": {
+    "name": "Sagrado Pedra Monge"
+  },
+  "saemon-havarian": {
+    "name": "Saemon Havarian"
+  },
+  "saeth-cromley": {
+    "name": "Saeth Cromley"
+  },
+  "sage": {
+    "name": "Sage"
+  },
+  "sahuagin-blademaster": {
+    "name": "Sahuagin Blademaster"
+  },
+  "sahuagin-champion": {
+    "name": "Sahuagin Campeão"
+  },
+  "sahuagin-coral-smasher": {
+    "name": "Sahuagin Coral Smasher"
+  },
+  "sahuagin-deep-diver": {
+    "name": "Sahuagin Profundo Diver"
+  },
+  "sahuagin-hatchling-swarm": {
+    "name": "Sahuagin Filhote Enxame"
+  },
+  "sahuagin-high-priestess": {
+    "name": "Sahuagin High Priestess"
+  },
+  "sahuagin-priestess": {
+    "name": "Sahuagin Priestess"
+  },
+  "sahuagin-warlock-of-ukotoa": {
+    "name": "Sahuagin Bruxo of Uk'otoa"
+  },
+  "sahuagin-wave-shaper": {
+    "name": "Sahuagin Onda Shaper"
+  },
+  "sailback": {
+    "name": "Sailback"
+  },
+  "saleeth-the-couatl": {
+    "name": "Saleeth, o Couatl"
+  },
+  "salida": {
+    "name": "Salida"
+  },
+  "samara-strongbones": {
+    "name": "Samara Strongbones"
+  },
+  "samira-arah": {
+    "name": "Samira Arah"
+  },
+  "sammaster-dracolich-form": {
+    "name": "Sammaster (Dracolich Form)"
+  },
+  "sammaster-lich-form": {
+    "name": "Sammaster (Lich Form)"
+  },
+  "sanbalet": {
+    "name": "Sanbalet"
+  },
+  "sandesyl-morgia": {
+    "name": "Sandesyl Morgia"
+  },
+  "sandwurm": {
+    "name": "Sandwurm"
+  },
+  "sangora": {
+    "name": "Sangora"
+  },
+  "sangzor": {
+    "name": "Sangzor"
+  },
+  "sapphire-dragon-wyrmling": {
+    "name": "Filhote de Safira Dragão"
+  },
+  "sapphire-greatwyrm": {
+    "name": "Safira Greatwyrm"
+  },
+  "sapphire-sentinel": {
+    "name": "Safira Sentinela"
+  },
+  "sarcelle-malinosh": {
+    "name": "Sarcelle Malinosh"
+  },
+  "sarevok": {
+    "name": "Sarevok"
+  },
+  "sarith-kzekarit": {
+    "name": "Sarith Kzekarit"
+  },
+  "sarlamir": {
+    "name": "Sarlamir"
+  },
+  "sarusanda-allester": {
+    "name": "Sarusanda Allester"
+  },
+  "satyr-reveler": {
+    "name": "Sátiro Reveler"
+  },
+  "satyr-thornbearer": {
+    "name": "Sátiro Thornbearer"
+  },
+  "sauriv": {
+    "name": "Sauriv"
+  },
+  "savid": {
+    "name": "Savid"
+  },
+  "scaladar": {
+    "name": "Scaladar"
+  },
+  "scarlet-sentinel": {
+    "name": "Escarlate Sentinela"
+  },
+  "scholarly-agent": {
+    "name": "Scholarly Agent"
+  },
+  "scholarly-excavator": {
+    "name": "Scholarly Excavator"
+  },
+  "scholarly-mastermind": {
+    "name": "Scholarly Mastermind"
+  },
+  "scion-of-grolantor": {
+    "name": "Scion of Grolantor"
+  },
+  "scion-of-memnor": {
+    "name": "Scion of Memnor"
+  },
+  "scion-of-skoraeus": {
+    "name": "Scion of Skoraeus"
+  },
+  "scion-of-stronmaus": {
+    "name": "Scion of Stronmaus"
+  },
+  "scion-of-surtur": {
+    "name": "Scion of Surtur"
+  },
+  "scion-of-thrym": {
+    "name": "Scion of Thrym"
+  },
+  "scorchbringer-guard": {
+    "name": "Scorchbringer Guarda"
+  },
+  "scrag": {
+    "name": "Scrag"
+  },
+  "scrapper": {
+    "name": "Scrapper"
+  },
+  "screaming-devilkin": {
+    "name": "Gritando Devilkin"
+  },
+  "scribble": {
+    "name": "Scribble"
+  },
+  "scufflecup-teacup": {
+    "name": "Scufflecup Teacup"
+  },
+  "scuttling-serpentmaw": {
+    "name": "Scuttling Serpentmaw"
+  },
+  "sea-elf": {
+    "name": "Mar Elfo"
+  },
+  "sea-elf-scout": {
+    "name": "Mar Elfo Batedor"
+  },
+  "sea-fury": {
+    "name": "Mar Fúria"
+  },
+  "sea-lion": {
+    "name": "Mar Leão"
+  },
+  "sea-spawn": {
+    "name": "Cria de Mar"
+  },
+  "seal": {
+    "name": "Foca"
+  },
+  "sekelok": {
+    "name": "Sekelok"
+  },
+  "selenelion-twin": {
+    "name": "Selenelion Twin"
+  },
+  "sentient-gray-ooze": {
+    "name": "Sentient Cinzento Gosma"
+  },
+  "sentient-ochre-jelly": {
+    "name": "Sentient Ochre Jelly"
+  },
+  "sentinel-marshal": {
+    "name": "Sentinela Marshal"
+  },
+  "seodra": {
+    "name": "Seodra"
+  },
+  "sephek-kaltro": {
+    "name": "Sephek Kaltro"
+  },
+  "septon-modron": {
+    "name": "Septon Modron"
+  },
+  "serapio": {
+    "name": "Serapio"
+  },
+  "sergeant": {
+    "name": "Sergeant"
+  },
+  "serpopard": {
+    "name": "Serpopard"
+  },
+  "serra-angel": {
+    "name": "Serra Angel"
+  },
+  "servitor-thrull": {
+    "name": "Servitor Thrull"
+  },
+  "servo": {
+    "name": "Servo"
+  },
+  "setessan-hoplite": {
+    "name": "Setessan Hoplite"
+  },
+  "seth-the-shapeshifting-dragon": {
+    "name": "Dragão Seth the Shapeshifting"
+  },
+  "severin": {
+    "name": "Severin"
+  },
+  "sewer-king": {
+    "name": "Sewer Rei"
+  },
+  "shadar-kai-gloom-weaver": {
+    "name": "Shadar-kai Gloom Tecelão"
+  },
+  "shadar-kai-shadow-dancer": {
+    "name": "Shadar-kai Sombrio Dançarino"
+  },
+  "shadar-kai-soul-monger": {
+    "name": "Shadar-kai Alma Monger"
+  },
+  "shade": {
+    "name": "Shade"
+  },
+  "shadow-assassin": {
+    "name": "Sombrio Assassino"
+  },
+  "shadow-dancer": {
+    "name": "Sombrio Dançarino"
+  },
+  "shadow-horror": {
+    "name": "Sombrio Horror"
+  },
+  "shadow-mastiff": {
+    "name": "Sombrio Mastim"
+  },
+  "shadow-mastiff-alpha": {
+    "name": "Sombrio Mastim Alpha"
+  },
+  "shadow-spirit": {
+    "name": "Espírito Sombrio"
+  },
+  "shadow-marked-agent": {
+    "name": "Shadow-Marked Agent"
+  },
+  "shadowghast": {
+    "name": "Shadowghast"
+  },
+  "shadowmoor-giant": {
+    "name": "Gigante de Shadowmoor"
+  },
+  "shadrix-silverquill": {
+    "name": "Shadrix Silverquill"
+  },
+  "shago": {
+    "name": "Shago"
+  },
+  "shalai": {
+    "name": "Shalai"
+  },
+  "shaldoor": {
+    "name": "Shaldoor"
+  },
+  "shalendra-floshin": {
+    "name": "Shalendra Floshin"
+  },
+  "shalfey": {
+    "name": "Shalfey"
+  },
+  "shalfi-lewin": {
+    "name": "Shalfi Lewin"
+  },
+  "shalvus-martholio": {
+    "name": "Shalvus Martholio"
+  },
+  "shambling-mound-totem-elemental": {
+    "name": "Shambling Mound Totem Elemental"
+  },
+  "shanzezim": {
+    "name": "Shanzezim"
+  },
+  "shapechanged-roper": {
+    "name": "Shapechanged Roper"
+  },
+  "shard-shunner": {
+    "name": "Shard Shunner"
+  },
+  "sharda": {
+    "name": "Sharda"
+  },
+  "shariel": {
+    "name": "Shariel"
+  },
+  "sharkbody-abomination": {
+    "name": "Sharkbody Abomination"
+  },
+  "sharwyn-hucrele": {
+    "name": "Sharwyn Hucrele"
+  },
+  "shator-demodand": {
+    "name": "Shator Demodand"
+  },
+  "shator-warden": {
+    "name": "Shator Guardião"
+  },
+  "shedrak-of-the-eyes": {
+    "name": "Shedrak of the Eyes"
+  },
+  "sheep": {
+    "name": "Ovelha"
+  },
+  "sheldon-the-blueberry-dragon": {
+    "name": "Dragão Sheldon the Blueberry"
+  },
+  "shell-shark": {
+    "name": "Shell Tubarão"
+  },
+  "shemeshka": {
+    "name": "Shemeshka"
+  },
+  "shemshime": {
+    "name": "Shemshime"
+  },
+  "shield-dwarf-guard": {
+    "name": "Escudo Anão Guarda"
+  },
+  "shield-dwarf-noble": {
+    "name": "Escudo Anão Nobre"
+  },
+  "shifter": {
+    "name": "Shifter"
+  },
+  "shira": {
+    "name": "Shira"
+  },
+  "shoal-serpent": {
+    "name": "Shoal Serpente"
+  },
+  "shoalar-quanderil": {
+    "name": "Shoalar Quanderil"
+  },
+  "shockerstomper": {
+    "name": "Shockerstomper"
+  },
+  "sholeh": {
+    "name": "Sholeh"
+  },
+  "shoosuva": {
+    "name": "Shoosuva"
+  },
+  "shredwing": {
+    "name": "Shredwing"
+  },
+  "shrieker-fungus": {
+    "name": "Shrieker Fungo"
+  },
+  "shunn-shurreth": {
+    "name": "Shunn Shurreth"
+  },
+  "sibriex": {
+    "name": "Sibriex"
+  },
+  "sigarda": {
+    "name": "Sigarda"
+  },
+  "sildar-hallwinter": {
+    "name": "Sildar Hallwinter"
+  },
+  "silver-greatwyrm": {
+    "name": "Prateado Greatwyrm"
+  },
+  "silverlily": {
+    "name": "Silverlily"
+  },
+  "silverquill-apprentice": {
+    "name": "Silverquill Apprentice"
+  },
+  "silverquill-pledgemage": {
+    "name": "Silverquill Pledgemage"
+  },
+  "silverquill-professor-of-radiance": {
+    "name": "Silverquill Professor of Radiance"
+  },
+  "silverquill-professor-of-shadow": {
+    "name": "Silverquill Professor of Sombrio"
+  },
+  "simic-merfolk": {
+    "name": "Simic Tritão"
+  },
+  "simon-aumar": {
+    "name": "Simon Aumar"
+  },
+  "sinensa": {
+    "name": "Sinensa"
+  },
+  "sing-along": {
+    "name": "Sing-Along"
+  },
+  "sion": {
+    "name": "Sion"
+  },
+  "sir-baric-nylef": {
+    "name": "Sir Baric Nylef"
+  },
+  "sir-braford": {
+    "name": "Sir Braford"
+  },
+  "sir-jared": {
+    "name": "Sir Jared"
+  },
+  "sir-talavar": {
+    "name": "Sir Talavar"
+  },
+  "sir-ursas": {
+    "name": "Sir Ursas"
+  },
+  "sirac-of-suzail": {
+    "name": "Sirac of Suzail"
+  },
+  "sire-of-insanity": {
+    "name": "Sire of Insanity"
+  },
+  "siren": {
+    "name": "Siren"
+  },
+  "sirene": {
+    "name": "Sirene"
+  },
+  "sivak-draconian": {
+    "name": "Sivak Draconian"
+  },
+  "sivis-scribe": {
+    "name": "Sivis Scribe"
+  },
+  "skaab": {
+    "name": "Skaab"
+  },
+  "skabatha-nightshade": {
+    "name": "Skabatha Nightshade"
+  },
+  "skeemo-weirdbottle": {
+    "name": "Skeemo Weirdbottle"
+  },
+  "skeletal-alchemist": {
+    "name": "Esquelético Alquimista"
+  },
+  "skeletal-bloodfin": {
+    "name": "Esquelético Bloodfin"
+  },
+  "skeletal-giant-owl": {
+    "name": "Gigante de Esquelético Coruja"
+  },
+  "skeletal-horror": {
+    "name": "Esquelético Horror"
+  },
+  "skeletal-juggernaut": {
+    "name": "Esquelético Juggernaut"
+  },
+  "skeletal-knight": {
+    "name": "Esquelético Cavaleiro"
+  },
+  "skeletal-owlbear": {
+    "name": "Esquelético Urso-coruja"
+  },
+  "skeletal-polar-bear": {
+    "name": "Esquelético Polar Urso"
+  },
+  "skeletal-rats": {
+    "name": "Esquelético Rats"
+  },
+  "skeletal-riding-horse": {
+    "name": "Esquelético Riding Cavalo"
+  },
+  "skeletal-swarm": {
+    "name": "Esquelético Enxame"
+  },
+  "skeletal-two-headed-owlbear": {
+    "name": "Esquelético Two-Headed Urso-coruja"
+  },
+  "skeleton-key": {
+    "name": "Esqueleto Chave"
+  },
+  "skeleton-lord": {
+    "name": "Esqueleto Senhor"
+  },
+  "skeleton-warrior": {
+    "name": "Esqueleto Guerreiro"
+  },
+  "sken-zabriss": {
+    "name": "Sken Zabriss"
+  },
+  "skittering-horror": {
+    "name": "Skittering Horror"
+  },
+  "skitterwidget": {
+    "name": "Skitterwidget"
+  },
+  "skra-sorsk": {
+    "name": "Skr'a S'orsk"
+  },
+  "skriss": {
+    "name": "Skriss"
+  },
+  "skulk": {
+    "name": "Skulk"
+  },
+  "skull-flier": {
+    "name": "Crânio Flier"
+  },
+  "skull-lasher-of-myrkul": {
+    "name": "Crânio Lasher of Myrkul"
+  },
+  "skull-lord": {
+    "name": "Crânio Senhor"
+  },
+  "skum": {
+    "name": "Skum"
+  },
+  "sky-leviathan": {
+    "name": "Céu Leviathan"
+  },
+  "sky-whale": {
+    "name": "Céu Baleia"
+  },
+  "skyjek-roc": {
+    "name": "Skyjek Roc"
+  },
+  "skylla": {
+    "name": "Skylla"
+  },
+  "skyswimmer": {
+    "name": "Skyswimmer"
+  },
+  "skyweaver": {
+    "name": "Skyweaver"
+  },
+  "sladis-vadir": {
+    "name": "Sladis Vadir"
+  },
+  "slarkrethel": {
+    "name": "Slarkrethel"
+  },
+  "slayer": {
+    "name": "Matador"
+  },
+  "sled-dog": {
+    "name": "Sled Cão"
+  },
+  "slithering-bloodfin": {
+    "name": "Slithering Bloodfin"
+  },
+  "slithering-tracker": {
+    "name": "Slithering Tracker"
+  },
+  "sloopidoop": {
+    "name": "Sloopidoop"
+  },
+  "sludge-hag": {
+    "name": "Bruxa Sludge"
+  },
+  "slurmy": {
+    "name": "Slurmy"
+  },
+  "small-drake": {
+    "name": "Draco Pequeno"
+  },
+  "smiler-the-defiler": {
+    "name": "Smiler, o Defiler"
+  },
+  "snake-horror": {
+    "name": "Serpente Horror"
+  },
+  "snapping-hydra": {
+    "name": "Snapping Hidra"
+  },
+  "snarla": {
+    "name": "Snarla"
+  },
+  "sneak": {
+    "name": "Sneak"
+  },
+  "snow-golem": {
+    "name": "Golem de Neve"
+  },
+  "snow-leopard": {
+    "name": "Neve Leopard"
+  },
+  "snow-maiden": {
+    "name": "Neve Maiden"
+  },
+  "snowy-owlbear": {
+    "name": "Snowy Urso-coruja"
+  },
+  "snurrevin": {
+    "name": "Snurrevin"
+  },
+  "society-of-sensation-muse": {
+    "name": "Society of Sensation Muse"
+  },
+  "sofina": {
+    "name": "Sofina"
+  },
+  "solar-bastion-knight": {
+    "name": "Solar Bastion Cavaleiro"
+  },
+  "solar-dragon-wyrmling": {
+    "name": "Filhote de Solar Dragão"
+  },
+  "soldier": {
+    "name": "Soldado"
+  },
+  "soluun-xibrindas": {
+    "name": "Soluun Xibrindas"
+  },
+  "sorrowfish": {
+    "name": "Sorrowfish"
+  },
+  "soul-monger": {
+    "name": "Alma Monger"
+  },
+  "soul-shaker": {
+    "name": "Alma Shaker"
+  },
+  "soulstinger-demon": {
+    "name": "Demônio Soulstinger"
+  },
+  "sovereign-basidia": {
+    "name": "Sovereign Basidia"
+  },
+  "space-clown": {
+    "name": "Space Clown"
+  },
+  "space-eel": {
+    "name": "Space Enguia"
+  },
+  "space-guppy": {
+    "name": "Space Guppy"
+  },
+  "space-hamster": {
+    "name": "Space Hamster"
+  },
+  "space-mollymawk": {
+    "name": "Space Mollymawk"
+  },
+  "space-swine": {
+    "name": "Space Swine"
+  },
+  "spawn-of-kyuss": {
+    "name": "Cria of Kyuss"
+  },
+  "speaker-devil": {
+    "name": "Diabo Porta-Voz"
+  },
+  "spectator": {
+    "name": "Spectator"
+  },
+  "specter-of-night": {
+    "name": "Espectro of Noturno"
+  },
+  "spectral-cloud": {
+    "name": "Espectral Nuvem"
+  },
+  "spellcaster": {
+    "name": "Spellcaster"
+  },
+  "spellcaster-healer": {
+    "name": "Spellcaster (Healer)"
+  },
+  "spellcaster-mage": {
+    "name": "Spellcaster (Mage)"
+  },
+  "spellix-romwod": {
+    "name": "Spellix Romwod"
+  },
+  "sperm-whale": {
+    "name": "Sperm Baleia"
+  },
+  "sphinx-type-1": {
+    "name": "Esfinge (Tipo 1)"
+  },
+  "sphinx-type-2": {
+    "name": "Esfinge (Tipo 2)"
+  },
+  "sphinx-of-judgment": {
+    "name": "Esfinge of Judgment"
+  },
+  "spider-king": {
+    "name": "Aranha Rei"
+  },
+  "spiderbait": {
+    "name": "Spiderbait"
+  },
+  "spiderdragon": {
+    "name": "Spiderdragon"
+  },
+  "spiderfrog": {
+    "name": "Spiderfrog"
+  },
+  "spiked-tomb-guardian": {
+    "name": "Cravejado Tumba Guardião"
+  },
+  "spirit-dragon-wyrmling": {
+    "name": "Filhote de Espírito Dragão"
+  },
+  "spirit-of-hunger": {
+    "name": "Espírito of Fome"
+  },
+  "spirit-statue-mascot": {
+    "name": "Espírito Estátua Mascot"
+  },
+  "spirit-troll": {
+    "name": "Espírito Troll"
+  },
+  "spitting-mimic": {
+    "name": "Spitting Mímico"
+  },
+  "splugoth-the-returned": {
+    "name": "Splugoth, o Returned"
+  },
+  "spore-of-moander": {
+    "name": "Spore of Moander"
+  },
+  "spore-servant-octopus": {
+    "name": "Spore Servo Polvo"
+  },
+  "spotted-lion": {
+    "name": "Spotted Leão"
+  },
+  "spring-eladrin": {
+    "name": "Nascente Eladrin"
+  },
+  "sprite-skirmisher": {
+    "name": "Sprite Skirmisher"
+  },
+  "squiddly": {
+    "name": "Squiddly"
+  },
+  "squire": {
+    "name": "Squire"
+  },
+  "squirt-the-oilcan": {
+    "name": "Squirt, o Oilcan"
+  },
+  "ssendam-lord-of-madness": {
+    "name": "Ssendam, Senhor of Madness"
+  },
+  "ssurran-defiler": {
+    "name": "Ssurran Defiler"
+  },
+  "ssurran-poisoner": {
+    "name": "Ssurran Poisoner"
+  },
+  "stalagma-steelshadow": {
+    "name": "Stalagma Steelshadow"
+  },
+  "stalker-of-baphomet": {
+    "name": "Perseguidor of Baphomet"
+  },
+  "stanimir": {
+    "name": "Stanimir"
+  },
+  "star-angler": {
+    "name": "Estrela Angler"
+  },
+  "star-lancer": {
+    "name": "Estrela Lancer"
+  },
+  "star-spawn-grue": {
+    "name": "Estrela Cria Grue"
+  },
+  "star-spawn-hulk": {
+    "name": "Estrela Cria Hulk"
+  },
+  "star-spawn-larva-mage": {
+    "name": "Estrela Cria Larva Mago"
+  },
+  "star-spawn-mangler": {
+    "name": "Estrela Cria Mangler"
+  },
+  "star-spawn-seer": {
+    "name": "Estrela Cria Vidente"
+  },
+  "stargleam": {
+    "name": "Stargleam"
+  },
+  "starlight-apparition": {
+    "name": "Starlight Apparition"
+  },
+  "statue-of-talos": {
+    "name": "Estátua of Talos"
+  },
+  "statue-of-vergadain": {
+    "name": "Estátua of Vergadain"
+  },
+  "steel-crane": {
+    "name": "Aço Crane"
+  },
+  "steel-defender": {
+    "name": "Aço Defender"
+  },
+  "steel-leaf-kavu": {
+    "name": "Aço Folha Kavu"
+  },
+  "steel-predator": {
+    "name": "Aço Predator"
+  },
+  "stegosaurus": {
+    "name": "Stegosaurus"
+  },
+  "stella-wachter": {
+    "name": "Stella Wachter"
+  },
+  "stench-kow": {
+    "name": "Fedor Kow"
+  },
+  "stolos": {
+    "name": "Stolos"
+  },
+  "stomping-foot": {
+    "name": "Stomping Foot"
+  },
+  "stone-cursed": {
+    "name": "Pedra Amaldiçoado"
+  },
+  "stone-defender": {
+    "name": "Pedra Defender"
+  },
+  "stone-dragon-statue": {
+    "name": "Pedra Dragão Estátua"
+  },
+  "stone-giant-dreamwalker": {
+    "name": "Gigante da Pedra Dreamwalker"
+  },
+  "stone-giant-of-evil-earth": {
+    "name": "Gigante da Pedra of Evil Terra"
+  },
+  "stone-giant-rockspeaker": {
+    "name": "Gigante da Pedra Rockspeaker"
+  },
+  "stone-giant-statue": {
+    "name": "Gigante da Pedra Estátua"
+  },
+  "stone-guardian-animated-armor": {
+    "name": "Pedra Guardião (Animated Armor)"
+  },
+  "stone-guardian-helmed-horror": {
+    "name": "Pedra Guardião (Helmed Horror)"
+  },
+  "stone-guardian-shield-guardian": {
+    "name": "Pedra Guardião (Shield Guardian)"
+  },
+  "stone-guardian-stone-golem": {
+    "name": "Pedra Guardião (Stone Golem)"
+  },
+  "stone-juggernaut": {
+    "name": "Pedra Juggernaut"
+  },
+  "stone-warrior": {
+    "name": "Pedra Guerreiro"
+  },
+  "stonecloak": {
+    "name": "Stonecloak"
+  },
+  "stonemelder": {
+    "name": "Stonemelder"
+  },
+  "stool": {
+    "name": "Stool"
+  },
+  "storm-crab": {
+    "name": "Tempestade Caranguejo"
+  },
+  "storm-giant-quintessent": {
+    "name": "Gigante da Tempestade Quintessent"
+  },
+  "storm-giant-skeleton": {
+    "name": "Esqueleto de Tempestade Gigante"
+  },
+  "storm-giant-tempest-caller": {
+    "name": "Gigante da Tempestade Tempest Caller"
+  },
+  "storm-herald": {
+    "name": "Tempestade Arauto"
+  },
+  "strahd-von-zarovich": {
+    "name": "Strahd von Zarovich"
+  },
+  "strahd-zombie": {
+    "name": "Zumbi Strahd"
+  },
+  "strahd-master-of-death-house": {
+    "name": "Strahd, Mestre of Morte House"
+  },
+  "strahds-animated-armor": {
+    "name": "Strahd's Animado Armadura"
+  },
+  "strefan-maurer": {
+    "name": "Strefan Maurer"
+  },
+  "strigoi": {
+    "name": "Strigoi"
+  },
+  "strixhaven-campus-guide": {
+    "name": "Strixhaven Campus Guide"
+  },
+  "strongheart": {
+    "name": "Strongheart"
+  },
+  "styx-dragon": {
+    "name": "Dragão Styx"
+  },
+  "su-monster": {
+    "name": "Su-monster"
+  },
+  "sul-khatesh": {
+    "name": "Sul Khatesh"
+  },
+  "suldil-baldoriel": {
+    "name": "Suldil Baldoriel"
+  },
+  "summer-eladrin": {
+    "name": "Verão Eladrin"
+  },
+  "sunbird": {
+    "name": "Sunbird"
+  },
+  "sunder-shaman": {
+    "name": "Sunder Xamã"
+  },
+  "sundeth": {
+    "name": "Sundeth"
+  },
+  "sunfly": {
+    "name": "Sunfly"
+  },
+  "surrakar": {
+    "name": "Surrakar"
+  },
+  "svirfneblin-wererat": {
+    "name": "Svirfneblin Wererat"
+  },
+  "swanmay": {
+    "name": "Swanmay"
+  },
+  "swarm-of-animated-books": {
+    "name": "Enxame de Animado Livros"
+  },
+  "swarm-of-books": {
+    "name": "Enxame de Livros"
+  },
+  "swarm-of-campestris": {
+    "name": "Enxame de Campestris"
+  },
+  "swarm-of-corrupted-rats": {
+    "name": "Enxame de Corrompido Rats"
+  },
+  "swarm-of-cranium-rats": {
+    "name": "Enxame de Cranium Rats"
+  },
+  "swarm-of-gibberlings": {
+    "name": "Enxame de Gibberlings"
+  },
+  "swarm-of-gremishkas": {
+    "name": "Enxame de Gremishkas"
+  },
+  "swarm-of-hoard-scarabs": {
+    "name": "Enxame de Hoard Scarabs"
+  },
+  "swarm-of-maggots": {
+    "name": "Enxame de Maggots"
+  },
+  "swarm-of-mechanical-spiders": {
+    "name": "Enxame de Mecânico Spiders"
+  },
+  "swarm-of-piranhas": {
+    "name": "Enxame de Piranhas"
+  },
+  "swarm-of-rot-grubs": {
+    "name": "Enxame de Podridão Grubs"
+  },
+  "swarm-of-scarabs": {
+    "name": "Enxame de Scarabs"
+  },
+  "swarm-of-sorrowfish": {
+    "name": "Enxame de Sorrowfish"
+  },
+  "swarm-of-sunflies": {
+    "name": "Enxame de Sunflies"
+  },
+  "swarm-of-undead-snakes": {
+    "name": "Enxame de Morto-vivo Snakes"
+  },
+  "swarm-of-zombie-limbs": {
+    "name": "Enxame de Zumbi Limbs"
+  },
+  "swashbuckler": {
+    "name": "Swashbuckler"
+  },
+  "swavain-basilisk": {
+    "name": "Swavain Basilisco"
+  },
+  "sweettooth-horror": {
+    "name": "Sweettooth Horror"
+  },
+  "sword-spider": {
+    "name": "Espada Aranha"
+  },
+  "sword-wraith-commander": {
+    "name": "Espada Aparição Comandante"
+  },
+  "sword-wraith-warrior": {
+    "name": "Espada Aparição Guerreiro"
+  },
+  "sylgar": {
+    "name": "Sylgar"
+  },
+  "sylvira-savikas": {
+    "name": "Sylvira Savikas"
+  },
+  "syndra-silvane": {
+    "name": "Syndra Silvane"
+  },
+  "sythian-skalderang": {
+    "name": "Sythian Skalderang"
+  },
+  "szikzith": {
+    "name": "Szikzith"
+  },
+  "szoldar-szoldarovich": {
+    "name": "Szoldar Szoldarovich"
+  },
+  "tabaxi-hunter": {
+    "name": "Tabaxi Caçador"
+  },
+  "tabaxi-minstrel": {
+    "name": "Tabaxi Minstrel"
+  },
+  "talis-the-white": {
+    "name": "Talis, o Branco"
+  },
+  "talisolvanar-tally-fellbranch": {
+    "name": "Talisolvanar Tally Fellbranch"
+  },
+  "talon-beast": {
+    "name": "Garra Besta"
+  },
+  "tanarukk": {
+    "name": "Tanarukk"
+  },
+  "tanazir-quandrix": {
+    "name": "Tanazir Quandrix"
+  },
+  "tarak": {
+    "name": "Tarak"
+  },
+  "tarkanan-assassin": {
+    "name": "Tarkanan Assassino"
+  },
+  "tarkanan-marauder": {
+    "name": "Tarkanan Marauder"
+  },
+  "tarkanan-ruffian": {
+    "name": "Tarkanan Ruffian"
+  },
+  "tarnhem": {
+    "name": "Tarnhem"
+  },
+  "tartha": {
+    "name": "Tartha"
+  },
+  "tarul-var": {
+    "name": "Tarul Var"
+  },
+  "tasha-the-witch": {
+    "name": "Tasha, a Bruxa"
+  },
+  "tashlyn-yafeera": {
+    "name": "Tashlyn Yafeera"
+  },
+  "tasloi": {
+    "name": "Tasloi"
+  },
+  "tasloi-sniper": {
+    "name": "Tasloi Sniper"
+  },
+  "tatina-rookledust": {
+    "name": "Tatina Rookledust"
+  },
+  "tau": {
+    "name": "Tau"
+  },
+  "tecuziztecatl": {
+    "name": "Tecuziztecatl"
+  },
+  "telepathic-pentacle": {
+    "name": "Telepathic Pentacle"
+  },
+  "tem-temble": {
+    "name": "Tem Temble"
+  },
+  "tempest-hart": {
+    "name": "Tempest Hart"
+  },
+  "tempest-spirit": {
+    "name": "Espírito Tempest"
+  },
+  "terastodon": {
+    "name": "Terastodon"
+  },
+  "teremini-nightsedge": {
+    "name": "Teremini Nightsedge"
+  },
+  "terenzio-cassalanter": {
+    "name": "Terenzio Cassalanter"
+  },
+  "terra-stomper": {
+    "name": "Terra Stomper"
+  },
+  "terracotta-warrior": {
+    "name": "Terracotta Guerreiro"
+  },
+  "terran-magen": {
+    "name": "Terran Magen"
+  },
+  "thane-kayalithica": {
+    "name": "Thane Kayalithica"
+  },
+  "thanoi-hunter": {
+    "name": "Thanoi Caçador"
+  },
+  "tharashk-hunter": {
+    "name": "Tharashk Caçador"
+  },
+  "thavius-kreeg": {
+    "name": "Thavius Kreeg"
+  },
+  "thayan-apprentice": {
+    "name": "Thayan Apprentice"
+  },
+  "thayan-warrior": {
+    "name": "Thayan Guerreiro"
+  },
+  "the-abbot": {
+    "name": "The Abbot"
+  },
+  "the-angry": {
+    "name": "The Angry"
+  },
+  "the-bagman": {
+    "name": "The Bagman"
+  },
+  "the-gardener": {
+    "name": "The Gardener"
+  },
+  "the-hungry": {
+    "name": "The Hungry"
+  },
+  "the-keeper": {
+    "name": "The Guardião"
+  },
+  "the-lonely": {
+    "name": "The Lonely"
+  },
+  "the-lord-of-blades": {
+    "name": "The Senhor of Blades"
+  },
+  "the-lost": {
+    "name": "The Lost"
+  },
+  "the-mad-mage-of-mount-baratok": {
+    "name": "The Mad Mago of Mount Baratok"
+  },
+  "the-pudding-king": {
+    "name": "The Pudding Rei"
+  },
+  "the-stranger": {
+    "name": "The Stranger"
+  },
+  "the-weevil": {
+    "name": "The Weevil"
+  },
+  "the-wretched": {
+    "name": "The Wretched"
+  },
+  "themberchaud": {
+    "name": "Themberchaud"
+  },
+  "theran-chimera": {
+    "name": "Theran Quimera"
+  },
+  "therzt": {
+    "name": "Therzt"
+  },
+  "thessalar": {
+    "name": "Thessalar"
+  },
+  "thessalars-homunculus": {
+    "name": "Thessalar's Homúnculo"
+  },
+  "thessalheart-construct": {
+    "name": "Thessalheart Construto"
+  },
+  "thessalhydra": {
+    "name": "Thessalhydra"
+  },
+  "thessalkraken": {
+    "name": "Thessalkraken"
+  },
+  "thinnings": {
+    "name": "Thinnings"
+  },
+  "tholtz-daggerdark": {
+    "name": "Tholtz Daggerdark"
+  },
+  "thomas-t-toad": {
+    "name": "Thomas T. Sapo"
+  },
+  "thopter-bat": {
+    "name": "Thopter (Bat)"
+  },
+  "thopter-blood-hawk": {
+    "name": "Thopter (Blood Hawk)"
+  },
+  "thopter-eagle": {
+    "name": "Thopter (Eagle)"
+  },
+  "thopter-hawk": {
+    "name": "Thopter (Hawk)"
+  },
+  "thopter-owl": {
+    "name": "Thopter (Owl)"
+  },
+  "thopter-pseudodragon": {
+    "name": "Thopter (Pseudodragon)"
+  },
+  "thopter-raven": {
+    "name": "Thopter (Raven)"
+  },
+  "thopter-vulture": {
+    "name": "Thopter (Vulture)"
+  },
+  "thorn-slinger": {
+    "name": "Espinho Slinger"
+  },
+  "thornboldt-thorn-durst": {
+    "name": "Thornboldt Espinho Durst"
+  },
+  "thorny": {
+    "name": "Thorny"
+  },
+  "thorny-vegepygmy": {
+    "name": "Thorny Vegepygmy"
+  },
+  "thorvin-twinbeard": {
+    "name": "Thorvin Twinbeard"
+  },
+  "thought-spy": {
+    "name": "Pensamento Espião"
+  },
+  "thousand-teeth": {
+    "name": "Thousand Teeth"
+  },
+  "thrakkus": {
+    "name": "Thrakkus"
+  },
+  "three-earrings": {
+    "name": "Three Earrings"
+  },
+  "thri-kreen": {
+    "name": "Thri-kreen"
+  },
+  "thri-kreen-gladiator": {
+    "name": "Thri-kreen Gladiador"
+  },
+  "thri-kreen-hunter": {
+    "name": "Thri-kreen Caçador"
+  },
+  "thri-kreen-mystic": {
+    "name": "Thri-kreen Mystic"
+  },
+  "thunderbeast-skeleton": {
+    "name": "Esqueleto de Thunderbeast"
+  },
+  "thurl-merosska": {
+    "name": "Thurl Merosska"
+  },
+  "thurstwell-vanthampur": {
+    "name": "Thurstwell Vanthampur"
+  },
+  "thwad-underbrew": {
+    "name": "Thwad Underbrew"
+  },
+  "tiamat": {
+    "name": "Tiamat"
+  },
+  "tiax": {
+    "name": "Tiax"
+  },
+  "tiberius-inuus": {
+    "name": "Tiberius Inuus"
+  },
+  "tiefling-acrobat": {
+    "name": "Tiefling Acrobat"
+  },
+  "tiefling-muralist": {
+    "name": "Tiefling Muralist"
+  },
+  "timbermaw": {
+    "name": "Timbermaw"
+  },
+  "time-dragon-wyrmling": {
+    "name": "Filhote de Temporal Dragão"
+  },
+  "tiny-servant": {
+    "name": "Minúsculo Servo"
+  },
+  "tissina-khyret": {
+    "name": "Tissina Khyret"
+  },
+  "titanothere": {
+    "name": "Titanothere"
+  },
+  "titivilus": {
+    "name": "Titivilus"
+  },
+  "tixie-tockworth": {
+    "name": "Tixie Tockworth"
+  },
+  "tixies-shield-guardian": {
+    "name": "Tixie's Escudo Guardião"
+  },
+  "tlacatecolo": {
+    "name": "Tlacatecolo"
+  },
+  "tlexolotl": {
+    "name": "Tlexolotl"
+  },
+  "tlincalli": {
+    "name": "Tlincalli"
+  },
+  "tloques-popolocas": {
+    "name": "Tloques-Popolocas"
+  },
+  "tomb-dwarf": {
+    "name": "Tumba Anão"
+  },
+  "tomb-guardian": {
+    "name": "Tumba Guardião"
+  },
+  "tomb-tapper": {
+    "name": "Tumba Tapper"
+  },
+  "tommy-two-butts": {
+    "name": "Tommy Two-Butts"
+  },
+  "tonalli": {
+    "name": "Tonalli"
+  },
+  "tooth-n-claw": {
+    "name": "Tooth-N-Claw"
+  },
+  "topaz-dragon-wyrmling": {
+    "name": "Filhote de Topázio Dragão"
+  },
+  "topaz-greatwyrm": {
+    "name": "Topázio Greatwyrm"
+  },
+  "topi": {
+    "name": "Topi"
+  },
+  "topolah": {
+    "name": "Topolah"
+  },
+  "topsy": {
+    "name": "Topsy"
+  },
+  "torbit": {
+    "name": "Torbit"
+  },
+  "torgja-stonecrusher-levels-1-4": {
+    "name": "Torgja Stonecrusher (Levels 1-4)"
+  },
+  "torgja-stonecrusher-levels-5-8": {
+    "name": "Torgja Stonecrusher (Levels 5-8)"
+  },
+  "torgja-stonecrusher-levels-9-11": {
+    "name": "Torgja Stonecrusher (Levels 9-11)"
+  },
+  "torlin-silvershield": {
+    "name": "Torlin Silvershield"
+  },
+  "tornscale": {
+    "name": "Tornscale"
+  },
+  "torogar-steelfist": {
+    "name": "Torogar Steelfist"
+  },
+  "tortle": {
+    "name": "Tortle"
+  },
+  "tortle-druid": {
+    "name": "Tortle Druida"
+  },
+  "tosh-starling-levels-1-4": {
+    "name": "Tosh Starling (Levels 1-4)"
+  },
+  "tosh-starling-levels-5-8": {
+    "name": "Tosh Starling (Levels 5-8)"
+  },
+  "tosh-starling-levels-9-11": {
+    "name": "Tosh Starling (Levels 9-11)"
+  },
+  "tower-hand": {
+    "name": "Torre Hand"
+  },
+  "tower-sage": {
+    "name": "Torre Sage"
+  },
+  "traag-draconian": {
+    "name": "Traag Draconian"
+  },
+  "transcendent-order-conduit": {
+    "name": "Transcendent Ordem Conduit"
+  },
+  "transcendent-order-instinct": {
+    "name": "Transcendent Ordem Instinct"
+  },
+  "transmuter": {
+    "name": "Transmutador"
+  },
+  "transmuter-wizard": {
+    "name": "Transmutador Mago"
+  },
+  "trapper": {
+    "name": "Trapper"
+  },
+  "traxigor": {
+    "name": "Traxigor"
+  },
+  "treant-sapling": {
+    "name": "Ent Sapling"
+  },
+  "treant-totem-elemental": {
+    "name": "Ent Totem Elemental"
+  },
+  "tree-blight": {
+    "name": "Árvore Praga"
+  },
+  "treefolk": {
+    "name": "Treefolk"
+  },
+  "trench-giant": {
+    "name": "Gigante de Trench"
+  },
+  "trenzia": {
+    "name": "Trenzia"
+  },
+  "trepsin": {
+    "name": "Trepsin"
+  },
+  "tressym": {
+    "name": "Tressym"
+  },
+  "tri-flower-frond": {
+    "name": "Tri-flower Frond"
+  },
+  "tribal-warrior-spore-servant": {
+    "name": "Tribal Guerreiro Spore Servo"
+  },
+  "tridrone": {
+    "name": "Tridrone"
+  },
+  "trilobite": {
+    "name": "Trilobite"
+  },
+  "trilobite-giant": {
+    "name": "Trilobite (Giant)"
+  },
+  "triton-master-of-waves": {
+    "name": "Triton Mestre of Waves"
+  },
+  "triton-shorestalker": {
+    "name": "Triton Shorestalker"
+  },
+  "trobriand": {
+    "name": "Trobriand"
+  },
+  "troglodyte-champion-of-laogzed": {
+    "name": "Troglodyte Campeão of Laogzed"
+  },
+  "troll-amalgam": {
+    "name": "Troll Amalgam"
+  },
+  "troll-mutate": {
+    "name": "Troll Mutate"
+  },
+  "tromokratis": {
+    "name": "Tromokratis"
+  },
+  "trostani": {
+    "name": "Trostani"
+  },
+  "tsucora-quori": {
+    "name": "Tsucora Quori"
+  },
+  "tug": {
+    "name": "Tug"
+  },
+  "tungsten-ward": {
+    "name": "Tungsten Ward"
+  },
+  "turlang": {
+    "name": "Turlang"
+  },
+  "turntimber-giant": {
+    "name": "Gigante de Turntimber"
+  },
+  "turvy": {
+    "name": "Turvy"
+  },
+  "two-dry-cloaks": {
+    "name": "Two Dry Cloaks"
+  },
+  "two-headed-cerberus": {
+    "name": "Two-Headed Cerberus"
+  },
+  "two-headed-crocodile": {
+    "name": "Two-Headed Crocodilo"
+  },
+  "two-headed-owlbear": {
+    "name": "Two-Headed Urso-coruja"
+  },
+  "two-headed-plesiosaurus": {
+    "name": "Two-Headed Plesiosaurus"
+  },
+  "two-headed-troll": {
+    "name": "Two-Headed Troll"
+  },
+  "typhon": {
+    "name": "Typhon"
+  },
+  "tyrannosaurus-zombie": {
+    "name": "Zumbi Tyrannosaurus"
+  },
+  "tyrant": {
+    "name": "Tyrant"
+  },
+  "tyrant-shadow": {
+    "name": "Tyrant Sombrio"
+  },
+  "tyreus-illusionist": {
+    "name": "Tyreus, Ilusionista"
+  },
+  "udaak": {
+    "name": "Udaak"
+  },
+  "ulamog": {
+    "name": "Ulamog"
+  },
+  "ulder-ravengard": {
+    "name": "Ulder Ravengard"
+  },
+  "ulitharid": {
+    "name": "Ulitharid"
+  },
+  "uma": {
+    "name": "Uma"
+  },
+  "umber-hulk": {
+    "name": "Umber Hulk"
+  },
+  "umberto-noblin": {
+    "name": "Umberto Noblin"
+  },
+  "umbragen-shadow-walker": {
+    "name": "Umbragen Sombrio Walker"
+  },
+  "umbraxakar": {
+    "name": "Umbraxakar"
+  },
+  "undead-bulette": {
+    "name": "Morto-vivo Bulette"
+  },
+  "undead-cockatrice": {
+    "name": "Morto-vivo Cocatriz"
+  },
+  "undead-shambling-mound": {
+    "name": "Morto-vivo Shambling Mound"
+  },
+  "undead-soldier": {
+    "name": "Morto-vivo Soldado"
+  },
+  "undead-spirit": {
+    "name": "Espírito Morto-vivo"
+  },
+  "undead-tree": {
+    "name": "Morto-vivo Árvore"
+  },
+  "undercity-medusa": {
+    "name": "Undercity Medusa"
+  },
+  "underworld-cerberus": {
+    "name": "Underworld Cerberus"
+  },
+  "undying-councilor": {
+    "name": "Undying Councilor"
+  },
+  "undying-soldier": {
+    "name": "Undying Soldado"
+  },
+  "unspeakable-horror": {
+    "name": "Unspeakable Horror"
+  },
+  "urgala-meltimer": {
+    "name": "Urgala Meltimer"
+  },
+  "urstul-floxin": {
+    "name": "Urstul Floxin"
+  },
+  "urwin-martikov": {
+    "name": "Urwin Martikov"
+  },
+  "usagt": {
+    "name": "Usagt"
+  },
+  "uthgardt-barbarian-leader": {
+    "name": "Uthgardt Bárbaro Leader"
+  },
+  "uthgardt-shaman": {
+    "name": "Uthgardt Xamã"
+  },
+  "uvashar": {
+    "name": "Uvashar"
+  },
+  "uzoma-baten": {
+    "name": "Uzoma Baten"
+  },
+  "vaal": {
+    "name": "Vaal"
+  },
+  "vaasha": {
+    "name": "Vaasha"
+  },
+  "vadalis-heir": {
+    "name": "Vadalis Heir"
+  },
+  "vaeve": {
+    "name": "Vaeve"
+  },
+  "vajra-safahr": {
+    "name": "Vajra Safahr"
+  },
+  "valenar-hawk": {
+    "name": "Valenar Falcão"
+  },
+  "valenar-hound": {
+    "name": "Valenar Cão"
+  },
+  "valenar-steed": {
+    "name": "Valenar Steed"
+  },
+  "valendar": {
+    "name": "Valendar"
+  },
+  "valetta": {
+    "name": "Valetta"
+  },
+  "valin-sarnaster": {
+    "name": "Valin Sarnaster"
+  },
+  "valindra-shadowmantle": {
+    "name": "Valindra Shadowmantle"
+  },
+  "valtagar-steelshadow": {
+    "name": "Valtagar Steelshadow"
+  },
+  "valygar": {
+    "name": "Valygar"
+  },
+  "vampirate": {
+    "name": "Vampirate"
+  },
+  "vampirate-captain": {
+    "name": "Vampirate Capitão"
+  },
+  "vampirate-mage": {
+    "name": "Vampirate Mago"
+  },
+  "vampire-null": {
+    "name": "Vampiro Null"
+  },
+  "vampiric-ixitxachitl": {
+    "name": "Vampiric Ixitxachitl"
+  },
+  "vampiric-ixitxachitl-cleric": {
+    "name": "Vampiric Ixitxachitl Clérigo"
+  },
+  "vampiric-jade-statue": {
+    "name": "Vampiric Jade Estátua"
+  },
+  "vampiric-mind-flayer": {
+    "name": "Vampiric Mente Flayer"
+  },
+  "vampiric-mist": {
+    "name": "Vampiric Névoa"
+  },
+  "vanifer": {
+    "name": "Vanifer"
+  },
+  "varakkta": {
+    "name": "Varakkta"
+  },
+  "vargouille": {
+    "name": "Vargouille"
+  },
+  "vargouille-reflection": {
+    "name": "Vargouille Reflection"
+  },
+  "varnoth": {
+    "name": "Varnoth"
+  },
+  "varnyr": {
+    "name": "Varnyr"
+  },
+  "varram": {
+    "name": "Varram"
+  },
+  "vasilka": {
+    "name": "Vasilka"
+  },
+  "vecna-impersonator": {
+    "name": "Vecna Impersonator"
+  },
+  "vecna-the-archlich": {
+    "name": "Vecna, o Archlich"
+  },
+  "vegepygmy": {
+    "name": "Vegepygmy"
+  },
+  "vegepygmy-chief": {
+    "name": "Vegepygmy Chefe"
+  },
+  "vegepygmy-moldmaker": {
+    "name": "Vegepygmy Moldmaker"
+  },
+  "vegepygmy-scavenger": {
+    "name": "Vegepygmy Scavenger"
+  },
+  "vegepygmy-thorny-hunter": {
+    "name": "Vegepygmy Thorny Caçador"
+  },
+  "veiled-presence": {
+    "name": "Veiled Presence"
+  },
+  "veldyskar": {
+    "name": "Veldyskar"
+  },
+  "vellin-farstride": {
+    "name": "Vellin Farstride"
+  },
+  "vellynne-harpell": {
+    "name": "Vellynne Harpell"
+  },
+  "velociraptor": {
+    "name": "Velociraptor"
+  },
+  "velomachus-lorehold": {
+    "name": "Velomachus Lorehold"
+  },
+  "venom-troll": {
+    "name": "Venom Troll"
+  },
+  "venomfang": {
+    "name": "Venomfang"
+  },
+  "verbeeg-longstrider": {
+    "name": "Verbeeg Longstrider"
+  },
+  "verbeeg-marauder": {
+    "name": "Verbeeg Marauder"
+  },
+  "verin-thelyss": {
+    "name": "Verin Thelyss"
+  },
+  "verminaard": {
+    "name": "Verminaard"
+  },
+  "vertrand-shadowdusk": {
+    "name": "Vertrand Shadowdusk"
+  },
+  "veteran-of-the-gauntlet": {
+    "name": "Veterano of the Gauntlet"
+  },
+  "vi-aroon": {
+    "name": "Vi Aroon"
+  },
+  "viari": {
+    "name": "Viari"
+  },
+  "viconia-devir": {
+    "name": "Viconia DeVir"
+  },
+  "victor-vallakovich": {
+    "name": "Victor Vallakovich"
+  },
+  "victoro-cassalanter": {
+    "name": "Victoro Cassalanter"
+  },
+  "viktor": {
+    "name": "Viktor"
+  },
+  "viln-tirin": {
+    "name": "Viln Tirin"
+  },
+  "vilnius": {
+    "name": "Vilnius"
+  },
+  "vincent-trench": {
+    "name": "Vincent Trench"
+  },
+  "vine-blight-tangler": {
+    "name": "Trepadeira Praga Tangler"
+  },
+  "vinx": {
+    "name": "Vinx"
+  },
+  "virruza": {
+    "name": "Virruza"
+  },
+  "virvos-magen": {
+    "name": "Virvos Magen"
+  },
+  "vistana-assassin": {
+    "name": "Vistana Assassino"
+  },
+  "vistana-bandit": {
+    "name": "Vistana Bandido"
+  },
+  "vistana-bandit-captain": {
+    "name": "Vistana Bandido Capitão"
+  },
+  "vistana-commoner": {
+    "name": "Vistana Plebeu"
+  },
+  "vistana-guard": {
+    "name": "Vistana Guarda"
+  },
+  "vistana-spy": {
+    "name": "Vistana Espião"
+  },
+  "vistana-thug": {
+    "name": "Vistana Capanga"
+  },
+  "vizeran-devir": {
+    "name": "Vizeran DeVir"
+  },
+  "vladimir-horngaard": {
+    "name": "Vladimir Horngaard"
+  },
+  "vlazok": {
+    "name": "Vlazok"
+  },
+  "voalsh": {
+    "name": "Voalsh"
+  },
+  "vocath": {
+    "name": "Vocath"
+  },
+  "void-scavver": {
+    "name": "Vazio Scavver"
+  },
+  "volenta-popofsky": {
+    "name": "Volenta Popofsky"
+  },
+  "volothamp-volo-geddarm": {
+    "name": "Volothamp Volo Geddarm"
+  },
+  "vond": {
+    "name": "Vond"
+  },
+  "vorvolaka": {
+    "name": "Vorvolaka"
+  },
+  "vox-seeker": {
+    "name": "Vox Buscador"
+  },
+  "vulkoori-stingblade": {
+    "name": "Vulkoori Stingblade"
+  },
+  "vulkoori-venom-priest": {
+    "name": "Vulkoori Venom Sacerdote"
+  },
+  "vuuthramis": {
+    "name": "Vuuthramis"
+  },
+  "waeloquay": {
+    "name": "Waeloquay"
+  },
+  "wakanga-otamu": {
+    "name": "Wakanga O'tamu"
+  },
+  "walking-corpse": {
+    "name": "Ambulante Cadáver"
+  },
+  "walking-statue-of-waterdeep": {
+    "name": "Ambulante Estátua of Waterdeep"
+  },
+  "walnut-dankgrass": {
+    "name": "Walnut Dankgrass"
+  },
+  "walrus": {
+    "name": "Walrus"
+  },
+  "war-devil": {
+    "name": "Diabo Guerra"
+  },
+  "war-priest": {
+    "name": "Guerra Sacerdote"
+  },
+  "warden-archon": {
+    "name": "Guardião Archon"
+  },
+  "warduke": {
+    "name": "Warduke"
+  },
+  "warforged-colossus": {
+    "name": "Warforged Colossus"
+  },
+  "warforged-soldier": {
+    "name": "Warforged Soldado"
+  },
+  "warforged-titan": {
+    "name": "Warforged Titan"
+  },
+  "warforged-warrior": {
+    "name": "Warforged Guerreiro"
+  },
+  "warlock-of-the-archfey": {
+    "name": "Bruxo of the Archfey"
+  },
+  "warlock-of-the-fiend": {
+    "name": "Bruxo of the Demônio"
+  },
+  "warlock-of-the-great-old-one": {
+    "name": "Bruxo of the Great Velho One"
+  },
+  "warlord": {
+    "name": "Senhor da Guerra"
+  },
+  "warrior": {
+    "name": "Guerreiro"
+  },
+  "warrior-of-madarua": {
+    "name": "Guerreiro of Madarua"
+  },
+  "warwyck-blastimoff": {
+    "name": "Warwyck Blastimoff"
+  },
+  "wasteland-dragonnel": {
+    "name": "Wasteland Dragonnel"
+  },
+  "wastrilith": {
+    "name": "Wastrilith"
+  },
+  "water-elemental-myrmidon": {
+    "name": "Elemental da Água Myrmidon"
+  },
+  "water-totem-elemental": {
+    "name": "Água Totem Elemental"
+  },
+  "wei-feng-ying": {
+    "name": "Wei Feng Ying"
+  },
+  "werebat": {
+    "name": "Werebat"
+  },
+  "werejaguar": {
+    "name": "Werejaguar"
+  },
+  "wereraven": {
+    "name": "Wereraven"
+  },
+  "werevulture": {
+    "name": "Werevulture"
+  },
+  "werewolf-krallenhorde": {
+    "name": "Lobisomem (Krallenhorde)"
+  },
+  "werewyvern": {
+    "name": "Werewyvern"
+  },
+  "wersten-kern": {
+    "name": "Wersten Kern"
+  },
+  "west-wind": {
+    "name": "West Vento"
+  },
+  "whirling-chandelier": {
+    "name": "Whirling Chandelier"
+  },
+  "whirlwyrm": {
+    "name": "Whirlwyrm"
+  },
+  "whistler": {
+    "name": "Whistler"
+  },
+  "white-abishai": {
+    "name": "Branco Abishai"
+  },
+  "white-greatwyrm": {
+    "name": "Branco Greatwyrm"
+  },
+  "white-guard-drake": {
+    "name": "Draco Branco Guarda"
+  },
+  "white-jade-emperor": {
+    "name": "Branco Jade Imperador"
+  },
+  "white-maw": {
+    "name": "Branco Fauce"
+  },
+  "whymsee": {
+    "name": "Whymsee"
+  },
+  "wiggan-nettlebee": {
+    "name": "Wiggan Nettlebee"
+  },
+  "wight-lifedrinker": {
+    "name": "Corpo Seco Lifedrinker"
+  },
+  "wild-dog": {
+    "name": "Selvagem Cão"
+  },
+  "wildfire-spirit": {
+    "name": "Espírito Wildfire"
+  },
+  "will-o-wells": {
+    "name": "Will-o'-Wells"
+  },
+  "willifort-crowelle": {
+    "name": "Willifort Crowelle"
+  },
+  "windfall": {
+    "name": "Windfall"
+  },
+  "windharrow": {
+    "name": "Windharrow"
+  },
+  "wine-weird": {
+    "name": "Wine Weird"
+  },
+  "winged-bull": {
+    "name": "Alado Touro"
+  },
+  "winged-lion": {
+    "name": "Alado Leão"
+  },
+  "winged-thrull": {
+    "name": "Alado Thrull"
+  },
+  "winter-eladrin": {
+    "name": "Inverno Eladrin"
+  },
+  "wiri-fleagol": {
+    "name": "Wiri Fleagol"
+  },
+  "witchkite": {
+    "name": "Witchkite"
+  },
+  "witchlight-hand-medium": {
+    "name": "Witchlight Hand (Medium)"
+  },
+  "witchlight-hand-small": {
+    "name": "Witchlight Hand (Small)"
+  },
+  "witchstalker": {
+    "name": "Witchstalker"
+  },
+  "witherbloom-apprentice": {
+    "name": "Witherbloom Apprentice"
+  },
+  "witherbloom-pledgemage": {
+    "name": "Witherbloom Pledgemage"
+  },
+  "witherbloom-professor-of-decay": {
+    "name": "Witherbloom Professor of Decomposição"
+  },
+  "witherbloom-professor-of-growth": {
+    "name": "Witherbloom Professor of Growth"
+  },
+  "withers": {
+    "name": "Withers"
+  },
+  "woe-strider": {
+    "name": "Woe Strider"
+  },
+  "wolf-of-the-overworld": {
+    "name": "Lobo of the Overworld"
+  },
+  "wolf-in-sheeps-clothing": {
+    "name": "Wolf-in-Sheep's-Clothing"
+  },
+  "wolfwere": {
+    "name": "Wolfwere"
+  },
+  "wolfwere-alpha": {
+    "name": "Wolfwere Alpha"
+  },
+  "wood-elf": {
+    "name": "Madeira Elfo"
+  },
+  "wood-elf-wizard": {
+    "name": "Madeira Elfo Mago"
+  },
+  "wood-woad": {
+    "name": "Madeira Woad"
+  },
+  "wooden-donkey": {
+    "name": "Wooden Burro"
+  },
+  "worker-robot": {
+    "name": "Worker Robot"
+  },
+  "wretched-sorrowsworn": {
+    "name": "Wretched Sorrowsworn"
+  },
+  "wurm": {
+    "name": "Wurm"
+  },
+  "wyhan": {
+    "name": "Wyhan"
+  },
+  "wyllow": {
+    "name": "Wyllow"
+  },
+  "wynling": {
+    "name": "Wynling"
+  },
+  "x01": {
+    "name": "X01"
+  },
+  "xan-moonblade": {
+    "name": "Xan Moonblade"
+  },
+  "xanathar": {
+    "name": "Xanathar"
+  },
+  "xandala": {
+    "name": "Xandala"
+  },
+  "xarann-adaragon": {
+    "name": "Xarann A'Daragon"
+  },
+  "xardorok-sunblight": {
+    "name": "Xardorok Sunblight"
+  },
+  "xazax-the-eyemonger": {
+    "name": "Xazax, o Eyemonger"
+  },
+  "xenk-yendar": {
+    "name": "Xenk Yendar"
+  },
+  "xill": {
+    "name": "Xill"
+  },
+  "xilonen": {
+    "name": "Xilonen"
+  },
+  "xocopol": {
+    "name": "Xocopol"
+  },
+  "xolkin-alassandar": {
+    "name": "Xolkin Alassandar"
+  },
+  "xorta": {
+    "name": "Xorta"
+  },
+  "xot": {
+    "name": "Xot"
+  },
+  "xvart": {
+    "name": "Xvart"
+  },
+  "xvart-speaker": {
+    "name": "Xvart Porta-Voz"
+  },
+  "xvart-warlock-of-raxivort": {
+    "name": "Xvart Bruxo of Raxivort"
+  },
+  "xzar-the-chaos-clone": {
+    "name": "Xzar, o Caos Clone"
+  },
+  "ydemi": {
+    "name": "Y'demi"
+  },
+  "yagnoloth": {
+    "name": "Yagnoloth"
+  },
+  "yagra-stonefist": {
+    "name": "Yagra Stonefist"
+  },
+  "yak": {
+    "name": "Yak"
+  },
+  "yakfolk-priest": {
+    "name": "Yakfolk Sacerdote"
+  },
+  "yakfolk-warrior": {
+    "name": "Yakfolk Guerreiro"
+  },
+  "yalaga-maladwyn": {
+    "name": "Yalaga Maladwyn"
+  },
+  "yalah-gralhund": {
+    "name": "Yalah Gralhund"
+  },
+  "yan-c-bin": {
+    "name": "Yan-C-Bin"
+  },
+  "yantha-coaxrock": {
+    "name": "Yantha Coaxrock"
+  },
+  "yanthdel-henlifel": {
+    "name": "Yanthdel Henlifel"
+  },
+  "yarana": {
+    "name": "Yarana"
+  },
+  "yarnspinner": {
+    "name": "Yarnspinner"
+  },
+  "yeenoghu": {
+    "name": "Yeenoghu"
+  },
+  "yellow-musk-creeper": {
+    "name": "Yellow Musk Creeper"
+  },
+  "yellow-musk-zombie": {
+    "name": "Zumbi Yellow Musk"
+  },
+  "yestabrod": {
+    "name": "Yestabrod"
+  },
+  "yeth-hound": {
+    "name": "Yeth Cão"
+  },
+  "yeti-leader": {
+    "name": "Yeti Leader"
+  },
+  "yeti-tyke": {
+    "name": "Yeti Tyke"
+  },
+  "yevgeni-krushkin": {
+    "name": "Yevgeni Krushkin"
+  },
+  "yggdrasti": {
+    "name": "Yggdrasti"
+  },
+  "ygorl-lord-of-entropy": {
+    "name": "Ygorl, Senhor of Entropy"
+  },
+  "yinra-emberwind": {
+    "name": "Yinra Emberwind"
+  },
+  "yorb": {
+    "name": "Yorb"
+  },
+  "yorn": {
+    "name": "Yorn"
+  },
+  "young-amethyst-dragon": {
+    "name": "Dragão Ametista Jovem"
+  },
+  "young-amonkhet-dragon": {
+    "name": "Dragão Amonkhet Jovem"
+  },
+  "young-basilisk": {
+    "name": "Basilisco Jovem"
+  },
+  "young-bulette": {
+    "name": "Bulette Jovem"
+  },
+  "young-cloud-giant": {
+    "name": "Nuvem Gigante Jovem"
+  },
+  "young-crystal-dragon": {
+    "name": "Dragão Cristal Jovem"
+  },
+  "young-deep-dragon": {
+    "name": "Dragão Profundo Jovem"
+  },
+  "young-dragon-turtle": {
+    "name": "Dragão Tartaruga Jovem"
+  },
+  "young-emerald-dragon": {
+    "name": "Dragão Esmeralda Jovem"
+  },
+  "young-fire-giant": {
+    "name": "Fogo Gigante Jovem"
+  },
+  "young-frost-giant": {
+    "name": "Gelo Gigante Jovem"
+  },
+  "young-griffon-medium": {
+    "name": "Grifo (Medium) Jovem"
+  },
+  "young-griffon-small": {
+    "name": "Grifo (Small) Jovem"
+  },
+  "young-griffon-tiny": {
+    "name": "Grifo (Tiny) Jovem"
+  },
+  "young-hill-giant": {
+    "name": "Colina Gigante Jovem"
+  },
+  "young-hook-horror": {
+    "name": "Hook Horror Jovem"
+  },
+  "young-horizonback-tortoise": {
+    "name": "Horizonback Tartaruga Jovem"
+  },
+  "young-kraken": {
+    "name": "Kraken Jovem"
+  },
+  "young-kruthik": {
+    "name": "Kruthik Jovem"
+  },
+  "young-lunar-dragon": {
+    "name": "Dragão Lunar Jovem"
+  },
+  "young-moonstone-dragon": {
+    "name": "Dragão Moonstone Jovem"
+  },
+  "young-ogre-servant": {
+    "name": "Ogro Servo Jovem"
+  },
+  "young-purple-worm": {
+    "name": "Púrpura Verme Jovem"
+  },
+  "young-red-shadow-dragon": {
+    "name": "Dragão Vermelho Sombrio Jovem"
+  },
+  "young-sapphire-dragon": {
+    "name": "Dragão Safira Jovem"
+  },
+  "young-sea-serpent": {
+    "name": "Mar Serpente Jovem"
+  },
+  "young-solar-dragon": {
+    "name": "Dragão Solar Jovem"
+  },
+  "young-spirit-dragon": {
+    "name": "Dragão Espírito Jovem"
+  },
+  "young-time-dragon": {
+    "name": "Dragão Temporal Jovem"
+  },
+  "young-topaz-dragon": {
+    "name": "Dragão Topázio Jovem"
+  },
+  "young-troglodyte": {
+    "name": "Troglodyte Jovem"
+  },
+  "young-wereraven": {
+    "name": "Wereraven Jovem"
+  },
+  "young-winter-wolf": {
+    "name": "Inverno Lobo Jovem"
+  },
+  "young-gi": {
+    "name": "Young-Gi"
+  },
+  "yrlakka": {
+    "name": "Yrlakka"
+  },
+  "yuan-ti-abomination": {
+    "name": "Yuan-ti Abomination"
+  },
+  "yuan-ti-anathema": {
+    "name": "Yuan-ti Anathema"
+  },
+  "yuan-ti-broodguard": {
+    "name": "Yuan-ti Broodguard"
+  },
+  "yuan-ti-malison-type-4": {
+    "name": "Yuan-ti Malison (Tipo 4)"
+  },
+  "yuan-ti-malison-type-5": {
+    "name": "Yuan-ti Malison (Tipo 5)"
+  },
+  "yuan-ti-mind-whisperer": {
+    "name": "Yuan-ti Mente Whisperer"
+  },
+  "yuan-ti-nightmare-speaker": {
+    "name": "Yuan-ti Pesadelo Porta-Voz"
+  },
+  "yuan-ti-pit-master": {
+    "name": "Yuan-ti Fosso Mestre"
+  },
+  "yuan-ti-priest": {
+    "name": "Yuan-ti Sacerdote"
+  },
+  "yuan-ti-pureblood": {
+    "name": "Yuan-ti Pureblood"
+  },
+  "yuk-yuk": {
+    "name": "Yuk Yuk"
+  },
+  "yusdrayl": {
+    "name": "Yusdrayl"
+  },
+  "zagum": {
+    "name": "Zagum"
+  },
+  "zakya-rakshasa": {
+    "name": "Zakya Rakshasa"
+  },
+  "zala-morphus": {
+    "name": "Zala Morphus"
+  },
+  "zalkor": {
+    "name": "Zalkoré"
+  },
+  "zaltember": {
+    "name": "Zaltember"
+  },
+  "zalthar-shadowdusk": {
+    "name": "Zalthar Shadowdusk"
+  },
+  "zarak": {
+    "name": "Zarak"
+  },
+  "zaratan": {
+    "name": "Zaratan"
+  },
+  "zargash": {
+    "name": "Zargash"
+  },
+  "zargon-the-returner": {
+    "name": "Zargon, o Returner"
+  },
+  "zariel": {
+    "name": "Zariel"
+  },
+  "zaroum-al-saryak": {
+    "name": "Zaroum Al-Saryak"
+  },
+  "zastra": {
+    "name": "Zastra"
+  },
+  "zaythir": {
+    "name": "Zaythir"
+  },
+  "zebra": {
+    "name": "Zebra"
+  },
+  "zegana": {
+    "name": "Zegana"
+  },
+  "zendikar-dragon": {
+    "name": "Dragão Zendikar"
+  },
+  "zendikar-golem": {
+    "name": "Golem de Zendikar"
+  },
+  "zeond": {
+    "name": "Zeond"
+  },
+  "zephyros": {
+    "name": "Zephyros"
+  },
+  "zhanthi": {
+    "name": "Zhanthi"
+  },
+  "zhent-martial-arts-adept": {
+    "name": "Zhent Martial Arts Adept"
+  },
+  "zhentarim-thug": {
+    "name": "Zhentarim Capanga"
+  },
+  "zhentilar-paladin-of-bane": {
+    "name": "Zhentilar Paladino of Perdição"
+  },
+  "zhentilar-soldier": {
+    "name": "Zhentilar Soldado"
+  },
+  "zi-liang": {
+    "name": "Zi Liang"
+  },
+  "zikran": {
+    "name": "Zikran"
+  },
+  "zikzokrishka": {
+    "name": "Zikzokrishka"
+  },
+  "zilchyn-qleptin": {
+    "name": "Zilchyn Q'Leptin"
+  },
+  "zindar": {
+    "name": "Zindar"
+  },
+  "ziraj-the-hunter": {
+    "name": "Ziraj, o Caçador"
+  },
+  "zlan": {
+    "name": "Zlan"
+  },
+  "zodar": {
+    "name": "Zodar"
+  },
+  "zombie-cat": {
+    "name": "Zumbi Gato"
+  },
+  "zombie-clot": {
+    "name": "Zumbi Clot"
+  },
+  "zombie-horse": {
+    "name": "Zumbi Cavalo"
+  },
+  "zombie-plague-spreader": {
+    "name": "Zumbi Praga Spreader"
+  },
+  "zombie-rat": {
+    "name": "Zumbi Rato"
+  },
+  "zombie-snake": {
+    "name": "Zumbi Serpente"
+  },
+  "zorak-lightdrinker": {
+    "name": "Zorak Lightdrinker"
+  },
+  "zorbo": {
+    "name": "Zorbo"
+  },
+  "zorhanna-adulare": {
+    "name": "Zorhanna Adulare"
+  },
+  "zorhannas-simulacrum": {
+    "name": "Zorhanna's Simulacrum"
+  },
+  "zox-clammersham": {
+    "name": "Zox Clammersham"
+  },
+  "zress-orlezziir": {
+    "name": "Zress Orlezziir"
+  },
+  "zuggtmoy": {
+    "name": "Zuggtmoy"
+  },
+  "zuleika-toranescu": {
+    "name": "Zuleika Toranescu"
+  },
+  "zygfrek-belview": {
+    "name": "Zygfrek Belview"
+  },
+  "zythan": {
+    "name": "Zythan"
+  },
+  "aarakocra-aeromancer": {
+    "name": "Aarakocra Aeromancer"
+  },
+  "aarakocra-skirmisher": {
+    "name": "Aarakocra Skirmisher"
+  },
+  "aberrant-cultist": {
+    "name": "Aberrant Cultista"
+  },
+  "animal-lord": {
+    "name": "Animal Senhor"
+  },
+  "animated-flying-sword": {
+    "name": "Animado Voador Espada"
+  },
+  "animated-object": {
+    "name": "Animado Object"
+  },
+  "animated-rug-of-smothering": {
+    "name": "Animado Tapete of Smothering"
+  },
+  "arch-hag": {
+    "name": "Arch-hag"
+  },
+  "archelon": {
+    "name": "Archelon"
+  },
+  "archpriest": {
+    "name": "Archpriest"
+  },
+  "azer-pyromancer": {
+    "name": "Azer Pyromancer"
+  },
+  "azer-sentinel": {
+    "name": "Azer Sentinela"
+  },
+  "bandit-crime-lord": {
+    "name": "Bandido Crime Senhor"
+  },
+  "bandit-deceiver": {
+    "name": "Bandido Deceiver"
+  },
+  "berserker-commander": {
+    "name": "Berserker Comandante"
+  },
+  "blob-of-annihilation": {
+    "name": "Blob of Annihilation"
+  },
+  "bone-naga": {
+    "name": "Naga Osso"
+  },
+  "brazen-gorgon": {
+    "name": "Brazen Gorgon"
+  },
+  "bugbear-stalker": {
+    "name": "Bugbear Perseguidor"
+  },
+  "bugbear-warrior": {
+    "name": "Bugbear Guerreiro"
+  },
+  "bulette-pup": {
+    "name": "Bulette Filhote"
+  },
+  "bullywug-bog-sage": {
+    "name": "Bullywug Charco Sage"
+  },
+  "bullywug-warrior": {
+    "name": "Bullywug Guerreiro"
+  },
+  "centaur-trooper": {
+    "name": "Centauro Trooper"
+  },
+  "centaur-warden": {
+    "name": "Centauro Guardião"
+  },
+  "cockatrice-regent": {
+    "name": "Cocatriz Regent"
+  },
+  "colossus": {
+    "name": "Colossus"
+  },
+  "cultist-fanatic": {
+    "name": "Cultista Fanatic"
+  },
+  "cultist-hierophant": {
+    "name": "Cultista Hierophant"
+  },
+  "cyclops-oracle": {
+    "name": "Ciclope Oráculo"
+  },
+  "cyclops-sentry": {
+    "name": "Ciclope Sentry"
+  },
+  "death-cultist": {
+    "name": "Morte Cultista"
+  },
+  "death-knight-aspirant": {
+    "name": "Morte Cavaleiro Aspirant"
+  },
+  "dire-worg": {
+    "name": "Worg Gigante"
+  },
+  "dracolich": {
+    "name": "Dracolich"
+  },
+  "elemental-cataclysm": {
+    "name": "Elemental Cataclysm"
+  },
+  "elemental-cultist": {
+    "name": "Elemental Cultista"
+  },
+  "empyrean-iota": {
+    "name": "Empyrean Iota"
+  },
+  "faerie-dragon-adult": {
+    "name": "Faerie Dragão Adulto"
+  },
+  "faerie-dragon-youth": {
+    "name": "Faerie Dragão Youth"
+  },
+  "fiend-cultist": {
+    "name": "Demônio Cultista"
+  },
+  "flaming-skeleton": {
+    "name": "Esqueleto de Flamejante"
+  },
+  "gas-spore-fungus": {
+    "name": "Gas Spore Fungo"
+  },
+  "ghast-gravecaller": {
+    "name": "Carniçal Maior Gravecaller"
+  },
+  "giant-axe-beak": {
+    "name": "Machado Beak Gigante"
+  },
+  "giant-insect": {
+    "name": "Insect Gigante"
+  },
+  "giant-seahorse": {
+    "name": "Seahorse Gigante"
+  },
+  "giant-squid": {
+    "name": "Lula Gigante"
+  },
+  "giant-venomous-snake": {
+    "name": "Venenoso Serpente Gigante"
+  },
+  "githyanki-dracomancer": {
+    "name": "Githyanki Dracomancer"
+  },
+  "githzerai-psion": {
+    "name": "Githzerai Psion"
+  },
+  "gnoll-demoniac": {
+    "name": "Gnoll Demoniac"
+  },
+  "goblin-hexer": {
+    "name": "Goblin Hexer"
+  },
+  "goblin-minion": {
+    "name": "Goblin Lacaio"
+  },
+  "graveyard-revenant": {
+    "name": "Graveyard Revenant"
+  },
+  "grick-ancient": {
+    "name": "Grick Ancião"
+  },
+  "guard-captain": {
+    "name": "Guarda Capitão"
+  },
+  "gulthias-blight": {
+    "name": "Gulthias Praga"
+  },
+  "half-dragon": {
+    "name": "Meio-Dragão"
+  },
+  "haunting-revenant": {
+    "name": "Haunting Revenant"
+  },
+  "hobgoblin-warrior": {
+    "name": "Hobgoblin Guerreiro"
+  },
+  "juvenile-shadow-dragon": {
+    "name": "Dragão Juvenile Sombrio"
+  },
+  "kobold-warrior": {
+    "name": "Kobold Guerreiro"
+  },
+  "lacedon-ghoul": {
+    "name": "Lacedon Carniçal"
+  },
+  "lizardfolk-geomancer": {
+    "name": "Povo-Lagarto Geomancer"
+  },
+  "lizardfolk-sovereign": {
+    "name": "Povo-Lagarto Sovereign"
+  },
+  "mage-apprentice": {
+    "name": "Mago Apprentice"
+  },
+  "manes-vaporspawn": {
+    "name": "Manes Vaporspawn"
+  },
+  "merfolk-skirmisher": {
+    "name": "Tritão Skirmisher"
+  },
+  "merfolk-wavebender": {
+    "name": "Tritão Wavebender"
+  },
+  "minotaur-of-baphomet": {
+    "name": "Minotauro of Baphomet"
+  },
+  "modron-duodrone": {
+    "name": "Modron Duodrone"
+  },
+  "modron-monodrone": {
+    "name": "Modron Monodrone"
+  },
+  "modron-pentadrone": {
+    "name": "Modron Pentadrone"
+  },
+  "modron-quadrone": {
+    "name": "Modron Quadrone"
+  },
+  "modron-tridrone": {
+    "name": "Modron Tridrone"
+  },
+  "myconid-spore-servant": {
+    "name": "Myconid Spore Servo"
+  },
+  "noble-prodigy": {
+    "name": "Nobre Prodigy"
+  },
+  "ogrillon-ogre": {
+    "name": "Ogrillon Ogro"
+  },
+  "otherworldly-steed": {
+    "name": "Otherworldly Steed"
+  },
+  "performer": {
+    "name": "Performer"
+  },
+  "performer-legend": {
+    "name": "Performer Legend"
+  },
+  "performer-maestro": {
+    "name": "Performer Maestro"
+  },
+  "pirate": {
+    "name": "Pirata"
+  },
+  "pirate-admiral": {
+    "name": "Pirata Admiral"
+  },
+  "pixie-wonderbringer": {
+    "name": "Pixie Wonderbringer"
+  },
+  "priest-acolyte": {
+    "name": "Sacerdote Acólito"
+  },
+  "primeval-owlbear": {
+    "name": "Primeval Urso-coruja"
+  },
+  "psychic-gray-ooze": {
+    "name": "Psíquico Cinzento Gosma"
+  },
+  "questing-knight": {
+    "name": "Questing Cavaleiro"
+  },
+  "sahuagin-priest": {
+    "name": "Sahuagin Sacerdote"
+  },
+  "sahuagin-warrior": {
+    "name": "Sahuagin Guerreiro"
+  },
+  "salamander-fire-snake": {
+    "name": "Salamandra Fogo Serpente"
+  },
+  "salamander-inferno-master": {
+    "name": "Salamandra Inferno Mestre"
+  },
+  "satyr-revelmaster": {
+    "name": "Sátiro Revelmaster"
+  },
+  "scout-captain": {
+    "name": "Batedor Capitão"
+  },
+  "seahorse": {
+    "name": "Seahorse"
+  },
+  "shadow-dragon": {
+    "name": "Dragão Sombrio"
+  },
+  "sphinx-of-lore": {
+    "name": "Esfinge of Lore"
+  },
+  "sphinx-of-secrets": {
+    "name": "Esfinge of Secrets"
+  },
+  "sphinx-of-valor": {
+    "name": "Esfinge of Valor"
+  },
+  "sphinx-of-wonder": {
+    "name": "Esfinge of Wonder"
+  },
+  "spy-master": {
+    "name": "Espião Mestre"
+  },
+  "swarm-of-crawling-claws": {
+    "name": "Enxame de Rastejante Claws"
+  },
+  "swarm-of-dretches": {
+    "name": "Enxame de Dretches"
+  },
+  "swarm-of-larvae": {
+    "name": "Enxame de Larvae"
+  },
+  "swarm-of-lemures": {
+    "name": "Enxame de Lemures"
+  },
+  "swarm-of-stirges": {
+    "name": "Enxame de Stirges"
+  },
+  "swarm-of-venomous-snakes": {
+    "name": "Enxame de Venenoso Snakes"
+  },
+  "thri-kreen-marauder": {
+    "name": "Thri-kreen Marauder"
+  },
+  "thri-kreen-psion": {
+    "name": "Thri-kreen Psion"
+  },
+  "tough": {
+    "name": "Tough"
+  },
+  "tough-boss": {
+    "name": "Tough Chefe"
+  },
+  "troll-limb": {
+    "name": "Troll Limb"
+  },
+  "vampire-familiar": {
+    "name": "Vampiro Familiar"
+  },
+  "vampire-nightbringer": {
+    "name": "Vampiro Nightbringer"
+  },
+  "vampire-umbral-lord": {
+    "name": "Vampiro Umbral Senhor"
+  },
+  "venomous-snake": {
+    "name": "Venenoso Serpente"
+  },
+  "violet-fungus-necrohulk": {
+    "name": "Violeta Fungo Necrohulk"
+  },
+  "warrior-commander": {
+    "name": "Guerreiro Comandante"
+  },
+  "warrior-infantry": {
+    "name": "Guerreiro Infantry"
+  },
+  "warrior-veteran": {
+    "name": "Guerreiro Veterano"
+  },
+  "yuan-ti-infiltrator": {
+    "name": "Yuan-ti Infiltrator"
+  },
+  "morphlit": {
+    "name": "Morphlit"
+  },
+  "bone-golem": {
+    "name": "Golem de Osso"
+  },
+  "tentaghoul": {
+    "name": "Tentaghoul"
+  },
+  "death-widow": {
+    "name": "Morte Widow"
+  },
+  "chainer-geist": {
+    "name": "Chainer Geist"
+  },
+  "size-of-a-field-mouse": {
+    "name": "Size-of-a-Field Mouse"
+  },
+  "beast-of-ill-omen": {
+    "name": "Besta of Ill Omen"
+  },
+  "horizon-walker-ranger": {
+    "name": "Horizon Walker Patrulheiro"
   }
 }

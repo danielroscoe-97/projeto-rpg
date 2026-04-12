@@ -8,6 +8,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { CompendiumMonsterHydrator } from "@/components/public/CompendiumMonsterHydrator";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { MonsterHeroCount } from "@/components/public/MonsterHeroCount";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 import monsterSlugsPt from "@/data/srd/monster-names-pt.json";
 
@@ -104,7 +105,7 @@ export default function MonstrosIndexPage() {
             Bestiário D&amp;D 5e
           </h1>
           <p className="text-gray-400 text-lg">
-            {deduped.length} monstros com roladores de dados interativos e fichas táticas. Todo conteúdo SRD é gratuito sob{" "}
+            <MonsterHeroCount ssrCount={deduped.length} /> monstros com roladores de dados interativos e fichas táticas. Todo conteúdo SRD é gratuito sob{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               className="underline hover:text-gray-200"

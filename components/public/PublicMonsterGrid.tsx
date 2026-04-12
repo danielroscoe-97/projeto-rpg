@@ -7,7 +7,7 @@ import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
 import { FilterChips } from "@/components/public/shared/FilterChips";
 import { CompendiumSearchInput } from "@/components/public/shared/CompendiumSearchInput";
 import { CollapseSection } from "@/components/public/shared/CollapseSection";
-import { CR_RANGES, CREATURE_TYPES, parseCR, toSlug } from "@/lib/utils/monster";
+import { ALL_CR_VALUES, CREATURE_TYPES, parseCR, toSlug, cleanDisplayName, baseFirstLetter } from "@/lib/utils/monster";
 
 const TYPE_EMOJI: Record<string, string> = {
   aberration: "\u{1F441}",
@@ -75,17 +75,19 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
   } = labels;
   const [descLang, setDescLang] = useState<"en" | "pt-BR">(locale);
   const isPt = descLang === "pt-BR";
-  const displayName = (m: MonsterEntry) => isPt ? (m.namePt ?? m.name) : (m.nameEn ?? m.name);
+  const displayName = (m: MonsterEntry) => cleanDisplayName(isPt ? (m.namePt ?? m.name) : (m.nameEn ?? m.name));
   const subtitleName = (m: MonsterEntry) => {
     if (!m.nameEn || !m.namePt || m.nameEn.toLowerCase() === m.namePt.toLowerCase()) return null;
-    return isPt ? m.nameEn : m.namePt;
+    return cleanDisplayName(isPt ? m.nameEn : m.namePt);
   };
   const [query, setQuery] = useState("");
-  const [crFilter, setCrFilter] = useState<string | null>(null);
+  const [crMin, setCrMin] = useState<string>("");
+  const [crMax, setCrMax] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const activeFilterCount = (crFilter ? 1 : 0) + (typeFilter ? 1 : 0);
+  const hasCrFilter = crMin !== "" || crMax !== "";
+  const activeFilterCount = (hasCrFilter ? 1 : 0) + (typeFilter ? 1 : 0);
 
   const filtered = useMemo(() => {
     let result = monsters;
@@ -99,14 +101,13 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
       );
     }
 
-    if (crFilter) {
-      const range = CR_RANGES.find((r) => r.label === crFilter);
-      if (range) {
-        result = result.filter((m) => {
-          const cr = parseCR(m.cr);
-          return cr >= range.min && cr <= range.max;
-        });
-      }
+    if (hasCrFilter) {
+      const minVal = crMin !== "" ? parseCR(crMin) : -Infinity;
+      const maxVal = crMax !== "" ? parseCR(crMax) : Infinity;
+      result = result.filter((m) => {
+        const cr = parseCR(m.cr);
+        return cr >= minVal && cr <= maxVal;
+      });
     }
 
     if (typeFilter) {
@@ -117,29 +118,29 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
     }
 
     return result;
-  }, [monsters, query, crFilter, typeFilter]);
+  }, [monsters, query, crMin, crMax, hasCrFilter, typeFilter]);
 
-  // Group by first letter (of display name)
+  // Group by first letter (of display name), normalizing accents (Á→A, Í→I)
   const grouped = useMemo(() => {
     const map = new Map<string, MonsterEntry[]>();
     for (const m of filtered) {
-      const dn = isPt ? (m.namePt ?? m.name) : (m.nameEn ?? m.name);
-      const letter = dn[0]?.toUpperCase() || "#";
+      const dn = cleanDisplayName(isPt ? (m.namePt ?? m.name) : (m.nameEn ?? m.name));
+      const letter = /^[a-zA-Z\u00C0-\u024F]/.test(dn[0] ?? "") ? baseFirstLetter(dn) : "#";
       if (!map.has(letter)) map.set(letter, []);
       map.get(letter)!.push(m);
     }
     // Sort entries within each letter by display name
     for (const [, group] of map) {
       group.sort((a, b) => {
-        const an = isPt ? (a.namePt ?? a.name) : (a.nameEn ?? a.name);
-        const bn = isPt ? (b.namePt ?? b.name) : (b.nameEn ?? b.name);
+        const an = cleanDisplayName(isPt ? (a.namePt ?? a.name) : (a.nameEn ?? a.name));
+        const bn = cleanDisplayName(isPt ? (b.namePt ?? b.name) : (b.nameEn ?? b.name));
         return an.localeCompare(bn);
       });
     }
     return new Map([...map.entries()].sort(([a], [b]) => a.localeCompare(b)));
   }, [filtered, isPt]);
 
-  const hasFilters = !!(query || crFilter || typeFilter);
+  const hasFilters = !!(query || hasCrFilter || typeFilter);
 
   return (
     <div>
@@ -176,15 +177,52 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
           )}
         </button>
 
-        {/* Collapsible CR + Type chips */}
+        {/* Collapsible CR + Type filters */}
         <CollapseSection open={filtersOpen}>
           <div className="space-y-3 pt-1">
-            <FilterChips
-              label={crLabel}
-              options={CR_RANGES.map((r) => ({ label: r.label, value: r.label }))}
-              selected={crFilter}
-              onSelect={(v) => setCrFilter(v)}
-            />
+            {/* CR range selects */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-gray-400 font-medium">{crLabel}</span>
+              <select
+                value={crMin}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setCrMin(v);
+                  if (v && crMax && parseCR(v) > parseCR(crMax)) setCrMax(v);
+                }}
+                className="bg-white/[0.06] border border-white/[0.08] rounded-md px-2 py-1 text-xs text-gray-300 focus:outline-none focus:ring-1 focus:ring-gold/50 min-w-[4.5rem]"
+              >
+                <option value="">Min</option>
+                {ALL_CR_VALUES.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+              <span className="text-xs text-gray-500">—</span>
+              <select
+                value={crMax}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setCrMax(v);
+                  if (v && crMin && parseCR(v) < parseCR(crMin)) setCrMin(v);
+                }}
+                className="bg-white/[0.06] border border-white/[0.08] rounded-md px-2 py-1 text-xs text-gray-300 focus:outline-none focus:ring-1 focus:ring-gold/50 min-w-[4.5rem]"
+              >
+                <option value="">Max</option>
+                {ALL_CR_VALUES.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+              {hasCrFilter && (
+                <button
+                  type="button"
+                  onClick={() => { setCrMin(""); setCrMax(""); }}
+                  className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors"
+                  title="Clear CR filter"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
             <FilterChips
               label={typeLabel}
               options={CREATURE_TYPES.map((t) => ({ label: t, value: t, icon: TYPE_EMOJI[t.toLowerCase()] ?? "" }))}
@@ -317,7 +355,7 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
           <p className="text-gray-400 text-lg">{noResults}</p>
           <button
             type="button"
-            onClick={() => { setQuery(""); setCrFilter(null); setTypeFilter(null); }}
+            onClick={() => { setQuery(""); setCrMin(""); setCrMax(""); setTypeFilter(null); }}
             className="mt-3 text-gold text-sm hover:underline"
           >
             {clearAll}

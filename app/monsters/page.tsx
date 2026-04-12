@@ -5,6 +5,7 @@ import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 import monsterSlugsPt from "@/data/srd/monster-names-pt.json";
 import { PublicNav } from "@/components/public/PublicNav";
 import { CompendiumMonsterHydrator } from "@/components/public/CompendiumMonsterHydrator";
+import { MonsterHeroCount } from "@/components/public/MonsterHeroCount";
 import { PublicFooter } from "@/components/public/PublicFooter";
 
 export const metadata: Metadata = {
@@ -100,7 +101,7 @@ export default function MonstersIndexPage() {
             D&amp;D 5e Monster Compendium
           </h1>
           <p className="text-gray-400 text-lg">
-            {monsters.length} monsters with interactive stat blocks, dice
+            <MonsterHeroCount ssrCount={monsters.length} /> monsters with interactive stat blocks, dice
             rollers, and full SRD data. All free under{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
