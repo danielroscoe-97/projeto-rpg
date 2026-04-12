@@ -80,7 +80,7 @@ function NewEncounterPageInner() {
           if (preset?.selected_members && preset.selected_members.length > 0 && members) {
             const selectedUserIds = new Set(
               preset.selected_members
-                .map((memberId) => members.find((m) => m.id === memberId)?.user_id)
+                .map((memberId) => members.find((m: { id: string; user_id: string }) => m.id === memberId)?.user_id)
                 .filter(Boolean)
             );
             if (selectedUserIds.size > 0) {
@@ -110,11 +110,10 @@ function NewEncounterPageInner() {
         // If fetch fails, skip picker and go straight to quick combat
         setChosen({ campaignId: null, preloadedPlayers: [] });
       } else {
-        const mapped = (data ?? []).map((c) => ({
+        const mapped = (data ?? []).map((c: { id: string; name: string; player_characters: { count: number }[] }) => ({
           id: c.id,
           name: c.name,
-          player_count:
-            (c.player_characters as { count: number }[])[0]?.count ?? 0,
+          player_count: c.player_characters[0]?.count ?? 0,
         }));
         // If no campaigns, skip picker
         if (mapped.length === 0) {
@@ -150,22 +149,22 @@ function NewEncounterPageInner() {
       .eq("role", "player")
       .eq("status", "active");
 
-    const unmatched = (memberRows ?? []).filter((m) => !sheetUserIds.has(m.user_id));
+    const unmatched = (memberRows ?? []).filter((m: { user_id: string }) => !sheetUserIds.has(m.user_id));
 
     let placeholders: PlayerCharacter[] = [];
     if (unmatched.length > 0) {
       const { data: userRows } = await supabase
         .from("users")
         .select("id, display_name")
-        .in("id", unmatched.map((m) => m.user_id));
+        .in("id", unmatched.map((m: { user_id: string }) => m.user_id));
 
       const userMap = new Map((userRows ?? []).map((u: { id: string; display_name: string | null }) => [u.id, u.display_name]));
 
-      placeholders = unmatched.map((m) => ({
+      placeholders = unmatched.map((m: { user_id: string }) => ({
         id: `__placeholder__${m.user_id}`,
         campaign_id: campaignId,
         user_id: m.user_id,
-        name: userMap.get(m.user_id) ?? "Jogador",
+        name: (userMap.get(m.user_id) ?? "Jogador") as string,
         max_hp: 0,
         current_hp: 0,
         ac: 0,
