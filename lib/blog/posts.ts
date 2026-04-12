@@ -336,6 +336,26 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "build",
     image: "/art/blog/capa-barsavi-portrait.png",
   },
+  {
+    slug: "guia-mestre-eficaz-combate-dnd-5e",
+    title: "Guia do Mestre Eficaz no Combate — E-book Gratuito para D&D 5e",
+    description:
+      "5 capítulos práticos para transformar seus combates de D&D 5e. Da iniciativa automática ao HP em tempo real. Baixe o PDF gratuito.",
+    date: "2026-04-11",
+    readingTime: "6 min",
+    keywords: [
+      "guia mestre D&D",
+      "e-book D&D 5e",
+      "combat tracker guia",
+      "como mestrar combate D&D",
+      "Pocket DM guia",
+      "combate rápido D&D",
+      "iniciativa D&D 5e",
+    ],
+    ogTitle: "Guia do Mestre Eficaz no Combate — E-book Gratuito | Pocket DM",
+    category: "guia",
+    image: "/art/blog/combat-hp-panel.png",
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
