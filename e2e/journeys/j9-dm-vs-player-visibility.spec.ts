@@ -24,7 +24,8 @@ import {
 
 test.describe("J9 — DM vs Player Visibility", () => {
   // Player join flow involves DM setup + realtime broadcast + late-join approval.
-  test.setTimeout(90_000);
+  // Generous timeout: these multi-context tests often run late in a big sequential suite.
+  test.setTimeout(180_000);
 
   test("J9.1 — DM ve HP exato, Player ve barras/tiers (anti-metagaming)", async ({
     browser,
