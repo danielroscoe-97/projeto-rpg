@@ -346,7 +346,7 @@ test.describe("J18 — Player Mode: CompendiumBrowser", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -408,7 +408,7 @@ test.describe("J18 — Player Mode: CompendiumBrowser", () => {
       }
     }
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 });
 

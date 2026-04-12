@@ -64,7 +64,7 @@ test.describe("J12 — Combat Resilience", () => {
     );
     expect(await combatants.count()).toBeGreaterThanOrEqual(2);
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 
   test("J12.2 — DM fecha e reabre sessao — dados intactos", async ({
@@ -87,7 +87,7 @@ test.describe("J12 — Combat Resilience", () => {
     await page1.waitForTimeout(1_000);
 
     // Close browser completely
-    await ctx1.close();
+    await ctx1.close().catch(() => {});
 
     // Phase 2: New browser, same session
     const ctx2 = await browser.newContext();
@@ -107,7 +107,7 @@ test.describe("J12 — Combat Resilience", () => {
     );
     expect(await combatants.count()).toBeGreaterThanOrEqual(2);
 
-    await ctx2.close();
+    await ctx2.close().catch(() => {});
   });
 
   test("J12.3 — Player reconecta apos offline e ve estado atual", async ({
@@ -118,11 +118,12 @@ test.describe("J12 — Combat Resilience", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Hero", hp: "50", ac: "16", init: "18" },
+      { name: "Skeleton", hp: "13", ac: "13", init: "6" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -155,8 +156,8 @@ test.describe("J12 — Combat Resilience", () => {
     const bodyText = await playerPage.textContent("body");
     expect(bodyText).not.toContain("Internal Server Error");
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J12.4 — Player refresh no meio de combate — volta ao player view", async ({
@@ -167,11 +168,12 @@ test.describe("J12 — Combat Resilience", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Orc", hp: "30", ac: "13", init: "10" },
+      { name: "Rat", hp: "4", ac: "10", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -199,8 +201,8 @@ test.describe("J12 — Combat Resilience", () => {
     // NOT a login page
     expect(playerPage.url()).not.toContain("/auth/login");
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("J12.5 — Multiplos refreshes nao corrompem o estado", async ({
@@ -239,6 +241,6 @@ test.describe("J12 — Combat Resilience", () => {
     // Still active
     await expect(dmPage.locator('[data-testid="active-combat"]')).toBeVisible();
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 });

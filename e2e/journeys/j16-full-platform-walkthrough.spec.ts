@@ -73,10 +73,6 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
       timeout: 10_000,
     });
 
-    // Deve ter campo de nome do encounter
-    const encounterNameInput = page.locator('[data-testid="encounter-name-input"]');
-    await expect(encounterNameInput).toBeVisible({ timeout: 5_000 });
-
     // Deve ter campos para adicionar combatente
     await expect(page.locator('[data-testid="add-row-name"]')).toBeVisible();
     await expect(page.locator('[data-testid="add-row-hp"]')).toBeVisible();
@@ -93,8 +89,6 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
   }) => {
     await loginAs(page, DM_PRIMARY);
     await goToNewSession(page);
-
-    await page.fill('[data-testid="encounter-name-input"]', "J16 Walkthrough — Caverna do Dragão");
 
     const combatants = [
       { name: "Paladino Aric", hp: "52", ac: "18", init: "14" },
@@ -187,7 +181,7 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
     // Screenshot: Combate ativo do DM
     await dmPage.screenshot({ path: "e2e/results/A5-dm-active-combat.png", fullPage: true });
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 
   test("A6 — DM avança 1 round completo (4 turnos) sem erros", async ({
@@ -227,7 +221,7 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
     );
     expect(await combatants.count()).toBe(3);
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 
   test("A7 — DM aplica dano, cura e condição a combatentes", async ({
@@ -327,7 +321,7 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
     // Combate deve continuar funcionando
     await expect(dmPage.locator('[data-testid="active-combat"]')).toBeVisible();
 
-    await dmContext.close();
+    await dmContext.close().catch(() => {});
   });
 });
 
@@ -351,7 +345,7 @@ test.describe("BLOCO B — Player Logado", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -377,8 +371,8 @@ test.describe("BLOCO B — Player Logado", () => {
     // Screenshot: Lobby do Player
     await playerPage.screenshot({ path: "e2e/results/B1-player-lobby.png", fullPage: true });
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("B2 — Player preenche lobby, DM aprova, player vê combate", async ({
@@ -394,7 +388,7 @@ test.describe("BLOCO B — Player Logado", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -445,8 +439,8 @@ test.describe("BLOCO B — Player Logado", () => {
     // Screenshot: Visão de combate do Player
     await playerPage.screenshot({ path: "e2e/results/B2-player-combat-view.png", fullPage: true });
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("B3 — Player vê notificação de turno quando DM avança para ele", async ({
@@ -463,7 +457,7 @@ test.describe("BLOCO B — Player Logado", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -503,8 +497,8 @@ test.describe("BLOCO B — Player Logado", () => {
     // Screenshot: Turno do player (com notificação)
     await playerPage.screenshot({ path: "e2e/results/B3-player-your-turn.png", fullPage: true });
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("B4 — Dois players logados entram na mesma sessão", async ({
@@ -515,11 +509,12 @@ test.describe("BLOCO B — Player Logado", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Lich King", hp: "300", ac: "20", init: "22" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -558,9 +553,9 @@ test.describe("BLOCO B — Player Logado", () => {
     await p2Page.screenshot({ path: "e2e/results/B4-player2-view.png", fullPage: true });
     await dmPage.screenshot({ path: "e2e/results/B4-dm-with-2-players.png", fullPage: true });
 
-    await dmContext.close();
-    await p1Context.close();
-    await p2Context.close();
+    await dmContext.close().catch(() => {});
+    await p1Context.close().catch(() => {});
+    await p2Context.close().catch(() => {});
   });
 });
 
@@ -584,7 +579,7 @@ test.describe("BLOCO C — Player Anônimo (Sem Login)", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -617,8 +612,8 @@ test.describe("BLOCO C — Player Anônimo (Sem Login)", () => {
     // Screenshot: Visitante anônimo no /join
     await anonPage.screenshot({ path: "e2e/results/C1-anon-join-page.png", fullPage: true });
 
-    await dmContext.close();
-    await anonContext.close();
+    await dmContext.close().catch(() => {});
+    await anonContext.close().catch(() => {});
   });
 
   test("C2 — Player anônimo preenche lobby e entra no combate", async ({
@@ -629,11 +624,12 @@ test.describe("BLOCO C — Player Anônimo (Sem Login)", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Ogre", hp: "59", ac: "11", init: "8" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -708,8 +704,8 @@ test.describe("BLOCO C — Player Anônimo (Sem Login)", () => {
     const body = await anonPage.textContent("body");
     expect(body).not.toContain("Internal Server Error");
 
-    await dmContext.close();
-    await anonContext.close();
+    await dmContext.close().catch(() => {});
+    await anonContext.close().catch(() => {});
   });
 
   test("C3 — Player anônimo NÃO vê HP exato dos monstros", async ({
@@ -720,11 +716,12 @@ test.describe("BLOCO C — Player Anônimo (Sem Login)", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Ancient Dragon", hp: "546", ac: "22", init: "20" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -749,8 +746,8 @@ test.describe("BLOCO C — Player Anônimo (Sem Login)", () => {
       expect(body!.includes("546 /")).toBe(false);
     }
 
-    await dmContext.close();
-    await anonContext.close();
+    await dmContext.close().catch(() => {});
+    await anonContext.close().catch(() => {});
   });
 });
 
@@ -984,11 +981,12 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Giant", hp: "100", ac: "14", init: "8" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -1056,8 +1054,8 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
       playerPage.locator('[data-testid="player-view"]')
     ).toBeVisible();
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("E2 — DM aplica condição → Player vê badge de condição", async ({
@@ -1068,11 +1066,12 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Target Goblin", hp: "20", ac: "15", init: "10" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -1129,8 +1128,8 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
       }
     }
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("E3 — DM avança turno → Player vê mudança de turno em realtime", async ({
@@ -1146,7 +1145,7 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -1187,8 +1186,8 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
     await playerPage.screenshot({ path: "e2e/results/E3-player-turn-changed.png", fullPage: true });
     await dmPage.screenshot({ path: "e2e/results/E3-dm-advanced-turn.png", fullPage: true });
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("E4 — DM derrota monstro → Player vê estado de derrota", async ({
@@ -1199,11 +1198,12 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Goblin Fraco", hp: "5", ac: "12", init: "10" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -1270,8 +1270,8 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
     // Screenshot: Player vê goblin derrotado
     await playerPage.screenshot({ path: "e2e/results/E4-player-goblin-dead.png", fullPage: true });
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 });
 

@@ -25,7 +25,7 @@ test.describe("P1 — Player Combat View", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -49,8 +49,8 @@ test.describe("P1 — Player Combat View", () => {
       expect(bannerText!.length).toBeGreaterThan(0);
     }
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("Player sees initiative board with combatant list", async ({ browser }) => {
@@ -64,7 +64,7 @@ test.describe("P1 — Player Combat View", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -86,8 +86,8 @@ test.describe("P1 — Player Combat View", () => {
     const count = await combatants.count();
     expect(count).toBeGreaterThanOrEqual(1);
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("Player/monster visual differentiation — blue vs red borders", async ({ browser }) => {
@@ -96,11 +96,12 @@ test.describe("P1 — Player Combat View", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Bandit", hp: "11", ac: "12", init: "10" },
+      { name: "Thug", hp: "32", ac: "11", init: "6" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -130,8 +131,8 @@ test.describe("P1 — Player Combat View", () => {
       expect(classes).toContain("border-l-4");
     }
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("Player bottom bar shows character stats on mobile", async ({ browser }) => {
@@ -144,12 +145,13 @@ test.describe("P1 — Player Combat View", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Zombie", hp: "22", ac: "8", init: "6" },
+      { name: "Skeleton", hp: "13", ac: "13", init: "10" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await mobileContext.close();
-      await dmDesktop.close();
+      await mobileContext.close().catch(() => {});
+      await dmDesktop.close().catch(() => {});
       return;
     }
 
@@ -167,8 +169,8 @@ test.describe("P1 — Player Combat View", () => {
     // Deve conter o nome do personagem
     await expect(bottomBar).toContainText("Aria");
 
-    await mobileContext.close();
-    await dmDesktop.close();
+    await mobileContext.close().catch(() => {});
+    await dmDesktop.close().catch(() => {});
   });
 
   test("Player note input is visible and functional", async ({ browser }) => {
@@ -177,11 +179,12 @@ test.describe("P1 — Player Combat View", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Imp", hp: "10", ac: "13", init: "11" },
+      { name: "Quasit", hp: "7", ac: "13", init: "7" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -207,8 +210,8 @@ test.describe("P1 — Player Combat View", () => {
       await expect(sendBtn).toContainText(/Enviado|Sent/i, { timeout: 5_000 });
     }
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("Notification toggle works", async ({ browser }) => {
@@ -217,11 +220,12 @@ test.describe("P1 — Player Combat View", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Rat", hp: "1", ac: "10", init: "9" },
+      { name: "Bat", hp: "1", ac: "12", init: "5" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -249,8 +253,8 @@ test.describe("P1 — Player Combat View", () => {
     const newText = await toggle.textContent();
     expect(newText).not.toBe(initialText);
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("Combat log appears below initiative list", async ({ browser }) => {
@@ -264,7 +268,7 @@ test.describe("P1 — Player Combat View", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -298,7 +302,7 @@ test.describe("P1 — Player Combat View", () => {
       }
     }
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 });

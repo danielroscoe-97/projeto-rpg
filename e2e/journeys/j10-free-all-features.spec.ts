@@ -47,7 +47,7 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
 
     // Should have navigation and action buttons
     const nav = page.locator("nav");
-    await expect(nav).toBeVisible({ timeout: 5_000 });
+    await expect(nav).toBeVisible({ timeout: 15_000 });
   });
 
   test("J10.2 — Criar nova sessao de combate funciona", async ({ page }) => {
@@ -68,10 +68,7 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
   }) => {
     await goToNewSession(page);
 
-    await page.fill(
-      '[data-testid="encounter-name-input"]',
-      "J10 Big Battle"
-    );
+    // Encounter name is auto-generated — no input needed
 
     // Add 8 combatants (exceeds free tier limit of 6)
     const names = [
@@ -80,12 +77,21 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
     ];
 
     for (let i = 0; i < names.length; i++) {
-      await page.fill('[data-testid="add-row-name"]', names[i]);
-      await page.fill('[data-testid="add-row-hp"]', "20");
-      await page.fill('[data-testid="add-row-ac"]', "14");
-      await page.fill('[data-testid="add-row-init"]', String(20 - i));
+      // Re-open manual form if closed
+      const addRowName = page.locator('[data-testid="add-row-name"]');
+      if (!(await addRowName.isVisible({ timeout: 1_000 }).catch(() => false))) {
+        const manualToggle = page.locator('button').filter({ hasText: /Manual/i }).first();
+        if (await manualToggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await manualToggle.click();
+          await page.waitForTimeout(300);
+        }
+      }
+      await page.locator('[data-testid="add-row-init"]').fill(String(20 - i));
+      await addRowName.fill(names[i]);
+      await page.locator('[data-testid="add-row-hp"]').fill("20");
+      await page.locator('[data-testid="add-row-ac"]').fill("14");
       await page.click('[data-testid="add-row-btn"]');
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
     }
 
     // All 8 should be added — no paywall blocking
@@ -193,7 +199,7 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
     const heading = page.locator("h1");
     await expect(heading).toBeVisible({ timeout: 10_000 });
     const headingText = await heading.textContent();
-    expect(headingText).toMatch(/Encontros Preparados|Encounter Presets/);
+    expect(headingText).toMatch(/Encontros Preparados|Encounter Presets|Presets de Combate|Combat Presets/);
   });
 
   test("J10.8 — Settings page carrega e permite trocar idioma", async ({

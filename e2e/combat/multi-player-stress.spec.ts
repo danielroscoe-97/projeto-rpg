@@ -129,7 +129,7 @@ async function simulateTabClose(
   });
 
   // Close old context (simulates closing the tab — sessionStorage dies)
-  await oldContext.close();
+  await oldContext.close().catch(() => {});
 
   // Create new context (simulates opening a new tab)
   const newContext = await browser.newContext();
@@ -161,7 +161,7 @@ async function simulateBrowserClose(
   joinUrl: string
 ): Promise<{ context: BrowserContext; page: Page }> {
   // Close old context (everything dies)
-  await oldContext.close();
+  await oldContext.close().catch(() => {});
 
   // Create completely fresh context (no storage at all)
   const newContext = await browser.newContext();

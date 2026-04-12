@@ -19,7 +19,7 @@ test.describe("P1 — Player Join Flow", () => {
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -83,8 +83,8 @@ test.describe("P1 — Player Join Flow", () => {
       ).toBeVisible({ timeout: 15_000 });
     }
 
-    await dmContext.close();
-    await playerContext.close();
+    await dmContext.close().catch(() => {});
+    await playerContext.close().catch(() => {});
   });
 
   test("Anonymous player can join without login", async ({ browser }) => {
@@ -93,11 +93,12 @@ test.describe("P1 — Player Join Flow", () => {
 
     const token = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
       { name: "Skeleton", hp: "13", ac: "13", init: "14" },
+      { name: "Zombie", hp: "22", ac: "8", init: "6" },
     ]);
 
     if (!token) {
       test.skip(true, "Could not generate share token");
-      await dmContext.close();
+      await dmContext.close().catch(() => {});
       return;
     }
 
@@ -133,7 +134,7 @@ test.describe("P1 — Player Join Flow", () => {
       anonPage.locator('[data-testid="player-view"], [data-testid="player-loading"], body')
     ).toBeVisible({ timeout: 10_000 });
 
-    await dmContext.close();
-    await anonContext.close();
+    await dmContext.close().catch(() => {});
+    await anonContext.close().catch(() => {});
   });
 });

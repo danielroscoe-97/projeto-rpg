@@ -247,6 +247,8 @@ test.describe("J7.5-J7.9 — Compendium Browser Dialog", () => {
     page,
   }) => {
     await goToTryPage(page);
+    await addAllCombatants(page, QUICK_ENCOUNTER);
+    await startCombat(page);
     const dialog = await openCompendiumDialog(page);
 
     // Click Abilities / Habilidades tab
@@ -280,6 +282,8 @@ test.describe("J7.5-J7.9 — Compendium Browser Dialog", () => {
     page,
   }) => {
     await goToTryPage(page);
+    await addAllCombatants(page, QUICK_ENCOUNTER);
+    await startCombat(page);
     const dialog = await openCompendiumDialog(page);
 
     // Click Races / Raças tab
@@ -309,6 +313,8 @@ test.describe("J7.5-J7.9 — Compendium Browser Dialog", () => {
     page,
   }) => {
     await goToTryPage(page);
+    await addAllCombatants(page, QUICK_ENCOUNTER);
+    await startCombat(page);
     const dialog = await openCompendiumDialog(page);
 
     // Click Backgrounds / Antecedentes tab
@@ -338,6 +344,8 @@ test.describe("J7.5-J7.9 — Compendium Browser Dialog", () => {
     page,
   }) => {
     await goToTryPage(page);
+    await addAllCombatants(page, QUICK_ENCOUNTER);
+    await startCombat(page);
     const dialog = await openCompendiumDialog(page);
 
     // "All" tab is selected by default — type in global search

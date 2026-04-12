@@ -29,10 +29,9 @@ test.describe("P0 — DM Creates Session", () => {
     await page.fill('[data-testid="add-row-init"]', "12");
     await page.click('[data-testid="add-row-btn"]');
 
-    // Combatant row added — name is in an input
-    await expect(
-      page.locator('input[data-testid^="setup-name-"]').first()
-    ).toHaveValue("Test Goblin", { timeout: 5_000 });
+    // Combatant row added — name is in an input (app may append " 1" suffix)
+    const nameValue = await page.locator('input[data-testid^="setup-name-"]').first().inputValue();
+    expect(nameValue).toContain("Test Goblin");
   });
 
   test("DM can generate share link", async ({ page }) => {
@@ -58,22 +57,28 @@ test.describe("P0 — DM Creates Session", () => {
   test("DM can start combat with combatants", async ({ page }) => {
     await goToNewSession(page);
 
-    // Set encounter name (required to start combat)
-    await page.fill('[data-testid="encounter-name-input"]', "E2E Test Encounter");
+    // Encounter name is auto-generated — no input needed
 
-    // Add 2 combatants
-    await page.fill('[data-testid="add-row-name"]', "Hero");
-    await page.fill('[data-testid="add-row-hp"]', "40");
-    await page.fill('[data-testid="add-row-ac"]', "16");
-    await page.fill('[data-testid="add-row-init"]', "18");
-    await page.click('[data-testid="add-row-btn"]');
-    await expect(page.locator('[data-testid^="setup-row-"]').first()).toBeVisible({ timeout: 5_000 });
-
-    await page.fill('[data-testid="add-row-name"]', "Villain");
-    await page.fill('[data-testid="add-row-hp"]', "50");
-    await page.fill('[data-testid="add-row-ac"]', "14");
-    await page.fill('[data-testid="add-row-init"]', "10");
-    await page.click('[data-testid="add-row-btn"]');
+    // Add 2 combatants (re-open manual form if closed)
+    for (const c of [
+      { name: "Hero", hp: "40", ac: "16", init: "18" },
+      { name: "Villain", hp: "50", ac: "14", init: "10" },
+    ]) {
+      const addRowName = page.locator('[data-testid="add-row-name"]');
+      if (!(await addRowName.isVisible({ timeout: 1_000 }).catch(() => false))) {
+        const manualToggle = page.locator('button').filter({ hasText: /Manual/i }).first();
+        if (await manualToggle.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          await manualToggle.click();
+          await page.waitForTimeout(300);
+        }
+      }
+      await page.locator('[data-testid="add-row-init"]').fill(c.init);
+      await addRowName.fill(c.name);
+      await page.locator('[data-testid="add-row-hp"]').fill(c.hp);
+      await page.locator('[data-testid="add-row-ac"]').fill(c.ac);
+      await page.click('[data-testid="add-row-btn"]');
+      await page.waitForTimeout(500);
+    }
     await expect(page.locator('[data-testid^="setup-row-"]')).toHaveCount(2, { timeout: 5_000 });
 
     // Start combat

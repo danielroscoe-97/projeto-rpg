@@ -393,11 +393,6 @@ test.describe("J17 — Sprint Audio Feedback", () => {
       await searchInput.fill("Goblin");
       await page.waitForTimeout(1_000);
 
-      // Set encounter name first (required for DM sessions)
-      const nameInput = page.locator('[data-testid="encounter-name-input"]');
-      await expect(nameInput).toBeVisible({ timeout: 5_000 });
-      await nameInput.fill("E2E Golden Glow Test");
-
       // Increase quantity to 2 (pt-BR aria-label)
       const increaseBtn = page.locator(
         'button[aria-label*="Aumentar"], button[aria-label*="increase"]'

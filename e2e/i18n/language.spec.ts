@@ -10,11 +10,11 @@ test.describe("P3 — i18n (English)", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // English DM navbar should have English text
-    const nav = page.locator("nav");
+    const nav = page.locator("nav").first();
     await expect(nav).toBeVisible({ timeout: 5_000 });
 
     // Should see English nav items (Dashboard, Settings, Logout, etc.)
-    const navText = await nav.textContent();
+    const navText = await page.locator("nav").evaluateAll((navs) => navs.map(n => n.textContent).join(" "));
     const hasEnglish =
       navText?.includes("Dashboard") ||
       navText?.includes("Settings") ||

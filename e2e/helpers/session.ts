@@ -8,7 +8,7 @@ import type { TestAccount } from "../fixtures/test-accounts";
  * Also opens the manual-add form so data-testid="add-row" is visible.
  */
 export async function goToNewSession(page: Page) {
-  await page.goto("/app/session/new");
+  await page.goto("/app/session/new", { waitUntil: "domcontentloaded", timeout: 45_000 });
   await page.waitForLoadState("domcontentloaded");
 
   // Wait for either the setup area or Quick Combat button

@@ -181,7 +181,7 @@ test.describe("JO-01/02 — Dashboard Safety-Net Redirect", () => {
     const cleared = remaining === null;
     expect(redirected || cleared).toBe(true);
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("JO-02: pendingJoinCode in localStorage triggers redirect from dashboard", async ({
@@ -222,7 +222,7 @@ test.describe("JO-01/02 — Dashboard Safety-Net Redirect", () => {
     const cleared = remaining === null;
     expect(redirected || cleared).toBe(true);
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
 

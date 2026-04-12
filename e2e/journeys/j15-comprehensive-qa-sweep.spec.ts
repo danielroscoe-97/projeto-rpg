@@ -421,8 +421,6 @@ test.describe("J15-F — Encounter Setup Advanced", () => {
   test("J15.F6 — CR calculator visible with combatants", async ({ page }) => {
     await goToNewSession(page);
 
-    await page.fill('[data-testid="encounter-name-input"]', "CR Test");
-
     // Add combatants to trigger CR calc
     for (const c of [
       { name: "Hero", hp: "45", ac: "18", init: "15" },
@@ -478,7 +476,7 @@ test.describe("J15-G — Combat Actions", () => {
 
     // Combat should still function regardless
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible();
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.G2 — Defeat combatant button works", async ({ browser }) => {
@@ -499,7 +497,7 @@ test.describe("J15-G — Combat Actions", () => {
       await expect(page.locator('[data-testid="active-combat"]')).toBeVisible();
     }
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.G3 — Remove combatant mid-combat", async ({ browser }) => {
@@ -520,7 +518,7 @@ test.describe("J15-G — Combat Actions", () => {
       expect(await rows.count()).toBe(1);
     }
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.G4 — Add combatant mid-combat", async ({ browser }) => {
@@ -529,6 +527,7 @@ test.describe("J15-G — Combat Actions", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "Original", hp: "50", ac: "16", init: "15" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const addBtn = page.locator('button:has-text("Adicionar"), button:has-text("Add")').first();
@@ -553,7 +552,7 @@ test.describe("J15-G — Combat Actions", () => {
     }
 
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible();
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.G5 — Weather effect selector opens", async ({ browser }) => {
@@ -562,6 +561,7 @@ test.describe("J15-G — Combat Actions", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "WeatherTest", hp: "30", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     // Button text is "Efeito Climático" with weather emoji
@@ -586,7 +586,7 @@ test.describe("J15-G — Combat Actions", () => {
       await page.keyboard.press("Escape");
     }
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.G6 — Keyboard shortcuts cheatsheet opens", async ({ browser }) => {
@@ -595,6 +595,7 @@ test.describe("J15-G — Combat Actions", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "KBTest", hp: "30", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const kbBtn = page.locator('button:has-text("?"), button[aria-label*="Atalhos"], button[aria-label*="Keyboard"]');
@@ -609,7 +610,7 @@ test.describe("J15-G — Combat Actions", () => {
       await page.keyboard.press("Escape");
     }
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.G7 — Hide combatant from players toggle", async ({ browser }) => {
@@ -630,7 +631,7 @@ test.describe("J15-G — Combat Actions", () => {
       await expect(page.locator('[data-testid="active-combat"]')).toBeVisible();
     }
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
 
@@ -647,6 +648,7 @@ test.describe("J15-H — Combat End Flow", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "EndTest", hp: "30", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const endBtn = page.locator('[data-testid="end-encounter-btn"], button:has-text("Fim")');
@@ -667,7 +669,7 @@ test.describe("J15-H — Combat End Flow", () => {
     const body = await page.textContent("body");
     expect(body).not.toContain("Internal Server Error");
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.H2 — DM audio volume controls in combat", async ({ browser }) => {
@@ -676,6 +678,7 @@ test.describe("J15-H — Combat End Flow", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "AudioTest", hp: "30", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const volumeBtn = page.locator('button:has-text("🔊"), button[aria-label*="Volume"]');
@@ -689,7 +692,7 @@ test.describe("J15-H — Combat End Flow", () => {
       expect(hasSlider).toBe(true);
     }
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
 
@@ -785,6 +788,7 @@ test.describe("J15-J — HP Adjuster", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "HPModeTest", hp: "50", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const hpBtn = page.locator('[data-testid^="hp-btn-"]').first();
@@ -800,7 +804,7 @@ test.describe("J15-J — HP Adjuster", () => {
                      body!.includes("Cura") || body!.includes("Heal");
     expect(hasModes).toBe(true);
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 
   test("J15.J2 — HP adjuster has temp HP option", async ({ browser }) => {
@@ -809,6 +813,7 @@ test.describe("J15-J — HP Adjuster", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "TempHPTest", hp: "50", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const hpBtn = page.locator('[data-testid^="hp-btn-"]').first();
@@ -833,7 +838,7 @@ test.describe("J15-J — HP Adjuster", () => {
 
     await page.keyboard.press("Escape");
     await expect(page.locator('[data-testid="active-combat"]')).toBeVisible();
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
 
@@ -995,6 +1000,7 @@ test.describe("J15-N — Dice Roll Log", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "DiceTest", hp: "30", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const diceBtn = page.locator('button[aria-label*="Roll"], button[aria-label*="Histórico"], button:has-text("🎲")').first();
@@ -1006,7 +1012,7 @@ test.describe("J15-N — Dice Roll Log", () => {
 
     expect(hasDice || hasHistory).toBe(true);
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
 
@@ -1036,7 +1042,7 @@ test.describe("J15-O — Monster Groups in Combat", () => {
     const unique = new Set(ids);
     expect(unique.size).toBe(ids.length);
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
 
@@ -1053,6 +1059,7 @@ test.describe("J15-P — Sync & Connection", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "SyncTest", hp: "30", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     // Check for "Conectado" status in navbar (uses [data-testid="sync-indicator"] or status element)
@@ -1067,7 +1074,7 @@ test.describe("J15-P — Sync & Connection", () => {
       expect(hasText).toBe(true);
     }
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
 
@@ -1099,6 +1106,7 @@ test.describe("J15-Q — Accessibility", () => {
 
     await dmSetupCombatSession(page, DM_PRIMARY, [
       { name: "A11yTest", hp: "30", ac: "14", init: "12" },
+      { name: "Dummy", hp: "10", ac: "10", init: "5" },
     ]);
 
     const list = page.locator('[data-testid="initiative-list"]');
@@ -1107,6 +1115,6 @@ test.describe("J15-Q — Accessibility", () => {
     // Should have list role (it's a <ul>)
     expect(role === "list" || await list.evaluate(el => el.tagName.toLowerCase()) === "ul").toBe(true);
 
-    await ctx.close();
+    await ctx.close().catch(() => {});
   });
 });
