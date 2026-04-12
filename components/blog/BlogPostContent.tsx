@@ -5,6 +5,7 @@ import {
   resolveFeatureHref,
   CATEGORY_CTA,
 } from "@/lib/blog/feature-links";
+import { EbookCTA } from "./EbookCTA";
 
 /* ─── Shared styling helpers ───────────────────────────────────── */
 function Img({ src, alt }: { src: string; alt: string }) {
@@ -296,6 +297,8 @@ export function BlogPost1() {
         e nas{" "}
         <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">5 ferramentas que todo mestre deveria ter</IntLink>.
       </P>
+
+      <EbookCTA variant="inline" />
     </>
   );
 }
@@ -834,6 +837,8 @@ export function BlogPost5() {
         e o{" "}
         <IntLink slug="guia-condicoes-dnd-5e">guia de condições</IntLink>.
       </P>
+
+      <EbookCTA variant="inline" />
     </>
   );
 }
@@ -1519,6 +1524,8 @@ export function BlogPost7() {
         e os{" "}
         <IntLink slug="melhores-monstros-dnd-5e">10 monstros essenciais para mestres</IntLink>.
       </P>
+
+      <EbookCTA variant="inline" />
 
       <CTA category="tutorial" />
     </>
@@ -2709,6 +2716,8 @@ export function BlogPost10() {
       <P>
         Agora é com você: reúna o grupo, prepare um começo forte e jogue.
       </P>
+
+      <EbookCTA variant="inline" />
 
       <CTA category="tutorial" />
     </>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Blog Hero Images — Pocket DM</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+    padding: 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .slide-label {
+    font-family: 'JetBrains Mono', monospace;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: -40px;
+  }
+
+  .hero {
+    width: 1280px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    border-radius: 16px;
+  }
+
+  /* Background */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0d0d14 0%, #13131E 40%, #1A1A28 100%);
+  }
+
+  /* Vignette overlay */
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+    z-index: 1;
+  }
+
+  /* Monster art */
+  .hero-art {
+    position: absolute;
+    right: -40px;
+    bottom: -40px;
+    width: 520px;
+    height: 520px;
+    object-fit: contain;
+    opacity: 0.25;
+    filter: saturate(0.7);
+    z-index: 0;
+  }
+
+  /* Content */
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 60px 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    max-width: 800px;
+  }
+
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-self: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .tag-tutorial { color: #60A5FA; background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25); }
+  .tag-guia { color: #34D399; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.25); }
+  .tag-lista { color: #FBBF24; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.25); }
+  .tag-comparativo { color: #A78BFA; background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.25); }
+  .tag-build { color: #FB7185; background: rgba(251,113,133,0.12); border: 1px solid rgba(251,113,133,0.25); }
+  .tag-devlog { color: #D4A853; background: rgba(212,168,83,0.12); border: 1px solid rgba(212,168,83,0.25); }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 44px;
+    color: #D4A853;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 20px rgba(212,168,83,0.15);
+  }
+
+  .hero-desc {
+    font-size: 18px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  .hero-meta {
+    position: absolute;
+    bottom: 40px;
+    left: 70px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 2;
+  }
+
+  .hero-meta span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .hero-meta .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(212,168,83,0.4);
+  }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 2;
+    opacity: 0.3;
+  }
+
+  .watermark img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .watermark span {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: #D4A853;
+    font-weight: 600;
+  }
+
+  /* Decorative line */
+  .hero-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, #D4A853, transparent);
+    opacity: 0.3;
+    z-index: 2;
+  }
+
+  /* Grid line decoration */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,168,83,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,168,83,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+
+  /* Instructions */
+  .instructions {
+    color: #888;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    max-width: 1280px;
+    padding: 20px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-top: 20px;
+    line-height: 1.8;
+  }
+  .instructions h3 { color: #D4A853; font-family: 'Cinzel', serif; margin-bottom: 12px; }
+  .instructions code { color: #60A5FA; background: rgba(96,165,250,0.1); padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO 1: Como Montar um Encontro Balanceado                 -->
+<!-- Export: encounter-building.png (1280x720)                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<p class="slide-label">HERO — encounter-building.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <!-- Use: docs/social-media/arts/assets/ancient-red-dragon.png -->
+  <img class="hero-art" src="../arts/assets/ancient-red-dragon.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-tutorial">Tutorial</span>
+    <h1 class="hero-title">Como Montar um Encontro Balanceado</h1>
+    <p class="hero-desc">Orcamento de XP, economia de acoes e composicao de monstros — tudo que voce precisa pra criar encontros memoraveis no D&D 5e.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>11 min de leitura</span>
+  </div>
+  <div class="watermark">
+    <span>POCKET DM</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO 2: Guia de Challenge Rating                           -->
+<!-- Export: challenge-rating.png (1280x720)                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<p class="slide-label">HERO — challenge-rating.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <!-- Use: docs/social-media/arts/assets/hydra.png -->
+  <img class="hero-art" src="../arts/assets/hydra.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-guia">Guia</span>
+    <h1 class="hero-title">Guia de Challenge Rating</h1>
+    <p class="hero-desc">Como calcular a dificuldade de encontros no D&D 5e — tabelas de XP, multiplicadores e quando o CR mente.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>10 min de leitura</span>
+  </div>
+  <div class="watermark">
+    <span>POCKET DM</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO 3: Como Mestrar pela Primeira Vez                     -->
+<!-- Export: first-time-dm.png (1280x720)                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<p class="slide-label">HERO — first-time-dm.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <!-- Use: docs/social-media/arts/assets/goblin.png -->
+  <img class="hero-art" src="../arts/assets/goblin.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-tutorial">Tutorial</span>
+    <h1 class="hero-title">Como Mestrar D&D pela Primeira Vez</h1>
+    <p class="hero-desc">Guia completo para iniciantes — preparacao, improvisacao e como evitar os erros mais comuns de novos mestres.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>11 min de leitura</span>
+  </div>
+  <div class="watermark">
+    <span>POCKET DM</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO 4: Musica Ambiente para RPG                           -->
+<!-- Export: ambient-music.png (1280x720)                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<p class="slide-label">HERO — ambient-music.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #141420 40%, #1a1528 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <!-- Use: docs/social-media/arts/assets/lich.png -->
+  <img class="hero-art" src="../arts/assets/lich.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-guia">Guia</span>
+    <h1 class="hero-title">Musica Ambiente para RPG</h1>
+    <p class="hero-desc">Como escolher a trilha sonora certa para cada cena — combate, exploracao, taverna e momentos dramaticos.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>10 min de leitura</span>
+  </div>
+  <div class="watermark">
+    <span>POCKET DM</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO 5: Teatro da Mente vs Grid                            -->
+<!-- Export: theater-vs-grid.png (1280x720)                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<p class="slide-label">HERO — theater-vs-grid.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <!-- Use: docs/social-media/arts/assets/minotaur.png -->
+  <img class="hero-art" src="../arts/assets/minotaur.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-comparativo">Comparativo</span>
+    <h1 class="hero-title">Teatro da Mente vs Grid</h1>
+    <p class="hero-desc">Qual estilo de combate usar no D&D 5e? Pros, contras e a abordagem hibrida com zonas.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>9 min de leitura</span>
+  </div>
+  <div class="watermark">
+    <span>POCKET DM</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO 6: Build Clerigo/Feiticeiro                           -->
+<!-- Export: cleric-sorcerer-build.png (1280x720)               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<p class="slide-label">HERO — cleric-sorcerer-build.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #1a1318 40%, #201520 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #FB7185, transparent);"></div>
+  <!-- Use: public/art/blog/capa-barsavi-portrait.png -->
+  <img class="hero-art" src="../../../../public/art/blog/capa-barsavi-portrait.png" alt="" style="opacity: 0.35; right: -20px; bottom: -80px; width: 500px; height: 650px; object-fit: cover; filter: saturate(0.8);">
+  <div class="hero-content">
+    <span class="hero-tag tag-build">Build</span>
+    <h1 class="hero-title">Build de Suporte Nivel 10</h1>
+    <p class="hero-desc">Clerigo da Ordem / Feiticeiro de Alma Divina — suporte tier S com Voz de Autoridade e Metamagia.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>14 min de leitura</span>
+  </div>
+  <div class="watermark">
+    <span>POCKET DM</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO 7: Guia do Mestre Eficaz (E-BOOK)                    -->
+<!-- Export: ebook-guia-mestre-eficaz.png (1280x720)            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<p class="slide-label">HERO — ebook-guia-mestre-eficaz.png (E-BOOK COVER)</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #151520 40%, #1a1a28 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <img class="hero-art" src="../arts/assets/kraken.png" alt="" style="opacity: 0.18; right: -20px; bottom: -60px; width: 580px; height: 580px;">
+  <div class="hero-content">
+    <span class="hero-tag tag-guia" style="color: #D4A853; background: rgba(212,168,83,0.12); border-color: rgba(212,168,83,0.3);">E-BOOK GRATUITO</span>
+    <h1 class="hero-title" style="font-size: 48px;">Guia do Mestre Eficaz no Combate</h1>
+    <p class="hero-desc" style="font-size: 19px;">5 capitulos praticos para transformar seus combates de D&D 5e — da iniciativa automatica ao HP em tempo real.</p>
+    <div style="margin-top: 30px; display: flex; gap: 16px; align-items: center;">
+      <div style="background: #D4A853; color: #0d0d14; font-family: 'Cinzel', serif; font-weight: 700; font-size: 15px; padding: 12px 28px; border-radius: 8px;">BAIXAR GRATIS</div>
+      <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace;">PDF &bull; 5 capitulos</span>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>pocketdm.com.br</span>
+  </div>
+  <div class="watermark">
+    <span>POCKET DM</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- INSTRUCTIONS                                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="instructions">
+  <h3>Como Exportar</h3>
+  1. Abra este arquivo no navegador<br>
+  2. Selecione cada <code>.hero</code> individualmente<br>
+  3. Use DevTools → captura de area (Ctrl+Shift+P → "Capture area screenshot")<br>
+  4. Ou use extensao GoFullPage e recorte cada hero em 1280x720<br>
+  5. Salve em <code>public/art/blog/heroes/</code> com o nome indicado no label<br>
+  6. <strong>IMPORTANTE: Mostre ao Dani_ para aprovacao antes de publicar!</strong>
+</div>
+
+</body>
+</html>

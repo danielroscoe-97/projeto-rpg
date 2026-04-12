@@ -26,6 +26,7 @@ import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
 import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
 import { CATEGORY_CTA } from "@/lib/blog/feature-links";
+import { EbookCTA } from "@/components/blog/EbookCTA";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
@@ -284,33 +285,58 @@ export default async function BlogPostPage({
               </div>
             )}
 
-            {/* Related posts */}
+            {/* Proxima Aventura — Related posts */}
             {relatedPosts.length > 0 && (
               <div className="mt-10 pt-8 border-t border-white/[0.06]">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-1 h-5 rounded-full bg-gold/50" />
                   <h2 className="font-display text-lg text-gold/80">
-                    Leia também
+                    Proxima Aventura
                   </h2>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-3">
                   {relatedPosts.map((rp) => (
                     <Link
                       key={rp.slug}
                       href={`/blog/${rp.slug}`}
-                      className="group rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300"
+                      className="group rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300 overflow-hidden"
                     >
-                      <p className="text-sm font-medium text-foreground group-hover:text-gold transition-colors leading-snug">
-                        {rp.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {rp.readingTime} de leitura
-                      </p>
+                      {rp.image && (
+                        <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/20">
+                          <img
+                            src={rp.image}
+                            alt={rp.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          <span className={`absolute top-3 left-3 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+                            rp.category === "tutorial" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
+                            rp.category === "guia" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                            rp.category === "lista" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" :
+                            rp.category === "comparativo" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
+                            rp.category === "build" ? "bg-rose-500/20 text-rose-300 border-rose-500/30" :
+                            "bg-gold/20 text-gold border-gold/30"
+                          }`}>
+                            {BLOG_CATEGORIES[rp.category]}
+                          </span>
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <p className="text-sm font-medium text-foreground group-hover:text-gold transition-colors leading-snug line-clamp-2">
+                          {rp.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {rp.readingTime} de leitura
+                        </p>
+                      </div>
                     </Link>
                   ))}
                 </div>
               </div>
             )}
+
+            {/* E-book CTA — lead magnet */}
+            <EbookCTA variant="banner" />
 
             {/* CTA — contextual per post category */}
             {(() => {

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { BlogPost, BlogCategory } from "@/lib/blog/posts";
 import { BLOG_CATEGORIES } from "@/lib/blog/posts";
 
@@ -133,24 +134,39 @@ function PostRow({ post }: { post: BlogPost }) {
   );
 }
 
-/* ─── Post Card (grid items) ─────────────────────────────── */
+/* ─── Post Card (grid items) — with thumbnail ───────────── */
 function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300 h-full"
+      className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-gold/20 hover:bg-white/[0.03] transition-all duration-300 h-full overflow-hidden"
     >
-      <div className="flex items-center gap-2 mb-2">
-        <CategoryBadge category={post.category} />
-        <LangBadge slug={post.slug} />
-        <span className="text-[10px] text-muted-foreground ml-auto">{post.readingTime}</span>
+      {post.image && (
+        <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/20">
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        </div>
+      )}
+      <div className="p-4 flex flex-col flex-1">
+        <div className="flex items-center gap-2 mb-2">
+          <CategoryBadge category={post.category} />
+          <LangBadge slug={post.slug} />
+          <span className="text-[10px] text-muted-foreground ml-auto">{post.readingTime}</span>
+        </div>
+        <h3 className="font-display text-[14px] text-foreground group-hover:text-gold transition-colors duration-200 mb-1.5 leading-snug flex-1">
+          {post.title}
+        </h3>
+        <p className="text-[11px] text-foreground/45 leading-relaxed line-clamp-2">
+          {post.description}
+        </p>
       </div>
-      <h3 className="font-display text-[14px] text-foreground group-hover:text-gold transition-colors duration-200 mb-1.5 leading-snug flex-1">
-        {post.title}
-      </h3>
-      <p className="text-[11px] text-foreground/45 leading-relaxed line-clamp-2">
-        {post.description}
-      </p>
     </Link>
   );
 }
@@ -219,6 +235,80 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
 
   return (
     <div>
+      {/* ─── Search + Filters (sticky on mobile) ─── */}
+      <div className="sticky top-[64px] z-20 -mx-6 px-6 py-3 bg-[#0a0a0f]/95 backdrop-blur-md border-b border-white/[0.04] mb-6">
+        <div className="relative mb-3">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar artigos..."
+            className="w-full h-10 pl-9 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/30 transition-colors"
+          />
+        </div>
+
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
+          <button
+            type="button"
+            onClick={() => setActiveCategory(null)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+              !activeCategory
+                ? "bg-gold/15 text-gold border border-gold/25"
+                : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
+            }`}
+          >
+            Todos
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+                activeCategory === cat
+                  ? "bg-gold/15 text-gold border border-gold/25"
+                  : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
+              }`}
+            >
+              {BLOG_CATEGORIES[cat]}
+            </button>
+          ))}
+
+          {hasMultipleLanguages && (
+            <>
+              <span className="w-px h-5 bg-white/[0.08] mx-1 shrink-0" />
+              {(["all", "pt", "en"] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLangFilter(l)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+                    langFilter === l
+                      ? "bg-gold/15 text-gold border border-gold/25"
+                      : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
+                  }`}
+                >
+                  {l === "all" ? "All" : l === "pt" ? "PT" : "EN"}
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
+
       {/* ─── Wiki Portal ─── */}
       {!hasFilters && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -248,80 +338,6 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
           />
         </div>
       )}
-
-      {/* ─── Filter bar ─── */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-            />
-          </svg>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar artigos..."
-            className="w-full h-9 pl-9 pr-4 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-gold/30 transition-colors"
-          />
-        </div>
-
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <button
-            type="button"
-            onClick={() => setActiveCategory(null)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
-              !activeCategory
-                ? "bg-gold/15 text-gold border border-gold/25"
-                : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
-            }`}
-          >
-            Todos
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
-                activeCategory === cat
-                  ? "bg-gold/15 text-gold border border-gold/25"
-                  : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
-              }`}
-            >
-              {BLOG_CATEGORIES[cat]}
-            </button>
-          ))}
-
-          {hasMultipleLanguages && (
-            <>
-              <span className="w-px h-4 bg-white/[0.08] mx-1 hidden sm:block" />
-              {(["all", "pt", "en"] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLangFilter(l)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
-                    langFilter === l
-                      ? "bg-gold/15 text-gold border border-gold/25"
-                      : "bg-white/[0.04] text-muted-foreground border border-white/[0.06] hover:text-foreground hover:border-white/[0.12]"
-                  }`}
-                >
-                  {l === "all" ? "All" : l === "pt" ? "PT" : "EN"}
-                </button>
-              ))}
-            </>
-          )}
-        </div>
-      </div>
 
       {/* Results count when filtered */}
       {hasFilters && (
