@@ -49,6 +49,14 @@ const WORD_DICT: Record<string, string> = {
   fighting: "Luta", style: "Estilo", ability: "Habilidade",
   score: "Atributo", improvement: "Melhoria", increase: "Aumento",
   training: "Treinamento",
+  // Prepositions / articles
+  of: "de",
+  the: "o",
+  and: "e",
+  or: "ou",
+  with: "com",
+  from: "de",
+  in: "em",
 };
 
 function translateCompound(phrase: string): string {

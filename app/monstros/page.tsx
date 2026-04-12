@@ -45,13 +45,7 @@ export const revalidate = 86400;
 export default function MonstrosIndexPage() {
   const deduped = getSrdMonstersDeduped();
   const ptNames = monsterNamesPt as Record<string, { name?: string }>;
-
-  // Build simplified maps for client-side hydration (beta testers see full data)
-  const ptNameMap: Record<string, string> = {};
-  for (const [slug, entry] of Object.entries(ptNames)) {
-    if (entry.name) ptNameMap[slug] = entry.name;
-  }
-  const ptSlugMap = monsterSlugsPt as Record<string, string>;
+  const allPtSlugs = monsterSlugsPt as Record<string, string>;
 
   const monsters = deduped.map((m) => {
     const enSlug = toSlug(m.name);
@@ -71,6 +65,16 @@ export default function MonstrosIndexPage() {
       hasPage: true,
     };
   });
+
+  // Only include PT names for SRD monsters in SSR props (non-SRD names are auth-gated)
+  const srdSlugs = new Set(monsters.map((m) => toSlug(m.nameEn ?? m.name)));
+  const ptNameMap: Record<string, string> = {};
+  const ptSlugMap: Record<string, string> = {};
+  for (const slug of srdSlugs) {
+    const ptName = ptNames[slug]?.name;
+    if (ptName) ptNameMap[slug] = ptName;
+    if (allPtSlugs[slug]) ptSlugMap[slug] = allPtSlugs[slug];
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
