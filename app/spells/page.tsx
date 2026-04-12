@@ -69,7 +69,7 @@ export default function SpellsIndexPage() {
     description: "Complete D&D 5e SRD spell compendium with descriptions, damage, range, and components.",
     url: "https://pocketdm.com.br/spells",
     inLanguage: "en",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: spells.length,

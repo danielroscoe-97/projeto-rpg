@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       .limit(1)
       .maybeSingle();
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.pocketdm.com.br";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
     const playerUrl = tokenData?.token
       ? `${baseUrl}/join/${tokenData.token}`
       : `${baseUrl}/app/dashboard`;

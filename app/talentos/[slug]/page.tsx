@@ -61,7 +61,7 @@ function FeatJsonLd({ feat, slug }: { feat: { name: string; prerequisite: string
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
       logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
     },
     inLanguage: "pt-BR",
@@ -71,7 +71,7 @@ function FeatJsonLd({ feat, slug }: { feat: { name: string; prerequisite: string
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.pocketdm.com.br" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
       { "@type": "ListItem", position: 2, name: "Talentos", item: "https://pocketdm.com.br/talentos" },
       { "@type": "ListItem", position: 3, name: feat.name, item: `https://pocketdm.com.br/talentos/${slug}` },
     ],

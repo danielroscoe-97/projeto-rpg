@@ -75,7 +75,7 @@ function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnT
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
       logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
     },
     inLanguage: "pt-BR",
@@ -85,7 +85,7 @@ function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnT
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Início", item: "https://www.pocketdm.com.br" },
+      { "@type": "ListItem", position: 1, name: "Início", item: "https://pocketdm.com.br" },
       { "@type": "ListItem", position: 2, name: "Monstros", item: "https://pocketdm.com.br/monstros" },
       { "@type": "ListItem", position: 3, name: ptName, item: `https://pocketdm.com.br/monstros/${slug}` },
     ],

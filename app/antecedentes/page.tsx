@@ -52,7 +52,7 @@ function BackgroundsJsonLd({ count }: { count: number }) {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://www.pocketdm.com.br",
+      url: "https://pocketdm.com.br",
     },
     mainEntity: {
       "@type": "ItemList",

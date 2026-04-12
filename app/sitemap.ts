@@ -14,7 +14,7 @@ import { BLOG_POSTS } from "@/lib/blog/posts";
 import classesData from "@/data/srd/classes-srd.json";
 import subclassesData from "@/data/srd/subclasses-srd.json";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

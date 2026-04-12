@@ -73,7 +73,7 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
 
     if (insertError) throw insertError;
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.pocketdm.com.br";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
     const inviteLink = `${baseUrl}/auth/sign-up?invite=${token}&campaign=${campaignId}`;
 
     // Send branded email invite via Resend (fail-open — invite link still works if email fails)

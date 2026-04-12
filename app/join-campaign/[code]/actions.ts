@@ -4,7 +4,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sendInviteAcceptedEmail } from "@/lib/notifications/invite-accepted-email";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 
-const APP_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.pocketdm.com.br";
+const APP_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
 
 interface JoinCampaignData {
   code: string;

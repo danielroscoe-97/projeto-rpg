@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
 export default function robots(): MetadataRoute.Robots {
   return {
