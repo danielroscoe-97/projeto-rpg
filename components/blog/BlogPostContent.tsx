@@ -6,6 +6,12 @@ import {
   CATEGORY_CTA,
 } from "@/lib/blog/feature-links";
 import { EbookCTA } from "./EbookCTA";
+import {
+  BuildVariantProvider,
+  BuildVariantToggle,
+  Variant,
+  StrategyBox,
+} from "./BuildVariant";
 
 /* ─── Shared styling helpers ───────────────────────────────────── */
 function Img({ src, alt }: { src: string; alt: string }) {
@@ -3483,7 +3489,7 @@ export function BlogPost12() {
    ═══════════════════════════════════════════════════════════════ */
 export function BlogPost13() {
   return (
-    <>
+    <BuildVariantProvider defaultVariant="rolled">
       {/* Quote de abertura */}
       <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-6 my-8 text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.06] rounded-full blur-[60px]" />
@@ -3501,6 +3507,24 @@ export function BlogPost13() {
         e uma das builds de suporte mais eficientes do D&amp;D 5e.
       </P>
 
+      <P>
+        Abaixo apresentamos duas versões da build: a <strong>original jogada em
+        campanha</strong> com dados rolados e Half-Elf, e uma{" "}
+        <strong>reconstrução otimizada com Point Buy</strong> usando Shadar-kai.
+        Escolha a variante e o artigo inteiro se adapta.
+      </P>
+
+      {/* ─── TOGGLE ─── */}
+      <BuildVariantToggle
+        variants={[
+          { id: "rolled", label: "Half-Elf (Drow)", sub: "Dados Rolados" },
+          { id: "pointbuy", label: "Shadar-kai", sub: "Point Buy" },
+        ]}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════
+         FICHA EM 30 SEGUNDOS
+         ═══════════════════════════════════════════════════════════ */}
       <H2>A ficha em 30 segundos</H2>
 
       <div className="overflow-x-auto mb-6">
@@ -3508,7 +3532,10 @@ export function BlogPost13() {
           <tbody>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Raça</td>
-              <td className="py-2">Half-Elf (Drow)</td>
+              <td className="py-2">
+                <Variant id="rolled">Half-Elf (Drow)</Variant>
+                <Variant id="pointbuy">Shadar-kai (Tasha{"'"}s / MotM)</Variant>
+              </td>
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Classe</td>
@@ -3523,12 +3550,22 @@ export function BlogPost13() {
               <td className="py-2">Suporte / Controle / Multiplicador de ação</td>
             </tr>
             <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Atributos</td>
+              <td className="py-2">
+                <Variant id="rolled">4d6 drop lowest (campanha)</Variant>
+                <Variant id="pointbuy">Point Buy (15 / 15 / 15 / 8 / 8 / 8)</Variant>
+              </td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Feats</td>
-              <td className="py-2">Resilient (CON), Fey Touched</td>
+              <td className="py-2">
+                <Variant id="rolled">Resilient (CON), Fey Touched</Variant>
+                <Variant id="pointbuy">Resilient (CON), +2 CHA ou Lucky</Variant>
+              </td>
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Metamagic</td>
-              <td className="py-2">Extended Spell, Quickened Spell</td>
+              <td className="py-2">Quickened Spell, Extended Spell</td>
             </tr>
             <tr>
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Dificuldade</td>
@@ -3538,209 +3575,409 @@ export function BlogPost13() {
         </table>
       </div>
 
-      <H2>Atributos — Dados Rolados vs Point Buy</H2>
+      {/* ═══════════════════════════════════════════════════════════
+         RAÇA — VARIANTE
+         ═══════════════════════════════════════════════════════════ */}
+      <H2>Raça</H2>
 
-      <Tip>
-        Esta build foi criada com dados rolados (4d6 drop lowest). Abaixo
-        mostramos como reconstruí-la usando Point Buy para quem prefere um
-        método padronizado. As prioridades de atributo se mantêm, com pequenos
-        ajustes.
-      </Tip>
-
-      <H3>Comparação final (nível 10)</H3>
-
-      <div className="overflow-x-auto mb-6">
-        <table className="w-full text-sm text-foreground/80 border-collapse">
-          <thead>
-            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
-              <th className="py-2 text-left">Atributo</th>
-              <th className="py-2 text-center">Rolado</th>
-              <th className="py-2 text-center">Point Buy</th>
-              <th className="py-2 text-center">Diferença</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">STR</td>
-              <td className="py-2 text-center">10</td>
-              <td className="py-2 text-center">8</td>
-              <td className="py-2 text-center text-red-400/70">&minus;2</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">DEX</td>
-              <td className="py-2 text-center">14</td>
-              <td className="py-2 text-center">14</td>
-              <td className="py-2 text-center text-green-400/70">0</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">CON</td>
-              <td className="py-2 text-center">18 → 19*</td>
-              <td className="py-2 text-center">16 → 17*</td>
-              <td className="py-2 text-center text-red-400/70">&minus;2</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">INT</td>
-              <td className="py-2 text-center">8</td>
-              <td className="py-2 text-center">9</td>
-              <td className="py-2 text-center text-green-400/70">+1</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">WIS</td>
-              <td className="py-2 text-center">14&dagger;</td>
-              <td className="py-2 text-center">14&dagger;</td>
-              <td className="py-2 text-center text-green-400/70">0</td>
-            </tr>
-            <tr>
-              <td className="py-2 font-semibold">CHA</td>
-              <td className="py-2 text-center">18&Dagger;</td>
-              <td className="py-2 text-center">18&Dagger;</td>
-              <td className="py-2 text-center text-green-400/70">0</td>
-            </tr>
-          </tbody>
-        </table>
-        <p className="text-xs text-muted-foreground/60 mt-2">
-          * Inclui Resilient CON (+1) &nbsp;|&nbsp; &dagger; Inclui Fey Touched (+1 WIS) &nbsp;|&nbsp; &Dagger; Inclui Tome of Leadership (+2 CHA)
-        </p>
-      </div>
-
-      <H3>Progressão de atributos (Point Buy)</H3>
-
-      <div className="overflow-x-auto mb-6">
-        <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
-          <thead>
-            <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
-              <th className="py-2 text-left">Nível</th>
-              <th className="py-2 text-left">Evento</th>
-              <th className="py-2 text-center">STR</th>
-              <th className="py-2 text-center">DEX</th>
-              <th className="py-2 text-center">CON</th>
-              <th className="py-2 text-center">INT</th>
-              <th className="py-2 text-center">WIS</th>
-              <th className="py-2 text-center">CHA</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-1.5">1</td>
-              <td className="py-1.5 text-xs">Point Buy + Racial</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center">16</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center">13</td>
-              <td className="py-1.5 text-center">16</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-1.5">5</td>
-              <td className="py-1.5 text-xs">Sorc 4 — Resilient CON</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center text-gold">17</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center">13</td>
-              <td className="py-1.5 text-center">16</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-1.5">9</td>
-              <td className="py-1.5 text-xs">Sorc 8 — Fey Touched (+1 WIS)</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center">17</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center text-gold">14</td>
-              <td className="py-1.5 text-center">16</td>
-            </tr>
-            <tr>
-              <td className="py-1.5">10</td>
-              <td className="py-1.5 text-xs">Tome of Leadership (+2 CHA)</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center">17</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center text-gold">18</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <P>
-        <strong>Trade-offs com Point Buy:</strong> A maior diferença é CON. Com
-        dados rolados, Capa tinha +4 de modificador de CON durante toda a
-        campanha, enquanto com Point Buy ficaria em +3. Isso significa{" "}
-        <strong>&minus;1 HP por nível</strong> (&minus;10 no total) e &minus;1 nos testes de
-        Constituição para manter concentração. Para uma build que depende de
-        manter Bless e Spirit Guardians ativos, é uma diferença real, mas
-        Resilient CON compensa boa parte disso com proficiência nos saves.
-      </P>
-
-      {/* Variante Point Buy — Shadar-kai */}
-      <div className="rounded-xl border border-gold/25 bg-gold/[0.05] p-5 my-8 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
-        <div className="pl-3">
-          <p className="text-gold font-display text-xs uppercase tracking-wider font-bold mb-2">
-            Variante — Shadar-kai com Point Buy
+      <Variant id="rolled">
+        <H3>Half-Elf (Drow)</H3>
+        <P>
+          Half-Elf é uma das raças mais flexíveis do 5e. O +2 CHA é exatamente o
+          que um Sorcerer precisa, e os dois +1 extras permitem arredondar CON e
+          DEX, atributos essenciais para sobrevivência e AC. A variante Drow
+          adiciona Darkvision 60ft e Fey Ancestry (vantagem contra charm e
+          imunidade a sono mágico), traços defensivos valiosos para quem precisa
+          manter concentração.
+        </P>
+        <StrategyBox title="Por que Drow e não High Elf?">
+          <p>
+            A variante Drow (SCAG) troca as duas proficiências de Skill
+            Versatility por Drow Magic: o cantrip <em>dancing lights</em>{" "}
+            gratuito, e no nível 3 <em>faerie fire</em> 1x/dia (sem gastar
+            slot). Faerie fire é brutal: vantagem em ataques contra todos os
+            alvos afetados, sinergia perfeita com Voice of Authority. High Elf
+            daria apenas um cantrip de Wizard — esta build já tem cantrips
+            suficientes.
           </p>
-          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            Se sua mesa usa Point Buy e permite ASIs flexíveis
-            (Tasha{"'"}s Cauldron / MotM),{" "}
-            <strong>Shadar-kai</strong> é uma alternativa excelente a
-            Half-Elf. Você consegue fechar{" "}
-            <strong>CHA 18, CON 18 e WIS par:</strong> todos os
-            atributos importantes em números pares, sem desperdício.
+        </StrategyBox>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Traço</th>
+                <th className="py-2 text-left">Detalhe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">ASI</td>
+                <td className="py-2">+2 CHA, +1 CON, +1 DEX</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Darkvision</td>
+                <td className="py-2">60ft</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Fey Ancestry</td>
+                <td className="py-2">Vantagem em saves contra charm, imune a sono mágico</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Drow Magic</td>
+                <td className="py-2">Dancing lights (cantrip), faerie fire 1x/dia (nível 3)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Variant>
+
+      <Variant id="pointbuy">
+        <H3>Shadar-kai</H3>
+        <P>
+          Se sua mesa usa Point Buy e permite ASIs flexíveis (Tasha{"'"}s Cauldron
+          / MotM), <strong>Shadar-kai</strong> é a raça ideal para esta build.
+          Com o array 15/15/15/8/8/8, você coloca os 15s em CHA, CON e WIS, e
+          usa os bônus raciais (+2 CON, +1 CHA) para chegar a{" "}
+          <strong>CON 17, CHA 16, WIS 15</strong> no nível 1.
+        </P>
+        <P>
+          A grande vantagem: <strong>Blessing of the Raven Queen</strong>.
+          Uma vez por long rest, como bônus action, você se teleporta 30ft e ganha
+          resistência a <em>todo dano</em> até o início do seu próximo turno.
+          Para um caster frontline que precisa se manter vivo concentrando Bless
+          ou Spirit Guardians, isso é brutalmente superior a Misty Step, que
+          é apenas mobilidade sem proteção.
+        </P>
+        <StrategyBox title="Blessing of the Raven Queen vs Misty Step">
+          <p>
+            Misty Step (da Fey Touched na variante Half-Elf) é bônus action +
+            30ft de teleporte, disponível 1x/dia grátis + spell slots adicionais.
+            Blessing of the Raven Queen é bônus action + 30ft de teleporte +
+            resistência a <em>todo dano</em> por 1 turno, mas apenas 1x/long
+            rest. Mesmo alcance, mas a Blessing adiciona uma camada de
+            sobrevivência que Misty Step não tem. O trade-off: Misty Step pode
+            ser usado múltiplas vezes com spell slots, a Blessing é 1x/dia.
           </p>
-          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            <strong>Como funciona:</strong>{" "}
-            Compre CHA 15 e CON 15 no Point Buy. Distribua os bônus
-            raciais como +2 CON e +1 CHA, chegando a{" "}
-            <strong>CHA 16, CON 17</strong>{" "}
-            no nível 1.
-          </p>
-          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-2.5 pl-0">
-            <li>
-              <strong>Nível 5 (Sorc 4) — Resilient (CON):</strong>{" "}
-              CON 17 → <strong>CON 18</strong>{" "}
-              (modificador +4) com proficiência em saves de CON.
-              Concentração blindada desde cedo.
-            </li>
-            <li>
-              <strong>Nível 9 (Sorc 8) — Fey Touched (+1 WIS):</strong>{" "}
-              Coloque o +1 em <strong>WIS</strong>{" "}
-              (não em CHA), fechando WIS num valor par. Você ganha
-              Misty Step + Gift of Alacrity e fica mais tanque nos
-              saves de WIS.
-            </li>
-            <li>
-              <strong>Nível 10 — Tome of Leadership:</strong>{" "}
-              CHA 16 → <strong>CHA 18</strong>{" "}
-              (modificador +4). O Tome pula direto de 16 para 18,
-              por isso você não precisa gastar Fey Touched em CHA.
-            </li>
-          </ul>
-          <p className="text-sm text-foreground/85 leading-relaxed">
-            <strong>Vantagem da Shadar-kai:</strong>{" "}
-            Além de fechar todos os atributos pares, você ganha{" "}
-            <em>Blessing of the Raven Queen</em>: teleporte de 30ft
-            como bônus action com resistência a todo dano até o
-            próximo turno. Para um caster frontline, é uma ferramenta
-            de sobrevivência brutal que Misty Step não oferece. O
-            trade-off é DEX mais baixo (12 vs 14) e perder Fey
-            Ancestry, mas com Point Buy os números finais compensam.
+        </StrategyBox>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Traço</th>
+                <th className="py-2 text-left">Detalhe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">ASI (Tasha{"'"}s)</td>
+                <td className="py-2">+2 CON, +1 CHA</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Darkvision</td>
+                <td className="py-2">60ft</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Fey Ancestry</td>
+                <td className="py-2">Vantagem em saves contra charm, imune a sono mágico</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Trance</td>
+                <td className="py-2">4h de descanso em vez de 8h de sono</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Blessing of the Raven Queen</td>
+                <td className="py-2">1x/long rest — teleporte 30ft + resistência a todo dano por 1 turno</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <P>
+          <strong>Trade-off honesto:</strong> DEX 8 significa &minus;1 em
+          iniciativa e DEX saves. Com heavy armor do Cleric, AC não é afetada,
+          mas você vai agir depois de quase todo mundo. Gift of Alacrity (se
+          disponível como magia via Sorcerer) ajuda a compensar, mas essa
+          versão aceita ser mais lenta em troca de ser mais resistente.
+        </P>
+      </Variant>
+
+      {/* ═══════════════════════════════════════════════════════════
+         ATRIBUTOS — VARIANTE
+         ═══════════════════════════════════════════════════════════ */}
+      <H2>Atributos</H2>
+
+      <Variant id="rolled">
+        <Tip>
+          Estes atributos foram rolados com 4d6 drop lowest durante a
+          campanha. Cada mesa rola diferente — o importante são as{" "}
+          <strong>prioridades</strong>: CHA &gt; CON &gt; WIS &gt; DEX.
+        </Tip>
+        <H3>Atributos finais (nível 10)</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Atributo</th>
+                <th className="py-2 text-center">Base</th>
+                <th className="py-2 text-center">Racial</th>
+                <th className="py-2 text-center">Nível 10</th>
+                <th className="py-2 text-center">Mod</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">STR</td>
+                <td className="py-2 text-center">10</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">10</td>
+                <td className="py-2 text-center text-muted-foreground">+0</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">DEX</td>
+                <td className="py-2 text-center">13</td>
+                <td className="py-2 text-center text-gold/70">+1</td>
+                <td className="py-2 text-center">14</td>
+                <td className="py-2 text-center text-green-400/70">+2</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">CON</td>
+                <td className="py-2 text-center">17</td>
+                <td className="py-2 text-center text-gold/70">+1</td>
+                <td className="py-2 text-center">19*</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">INT</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">WIS</td>
+                <td className="py-2 text-center">12</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">14&dagger;</td>
+                <td className="py-2 text-center text-green-400/70">+2</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">CHA</td>
+                <td className="py-2 text-center">16</td>
+                <td className="py-2 text-center text-gold/70">+2</td>
+                <td className="py-2 text-center">18&Dagger;</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-xs text-muted-foreground/60 mt-2">
+            * Resilient CON (+1) &nbsp;|&nbsp; &dagger; Fey Touched (+1 WIS) &nbsp;|&nbsp; &Dagger; Tome of Leadership (+2 CHA)
           </p>
         </div>
-      </div>
 
-      <H2>Por que cada peça existe</H2>
+        <H3>Progressão por nível</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Nível</th>
+                <th className="py-2 text-left">Evento</th>
+                <th className="py-2 text-center">STR</th>
+                <th className="py-2 text-center">DEX</th>
+                <th className="py-2 text-center">CON</th>
+                <th className="py-2 text-center">INT</th>
+                <th className="py-2 text-center">WIS</th>
+                <th className="py-2 text-center">CHA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">1</td>
+                <td className="py-1.5 text-xs">Rolado + Half-Elf (+2/+1/+1)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center">18</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">12</td>
+                <td className="py-1.5 text-center">18</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">5</td>
+                <td className="py-1.5 text-xs">Sorc 4 — Resilient (CON)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center text-gold">19</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">12</td>
+                <td className="py-1.5 text-center">18</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">9</td>
+                <td className="py-1.5 text-xs">Sorc 8 — Fey Touched (+1 WIS)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center">19</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center text-gold">14</td>
+                <td className="py-1.5 text-center">18</td>
+              </tr>
+              <tr>
+                <td className="py-1.5">10</td>
+                <td className="py-1.5 text-xs">Tome of Leadership (+2 CHA)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center">19</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center text-gold">20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Variant>
 
-      <H3>Raça: Half-Elf (Drow)</H3>
-      <P>
-        Half-Elf é uma das raças mais flexíveis do 5e. O +2 CHA é exatamente o
-        que um Sorcerer precisa, e os dois +1 extras permitem arredondar CON e
-        DEX, atributos essenciais para sobrevivência e AC. A variante Drow
-        adiciona Darkvision 60ft e Fey Ancestry (vantagem contra charm e
-        imunidade a sono mágico), traços defensivos valiosos para quem precisa
-        manter concentração.
-      </P>
+      <Variant id="pointbuy">
+        <Tip>
+          Point Buy 15/15/15/8/8/8 com Shadar-kai. Os 15s vão em CHA, CON e WIS.
+          Os raciais (+2 CON, +1 CHA) fecham CON ímpar no nível 1, arredondado
+          por Resilient no nível 5. Esta variante prioriza{" "}
+          <strong>sobrevivência</strong> sobre casting puro.
+        </Tip>
+        <H3>Atributos finais (nível 10)</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Atributo</th>
+                <th className="py-2 text-center">Point Buy</th>
+                <th className="py-2 text-center">Racial</th>
+                <th className="py-2 text-center">Nível 10</th>
+                <th className="py-2 text-center">Mod</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">STR</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">DEX</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">CON</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-gold/70">+2</td>
+                <td className="py-2 text-center">18*</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">INT</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">WIS</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-green-400/70">+2</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">CHA</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-gold/70">+1</td>
+                <td className="py-2 text-center">18&dagger;</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-xs text-muted-foreground/60 mt-2">
+            * Resilient CON (+1) &nbsp;|&nbsp; &dagger; +2 CHA no Sorc 8 (ou Lucky — veja abaixo)
+          </p>
+        </div>
+
+        <H3>Progressão por nível</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Nível</th>
+                <th className="py-2 text-left">Evento</th>
+                <th className="py-2 text-center">STR</th>
+                <th className="py-2 text-center">DEX</th>
+                <th className="py-2 text-center">CON</th>
+                <th className="py-2 text-center">INT</th>
+                <th className="py-2 text-center">WIS</th>
+                <th className="py-2 text-center">CHA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">1</td>
+                <td className="py-1.5 text-xs">Point Buy + Shadar-kai (+2/+1)</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">17</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">15</td>
+                <td className="py-1.5 text-center">16</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">5</td>
+                <td className="py-1.5 text-xs">Sorc 4 — Resilient (CON)</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center text-gold">18</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">15</td>
+                <td className="py-1.5 text-center">16</td>
+              </tr>
+              <tr>
+                <td className="py-1.5">9</td>
+                <td className="py-1.5 text-xs">Sorc 8 — +2 CHA ou Lucky</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">18</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">15</td>
+                <td className="py-1.5 text-center text-gold">18 ou 16</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <StrategyBox title="A decisão do nível 9: +2 CHA ou Lucky?">
+          <p>
+            <strong>+2 CHA (→ 18):</strong> fecha o modificador em +4. Spell save
+            DC sobe de 14 para 15, spell attack de +7 para +8. É a escolha caster
+            pura — suas magias acertam e grudam mais.
+          </p>
+          <p>
+            <strong>Lucky:</strong> CHA fica em 16 (+3), mas você ganha 3 rerolls
+            por dia. Pode usar em saves de concentração, saves contra efeitos
+            letais, ou até forçar um inimigo a rerollar um ataque contra você.
+            É a escolha sobrevivente — aceita ser um caster levemente inferior em
+            troca de 3 momentos de {"\u201C"}não hoje{"\u201D"} por dia.
+          </p>
+          <p>
+            <strong>Recomendação:</strong> se seu grupo tem bastante dano e precisa
+            que você fique vivo, Lucky. Se você é o principal caster ofensivo,
+            +2 CHA.
+          </p>
+        </StrategyBox>
+      </Variant>
+
+      {/* ═══════════════════════════════════════════════════════════
+         CLASSE E FEATURES — COMPARTILHADO
+         ═══════════════════════════════════════════════════════════ */}
+      <H2>Classe e features</H2>
 
       <H3>Cleric 1 — Order Domain</H3>
       <P>
@@ -3748,16 +3985,28 @@ export function BlogPost13() {
         <strong>Voice of Authority</strong> é a feature que transforma um
         caster de suporte em um multiplicador de ações: toda vez que você
         conjura uma magia com spell slot mirando um aliado, esse aliado pode
-        usar sua reação para fazer um ataque de arma. Combine com Quickened
-        Spell e você pode buffar alguém E conjurar uma magia ofensiva no mesmo
-        turno, enquanto seu aliado ainda ganha um ataque extra.
+        usar sua reação para fazer um ataque de arma.
       </P>
       <P>
         Além disso, o nível de Cleric traz proficiência em armaduras pesadas e
         escudos (AC 19-21), saves de Sabedoria, e acesso a magias clericais de
-        1º nível que um Sorcerer normalmente não teria, como Command e
-        Heroism, ambas preparadas gratuitamente pelo domínio.
+        1º nível como Command e Heroism, ambas preparadas gratuitamente
+        pelo domínio.
       </P>
+
+      <StrategyBox title="Voice of Authority — Por que é tão forte">
+        <p>
+          Voice of Authority ativa em <em>qualquer</em> magia com spell slot que
+          mire um aliado. Bless mira 3 aliados? Escolha o Fighter. Healing Word
+          num aliado caído? Ele levanta E ataca. Aid num Paladin? Ele ganha HP
+          temporário e um ataque de reação com Smite.
+        </p>
+        <p>
+          Com Quickened Spell, você pode buffar (ativando Voice of Authority) como bônus
+          action e ainda usar sua ação normalmente. É um ataque extra gratuito para
+          seu grupo <em>em cada turno</em> que você buffa alguém.
+        </p>
+      </StrategyBox>
 
       <H3>Sorcerer — Divine Soul</H3>
       <P>
@@ -3765,7 +4014,7 @@ export function BlogPost13() {
         <strong>tier S</strong> entre as subclasses de Sorcerer, e por bom
         motivo. Ele dá acesso à <strong>lista inteira de magias de Cleric</strong>{" "}
         sem precisar de mais níveis em Cleric. Isso significa Spirit Guardians,
-        Aid, Revivify, Death Ward, tudo usando Carisma e com Metamagic
+        Aid, Revivify, Death Ward — tudo usando Carisma e com Metamagic
         disponível.
       </P>
       <P>
@@ -3777,6 +4026,7 @@ export function BlogPost13() {
       </P>
 
       <H3>Feats</H3>
+
       <Ul>
         <Li>
           <strong>Resilient (CON) — Sorc 4:</strong> Proficiência em saves de
@@ -3785,20 +4035,36 @@ export function BlogPost13() {
           CON torna quase impossível perder concentração em danos baixos e
           moderados.
         </Li>
-        <Li>
-          <strong>Fey Touched — Sorc 8:</strong> +1 WIS (arredondando de 13
-          para 14), Misty Step gratuito 1x/dia (mobilidade essencial para um
-          caster frontline), e Gift of Alacrity (bônus de iniciativa para
-          garantir que os buffs cheguem antes dos inimigos agirem).
-        </Li>
       </Ul>
+
+      <Variant id="rolled">
+        <Ul>
+          <Li>
+            <strong>Fey Touched — Sorc 8:</strong> +1 WIS (arredondando de 13
+            para 14), Misty Step gratuito 1x/dia (mobilidade essencial para um
+            caster frontline), e Gift of Alacrity (bônus de 1d8 em iniciativa para
+            garantir que os buffs cheguem antes dos inimigos agirem).
+          </Li>
+        </Ul>
+      </Variant>
+      <Variant id="pointbuy">
+        <Ul>
+          <Li>
+            <strong>+2 CHA ou Lucky — Sorc 8:</strong> Como Shadar-kai já tem
+            Blessing of the Raven Queen como mobilidade de emergência, o nível 8
+            abre para fechar CHA 18 (+2 ASI) ou pegar Lucky para 3 rerolls/dia.
+            Sem Fey Touched, você perde Gift of Alacrity — mas com DEX 8, iniciativa
+            já não era seu forte de qualquer forma.
+          </Li>
+        </Ul>
+      </Variant>
 
       <H3>Metamagic</H3>
       <Ul>
         <Li>
           <strong>Quickened Spell:</strong> Transforma uma magia de ação em
           bônus action. Permite conjurar um buff (ativando Voice of Authority)
-          e ainda usar sua ação para um cantrip ou outra magia no mesmo turno.
+          e ainda usar sua ação para Dodge, cantrip, ou outra magia no mesmo turno.
         </Li>
         <Li>
           <strong>Extended Spell:</strong> Dobra a duração de magias como Aid
@@ -3807,37 +4073,121 @@ export function BlogPost13() {
         </Li>
       </Ul>
 
-      <H2>Na mesa: o que essa build faz de melhor</H2>
+      {/* ═══════════════════════════════════════════════════════════
+         ESTRATÉGIA DE COMBATE — EXPANDIDO
+         ═══════════════════════════════════════════════════════════ */}
+      <H2>Estratégia de combate</H2>
 
-      <H3>Rotação típica</H3>
+      <P>
+        Esta build não funciona como um caster tradicional. Você não fica atrás
+        lançando Fireball. Você entra na frontline, concentra seu buff principal,
+        entra em Dodge, e transforma cada reação em valor pro grupo. O dano vem
+        dos aliados — o seu trabalho é sobreviver e mantê-los fortalecidos.
+      </P>
+
+      <H3>Turno 1 — Montar a fundação</H3>
+      <StrategyBox title="Flowchart do Round 1">
+        <p>
+          <strong>Bônus action:</strong> Quickened Bless em 3 aliados.
+          Voice of Authority ativa: escolha o aliado com maior DPR (Fighter,
+          Paladin, Rogue) para o ataque de reação gratuito.
+        </p>
+        <p>
+          <strong>Ação:</strong> Dodge. Sim, Dodge. Você está na frontline com
+          AC 19-21 e Bless concentrado. Seu trabalho agora é{" "}
+          <em>não perder concentração</em>, não causar dano.
+        </p>
+        <p>
+          <strong>Movimento:</strong> Posicionar-se entre os aliados e os
+          inimigos. Você quer estar ao alcance de Silvery Barbs e próximo dos
+          alvos de Spirit Guardians quando for a hora.
+        </p>
+      </StrategyBox>
+
+      <H3>Entre turnos — Silvery Barbs como motor</H3>
+      <P>
+        Aqui está o segredo da build. Silvery Barbs custa uma reação e faz
+        duas coisas: força o inimigo a rerollar um teste (ataque, save, check)
+        E dá vantagem a um aliado no próximo d20 dele. Mas como é uma magia
+        com spell slot mirando um aliado (o beneficiado), ela ativa{" "}
+        <strong>Voice of Authority</strong>.
+      </P>
+      <P>
+        Resultado prático: <strong>entre seus turnos</strong>, toda vez que um
+        inimigo acerta algo importante, você usa Silvery Barbs → o inimigo
+        rerolla → seu aliado ganha vantagem E um ataque de reação gratuito.
+        Isso acontece <em>fora do seu turno</em>, sem custar ação nem bônus
+        action.
+      </P>
+
+      <StrategyBox title="Silvery Barbs + Voice of Authority — a combo">
+        <p>
+          Inimigo acerta um ataque contra o Wizard → Você usa Silvery Barbs como
+          reação → Inimigo rerolla (possivelmente erra) → Fighter ganha vantagem
+          no próximo ataque E um ataque de reação agora via Voice of Authority.
+          Resultado: inimigo possivelmente falhou, Fighter atacou, Fighter tem
+          vantagem no próximo ataque. Tudo com 1 spell slot e 0 ações.
+        </p>
+      </StrategyBox>
+
+      <H3>Turnos 2+ — Manter e escalar</H3>
+      <P>
+        Com Bless ativo e Dodge rolando, seus turnos seguintes são flexíveis:
+      </P>
       <Ul>
         <Li>
-          <strong>Round 1:</strong> Quickened Bless em 3 aliados (Voice of
-          Authority dá um ataque de reação ao alvo principal) + Sacred Flame ou
-          Toll the Dead como ação.
+          <strong>Se o combate é longo:</strong> mantenha Bless + Dodge. Use
+          Silvery Barbs nas reações. Jogue cantrips (Toll the Dead, Sacred Flame)
+          como ação se não precisar de Dodge.
         </Li>
         <Li>
-          <strong>Round 2+:</strong> Spirit Guardians (se em melee) ou Spiritual
-          Weapon + cantrips. Cada magia com slot mirando aliados continua
-          ativando Voice of Authority.
+          <strong>Se há muitos inimigos agrupados:</strong> solte Bless e mude
+          concentração para Spirit Guardians. Quickened Spirit Guardians como
+          bônus action + Dodge como ação. Cada inimigo que começa o turno perto
+          de você toma 3d8 radiant.
         </Li>
         <Li>
-          <strong>Reação:</strong> Shield (+5 AC por um turno, 1x grátis pelo
-          background), Absorb Elements, Silvery Barbs (forçar reroll inimigo E
-          dar vantagem a um aliado), ou Counterspell.
+          <strong>Se precisa de dano imediato:</strong> Fireball ou outra magia
+          de área. Quickened Bless → Ação Fireball funciona, e ainda ativa
+          Voice of Authority.
         </Li>
         <Li>
-          <strong>Emergência:</strong> Healing Word (cura à distância como bônus
-          action), Revivify, ou Dimension Door para reposicionamento.
+          <strong>Emergência:</strong> Healing Word (bônus action, cura à
+          distância para levantar um aliado caído) ou Revivify se alguém morreu.
         </Li>
       </Ul>
 
+      <Variant id="rolled">
+        <StrategyBox title="Fey Touched como mobility">
+          <p>
+            Na variante Half-Elf, Misty Step (da Fey Touched) é seu escape de
+            emergência. Se você está cercado e a concentração está em risco,
+            Misty Step 30ft como bônus action para sair, Dodge como ação.
+            Gift of Alacrity garante que você frequentemente age antes dos
+            inimigos no Round 1.
+          </p>
+        </StrategyBox>
+      </Variant>
+      <Variant id="pointbuy">
+        <StrategyBox title="Blessing of the Raven Queen como panic button">
+          <p>
+            Na variante Shadar-kai, Blessing of the Raven Queen substitui Misty
+            Step como escape. Mesmo alcance (30ft), mas com resistência a todo
+            dano até o início do próximo turno. Se você está cercado e
+            concentrando Spirit Guardians, ative a Blessing: teleporte para
+            segurança + todo dano que vier no turno dos inimigos é reduzido
+            pela metade. A diferença: Misty Step pode ser usado várias vezes
+            por dia com spell slots, a Blessing é 1x/long rest.
+          </p>
+        </StrategyBox>
+      </Variant>
+
       <H3>Onde a build brilha</H3>
       <Ul>
-        <Li>Multiplicação de ações: cada buff gera ataques extras para o grupo</Li>
-        <Li>Concentração blindada: Resilient CON + alta CON = saves quase garantidos</Li>
+        <Li>Multiplicação de ações: cada buff + cada Silvery Barbs gera ataques extras para o grupo</Li>
+        <Li>Concentração blindada: Resilient CON + alta CON + Dodge = saves quase garantidos</Li>
         <Li>Versatilidade: acesso a listas de Cleric e Sorcerer simultaneamente</Li>
-        <Li>AC alta para caster: 19-21 com Half Plate/Mithril Plate + Shield</Li>
+        <Li>AC alta para caster: 19-21 com Heavy Armor + Shield</Li>
         <Li>Contramágica: Counterspell e Silvery Barbs para proteger o grupo</Li>
       </Ul>
 
@@ -3847,8 +4197,12 @@ export function BlogPost13() {
         <Li>Dependência de concentração: perder Bless ou Spirit Guardians dói</Li>
         <Li>Dano direto baixo: o dano vem dos aliados, não de você</Li>
         <Li>Início lento: níveis 1-4 antes de Metamagic e magias de 3º nível</Li>
+        <Li>Custo de Silvery Barbs: 1st level slot cada uso, queima recursos rápido em combates longos</Li>
       </Ul>
 
+      {/* ═══════════════════════════════════════════════════════════
+         META COMPARISON — COMPARTILHADO
+         ═══════════════════════════════════════════════════════════ */}
       <H2>Como se compara com o meta?</H2>
 
       <P>
@@ -3878,6 +4232,9 @@ export function BlogPost13() {
         preparação e versatilidade sobre raw output.
       </P>
 
+      {/* ═══════════════════════════════════════════════════════════
+         CRESCIMENTO — COMPARTILHADO
+         ═══════════════════════════════════════════════════════════ */}
       <H2>Depois do nível 10: pra onde crescer</H2>
 
       <Ul>
@@ -3892,8 +4249,8 @@ export function BlogPost13() {
           de emergência.
         </Li>
         <Li>
-          <strong>Nível 13 (Sorc 12):</strong> ASI. +2 CHA (chegando a 20 com
-          o Tome) ou um feat como Alert para garantir iniciativa alta.
+          <strong>Nível 13 (Sorc 12):</strong> ASI. +2 CHA (chegando a 20) ou
+          um feat como Alert para garantir iniciativa alta.
         </Li>
         <Li>
           <strong>Itens desejados:</strong> Staff of Power (Very Rare) para mais
@@ -3902,6 +4259,9 @@ export function BlogPost13() {
         </Li>
       </Ul>
 
+      {/* ═══════════════════════════════════════════════════════════
+         HISTÓRIA — COMPARTILHADO
+         ═══════════════════════════════════════════════════════════ */}
       <H2>A história por trás da ficha</H2>
 
       {/* Character Portrait — with gold glow + hover effect */}
@@ -4005,7 +4365,7 @@ export function BlogPost13() {
           </div>
         </div>
       </div>
-    </>
+    </BuildVariantProvider>
   );
 }
 
@@ -4014,7 +4374,7 @@ export function BlogPost13() {
    ═══════════════════════════════════════════════════════════════ */
 export function BlogPost14() {
   return (
-    <>
+    <BuildVariantProvider defaultVariant="rolled">
       {/* Opening quote */}
       <div className="rounded-xl border border-gold/20 bg-gold/[0.04] p-6 my-8 text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gold/[0.06] rounded-full blur-[60px]" />
@@ -4032,6 +4392,23 @@ export function BlogPost14() {
         efficient support builds in D&amp;D 5e.
       </P>
 
+      <P>
+        Below we present two versions of the build: the{" "}
+        <strong>original played in a campaign</strong> with rolled stats and
+        Half-Elf, and an{" "}
+        <strong>optimized Point Buy reconstruction</strong> using Shadar-kai.
+        Choose a variant and the entire article adapts.
+      </P>
+
+      {/* ─── TOGGLE ─── */}
+      <BuildVariantToggle
+        variants={[
+          { id: "rolled", label: "Half-Elf (Drow)", sub: "Rolled Stats" },
+          { id: "pointbuy", label: "Shadar-kai", sub: "Point Buy" },
+        ]}
+      />
+
+      {/* ═══ SHEET IN 30 SECONDS ═══ */}
       <H2>The sheet in 30 seconds</H2>
 
       <div className="overflow-x-auto mb-6">
@@ -4039,7 +4416,10 @@ export function BlogPost14() {
           <tbody>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Race</td>
-              <td className="py-2">Half-Elf (Drow)</td>
+              <td className="py-2">
+                <Variant id="rolled">Half-Elf (Drow)</Variant>
+                <Variant id="pointbuy">Shadar-kai (Tasha{"'"}s / MotM)</Variant>
+              </td>
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Class</td>
@@ -4054,226 +4434,425 @@ export function BlogPost14() {
               <td className="py-2">Support / Control / Action economy multiplier</td>
             </tr>
             <tr className="border-b border-white/[0.06]">
+              <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Stats</td>
+              <td className="py-2">
+                <Variant id="rolled">4d6 drop lowest (campaign)</Variant>
+                <Variant id="pointbuy">Point Buy (15 / 15 / 15 / 8 / 8 / 8)</Variant>
+              </td>
+            </tr>
+            <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Feats</td>
-              <td className="py-2">Resilient (CON), Fey Touched</td>
+              <td className="py-2">
+                <Variant id="rolled">Resilient (CON), Fey Touched</Variant>
+                <Variant id="pointbuy">Resilient (CON), +2 CHA or Lucky</Variant>
+              </td>
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Metamagic</td>
-              <td className="py-2">Extended Spell, Quickened Spell</td>
+              <td className="py-2">Quickened Spell, Extended Spell</td>
             </tr>
             <tr>
               <td className="py-2 pr-4 font-semibold text-gold/80 whitespace-nowrap">Difficulty</td>
-              <td className="py-2">Medium — requires synergy knowledge and timing</td>
+              <td className="py-2">Medium — requires understanding of synergy and timing</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <H2>Ability Scores — Rolled Stats vs Point Buy</H2>
+      {/* ═══ RACE — VARIANT ═══ */}
+      <H2>Race</H2>
 
-      <Tip>
-        This build was created with rolled stats (4d6 drop lowest). Below we
-        show how to rebuild it using Point Buy for those who prefer a
-        standardized method. Attribute priorities remain the same with minor
-        adjustments.
-      </Tip>
-
-      <H3>Final comparison (level 10)</H3>
-
-      <div className="overflow-x-auto mb-6">
-        <table className="w-full text-sm text-foreground/80 border-collapse">
-          <thead>
-            <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
-              <th className="py-2 text-left">Ability</th>
-              <th className="py-2 text-center">Rolled</th>
-              <th className="py-2 text-center">Point Buy</th>
-              <th className="py-2 text-center">Diff</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">STR</td>
-              <td className="py-2 text-center">10</td>
-              <td className="py-2 text-center">8</td>
-              <td className="py-2 text-center text-red-400/70">&minus;2</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">DEX</td>
-              <td className="py-2 text-center">14</td>
-              <td className="py-2 text-center">14</td>
-              <td className="py-2 text-center text-green-400/70">0</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">CON</td>
-              <td className="py-2 text-center">18 → 19*</td>
-              <td className="py-2 text-center">16 → 17*</td>
-              <td className="py-2 text-center text-red-400/70">&minus;2</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">INT</td>
-              <td className="py-2 text-center">8</td>
-              <td className="py-2 text-center">9</td>
-              <td className="py-2 text-center text-green-400/70">+1</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-2 font-semibold">WIS</td>
-              <td className="py-2 text-center">14&dagger;</td>
-              <td className="py-2 text-center">14&dagger;</td>
-              <td className="py-2 text-center text-green-400/70">0</td>
-            </tr>
-            <tr>
-              <td className="py-2 font-semibold">CHA</td>
-              <td className="py-2 text-center">18&Dagger;</td>
-              <td className="py-2 text-center">18&Dagger;</td>
-              <td className="py-2 text-center text-green-400/70">0</td>
-            </tr>
-          </tbody>
-        </table>
-        <p className="text-xs text-muted-foreground/60 mt-2">
-          * Includes Resilient CON (+1) &nbsp;|&nbsp; &dagger; Includes Fey Touched (+1 WIS) &nbsp;|&nbsp; &Dagger; Includes Tome of Leadership (+2 CHA)
-        </p>
-      </div>
-
-      <H3>Point Buy attribute progression</H3>
-
-      <div className="overflow-x-auto mb-6">
-        <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
-          <thead>
-            <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
-              <th className="py-2 text-left">Level</th>
-              <th className="py-2 text-left">Event</th>
-              <th className="py-2 text-center">STR</th>
-              <th className="py-2 text-center">DEX</th>
-              <th className="py-2 text-center">CON</th>
-              <th className="py-2 text-center">INT</th>
-              <th className="py-2 text-center">WIS</th>
-              <th className="py-2 text-center">CHA</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-1.5">1</td>
-              <td className="py-1.5 text-xs">Point Buy + Racial</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center">16</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center">13</td>
-              <td className="py-1.5 text-center">16</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-1.5">5</td>
-              <td className="py-1.5 text-xs">Sorc 4 — Resilient CON</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center text-gold">17</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center">13</td>
-              <td className="py-1.5 text-center">16</td>
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="py-1.5">9</td>
-              <td className="py-1.5 text-xs">Sorc 8 — Fey Touched (+1 WIS)</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center">17</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center text-gold">14</td>
-              <td className="py-1.5 text-center">16</td>
-            </tr>
-            <tr>
-              <td className="py-1.5">10</td>
-              <td className="py-1.5 text-xs">Tome of Leadership (+2 CHA)</td>
-              <td className="py-1.5 text-center">8</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center">17</td>
-              <td className="py-1.5 text-center">9</td>
-              <td className="py-1.5 text-center">14</td>
-              <td className="py-1.5 text-center text-gold">18</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <P>
-        <strong>Point Buy trade-offs:</strong> The biggest difference is CON:
-        with rolled stats, Capa had a +4 CON modifier throughout the campaign,
-        while Point Buy would give +3. That means{" "}
-        <strong>&minus;1 HP per level</strong> (&minus;10 total) and &minus;1 to concentration
-        saving throws. For a build that depends on maintaining Bless and Spirit
-        Guardians, that{"'"}s a real difference, but Resilient CON compensates
-        significantly by granting proficiency in CON saves.
-      </P>
-
-      {/* Point Buy Variant — Shadar-kai */}
-      <div className="rounded-xl border border-gold/25 bg-gold/[0.05] p-5 my-8 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-gold/50 rounded-l-xl" />
-        <div className="pl-3">
-          <p className="text-gold font-display text-xs uppercase tracking-wider font-bold mb-2">
-            Variant — Shadar-kai with Point Buy
+      <Variant id="rolled">
+        <H3>Half-Elf (Drow)</H3>
+        <P>
+          Half-Elf is one of the most flexible races in 5e. The +2 CHA is exactly
+          what a Sorcerer needs, and the two floating +1s let you round out CON
+          and DEX, essential for survivability and AC. The Drow variant adds
+          Darkvision 60ft and Fey Ancestry (advantage against charm, immunity to
+          magical sleep), valuable defensive traits for maintaining concentration.
+        </P>
+        <StrategyBox title="Why Drow and not High Elf?">
+          <p>
+            The Drow variant (SCAG) trades Skill Versatility{"'"}s two proficiencies
+            for Drow Magic: the <em>dancing lights</em> cantrip for free, and
+            at level 3 <em>faerie fire</em> 1x/day (no slot required). Faerie
+            fire is brutal: advantage on attacks against all affected targets,
+            perfect synergy with Voice of Authority. High Elf would only give a
+            Wizard cantrip — this build already has enough cantrips.
           </p>
-          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            If your table uses Point Buy and allows flexible ASI rules
-            (Tasha{"'"}s Cauldron / MotM),{" "}
-            <strong>Shadar-kai</strong> is an excellent alternative to
-            Half-Elf. You can close{" "}
-            <strong>CHA 18, CON 18, and WIS even:</strong> every
-            important ability score on an even number, zero waste.
+        </StrategyBox>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Trait</th>
+                <th className="py-2 text-left">Detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">ASI</td>
+                <td className="py-2">+2 CHA, +1 CON, +1 DEX</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Darkvision</td>
+                <td className="py-2">60ft</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Fey Ancestry</td>
+                <td className="py-2">Advantage on saves against charm, immune to magical sleep</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Drow Magic</td>
+                <td className="py-2">Dancing lights (cantrip), faerie fire 1x/day (level 3)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Variant>
+
+      <Variant id="pointbuy">
+        <H3>Shadar-kai</H3>
+        <P>
+          If your table uses Point Buy with flexible ASI rules (Tasha{"'"}s Cauldron
+          / MotM), <strong>Shadar-kai</strong> is the ideal race for this build.
+          With the 15/15/15/8/8/8 array, place the 15s in CHA, CON and WIS, and
+          use racial bonuses (+2 CON, +1 CHA) to reach{" "}
+          <strong>CON 17, CHA 16, WIS 15</strong> at level 1.
+        </P>
+        <P>
+          The key advantage: <strong>Blessing of the Raven Queen</strong>.
+          Once per long rest, as a bonus action, you teleport 30ft and gain
+          resistance to <em>all damage</em> until the start of your next turn.
+          For a frontline caster who needs to stay alive concentrating on Bless
+          or Spirit Guardians, this is brutally superior to Misty Step, which
+          offers only mobility with no protection.
+        </P>
+        <StrategyBox title="Blessing of the Raven Queen vs Misty Step">
+          <p>
+            Misty Step (from Fey Touched in the Half-Elf variant) is bonus action +
+            30ft teleport, available 1x/day free + additional spell slots.
+            Blessing of the Raven Queen is bonus action + 30ft teleport +
+            resistance to <em>all damage</em> for 1 turn, but only 1x/long
+            rest. Same range, but the Blessing adds a survival layer Misty
+            Step lacks. The trade-off: Misty Step can be cast multiple times
+            with spell slots, the Blessing is 1x/day.
           </p>
-          <p className="text-sm text-foreground/85 leading-relaxed mb-3">
-            <strong>How it works:</strong>{" "}
-            Buy CHA 15 and CON 15 in Point Buy. Place racial bonuses
-            as +2 CON and +1 CHA, arriving at{" "}
-            <strong>CHA 16, CON 17</strong>{" "}
-            at level 1.
-          </p>
-          <ul className="text-sm text-foreground/85 leading-relaxed mb-3 list-none space-y-2.5 pl-0">
-            <li>
-              <strong>Level 5 (Sorc 4) — Resilient (CON):</strong>{" "}
-              CON 17 → <strong>CON 18</strong>{" "}
-              (+4 modifier) with proficiency in CON saves. Armored
-              concentration from early on.
-            </li>
-            <li>
-              <strong>Level 9 (Sorc 8) — Fey Touched (+1 WIS):</strong>{" "}
-              Put the +1 into <strong>WIS</strong>{" "}
-              (not CHA), closing WIS to an even number. You gain
-              Misty Step + Gift of Alacrity and become tankier on WIS
-              saves.
-            </li>
-            <li>
-              <strong>Level 10 — Tome of Leadership:</strong>{" "}
-              CHA 16 → <strong>CHA 18</strong>{" "}
-              (+4 modifier). The Tome jumps straight from 16 to 18,
-              which is why you don{"'"}t need to spend Fey Touched on
-              CHA.
-            </li>
-          </ul>
-          <p className="text-sm text-foreground/85 leading-relaxed">
-            <strong>Shadar-kai advantage:</strong>{" "}
-            Beyond closing all scores even, you gain{" "}
-            <em>Blessing of the Raven Queen</em>: a 30ft teleport
-            as a bonus action with resistance to all damage until
-            your next turn. For a frontline caster, this is a brutal
-            survival tool that Misty Step doesn{"'"}t offer. The
-            trade-off is lower DEX (12 vs 14) and losing Fey
-            Ancestry, but with Point Buy the final numbers come out
-            ahead.
+        </StrategyBox>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Trait</th>
+                <th className="py-2 text-left">Detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">ASI (Tasha{"'"}s)</td>
+                <td className="py-2">+2 CON, +1 CHA</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Darkvision</td>
+                <td className="py-2">60ft</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Fey Ancestry</td>
+                <td className="py-2">Advantage on saves against charm, immune to magical sleep</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Trance</td>
+                <td className="py-2">4h rest instead of 8h sleep</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4 font-semibold whitespace-nowrap">Blessing of the Raven Queen</td>
+                <td className="py-2">1x/long rest — 30ft teleport + resistance to all damage for 1 turn</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <P>
+          <strong>Honest trade-off:</strong> DEX 8 means &minus;1 to initiative
+          and DEX saves. With heavy armor from Cleric, AC isn{"'"}t affected, but
+          you{"'"}ll act after nearly everyone. Gift of Alacrity (if available as
+          a Sorcerer spell) helps compensate, but this version accepts being
+          slower in exchange for being tougher.
+        </P>
+      </Variant>
+
+      {/* ═══ ABILITY SCORES — VARIANT ═══ */}
+      <H2>Ability Scores</H2>
+
+      <Variant id="rolled">
+        <Tip>
+          These stats were rolled with 4d6 drop lowest during the campaign.
+          Every table rolls differently — what matters are the{" "}
+          <strong>priorities</strong>: CHA &gt; CON &gt; WIS &gt; DEX.
+        </Tip>
+        <H3>Final stats (level 10)</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Ability</th>
+                <th className="py-2 text-center">Base</th>
+                <th className="py-2 text-center">Racial</th>
+                <th className="py-2 text-center">Level 10</th>
+                <th className="py-2 text-center">Mod</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">STR</td>
+                <td className="py-2 text-center">10</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">10</td>
+                <td className="py-2 text-center text-muted-foreground">+0</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">DEX</td>
+                <td className="py-2 text-center">13</td>
+                <td className="py-2 text-center text-gold/70">+1</td>
+                <td className="py-2 text-center">14</td>
+                <td className="py-2 text-center text-green-400/70">+2</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">CON</td>
+                <td className="py-2 text-center">17</td>
+                <td className="py-2 text-center text-gold/70">+1</td>
+                <td className="py-2 text-center">19*</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">INT</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">WIS</td>
+                <td className="py-2 text-center">12</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">14&dagger;</td>
+                <td className="py-2 text-center text-green-400/70">+2</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">CHA</td>
+                <td className="py-2 text-center">16</td>
+                <td className="py-2 text-center text-gold/70">+2</td>
+                <td className="py-2 text-center">18&Dagger;</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-xs text-muted-foreground/60 mt-2">
+            * Resilient CON (+1) &nbsp;|&nbsp; &dagger; Fey Touched (+1 WIS) &nbsp;|&nbsp; &Dagger; Tome of Leadership (+2 CHA)
           </p>
         </div>
-      </div>
 
-      <H2>Why each piece exists</H2>
+        <H3>Progression by level</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Level</th>
+                <th className="py-2 text-left">Event</th>
+                <th className="py-2 text-center">STR</th>
+                <th className="py-2 text-center">DEX</th>
+                <th className="py-2 text-center">CON</th>
+                <th className="py-2 text-center">INT</th>
+                <th className="py-2 text-center">WIS</th>
+                <th className="py-2 text-center">CHA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">1</td>
+                <td className="py-1.5 text-xs">Rolled + Half-Elf (+2/+1/+1)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center">18</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">12</td>
+                <td className="py-1.5 text-center">18</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">5</td>
+                <td className="py-1.5 text-xs">Sorc 4 — Resilient (CON)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center text-gold">19</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">12</td>
+                <td className="py-1.5 text-center">18</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">9</td>
+                <td className="py-1.5 text-xs">Sorc 8 — Fey Touched (+1 WIS)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center">19</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center text-gold">14</td>
+                <td className="py-1.5 text-center">18</td>
+              </tr>
+              <tr>
+                <td className="py-1.5">10</td>
+                <td className="py-1.5 text-xs">Tome of Leadership (+2 CHA)</td>
+                <td className="py-1.5 text-center">10</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center">19</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">14</td>
+                <td className="py-1.5 text-center text-gold">20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Variant>
 
-      <H3>Race: Half-Elf (Drow)</H3>
-      <P>
-        Half-Elf is one of the most flexible races in 5e. The +2 CHA is exactly
-        what a Sorcerer needs, and the two floating +1s let you round out CON
-        and DEX, essential for survivability and AC. The Drow variant adds
-        Darkvision 60ft and Fey Ancestry (advantage against charm, immunity to
-        magical sleep), valuable defensive traits for someone who needs to
-        maintain concentration.
-      </P>
+      <Variant id="pointbuy">
+        <Tip>
+          Point Buy 15/15/15/8/8/8 with Shadar-kai. The 15s go into CHA, CON
+          and WIS. Racial bonuses (+2 CON, +1 CHA) leave CON odd at level 1,
+          rounded by Resilient at level 5. This variant prioritizes{" "}
+          <strong>survival</strong> over pure casting.
+        </Tip>
+        <H3>Final stats (level 10)</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Ability</th>
+                <th className="py-2 text-center">Point Buy</th>
+                <th className="py-2 text-center">Racial</th>
+                <th className="py-2 text-center">Level 10</th>
+                <th className="py-2 text-center">Mod</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">STR</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">DEX</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">CON</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-gold/70">+2</td>
+                <td className="py-2 text-center">18*</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">INT</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">8</td>
+                <td className="py-2 text-center text-red-400/70">&minus;1</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-2 font-semibold">WIS</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-muted-foreground">—</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-green-400/70">+2</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">CHA</td>
+                <td className="py-2 text-center">15</td>
+                <td className="py-2 text-center text-gold/70">+1</td>
+                <td className="py-2 text-center">18&dagger;</td>
+                <td className="py-2 text-center text-green-400/70">+4</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-xs text-muted-foreground/60 mt-2">
+            * Resilient CON (+1) &nbsp;|&nbsp; &dagger; +2 CHA at Sorc 8 (or Lucky — see below)
+          </p>
+        </div>
+
+        <H3>Progression by level</H3>
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-xs sm:text-sm text-foreground/80 border-collapse">
+            <thead>
+              <tr className="border-b border-gold/20 text-gold/70 text-[10px] sm:text-xs uppercase tracking-wider">
+                <th className="py-2 text-left">Level</th>
+                <th className="py-2 text-left">Event</th>
+                <th className="py-2 text-center">STR</th>
+                <th className="py-2 text-center">DEX</th>
+                <th className="py-2 text-center">CON</th>
+                <th className="py-2 text-center">INT</th>
+                <th className="py-2 text-center">WIS</th>
+                <th className="py-2 text-center">CHA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">1</td>
+                <td className="py-1.5 text-xs">Point Buy + Shadar-kai (+2/+1)</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">17</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">15</td>
+                <td className="py-1.5 text-center">16</td>
+              </tr>
+              <tr className="border-b border-white/[0.06]">
+                <td className="py-1.5">5</td>
+                <td className="py-1.5 text-xs">Sorc 4 — Resilient (CON)</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center text-gold">18</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">15</td>
+                <td className="py-1.5 text-center">16</td>
+              </tr>
+              <tr>
+                <td className="py-1.5">9</td>
+                <td className="py-1.5 text-xs">Sorc 8 — +2 CHA or Lucky</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">18</td>
+                <td className="py-1.5 text-center">8</td>
+                <td className="py-1.5 text-center">15</td>
+                <td className="py-1.5 text-center text-gold">18 or 16</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <StrategyBox title="The level 9 decision: +2 CHA or Lucky?">
+          <p>
+            <strong>+2 CHA (to 18):</strong> closes the modifier at +4. Spell save
+            DC goes from 14 to 15, spell attack from +7 to +8. The pure caster
+            choice — your spells hit and stick more often.
+          </p>
+          <p>
+            <strong>Lucky:</strong> CHA stays at 16 (+3), but you get 3 rerolls
+            per day. Use them on concentration saves, saves against lethal effects,
+            or force an enemy to reroll an attack against you. The survivor choice
+            — slightly weaker caster in exchange for 3 daily {"\u201C"}not today{"\u201D"} moments.
+          </p>
+          <p>
+            <strong>Recommendation:</strong> if your party has plenty of damage and
+            needs you alive, take Lucky. If you{"'"}re the primary offensive caster,
+            take +2 CHA.
+          </p>
+        </StrategyBox>
+      </Variant>
+
+      {/* ═══ CLASS AND FEATURES — SHARED ═══ */}
+      <H2>Class and features</H2>
 
       <H3>Cleric 1 — Order Domain</H3>
       <P>
@@ -4281,16 +4860,27 @@ export function BlogPost14() {
         <strong>Voice of Authority</strong> transforms a support caster into an
         action economy multiplier: every time you cast a spell with a spell slot
         targeting an ally, that ally can use their reaction to make a weapon
-        attack. Combine with Quickened Spell and you can buff someone AND cast
-        an offensive spell in the same turn, while your ally still gets a
-        bonus attack.
+        attack.
       </P>
       <P>
         The Cleric level also brings heavy armor and shield proficiency (AC
         19-21), Wisdom save proficiency, and access to 1st-level Cleric spells
-        a Sorcerer normally wouldn{"'"}t have, like Command and Heroism, both
-        prepared for free through the domain.
+        like Command and Heroism, both prepared for free through the domain.
       </P>
+
+      <StrategyBox title="Voice of Authority — Why it's so strong">
+        <p>
+          Voice of Authority triggers on <em>any</em> spell with a spell slot
+          targeting an ally. Bless targets 3 allies? Pick the Fighter. Healing
+          Word on a downed ally? They stand up AND attack. Aid on a Paladin?
+          They get temp HP and a reaction attack with Smite.
+        </p>
+        <p>
+          With Quickened Spell, you can buff (triggering Voice of Authority) as a
+          bonus action and still use your action normally. That{"'"}s a free extra
+          attack for your party <em>every turn</em> you buff someone.
+        </p>
+      </StrategyBox>
 
       <H3>Sorcerer — Divine Soul</H3>
       <P>
@@ -4298,7 +4888,7 @@ export function BlogPost14() {
         <strong>S-tier</strong> among Sorcerer subclasses, and for good reason.
         It grants access to the <strong>entire Cleric spell list</strong>{" "}
         without needing additional Cleric levels. That means Spirit Guardians,
-        Aid, Revivify, Death Ward, all using Charisma and with Metamagic
+        Aid, Revivify, Death Ward — all using Charisma and with Metamagic
         available.
       </P>
       <P>
@@ -4310,28 +4900,44 @@ export function BlogPost14() {
       </P>
 
       <H3>Feats</H3>
+
       <Ul>
         <Li>
-          <strong>Resilient (CON) — Sorc 4:</strong> Proficiency in
-          Constitution saves is essential for maintaining concentration on
-          Bless and Spirit Guardians. By level 10, the +7/+8 CON save bonus
-          makes it nearly impossible to lose concentration on low to moderate
-          damage.
-        </Li>
-        <Li>
-          <strong>Fey Touched — Sorc 8:</strong> +1 WIS (rounding from 13 to
-          14), free Misty Step once per day (essential mobility for a frontline
-          caster), and Gift of Alacrity (initiative bonus to ensure buffs land
-          before enemies act).
+          <strong>Resilient (CON) — Sorc 4:</strong> Proficiency in Constitution
+          saves is essential for maintaining concentration on Bless and Spirit
+          Guardians. By level 10, the +7/+8 CON save bonus makes it nearly
+          impossible to lose concentration on low to moderate damage.
         </Li>
       </Ul>
+
+      <Variant id="rolled">
+        <Ul>
+          <Li>
+            <strong>Fey Touched — Sorc 8:</strong> +1 WIS (rounding from 13
+            to 14), free Misty Step 1x/day (essential mobility for a frontline
+            caster), and Gift of Alacrity (1d8 initiative bonus to ensure buffs
+            land before enemies act).
+          </Li>
+        </Ul>
+      </Variant>
+      <Variant id="pointbuy">
+        <Ul>
+          <Li>
+            <strong>+2 CHA or Lucky — Sorc 8:</strong> Since Shadar-kai already
+            has Blessing of the Raven Queen as emergency mobility, level 8 opens
+            up to close CHA 18 (+2 ASI) or take Lucky for 3 rerolls/day.
+            Without Fey Touched, you lose Gift of Alacrity — but with DEX 8,
+            initiative was never your strong suit anyway.
+          </Li>
+        </Ul>
+      </Variant>
 
       <H3>Metamagic</H3>
       <Ul>
         <Li>
           <strong>Quickened Spell:</strong> Turns an action spell into a bonus
           action. Cast a buff (triggering Voice of Authority) and still use your
-          action for a cantrip or another spell in the same turn.
+          action for Dodge, cantrip, or another spell in the same turn.
         </Li>
         <Li>
           <strong>Extended Spell:</strong> Doubles the duration of spells like
@@ -4340,37 +4946,118 @@ export function BlogPost14() {
         </Li>
       </Ul>
 
-      <H2>At the table: what this build actually does</H2>
+      {/* ═══ COMBAT STRATEGY — EXPANDED ═══ */}
+      <H2>Combat strategy</H2>
 
-      <H3>Typical rotation</H3>
+      <P>
+        This build doesn{"'"}t play like a traditional caster. You don{"'"}t sit
+        in the back casting Fireball. You step into the frontline, concentrate
+        your main buff, go into Dodge, and turn every reaction into value for
+        the party. Damage comes from your allies — your job is to survive and
+        keep them empowered.
+      </P>
+
+      <H3>Turn 1 — Build the foundation</H3>
+      <StrategyBox title="Round 1 Flowchart">
+        <p>
+          <strong>Bonus action:</strong> Quickened Bless on 3 allies. Voice of
+          Authority triggers: pick the ally with the highest DPR (Fighter,
+          Paladin, Rogue) for the free reaction attack.
+        </p>
+        <p>
+          <strong>Action:</strong> Dodge. Yes, Dodge. You{"'"}re on the frontline
+          with AC 19-21 and Bless concentrated. Your job now is to{" "}
+          <em>not lose concentration</em>, not deal damage.
+        </p>
+        <p>
+          <strong>Movement:</strong> Position between your allies and the
+          enemies. You want to be in range for Silvery Barbs and close to Spirit
+          Guardians targets when the time comes.
+        </p>
+      </StrategyBox>
+
+      <H3>Between turns — Silvery Barbs as the engine</H3>
+      <P>
+        Here{"'"}s the build{"'"}s secret. Silvery Barbs costs a reaction and does
+        two things: forces the enemy to reroll a d20 (attack, save, check)
+        AND gives advantage to an ally on their next d20. But since it{"'"}s a
+        spell with a spell slot targeting an ally (the beneficiary), it
+        triggers <strong>Voice of Authority</strong>.
+      </P>
+      <P>
+        Practical result: <strong>between your turns</strong>, every time an
+        enemy lands something important, you use Silvery Barbs — the enemy
+        rerolls — your ally gains advantage AND a free reaction attack.
+        This happens <em>off your turn</em>, costing no action or bonus action.
+      </P>
+
+      <StrategyBox title="Silvery Barbs + Voice of Authority — the combo">
+        <p>
+          Enemy hits the Wizard — You use Silvery Barbs as a reaction — Enemy
+          rerolls (possibly misses) — Fighter gains advantage on next attack AND
+          a reaction attack now via Voice of Authority. Result: enemy possibly
+          failed, Fighter attacked, Fighter has advantage on next attack. All
+          from 1 spell slot and 0 actions.
+        </p>
+      </StrategyBox>
+
+      <H3>Turns 2+ — Maintain and scale</H3>
+      <P>
+        With Bless active and Dodge rolling, your subsequent turns are flexible:
+      </P>
       <Ul>
         <Li>
-          <strong>Round 1:</strong> Quickened Bless on 3 allies (Voice of
-          Authority grants a reaction attack to the primary target) + Sacred
-          Flame or Toll the Dead as your action.
+          <strong>Long combat:</strong> keep Bless + Dodge. Use Silvery Barbs on
+          reactions. Throw cantrips (Toll the Dead, Sacred Flame) as your action
+          if you don{"'"}t need Dodge.
         </Li>
         <Li>
-          <strong>Round 2+:</strong> Spirit Guardians (if in melee) or Spiritual
-          Weapon + cantrips. Every spell with a slot targeting allies keeps
-          triggering Voice of Authority.
+          <strong>Clustered enemies:</strong> drop Bless and switch concentration
+          to Spirit Guardians. Quickened Spirit Guardians as bonus action + Dodge
+          as action. Each enemy starting their turn near you takes 3d8 radiant.
         </Li>
         <Li>
-          <strong>Reaction:</strong> Shield (+5 AC for a round, 1x free from
-          background), Absorb Elements, Silvery Barbs (force enemy reroll AND
-          grant advantage to an ally), or Counterspell.
+          <strong>Burst damage needed:</strong> Fireball or another AoE.
+          Quickened Bless — Action Fireball works, and still triggers Voice of
+          Authority.
         </Li>
         <Li>
-          <strong>Emergency:</strong> Healing Word (ranged healing as bonus
-          action), Revivify, or Dimension Door for repositioning.
+          <strong>Emergency:</strong> Healing Word (bonus action ranged heal to
+          pick up a downed ally) or Revivify if someone died.
         </Li>
       </Ul>
 
+      <Variant id="rolled">
+        <StrategyBox title="Fey Touched as mobility">
+          <p>
+            In the Half-Elf variant, Misty Step (from Fey Touched) is your
+            emergency escape. If you{"'"}re surrounded and concentration is at
+            risk, Misty Step 30ft as bonus action to disengage, Dodge as action.
+            Gift of Alacrity ensures you frequently act before enemies in
+            Round 1.
+          </p>
+        </StrategyBox>
+      </Variant>
+      <Variant id="pointbuy">
+        <StrategyBox title="Blessing of the Raven Queen as panic button">
+          <p>
+            In the Shadar-kai variant, Blessing of the Raven Queen replaces Misty
+            Step as your escape. Same range (30ft), but with resistance to all
+            damage until the start of your next turn. If you{"'"}re surrounded
+            and concentrating Spirit Guardians, activate the Blessing: teleport
+            to safety + all incoming damage is halved for a full enemy turn.
+            The difference: Misty Step can be cast multiple times per day with
+            spell slots, the Blessing is 1x/long rest.
+          </p>
+        </StrategyBox>
+      </Variant>
+
       <H3>Where the build shines</H3>
       <Ul>
-        <Li>Action economy multiplication: every buff generates extra attacks for the party</Li>
-        <Li>Armored concentration: Resilient CON + high CON = nearly guaranteed saves</Li>
+        <Li>Action multiplication: every buff + every Silvery Barbs generates extra attacks for the party</Li>
+        <Li>Armored concentration: Resilient CON + high CON + Dodge = nearly guaranteed saves</Li>
         <Li>Versatility: access to both Cleric and Sorcerer spell lists</Li>
-        <Li>High AC for a caster: 19-21 with Half Plate/Mithril Plate + Shield</Li>
+        <Li>High AC for a caster: 19-21 with Heavy Armor + Shield</Li>
         <Li>Counter-magic: Counterspell and Silvery Barbs to protect the group</Li>
       </Ul>
 
@@ -4380,8 +5067,10 @@ export function BlogPost14() {
         <Li>Concentration-dependent: losing Bless or Spirit Guardians hurts</Li>
         <Li>Low direct damage: your damage comes from allies, not from you</Li>
         <Li>Slow start: levels 1-4 before Metamagic and 3rd-level spells feel weak</Li>
+        <Li>Silvery Barbs cost: 1st level slot each use, burns resources fast in long combats</Li>
       </Ul>
 
+      {/* ═══ META COMPARISON — SHARED ═══ */}
       <H2>How it stacks up against the meta</H2>
 
       <P>
@@ -4412,6 +5101,7 @@ export function BlogPost14() {
         preparation and versatility over raw output.
       </P>
 
+      {/* ═══ GROWTH — SHARED ═══ */}
       <H2>After level 10: where to grow</H2>
 
       <Ul>
@@ -4426,8 +5116,8 @@ export function BlogPost14() {
           healing.
         </Li>
         <Li>
-          <strong>Level 13 (Sorc 12):</strong> ASI: +2 CHA (reaching 20 with
-          the Tome) or a feat like Alert for high initiative.
+          <strong>Level 13 (Sorc 12):</strong> ASI: +2 CHA (reaching 20) or a
+          feat like Alert for high initiative.
         </Li>
         <Li>
           <strong>Desired items:</strong> Staff of Power (Very Rare) for more AC
@@ -4436,9 +5126,10 @@ export function BlogPost14() {
         </Li>
       </Ul>
 
+      {/* ═══ STORY — SHARED ═══ */}
       <H2>The story behind the sheet</H2>
 
-      {/* Character Portrait — with gold glow + hover effect */}
+      {/* Character Portrait */}
       <div className="my-10 flex justify-center">
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-b from-gold/[0.06] via-gold/[0.14] to-gold/[0.06] rounded-full blur-[80px] scale-90 transition-all duration-500 group-hover:scale-100 group-hover:via-gold/[0.20]" />
@@ -4539,7 +5230,7 @@ export function BlogPost14() {
           </div>
         </div>
       </div>
-    </>
+    </BuildVariantProvider>
   );
 }
 
