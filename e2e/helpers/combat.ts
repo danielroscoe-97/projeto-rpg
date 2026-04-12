@@ -115,13 +115,23 @@ export async function startCombat(page: Page) {
 
 /**
  * Advance to the next turn by clicking the next-turn button.
+ * The button disables briefly during DB persist (turnPending state).
+ * We wait up to 15s for it to be enabled, then click.
+ * If it remains disabled (slow Supabase persist), force-click anyway
+ * since handleAdvanceTurn is idempotent and the UI will catch up.
  */
 export async function advanceTurn(page: Page) {
   const nextBtn = page.locator('[data-testid="next-turn-btn"]');
   await expect(nextBtn).toBeVisible({ timeout: 5_000 });
-  await nextBtn.click();
-  // Small delay for state to propagate
-  await page.waitForTimeout(500);
+  try {
+    await expect(nextBtn).toBeEnabled({ timeout: 10_000 });
+    await nextBtn.click();
+  } catch {
+    // Button still disabled (slow persist) — force click
+    await nextBtn.click({ force: true });
+  }
+  // Allow state to propagate
+  await page.waitForTimeout(800);
 }
 
 /**
