@@ -6,6 +6,7 @@ import { PublicMonsterGrid, type MonsterEntry } from "./PublicMonsterGrid";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { setFullDataMode } from "@/lib/srd/srd-mode";
+import { mergeImportedMonsters } from "@/lib/srd/srd-search";
 import { toSlug } from "@/lib/utils/monster";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -75,7 +76,11 @@ export function CompendiumMonsterHydrator({
       ),
     ])
       .then(([m2014, m2024, mad]) => {
-        setFullMonsters([...m2014, ...m2024, ...mad]);
+        const all = [...m2014, ...m2024, ...mad];
+        // Inject directly into the search module so getMonsterById resolves
+        // immediately — no need to wait for the SRD store's deferred phases
+        mergeImportedMonsters(all);
+        setFullMonsters(all);
       })
       .catch(() => {
         // Fetch failed — stay with SSR data
