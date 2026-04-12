@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -172,10 +172,30 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, mini
         </div>
       </nav>
 
+      {/* Mobile menu backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Mobile menu drawer */}
       {mobileOpen && (
         <div className="fixed inset-x-0 top-[72px] bottom-0 z-40 bg-background border-b border-white/[0.08] p-4 lg:hidden overflow-y-auto flex flex-col">
           <ErrorBoundary name="MobileDrawer">
+            {/* Close button */}
+            <div className="flex justify-end mb-2">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center min-h-[44px] min-w-[44px] p-2 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={t("close_menu")}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
             <div className="flex flex-col gap-1">
               {links.map((link) =>
                 link.children ? (
