@@ -119,12 +119,21 @@
   .chapter-hero {
     position: relative;
     width: calc(100% + 120px);
-    margin: -50px -60px 30px -60px;
-    height: 200px;
-    overflow: hidden;
+    margin: -50px -60px 0 -60px;
+    height: 220px;
+    overflow: visible;
     display: flex;
     align-items: flex-end;
-    padding: 30px 60px;
+    padding: 30px 60px 40px 60px;
+  }
+  .chapter-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, #0d0d14, transparent);
+    z-index: 3;
+    pointer-events: none;
   }
   .chapter-hero-bg {
     position: absolute; inset: 0;
@@ -132,7 +141,7 @@
   }
   .chapter-hero-gradient {
     position: absolute; inset: 0;
-    background: linear-gradient(to top, #0d0d14 0%, #0d0d14 5%, rgba(13,13,20,0.85) 30%, rgba(13,13,20,0.4) 60%, rgba(13,13,20,0.2) 100%);
+    background: linear-gradient(to top, #0d0d14 0%, rgba(13,13,20,0.95) 15%, rgba(13,13,20,0.6) 50%, rgba(13,13,20,0.15) 100%);
     z-index: 1;
   }
   .chapter-hero-art {
@@ -517,23 +526,23 @@
 
     <p>E o mestre? O mestre vê <em>tudo</em>. HP de cada jogador, condições ativas, quem já usou reação.</p>
 
-    <!-- HP Tier Visual -->
+    <!-- HP Tier Visual (LIGHT / MODERATE / HEAVY / CRITICAL) -->
     <div class="hp-tiers">
       <div class="hp-tier">
         <div class="hp-bar hp-bar-healthy"></div>
-        <span>Saudável<br>&gt; 70%</span>
+        <span>LIGHT<br>&gt; 70%</span>
       </div>
       <div class="hp-tier">
         <div class="hp-bar hp-bar-wounded"></div>
-        <span>Ferido<br>40-70%</span>
+        <span>MODERATE<br>40-70%</span>
       </div>
       <div class="hp-tier">
         <div class="hp-bar hp-bar-critical"></div>
-        <span>Crítico<br>10-40%</span>
+        <span>HEAVY<br>10-40%</span>
       </div>
       <div class="hp-tier">
         <div class="hp-bar hp-bar-dying"></div>
-        <span>Quase Morto<br>&lt; 10%</span>
+        <span>CRITICAL<br>&le; 10%</span>
       </div>
     </div>
 
