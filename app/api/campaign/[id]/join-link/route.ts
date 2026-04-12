@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { captureError } from "@/lib/errors/capture";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.pocketdm.com.br";
 
 function generateJoinCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

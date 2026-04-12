@@ -83,7 +83,7 @@ export default function MonstrosIndexPage() {
     description: "Bestiário completo do D&D 5e com blocos de estatísticas interativos e roladores de dados.",
     url: "https://pocketdm.com.br/monstros",
     inLanguage: "pt-BR",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: monsters.length,

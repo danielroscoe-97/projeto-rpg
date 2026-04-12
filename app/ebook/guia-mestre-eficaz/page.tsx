@@ -5,7 +5,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
 import { EbookCTA } from "@/components/blog/EbookCTA";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
 
 export const metadata: Metadata = {
   title: "Guia do Mestre Eficaz no Combate — E-book Gratuito D&D 5e",

@@ -75,7 +75,7 @@ export default function ItensIndexPage() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "https://www.pocketdm.com.br",
     },
     mainEntity: {
       "@type": "ItemList",

@@ -79,7 +79,7 @@ export default function MonstersIndexPage() {
     description: "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers.",
     url: "https://pocketdm.com.br/monsters",
     inLanguage: "en",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: monsters.length,

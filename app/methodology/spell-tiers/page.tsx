@@ -40,7 +40,7 @@ export default async function SpellTiersPage() {
     creator: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "https://www.pocketdm.com.br",
     },
   };
 

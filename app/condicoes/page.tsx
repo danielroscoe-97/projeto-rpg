@@ -55,7 +55,7 @@ function ConditionsJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "https://www.pocketdm.com.br",
     },
     inLanguage: "pt-BR",
   };

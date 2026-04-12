@@ -33,7 +33,7 @@ import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
 import { CATEGORY_CTA } from "@/lib/blog/feature-links";
 import { EbookCTA } from "@/components/blog/EbookCTA";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
 
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));

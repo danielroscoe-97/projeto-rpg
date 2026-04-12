@@ -1,7 +1,7 @@
 import { BLOG_POSTS } from "@/lib/blog/posts";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
 
 export function GET() {
   const items = BLOG_POSTS.map(

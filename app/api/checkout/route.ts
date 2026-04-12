@@ -49,7 +49,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function POST(request
       customerOptions.customer_email = user.email;
     }
 
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://www.pocketdm.com.br";
 
     // Idempotency key: same user + interval + 5-minute window = same session
     const idempotencyKey = `checkout-${user.id}-${interval}-${Math.floor(Date.now() / 300000)}`;

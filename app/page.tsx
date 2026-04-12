@@ -1433,7 +1433,7 @@ export default async function LandingPage() {
     "@type": "WebSite",
     name: "Pocket DM",
     alternateName: "Pocket DM — Combat Tracker D&D 5e",
-    url: "https://pocketdm.com.br",
+    url: "https://www.pocketdm.com.br",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -1448,7 +1448,7 @@ export default async function LandingPage() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Pocket DM",
-    url: "https://pocketdm.com.br",
+    url: "https://www.pocketdm.com.br",
     logo: "https://pocketdm.com.br/icons/icon-512.png",
     sameAs: [
       "https://www.instagram.com/pocket.dm",
@@ -1460,7 +1460,7 @@ export default async function LandingPage() {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "Pocket DM",
-    url: "https://pocketdm.com.br",
+    url: "https://www.pocketdm.com.br",
     applicationCategory: "GameApplication",
     operatingSystem: "Web",
     offers: {

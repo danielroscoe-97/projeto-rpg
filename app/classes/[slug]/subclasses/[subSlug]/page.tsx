@@ -96,7 +96,7 @@ function SubclassJsonLd({
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "https://www.pocketdm.com.br",
       logo: {
         "@type": "ImageObject",
         url: "https://pocketdm.com.br/icons/icon-512.png",
@@ -113,7 +113,7 @@ function SubclassJsonLd({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://pocketdm.com.br",
+        item: "https://www.pocketdm.com.br",
       },
       {
         "@type": "ListItem",

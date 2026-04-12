@@ -158,7 +158,7 @@ export async function acceptInviteAction(data: AcceptInviteData) {
       .eq("campaign_id", invite.campaign_id)
       .eq("status", "active");
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.pocketdm.com.br";
 
     if (dmUser) {
       const sent = await sendInviteAcceptedEmail({

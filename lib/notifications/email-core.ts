@@ -11,8 +11,8 @@ export const BRAND = {
   textBody: "#ccc",
   textMuted: "#888",
   textFooter: "#666",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br",
-  logoUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br"}/icons/icon-192.png`,
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.pocketdm.com.br",
+  logoUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.pocketdm.com.br"}/icons/icon-192.png`,
   fromEmail: process.env.RESEND_FROM_EMAIL ?? "Pocket DM <noreply@pocketdm.com.br>",
 } as const;
 

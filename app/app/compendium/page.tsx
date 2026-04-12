@@ -3,6 +3,8 @@
 import { Suspense, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { Home, LayoutDashboard } from "lucide-react";
 import { trackEvent } from "@/lib/analytics/track";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { MonsterBrowser } from "@/components/compendium/MonsterBrowser";
@@ -49,6 +51,23 @@ function CompendiumContent() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <Link
+            href="/app/dashboard"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-2 -ml-2"
+          >
+            <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{t("nav_dashboard")}</span>
+          </Link>
+          <span className="text-muted-foreground/40">/</span>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-2"
+          >
+            <Home className="w-4 h-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{t("nav_home")}</span>
+          </Link>
+        </div>
         <h1 className="font-display text-3xl font-bold text-gold tracking-wide">
           {t("title")}
         </h1>

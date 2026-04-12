@@ -70,7 +70,7 @@ export default function MagiasIndexPage() {
     description: "Compêndio completo de magias do D&D 5e com descrições, alcance, componentes e tier de poder.",
     url: "https://pocketdm.com.br/magias",
     inLanguage: "pt-BR",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://www.pocketdm.com.br" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: spells.length,

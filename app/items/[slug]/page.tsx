@@ -70,7 +70,7 @@ function ItemJsonLd({ item, slug }: { item: { name: string; type: string; rarity
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "https://www.pocketdm.com.br",
       logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
     },
     inLanguage: "en",
@@ -80,7 +80,7 @@ function ItemJsonLd({ item, slug }: { item: { name: string; type: string; rarity
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.pocketdm.com.br" },
       { "@type": "ListItem", position: 2, name: "Items", item: "https://pocketdm.com.br/items" },
       { "@type": "ListItem", position: 3, name: item.name, item: `https://pocketdm.com.br/items/${slug}` },
     ],

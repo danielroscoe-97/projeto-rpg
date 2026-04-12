@@ -80,7 +80,7 @@ function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<ty
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "https://www.pocketdm.com.br",
       logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
     },
     inLanguage: "pt-BR",
@@ -90,7 +90,7 @@ function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<ty
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Início", item: "https://pocketdm.com.br" },
+      { "@type": "ListItem", position: 1, name: "Início", item: "https://www.pocketdm.com.br" },
       { "@type": "ListItem", position: 2, name: "Magias", item: "https://pocketdm.com.br/magias" },
       { "@type": "ListItem", position: 3, name: ptName, item: `https://pocketdm.com.br/magias/${slug}` },
     ],

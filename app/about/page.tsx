@@ -18,7 +18,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Pocket DM",
-    url: "https://pocketdm.com.br",
+    url: "https://www.pocketdm.com.br",
     logo: "https://pocketdm.com.br/icons/icon-512.png",
     foundingDate: "2026",
     description:
@@ -49,7 +49,7 @@ export default function AboutPage() {
       applicationCategory: "GameApplication",
       applicationSubCategory: "D&D 5e Combat Tracker",
       operatingSystem: "Web, iOS, Android (PWA)",
-      url: "https://pocketdm.com.br",
+      url: "https://www.pocketdm.com.br",
       offers: {
         "@type": "Offer",
         price: "0",
