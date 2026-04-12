@@ -64,12 +64,12 @@ export function EbookCTA({ variant = "inline" }: EbookCTAProps) {
         {/* Background with monster art */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#13131E] via-[#1A1A28] to-[#13131E]" />
         <div className="absolute inset-0 bg-[image:linear-gradient(rgba(212,168,83,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(212,168,83,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
-        <div className="absolute right-[-20px] top-[40px] w-[340px] h-[340px] pointer-events-none">
+        <div className="absolute right-[-455px] bottom-[-350px] w-[800px] h-[800px] pointer-events-none">
           <Image
             src="/art/blog/heroes/ancient-red-dragon.png"
             alt=""
             fill
-            className="object-contain object-center opacity-[0.12] saturate-[0.6]"
+            className="object-contain object-center opacity-[0.35] saturate-[0.7]"
             unoptimized
             aria-hidden="true"
           />
