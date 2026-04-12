@@ -15,7 +15,7 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/", "<rootDir>/e2e/", "<rootDir>/scripts/orchestrator/", "<rootDir>/lib/combat/"],
+  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/", "<rootDir>/e2e/", "<rootDir>/scripts/orchestrator/", "<rootDir>/lib/combat/", "<rootDir>/.claude/", "<rootDir>/backup/"],
 };
 
 export default config;

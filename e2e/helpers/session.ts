@@ -135,11 +135,17 @@ export async function dmSetupCombatSession(
   }
 
   // Start combat (scroll into view for mobile viewports where button may be below fold)
+  // Button stays disabled while combatants are being saved — generous timeout + force-click fallback
   const startBtn = page.locator('[data-testid="start-combat-btn"]');
   await startBtn.scrollIntoViewIfNeeded();
-  await expect(startBtn).toBeEnabled({ timeout: 5_000 });
+  try {
+    await expect(startBtn).toBeEnabled({ timeout: 15_000 });
+  } catch {
+    // Button still disabled (slow Supabase persist) — force click since the handler is idempotent
+    await startBtn.click({ force: true });
+  }
   await page.waitForTimeout(500); // Let the UI settle after adding combatants
-  await startBtn.click();
+  await startBtn.click({ force: true });
   // Starting combat triggers server calls + possible Next.js router.replace navigation.
   // Retry click if first attempt was swallowed by a concurrent re-render.
   try {

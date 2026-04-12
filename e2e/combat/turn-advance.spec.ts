@@ -70,10 +70,13 @@ test.describe("P1 — Turn Advance & HP", () => {
     await expect(skipBtn).toBeVisible({ timeout: 3_000 });
     await skipBtn.click();
 
-    // After ending, combat transitions to post-combat leaderboard/summary.
-    // Verify the encounter name modal is dismissed and next-turn button disappears.
+    // After ending, combat transitions to post-combat leaderboard/recap.
+    // The name dialog is dismissed and the leaderboard or recap overlay appears.
     await expect(dialog).not.toBeVisible({ timeout: 5_000 });
-    await expect(dmPage.locator('[data-testid="next-turn-btn"]')).not.toBeVisible({ timeout: 15_000 });
+
+    // Post-combat: either leaderboard or recap appears (depending on combat activity)
+    const postCombat = dmPage.locator('[data-testid="combat-leaderboard"], [data-testid="combat-recap"]');
+    await expect(postCombat.first()).toBeVisible({ timeout: 15_000 });
 
     await dmContext.close();
   });
