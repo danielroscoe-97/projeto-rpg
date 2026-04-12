@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Blog Hero Images — Remaining</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+    padding: 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .slide-label {
+    font-family: 'JetBrains Mono', monospace;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: -40px;
+  }
+  .hero {
+    width: 1280px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    border-radius: 16px;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0d0d14 0%, #13131E 40%, #1A1A28 100%);
+  }
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+    z-index: 1;
+  }
+  .hero-art {
+    position: absolute;
+    right: -40px;
+    bottom: -40px;
+    width: 520px;
+    height: 520px;
+    object-fit: contain;
+    opacity: 0.25;
+    filter: saturate(0.7);
+    z-index: 0;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 60px 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    max-width: 800px;
+  }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-self: flex-start;
+    margin-bottom: 24px;
+  }
+  .tag-tutorial { color: #60A5FA; background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25); }
+  .tag-guia { color: #34D399; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.25); }
+  .tag-lista { color: #FBBF24; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.25); }
+  .tag-comparativo { color: #A78BFA; background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.25); }
+  .tag-build { color: #FB7185; background: rgba(251,113,133,0.12); border: 1px solid rgba(251,113,133,0.25); }
+  .tag-devlog { color: #D4A853; background: rgba(212,168,83,0.12); border: 1px solid rgba(212,168,83,0.25); }
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 44px;
+    color: #D4A853;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 20px rgba(212,168,83,0.15);
+  }
+  .hero-desc {
+    font-size: 18px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    max-width: 600px;
+  }
+  .hero-meta {
+    position: absolute;
+    bottom: 40px;
+    left: 70px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 2;
+  }
+  .hero-meta span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+  }
+  .hero-meta .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(212,168,83,0.4);
+  }
+  .watermark {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 2;
+    opacity: 0.3;
+  }
+  .watermark span {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: #D4A853;
+    font-weight: 600;
+  }
+  .hero-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, #D4A853, transparent);
+    opacity: 0.3;
+    z-index: 2;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,168,83,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,168,83,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1: Diario de Aventura (PINNED DEVLOG) -->
+<p class="slide-label">HERO — diario-de-aventura.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #171520 40%, #1a1828 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #D4A853, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/ancient-red-dragon.png" alt="" style="opacity: 0.2; width: 600px; height: 600px; right: -60px; bottom: -80px;">
+  <div class="hero-content">
+    <span class="hero-tag tag-devlog">Devlog</span>
+    <h1 class="hero-title" style="font-size: 48px;">Diario de Aventura</h1>
+    <p class="hero-desc" style="font-size: 19px;">Da dor de gerenciar combate no caderno ate um combat tracker completo. A jornada do Pocket DM contada por quem viveu cada mesa.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>15 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 2: Como Usar Combat Tracker -->
+<p class="slide-label">HERO — combat-tracker.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <img class="hero-art" src="../arts/assets/death-knight.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-tutorial">Tutorial</span>
+    <h1 class="hero-title">Como Usar um Combat Tracker</h1>
+    <p class="hero-desc">Guia pratico para mestres que querem gerenciar combate de forma rapida — iniciativa, HP e condicoes sem perder o ritmo.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>8 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 3: 5 Ferramentas Essenciais -->
+<p class="slide-label">HERO — 5-ferramentas.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #FBBF24, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/owlbear.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-lista">Lista</span>
+    <h1 class="hero-title">5 Ferramentas Essenciais para Mestres</h1>
+    <p class="hero-desc">Do bestiario digital ao combat tracker gratuito — as ferramentas que todo mestre de D&D 5e precisa.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>7 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 4: Combat Tracker vs VTT -->
+<p class="slide-label">HERO — tracker-vs-vtt.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #141320 40%, #1a1528 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #A78BFA, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/chimera.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-comparativo">Comparativo</span>
+    <h1 class="hero-title">Combat Tracker vs VTT</h1>
+    <p class="hero-desc">Qual a diferenca e qual usar? Descubra a ferramenta ideal para sua mesa presencial ou online de D&D 5e.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>6 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 5: Guia Condicoes -->
+<p class="slide-label">HERO — condicoes.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #34D399, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/medusa.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-guia">Guia</span>
+    <h1 class="hero-title">Guia Completo de Condicoes do D&D 5e</h1>
+    <p class="hero-desc">Todas as 15 condicoes explicadas em portugues — Blinded, Charmed, Stunned e mais, com exemplos praticos.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>10 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 6: Como Agilizar Combate -->
+<p class="slide-label">HERO — agilizar-combate.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <img class="hero-art" src="../arts/assets/vampire.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-tutorial">Tutorial</span>
+    <h1 class="hero-title">Como Agilizar o Combate no D&D 5e</h1>
+    <p class="hero-desc">10 dicas praticas para acelerar combates sem perder a diversao — do dano fixo ao combat tracker digital.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>9 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 7: Tutorial Pocket DM -->
+<p class="slide-label">HERO — tutorial-pocket-dm.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <img class="hero-art" src="../arts/assets/troll.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-tutorial">Tutorial</span>
+    <h1 class="hero-title">Como Usar o Pocket DM</h1>
+    <p class="hero-desc">Tutorial completo: montar encontros, adicionar monstros, gerenciar combate, convidar jogadores e usar o bestiario.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>12 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 8: 10 Melhores Monstros -->
+<p class="slide-label">HERO — melhores-monstros.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #FBBF24, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/tarrasque.png" alt="" style="opacity: 0.3; width: 580px; height: 580px;">
+  <div class="hero-content">
+    <span class="hero-tag tag-lista">Lista</span>
+    <h1 class="hero-title">10 Monstros que Todo Mestre Deveria Usar</h1>
+    <p class="hero-desc">Do Goblin ao Lich — dicas taticas, quando usar cada criatura e links para fichas completas no compendio.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>11 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 9: Build EN -->
+<p class="slide-label">HERO — cleric-sorcerer-build-en.png</p>
+<div class="hero">
+  <div class="hero-bg" style="background: linear-gradient(135deg, #0d0d14 0%, #1a1318 40%, #201520 100%);"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #FB7185, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/capa-barsavi-portrait.png" alt="" style="opacity: 0.35; right: -20px; bottom: -80px; width: 500px; height: 650px; object-fit: cover; filter: saturate(0.8);">
+  <div class="hero-content">
+    <span class="hero-tag tag-build">Build</span>
+    <h1 class="hero-title">Order Cleric / Divine Soul Sorcerer</h1>
+    <p class="hero-desc">Level 10 support build — S-tier with Voice of Authority and Metamagic. Point Buy and rolled stats.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>14 min read</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 10: Gerenciar HP -->
+<p class="slide-label">HERO — gerenciar-hp.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line"></div>
+  <img class="hero-art" src="../arts/assets/oni.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-tutorial">Tutorial</span>
+    <h1 class="hero-title">Como Gerenciar HP no D&D 5e</h1>
+    <p class="hero-desc">Sem planilha, sem papel. Barras visuais com tiers de dano que aceleram o combate de 60 pra 25 minutos.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>8 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 11: 7 Erros -->
+<p class="slide-label">HERO — 7-erros-combate.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #FBBF24, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/flameskull.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-lista">Lista</span>
+    <h1 class="hero-title">7 Erros que Mestres Cometem no Combate</h1>
+    <p class="hero-desc">Os erros mais comuns e como corrigir cada um — da iniciativa no papel ao combate sem ferramenta digital.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>10 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+<!-- 12: Iniciativa -->
+<p class="slide-label">HERO — iniciativa.png</p>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-line" style="background: linear-gradient(to bottom, transparent, #34D399, transparent);"></div>
+  <img class="hero-art" src="../arts/assets/werewolf.png" alt="">
+  <div class="hero-content">
+    <span class="hero-tag tag-guia">Guia</span>
+    <h1 class="hero-title">Iniciativa D&D 5e</h1>
+    <p class="hero-desc">Regras oficiais, variantes populares (Popcorn, Side, Speed Factor) e como automatizar com QR Code.</p>
+  </div>
+  <div class="hero-meta">
+    <span>Pocket DM</span>
+    <span class="dot"></span>
+    <span>9 min de leitura</span>
+  </div>
+  <div class="watermark"><span>POCKET DM</span></div>
+</div>
+
+</body>
+</html>

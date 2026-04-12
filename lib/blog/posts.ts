@@ -43,7 +43,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Diário de Aventura — A Jornada do Pocket DM",
     category: "devlog",
     pinned: true,
-    image: "/art/blog/landing-hero.png",
+    image: "/art/blog/heroes/diario-de-aventura.png",
   },
   {
     slug: "como-usar-combat-tracker-dnd-5e",
@@ -61,7 +61,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Usar um Combat Tracker na Mesa de D&D 5e | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/combat-tracker.svg",
+    image: "/art/blog/heroes/combat-tracker.png",
   },
   {
     slug: "ferramentas-essenciais-mestre-dnd-5e",
@@ -79,7 +79,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "5 Ferramentas Essenciais para Mestres de D&D 5e | Pocket DM",
     category: "lista",
-    image: "/art/blog/heroes/5-ferramentas.svg",
+    image: "/art/blog/heroes/5-ferramentas.png",
   },
   {
     slug: "combat-tracker-vs-vtt-diferenca",
@@ -97,7 +97,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Combat Tracker vs VTT — Qual a Diferença? | Pocket DM",
     category: "comparativo",
-    image: "/art/blog/heroes/tracker-vs-vtt.svg",
+    image: "/art/blog/heroes/tracker-vs-vtt.png",
   },
   {
     slug: "guia-condicoes-dnd-5e",
@@ -116,7 +116,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Guia Completo de Condições D&D 5e | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/condicoes.svg",
+    image: "/art/blog/heroes/condicoes.png",
   },
   {
     slug: "como-agilizar-combate-dnd-5e",
@@ -134,7 +134,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Agilizar o Combate no D&D 5e | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/agilizar-combate.svg",
+    image: "/art/blog/heroes/agilizar-combate.png",
   },
   {
     slug: "como-usar-pocket-dm-tutorial",
@@ -154,7 +154,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Usar o Pocket DM — Tutorial Completo | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/tutorial-pocket-dm.svg",
+    image: "/art/blog/heroes/tutorial-pocket-dm.png",
   },
   {
     slug: "como-montar-encontro-balanceado-dnd-5e",
@@ -176,7 +176,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Como Montar um Encontro Balanceado no D&D 5e | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/encontro-balanceado.svg",
+    image: "/art/blog/heroes/encounter-building.png",
   },
   {
     slug: "como-mestrar-dnd-primeira-vez",
@@ -197,7 +197,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Como Mestrar D&D pela Primeira Vez — Guia Completo | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/primeira-vez-dm.svg",
+    image: "/art/blog/heroes/first-time-dm.png",
   },
   {
     slug: "musica-ambiente-para-rpg",
@@ -219,7 +219,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Música Ambiente para RPG — Trilha Sonora para Cada Cena | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/musica-ambiente.svg",
+    image: "/art/blog/heroes/ambient-music.png",
   },
   {
     slug: "melhores-monstros-dnd-5e",
@@ -241,7 +241,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "10 Monstros que Todo Mestre de D&D Deveria Usar | Pocket DM",
     category: "lista",
-    image: "/art/blog/heroes/melhores-monstros.svg",
+    image: "/art/blog/heroes/melhores-monstros.png",
   },
   {
     slug: "guia-challenge-rating-dnd-5e",
@@ -263,7 +263,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Guia de Challenge Rating — Como Calcular a Dificuldade | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/challenge-rating.svg",
+    image: "/art/blog/heroes/challenge-rating.png",
   },
   {
     slug: "teatro-da-mente-vs-grid-dnd-5e",
@@ -284,7 +284,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Teatro da Mente vs Grid — Qual Estilo de Combate? | Pocket DM",
     category: "comparativo",
-    image: "/art/blog/heroes/teatro-vs-grid.svg",
+    image: "/art/blog/heroes/theater-vs-grid.png",
   },
   {
     slug: "build-half-elf-order-cleric-divine-soul-sorcerer",
@@ -309,7 +309,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Build de Suporte Nível 10 — Clérigo da Ordem / Feiticeiro de Alma Divina | Pocket DM",
     category: "build",
-    image: "/art/blog/capa-barsavi-portrait.png",
+    image: "/art/blog/heroes/cleric-sorcerer-build.png",
   },
   {
     slug: "build-half-elf-order-cleric-divine-soul-sorcerer-en",
@@ -334,7 +334,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle:
       "Half-Elf Order Cleric / Divine Soul Sorcerer — Level 10 Build | Pocket DM",
     category: "build",
-    image: "/art/blog/capa-barsavi-portrait.png",
+    image: "/art/blog/heroes/cleric-sorcerer-build-en.png",
   },
   {
     slug: "guia-mestre-eficaz-combate-dnd-5e",
@@ -354,7 +354,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Guia do Mestre Eficaz no Combate — E-book Gratuito | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/ebook-guia-mestre.svg",
+    image: "/art/blog/heroes/ebook-guia-mestre-eficaz.png",
   },
   {
     slug: "como-gerenciar-hp-dnd-5e",
@@ -371,7 +371,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Como Gerenciar HP no D&D 5e sem Planilha | Pocket DM",
     category: "tutorial",
-    image: "/art/blog/heroes/gerenciar-hp.svg",
+    image: "/art/blog/heroes/gerenciar-hp.png",
   },
   {
     slug: "7-erros-mestre-combate-dnd",
@@ -388,7 +388,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "7 Erros que Mestres Cometem no Combate de D&D | Pocket DM",
     category: "lista",
-    image: "/art/blog/heroes/7-erros-combate.svg",
+    image: "/art/blog/heroes/7-erros-combate.png",
   },
   {
     slug: "iniciativa-dnd-5e-regras-variantes",
@@ -406,7 +406,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     ogTitle: "Iniciativa D&D 5e: Regras, Variantes e Como Automatizar | Pocket DM",
     category: "guia",
-    image: "/art/blog/heroes/iniciativa.svg",
+    image: "/art/blog/heroes/iniciativa.png",
   },
 ];
 
