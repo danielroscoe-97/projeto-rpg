@@ -180,6 +180,8 @@ export interface MonsterStatBlockProps {
   isLocked?: boolean;
   onMinimize?: () => void;
   onClose?: () => void;
+  /** URL to the monster's full detail page (only for SRD/MAD monsters) */
+  pageUrl?: string;
   /** Override description renderer — used by LinkedText/DiceText integration */
   renderDesc?: (text: string, rulesetVersion: RulesetVersion, actionName?: string) => React.ReactNode;
 }
@@ -193,6 +195,7 @@ export function MonsterStatBlock({
   isLocked = false,
   onMinimize,
   onClose,
+  pageUrl,
   renderDesc: renderDescProp,
 }: MonsterStatBlockProps) {
   const isMonsterADay = !!monster.monster_a_day_url;
@@ -470,6 +473,18 @@ export function MonsterStatBlock({
               {monster.monster_a_day_author ? ` (${monster.monster_a_day_author})` : ""}
             </a>
           </p>
+        </>
+      )}
+
+      {pageUrl && isCard && (
+        <>
+          <CardDivider />
+          <a
+            href={pageUrl}
+            className="block text-center text-xs text-gold hover:text-gold/80 py-1.5 transition-colors"
+          >
+            Ver ficha completa &rarr;
+          </a>
         </>
       )}
     </section>

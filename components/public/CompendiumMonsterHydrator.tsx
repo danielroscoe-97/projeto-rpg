@@ -1,22 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useContentAccess } from "@/lib/hooks/use-content-access";
-import { PublicMonsterGrid } from "./PublicMonsterGrid";
+import { PublicMonsterGrid, type MonsterEntry } from "./PublicMonsterGrid";
+import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { toSlug } from "@/lib/utils/monster";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
-
-interface MonsterEntry {
-  name: string;
-  nameEn?: string;
-  namePt?: string;
-  cr: string;
-  type: string;
-  isMAD?: boolean;
-  slug?: string;
-  tokenUrl?: string;
-  fallbackTokenUrl?: string;
-}
+import type { RulesetVersion } from "@/lib/types/database";
 
 interface Props {
   ssrMonsters: MonsterEntry[];
@@ -41,8 +31,8 @@ interface Props {
 /**
  * Client-side hydrator that upgrades the SSR monster grid for beta testers.
  *
- * - Public/guest visitors see the SSR data (SRD-only, deduplicated)
- * - Beta testers see the full dataset fetched directly from /api/srd/full/
+ * - Public/guest visitors see the SSR data with Link navigation (SEO)
+ * - Beta testers see the full dataset; all clicks open floating stat block cards
  *
  * Uses useContentAccess() to detect beta access, then fetches monster data
  * directly from the auth-gated API — no dependency on the SRD store chain.
@@ -58,6 +48,7 @@ export function CompendiumMonsterHydrator({
   const { canAccess, isLoading } = useContentAccess();
   const [fullMonsters, setFullMonsters] = useState<SrdMonster[] | null>(null);
   const fetchedRef = useRef(false);
+  const pinCard = usePinnedCardsStore((s) => s.pinCard);
 
   useEffect(() => {
     if (isLoading || !canAccess || fetchedRef.current) return;
@@ -92,6 +83,7 @@ export function CompendiumMonsterHydrator({
     return fullMonsters.map((m) => {
       const enSlug = toSlug(m.name);
       const ptName = ptNameMap[enSlug] ?? m.name;
+      const hasPage = !!(m.is_srd || m.monster_a_day_url);
       return {
         name: isPt ? ptName : m.name,
         nameEn: m.name,
@@ -102,9 +94,24 @@ export function CompendiumMonsterHydrator({
         slug: isPt ? (ptSlugMap[enSlug] ?? enSlug) : enSlug,
         tokenUrl: m.token_url,
         fallbackTokenUrl: m.fallback_token_url,
+        entityId: m.id,
+        rulesetVersion: m.ruleset_version,
+        hasPage,
       };
     });
   }, [fullMonsters, ssrMonsters, ptNameMap, ptSlugMap, locale]);
+
+  const handleMonsterClick = useCallback(
+    (m: MonsterEntry) => {
+      if (m.entityId && m.rulesetVersion) {
+        pinCard("monster", m.entityId, m.rulesetVersion as RulesetVersion);
+      }
+    },
+    [pinCard]
+  );
+
+  // Only intercept clicks when we have full data with entityIds
+  const hasFullData = fullMonsters && fullMonsters.length > 0;
 
   return (
     <PublicMonsterGrid
@@ -112,6 +119,7 @@ export function CompendiumMonsterHydrator({
       basePath={basePath}
       locale={locale}
       labels={labels}
+      onMonsterClick={hasFullData ? handleMonsterClick : undefined}
     />
   );
 }

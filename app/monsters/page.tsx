@@ -61,6 +61,9 @@ export default function MonstersIndexPage() {
         slug: toSlug(m.name),
         tokenUrl: m.token_url,
         fallbackTokenUrl: m.fallback_token_url,
+        entityId: m.id,
+        rulesetVersion: m.ruleset_version,
+        hasPage: true,
       };
     });
 

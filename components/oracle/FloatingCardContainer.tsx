@@ -22,6 +22,7 @@ import {
   findCondition,
 } from "@/lib/srd/srd-search";
 import { useSrdStore } from "@/lib/stores/srd-store";
+import { toSlug } from "@/lib/utils/monster";
 import { MonsterStatBlock } from "./MonsterStatBlock";
 import { SpellCard } from "./SpellCard";
 import { ItemCard } from "./ItemCard";
@@ -219,6 +220,11 @@ function PinnedMonsterCard({
       </div>
     );
   }
+
+  // SRD/MAD monsters have a dedicated detail page
+  const hasPage = !!(monster.is_srd || monster.monster_a_day_url);
+  const pageUrl = hasPage ? `/monsters/${toSlug(monster.name)}` : undefined;
+
   return (
     <MonsterStatBlock
       monster={monster}
@@ -228,6 +234,7 @@ function PinnedMonsterCard({
       isLocked={card.isLocked}
       onClose={onClose}
       onMinimize={onMinimize}
+      pageUrl={pageUrl}
     />
   );
 }

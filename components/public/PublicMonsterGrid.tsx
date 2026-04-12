@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, type MouseEvent } from "react";
 import Link from "next/link";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { LanguageToggle } from "@/components/public/shared/LanguageToggle";
@@ -26,7 +26,7 @@ const TYPE_EMOJI: Record<string, string> = {
   undead: "\u{1F480}",
 };
 
-interface MonsterEntry {
+export interface MonsterEntry {
   name: string;
   nameEn?: string;
   namePt?: string;
@@ -36,12 +36,20 @@ interface MonsterEntry {
   slug?: string;
   tokenUrl?: string;
   fallbackTokenUrl?: string;
+  /** SRD entity ID for pinning floating cards (e.g. "goblin-mm") */
+  entityId?: string;
+  /** Ruleset version for floating card resolution */
+  rulesetVersion?: string;
+  /** Whether this monster has a dedicated detail page (SRD/MAD = true) */
+  hasPage?: boolean;
 }
 
 interface PublicMonsterGridProps {
   monsters: MonsterEntry[];
   basePath?: string;
   locale?: "en" | "pt-BR";
+  /** When provided, clicking a monster opens a floating card instead of navigating */
+  onMonsterClick?: (monster: MonsterEntry) => void;
   labels?: {
     searchPlaceholder?: string;
     crLabel?: string;
@@ -54,7 +62,7 @@ interface PublicMonsterGridProps {
   };
 }
 
-export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "en", labels = {} }: PublicMonsterGridProps) {
+export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "en", onMonsterClick, labels = {} }: PublicMonsterGridProps) {
   const {
     searchPlaceholder = "Search monsters by name...",
     crLabel = "CR:",
@@ -222,12 +230,8 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
           <div className="compendium-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {group.map((m) => {
               const baseType = m.type.split("(")[0].trim();
-              return (
-                <Link
-                  key={m.nameEn ?? m.name}
-                  href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
-                  className="compendium-card flex items-center gap-2.5 rounded-xl bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 transition-all group"
-                >
+              const cardContent = (
+                <>
                   <span className="relative inline-flex shrink-0 transition-transform duration-200 group-hover:scale-[1.8] group-hover:z-10">
                     <MonsterToken
                       tokenUrl={m.tokenUrl}
@@ -256,6 +260,48 @@ export function PublicMonsterGrid({ monsters, basePath = "/monsters", locale = "
                       r/
                     </span>
                   )}
+                </>
+              );
+
+              const cardClass = "compendium-card flex items-center gap-2.5 rounded-xl bg-card border border-white/[0.04] px-3 py-2.5 hover:bg-gray-700/50 transition-all group";
+
+              // When onMonsterClick is provided, intercept clicks to open floating cards
+              if (onMonsterClick) {
+                const href = `${basePath}/${m.slug ?? toSlug(m.name)}`;
+                // SRD/MAD: keep <a> for SEO but intercept click
+                if (m.hasPage !== false) {
+                  return (
+                    <Link
+                      key={m.entityId ?? m.nameEn ?? m.name}
+                      href={href}
+                      onClick={(e: MouseEvent) => { e.preventDefault(); onMonsterClick(m); }}
+                      className={cardClass}
+                    >
+                      {cardContent}
+                    </Link>
+                  );
+                }
+                // Non-SRD: no link (no page exists), just button
+                return (
+                  <button
+                    key={m.entityId ?? m.nameEn ?? m.name}
+                    type="button"
+                    onClick={() => onMonsterClick(m)}
+                    className={`${cardClass} w-full text-left cursor-pointer`}
+                  >
+                    {cardContent}
+                  </button>
+                );
+              }
+
+              // Default: navigate to detail page (original behavior)
+              return (
+                <Link
+                  key={m.nameEn ?? m.name}
+                  href={`${basePath}/${m.slug ?? toSlug(m.name)}`}
+                  className={cardClass}
+                >
+                  {cardContent}
                 </Link>
               );
             })}
