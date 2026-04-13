@@ -61,20 +61,20 @@ export function CampaignOnboardingChecklist({
       icon: Users,
     },
     {
-      key: "encounter",
-      done: encounterCount > 0,
+      key: "session",
+      done: sessionCount > 0,
       titleKey: "step3_title",
       descKey: "step3_desc",
       ctaKey: "step3_cta",
-      icon: ScrollText,
+      icon: Swords,
     },
     {
-      key: "session",
-      done: sessionCount > 0,
+      key: "encounter",
+      done: encounterCount > 0,
       titleKey: "step4_title",
       descKey: "step4_desc",
       ctaKey: "step4_cta",
-      icon: Swords,
+      icon: ScrollText,
     },
   ];
 
@@ -187,7 +187,7 @@ export function CampaignOnboardingChecklist({
                   {/* Pulsing glow for current step */}
                   {isCurrent && (
                     <motion.div
-                      className="absolute inset-0 rounded-lg border border-amber-500/40"
+                      className="absolute inset-0 rounded-lg border border-amber-500/40 pointer-events-none"
                       animate={{
                         boxShadow: [
                           "0 0 0px rgba(245, 158, 11, 0)",
