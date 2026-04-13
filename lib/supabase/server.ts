@@ -2,9 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
-/** Abort-aware fetch with a per-request timeout (default 8s).
+/** Abort-aware fetch with a per-request timeout (default 4s).
  *  Prevents Supabase queries from hanging when the DB/auth service is slow. */
-function fetchWithTimeout(timeoutMs = 8000): typeof globalThis.fetch {
+function fetchWithTimeout(timeoutMs = 4000): typeof globalThis.fetch {
   return (input, init?) => {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -28,7 +28,7 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
-      global: { fetch: fetchWithTimeout(8000) },
+      global: { fetch: fetchWithTimeout(4000) },
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -56,6 +56,6 @@ export function createServiceClient() {
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { global: { fetch: fetchWithTimeout(8000) } },
+    { global: { fetch: fetchWithTimeout(4000) } },
   );
 }

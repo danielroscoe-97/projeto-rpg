@@ -1,19 +1,46 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import { trackEvent } from "@/lib/analytics/track";
 import { useSrdStore } from "@/lib/stores/srd-store";
-import { MonsterBrowser } from "@/components/compendium/MonsterBrowser";
-import { SpellBrowser } from "@/components/compendium/SpellBrowser";
-import { ConditionReference } from "@/components/compendium/ConditionReference";
-import { ItemBrowser } from "@/components/compendium/ItemBrowser";
-import { FeatBrowser } from "@/components/compendium/FeatBrowser";
-import { BackgroundBrowser } from "@/components/compendium/BackgroundBrowser";
-import { ClassBrowser } from "@/components/compendium/ClassBrowser";
-import { RaceBrowser } from "@/components/compendium/RaceBrowser";
 import { CompendiumSkeleton } from "@/components/ui/skeletons/CompendiumSkeleton";
+
+// Code-split each browser tab — only the active tab's JS is loaded
+const MonsterBrowser = dynamic(
+  () => import("@/components/compendium/MonsterBrowser").then(m => ({ default: m.MonsterBrowser })),
+  { loading: () => <CompendiumSkeleton /> }
+);
+const SpellBrowser = dynamic(
+  () => import("@/components/compendium/SpellBrowser").then(m => ({ default: m.SpellBrowser })),
+  { loading: () => <CompendiumSkeleton /> }
+);
+const ClassBrowser = dynamic(
+  () => import("@/components/compendium/ClassBrowser").then(m => ({ default: m.ClassBrowser })),
+  { loading: () => <CompendiumSkeleton /> }
+);
+const ItemBrowser = dynamic(
+  () => import("@/components/compendium/ItemBrowser").then(m => ({ default: m.ItemBrowser })),
+  { loading: () => <CompendiumSkeleton /> }
+);
+const FeatBrowser = dynamic(
+  () => import("@/components/compendium/FeatBrowser").then(m => ({ default: m.FeatBrowser })),
+  { loading: () => <CompendiumSkeleton /> }
+);
+const BackgroundBrowser = dynamic(
+  () => import("@/components/compendium/BackgroundBrowser").then(m => ({ default: m.BackgroundBrowser })),
+  { loading: () => <CompendiumSkeleton /> }
+);
+const RaceBrowser = dynamic(
+  () => import("@/components/compendium/RaceBrowser").then(m => ({ default: m.RaceBrowser })),
+  { loading: () => <CompendiumSkeleton /> }
+);
+const ConditionReference = dynamic(
+  () => import("@/components/compendium/ConditionReference").then(m => ({ default: m.ConditionReference })),
+  { loading: () => <CompendiumSkeleton /> }
+);
 
 type Tab = "monsters" | "spells" | "classes" | "items" | "feats" | "backgrounds" | "races" | "conditions";
 
@@ -25,6 +52,12 @@ function CompendiumContent() {
 
   useEffect(() => {
     trackEvent("compendium:visited");
+    // Ensure SRD data is loading eagerly when user navigates to compendium
+    // (the layout's SrdInitializer defers init via requestIdleCallback)
+    const state = useSrdStore.getState();
+    if (state.monsters.length === 0 && !state.is_loading) {
+      state.initializeSrd();
+    }
   }, []);
 
   const tabParam = searchParams.get("tab") as Tab | null;

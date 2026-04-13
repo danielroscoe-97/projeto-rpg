@@ -17,38 +17,50 @@ import {
 } from "@/lib/supabase/campaign-membership";
 
 export default async function DashboardPage() {
-  const t = await getTranslations("dashboard");
-  const ts = await getTranslations("sidebar");
-  const tm = await getTranslations("methodology");
-  const tpc = await getTranslations("player_checklist");
-  const supabase = await createClient();
+  // Phase 0: Parallelize all independent async setup
+  const [t, ts, tm, tpc, supabase] = await Promise.all([
+    getTranslations("dashboard"),
+    getTranslations("sidebar"),
+    getTranslations("methodology"),
+    getTranslations("player_checklist"),
+    createClient(),
+  ]);
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login");
 
-  // Fetch user role
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role, email")
-    .eq("id", user.id)
-    .maybeSingle();
+  // Phase 1: Fire ALL independent queries in parallel (biggest perf win)
+  const [
+    userDataRes,
+    memberships,
+    onboardingRes,
+    pendingInvites,
+    campaignsRes,
+    encountersRes,
+    encounterCountRes,
+  ] = await Promise.all([
+    supabase.from("users").select("role, email").eq("id", user.id).maybeSingle(),
+    getUserMemberships(user.id),
+    supabase.from("user_onboarding").select("wizard_completed, dashboard_tour_completed, source").eq("user_id", user.id).maybeSingle(),
+    getPendingInvites(user.email ?? ""),
+    supabase.from("campaigns").select("id, name, created_at, updated_at, cover_image_url, player_characters(count)").eq("owner_id", user.id).order("created_at", { ascending: false }),
+    supabase.from("encounters").select("id, name, round_number, is_active, updated_at, session_id, sessions!inner(id, name, owner_id)").eq("sessions.owner_id", user.id).eq("is_active", true).order("updated_at", { ascending: false }).limit(5),
+    supabase.from("encounters").select("id, sessions!inner(owner_id)", { count: "exact", head: true }).eq("sessions.owner_id", user.id),
+  ]);
 
+  const userData = userDataRes.data;
   const userRole = (userData?.role as UserRole) ?? "both";
   const userEmail = userData?.email ?? user.email ?? "";
+  const onboarding = onboardingRes.data as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
+  const hasUsedCombat = (encounterCountRes.count ?? 0) > 0;
 
-  // Fetch memberships (dual-role: DM + Player campaigns)
-  const memberships = await getUserMemberships(user.id);
-
-  // Fetch onboarding state
-  const { data: onboardingData } = await supabase
-    .from("user_onboarding")
-    .select("wizard_completed, dashboard_tour_completed, source")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  const onboarding = onboardingData as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
+  // Re-fetch pending invites with DB email if it differs from auth email
+  const finalPendingInvites = (userEmail && userEmail !== user.email)
+    ? await getPendingInvites(userEmail)
+    : pendingInvites;
 
   // Onboarding redirect — any user who hasn't completed the wizard and has no campaigns/memberships
   {
@@ -63,17 +75,7 @@ export default async function DashboardPage() {
     }
   }
 
-  // Fetch pending invites
-  const pendingInvites = await getPendingInvites(userEmail);
-
-  // Fetch campaigns owned by user
-  const { data: rawCampaigns } = await supabase
-    .from("campaigns")
-    .select("id, name, created_at, updated_at, cover_image_url, player_characters(count)")
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: false });
-
-  const campaigns = (rawCampaigns ?? []).map((c) => ({
+  const campaigns = (campaignsRes.data ?? []).map((c) => ({
     id: c.id as string,
     name: c.name as string,
     created_at: c.created_at as string,
@@ -83,23 +85,16 @@ export default async function DashboardPage() {
     last_combat: (c.updated_at as string | null) ?? null,
   }));
 
-  // Fetch active encounters for resume
-  const { data: rawEncounters } = await supabase
-    .from("encounters")
-    .select("id, name, round_number, is_active, updated_at, session_id, sessions!inner(id, name, owner_id)")
-    .eq("sessions.owner_id", user.id)
-    .eq("is_active", true)
-    .order("updated_at", { ascending: false })
-    .limit(5);
+  const savedEncounters: SavedEncounterRow[] = (encountersRes.data ?? []).map((e) => ({
+    session_id: e.session_id as string,
+    encounter_name: (e.name ?? "Encounter") as string,
+    session_name: ((e.sessions as unknown as Record<string, unknown>)?.name ?? "Session") as string,
+    round_number: (e.round_number ?? 1) as number,
+    is_active: (e.is_active ?? false) as boolean,
+    updated_at: (e.updated_at ?? "") as string,
+  }));
 
-  // Check if DM has ever run any real combat (encounters, not just sessions from onboarding)
-  const { count: encounterCount } = await supabase
-    .from("encounters")
-    .select("id, sessions!inner(owner_id)", { count: "exact", head: true })
-    .eq("sessions.owner_id", user.id);
-  const hasUsedCombat = (encounterCount ?? 0) > 0;
-
-  // JO-13: Activation checklist data (DM only)
+  // Phase 2: Conditional queries (depend on role from Phase 1) — run in parallel
   let checklistStatus = {
     hasAccount: true,
     hasRunCombat: hasUsedCombat,
@@ -107,6 +102,7 @@ export default async function DashboardPage() {
     hasUsedLegendary: false,
     hasViewedRecap: false,
   };
+
   if (userRole !== "player") {
     const [inviteRes, legendaryRes, recapRes] = await Promise.all([
       supabase
@@ -131,15 +127,6 @@ export default async function DashboardPage() {
       hasViewedRecap: (recapRes.count ?? 0) > 0,
     };
   }
-
-  const savedEncounters: SavedEncounterRow[] = (rawEncounters ?? []).map((e) => ({
-    session_id: e.session_id as string,
-    encounter_name: (e.name ?? "Encounter") as string,
-    session_name: ((e.sessions as unknown as Record<string, unknown>)?.name ?? "Session") as string,
-    round_number: (e.round_number ?? 1) as number,
-    is_active: (e.is_active ?? false) as boolean,
-    updated_at: (e.updated_at ?? "") as string,
-  }));
 
   // Pre-translate strings for client component
   const translations = {
@@ -291,7 +278,7 @@ export default async function DashboardPage() {
         userId={user.id}
         userRole={userRole}
         memberships={memberships}
-        pendingInvites={pendingInvites}
+        pendingInvites={finalPendingInvites}
         translations={translations}
         streakWeeks={streakWeeks}
         hasUsedCombat={hasUsedCombat}

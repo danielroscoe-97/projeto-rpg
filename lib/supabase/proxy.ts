@@ -79,7 +79,7 @@ export async function updateSession(request: NextRequest) {
   try {
     const result = await Promise.race([
       supabase.auth.getClaims(),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000)),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000)),
     ]);
     if (result && "data" in result) {
       user = (result.data as { claims?: Record<string, unknown> | null })?.claims ?? null;
