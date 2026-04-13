@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { NavbarWithSync } from "@/components/layout/NavbarWithSync";
@@ -17,14 +17,12 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Parallelize translations + Supabase client creation
-  const [t, supabase] = await Promise.all([
+  // Parallelize translations + auth + Supabase client creation
+  const [t, user, supabase] = await Promise.all([
     getTranslations("nav"),
+    getAuthUser(),
     createClient(),
   ]);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/auth/login");

@@ -153,6 +153,15 @@
 
 ---
 
+## Infraestrutura & Planos
+
+| # | Item | Status | Notas |
+|---|------|--------|-------|
+| I-01 | Supabase Pro ($25/mes) | 📋 | CPU dedicado (latencia consistente), connection pooling (Supavisor), sem pause por inatividade, backups diarios. Prioridade alta — impacta diretamente velocidade das queries. Migrar antes das demos em BH (maio 2026) |
+| I-02 | Vercel Pro ($20/mes) | 📋 | Serverless 60s timeout (vs 10s hobby), mais bandwidth, analytics Web Vitals. Menor prioridade que Supabase Pro — so quando trafego crescer |
+
+---
+
 ## Resumo Quantitativo
 
 | Status | Quantidade | % |

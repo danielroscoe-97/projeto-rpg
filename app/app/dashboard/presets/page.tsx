@@ -1,17 +1,16 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { PresetsManager } from "@/components/presets/PresetsManager";
 
 export default async function PresetsPage() {
-  const t = await getTranslations("presets");
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const [t, user, supabase] = await Promise.all([
+    getTranslations("presets"),
+    getAuthUser(),
+    createClient(),
+  ]);
   if (!user) redirect("/auth/login");
 
   const { data: rawPresets } = await supabase

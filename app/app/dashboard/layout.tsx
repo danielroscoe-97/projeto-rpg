@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
@@ -7,8 +7,12 @@ export default async function DashboardRouteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const t = await getTranslations("sidebar");
-  const supabase = await createClient();
+  // Parallelize translations + auth + client (getAuthUser is cached per-request)
+  const [t, user, supabase] = await Promise.all([
+    getTranslations("sidebar"),
+    getAuthUser(),
+    createClient(),
+  ]);
 
   const translations = {
     overview: t("overview"),
@@ -26,9 +30,6 @@ export default async function DashboardRouteLayout({
     invite_player: t("invite_player"),
     quick_actions: t("quick_actions"),
   };
-
-  // Check if dashboard tour should be shown + DM access for sidebar presets
-  const { data: { user } } = await supabase.auth.getUser();
   let showDashboardTour = false;
   let isPlayerFirstCampaign = false;
   let tourSource: string | undefined;

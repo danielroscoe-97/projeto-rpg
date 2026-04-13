@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
@@ -7,8 +7,12 @@ export default async function CompendiumRouteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const t = await getTranslations("sidebar");
-  const supabase = await createClient();
+  // Parallelize all independent setup (getAuthUser is cached per-request)
+  const [t, user, supabase] = await Promise.all([
+    getTranslations("sidebar"),
+    getAuthUser(),
+    createClient(),
+  ]);
 
   const translations = {
     overview: t("overview"),
@@ -26,8 +30,6 @@ export default async function CompendiumRouteLayout({
     invite_player: t("invite_player"),
     quick_actions: t("quick_actions"),
   };
-
-  const { data: { user } } = await supabase.auth.getUser();
   let hasDmAccess = false;
 
   if (user) {

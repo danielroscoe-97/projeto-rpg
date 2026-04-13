@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
@@ -17,18 +17,15 @@ import {
 } from "@/lib/supabase/campaign-membership";
 
 export default async function DashboardPage() {
-  // Phase 0: Parallelize all independent async setup
-  const [t, ts, tm, tpc, supabase] = await Promise.all([
+  // Phase 0: Parallelize all independent async setup (getAuthUser is cached per-request)
+  const [t, ts, tm, tpc, user, supabase] = await Promise.all([
     getTranslations("dashboard"),
     getTranslations("sidebar"),
     getTranslations("methodology"),
     getTranslations("player_checklist"),
+    getAuthUser(),
     createClient(),
   ]);
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login");
 

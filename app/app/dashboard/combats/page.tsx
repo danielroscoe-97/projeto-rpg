@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
@@ -8,12 +8,11 @@ import { CombatsPageClient } from "@/components/dashboard/CombatsPageClient";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 
 export default async function CombatsPage() {
-  const t = await getTranslations("dashboard");
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const [t, user, supabase] = await Promise.all([
+    getTranslations("dashboard"),
+    getAuthUser(),
+    createClient(),
+  ]);
   if (!user) redirect("/auth/login");
 
   // Fetch all active/saved encounters (larger limit for the dedicated page)

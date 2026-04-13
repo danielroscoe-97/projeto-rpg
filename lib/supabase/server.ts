@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
@@ -48,6 +49,16 @@ export async function createClient() {
     },
   );
 }
+
+/** Cached per-request auth check — deduplicates getUser() across layout + page
+ *  + sub-layouts within the same server render. React.cache() ensures the
+ *  Supabase auth API is hit at most ONCE per HTTP request, no matter how many
+ *  server components call getAuthUser(). */
+export const getAuthUser = cache(async () => {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+});
 
 /** Service-role client that bypasses RLS.
  *  Use ONLY on the server for operations where the caller has no auth yet

@@ -1,17 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import type { OnboardingSource } from "@/lib/types/database";
 
 export default async function OnboardingPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/auth/login");
-  }
+  const [user, supabase] = await Promise.all([getAuthUser(), createClient()]);
+  if (!user) redirect("/auth/login");
 
   // Safety: if user already has campaigns (as DM or player), skip onboarding
   const [{ count: dmCount, error: dmErr }, { count: playerCount, error: playerErr }] = await Promise.all([

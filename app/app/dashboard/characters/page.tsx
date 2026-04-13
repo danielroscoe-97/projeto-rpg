@@ -1,15 +1,11 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { MyCharactersPage } from "@/components/dashboard/MyCharactersPage";
 
 export default async function CharactersPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const [user, supabase] = await Promise.all([getAuthUser(), createClient()]);
   if (!user) redirect("/auth/login");
 
   const { data: characters } = await supabase

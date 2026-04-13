@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useTransition } from "react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -48,6 +48,7 @@ function CompendiumContent() {
   const t = useTranslations("compendium");
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const isLoading = useSrdStore((s) => s.is_loading);
 
   useEffect(() => {
@@ -64,7 +65,9 @@ function CompendiumContent() {
   const activeTab: Tab = (tabParam && ["monsters", "spells", "classes", "items", "feats", "backgrounds", "races", "conditions"].includes(tabParam)) ? tabParam : "monsters";
 
   function handleTabChange(tab: Tab) {
-    router.replace(`/app/compendium?tab=${tab}`, { scroll: false });
+    startTransition(() => {
+      router.replace(`/app/compendium?tab=${tab}`, { scroll: false });
+    });
   }
 
   const tabs: { key: Tab; label: string }[] = [
@@ -109,6 +112,10 @@ function CompendiumContent() {
       {/* Content */}
       {isLoading ? (
         <CompendiumSkeleton />
+      ) : isPending ? (
+        <div className="opacity-60 transition-opacity duration-200">
+          <CompendiumSkeleton />
+        </div>
       ) : (
         <>
           {activeTab === "monsters" && <MonsterBrowser />}

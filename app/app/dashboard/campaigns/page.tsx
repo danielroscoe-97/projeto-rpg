@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
@@ -15,38 +15,43 @@ import {
 } from "@/lib/supabase/campaign-membership";
 
 export default async function CampaignsPage() {
-  const t = await getTranslations("dashboard");
-  const tSheet = await getTranslations("sheet");
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Parallelize all independent setup (getAuthUser is cached per-request)
+  const [t, tSheet, user, supabase] = await Promise.all([
+    getTranslations("dashboard"),
+    getTranslations("sheet"),
+    getAuthUser(),
+    createClient(),
+  ]);
 
   if (!user) redirect("/auth/login");
 
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role, email")
-    .eq("id", user.id)
-    .maybeSingle();
+  // Fire all independent queries in parallel
+  const [userDataRes, memberships, pendingInvites, campaignsRes] = await Promise.all([
+    supabase.from("users").select("role, email").eq("id", user.id).maybeSingle(),
+    getUserMemberships(user.id),
+    getPendingInvites(user.email ?? ""),
+    supabase
+      .from("campaigns")
+      .select(`
+        id, name, created_at, is_archived,
+        player_characters(count),
+        sessions(count),
+        campaign_notes(count),
+        campaign_npcs(count)
+      `)
+      .eq("owner_id", user.id)
+      .order("created_at", { ascending: false }),
+  ]);
 
+  const userData = userDataRes.data;
   const userRole = (userData?.role as UserRole) ?? "both";
   const userEmail = userData?.email ?? user.email ?? "";
+  const rawCampaigns = campaignsRes.data;
 
-  const memberships = await getUserMemberships(user.id);
-  const pendingInvites = await getPendingInvites(userEmail);
-
-  const { data: rawCampaigns } = await supabase
-    .from("campaigns")
-    .select(`
-      id, name, created_at, is_archived,
-      player_characters(count),
-      sessions(count),
-      campaign_notes(count),
-      campaign_npcs(count)
-    `)
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: false });
+  // Re-fetch pending invites with DB email if it differs from auth email
+  const finalPendingInvites = (userEmail && userEmail !== user.email)
+    ? await getPendingInvites(userEmail)
+    : pendingInvites;
 
   // Fetch last session date + encounter counts per campaign
   const campaignIds = (rawCampaigns ?? []).map((c) => c.id as string);
@@ -133,7 +138,7 @@ export default async function CampaignsPage() {
       userId={user.id}
       userRole={userRole}
       playerMemberships={playerMemberships}
-      pendingInvites={pendingInvites}
+      pendingInvites={finalPendingInvites}
       translations={translations}
     />
   );

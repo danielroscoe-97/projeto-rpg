@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -14,31 +14,27 @@ interface SessionPageProps {
 
 export default async function SessionPage({ params }: SessionPageProps) {
   const { id: sessionId } = await params;
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [user, supabase] = await Promise.all([getAuthUser(), createClient()]);
   if (!user) redirect("/auth/login");
 
-  // Fetch onboarding state for combat tour
-  const { data: onboardingData } = await supabase
-    .from("user_onboarding")
-    .select("combat_tour_completed")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  // Parallelize onboarding + session fetch (both only need user.id)
+  const [onboardingRes, sessionRes] = await Promise.all([
+    supabase
+      .from("user_onboarding")
+      .select("combat_tour_completed")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("sessions")
+      .select("id, name, ruleset_version, campaign_id")
+      .eq("id", sessionId)
+      .eq("owner_id", user.id)
+      .single(),
+  ]);
 
-  const combatTourCompleted = (onboardingData as { combat_tour_completed?: boolean } | null)?.combat_tour_completed ?? false;
-
-  // Fetch session
-  const { data: session, error: sessionError } = await supabase
-    .from("sessions")
-    .select("id, name, ruleset_version, campaign_id")
-    .eq("id", sessionId)
-    .eq("owner_id", user.id)
-    .single();
-
-  if (sessionError || !session) notFound();
+  const combatTourCompleted = (onboardingRes.data as { combat_tour_completed?: boolean } | null)?.combat_tour_completed ?? false;
+  const session = sessionRes.data;
+  if (sessionRes.error || !session) notFound();
 
   // Fetch the most recent encounter for this session (maybeSingle: zero rows = null, not error)
   const { data: encounter } = await supabase
