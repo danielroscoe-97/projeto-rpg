@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { CustomSoundCard, type CustomSound } from "@/components/audio/CustomSoundCard";
 import { CustomSoundUploader } from "@/components/audio/CustomSoundUploader";
 import {
@@ -11,8 +12,10 @@ import {
 } from "@/lib/utils/audio-presets";
 import type { AudioPreset } from "@/lib/types/audio";
 import { useAudioStore } from "@/lib/stores/audio-store";
+import { useFavoritesStore } from "@/lib/stores/favorites-store";
 import { DmAudioControls } from "@/components/audio/DmAudioControls";
-import { Play, Square, X, Search } from "lucide-react";
+import { AudioFavoritesBar } from "@/components/audio/AudioFavoritesBar";
+import { Play, Square, X, Search, Star } from "lucide-react";
 
 const DM_PAGE_TABS = [
   { key: "ambient", icon: "🌿", categories: ["ambient"] as string[], isLoop: true },
@@ -40,6 +43,10 @@ export function SoundboardPageClient({ title }: { title: string }) {
   const stopAllAudio = useAudioStore((s) => s.stopAllAudio);
   const playSound = useAudioStore((s) => s.playSound);
   const activeAudioId = useAudioStore((s) => s.activeAudioId);
+
+  const isFavorite = useFavoritesStore((s) => s.isFavorite);
+  const addFavorite = useFavoritesStore((s) => s.addFavorite);
+  const removeFavorite = useFavoritesStore((s) => s.removeFavorite);
 
   const ambientPresets = getAmbientPresets();
   const musicPresets = getMusicPresets();
@@ -91,6 +98,41 @@ export function SoundboardPageClient({ title }: { title: string }) {
   useEffect(() => {
     loadSounds();
   }, [loadSounds]);
+
+  useEffect(() => {
+    useFavoritesStore.getState().hydrate(true);
+  }, []);
+
+  const handleToggleFavorite = useCallback(
+    async (presetId: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isFavorite(presetId)) {
+        removeFavorite(presetId);
+        toast(tAudio("favorites_removed"), { duration: 1500 });
+      } else {
+        const added = await addFavorite(presetId, "preset");
+        if (added) {
+          toast.success(tAudio("favorites_added"), { duration: 1500 });
+        } else {
+          toast.error(tAudio("favorites_limit"), { duration: 2000 });
+        }
+      }
+    },
+    [isFavorite, addFavorite, removeFavorite, tAudio]
+  );
+
+  const handlePlayForBar = useCallback(
+    (presetId: string, _source: "preset" | "custom", _url?: string) => {
+      const preset = allPresets.find((p) => p.id === presetId);
+      if (!preset) return;
+      if (preset.category === "ambient" || preset.category === "music") {
+        playAmbient(presetId);
+      } else {
+        playSound(presetId, "preset", "DM");
+      }
+    },
+    [allPresets, playAmbient, playSound]
+  );
 
   const handleSoundUploaded = (sound: CustomSound) => {
     setCustomSounds((prev) => [...prev, sound]);
@@ -172,6 +214,11 @@ export function SoundboardPageClient({ title }: { title: string }) {
               {tAudio("dm_stop_all")}
             </button>
           )}
+        </div>
+
+        {/* Favorites Bar */}
+        <div className="mb-4">
+          <AudioFavoritesBar onPlaySound={handlePlayForBar} />
         </div>
 
         {/* Preset tabs */}
@@ -262,17 +309,32 @@ export function SoundboardPageClient({ title }: { title: string }) {
                       playSound(preset.id, "preset", "DM");
                     }
                   }}
-                  className={`relative flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all min-h-[80px] ${
+                  className={`group/preset relative flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all min-h-[80px] ${
                     isActive
                       ? activeColor
                       : "bg-white/[0.06] text-foreground hover:bg-white/[0.1] border border-transparent"
                   }`}
                 >
+                  {/* Favorite star */}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => handleToggleFavorite(preset.id, e)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleToggleFavorite(preset.id, e as unknown as React.MouseEvent); }}
+                    className={`absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full transition-all z-10 ${
+                      isFavorite(preset.id)
+                        ? "text-gold"
+                        : "text-transparent group-hover/preset:text-muted-foreground/40"
+                    }`}
+                    aria-label={isFavorite(preset.id) ? tAudio("favorites_remove") : tAudio("favorites_add")}
+                  >
+                    <Star className={`w-3.5 h-3.5 ${isFavorite(preset.id) ? "fill-gold" : ""}`} />
+                  </span>
                   <span className="text-xl leading-none">{preset.icon}</span>
                   <span className="text-[11px] text-center truncate w-full">
                     {tAudio(preset.name_key.replace("audio.", "") as Parameters<typeof tAudio>[0])}
                   </span>
-                  {isActive && (
+                  {isActive && !isFavorite(preset.id) && (
                     <div className="absolute top-1.5 right-1.5 flex items-center gap-1">
                       <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
                         presetTab === "music" ? "bg-amber-400" : "bg-emerald-400"
