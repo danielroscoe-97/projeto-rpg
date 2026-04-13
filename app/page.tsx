@@ -128,9 +128,9 @@ function D20Icon({ className, style }: { className?: string; style?: React.CSSPr
 
 
 export const metadata = {
-  title: { absolute: "Pocket DM — Rastreador de Combate D&D 5e Grátis | Combat Tracker" },
+  title: { absolute: "Pocket DM — Free D&D 5e Combat & Initiative Tracker | Rastreador de Combate" },
   description:
-    "Rastreador de combate e iniciativa para D&D 5e — grátis e sem cadastro. Gerencie HP, condições, turnos e magias em tempo real no celular dos seus jogadores. O melhor app para mestre de RPG presencial. Free D&D 5e combat tracker for in-person play.",
+    "Free D&D 5e combat & initiative tracker — no sign-up required. Track initiative, HP, conditions, and spells in real time on your players' phones. The best initiative tracker for in-person RPG sessions. Rastreador de combate e iniciativa grátis.",
   alternates: { canonical: "/" },
 };
 

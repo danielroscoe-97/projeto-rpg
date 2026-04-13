@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     "como usar combat tracker",
     "ferramentas mestre RPG",
     "D&D 5e combat tracker free",
+    "initiative tracker D&D",
+    "initiative tracker 5e",
+    "rastreador de iniciativa D&D 5e",
+    "best initiative tracker free",
   ],
   alternates: {
     canonical: "/faq",
@@ -68,6 +72,18 @@ const FAQ_CATEGORIES = [
       {
         q: "O Pocket DM tem música ambiente?",
         a: "Sim. O Pocket DM oferece música ambiente integrada com mais de 12 presets temáticos (taverna, dungeon, floresta, batalha, etc.). O mestre controla a trilha sonora direto da interface de combate.",
+      },
+      {
+        q: "O que é um initiative tracker para D&D 5e?",
+        a: "Um initiative tracker (rastreador de iniciativa) é uma ferramenta digital que organiza automaticamente a ordem de combate em D&D 5e. Em vez de anotar valores em papel, o initiative tracker ordena os combatentes por valor de iniciativa, avança turnos automaticamente e mantém tudo sincronizado — inclusive para os jogadores, que veem a ordem no próprio celular.",
+      },
+      {
+        q: "O Pocket DM funciona como initiative tracker?",
+        a: "Sim. O Pocket DM é um combat & initiative tracker completo. Você insere os valores de iniciativa (ou usa rolagem automática), o sistema ordena automaticamente, resolve empates com drag-and-drop, e avança turnos com um clique. Os jogadores acompanham a ordem de turno em tempo real no celular, sem instalar nada.",
+      },
+      {
+        q: "Qual o melhor initiative tracker gratuito para D&D 5e?",
+        a: "O Pocket DM oferece rastreamento de iniciativa automático, com auto-sort, gerenciamento de HP com barras visuais, condições D&D 5e integradas, bestiário SRD completo com 1100+ monstros, e player view em tempo real no celular — tudo gratuito e sem cadastro obrigatório. É o initiative tracker mais completo para mesas presenciais de D&D 5e.",
       },
     ],
   },

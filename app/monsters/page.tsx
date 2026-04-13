@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     "SRD monsters",
     "monster stat blocks",
     "D&D combat tracker",
+    "D&D initiative tracker",
     "5e monster list",
   ],
   alternates: {

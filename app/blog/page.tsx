@@ -7,13 +7,14 @@ import { BlogNavbar } from "@/components/blog/BlogNavbar";
 export const metadata: Metadata = {
   title: "Blog — Dicas para Mestres de D&D 5e",
   description:
-    "Dicas, guias e tutoriais para mestres e jogadores de D&D 5e. Combat tracker, condições, ferramentas, e como agilizar suas sessões de RPG presencial.",
+    "Dicas, guias e tutoriais para mestres e jogadores de D&D 5e. Combat & initiative tracker, condições, ferramentas, e como agilizar suas sessões de RPG presencial.",
   keywords: [
     "blog D&D 5e",
     "dicas mestre RPG",
     "guia D&D",
     "ferramentas RPG",
     "combat tracker dicas",
+    "initiative tracker dicas",
     "como mestrar D&D",
   ],
   alternates: {

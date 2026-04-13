@@ -46,9 +46,9 @@
     "skip_content": "Skip to main content",
     "open_menu": "Open menu",
     "close_menu": "Close menu",
-    "mobile_tagline": "Combat tracker for D&D 5e.\n1100+ monsters · 600+ spells · Free.",
+    "mobile_tagline": "Combat & initiative tracker for D&D 5e.\n1100+ monsters · 600+ spells · Free.",
     "footer_brand": "Pocket DM",
-    "footer_subtitle": "Combat tracker for D&D 5e Game Masters",
+    "footer_subtitle": "Combat & initiative tracker for D&D 5e Game Masters",
     "footer_login": "Login",
     "footer_signup": "Sign Up",
     "footer_pricing": "Pricing",
@@ -2871,8 +2871,8 @@
     "roller_title": "Dice Tray"
   },
   "landing": {
-    "meta_title": "Pocket DM — Free D&D 5e Combat Tracker",
-    "meta_description": "Free D&D 5e combat and initiative tracker — no sign-up required. Manage HP, conditions, turns, and spells in real time on your players' phones. The best app for in-person RPG sessions.",
+    "meta_title": "Pocket DM — Free D&D 5e Combat & Initiative Tracker",
+    "meta_description": "Free D&D 5e combat & initiative tracker — no sign-up required. Track initiative order, HP, conditions, and spells in real time on your players' phones. The best initiative tracker for in-person RPG sessions.",
 
     "open_beta": "Open Beta",
     "tagline": "Master your table.",
@@ -2880,7 +2880,7 @@
 
     "hero_headline_1": "Master combat.",
     "hero_headline_2": "Ditch the paper.",
-    "hero_subheading": "The definitive combat tracker for D&D 5e. Initiative, HP, and conditions in real time — right on your players' phones.",
+    "hero_subheading": "The definitive combat & initiative tracker for D&D 5e. Auto-sort initiative, HP, and conditions in real time — right on your players' phones.",
 
     "cta_try_free": "Try Free",
     "cta_quick_combat": "Quick Combat",
@@ -2897,10 +2897,10 @@
     "stat_price_label": "to get started",
 
     "features_heading": "Everything the DM needs",
-    "features_subheading": "From initiative to hit points, from conditions to a spell oracle. One tool focused on what matters.",
+    "features_subheading": "A complete initiative tracker and combat manager. From turn order to hit points, from conditions to a spell oracle — one tool focused on what matters.",
 
-    "feature_1_title": "Full Combat Tracker",
-    "feature_1_description": "Auto initiative, HP with temp HP, 13 D&D conditions, death saves, add/remove combatants mid-fight.",
+    "feature_1_title": "Combat & Initiative Tracker",
+    "feature_1_description": "Auto-sort initiative, HP with temp HP, 13 D&D conditions, death saves, add/remove combatants mid-fight.",
     "feature_2_tag": "Popular",
     "feature_2_title": "Real-Time Player View",
     "feature_2_description": "Generate a link. Players open it on their phone. No account, no app, no friction. Everything updates live.",
@@ -2929,7 +2929,7 @@
     "step_4_title": "Run the Combat",
     "step_4_description": "Advance turns, deal damage, and manage conditions. Your players see updates live.",
     "step_4_time": "live",
-    "how_it_works_cta": "Try Combat Tracker — Free",
+    "how_it_works_cta": "Try Initiative Tracker — Free",
     "no_account_needed": "No account needed",
 
     "comparison_heading": "Built for the table, not the screen",
@@ -2941,7 +2941,7 @@
     "comparison_col_pocketdm": "Pocket DM",
     "comparison_pocketdm_badge": "Built for your table",
 
-    "comparison_row_1_feature": "Combat tracker",
+    "comparison_row_1_feature": "Combat & initiative tracker",
     "comparison_row_1_roll20": "Heavy",
     "comparison_row_1_beyond": "Basic",
     "comparison_row_1_pocketdm": "Optimized",

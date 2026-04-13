@@ -13,10 +13,10 @@ import "./globals.css";
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
-const siteTitle = "Pocket DM — Rastreador de Combate D&D 5e | Combat Tracker";
+const siteTitle = "Pocket DM — Combat & Initiative Tracker D&D 5e | Rastreador de Combate";
 const siteTitleSocial = "Pocket DM — Master your table.";
 const siteDescription =
-  "O rastreador de combate definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias em tempo real — grátis, no celular dos seus jogadores. Free D&D 5e combat tracker.";
+  "O combat & initiative tracker definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias em tempo real — grátis, no celular dos seus jogadores. Free D&D 5e combat & initiative tracker.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
@@ -27,14 +27,20 @@ export const metadata: Metadata = {
   description: siteDescription,
   keywords: [
     "combat tracker",
+    "initiative tracker",
     "D&D 5e",
+    "initiative tracker 5e",
+    "initiative tracker dnd",
+    "initiative tracker rpg",
     "rastreador de combate",
+    "rastreador de iniciativa",
     "iniciativa D&D",
+    "dnd combat tracker",
+    "dnd initiative tracker",
+    "d&d initiative tracker free",
     "gerenciador de combate RPG",
     "ferramentas para mestre de RPG",
     "app para mestre de RPG",
-    "dnd combat tracker",
-    "initiative tracker",
     "encounter tracker",
     "combat tracker presencial",
     "Pocket DM",

@@ -4,9 +4,9 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 
 export const metadata: Metadata = {
-  title: "Sobre — Combat Tracker Gratuito para D&D 5e",
+  title: "Sobre — Combat & Initiative Tracker Gratuito para D&D 5e",
   description:
-    "O Pocket DM é um rastreador de combate gratuito para D&D 5e, projetado para mesas presenciais. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores. Criado no Brasil.",
+    "O Pocket DM é um combat & initiative tracker gratuito para D&D 5e, projetado para mesas presenciais. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores. Free D&D 5e initiative tracker.",
   alternates: {
     canonical: "/about",
     languages: { "pt-BR": "/about", en: "/about" },
@@ -22,12 +22,13 @@ export default function AboutPage() {
     logo: "https://pocketdm.com.br/icons/icon-512.png",
     foundingDate: "2026",
     description:
-      "Pocket DM é o combat tracker gratuito para D&D 5e focado em mesas presenciais. Criado no Brasil para mestres e jogadores de RPG de todo o mundo.",
+      "Pocket DM é o combat & initiative tracker gratuito para D&D 5e focado em mesas presenciais. Criado no Brasil para mestres e jogadores de RPG de todo o mundo.",
     knowsAbout: [
       "Dungeons & Dragons 5th Edition",
       "TTRPG Combat Management",
+      "D&D 5e Initiative Tracking",
+      "Initiative Tracker Tools",
       "RPG Digital Tools",
-      "Initiative Tracking",
       "D&D 5e Monsters",
       "D&D 5e Spells",
     ],
@@ -42,12 +43,12 @@ export default function AboutPage() {
     name: "Sobre o Pocket DM",
     url: "https://pocketdm.com.br/about",
     description:
-      "O Pocket DM é um rastreador de combate gratuito para D&D 5e, projetado para mesas presenciais.",
+      "O Pocket DM é um combat & initiative tracker gratuito para D&D 5e, projetado para mesas presenciais.",
     mainEntity: {
       "@type": "SoftwareApplication",
       name: "Pocket DM",
       applicationCategory: "GameApplication",
-      applicationSubCategory: "D&D 5e Combat Tracker",
+      applicationSubCategory: "D&D 5e Combat & Initiative Tracker",
       operatingSystem: "Web, iOS, Android (PWA)",
       url: "https://pocketdm.com.br",
       offers: {
@@ -57,7 +58,7 @@ export default function AboutPage() {
         description: "Plano gratuito com funcionalidades completas de combate",
       },
       featureList: [
-        "Rastreador de iniciativa em tempo real",
+        "Initiative tracker com auto-sort em tempo real",
         "Gerenciamento de HP com barras visuais",
         "Condições D&D 5e com regras integradas",
         "Bestiário SRD completo + monstros do compêndio Monster a Day",

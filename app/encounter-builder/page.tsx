@@ -9,7 +9,7 @@ import { PublicFooter } from "@/components/public/PublicFooter";
 export const metadata: Metadata = {
   title: "D&D 5e Encounter Builder — Difficulty Calculator",
   description:
-    "Free encounter difficulty calculator for D&D 5e. Add monsters from 1,100+ SRD creatures, set party size and level, and instantly see if your encounter is Easy, Medium, Hard, or Deadly.",
+    "Free encounter difficulty calculator and initiative tracker for D&D 5e. Add monsters from 1,100+ SRD creatures, set party size and level, and instantly see if your encounter is Easy, Medium, Hard, or Deadly.",
   openGraph: {
     title: "D&D 5e Encounter Builder — Difficulty Calculator",
     description:

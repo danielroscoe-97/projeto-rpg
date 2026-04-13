@@ -25,6 +25,7 @@ import {
   BlogPost17,
   BlogPost18,
   BlogPost19,
+  BlogPost20,
 } from "@/components/blog/BlogPostContent";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
@@ -87,6 +88,7 @@ const CONTENT_MAP: Record<string, React.ComponentType> = {
   "como-gerenciar-hp-dnd-5e": BlogPost17,
   "7-erros-mestre-combate-dnd": BlogPost18,
   "iniciativa-dnd-5e-regras-variantes": BlogPost19,
+  "best-initiative-tracker-dnd-5e": BlogPost20,
 };
 
 export const revalidate = 86400;

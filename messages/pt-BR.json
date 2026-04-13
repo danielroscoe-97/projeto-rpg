@@ -46,9 +46,9 @@
     "skip_content": "Pular para conteúdo principal",
     "open_menu": "Abrir menu",
     "close_menu": "Fechar menu",
-    "mobile_tagline": "Combat tracker para D&D 5e.\n1100+ monstros · 600+ magias · Grátis.",
+    "mobile_tagline": "Combat & initiative tracker para D&D 5e.\n1100+ monstros · 600+ magias · Grátis.",
     "footer_brand": "Pocket DM",
-    "footer_subtitle": "Combat tracker para mestres de D&D 5e",
+    "footer_subtitle": "Combat & initiative tracker para mestres de D&D 5e",
     "footer_login": "Login",
     "footer_signup": "Criar Conta",
     "footer_pricing": "Preços",
@@ -2871,8 +2871,8 @@
     "roller_title": "Bandeja de Dados"
   },
   "landing": {
-    "meta_title": "Pocket DM — Rastreador de Combate D&D 5e Grátis | Combat Tracker",
-    "meta_description": "Rastreador de combate e iniciativa para D&D 5e — grátis e sem cadastro. Gerencie HP, condições, turnos e magias em tempo real no celular dos seus jogadores. O melhor app para mestre de RPG presencial. Free D&D 5e combat tracker for in-person play.",
+    "meta_title": "Pocket DM — Combat & Initiative Tracker D&D 5e Grátis | Rastreador de Combate e Iniciativa",
+    "meta_description": "Combat & initiative tracker grátis para D&D 5e — sem cadastro. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores. O melhor rastreador de iniciativa para mesas presenciais. Free D&D 5e initiative tracker.",
 
     "open_beta": "Open Beta",
     "tagline": "Master your table.",
@@ -2880,7 +2880,7 @@
 
     "hero_headline_1": "Domine o combate.",
     "hero_headline_2": "Abandone o papel.",
-    "hero_subheading": "O combat tracker definitivo para D&D 5e. Iniciativa, HP e condições em tempo real — tudo no celular dos seus jogadores.",
+    "hero_subheading": "O combat & initiative tracker definitivo para D&D 5e. Ordene iniciativa automaticamente, HP e condições em tempo real — tudo no celular dos seus jogadores.",
 
     "cta_try_free": "Testar Grátis",
     "cta_quick_combat": "Combate Rápido",
@@ -2897,10 +2897,10 @@
     "stat_price_label": "pra começar",
 
     "features_heading": "Tudo o que o Mestre precisa",
-    "features_subheading": "De iniciativa a pontos de vida, de condições a oráculo de magias. Uma ferramenta focada no que importa.",
+    "features_subheading": "Rastreador de iniciativa completo e gerenciador de combate. Da ordem de turno aos pontos de vida, das condições ao oráculo de magias — uma ferramenta focada no que importa.",
 
-    "feature_1_title": "Combat Tracker Completo",
-    "feature_1_description": "Iniciativa automática, HP com temp HP, 13 condições D&D, derrota, adicionar/remover combatentes no meio do combate.",
+    "feature_1_title": "Combat & Initiative Tracker",
+    "feature_1_description": "Iniciativa automática com auto-sort, HP com temp HP, 13 condições D&D, derrota, adicionar/remover combatentes no meio do combate.",
     "feature_2_tag": "Popular",
     "feature_2_title": "Player View em Tempo Real",
     "feature_2_description": "Gere um link. Jogadores abrem no celular. Sem conta, sem app, sem fricção. Tudo atualiza ao vivo.",
@@ -2929,7 +2929,7 @@
     "step_4_title": "Mestre o Combate",
     "step_4_description": "Avance turnos, aplique dano e gerencie condições. Seus jogadores veem as atualizações ao vivo.",
     "step_4_time": "ao vivo",
-    "how_it_works_cta": "Testar Combat Tracker — Grátis",
+    "how_it_works_cta": "Testar Initiative Tracker — Grátis",
     "no_account_needed": "Sem cadastro necessário",
 
     "comparison_heading": "Feito para a mesa, não para a tela",
@@ -2941,7 +2941,7 @@
     "comparison_col_pocketdm": "Pocket DM",
     "comparison_pocketdm_badge": "Feito pra sua mesa",
 
-    "comparison_row_1_feature": "Combat tracker",
+    "comparison_row_1_feature": "Combat & initiative tracker",
     "comparison_row_1_roll20": "Pesado",
     "comparison_row_1_beyond": "Básico",
     "comparison_row_1_pocketdm": "Otimizado",
