@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket DM | Press Kit 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --gold: #D4A853;
+    --gold-light: #E8C87A;
+    --gold-dark: #B8903D;
+    --bg-deep: #13131E;
+    --bg-surface: #1A1A28;
+    --bg-elevated: #222234;
+    --text-primary: #E8E6E0;
+    --text-secondary: #B5B3BD;
+    --text-tertiary: #8A8894;
+    --destructive: #C43C3C;
+    --info: #5B8DEF;
+    --success: #4A9E5C;
+    --warning: #E89B2D;
+    --warm: #E8593C;
+    --purple: #A569BD;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+    background: var(--bg-deep);
+  }
+
+  .page:last-child {
+    page-break-after: auto;
+  }
+
+  .page-inner {
+    padding: 36px 46px;
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Noise texture overlay */
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Page corner ornament */
+  .page::after {
+    content: '';
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    width: 30px;
+    height: 30px;
+    border-right: 2px solid rgba(212,168,83,0.15);
+    border-bottom: 2px solid rgba(212,168,83,0.15);
+    z-index: 3;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Cinzel', 'Times New Roman', serif;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+
+  h1 { font-size: 30px; font-weight: 700; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 14px; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--gold-light); letter-spacing: 1px; }
+
+  p {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text-primary);
+  }
+
+  .text-secondary {
+    color: var(--text-secondary);
+    font-size: 12.5px;
+  }
+
+  .text-small {
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  /* Gold divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 18px 0;
+    opacity: 0.4;
+  }
+
+  .divider-dot {
+    text-align: center;
+    margin: -8px 0 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .divider-dot::after {
+    content: '\25C6';
+    font-size: 8px;
+    color: var(--gold);
+    background: var(--bg-deep);
+    padding: 0 12px;
+    opacity: 0.6;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border: 1px solid rgba(212,168,83,0.3);
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Card */
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid rgba(212,168,83,0.08);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+
+  .card-gold {
+    border-color: rgba(212,168,83,0.2);
+    box-shadow: 0 0 20px rgba(212,168,83,0.05);
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: 16px 10px;
+    background: var(--bg-surface);
+    border: 1px solid rgba(212,168,83,0.1);
+    border-radius: 12px;
+  }
+
+  .stat-number {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Comparison table */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .compare-table th {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 8px;
+    text-align: center;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(212,168,83,0.15);
+  }
+
+  .compare-table th:first-child {
+    text-align: left;
+    color: var(--gold-light);
+  }
+
+  .compare-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: var(--text-primary);
+  }
+
+  .compare-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .compare-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .check { color: var(--success); font-size: 15px; }
+  .cross { color: var(--destructive); font-size: 15px; opacity: 0.5; }
+  .partial { color: var(--warning); font-size: 13px; }
+
+  .highlight-col {
+    background: rgba(212,168,83,0.06);
+  }
+
+  /* Flow */
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 20px 0;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .flow-step-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 2px solid rgba(212,168,83,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .flow-step-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 90px;
+  }
+
+  .flow-arrow {
+    font-size: 16px;
+    color: var(--gold);
+    opacity: 0.5;
+    margin-top: -20px;
+  }
+
+  /* Page number */
+  .page-number {
+    position: absolute;
+    bottom: 22px;
+    left: 46px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-tertiary);
+    letter-spacing: 2px;
+  }
+
+  /* Two columns */
+  .two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .three-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Tier badges */
+  .tier-free {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(74,158,92,0.15);
+    border: 1px solid rgba(74,158,92,0.3);
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .tier-pro {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(212,168,83,0.15);
+    border: 1px solid rgba(212,168,83,0.3);
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Quote */
+  .quote-block {
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    background: rgba(212,168,83,0.04);
+    border-radius: 0 8px 8px 0;
+    margin: 14px 0;
+  }
+
+  .quote-block p {
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+
+  .quote-block .quote-author {
+    font-style: normal;
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* Contact grid */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg-surface);
+    border: 1px solid rgba(212,168,83,0.08);
+    border-radius: 10px;
+  }
+
+  .contact-icon {
+    font-size: 18px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-elevated);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .contact-label {
+    font-size: 9px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .contact-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  /* CTA button */
+  .cta-button {
+    display: inline-block;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+    color: var(--bg-deep);
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    border-radius: 8px;
+    text-transform: uppercase;
+  }
+
+  /* List with gold bullets */
+  .gold-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .gold-list li {
+    padding: 4px 0;
+    padding-left: 18px;
+    position: relative;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+
+  .gold-list li::before {
+    content: '\25C6';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 7px;
+    top: 8px;
+  }
+
+  /* Cover page specific */
+  .cover-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    gap: 28px;
+  }
+
+  .cover-logo svg {
+    width: 200px;
+    height: auto;
+    filter: drop-shadow(0 0 40px rgba(212,168,83,0.2));
+  }
+
+  .cover-tagline {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-secondary);
+    letter-spacing: 3px;
+  }
+
+  /* Glow accent line */
+  .glow-line {
+    height: 2px;
+    width: 120px;
+    margin: 0 auto;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    box-shadow: 0 0 15px rgba(212,168,83,0.4);
+  }
+
+  /* Person card */
+  .person-card {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .person-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid rgba(212,168,83,0.3);
+    background: var(--bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .person-info {
+    flex: 1;
+  }
+
+  .person-name {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  .person-role {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* Screenshot placeholder */
+  .screenshot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+  }
+
+  .screenshot-box {
+    background: var(--bg-elevated);
+    border: 1px solid rgba(212,168,83,0.08);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .screenshot-box img {
+    width: 100%;
+    border-radius: 6px;
+    opacity: 0.95;
+  }
+
+  .screenshot-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.02;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .watermark svg {
+    width: 400px;
+    height: auto;
+  }
+
+  /* Roadmap timeline */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--gold), rgba(212,168,83,0.15));
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: var(--bg-deep);
+  }
+
+  .timeline-item.done::before {
+    background: var(--gold);
+  }
+
+  .timeline-item.active::before {
+    background: var(--success);
+    border-color: var(--success);
+    box-shadow: 0 0 8px rgba(74,158,92,0.5);
+  }
+
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .timeline-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .timeline-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* AI level cards */
+  .ai-level {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px;
+    background: var(--bg-surface);
+    border: 1px solid rgba(212,168,83,0.08);
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+
+  .ai-level-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Check icon inline */
+  .ci {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 3px;
+  }
+
+  .ci svg { flex-shrink: 0; }
+
+  /* Responsive for screen viewing */
+  @media screen {
+    body {
+      padding: 20px;
+    }
+    .page {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 60px rgba(0,0,0,0.5);
+      border-radius: 4px;
+    }
+  }
+
+  @media print {
+    body { padding: 0; }
+    .page {
+      box-shadow: none;
+      border-radius: 0;
+      margin: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- =================================================================
+     PAGE 1 — CAPA
+     ================================================================= -->
+<div class="page">
+  <div class="watermark">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512"><defs><linearGradient id="wm-a" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient><linearGradient id="wm-d" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#edcf82"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b89040"/></linearGradient></defs><g stroke="url(#wm-a)" stroke-linejoin="round"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216" opacity=".5"/><path stroke-width="5" d="m256 110 80 216" opacity=".5"/><path stroke-width="5" d="m256 410-80-84" opacity=".5"/><path stroke-width="5" d="m256 410 80-84" opacity=".5"/></g><path fill="url(#wm-d)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+  </div>
+  <div class="page-inner cover-content">
+    <div style="flex:1"></div>
+
+    <div class="cover-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 620"><defs><linearGradient id="cl-a" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient><linearGradient id="cl-d" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#edcf82"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b89040"/></linearGradient><filter id="cl-c" width="140%" height="140%" x="-20%" y="-20%"><feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="5"/><feComposite in="SourceGraphic" in2="blur"/></filter></defs><g stroke="url(#cl-a)" stroke-linejoin="round" filter="url(#cl-c)" transform="matrix(.82 0 0 .82 46 10)"><g stroke-linecap="round"><path stroke-width="11" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="7" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="6" d="m256 110-80 216" opacity=".5"/><path stroke-width="6" d="m256 110 80 216" opacity=".5"/><path stroke-width="6" d="m256 410-80-84" opacity=".5"/><path stroke-width="6" d="m256 410 80-84" opacity=".5"/><path stroke-width="5" d="m133 185 123 9" opacity=".35"/><path stroke-width="5" d="m379 185-123 9" opacity=".35"/><path stroke-width="5" d="m133 185 43 141" opacity=".35"/><path stroke-width="5" d="m379 185-43 141" opacity=".35"/><path stroke-width="5" d="m133 335 43-9" opacity=".35"/><path stroke-width="5" d="m379 335-43-9" opacity=".35"/></g><path fill="url(#cl-d)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g><text x="256" y="555" fill="url(#cl-a)" font-family="Cinzel, 'Times New Roman', serif" font-size="64" font-weight="700" letter-spacing="8" text-anchor="middle">POCKET DM</text></svg>
+    </div>
+
+    <div class="glow-line"></div>
+
+    <div class="cover-tagline">Master your table.</div>
+
+    <div style="flex:1"></div>
+
+    <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+      <span class="badge">Press Kit 2026</span>
+      <span class="badge" style="border-color:rgba(74,158,92,0.4); color:var(--success);">Open Beta</span>
+    </div>
+
+    <div style="flex:0.3"></div>
+
+    <p class="text-small" style="letter-spacing:2px;">pocketdm.com.br &nbsp;&middot;&nbsp; @pocket.dm</p>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 2 — O PROBLEMA
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:20px; border-color:rgba(232,89,60,0.4); color:var(--warm);">O Problema</span>
+
+    <h1 style="font-size:26px; line-height:1.3; margin-bottom:20px;">
+      Mestres ainda gerenciam<br>
+      combate no papel.
+    </h1>
+
+    <p style="font-size:14px; line-height:1.8; margin-bottom:24px;">
+      Em 2026, a maioria dos Mestres de RPG presencial ainda alterna entre
+      cadernos, planilhas e 3-5 apps diferentes durante o combate. O resultado?
+      Sessões lentas, imersão quebrada e jogadores entediados esperando o turno.
+    </p>
+
+    <div class="two-cols" style="margin-bottom:20px;">
+      <div class="card" style="border-color:rgba(232,89,60,0.15); padding:16px;">
+        <h3 style="color:var(--warm); font-size:12px;">Dores do Mestre</h3>
+        <ul class="gold-list" style="margin-top:6px;">
+          <li style="color:var(--text-secondary); font-size:12px;">Anotar HP de 8 monstros no papel</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Esquecer condições e concentração</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Parar o jogo pra consultar stat blocks</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Perder o ritmo entre turnos</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Jogadores: "de quem é o turno?"</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(232,89,60,0.15); padding:16px;">
+        <h3 style="color:var(--warm); font-size:12px;">Dores do Jogador</h3>
+        <ul class="gold-list" style="margin-top:6px;">
+          <li style="color:var(--text-secondary); font-size:12px;">Não saber quando é seu turno</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Procurar magias no livro por 5 minutos</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Metagaming: ver HP exato do monstro</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Desconexão: "o que tá acontecendo?"</li>
+          <li style="color:var(--text-secondary); font-size:12px;">Ter que criar conta em mais um app</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card card-gold" style="text-align:center; padding:16px;">
+      <p style="font-size:14px; font-weight:600; color:var(--gold);">
+        O mercado de ferramentas RPG é poluído com complexidade.
+      </p>
+      <p style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+        VTTs (Roll20, Foundry) sao poderosos, mas pesados e feitos para mesas online.
+        Nenhuma ferramenta resolve o combate presencial com simplicidade.
+      </p>
+    </div>
+
+    <div class="divider"></div>
+    <div class="divider-dot"></div>
+
+    <h3 style="font-size:14px; margin-top:12px; margin-bottom:12px;">O mercado cresce, as ferramentas não acompanham</h3>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-number" style="font-size:22px;">US$2.4B</div>
+        <div class="stat-label">Mercado TTRPG<br>global 2026</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" style="font-size:22px;">11.8%</div>
+        <div class="stat-label">CAGR até<br>2035</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" style="font-size:22px;">50M+</div>
+        <div class="stat-label">Jogadores<br>de D&amp;D</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" style="font-size:22px;">48%</div>
+        <div class="stat-label">Usam tools<br>digitais</div>
+      </div>
+    </div>
+
+    <p class="text-small" style="margin-top:8px; text-align:center;">Fontes: Global Growth Insights, Fiction Horizon, Industry Research 2025</p>
+
+    <div style="flex:1"></div>
+    <span class="page-number">02 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 3 — A SOLUÇÃO (1/2)
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:24px;">A Solução</span>
+
+    <h2 style="font-size:28px; line-height:1.3; margin-bottom:16px;">
+      O combat tracker que<br>
+      faltava na sua mesa.
+    </h2>
+
+    <p style="font-size:15px; line-height:1.8; max-width:500px; margin-bottom:28px;">
+      <strong>Pocket DM</strong> (Pocket Dungeon Manager) é uma ferramenta gratuita de combate para D&D 5e, feita para
+      mesas presenciais. O Mestre controla tudo no notebook ou tablet e os jogadores
+      acompanham ao vivo pelo celular. Sem cadastro, sem download, sem complicação.
+    </p>
+
+    <div class="divider"></div>
+    <div class="divider-dot"></div>
+
+    <h3 style="margin-top:16px; margin-bottom:16px; font-size:14px;">Visão do Mestre (Desktop)</h3>
+
+    <div class="screenshot-box" style="margin-bottom:16px; padding:12px;">
+      <img src="../e2e/guest-qa/screenshots/d01-03-combat-active.png" alt="Tela DM: combate ativo" style="width:100%; border-radius:8px;" onerror="this.style.display='none'; this.parentElement.querySelector('.screenshot-label').textContent='[Inserir: screenshot DM combat]';">
+      <div class="screenshot-label">Combate ativo — iniciativa, HP, condições e stat blocks em uma tela</div>
+    </div>
+
+    <div class="two-cols" style="margin-top:12px;">
+      <div class="card" style="padding:14px;">
+        <h3 style="font-size:12px; margin-bottom:6px;">O que o Mestre vê</h3>
+        <ul class="gold-list">
+          <li style="font-size:12px; color:var(--text-secondary);">Ordem de iniciativa completa</li>
+          <li style="font-size:12px; color:var(--text-secondary);">HP exato + barras visuais</li>
+          <li style="font-size:12px; color:var(--text-secondary);">Stat blocks inline dos monstros</li>
+          <li style="font-size:12px; color:var(--text-secondary);">Condições com duração por turno</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:14px;">
+        <h3 style="font-size:12px; margin-bottom:6px;">O que o Jogador vê</h3>
+        <ul class="gold-list">
+          <li style="font-size:12px; color:var(--text-secondary);">HP em tiers (não números exatos)</li>
+          <li style="font-size:12px; color:var(--text-secondary);">De quem é o turno atual</li>
+          <li style="font-size:12px; color:var(--text-secondary);">Busca de magias integrada</li>
+          <li style="font-size:12px; color:var(--text-secondary);">Condições visíveis do combate</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">03 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 4 — A SOLUÇÃO (2/2)
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:20px;">A Solução</span>
+
+    <h3 style="font-size:15px; margin-bottom:14px;">Mais telas do produto</h3>
+
+    <div class="three-cols" style="gap:10px; margin-bottom:16px;">
+      <div class="screenshot-box" style="padding:8px;">
+        <img src="../e2e/guest-qa/screenshots/m01-03-combat-active-mobile.png" alt="Player view mobile" style="width:100%; border-radius:6px;" onerror="this.style.display='none'; this.parentElement.querySelector('.screenshot-label').textContent='[Player view]';">
+        <div class="screenshot-label">Player view (mobile)</div>
+      </div>
+      <div class="screenshot-box" style="padding:8px;">
+        <img src="../e2e/guest-qa/screenshots/d01-02-setup-filled.png" alt="Setup de encontro" style="width:100%; border-radius:6px;" onerror="this.style.display='none'; this.parentElement.querySelector('.screenshot-label').textContent='[Setup]';">
+        <div class="screenshot-label">Setup do encontro</div>
+      </div>
+      <div class="screenshot-box" style="padding:8px;">
+        <img src="../e2e/guest-qa/screenshots/d01-05-recap-awards.png" alt="Recap pós-combate" style="width:100%; border-radius:6px;" onerror="this.style.display='none'; this.parentElement.querySelector('.screenshot-label').textContent='[Recap]';">
+        <div class="screenshot-label">Recap pós-combate</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="divider-dot"></div>
+
+    <div class="stats-grid" style="margin-top:16px; margin-bottom:16px;">
+      <!-- Monstros — Orc silhouette -->
+      <div class="stat-box" style="border-color:rgba(239,68,68,0.1);">
+        <img src="../public/art/decorations/orc-silhouette.svg" alt="" style="width:36px; height:36px; margin-bottom:4px; opacity:0.75;">
+        <div class="stat-number" style="font-size:22px;">1100+</div>
+        <div class="stat-label">Monstros</div>
+      </div>
+      <!-- Magias — Spell star -->
+      <div class="stat-box" style="border-color:rgba(168,85,247,0.1);">
+        <svg width="36" height="36" viewBox="0 0 80 80" fill="none" style="margin-bottom:4px;">
+          <path d="M40 8l4 16 16 4-16 4-4 16-4-16-16-4 16-4z" stroke="#A855F7" stroke-width="1.5" fill="#A855F7" fill-opacity="0.08"/>
+          <path d="M40 20l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" stroke="#A855F7" stroke-width="0.8" fill="#A855F7" fill-opacity="0.12"/>
+          <circle cx="40" cy="40" r="24" stroke="#A855F7" stroke-width="0.8" opacity="0.15" stroke-dasharray="4 4"/>
+        </svg>
+        <div class="stat-number" style="font-size:22px;">600+</div>
+        <div class="stat-label">Magias</div>
+      </div>
+      <!-- SFX — Sound wave -->
+      <div class="stat-box" style="border-color:rgba(91,141,239,0.1);">
+        <svg width="36" height="36" viewBox="0 0 80 80" fill="none" style="margin-bottom:4px;">
+          <rect x="18" y="30" width="6" height="20" rx="3" fill="#5B8DEF" fill-opacity="0.15" stroke="#5B8DEF" stroke-width="1"/>
+          <rect x="28" y="22" width="6" height="36" rx="3" fill="#5B8DEF" fill-opacity="0.1" stroke="#5B8DEF" stroke-width="1"/>
+          <rect x="38" y="14" width="6" height="52" rx="3" fill="#5B8DEF" fill-opacity="0.08" stroke="#5B8DEF" stroke-width="1"/>
+          <rect x="48" y="22" width="6" height="36" rx="3" fill="#5B8DEF" fill-opacity="0.1" stroke="#5B8DEF" stroke-width="1"/>
+          <rect x="58" y="30" width="6" height="20" rx="3" fill="#5B8DEF" fill-opacity="0.15" stroke="#5B8DEF" stroke-width="1"/>
+        </svg>
+        <div class="stat-number" style="font-size:22px;">151+</div>
+        <div class="stat-label">SFX Presets</div>
+      </div>
+      <!-- Grátis — Sparkle -->
+      <div class="stat-box" style="border-color:rgba(74,158,92,0.1);">
+        <svg width="36" height="36" viewBox="0 0 80 80" fill="none" style="margin-bottom:4px;">
+          <path d="M40 10L44 30L64 40L44 50L40 70L36 50L16 40L36 30Z" stroke="#4A9E5C" stroke-width="1.2" fill="#4A9E5C" fill-opacity="0.06"/>
+          <path d="M40 24L42 34L52 40L42 46L40 56L38 46L28 40L38 34Z" stroke="#4A9E5C" stroke-width="0.8" fill="#4A9E5C" fill-opacity="0.1"/>
+          <circle cx="40" cy="40" r="4" fill="#4A9E5C" fill-opacity="0.2"/>
+        </svg>
+        <div class="stat-number" style="font-size:22px;">R$0</div>
+        <div class="stat-label">Para começar</div>
+      </div>
+    </div>
+
+    <div class="card card-gold" style="display:flex; gap:12px; align-items:center; padding:14px;">
+      <div style="width:36px; height:36px; border-radius:8px; background:rgba(212,168,83,0.1); border:1px solid rgba(212,168,83,0.2); display:flex; align-items:center; justify-content:center; color:var(--gold); flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect x="10" y="5" width="12" height="22" rx="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="2.5" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="5" stroke="currentColor" stroke-width="0.8" opacity="0.35"/><circle cx="16" cy="16" r="1" fill="currentColor"/></svg>
+      </div>
+      <div>
+        <h3 style="font-size:13px; margin:0 0 2px;">PWA — Funciona em qualquer dispositivo</h3>
+        <p style="font-size:12px; color:var(--text-secondary);">
+          Web app progressivo. Sem instalação, sem paywall, sem ads. Navegador aberto = pronto pra jogar.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:10px; text-align:center; padding:12px; background:rgba(74,158,92,0.06); border-color:rgba(74,158,92,0.15);">
+      <p style="font-size:12px; color:var(--success); font-weight:600;">
+        Durante o Open Beta, TODAS as features Pro estão desbloqueadas gratuitamente.
+      </p>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">04 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 5 — COMO FUNCIONA
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:20px;">Como Funciona</span>
+
+    <h2 style="font-size:26px; line-height:1.3; margin-bottom:10px;">
+      Do zero ao combaté<br>
+      em um minuto.
+    </h2>
+
+    <p class="text-secondary" style="margin-bottom:24px;">
+      Sem instalação. Sem configuração. Sem tutorial obrigatório.
+    </p>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-icon" style="color:var(--gold);"><svg width="24" height="24" viewBox="0 0 64 64" fill="none"><rect x="12" y="6" width="40" height="52" rx="3" stroke="currentColor" stroke-width="2.5" fill="currentColor" fill-opacity="0.06"/><path d="M18 6v52" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="28" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
+        <div class="flow-step-label">Mestre abre o app no notebook</div>
+      </div>
+      <div class="flow-arrow">&#x25B8;</div>
+      <div class="flow-step">
+        <div class="flow-step-icon" style="color:var(--gold);"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 2C5.5 2 3 4 3 7c0 2 1 3.5 2 4.5L6 14h4l1-2.5C12 10.5 13 9 13 7c0-3-2.5-5-5-5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="6" cy="6.5" r="0.8" fill="currentColor" opacity="0.7"/><circle cx="10" cy="6.5" r="0.8" fill="currentColor" opacity="0.7"/></svg></div>
+        <div class="flow-step-label">Cria o encontro com monstros</div>
+      </div>
+      <div class="flow-arrow">&#x25B8;</div>
+      <div class="flow-step">
+        <div class="flow-step-icon" style="color:var(--gold);"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="5" y="5" width="22" height="22" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M9 5v7h14V5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="10" y="17" width="12" height="7" rx="1" stroke="currentColor" stroke-width="1.2" opacity="0.4"/></svg></div>
+        <div class="flow-step-label">Compartilha QR code com a mesa</div>
+      </div>
+      <div class="flow-arrow">&#x25B8;</div>
+      <div class="flow-step">
+        <div class="flow-step-icon" style="color:var(--gold);"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="9" y="4" width="14" height="24" rx="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="16" r="1" fill="currentColor"/></svg></div>
+        <div class="flow-step-label">Jogadores entram pelo celular</div>
+      </div>
+    </div>
+
+    <div class="divider" style="margin:20px 0;"></div>
+
+    <h3 style="margin-bottom:12px; font-size:14px;">Três modos de acesso</h3>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div class="card" style="display:flex; gap:14px; align-items:center; padding:14px;">
+        <div style="width:40px; height:40px; border-radius:10px; background:var(--bg-elevated); border:1px solid rgba(212,168,83,0.15); display:flex; align-items:center; justify-content:center; color:var(--gold); flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5L12 2Z" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.06"/></svg></div>
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+            <h3 style="font-size:13px; margin:0;">Modo Guest</h3>
+            <span class="tier-free">grátis</span>
+          </div>
+          <p class="text-secondary" style="font-size:11px;">
+            Acesse <strong>pocketdm.com.br/try</strong> e comece a jogar imediatamente.
+            Sem cadastro. Funcionalidade completa para testar.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex; gap:14px; align-items:center; padding:14px;">
+        <div style="width:40px; height:40px; border-radius:10px; background:var(--bg-elevated); border:1px solid rgba(91,141,239,0.2); display:flex; align-items:center; justify-content:center; color:var(--info); flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect x="9" y="4" width="14" height="24" rx="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="16" r="1" fill="currentColor"/></svg></div>
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+            <h3 style="font-size:13px; margin:0;">Player View</h3>
+            <span class="tier-free">grátis</span>
+          </div>
+          <p class="text-secondary" style="font-size:11px;">
+            Jogadores escaneiam o QR code e acompanham o combate ao vivo.
+            Buscam magias, veem turnos e condições. Zero fricção.
+          </p>
+        </div>
+      </div>
+
+      <div class="card card-gold" style="display:flex; gap:14px; align-items:center; padding:14px;">
+        <div style="width:40px; height:40px; border-radius:10px; background:rgba(212,168,83,0.1); border:1px solid rgba(212,168,83,0.25); display:flex; align-items:center; justify-content:center; color:var(--gold); flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 80 80" fill="none"><path d="M40 10L14 24v18c0 14 10 24 26 30 16-6 26-16 26-30V24L40 10z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/></svg></div>
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+            <h3 style="font-size:13px; margin:0;">Conta de Mestre</h3>
+            <span class="tier-free">grátis</span>
+          </div>
+          <p class="text-secondary" style="font-size:11px;">
+            Campanhas persistentes, histórico de encontros, presets salvos,
+            gerenciamento de jogadores e acesso ao compêndio completo.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px; text-align:center; padding:14px; background:rgba(74,158,92,0.06); border-color:rgba(74,158,92,0.15);">
+      <p style="font-size:12px; color:var(--success); font-weight:600;">
+        Durante o Open Beta, TODAS as features Pro estão desbloqueadas gratuitamente.
+      </p>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">05 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 6 — FEATURES PRINCIPAIS
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:18px; border-color:rgba(91,141,239,0.4); color:var(--info);">Features</span>
+
+    <h2 style="font-size:24px; line-height:1.3; margin-bottom:20px;">
+      Tudo que o Mestre precisa.<br>
+      Nada que ele não precisa.
+    </h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
+      <!-- Combat Tracker -->
+      <div class="card" style="padding:16px; border-color:rgba(212,168,83,0.12);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="width:28px; height:28px; border-radius:7px; background:rgba(212,168,83,0.1); border:1px solid rgba(212,168,83,0.2); display:flex; align-items:center; justify-content:center; color:var(--gold); flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M6 26L20 12M20 12V18M20 12H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M26 26L12 12M12 12V18M12 12H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3 style="font-size:12px; margin:0;">Combat Tracker</h3>
+        </div>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Iniciativa automática</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>HP, temp HP, death saves</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>13 condições + concentração</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Adicionar mid-combat</div>
+      </div>
+
+      <!-- Player View -->
+      <div class="card" style="padding:16px; border-color:rgba(91,141,239,0.12);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="width:28px; height:28px; border-radius:7px; background:rgba(91,141,239,0.1); border:1px solid rgba(91,141,239,0.2); display:flex; align-items:center; justify-content:center; color:var(--info); flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><rect x="9" y="4" width="14" height="24" rx="2.5" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h3 style="font-size:12px; margin:0;">Player View Realtime</h3>
+        </div>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>QR code ou link direto</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Zero cadastro pro jogador</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Combate ao vivo no celular</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Busca de magias inline</div>
+      </div>
+
+      <!-- Compêndio -->
+      <div class="card" style="padding:16px; border-color:rgba(74,158,92,0.12);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="width:28px; height:28px; border-radius:7px; background:rgba(74,158,92,0.1); border:1px solid rgba(74,158,92,0.2); display:flex; align-items:center; justify-content:center; color:var(--success); flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="15" r="9" stroke="currentColor" stroke-width="1.8"/></svg>
+          </div>
+          <h3 style="font-size:12px; margin:0;">Compêndio SRD</h3>
+        </div>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>1100+ monstros com stat blocks</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>600+ magias completas</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>8 abas: monstros, magias, itens...</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Busca e filtros instantâneos</div>
+      </div>
+
+      <!-- Anti-Metagaming -->
+      <div class="card" style="padding:16px; border-color:rgba(232,89,60,0.12);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="width:28px; height:28px; border-radius:7px; background:rgba(232,89,60,0.1); border:1px solid rgba(232,89,60,0.2); display:flex; align-items:center; justify-content:center; color:var(--warm); flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 64 64" fill="none"><path d="M32 4L8 16v18c0 14 10 22 24 26 14-4 24-12 24-26V16L32 4z" stroke="currentColor" stroke-width="3"/></svg>
+          </div>
+          <h3 style="font-size:12px; margin:0;">Anti-Metagaming</h3>
+        </div>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>HP em tiers, não números</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>AC oculto dos jogadores</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Barras de cor por severidade</div>
+      </div>
+
+      <!-- Dual Ruleset -->
+      <div class="card" style="padding:16px; border-color:rgba(232,155,45,0.12);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="width:28px; height:28px; border-radius:7px; background:rgba(232,155,45,0.1); border:1px solid rgba(232,155,45,0.2); display:flex; align-items:center; justify-content:center; color:var(--warning); flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 32 32" fill="none"><path d="M16 6C14 5 10 4 5 5v18c5-1 9 0 11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 6c2-1 6-2 11-1v18c-5-1-9 0-11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3 style="font-size:12px; margin:0;">Regras 2014 &amp; 2024</h3>
+        </div>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Alterna com um clique</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Stats lado a lado</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Único no mercado</div>
+      </div>
+
+      <!-- Soundboard + Audio -->
+      <div class="card" style="padding:16px; border-color:rgba(142,68,173,0.12);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="width:28px; height:28px; border-radius:7px; background:rgba(142,68,173,0.1); border:1px solid rgba(142,68,173,0.2); display:flex; align-items:center; justify-content:center; color:var(--purple); flex-shrink:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5L12 2Z" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h3 style="font-size:12px; margin:0;">Audio &amp; Soundboard</h3>
+        </div>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>151+ presets de SFX</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Atmosferas por contexto</div><br>
+        <div class="ci"><svg width="12" height="12" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(74,158,92,0.15)" stroke="#4A9E5C" stroke-width="1.5"/><path d="M6 10.5l2.8 2.8 5-5.6" stroke="#4A9E5C" stroke-width="2" stroke-linecap="round"/></svg>Taverna, caverna, batalha...</div>
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top:10px; background:rgba(212,168,83,0.04); border-color:rgba(212,168,83,0.15); padding:12px 16px; display:flex; align-items:center; gap:10px;">
+      <div style="font-size:11px; color:var(--text-secondary);">
+        <strong style="color:var(--gold);">Também inclui:</strong>
+        Dice roller &middot; Spell slots &middot; Notas &middot; Quest board &middot; Chat &middot; Combat recap (estilo Spotify Wrapped) &middot; Analytics do DM &middot; Character abilities &middot; Attunement slots
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">06 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 7 — POSICIONAMENTO COMPETITIVO
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:20px;">Posicionamento</span>
+
+    <h2 style="font-size:24px; line-height:1.3; margin-bottom:10px;">
+      O que nos torna<br>
+      diferentes.
+    </h2>
+
+    <p class="text-secondary" style="margin-bottom:18px;">
+      Comparacao objetiva com as principais ferramentas do mercado.
+    </p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th class="highlight-col" style="color:var(--gold);">Pocket DM</th>
+          <th>D&amp;D Beyond</th>
+          <th>Roll20</th>
+          <th>Foundry VTT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Foco presencial</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td><td><span class="cross">&#10007;</span></td><td><span class="cross">&#10007;</span></td></tr>
+        <tr><td>Player view realtime</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td><td><span class="partial">~</span></td><td><span class="partial">~</span></td></tr>
+        <tr><td>Zero cadastro p/ jogador</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td><td><span class="cross">&#10007;</span></td><td><span class="cross">&#10007;</span></td></tr>
+        <tr><td>Anti-metagaming nativo</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td><td><span class="partial">~</span></td><td><span class="check">&#10003;</span></td></tr>
+        <tr><td>Dual ruleset (2014+2024)</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="partial">~</span></td><td><span class="cross">&#10007;</span></td><td><span class="partial">~</span></td></tr>
+        <tr><td>Grátis completo</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td><td><span class="partial">~</span></td><td><span class="cross">&#10007;</span></td></tr>
+        <tr><td>Sem instalação</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+        <tr><td>PT-BR nativo + bilíngue</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="partial">~</span></td><td><span class="cross">&#10007;</span></td><td><span class="partial">~</span></td></tr>
+        <tr><td>Preco em R$</td><td class="highlight-col"><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td><td><span class="cross">&#10007;</span></td><td><span class="cross">&#10007;</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="divider" style="margin-top:20px;"></div>
+
+    <h3 style="margin-top:14px; margin-bottom:10px; font-size:13px;">5 moats defensaveis</h3>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div class="card" style="padding:12px;">
+        <p style="font-size:11px; font-weight:600; color:var(--gold); margin-bottom:2px;">Broadcast Realtime</p>
+        <p class="text-small">Jogadores veem HP, turnos e condições ao vivo no celular. Nenhum outro tracker faz isso.</p>
+      </div>
+      <div class="card" style="padding:12px;">
+        <p style="font-size:11px; font-weight:600; color:var(--gold); margin-bottom:2px;">Zero Fricção</p>
+        <p class="text-small">Link ou QR code, sem login, funciona na hora. Jogador entra em 5 segundos.</p>
+      </div>
+      <div class="card" style="padding:12px;">
+        <p style="font-size:11px; font-weight:600; color:var(--gold); margin-bottom:2px;">Dual SRD Versioning</p>
+        <p class="text-small">2014 e 2024 coexistem. D&D Beyond falhou nisso (40k cancelamentos na transição).</p>
+      </div>
+      <div class="card" style="padding:12px;">
+        <p style="font-size:11px; font-weight:600; color:var(--gold); margin-bottom:2px;">Presencial-First</p>
+        <p class="text-small">Única ferramenta pensada para a mesa física + celular como companion.</p>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">07 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 8 — CONTEÚDO & COMPÊNDIO
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:20px; border-color:rgba(74,158,92,0.4); color:var(--success);">Conteúdo</span>
+
+    <h2 style="font-size:24px; line-height:1.3; margin-bottom:10px;">
+      O maior compêndio SRD<br>
+      do Brasil.
+    </h2>
+
+    <p class="text-secondary" style="margin-bottom:18px;">
+      Todo o conteúdo é baseado no SRD 5.1 (CC-BY-4.0), com contribuicoes da comunidade
+      Monster-a-Day. Dados oficiais, stat blocks completos, busca instantanea.
+    </p>
+
+    <div class="two-cols" style="margin-bottom:14px;">
+      <div class="card" style="text-align:center; padding:16px;">
+        <h3 style="font-size:13px; margin-bottom:6px; margin-top:4px;">Bestiário</h3>
+        <div class="stat-number" style="font-size:32px;">1122</div>
+        <div class="stat-label" style="margin-top:4px;">Monstros com stat blocks</div>
+        <div style="margin-top:8px;">
+          <p class="text-small">419 SRD 5.1 &middot; 346 SRD 2024 &middot; 357 Monster-a-Day</p>
+        </div>
+      </div>
+      <div class="card" style="text-align:center; padding:16px;">
+        <h3 style="font-size:13px; margin-bottom:6px; margin-top:4px;">Grimório</h3>
+        <div class="stat-number" style="font-size:32px;">604</div>
+        <div class="stat-label" style="margin-top:4px;">Magias com descrições</div>
+        <div style="margin-top:8px;">
+          <p class="text-small">Filtros por classe, nivel, escola e componentes</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-gold" style="padding:16px;">
+      <h3 style="font-size:12px; margin-bottom:8px;">O que éstá incluso</h3>
+      <div class="two-cols" style="gap:10px;">
+        <ul class="gold-list">
+          <li style="font-size:11px;">Monstros com ações e habilidades</li>
+          <li style="font-size:11px;">Magias de todas as classes</li>
+          <li style="font-size:11px;">Itens mágicos com propriedades</li>
+          <li style="font-size:11px;">13 condições com regras completas</li>
+        </ul>
+        <ul class="gold-list">
+          <li style="font-size:11px;">12 classes com descrições</li>
+          <li style="font-size:11px;">Raças e opções de personagem</li>
+          <li style="font-size:11px;">Backgrounds e históricos</li>
+          <li style="font-size:11px;">Feats e talentos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:4px; padding:14px;">
+      <h3 style="font-size:12px; margin-bottom:6px;">Dual Ruleset: 2014 e 2024</h3>
+      <p class="text-secondary" style="font-size:12px;">
+        O Pocket DM é a <strong>única ferramenta</strong> que oferece ambos os rulesets D&D lado a lado.
+        Monstros como o <em>Owlbear</em> tem stats diferentes em 2014 vs 2024. O Mestre escolhe
+        qual versão usar com um clique. Perfeito para mesas em transição entre edições.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:4px; background:rgba(142,68,173,0.06); border-color:rgba(142,68,173,0.15); padding:14px;">
+      <h3 style="font-size:12px; margin-bottom:6px; color:var(--purple);">Metodologia Comunitária</h3>
+      <p class="text-secondary" style="font-size:12px;">
+        Dados reais de combate alimentam análises da comunidade: tier lists de magias,
+        precisao do Challenge Rating, estatisticas de encontros. Sistema de titulos
+        progressivos (Explorer &rarr; Data Hunter &rarr; Researcher &rarr; Meta Architect)
+        gamifica a contribuicao. Os jogadores constroem o conhecimento coletivo.
+      </p>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">08 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 9 — IA & INOVAÇÃO
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:20px; border-color:rgba(142,68,173,0.4); color:var(--purple);">Inteligência Artificial</span>
+
+    <h2 style="font-size:24px; line-height:1.3; margin-bottom:10px;">
+      IA que entende<br>
+      a sua mesa.
+    </h2>
+
+    <p style="font-size:13px; line-height:1.7; margin-bottom:20px;">
+      O Pocket DM está construindo uma camada de inteligência artificial que não e genérica:
+      ela entende o contexto do seu combate, os combatentes ativos, condições aplicadas e histórico
+      de ações. A IA evolui em 4 niveis, do básico ao proativo.
+    </p>
+
+    <!-- Level 1 -->
+    <div class="ai-level" style="border-color:rgba(74,158,92,0.2);">
+      <div class="ai-level-badge" style="background:rgba(74,158,92,0.15); border:2px solid var(--success); color:var(--success);">1</div>
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+          <p style="font-size:13px; font-weight:600; color:var(--success);">Oracle de Regras</p>
+          <span class="tier-free" style="font-size:8px; padding:1px 6px;">DEPLOYED</span>
+        </div>
+        <p style="font-size:11px; color:var(--text-secondary); line-height:1.5;">
+          Consulta de regras D&D via linguagem natural. O Mestre pergunta "como funciona concentração?"
+          e recebe a resposta formatada sem sair da tela de combate.
+        </p>
+      </div>
+    </div>
+
+    <!-- Level 2 -->
+    <div class="ai-level" style="border-color:rgba(91,141,239,0.2);">
+      <div class="ai-level-badge" style="background:rgba(91,141,239,0.15); border:2px solid var(--info); color:var(--info);">2</div>
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+          <p style="font-size:13px; font-weight:600; color:var(--info);">Context-Aware</p>
+          <span class="badge" style="font-size:8px; padding:1px 6px; border-color:rgba(91,141,239,0.3); color:var(--info);">Q3 2026</span>
+        </div>
+        <p style="font-size:11px; color:var(--text-secondary); line-height:1.5;">
+          A IA conhece os combatentes ativos, seus HPs, condições e turno atual. Respostas contextualizadas:
+          "O Goblin tem 3 HP e está Frightened — ele não pode se aproximar do Paladin."
+        </p>
+      </div>
+    </div>
+
+    <!-- Level 3 -->
+    <div class="ai-level" style="border-color:rgba(232,155,45,0.2);">
+      <div class="ai-level-badge" style="background:rgba(232,155,45,0.15); border:2px solid var(--warning); color:var(--warning);">3</div>
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+          <p style="font-size:13px; font-weight:600; color:var(--warning);">Sugestões Proativas</p>
+          <span class="badge" style="font-size:8px; padding:1px 6px; border-color:rgba(232,155,45,0.3); color:var(--warning);">Q4 2026</span>
+        </div>
+        <p style="font-size:11px; color:var(--text-secondary); line-height:1.5;">
+          Recomenda magias e ações baseadas no estado atual. Sugere táticas para monstros.
+          Alerta sobre condições prestes a expirar. O assistente que todo Mestre queria ter ao lado.
+        </p>
+      </div>
+    </div>
+
+    <!-- Level 4 -->
+    <div class="ai-level" style="border-color:rgba(212,168,83,0.2);">
+      <div class="ai-level-badge" style="background:rgba(212,168,83,0.15); border:2px solid var(--gold); color:var(--gold);">4</div>
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+          <p style="font-size:13px; font-weight:600; color:var(--gold);">Session Intelligence</p>
+          <span class="badge" style="font-size:8px; padding:1px 6px;">Q1 2027+</span>
+        </div>
+        <p style="font-size:11px; color:var(--text-secondary); line-height:1.5;">
+          Gera recaps narrativos pos-sessão automáticamente. Analisa padrões de combate ao longo da campanha.
+          Mind maps de sessão gerados por IA. Insights de balanceamento baseados em dados reais.
+        </p>
+      </div>
+    </div>
+
+    <div class="card card-gold" style="margin-top:10px; text-align:center; padding:14px;">
+      <p style="font-size:12px; color:var(--text-secondary);">
+        <strong style="color:var(--gold);">Diferencial:</strong> A IA do Pocket DM não e um chatbot genérico.
+        Ela lê o estado do combate em tempo real e responde com contexto que nenhum outro assistente tem.
+      </p>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">09 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 10 — MODELO DE NEGÓCIO + QUEM SOMOS
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <span class="badge" style="margin-bottom:20px;">Modelo de Negócio</span>
+
+    <h2 style="font-size:22px; line-height:1.3; margin-bottom:16px;">
+      Freemium sem degradação.
+    </h2>
+
+    <div class="two-cols" style="margin-bottom:14px;">
+      <div class="card" style="text-align:center; padding:18px;">
+        <span class="tier-free" style="font-size:11px; padding:3px 12px;">FREE</span>
+        <div style="margin-top:10px;">
+          <span style="font-family:'Cinzel',serif; font-size:26px; font-weight:700; color:var(--success);">R$0</span>
+          <span style="font-size:11px; color:var(--text-tertiary);"> / para sempre</span>
+        </div>
+        <ul class="gold-list" style="text-align:left; margin-top:12px;">
+          <li style="font-size:11px; color:var(--text-secondary);">Combat tracker completo</li>
+          <li style="font-size:11px; color:var(--text-secondary);">Player view realtime</li>
+          <li style="font-size:11px; color:var(--text-secondary);">Compêndio SRD (1700+ entradas)</li>
+          <li style="font-size:11px; color:var(--text-secondary);">Guest mode, soundboard, dice roller</li>
+          <li style="font-size:11px; color:var(--text-secondary);">Oracle IA (regras basicas)</li>
+        </ul>
+      </div>
+      <div class="card card-gold" style="text-align:center; padding:18px;">
+        <span class="tier-pro" style="font-size:11px; padding:3px 12px;">PRO</span>
+        <div style="margin-top:10px;">
+          <span style="font-family:'Cinzel',serif; font-size:26px; font-weight:700; color:var(--gold);">R$14,90</span>
+          <span style="font-size:11px; color:var(--text-tertiary);"> / mes</span>
+        </div>
+        <ul class="gold-list" style="text-align:left; margin-top:12px;">
+          <li style="font-size:11px; color:var(--text-secondary);">Campanhas persistentes + histórico</li>
+          <li style="font-size:11px; color:var(--text-secondary);">Encounter presets salvos</li>
+          <li style="font-size:11px; color:var(--text-secondary);">Export &amp; backup (PDF, JSON)</li>
+          <li style="font-size:11px; color:var(--text-secondary);">Session analytics avançado</li>
+          <li style="font-size:11px; color:var(--text-secondary);">IA context-aware + proativa</li>
+        </ul>
+        <p class="text-small" style="margin-top:6px;">ou R$119,90/ano (33% desconto)</p>
+      </div>
+    </div>
+
+    <div class="card" style="padding:12px; margin-bottom:14px; background:rgba(212,168,83,0.04); border-color:rgba(212,168,83,0.15);">
+      <p style="font-size:11px; color:var(--text-secondary); text-align:center;">
+        <strong style="color:var(--gold);">Receita futura adicional:</strong>
+        Marketplace de homebrew (70/30) &middot; Modulos standalone &middot; Grupo/mesa tier &middot; API access
+      </p>
+    </div>
+
+    <div class="divider"></div>
+    <div class="divider-dot"></div>
+
+    <span class="badge" style="margin-top:10px; margin-bottom:14px;">Quem Esta Por Tras</span>
+
+    <div class="person-card" style="margin-bottom:14px;">
+      <div class="person-avatar" style="width:76px; height:76px;">
+        <img src="daniel-roscoe.jpg" alt="Daniel Roscoe Oliveira" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-family:Cinzel,serif;font-size:24px;font-weight:700;color:#D4A853;\'>DR</span>';">
+      </div>
+      <div class="person-info">
+        <div class="person-name" style="font-size:16px;">Daniel Roscoe Oliveira</div>
+        <div class="person-role" style="margin-bottom:4px;">Fundador &middot; Belo Horizonte, MG</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+          <span class="badge" style="font-size:8px; padding:2px 8px;">Head of AI Product Ops @ Awsales</span>
+          <a href="https://www.linkedin.com/in/daniel-roscoe-oliveira/" target="_blank" style="text-decoration:none;">
+            <span class="badge" style="font-size:8px; padding:2px 8px; border-color:rgba(91,141,239,0.3); color:var(--info);">LinkedIn</span>
+          </a>
+        </div>
+        <p style="font-size:11px; line-height:1.6; color:var(--text-secondary);">
+          Product leader com 8+ anos em fintech, dados e IA.
+          Stone, Inter, Warren e Take Blip antes de liderar AI Ops na Awsales,
+          escalando agentes de IA com 1M+ conversas/mes. Mestre de D&D semanal.
+        </p>
+      </div>
+    </div>
+
+    <div class="three-cols">
+      <div class="card" style="padding:10px; text-align:center;">
+        <p style="font-size:10px; font-weight:600; color:var(--gold); margin-bottom:2px;">Produto &amp; Fintech</p>
+        <p class="text-small">PM em Stone, Inter, Warren. Produtos que éscalaram bilhoes</p>
+      </div>
+      <div class="card" style="padding:10px; text-align:center;">
+        <p style="font-size:10px; font-weight:600; color:var(--gold); margin-bottom:2px;">IA &amp; Operações</p>
+        <p class="text-small">Head AI Ops na Awsales. Multi-agentes, 1M+ interações</p>
+      </div>
+      <div class="card" style="padding:10px; text-align:center;">
+        <p style="font-size:10px; font-weight:600; color:var(--gold); margin-bottom:2px;">RPG de Mesa</p>
+        <p class="text-small">DM semanal. Construiu o app que queria usar na propria mesa</p>
+      </div>
+    </div>
+
+    <div class="quote-block" style="margin:10px 0 0;">
+      <p style="font-size:12px;">"Toda sessão era uma luta entre cadernos, planilhas e 3 apps. Nenhuma ferramenta
+      resolvia o combate presencial de verdade. Então construi a que faltava."</p>
+      <div class="quote-author">-- Daniel Roscoe, Fundador</div>
+    </div>
+
+    <div style="flex:1"></div>
+    <span class="page-number">10 / 11</span>
+  </div>
+</div>
+
+<!-- =================================================================
+     PAGE 11 — CTA + CONTATO + ASSETS
+     ================================================================= -->
+<div class="page">
+  <div class="page-inner">
+    <div style="flex:0.3"></div>
+
+    <div style="text-align:center; margin-bottom:24px;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="80" height="80" style="filter:drop-shadow(0 0 30px rgba(212,168,83,0.25));"><defs><linearGradient id="cta-a" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient><linearGradient id="cta-d" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#edcf82"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b89040"/></linearGradient><filter id="cta-c" width="140%" height="140%" x="-20%" y="-20%"><feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="7"/><feComposite in="SourceGraphic" in2="blur"/></filter></defs><g stroke="url(#cta-a)" stroke-linejoin="round" filter="url(#cta-c)"><g stroke-linecap="round"><path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/><path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/><path stroke-width="5" d="m256 110-80 216" opacity=".5"/><path stroke-width="5" d="m256 110 80 216" opacity=".5"/><path stroke-width="5" d="m256 410-80-84" opacity=".5"/><path stroke-width="5" d="m256 410 80-84" opacity=".5"/></g><path fill="url(#cta-d)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/></g></svg>
+    </div>
+
+    <h2 style="text-align:center; font-size:26px; line-height:1.3; margin-bottom:6px;">
+      Teste agora.<br>
+      Sem cadastro.
+    </h2>
+
+    <p class="text-secondary" style="text-align:center; margin-bottom:24px;">
+      Acesse o modo guest e experimente o combate completo em um minuto.
+    </p>
+
+    <div style="text-align:center; margin-bottom:28px;">
+      <div class="cta-button" style="display:inline-block;">pocketdm.com.br/try</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="divider-dot"></div>
+
+    <h3 style="text-align:center; margin:16px 0 12px; font-size:14px;">Contato &amp; Redes</h3>
+
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-icon" style="color:var(--gold);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M3 12h18M12 3c-2.5 2.5-4 5.5-4 9s1.5 6.5 4 9c2.5-2.5 4-5.5 4-9s-1.5-6.5-4-9z" stroke="currentColor" stroke-width="1.2" opacity="0.6"/></svg></div>
+        <div>
+          <div class="contact-label">Site</div>
+          <div class="contact-value">pocketdm.com.br</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon" style="color:var(--gold);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" opacity="0.6"/></svg></div>
+        <div>
+          <div class="contact-label">Instagram</div>
+          <div class="contact-value">@pocket.dm</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon" style="color:var(--gold);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 4l16 8-16 8V4z" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.06" stroke-linejoin="round"/></svg></div>
+        <div>
+          <div class="contact-label">E-mail</div>
+          <div class="contact-value">contato@pocketdm.com.br</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <a href="https://www.linkedin.com/in/daniel-roscoe-oliveira/" target="_blank" style="text-decoration:none; display:flex; align-items:center; gap:12px; width:100%;">
+          <div class="contact-icon" style="color:var(--info);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 11v5M8 8v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 16v-3.5c0-1.5 1-2.5 2.5-2.5s2.5 1 2.5 2.5V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div>
+          <div>
+            <div class="contact-label">LinkedIn</div>
+            <div class="contact-value" style="color:var(--info);">Daniel Roscoe Oliveira</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="divider" style="margin-top:20px;"></div>
+
+    <h3 style="text-align:center; margin:14px 0 10px; font-size:13px;">Parcerias &amp; Midia</h3>
+
+    <div class="card card-gold" style="padding:16px;">
+      <div class="two-cols" style="gap:16px;">
+        <div>
+          <h3 style="font-size:11px; margin-bottom:6px;">Para Criadores de Conteúdo</h3>
+          <ul class="gold-list">
+            <li style="font-size:11px; color:var(--text-secondary);">Acesso antecipado a features Pro</li>
+            <li style="font-size:11px; color:var(--text-secondary);">Material gráfico para reviews</li>
+            <li style="font-size:11px; color:var(--text-secondary);">Co-criacao de conteúdo</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="font-size:11px; margin-bottom:6px;">Para Editoras &amp; Publishers</h3>
+          <ul class="gold-list">
+            <li style="font-size:11px; color:var(--text-secondary);">Integracao de sistemas (API)</li>
+            <li style="font-size:11px; color:var(--text-secondary);">Marketplace de conteúdo oficial</li>
+            <li style="font-size:11px; color:var(--text-secondary);">White-label para eventos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:6px; padding:12px; text-align:center;">
+      <p style="font-size:11px; color:var(--text-secondary);">
+        <strong style="color:var(--gold);">Press Assets:</strong>
+        Logo SVG, screenshots em alta, brand guide e material gráfico disponível sob demanda.
+        <br>Mande um e-mail para <strong>contato@pocketdm.com.br</strong> com o assunto "Press Kit".
+      </p>
+    </div>
+
+    <div style="flex:1"></div>
+
+    <div style="text-align:center; margin-top:16px;">
+      <div class="glow-line" style="margin-bottom:12px;"></div>
+      <p class="text-small" style="letter-spacing:2px;">
+        POCKET DM &nbsp;&middot;&nbsp; MASTER YOUR TABLE &nbsp;&middot;&nbsp; 2026
+      </p>
+      <p class="text-small" style="margin-top:4px; font-size:9px; opacity:0.5;">D&amp;D e Dungeons &amp; Dragons sao marcas da Wizards of the Coast. Pocket DM não e afiliado a WotC. Conteúdo SRD sob CC-BY-4.0.</p>
+    </div>
+
+    <span class="page-number">11 / 11</span>
+  </div>
+</div>
+
+</body>
+</html>
