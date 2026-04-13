@@ -88,7 +88,7 @@ function computePosition(
       const top = Math.min(targetRect.bottom + padding, window.innerHeight - safeMargin - 100);
       style.top = top;
       style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
-      style.maxHeight = `${window.innerHeight - top - safeMargin}px`;
+      if (isMobile) style.maxHeight = `${window.innerHeight - top - safeMargin}px`;
       break;
     }
     case "top": {
@@ -96,7 +96,7 @@ function computePosition(
       const bottomVal = window.innerHeight - targetRect.top + topPadding;
       style.bottom = bottomVal;
       style.left = Math.max(safeMargin, Math.min(centerX - tooltipWidth / 2, window.innerWidth - tooltipWidth - safeMargin));
-      style.maxHeight = `${window.innerHeight - bottomVal - safeMargin}px`;
+      if (isMobile) style.maxHeight = `${window.innerHeight - bottomVal - safeMargin}px`;
       break;
     }
     case "right":
@@ -396,7 +396,7 @@ export function TourTooltip({
         aria-describedby={`tour-step-desc-${step.id}`}
         aria-live="polite"
         data-testid="tour-tooltip"
-        className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-5 overflow-y-auto"
+        className="fixed z-[10001] bg-card border border-gold/30 rounded-lg shadow-2xl p-5 overflow-y-auto md:overflow-visible"
         style={{ ...style, pointerEvents: "auto" }}
         initial={{ opacity: 0, ...slideDirection[position] }}
         animate={shake ? { opacity: 1, x: [0, -6, 6, -4, 4, 0], y: 0 } : { opacity: 1, x: 0, y: 0 }}
