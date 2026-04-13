@@ -1,0 +1,73 @@
+name: Scheduled E2E (Production)
+
+on:
+  schedule:
+    # Runs every 6 hours: 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  e2e-production:
+    name: E2E against Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check secrets configured
+        id: check
+        run: |
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "Supabase secrets not configured — skipping."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+
+      - name: Checkout
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check.outputs.skip != 'true'
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: steps.check.outputs.skip != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E against production
+        if: steps.check.outputs.skip != 'true'
+        run: npx playwright test e2e/visitor/landing-page.spec.ts e2e/visitor/try-mode.spec.ts e2e/auth/login.spec.ts --project=desktop-chrome
+        env:
+          CI: true
+          BASE_URL: https://pocketdm.app
+          E2E_DM_EMAIL: ${{ secrets.E2E_DM_EMAIL }}
+          E2E_DM_PASSWORD: ${{ secrets.E2E_DM_PASSWORD }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always() && steps.check.outputs.skip != 'true'
+        with:
+          name: e2e-production-report
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always() && steps.check.outputs.skip != 'true'
+        with:
+          name: e2e-production-results
+          path: e2e/results/
+          retention-days: 7
