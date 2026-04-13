@@ -3,6 +3,9 @@
 # Monster a Day source files — keep locally, never delete
 /monster a day - nao apagar/
 
+# Raw images for blog treatment — downloaded assets, not tracked
+/raw-images/
+
 # dependencies
 /node_modules
 /.pnp

@@ -164,6 +164,113 @@ function CTA({
   );
 }
 
+/* ─── Visual enrichment helpers ───────────────────────────────── */
+
+/**
+ * FloatingArt — decorative character PNG positioned at the edge of a
+ * text section, low opacity, like RPG book margin illustrations.
+ * `side` controls left/right placement.  Hidden on mobile (<md).
+ */
+function FloatingArt({
+  src,
+  alt,
+  side = "right",
+}: {
+  src: string;
+  alt: string;
+  side?: "left" | "right";
+}) {
+  return (
+    <div
+      className={`hidden md:block pointer-events-none select-none absolute top-0 ${
+        side === "right" ? "-right-16 xl:-right-24" : "-left-16 xl:-left-24"
+      } w-[220px] xl:w-[260px] h-full`}
+      aria-hidden="true"
+    >
+      <div className="sticky top-32">
+        <Image
+          src={src}
+          alt={alt}
+          width={260}
+          height={400}
+          className={`w-full h-auto opacity-[0.07] ${
+            side === "left" ? "-scale-x-100" : ""
+          }`}
+          unoptimized
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * SectionDivider — thematic break between major sections with a
+ * character silhouette at very low opacity behind a gradient fade.
+ */
+function SectionDivider({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="relative my-14 flex flex-col items-center" aria-hidden="true">
+      {/* Top line */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent mb-4" />
+      {/* Character — clean, no extra effects */}
+      <Image
+        src={src}
+        alt={alt}
+        width={400}
+        height={500}
+        className="w-56 sm:w-72 md:w-80 h-auto object-contain opacity-60"
+        unoptimized
+      />
+      {/* Bottom diamond line */}
+      <div className="flex items-center gap-3 mt-4 w-full">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gold/20" />
+        <span className="text-gold/25 text-[10px]">&#9670;</span>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gold/20" />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * ArtCallout — a highlighted box with a character image on one side
+ * and rich text content on the other (like an NPC quote or feature
+ * highlight).  Stacks vertically on mobile.
+ */
+function ArtCallout({
+  src,
+  alt,
+  children,
+  side = "left",
+}: {
+  src: string;
+  alt: string;
+  children: React.ReactNode;
+  side?: "left" | "right";
+}) {
+  return (
+    <div
+      className={`my-10 rounded-xl border border-white/[0.08] bg-white/[0.02] overflow-hidden flex flex-col ${
+        side === "right" ? "md:flex-row-reverse" : "md:flex-row"
+      }`}
+    >
+      <div className="relative w-full md:w-40 lg:w-48 shrink-0 flex items-center justify-center py-6 md:py-0">
+        <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-gold/[0.04] to-transparent" />
+        <Image
+          src={src}
+          alt={alt}
+          width={180}
+          height={280}
+          className="relative w-auto h-28 md:h-40 lg:h-48 object-contain opacity-60"
+          unoptimized
+        />
+      </div>
+      <div className="flex-1 p-5 md:p-6 flex flex-col justify-center text-foreground/80 text-[15px] leading-[1.8] [&>p]:mb-0">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    BLOG POST 1 — Como Usar um Combat Tracker na Mesa de D&D 5e
    ═══════════════════════════════════════════════════════════════════ */
@@ -366,6 +473,8 @@ export function BlogPost2() {
         <ProdLink href="/magias">busca inteligente em mais de 900 magias SRD</ProdLink>,
         acessível durante o combate sem interromper o fluxo do jogo.
       </P>
+
+      <SectionDivider src="/art/blog/treated-nobg/dnd-character-gnome-male-artificer-in-a-workshop.png" alt="Gnomo artificer na oficina" />
 
       <H2>4. Música Ambiente — a arma secreta que ninguém usa</H2>
       <P>
@@ -706,6 +815,8 @@ export function BlogPost4() {
         <ProdLink href="/condicoes">referência rápida de condições</ProdLink>.
       </Tip>
 
+      <SectionDivider src="/art/blog/treated-nobg/dnd-character-human-blood-hunter-with-red-eyes-and-long-hair.png" alt="Blood Hunter de olhos vermelhos" />
+
       <H2>O efeito cascata: condições que se empilham</H2>
       <P>
         Detalhe que pega muita gente: <strong>Paralyzed</strong>,{" "}
@@ -789,6 +900,8 @@ export function BlogPost5() {
         cada jogador já vê tudo no próprio celular, e a delegação acontece
         naturalmente.
       </P>
+
+      <SectionDivider src="/art/blog/treated-nobg/dnd-character-githyanki-female-warrior.png" alt="Githyanki guerreira" />
 
       <H2>7. Monstros inteligentes fogem (e deveriam)</H2>
       <P>
@@ -1076,6 +1189,8 @@ export function BlogPost7() {
         balanceamento é saber <em>de antemão</em> qual será a dificuldade, para
         que surpresas letais aconteçam por escolha do mestre, não por acidente.
       </P>
+
+      <SectionDivider src="/art/blog/treated-nobg/mythjourneys-dnd-character-dwarf-male-fighter-paladin.png" alt="Anão paladino" />
 
       <H2>O método oficial: Orçamento de XP (DMG)</H2>
       <P>
@@ -1587,6 +1702,8 @@ export function BlogPost8() {
         aplica multiplicadores por quantidade, e compara com os limiares de XP do
         grupo para determinar a dificuldade.
       </P>
+
+      <SectionDivider src="/art/blog/treated-nobg/mythjourneys-dnd-character-dragonborn-male-fighter.png" alt="Dragonborn guerreiro" />
 
       <H2>A tabela que você vai consultar toda sessão</H2>
       <P>
@@ -2149,6 +2266,8 @@ export function BlogPost9() {
       </P>
 
       {/* ── 8. MIND FLAYER ────────────────────────────────────────── */}
+      <SectionDivider src="/art/blog/treated-nobg/mythjourneys-anubis-god-of-the-dead.png" alt="Anubis, deus dos mortos" />
+
       <H2>8. Mind Flayer — Horror e Psionismo</H2>
       <P>
         Poucos monstros geram tanto medo em jogadores experientes quanto o
@@ -2326,6 +2445,8 @@ export function BlogPost10() {
         <ExtLink href="https://thealexandrian.net/gamemastery-101">The Alexandrian</ExtLink>{" "}
         para te ajudar a preparar e rodar sua primeira sessão com confiança.
       </P>
+
+      <SectionDivider src="/art/blog/treated-nobg/dnd-elf-wizard-sorcerer-mythjourneys.png" alt="Elfo mago" />
 
       <H2>O que o mestre faz de verdade (spoiler: menos do que você pensa)</H2>
       <P>
@@ -2782,6 +2903,8 @@ export function BlogPost11() {
         triunfante. A transição musical diz mais que mil palavras.
       </Tip>
 
+      <SectionDivider src="/art/blog/treated-nobg/mythjourneys-dnd-character-dragonborn-male-bard.png" alt="Dragonborn bardo" />
+
       <H2>3 playlists cobrem 90% da sessão</H2>
       <P>
         Não tente ter uma trilha diferente pra cada cena. Você vai enlouquecer.
@@ -2791,6 +2914,8 @@ export function BlogPost11() {
         incrivelmente bem:
       </P>
 
+      <Img src="/art/blog/soundboard-ambiente.png" alt="Soundboard do Pocket DM — presets de ambiente: Fogueira, Tempestade, Vento, Dungeon, Taverna, Floresta e mais" />
+
       <H3>1. Exploração e Viagem</H3>
       <P>
         Trilhas calmas, instrumentais, com bastante espaço sonoro. Pense em
@@ -2798,7 +2923,8 @@ export function BlogPost11() {
         noturnos. O objetivo aqui é criar uma base suave que não compete com a
         sua narração. Trilhas sonoras de jogos como <em>The Elder Scrolls:
         Skyrim</em>, <em>The Witcher 3</em> e <em>Breath of the Wild</em> são
-        perfeitas para isso.
+        perfeitas para isso. No <ProdLink href="/try">Pocket DM</ProdLink>, os
+        presets de Floresta, Vento e Riacho fazem exatamente isso com um clique.
       </P>
       <Ul>
         <Li>Instrumentos: cordas, flauta, piano, harpa</Li>
@@ -2828,8 +2954,12 @@ export function BlogPost11() {
         ter letra, porque músicas com vocal distraem quando o mestre está falando
         o tempo todo. Trilhas de <em>Two Steps from Hell</em>,{" "}
         <em>Immediate Music</em> e os combates de <em>God of War</em> são
-        referências clássicas.
+        referências clássicas. O soundboard do Pocket DM tem presets como
+        Batalha Épica, Marcha de Guerra e Batalha Final prontos pra disparar
+        no meio do combate.
       </P>
+
+      <Img src="/art/blog/soundboard-musicas.png" alt="Soundboard do Pocket DM — presets de músicas: Batalha Épica, Marcha de Guerra, Exploração, Dungeon Sombria e mais" />
       <Ul>
         <Li>Instrumentos: percussão taiko, metais, cordas rápidas, coro épico</Li>
         <Li>Andamento: rápido e constante</Li>
@@ -3013,12 +3143,15 @@ export function BlogPost11() {
         </Li>
       </Ul>
 
+      <Img src="/art/blog/soundboard-ataques.png" alt="Soundboard do Pocket DM — efeitos sonoros de ataques: Pancada, Golpe Sônico, Investida Devastadora, Cruz Sagrada e mais" />
+
       <Tip linkHref="/try" linkText="Ver soundboard do Pocket DM">
-        O Pocket DM tem um recurso de soundboard integrado que permite
-        controlar ambientação sonora direto da mesma tela onde você gerencia
-        o combate. Sem trocar de app, sem perder o foco, tudo num lugar só.
-        Ideal para mestres que não querem ficar malabarando entre abas e
-        aplicativos durante a sessão.
+        O Pocket DM tem um soundboard completo integrado ao combat tracker:
+        sons de ambiente (Fogueira, Dungeon, Taverna), músicas temáticas
+        (Batalha Épica, Exploração, Suspense), efeitos de ataque (Golpe de
+        Espada, Flecha, Magnum Break) e até sons de magias. Tudo com um
+        clique, sem trocar de app, sem perder o foco do combate. É como
+        ter um DJ na mesa, só que o DJ é o seu tracker.
       </Tip>
 
       <H2>A regra de ouro do volume (que todo mundo quebra)</H2>
@@ -4408,6 +4541,8 @@ export function BlogPost14() {
         ]}
       />
 
+      <SectionDivider src="/art/blog/treated-nobg/mythjourneys-dnd-character-dark-elf-female-wizard-sorcerer.png" alt="Dark elf sorceress" />
+
       {/* ═══ SHEET IN 30 SECONDS ═══ */}
       <H2>The sheet in 30 seconds</H2>
 
@@ -5289,6 +5424,8 @@ export function BlogPost15() {
         ))}
       </div>
 
+      <SectionDivider src="/art/blog/treated-nobg/mythjourneys-a-beautiful-blond-valkyrie-in-armor.png" alt="Valquíria em armadura" />
+
       {/* ── ERA 0 ── */}
       <H2>A Dor &mdash; Antes do Código</H2>
       <P>
@@ -5688,6 +5825,8 @@ export function BlogPost17() {
         apanha. Você só digita o dano. Sem conta, sem erro, sem planilha.
       </Tip>
 
+      <SectionDivider src="/art/blog/treated-nobg/dnd-character-human-female-barbarian-with-an-angry-look.png" alt="Barbarian furiosa" />
+
       <H2>Como rastrear HP no D&D 5e sem enlouquecer?</H2>
       <P>
         Resposta curta: usa um tracker digital com barras visuais. Resposta
@@ -5888,6 +6027,8 @@ export function BlogPost18() {
         automático elimina aquela pausa entre ações.
       </P>
 
+      <SectionDivider src="/art/blog/treated-nobg/dnd-character-dwarf-male-cleric-in-heavy-shiny-armor.png" alt="Anão clérigo em armadura reluzente" />
+
       <H2>Erro #4: Calcular tudo na hora</H2>
       <P>
         Você tá narrando a investida do ogre e de repente para pra rolar 2d8+4,
@@ -6054,6 +6195,8 @@ export function BlogPost19() {
           agrupa, precisa anotar separado.
         </Li>
       </Ul>
+
+      <SectionDivider src="/art/blog/treated-nobg/dnd-character-elf-fighter-wearing-heavy-armor-in-the-forest.png" alt="Elfa guerreira na floresta" />
 
       <H2>Quais as variantes de iniciativa?</H2>
       <P>
