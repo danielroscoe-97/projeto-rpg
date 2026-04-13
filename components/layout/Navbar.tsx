@@ -81,9 +81,9 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, mini
 
           {/* Desktop links */}
           <div className="hidden lg:flex items-center gap-1 ml-6">
-            {links.map((link) =>
+            {links.map((link, idx) =>
               link.children ? (
-                <DropdownMenu key={link.label?.toString()}>
+                <DropdownMenu key={link.href ?? `dropdown-${idx}`}>
                   <DropdownMenuTrigger asChild>
                     <button
                       className="text-sm text-muted-foreground font-medium px-3 py-2 rounded-lg hover:text-foreground hover:bg-white/[0.06] transition-all duration-[250ms] min-h-[44px] inline-flex items-center gap-1"
@@ -225,9 +225,9 @@ export function Navbar({ brand, brandHref, links = [], rightSlot, syncSlot, mini
                   {t("brand")}
                 </Link>
               </div>
-              {links.map((link) =>
+              {links.map((link, idx) =>
                 link.children ? (
-                  <div key={link.label?.toString()}>
+                  <div key={link.href ?? `mobile-dropdown-${idx}`}>
                     <span className="text-muted-foreground font-medium px-4 py-3 min-h-[44px] flex items-center text-sm">
                       {link.label}
                     </span>

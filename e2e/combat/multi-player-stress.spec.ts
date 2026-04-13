@@ -122,8 +122,14 @@ async function simulateTabClose(
   // Instead: close the page (tab) and open a new one in the SAME context.
   const oldPage = oldContext.pages()[0];
 
-  // Clear sessionStorage to simulate tab close (sessionStorage is per-tab)
-  await oldPage.evaluate(() => sessionStorage.clear());
+  // Dispatch pagehide + visibilitychange to trigger app disconnect handlers
+  // (sendBeacon, broadcast player:disconnecting, heartbeat pause)
+  await oldPage.evaluate(() => {
+    document.dispatchEvent(new Event("visibilitychange"));
+    window.dispatchEvent(new PageTransitionEvent("pagehide"));
+    sessionStorage.clear();
+  });
+  await oldPage.waitForTimeout(500);
 
   // Close the tab
   await oldPage.close();
