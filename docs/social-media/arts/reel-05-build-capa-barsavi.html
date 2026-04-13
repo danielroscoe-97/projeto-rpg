@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Reel R5 — Build Capa Barsavi</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; background: #070710; }
+
+  .reel {
+    width: 1080px; height: 1920px; position: relative; overflow: hidden;
+    background: radial-gradient(ellipse at center 40%, #12111E 0%, #070710 70%);
+  }
+
+  /* === PERSISTENT EFFECTS === */
+  .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center 45%, transparent 40%, rgba(0,0,0,0.7) 100%); z-index: 5; pointer-events: none; }
+  .scanlines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px); z-index: 6; pointer-events: none; }
+  .border-glow { position: absolute; inset: 20px; border: 1px solid rgba(212,168,83,0.1); z-index: 7; pointer-events: none; animation: borderPulse 3s ease-in-out infinite; }
+
+  .particles-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+  .particle { position: absolute; border-radius: 50%; background: #A855F7; animation: particleRise linear infinite; }
+  .particle:nth-child(1)  { width: 4px; height: 4px; left: 8%;  bottom: -20px; opacity: 0.7; animation-duration: 6s; animation-delay: 0s; }
+  .particle:nth-child(2)  { width: 3px; height: 3px; left: 15%; bottom: -20px; opacity: 0.5; animation-duration: 8s; animation-delay: 1s; background: #D4A853; }
+  .particle:nth-child(3)  { width: 5px; height: 5px; left: 25%; bottom: -20px; opacity: 0.8; animation-duration: 7s; animation-delay: 0.5s; }
+  .particle:nth-child(4)  { width: 3px; height: 3px; left: 35%; bottom: -20px; opacity: 0.4; animation-duration: 9s; animation-delay: 2s; background: #D4A853; }
+  .particle:nth-child(5)  { width: 6px; height: 6px; left: 45%; bottom: -20px; opacity: 0.9; animation-duration: 5s; animation-delay: 0.3s; box-shadow: 0 0 6px #A855F7; }
+  .particle:nth-child(6)  { width: 4px; height: 4px; left: 55%; bottom: -20px; opacity: 0.6; animation-duration: 7.5s; animation-delay: 1.5s; background: #D4A853; }
+  .particle:nth-child(7)  { width: 3px; height: 3px; left: 65%; bottom: -20px; opacity: 0.5; animation-duration: 6.5s; animation-delay: 0.8s; }
+  .particle:nth-child(8)  { width: 5px; height: 5px; left: 75%; bottom: -20px; opacity: 0.7; animation-duration: 8.5s; animation-delay: 2.5s; background: #D4A853; }
+  .particle:nth-child(9)  { width: 4px; height: 4px; left: 85%; bottom: -20px; opacity: 0.6; animation-duration: 6s; animation-delay: 1.2s; }
+  .particle:nth-child(10) { width: 3px; height: 3px; left: 92%; bottom: -20px; opacity: 0.4; animation-duration: 9.5s; animation-delay: 3s; background: #D4A853; }
+  .particle:nth-child(11) { width: 7px; height: 7px; left: 20%; bottom: -20px; opacity: 0.3; animation-duration: 10s; animation-delay: 0.7s; box-shadow: 0 0 8px #A855F7; }
+  .particle:nth-child(12) { width: 7px; height: 7px; left: 60%; bottom: -20px; opacity: 0.3; animation-duration: 11s; animation-delay: 1.8s; box-shadow: 0 0 8px #D4A853; }
+  .particle:nth-child(13) { width: 2px; height: 2px; left: 40%; bottom: -20px; opacity: 0.6; animation-duration: 5.5s; animation-delay: 0.2s; }
+  .particle:nth-child(14) { width: 2px; height: 2px; left: 70%; bottom: -20px; opacity: 0.5; animation-duration: 7s; animation-delay: 3.5s; background: #D4A853; }
+  .particle:nth-child(15) { width: 4px; height: 4px; left: 50%; bottom: -20px; opacity: 0.8; animation-duration: 6s; animation-delay: 0.1s; box-shadow: 0 0 6px #A855F7; }
+
+  .corner-ornament { position: absolute; width: 120px; height: 120px; z-index: 7; opacity: 0.2; }
+  .corner-tl { top: 30px; left: 30px; }
+  .corner-tr { top: 30px; right: 30px; transform: scaleX(-1); }
+  .corner-bl { bottom: 30px; left: 30px; transform: scaleY(-1); }
+  .corner-br { bottom: 30px; right: 30px; transform: scale(-1); }
+
+  .watermark { position: absolute; bottom: 320px; left: 50%; transform: translateX(-50%); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; color: rgba(212,168,83,0.35); letter-spacing: 4px; z-index: 30; }
+
+  /* === SCENES === */
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; z-index: 10; opacity: 0; }
+
+  .impact-flash { position: absolute; inset: 0; background: rgba(168,85,247,0.4); z-index: 20; opacity: 0; mix-blend-mode: screen; }
+
+  .char-glow { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(168,85,247,0.18) 0%, rgba(168,85,247,0.06) 40%, transparent 70%); opacity: 0; z-index: 8; }
+
+  .energy-ring { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; border-radius: 50%; border: 2px solid rgba(168,85,247,0.2); box-shadow: 0 0 30px rgba(168,85,247,0.1), inset 0 0 30px rgba(168,85,247,0.05); opacity: 0; z-index: 8; }
+
+  /* === SCENE 1: HOOK (0-5s) === */
+  .hook-text {
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 52px;
+    color: #E8E6E0; text-align: center; line-height: 1.3;
+    text-shadow: 0 0 20px rgba(232,230,224,0.3); opacity: 0; max-width: 850px; margin-top: 650px;
+  }
+  .hook-text em {
+    font-style: normal; color: #A855F7; text-shadow: 0 0 30px rgba(168,85,247,0.5);
+  }
+  .hook-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 36px;
+    color: #D4A853; text-align: center; margin-top: 24px; opacity: 0; letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(212,168,83,0.4);
+  }
+  .hook-glow { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 60%); z-index: 8; animation: glowPulse 2s ease-in-out infinite; }
+
+  /* === SCENE 2: CHARACTER REVEAL (5-15s) === */
+  .char-art {
+    position: absolute; top: 140px; left: 50%; transform: translateX(-50%) scale(0);
+    width: 460px; height: 460px; object-fit: contain; z-index: 10;
+    filter: drop-shadow(0 0 50px rgba(168,85,247,0.4)) drop-shadow(0 10px 30px rgba(0,0,0,0.8));
+    border-radius: 16px;
+  }
+  .char-name {
+    position: absolute; top: 630px; left: 50%; transform: translateX(-50%);
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 56px;
+    color: #D4A853; text-transform: uppercase; letter-spacing: 6px;
+    text-shadow: 0 0 30px rgba(212,168,83,0.5); z-index: 15; opacity: 0;
+    white-space: nowrap;
+  }
+  .char-class {
+    position: absolute; top: 710px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 18px;
+    color: #A855F7; letter-spacing: 2px; text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(168,85,247,0.4); z-index: 15; opacity: 0;
+    white-space: nowrap;
+  }
+  .char-separator {
+    position: absolute; top: 755px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 2px; background: linear-gradient(90deg, transparent, #A855F7, transparent); z-index: 15;
+  }
+
+  /* Build details */
+  .build-grid {
+    position: absolute; top: 790px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; gap: 18px; z-index: 15; opacity: 0;
+    width: 760px;
+  }
+  .build-row {
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px; border-radius: 12px;
+    background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.15);
+  }
+  .build-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700;
+    color: #A855F7; text-transform: uppercase; letter-spacing: 3px; min-width: 120px;
+    text-shadow: 0 0 10px rgba(168,85,247,0.3);
+  }
+  .build-value {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 600;
+    color: #E8E6E0;
+  }
+
+  .build-highlight {
+    position: absolute; top: 1180px; left: 50%; transform: translateX(-50%);
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 28px;
+    color: #22C55E; text-align: center; z-index: 15; opacity: 0;
+    text-shadow: 0 0 15px rgba(34,197,94,0.4); max-width: 750px;
+  }
+
+  .build-phrase {
+    position: absolute; top: 1270px; left: 50%; transform: translateX(-50%);
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 28px;
+    color: #D4A853; text-align: center;
+    z-index: 15; opacity: 0; max-width: 750px;
+    text-shadow: 0 0 15px rgba(212,168,83,0.3);
+  }
+
+  /* === SCENE 3: CTA (15-20s) === */
+  .scene-cta { justify-content: center; gap: 20px; }
+  .cta-logo { width: 160px; height: 160px; opacity: 0; filter: drop-shadow(0 0 30px rgba(212,168,83,0.5)); }
+  .cta-brand { font-family: 'Cinzel', serif; font-weight: 900; font-size: 72px; background: linear-gradient(180deg, #E8C87A 0%, #D4A853 50%, #B8903D 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 10px; opacity: 0; }
+  .cta-separator { width: 0; height: 2px; background: linear-gradient(90deg, transparent, #D4A853, transparent); }
+  .cta-tagline { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 30px; color: #E8E6E0; letter-spacing: 4px; text-transform: uppercase; opacity: 0; text-align: center; max-width: 800px; }
+  .cta-sub { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 22px; color: #9896A0; letter-spacing: 4px; text-transform: uppercase; opacity: 0; }
+
+  /* === ANIMATIONS === */
+  @keyframes particleRise { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-2000px) translateX(40px); opacity: 0; } }
+  @keyframes borderPulse { 0%, 100% { border-color: rgba(212,168,83,0.05); } 50% { border-color: rgba(212,168,83,0.2); } }
+  @keyframes glowPulse { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
+  @keyframes slamIn { 0% { opacity: 0; transform: scale(2.5); } 50% { transform: scale(0.9); } 70% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes fadeIn { to { opacity: 1; } }
+  @keyframes fadeInOut { 0% { opacity: 0; } 8% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes typeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes charReveal { 0% { transform: translateX(-50%) scale(0) rotate(-3deg); opacity: 0; } 40% { transform: translateX(-50%) scale(1.1) rotate(1deg); opacity: 1; } 60% { transform: translateX(-50%) scale(0.97); } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+  @keyframes slideUp { 0% { opacity: 0; transform: translateX(-50%) translateY(40px); } 100% { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  @keyframes flashIn { 0% { opacity: 0.7; } 100% { opacity: 0; } }
+  @keyframes separatorGrow { 0% { width: 0; } 100% { width: 400px; } }
+  @keyframes ringPulse { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); } 50% { opacity: 0.6; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); } }
+  @keyframes glowReveal { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+  @keyframes buildSlideIn { 0% { opacity: 0; transform: translateX(-50%) translateX(-30px); } 100% { opacity: 1; transform: translateX(-50%) translateX(0); } }
+
+  /* === TIMING (~25s) === */
+  /* Hook: 0-5s */
+  .scene-hook { animation: fadeInOut 5s ease forwards; }
+  .scene-hook .hook-text { animation: typeIn 0.7s ease 0.3s forwards; }
+  .scene-hook .hook-sub { animation: typeIn 0.5s ease 1.2s forwards; }
+
+  /* Character Reveal: 5-18s */
+  .scene-char { animation: fadeInOut 13s ease 5s forwards; }
+  .scene-char .impact-flash { animation: flashIn 0.3s ease 5s forwards; }
+  .scene-char .energy-ring { animation: ringPulse 1.5s ease 5.1s forwards; }
+  .scene-char .char-glow { animation: glowReveal 0.6s ease 5.2s forwards; }
+  .scene-char .char-art { animation: charReveal 0.8s ease 5.3s forwards; }
+  .scene-char .char-name { animation: slideUp 0.5s ease 6.2s forwards; }
+  .scene-char .char-class { animation: slideUp 0.4s ease 6.6s forwards; }
+  .scene-char .char-separator { animation: separatorGrow 0.4s ease 6.9s forwards; }
+  .scene-char .build-grid { animation: buildSlideIn 0.5s ease 7.5s forwards; }
+  .scene-char .build-highlight { animation: slideUp 0.4s ease 9s forwards; }
+  .scene-char .build-phrase { animation: fadeIn 0.5s ease 10s forwards; }
+
+  /* CTA: 18-25s */
+  .scene-cta { animation: fadeIn 0.5s ease 18s forwards; }
+  .scene-cta .cta-logo { animation: slamIn 0.7s ease 18.3s forwards; }
+  .scene-cta .cta-brand { animation: fadeIn 0.5s ease 19s forwards; }
+  .scene-cta .cta-separator { animation: separatorGrow 0.5s ease 19.5s forwards; }
+  .scene-cta .cta-tagline { animation: fadeIn 0.5s ease 20s forwards; }
+  .scene-cta .cta-sub { animation: fadeIn 0.5s ease 20.5s forwards; }
+</style>
+</head>
+<body>
+
+<div class="reel">
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+  <div class="border-glow"></div>
+  <div class="particles-layer">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+  </div>
+  <svg class="corner-ornament corner-tl" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-tr" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-bl" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-br" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+  <div class="watermark">@pocket.dm</div>
+
+  <!-- HOOK: 0-5s -->
+  <div class="scene scene-hook">
+    <div class="hook-glow"></div>
+    <div class="hook-text">A melhor build de suporte<br>do D&D 5e <em>não é só</em><br>de Clérigo.</div>
+    <div class="hook-sub">Eu posso provar.</div>
+  </div>
+
+  <!-- CHARACTER: 5-18s -->
+  <div class="scene scene-char">
+    <div class="impact-flash"></div>
+    <div class="energy-ring"></div>
+    <div class="char-glow"></div>
+    <img class="char-art" src="assets/capa-barsavi-portrait.png" alt="">
+    <div class="char-name">Capa Barsavi</div>
+    <div class="char-class">Order Cleric 1 / Divine Soul Sorcerer 9</div>
+    <div class="char-separator"></div>
+    <div class="build-grid">
+      <div class="build-row">
+        <span class="build-label">Raça</span>
+        <span class="build-value">Meio-Elfo ou Shadar-kai</span>
+      </div>
+      <div class="build-row">
+        <span class="build-label">Chave</span>
+        <span class="build-value">Voice of Authority</span>
+      </div>
+      <div class="build-row">
+        <span class="build-label">Motor</span>
+        <span class="build-value">Metamagic + Buffs (Twin, Haste)</span>
+      </div>
+      <div class="build-row">
+        <span class="build-label">Resultado</span>
+        <span class="build-value">Ataques extras fora do seu turno</span>
+      </div>
+    </div>
+    <div class="build-highlight">Só 1 nível de Clérigo. O resto é Feiticeiro.</div>
+    <div class="build-phrase">Build completa no blog.</div>
+  </div>
+
+  <!-- CTA: 18-25s -->
+  <div class="scene scene-cta">
+    <svg class="cta-logo" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient>
+        <linearGradient id="g2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#edcf82"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b89040"/></linearGradient>
+        <filter id="glow" width="160%" height="160%" x="-30%" y="-30%"><feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="8"/><feComposite in="SourceGraphic" in2="blur"/></filter>
+      </defs>
+      <g stroke="url(#g1)" stroke-linejoin="round" filter="url(#glow)">
+        <g stroke-linecap="round">
+          <path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/>
+          <path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/>
+          <path stroke-width="5" d="m256 110-80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 110 80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 410-80-84" opacity=".5"/>
+          <path stroke-width="5" d="m256 410 80-84" opacity=".5"/>
+          <path stroke-width="4" d="m133 185 123 9" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-123 9" opacity=".35"/>
+          <path stroke-width="4" d="m133 185 43 141" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-43 141" opacity=".35"/>
+          <path stroke-width="4" d="m133 335 43-9" opacity=".35"/>
+          <path stroke-width="4" d="m379 335-43-9" opacity=".35"/>
+        </g>
+        <path fill="url(#g2)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/>
+      </g>
+    </svg>
+    <div class="cta-brand">POCKET DM</div>
+    <div class="cta-separator"></div>
+    <div class="cta-tagline">Build completa no blog.</div>
+    <div class="cta-sub">Link na bio.</div>
+  </div>
+</div>
+
+</body>
+</html>

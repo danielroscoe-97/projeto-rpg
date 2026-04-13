@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Reel R6 — Top 5 Magias Que Você Precisa</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; background: #070710; }
+
+  .reel {
+    width: 1080px; height: 1920px; position: relative; overflow: hidden;
+    background: radial-gradient(ellipse at center 40%, #12111E 0%, #070710 70%);
+  }
+
+  /* === PERSISTENT === */
+  .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center 45%, transparent 40%, rgba(0,0,0,0.7) 100%); z-index: 5; pointer-events: none; }
+  .scanlines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px); z-index: 6; pointer-events: none; }
+  .border-glow { position: absolute; inset: 20px; border: 1px solid rgba(168,85,247,0.1); z-index: 7; pointer-events: none; animation: borderPulse 3s ease-in-out infinite; }
+
+  .particles-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+  .particle { position: absolute; border-radius: 50%; background: #A855F7; animation: particleRise linear infinite; }
+  .particle:nth-child(1)  { width: 4px; height: 4px; left: 8%;  bottom: -20px; opacity: 0.7; animation-duration: 6s; }
+  .particle:nth-child(2)  { width: 3px; height: 3px; left: 18%; bottom: -20px; opacity: 0.5; animation-duration: 8s; animation-delay: 1s; }
+  .particle:nth-child(3)  { width: 5px; height: 5px; left: 28%; bottom: -20px; opacity: 0.8; animation-duration: 7s; animation-delay: 0.5s; box-shadow: 0 0 6px #A855F7; }
+  .particle:nth-child(4)  { width: 3px; height: 3px; left: 38%; bottom: -20px; opacity: 0.4; animation-duration: 9s; animation-delay: 2s; }
+  .particle:nth-child(5)  { width: 6px; height: 6px; left: 48%; bottom: -20px; opacity: 0.7; animation-duration: 5s; animation-delay: 0.3s; box-shadow: 0 0 8px #A855F7; }
+  .particle:nth-child(6)  { width: 4px; height: 4px; left: 58%; bottom: -20px; opacity: 0.6; animation-duration: 7.5s; animation-delay: 1.5s; }
+  .particle:nth-child(7)  { width: 3px; height: 3px; left: 68%; bottom: -20px; opacity: 0.5; animation-duration: 6.5s; animation-delay: 0.8s; }
+  .particle:nth-child(8)  { width: 5px; height: 5px; left: 78%; bottom: -20px; opacity: 0.7; animation-duration: 8.5s; animation-delay: 2.5s; box-shadow: 0 0 6px #A855F7; }
+  .particle:nth-child(9)  { width: 4px; height: 4px; left: 88%; bottom: -20px; opacity: 0.6; animation-duration: 6s; animation-delay: 1.2s; }
+  .particle:nth-child(10) { width: 7px; height: 7px; left: 50%; bottom: -20px; opacity: 0.3; animation-duration: 10s; animation-delay: 0.7s; box-shadow: 0 0 10px #A855F7; }
+
+  .corner-ornament { position: absolute; width: 120px; height: 120px; z-index: 7; opacity: 0.2; }
+  .corner-tl { top: 30px; left: 30px; }
+  .corner-tr { top: 30px; right: 30px; transform: scaleX(-1); }
+  .corner-bl { bottom: 30px; left: 30px; transform: scaleY(-1); }
+  .corner-br { bottom: 30px; right: 30px; transform: scale(-1); }
+
+  .watermark { position: absolute; bottom: 320px; left: 50%; transform: translateX(-50%); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; color: rgba(168,85,247,0.35); letter-spacing: 4px; z-index: 30; }
+
+  /* === SCENES === */
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; z-index: 10; opacity: 0; }
+
+  .impact-flash { position: absolute; inset: 0; background: rgba(168,85,247,0.35); z-index: 20; opacity: 0; mix-blend-mode: screen; }
+  .spell-glow { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; border-radius: 50%; opacity: 0; z-index: 8; }
+
+  /* === SPELL CARD (redesigned) === */
+  .spell-card {
+    position: absolute; top: 220px; left: 50%; transform: translateX(-50%);
+    width: 780px; z-index: 12; opacity: 0;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* Spell SVG icon */
+  .spell-icon {
+    width: 200px; height: 200px; margin-bottom: 30px;
+    filter: drop-shadow(0 0 30px var(--spell-color, #A855F7));
+  }
+
+  /* Tier + Rank badges row */
+  .spell-badges {
+    display: flex; gap: 16px; align-items: center; margin-bottom: 16px;
+  }
+  .tier-badge {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px;
+    padding: 6px 20px; border-radius: 6px; letter-spacing: 3px;
+    text-shadow: 0 0 10px var(--tier-glow);
+  }
+  .tier-s { background: rgba(212,168,83,0.15); border: 1px solid rgba(212,168,83,0.4); color: #D4A853; --tier-glow: rgba(212,168,83,0.5); }
+  .tier-a { background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.4); color: #A855F7; --tier-glow: rgba(168,85,247,0.5); }
+  .tier-b { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.4); color: #22C55E; --tier-glow: rgba(34,197,94,0.5); }
+
+  .rank-badge {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px;
+    color: #9896A0; letter-spacing: 4px; padding: 6px 20px;
+    border: 1px solid rgba(152,150,160,0.3); border-radius: 6px;
+  }
+
+  /* Spell name */
+  .spell-name {
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 64px;
+    color: #E8E6E0; margin-bottom: 8px; text-align: center;
+    text-shadow: 0 0 25px rgba(232,230,224,0.2);
+  }
+  .spell-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 20px; color: #9896A0;
+    letter-spacing: 2px; margin-bottom: 24px;
+  }
+  .spell-separator {
+    width: 500px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), transparent);
+    margin-bottom: 24px;
+  }
+  .spell-desc {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 400;
+    color: rgba(232,230,224,0.75); line-height: 1.6; text-align: center;
+    max-width: 680px; margin-bottom: 24px;
+  }
+  .spell-highlight {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 700;
+    color: #22C55E; text-align: center;
+    text-shadow: 0 0 12px rgba(34,197,94,0.3);
+  }
+
+  /* === INTRO === */
+  .intro-text-1 {
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 80px;
+    color: #A855F7; text-transform: uppercase; letter-spacing: 6px; text-align: center; opacity: 0;
+    text-shadow: 0 0 40px rgba(168,85,247,0.6); margin-top: 600px;
+  }
+  .intro-separator { width: 0; height: 3px; background: linear-gradient(90deg, transparent, #A855F7, transparent); margin: 20px 0; }
+  .intro-text-2 {
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 48px;
+    color: #E8E6E0; letter-spacing: 3px; text-align: center; opacity: 0; max-width: 800px;
+    text-shadow: 0 0 15px rgba(232,230,224,0.2);
+  }
+  .intro-text-3 {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 24px;
+    color: #9896A0; letter-spacing: 8px; opacity: 0; margin-top: 12px;
+  }
+  .intro-glow { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 60%); z-index: 8; animation: glowPulse 2s ease-in-out infinite; }
+
+  /* === CHARACTER ART (bottom of spell scene) === */
+  .scene-character {
+    position: absolute;
+    bottom: 380px;
+    left: 50%;
+    transform: translateX(-50%) scale(1);
+    height: 560px;
+    z-index: 9;
+    opacity: 0;
+    filter: drop-shadow(0 0 40px var(--char-glow, rgba(168,85,247,0.4)));
+    pointer-events: none;
+    object-fit: contain;
+    animation: charRevealFloat 7s ease forwards;
+    animation-delay: inherit;
+  }
+
+  @keyframes charRevealFloat {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.85) translateY(30px); }
+    15% { opacity: 0.55; transform: translateX(-50%) scale(1.02) translateY(0); }
+    50% { transform: translateX(-50%) scale(1.05) translateY(-8px); }
+    85% { opacity: 0.55; }
+    100% { opacity: 0; transform: translateX(-50%) scale(1.02) translateY(0); }
+  }
+
+  /* === CTA === */
+  .scene-cta { justify-content: center; gap: 24px; }
+  .cta-text-main { font-family: 'Cinzel', serif; font-weight: 900; font-size: 52px; color: #A855F7; text-align: center; opacity: 0; text-shadow: 0 0 30px rgba(168,85,247,0.4); max-width: 800px; }
+  .cta-text-sub { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 28px; color: #E8E6E0; text-align: center; opacity: 0; max-width: 750px; line-height: 1.5; }
+  .cta-separator { width: 0; height: 2px; background: linear-gradient(90deg, transparent, #D4A853, transparent); }
+  .cta-brand { font-family: 'Cinzel', serif; font-weight: 900; font-size: 56px; background: linear-gradient(180deg, #E8C87A 0%, #D4A853 50%, #B8903D 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 8px; opacity: 0; }
+  .cta-sub { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 22px; color: #9896A0; letter-spacing: 4px; text-transform: uppercase; opacity: 0; }
+
+  /* === ANIMATIONS === */
+  @keyframes particleRise { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-2000px) translateX(30px); opacity: 0; } }
+  @keyframes borderPulse { 0%, 100% { border-color: rgba(168,85,247,0.05); } 50% { border-color: rgba(168,85,247,0.2); } }
+  @keyframes glowPulse { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
+  @keyframes slamIn { 0% { opacity: 0; transform: scale(2.5); } 50% { transform: scale(0.9); } 70% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes fadeIn { to { opacity: 1; } }
+  @keyframes fadeInOut { 0% { opacity: 0; } 8% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes separatorGrow { 0% { width: 0; } 100% { width: 500px; } }
+  @keyframes cardSlideIn { 0% { opacity: 0; transform: translateX(-50%) translateY(60px) scale(0.9); } 100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+  @keyframes flashIn { 0% { opacity: 0.6; } 100% { opacity: 0; } }
+  @keyframes glowReveal { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+  @keyframes iconFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes iconPulse { 0%, 100% { filter: drop-shadow(0 0 20px var(--spell-color, #A855F7)); } 50% { filter: drop-shadow(0 0 40px var(--spell-color, #A855F7)); } }
+
+  /* === TIMING (~42s) === */
+
+  /* INTRO 0-4s */
+  .scene-intro { animation: fadeInOut 4s ease forwards; }
+  .scene-intro .intro-text-1 { animation: slamIn 0.6s ease-out 0.3s forwards; }
+  .scene-intro .intro-separator { animation: separatorGrow 0.5s ease 0.8s forwards; }
+  .scene-intro .intro-text-2 { animation: slamIn 0.5s ease-out 1.1s forwards; }
+  .scene-intro .intro-text-3 { animation: fadeIn 0.5s ease 1.8s forwards; }
+
+  /* S5: Shield 4-11s */
+  .scene-s5 { animation: fadeInOut 7s ease 4s forwards; }
+  .scene-s5 .impact-flash { animation: flashIn 0.3s ease 4s forwards; }
+  .scene-s5 .spell-glow { animation: glowReveal 0.5s ease 4.2s forwards; }
+  .scene-s5 .spell-card { animation: cardSlideIn 0.6s ease 4.3s forwards; }
+
+  /* S4: Counterspell 11-18s */
+  .scene-s4 { animation: fadeInOut 7s ease 11s forwards; }
+  .scene-s4 .impact-flash { animation: flashIn 0.3s ease 11s forwards; }
+  .scene-s4 .spell-glow { animation: glowReveal 0.5s ease 11.2s forwards; }
+  .scene-s4 .spell-card { animation: cardSlideIn 0.6s ease 11.3s forwards; }
+
+  /* S3: Fireball 18-25s */
+  .scene-s3 { animation: fadeInOut 7s ease 18s forwards; }
+  .scene-s3 .impact-flash { animation: flashIn 0.3s ease 18s forwards; }
+  .scene-s3 .spell-glow { animation: glowReveal 0.5s ease 18.2s forwards; }
+  .scene-s3 .spell-card { animation: cardSlideIn 0.6s ease 18.3s forwards; }
+
+  /* S2: Healing Word 25-32s */
+  .scene-s2 { animation: fadeInOut 7s ease 25s forwards; }
+  .scene-s2 .impact-flash { animation: flashIn 0.3s ease 25s forwards; }
+  .scene-s2 .spell-glow { animation: glowReveal 0.5s ease 25.2s forwards; }
+  .scene-s2 .spell-card { animation: cardSlideIn 0.6s ease 25.3s forwards; }
+
+  /* S1: Dispel Magic 32-39s */
+  .scene-s1 { animation: fadeInOut 7s ease 32s forwards; }
+  .scene-s1 .impact-flash { animation: flashIn 0.3s ease 32s forwards; }
+  .scene-s1 .spell-glow { animation: glowReveal 0.5s ease 32.2s forwards; }
+  .scene-s1 .spell-card { animation: cardSlideIn 0.6s ease 32.3s forwards; }
+
+  /* CTA: 39-45s */
+  .scene-cta { animation: fadeIn 0.5s ease 39s forwards; }
+  .scene-cta .cta-text-main { animation: slamIn 0.6s ease 39.3s forwards; }
+  .scene-cta .cta-text-sub { animation: fadeIn 0.5s ease 40s forwards; }
+  .scene-cta .cta-separator { animation: separatorGrow 0.5s ease 40.5s forwards; }
+  .scene-cta .cta-logo { animation: slamIn 0.7s ease 41s forwards; }
+  .scene-cta .cta-brand { animation: fadeIn 0.5s ease 41.5s forwards; }
+  .scene-cta .cta-sub { animation: fadeIn 0.5s ease 42s forwards; }
+</style>
+</head>
+<body>
+
+<div class="reel">
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+  <div class="border-glow"></div>
+  <div class="particles-layer">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  <svg class="corner-ornament corner-tl" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#A855F7"/><path d="M12 12h60v2H14v60h-2V12z" fill="#A855F7" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#A855F7" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-tr" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#A855F7"/><path d="M12 12h60v2H14v60h-2V12z" fill="#A855F7" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#A855F7" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-bl" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#A855F7"/><path d="M12 12h60v2H14v60h-2V12z" fill="#A855F7" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#A855F7" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-br" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#A855F7"/><path d="M12 12h60v2H14v60h-2V12z" fill="#A855F7" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#A855F7" opacity="0.6"/></svg>
+  <div class="watermark">@pocket.dm</div>
+
+  <!-- INTRO -->
+  <div class="scene scene-intro">
+    <div class="intro-glow"></div>
+    <div class="intro-text-1">TOP 5</div>
+    <div class="intro-separator"></div>
+    <div class="intro-text-2">Magias Que Você Precisa no Próximo Personagem</div>
+    <div class="intro-text-3">D&D 5e SRD</div>
+  </div>
+
+  <!-- #5 DISPEL MAGIC (Tier A) -->
+  <div class="scene scene-s5">
+    <div class="impact-flash"></div>
+    <div class="spell-glow" style="background: radial-gradient(circle, rgba(212,168,83,0.18) 0%, transparent 60%);"></div>
+    <img class="scene-character" src="../imagens/autumn elf.png" alt="" style="--char-glow: rgba(212,168,83,0.5); animation-delay: 4s;">
+    <div class="spell-card">
+      <svg class="spell-icon" viewBox="0 0 200 200" style="--spell-color: #D4A853; animation: iconFloat 3s ease-in-out infinite, iconPulse 2s ease-in-out infinite;">
+        <defs><linearGradient id="dispelG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E8C87A"/><stop offset="100%" stop-color="#D4A853"/></linearGradient></defs>
+        <circle cx="100" cy="100" r="70" fill="none" stroke="url(#dispelG)" stroke-width="3" opacity="0.5" stroke-dasharray="12 4"/>
+        <circle cx="100" cy="100" r="50" fill="none" stroke="url(#dispelG)" stroke-width="2" opacity="0.3" stroke-dasharray="6 6"/>
+        <circle cx="100" cy="100" r="30" fill="rgba(212,168,83,0.08)" stroke="url(#dispelG)" stroke-width="2" opacity="0.4"/>
+        <line x1="100" y1="30" x2="100" y2="10" stroke="#E8C87A" stroke-width="2" opacity="0.6"/>
+        <line x1="100" y1="170" x2="100" y2="190" stroke="#E8C87A" stroke-width="2" opacity="0.6"/>
+        <line x1="30" y1="100" x2="10" y2="100" stroke="#E8C87A" stroke-width="2" opacity="0.6"/>
+        <line x1="170" y1="100" x2="190" y2="100" stroke="#E8C87A" stroke-width="2" opacity="0.6"/>
+        <line x1="50" y1="50" x2="35" y2="35" stroke="#E8C87A" stroke-width="2" opacity="0.4"/>
+        <line x1="150" y1="50" x2="165" y2="35" stroke="#E8C87A" stroke-width="2" opacity="0.4"/>
+        <line x1="50" y1="150" x2="35" y2="165" stroke="#E8C87A" stroke-width="2" opacity="0.4"/>
+        <line x1="150" y1="150" x2="165" y2="165" stroke="#E8C87A" stroke-width="2" opacity="0.4"/>
+        <text x="100" y="108" text-anchor="middle" font-family="Cinzel" font-size="20" font-weight="900" fill="#E8C87A" opacity="0.8">DISPEL</text>
+      </svg>
+      <div class="spell-badges">
+        <span class="tier-badge tier-a">TIER A</span>
+        <span class="rank-badge">#5</span>
+      </div>
+      <div class="spell-name" style="font-size: 52px;">Dispel Magic</div>
+      <div class="spell-meta">3º Nível · Abjuração · Ação</div>
+      <div class="spell-separator"></div>
+      <div class="spell-desc">Remove qualquer efeito mágico ativo. Barreiras, maldições, encantamentos, ilusões.</div>
+      <div class="spell-highlight">A solução universal. Nenhuma mesa deveria ficar sem.</div>
+    </div>
+  </div>
+
+  <!-- #4 HEALING WORD (Tier A) -->
+  <div class="scene scene-s4">
+    <div class="impact-flash" style="background: rgba(34,197,94,0.3);"></div>
+    <div class="spell-glow" style="background: radial-gradient(circle, rgba(34,197,94,0.15) 0%, transparent 60%);"></div>
+    <img class="scene-character" src="../imagens/cleric.png" alt="" style="--char-glow: rgba(34,197,94,0.4); animation-delay: 11s;">
+    <div class="spell-card">
+      <svg class="spell-icon" viewBox="0 0 200 200" style="--spell-color: #22C55E; animation: iconFloat 3s ease-in-out infinite 0.5s, iconPulse 2s ease-in-out infinite 0.5s;">
+        <defs><linearGradient id="healG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#86EFAC"/><stop offset="100%" stop-color="#22C55E"/></linearGradient></defs>
+        <circle cx="100" cy="100" r="65" fill="none" stroke="url(#healG)" stroke-width="2" opacity="0.3"/>
+        <circle cx="100" cy="100" r="45" fill="rgba(34,197,94,0.06)" stroke="url(#healG)" stroke-width="1.5" opacity="0.4"/>
+        <rect x="88" y="55" width="24" height="90" rx="4" fill="url(#healG)" opacity="0.7"/>
+        <rect x="55" y="88" width="90" height="24" rx="4" fill="url(#healG)" opacity="0.7"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="url(#healG)" stroke-width="1" opacity="0.15" stroke-dasharray="4 8"/>
+      </svg>
+      <div class="spell-badges">
+        <span class="tier-badge tier-a">TIER A</span>
+        <span class="rank-badge">#4</span>
+      </div>
+      <div class="spell-name" style="font-size: 52px;">Healing Word</div>
+      <div class="spell-meta">1º Nível · Evocação · Ação Bônus</div>
+      <div class="spell-separator"></div>
+      <div class="spell-desc">Cura 1d4 + modificador à distância. Ação Bônus. Levanta aliados caídos e ainda ataca no mesmo turno.</div>
+      <div class="spell-highlight">A magia que evita TPKs há 50 anos.</div>
+    </div>
+  </div>
+
+  <!-- #3 SHIELD (Tier S) -->
+  <div class="scene scene-s3">
+    <div class="impact-flash" style="background: rgba(100,180,255,0.3);"></div>
+    <div class="spell-glow" style="background: radial-gradient(circle, rgba(100,180,255,0.18) 0%, transparent 60%);"></div>
+    <img class="scene-character" src="../imagens/fighter.png" alt="" style="--char-glow: rgba(100,180,255,0.5); animation-delay: 18s;">
+    <div class="spell-card">
+      <svg class="spell-icon" viewBox="0 0 200 200" style="--spell-color: #64B4FF; animation: iconFloat 3s ease-in-out infinite 1s, iconPulse 2s ease-in-out infinite 1s;">
+        <defs><linearGradient id="shieldG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#93C5FD"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient></defs>
+        <path d="M100 20 L170 60 L170 110 C170 155 140 180 100 195 C60 180 30 155 30 110 L30 60 Z" fill="none" stroke="url(#shieldG)" stroke-width="4" opacity="0.8"/>
+        <path d="M100 40 L150 70 L150 110 C150 145 130 165 100 178 C70 165 50 145 50 110 L50 70 Z" fill="rgba(100,180,255,0.08)" stroke="url(#shieldG)" stroke-width="2" opacity="0.5"/>
+        <path d="M100 65 L130 82 L130 110 C130 132 118 145 100 155 C82 145 70 132 70 110 L70 82 Z" fill="rgba(100,180,255,0.12)" stroke="url(#shieldG)" stroke-width="1.5" opacity="0.6"/>
+        <text x="100" y="120" text-anchor="middle" font-family="Cinzel" font-size="28" font-weight="900" fill="#93C5FD">+5</text>
+      </svg>
+      <div class="spell-badges">
+        <span class="tier-badge tier-s">TIER S</span>
+        <span class="rank-badge">#3</span>
+      </div>
+      <div class="spell-name">Shield</div>
+      <div class="spell-meta">1º Nível · Abjuração · Reação</div>
+      <div class="spell-separator"></div>
+      <div class="spell-desc">+5 na CA até o início do próximo turno. Reação. Sem concentração.</div>
+      <div class="spell-highlight">Transforme um acerto em erro com uma reação.</div>
+    </div>
+  </div>
+
+  <!-- #2 COUNTERSPELL (Tier S) -->
+  <div class="scene scene-s2">
+    <div class="impact-flash" style="background: rgba(168,85,247,0.3);"></div>
+    <div class="spell-glow" style="background: radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 60%);"></div>
+    <img class="scene-character" src="../imagens/dh19-inquisitor.png" alt="" style="--char-glow: rgba(168,85,247,0.5); animation-delay: 25s;">
+    <div class="spell-card">
+      <svg class="spell-icon" viewBox="0 0 200 200" style="--spell-color: #A855F7; animation: iconFloat 3s ease-in-out infinite 1.5s, iconPulse 2s ease-in-out infinite 1.5s;">
+        <defs><linearGradient id="counterG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C084FC"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+        <circle cx="100" cy="100" r="70" fill="none" stroke="url(#counterG)" stroke-width="3" opacity="0.4"/>
+        <circle cx="100" cy="100" r="50" fill="none" stroke="url(#counterG)" stroke-width="2" opacity="0.3" stroke-dasharray="8 6"/>
+        <line x1="45" y1="45" x2="155" y2="155" stroke="#EF4444" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+        <circle cx="100" cy="100" r="30" fill="rgba(168,85,247,0.1)" stroke="url(#counterG)" stroke-width="2" opacity="0.5"/>
+        <text x="100" y="108" text-anchor="middle" font-family="Cinzel" font-size="22" font-weight="700" fill="#C084FC">NO</text>
+      </svg>
+      <div class="spell-badges">
+        <span class="tier-badge tier-s">TIER S</span>
+        <span class="rank-badge">#2</span>
+      </div>
+      <div class="spell-name">Counterspell</div>
+      <div class="spell-meta">3º Nível · Abjuração · Reação</div>
+      <div class="spell-separator"></div>
+      <div class="spell-desc">Anula qualquer magia de nível 3 ou menor. Acima disso, teste de habilidade.</div>
+      <div class="spell-highlight">O inimigo conjurou Fireball? Não mais.</div>
+    </div>
+  </div>
+
+  <!-- #1 FIREBALL (Tier S) -->
+  <div class="scene scene-s1">
+    <div class="impact-flash" style="background: rgba(239,100,68,0.35);"></div>
+    <div class="spell-glow" style="background: radial-gradient(circle, rgba(239,100,68,0.2) 0%, transparent 60%);"></div>
+    <img class="scene-character" src="../imagens/wizard fireball.png" alt="" style="--char-glow: rgba(239,100,68,0.6); animation-delay: 32s;">
+    <div class="spell-card">
+      <svg class="spell-icon" viewBox="0 0 200 200" style="--spell-color: #F97316; animation: iconFloat 3s ease-in-out infinite 2s, iconPulse 2s ease-in-out infinite 2s;">
+        <defs><linearGradient id="fireG" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#DC2626"/><stop offset="40%" stop-color="#F97316"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient></defs>
+        <path d="M100 15 C120 50 155 60 150 100 C148 120 135 130 130 115 C130 140 145 155 130 175 C115 190 95 190 85 180 C90 170 95 160 85 150 C75 155 70 170 60 175 C45 165 40 140 50 120 C55 130 60 125 55 110 C45 95 50 60 70 45 C75 60 85 55 80 40 C90 50 95 35 100 15Z" fill="url(#fireG)" opacity="0.85"/>
+        <path d="M100 60 C110 75 125 80 120 105 C118 115 112 118 110 110 C112 125 118 135 110 150 C105 155 95 155 90 150 C93 145 95 138 90 132 C85 136 82 145 78 148 C70 142 68 128 73 115 C76 120 78 118 76 110 C70 100 73 80 85 70 C88 78 92 75 90 65 C95 70 98 62 100 60Z" fill="#FBBF24" opacity="0.5"/>
+        <text x="100" y="195" text-anchor="middle" font-family="JetBrains Mono" font-size="16" font-weight="700" fill="#FBBF24" opacity="0.8">8d6</text>
+      </svg>
+      <div class="spell-badges">
+        <span class="tier-badge tier-s">TIER S</span>
+        <span class="rank-badge">#1</span>
+      </div>
+      <div class="spell-name">Fireball</div>
+      <div class="spell-meta">3º Nível · Evocação · Ação</div>
+      <div class="spell-separator"></div>
+      <div class="spell-desc">8d6 de dano de fogo num raio de 20 ft. Cada nível acima adiciona 1d6.</div>
+      <div class="spell-highlight">Quando a resposta pra tudo é fogo.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="scene scene-cta">
+    <div class="cta-text-main">Concorda com o ranking?</div>
+    <div class="cta-text-sub">Crie sua conta gratuita e vote nas magias mais essenciais do D&D 5e.</div>
+    <div class="cta-separator"></div>
+    <svg class="cta-logo" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:140px;height:140px;opacity:0;filter:drop-shadow(0 0 30px rgba(212,168,83,0.5));">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient>
+        <linearGradient id="g2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#edcf82"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b89040"/></linearGradient>
+        <filter id="glow" width="160%" height="160%" x="-30%" y="-30%"><feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="8"/><feComposite in="SourceGraphic" in2="blur"/></filter>
+      </defs>
+      <g stroke="url(#g1)" stroke-linejoin="round" filter="url(#glow)">
+        <g stroke-linecap="round">
+          <path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/>
+          <path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/>
+          <path stroke-width="5" d="m256 110-80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 110 80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 410-80-84" opacity=".5"/>
+          <path stroke-width="5" d="m256 410 80-84" opacity=".5"/>
+          <path stroke-width="4" d="m133 185 123 9" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-123 9" opacity=".35"/>
+          <path stroke-width="4" d="m133 185 43 141" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-43 141" opacity=".35"/>
+          <path stroke-width="4" d="m133 335 43-9" opacity=".35"/>
+          <path stroke-width="4" d="m379 335-43-9" opacity=".35"/>
+        </g>
+        <path fill="url(#g2)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/>
+      </g>
+    </svg>
+    <div class="cta-brand">POCKET DM</div>
+    <div class="cta-sub">600+ magias no compêndio. Link na bio.</div>
+  </div>
+</div>
+
+</body>
+</html>

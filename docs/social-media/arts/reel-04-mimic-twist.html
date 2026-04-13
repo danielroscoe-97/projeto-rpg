@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Reel R4 — Seu Baú É Um Mimic</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@600;700&family=JetBrains+Mono:wght@700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body { width: 1080px; height: 1920px; overflow: hidden; background: #070710; }
+
+  .reel {
+    width: 1080px; height: 1920px; position: relative; overflow: hidden;
+    background: radial-gradient(ellipse at center 40%, #12111E 0%, #070710 70%);
+  }
+
+  /* === PERSISTENT EFFECTS === */
+  .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center 45%, transparent 40%, rgba(0,0,0,0.7) 100%); z-index: 5; pointer-events: none; }
+  .scanlines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px); z-index: 6; pointer-events: none; }
+  .border-glow { position: absolute; inset: 20px; border: 1px solid rgba(212,168,83,0.1); z-index: 7; pointer-events: none; animation: borderPulse 3s ease-in-out infinite; }
+
+  .particles-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+  .particle { position: absolute; border-radius: 50%; background: #D4A853; animation: particleRise linear infinite; }
+  .particle:nth-child(1)  { width: 4px; height: 4px; left: 8%;  bottom: -20px; opacity: 0.7; animation-duration: 6s; animation-delay: 0s; }
+  .particle:nth-child(2)  { width: 3px; height: 3px; left: 15%; bottom: -20px; opacity: 0.5; animation-duration: 8s; animation-delay: 1s; }
+  .particle:nth-child(3)  { width: 5px; height: 5px; left: 25%; bottom: -20px; opacity: 0.8; animation-duration: 7s; animation-delay: 0.5s; }
+  .particle:nth-child(4)  { width: 3px; height: 3px; left: 35%; bottom: -20px; opacity: 0.4; animation-duration: 9s; animation-delay: 2s; }
+  .particle:nth-child(5)  { width: 6px; height: 6px; left: 45%; bottom: -20px; opacity: 0.9; animation-duration: 5s; animation-delay: 0.3s; box-shadow: 0 0 6px #D4A853; }
+  .particle:nth-child(6)  { width: 4px; height: 4px; left: 55%; bottom: -20px; opacity: 0.6; animation-duration: 7.5s; animation-delay: 1.5s; }
+  .particle:nth-child(7)  { width: 3px; height: 3px; left: 65%; bottom: -20px; opacity: 0.5; animation-duration: 6.5s; animation-delay: 0.8s; }
+  .particle:nth-child(8)  { width: 5px; height: 5px; left: 75%; bottom: -20px; opacity: 0.7; animation-duration: 8.5s; animation-delay: 2.5s; }
+  .particle:nth-child(9)  { width: 4px; height: 4px; left: 85%; bottom: -20px; opacity: 0.6; animation-duration: 6s; animation-delay: 1.2s; }
+  .particle:nth-child(10) { width: 3px; height: 3px; left: 92%; bottom: -20px; opacity: 0.4; animation-duration: 9.5s; animation-delay: 3s; }
+  .particle:nth-child(11) { width: 7px; height: 7px; left: 20%; bottom: -20px; opacity: 0.3; animation-duration: 10s; animation-delay: 0.7s; box-shadow: 0 0 8px #D4A853; }
+  .particle:nth-child(12) { width: 7px; height: 7px; left: 60%; bottom: -20px; opacity: 0.3; animation-duration: 11s; animation-delay: 1.8s; box-shadow: 0 0 8px #D4A853; }
+  .particle:nth-child(13) { width: 2px; height: 2px; left: 40%; bottom: -20px; opacity: 0.6; animation-duration: 5.5s; animation-delay: 0.2s; }
+  .particle:nth-child(14) { width: 2px; height: 2px; left: 70%; bottom: -20px; opacity: 0.5; animation-duration: 7s; animation-delay: 3.5s; }
+  .particle:nth-child(15) { width: 4px; height: 4px; left: 50%; bottom: -20px; opacity: 0.8; animation-duration: 6s; animation-delay: 0.1s; box-shadow: 0 0 6px #D4A853; }
+
+  .corner-ornament { position: absolute; width: 120px; height: 120px; z-index: 7; opacity: 0.2; }
+  .corner-tl { top: 30px; left: 30px; }
+  .corner-tr { top: 30px; right: 30px; transform: scaleX(-1); }
+  .corner-bl { bottom: 30px; left: 30px; transform: scaleY(-1); }
+  .corner-br { bottom: 30px; right: 30px; transform: scale(-1); }
+
+  .watermark { position: absolute; bottom: 320px; left: 50%; transform: translateX(-50%); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; color: rgba(212,168,83,0.35); letter-spacing: 4px; z-index: 30; }
+
+  /* === SCENES === */
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; opacity: 0; }
+
+  .impact-flash { position: absolute; inset: 0; background: rgba(212,168,83,0.5); z-index: 20; opacity: 0; mix-blend-mode: screen; }
+  .impact-flash-red { position: absolute; inset: 0; background: rgba(239,68,68,0.4); z-index: 20; opacity: 0; mix-blend-mode: screen; }
+
+  .monster-glow { position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(212,168,83,0.2) 0%, rgba(212,168,83,0.08) 40%, transparent 70%); opacity: 0; z-index: 8; }
+  .monster-glow-red { position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(239,68,68,0.15) 0%, rgba(239,68,68,0.05) 40%, transparent 70%); opacity: 0; z-index: 8; }
+
+  .energy-ring { position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; border-radius: 50%; border: 2px solid rgba(212,168,83,0.15); box-shadow: 0 0 30px rgba(212,168,83,0.1), inset 0 0 30px rgba(212,168,83,0.05); opacity: 0; z-index: 8; }
+
+  .speed-lines-radial { position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 1200px; height: 1200px; opacity: 0; z-index: 8;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(239,68,68,0.08) 2deg, transparent 4deg, transparent 15deg, rgba(239,68,68,0.06) 17deg, transparent 19deg, transparent 30deg, rgba(239,68,68,0.08) 32deg, transparent 34deg, transparent 50deg, rgba(239,68,68,0.06) 52deg, transparent 54deg, transparent 72deg, rgba(239,68,68,0.08) 74deg, transparent 76deg, transparent 90deg, rgba(239,68,68,0.06) 92deg, transparent 94deg, transparent 110deg, rgba(239,68,68,0.08) 112deg, transparent 114deg, transparent 135deg, rgba(239,68,68,0.06) 137deg, transparent 139deg, transparent 160deg, rgba(239,68,68,0.08) 162deg, transparent 164deg, transparent 180deg, rgba(239,68,68,0.06) 182deg, transparent 184deg, transparent 200deg, rgba(239,68,68,0.08) 202deg, transparent 204deg, transparent 225deg, rgba(239,68,68,0.06) 227deg, transparent 229deg, transparent 250deg, rgba(239,68,68,0.08) 252deg, transparent 254deg, transparent 270deg, rgba(239,68,68,0.06) 272deg, transparent 274deg, transparent 300deg, rgba(239,68,68,0.08) 302deg, transparent 304deg, transparent 330deg, rgba(239,68,68,0.06) 332deg, transparent 334deg, transparent 360deg);
+  }
+
+  /* === SCENE 1: HOOK — "Você encontra um baú" (0-5s) === */
+  .hook-text {
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 64px;
+    color: #E8E6E0; text-align: center; line-height: 1.3;
+    text-shadow: 0 0 20px rgba(232,230,224,0.3); opacity: 0; max-width: 800px;
+  }
+  .hook-sub {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 32px;
+    color: #9896A0; text-align: center; margin-top: 20px; opacity: 0; letter-spacing: 4px;
+  }
+  .hook-glow {
+    position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,168,83,0.1) 0%, transparent 60%);
+    z-index: 8; animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  /* === SCENE 2: SUSPENSE — "Você abre..." (5-10s) === */
+  .suspense-text {
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 56px;
+    color: #D4A853; text-align: center; line-height: 1.4; opacity: 0;
+    text-shadow: 0 0 30px rgba(212,168,83,0.4); max-width: 800px;
+  }
+  .suspense-dots {
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 80px;
+    color: #D4A853; letter-spacing: 20px; opacity: 0;
+    text-shadow: 0 0 40px rgba(212,168,83,0.6);
+  }
+
+  /* === SCENE 3: REVEAL — Mimic! (10-20s) === */
+  .monster-art {
+    position: absolute; top: 240px; left: 50%; transform: translateX(-50%) scale(0);
+    width: 650px; height: 650px; object-fit: contain; z-index: 10;
+    filter: drop-shadow(0 0 60px rgba(239,68,68,0.4)) drop-shadow(0 10px 30px rgba(0,0,0,0.8));
+  }
+  .reveal-name {
+    position: absolute; top: 920px; left: 50%; transform: translateX(-50%);
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 80px;
+    color: #EF4444; text-transform: uppercase; letter-spacing: 8px;
+    text-shadow: 0 0 40px rgba(239,68,68,0.6), 0 2px 4px rgba(0,0,0,0.8);
+    z-index: 15; opacity: 0;
+  }
+  .reveal-separator {
+    position: absolute; top: 1020px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 3px; background: linear-gradient(90deg, transparent, #EF4444, transparent); z-index: 15;
+  }
+  .reveal-stats {
+    position: absolute; top: 1050px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 60px; z-index: 15; opacity: 0;
+  }
+  .stat-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 18px; color: #9896A0; letter-spacing: 3px; text-transform: uppercase; }
+  .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 52px; font-weight: 700; color: #E8E6E0; text-shadow: 0 0 15px rgba(232,230,224,0.3); }
+  .reveal-danger {
+    position: absolute; top: 1190px; left: 50%; transform: translateX(-50%);
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 24px;
+    color: #EF4444; text-transform: uppercase; letter-spacing: 3px; text-align: center;
+    z-index: 15; opacity: 0; text-shadow: 0 0 20px rgba(239,68,68,0.5);
+  }
+  .reveal-phrase {
+    position: absolute; top: 1260px; left: 50%; transform: translateX(-50%);
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 26px;
+    color: rgba(232,230,224,0.6); font-style: italic; text-align: center;
+    z-index: 15; opacity: 0; max-width: 800px;
+  }
+
+  /* === SCENE 4: CTA (20-25s) === */
+  .scene-cta { justify-content: center; gap: 20px; }
+  .cta-logo { width: 180px; height: 180px; opacity: 0; filter: drop-shadow(0 0 30px rgba(212,168,83,0.5)); }
+  .cta-brand { font-family: 'Cinzel', serif; font-weight: 900; font-size: 80px; background: linear-gradient(180deg, #E8C87A 0%, #D4A853 50%, #B8903D 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 10px; opacity: 0; filter: drop-shadow(0 0 20px rgba(212,168,83,0.4)); }
+  .cta-separator { width: 0; height: 2px; background: linear-gradient(90deg, transparent, #D4A853, transparent); }
+  .cta-tagline { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 34px; color: #E8E6E0; letter-spacing: 8px; text-transform: uppercase; opacity: 0; }
+  .cta-sub { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 22px; color: #9896A0; letter-spacing: 4px; text-transform: uppercase; opacity: 0; }
+
+  /* === ANIMATIONS === */
+  @keyframes particleRise { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-2000px) translateX(40px); opacity: 0; } }
+  @keyframes borderPulse { 0%, 100% { border-color: rgba(212,168,83,0.05); } 50% { border-color: rgba(212,168,83,0.2); } }
+  @keyframes glowPulse { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
+  @keyframes slamIn { 0% { opacity: 0; transform: scale(2.5); } 50% { transform: scale(0.9); } 70% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes fadeIn { to { opacity: 1; } }
+  @keyframes fadeInOut { 0% { opacity: 0; } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes typeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes monsterReveal { 0% { transform: translateX(-50%) scale(0) rotate(-5deg); opacity: 0; } 40% { transform: translateX(-50%) scale(1.15) rotate(2deg); opacity: 1; } 60% { transform: translateX(-50%) scale(0.95) rotate(-1deg); } 80% { transform: translateX(-50%) scale(1.03); } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+  @keyframes slideUp { 0% { opacity: 0; transform: translateX(-50%) translateY(40px); } 100% { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  @keyframes flashIn { 0% { opacity: 0.8; } 100% { opacity: 0; } }
+  @keyframes separatorGrow { 0% { width: 0; } 100% { width: 400px; } }
+  @keyframes speedLinesIn { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); } 30% { opacity: 0.8; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5) rotate(15deg); } }
+  @keyframes ringPulse { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); } 50% { opacity: 0.6; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); } }
+  @keyframes glowReveal { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+  @keyframes dotsAppear { 0% { opacity: 0; letter-spacing: 5px; } 100% { opacity: 1; letter-spacing: 20px; } }
+  @keyframes shakeScene { 0%, 100% { transform: translate(0); } 20% { transform: translate(-6px, 3px); } 40% { transform: translate(6px, -3px); } 60% { transform: translate(-3px, 6px); } 80% { transform: translate(3px, -6px); } }
+
+  /* === TIMING (~25s total) === */
+  /* Hook: 0-5s */
+  .scene-hook { animation: fadeInOut 5s ease forwards; }
+  .scene-hook .hook-text { animation: typeIn 0.6s ease 0.3s forwards; }
+  .scene-hook .hook-sub { animation: fadeIn 0.5s ease 1.2s forwards; }
+
+  /* Suspense: 5-10s */
+  .scene-suspense { animation: fadeInOut 5s ease 5s forwards; }
+  .scene-suspense .suspense-text { animation: typeIn 0.8s ease 5.3s forwards; }
+  .scene-suspense .suspense-dots { animation: dotsAppear 1.5s ease 6.5s forwards; }
+
+  /* Reveal: 10-20s */
+  .scene-reveal { animation: fadeInOut 10s ease 10s forwards; }
+  .scene-reveal .impact-flash-red { animation: flashIn 0.4s ease 10s forwards; }
+  .scene-reveal .speed-lines-radial { animation: speedLinesIn 1.5s ease 10s forwards; }
+  .scene-reveal .energy-ring { animation: ringPulse 1.5s ease 10.1s forwards; }
+  .scene-reveal .monster-glow-red { animation: glowReveal 0.6s ease 10.2s forwards; }
+  .scene-reveal .monster-art { animation: monsterReveal 0.8s ease 10.3s forwards; }
+  .scene-reveal .reveal-name { animation: slideUp 0.5s ease 11.2s forwards; }
+  .scene-reveal .reveal-separator { animation: separatorGrow 0.4s ease 11.6s forwards; }
+  .scene-reveal .reveal-stats { animation: slideUp 0.4s ease 11.9s forwards; }
+  .scene-reveal .reveal-danger { animation: slideUp 0.3s ease 12.5s forwards; }
+  .scene-reveal .reveal-phrase { animation: fadeIn 0.5s ease 13.2s forwards; }
+
+  /* Shake on reveal */
+  .scene-reveal { animation: fadeInOut 10s ease 10s forwards, shakeScene 0.4s ease 10s 1; }
+
+  /* CTA: 20-25s */
+  .scene-cta { animation: fadeIn 0.5s ease 20s forwards; }
+  .scene-cta .cta-logo { animation: slamIn 0.7s ease 20.3s forwards; }
+  .scene-cta .cta-brand { animation: fadeIn 0.5s ease 21s forwards; }
+  .scene-cta .cta-separator { animation: separatorGrow 0.5s ease 21.5s forwards; }
+  .scene-cta .cta-tagline { animation: fadeIn 0.5s ease 22s forwards; }
+  .scene-cta .cta-sub { animation: fadeIn 0.5s ease 22.5s forwards; }
+</style>
+</head>
+<body>
+
+<div class="reel">
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+  <div class="border-glow"></div>
+  <div class="particles-layer">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+  </div>
+
+  <svg class="corner-ornament corner-tl" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-tr" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-bl" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+  <svg class="corner-ornament corner-br" viewBox="0 0 120 120" fill="none"><path d="M0 0h120v6H6v114H0V0z" fill="#D4A853"/><path d="M12 12h60v2H14v60h-2V12z" fill="#D4A853" opacity="0.4"/><circle cx="6" cy="6" r="3" fill="#D4A853" opacity="0.6"/></svg>
+
+  <div class="watermark">@pocket.dm</div>
+
+  <!-- HOOK: 0-5s -->
+  <div class="scene scene-hook">
+    <div class="hook-glow"></div>
+    <div class="hook-text">Você encontra<br>um baú no<br>corredor escuro.</div>
+    <div class="hook-sub">O QUE VOCÊ FAZ?</div>
+  </div>
+
+  <!-- SUSPENSE: 5-10s -->
+  <div class="scene scene-suspense">
+    <div class="suspense-text">Você abre<br>o baú</div>
+    <div class="suspense-dots">. . .</div>
+  </div>
+
+  <!-- REVEAL: 10-20s -->
+  <div class="scene scene-reveal">
+    <div class="impact-flash-red"></div>
+    <div class="speed-lines-radial"></div>
+    <div class="energy-ring"></div>
+    <div class="monster-glow-red"></div>
+    <img class="monster-art" src="assets/mimic.png" alt="">
+    <div class="reveal-name">MIMIC!</div>
+    <div class="reveal-separator"></div>
+    <div class="reveal-stats">
+      <div class="stat-item"><span class="stat-label">CR</span><span class="stat-value">2</span></div>
+      <div class="stat-item"><span class="stat-label">HP</span><span class="stat-value">58</span></div>
+      <div class="stat-item"><span class="stat-label">AC</span><span class="stat-value">12</span></div>
+    </div>
+    <div class="reveal-danger">Shapechanger + Adhesive + Ácido</div>
+    <div class="reveal-phrase">Seus jogadores nunca mais vão confiar num baú.</div>
+  </div>
+
+  <!-- CTA: 20-25s -->
+  <div class="scene scene-cta">
+    <svg class="cta-logo" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e8c87a"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b8903d"/></linearGradient>
+        <linearGradient id="g2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#edcf82"/><stop offset="50%" stop-color="#d4a853"/><stop offset="100%" stop-color="#b89040"/></linearGradient>
+        <filter id="glow" width="160%" height="160%" x="-30%" y="-30%"><feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="8"/><feComposite in="SourceGraphic" in2="blur"/></filter>
+      </defs>
+      <g stroke="url(#g1)" stroke-linejoin="round" filter="url(#glow)">
+        <g stroke-linecap="round">
+          <path stroke-width="10" d="m256 110 123 75v150l-123 75-123-75V185z"/>
+          <path stroke-width="6" d="m256 194-80 132h160z" opacity=".55"/>
+          <path stroke-width="5" d="m256 110-80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 110 80 216" opacity=".5"/>
+          <path stroke-width="5" d="m256 410-80-84" opacity=".5"/>
+          <path stroke-width="5" d="m256 410 80-84" opacity=".5"/>
+          <path stroke-width="4" d="m133 185 123 9" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-123 9" opacity=".35"/>
+          <path stroke-width="4" d="m133 185 43 141" opacity=".35"/>
+          <path stroke-width="4" d="m379 185-43 141" opacity=".35"/>
+          <path stroke-width="4" d="m133 335 43-9" opacity=".35"/>
+          <path stroke-width="4" d="m379 335-43-9" opacity=".35"/>
+        </g>
+        <path fill="url(#g2)" stroke-width="2" d="M130 174 110 37l85 55 61-88 61 88 85-55-20 137-126-82Z"/>
+      </g>
+    </svg>
+    <div class="cta-brand">POCKET DM</div>
+    <div class="cta-separator"></div>
+    <div class="cta-tagline">Master your table.</div>
+    <div class="cta-sub">Stats completos no compêndio. Link na bio.</div>
+  </div>
+</div>
+
+</body>
+</html>
