@@ -150,6 +150,7 @@
 | Encounter Builder Logado | ✅ | CampaignEncounterBuilder dentro de CampaignFocusView (`?section=encounters`). DM-only |
 | ~~Combat Recap (Spotify Wrapped)~~ | ✅ | CombatRecap.tsx + RecapAwardsCarousel + RecapNarratives + RecapSummary + RecapActions. 8 awards, 4 narrativas, share links, email, broadcast, public pages `/r/[code]` |
 | SEO Supremo | ✅ Waves 1-3 | Monsters, spells, conditions, classes, races, backgrounds, feats, items. 3500+ paginas |
+| SEO Initiative Tracker | ✅ | "initiative tracker" keyword targeting: metadata (6 pages), i18n copy (EN+PT hero/features/CTA/nav/footer), blog post #20 (best-initiative-tracker-dnd-5e, 1300 words, 3 screenshots), FAQ +3 questions, JSON-LD enriched. 2026-04-12 |
 
 ---
 
