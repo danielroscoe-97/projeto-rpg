@@ -520,6 +520,29 @@ html[data-combat-active="true"] main#main-content {
     50% { box-shadow: 0 0 16px 4px rgba(220, 38, 38, 0.5); }
   }
 
+  /* ─── Optimistic ACK: gold pulse for pending player actions ─── */
+  @keyframes pending-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+    50% { box-shadow: 0 0 8px 2px rgba(212, 175, 55, 0.4); }
+  }
+  .animate-pending-pulse {
+    animation: pending-pulse 1.5s ease-in-out 1;
+    will-change: box-shadow;
+  }
+  /* Reaction blink — single cycle, not infinite */
+  @keyframes reaction-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .animate-reaction-blink {
+    animation: reaction-blink 0.3s ease-in-out 1;
+  }
+  /* Confirmed fade — smooth transition from pending state */
+  .hp-confirmed-fade {
+    transition: box-shadow 300ms ease-out;
+    box-shadow: none;
+  }
+
   /* ─── Field validation error highlight ─── */
   @keyframes field-error-pulse {
     0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }

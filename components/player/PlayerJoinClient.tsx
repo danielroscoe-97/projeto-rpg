@@ -50,6 +50,9 @@ import { DifficultyPoll, DIFFICULTY_OPTIONS } from "@/components/combat/Difficul
 import { PlayerSharedNotes } from "@/components/player/PlayerSharedNotes";
 import { PlayerChat } from "@/components/player/PlayerChat";
 import { DmPostit } from "@/components/player/DmPostit";
+import { usePendingActionsStore, generateActionId } from "@/lib/stores/pending-actions-store";
+import { useActionAck, confirmActionsForCombatant } from "@/hooks/use-action-ack";
+import type { CombatantPendingState } from "@/hooks/use-action-ack";
 
 const SpellSearch = lazy(() =>
   import("@/components/oracle/SpellSearch").then((mod) => ({
@@ -275,6 +278,56 @@ export function PlayerJoinClient({
   useEffect(() => { effectiveTokenIdRef.current = effectiveTokenId; }, [effectiveTokenId]);
   useEffect(() => { registeredNameRef.current = registeredName; }, [registeredName]);
 
+  // --- Optimistic ACK system: track pending player actions awaiting DM confirmation ---
+  // channelRef is declared further down (after auth init) — resendBroadcast uses a ref-based
+  // access pattern so the useCallback doesn't need channelRef in its deps.
+  const resendBroadcastRef = useRef<(event: string, payload: Record<string, unknown>) => boolean>(() => false);
+  const resendBroadcast = useCallback((event: string, payload: Record<string, unknown>): boolean => {
+    return resendBroadcastRef.current(event, payload);
+  }, []);
+
+  const handleActionFailed = useCallback((action: import("@/lib/stores/pending-actions-store").PendingAction) => {
+    // Rollback: revert optimistic update using snapshot
+    if (action.rollbackSnapshot && action.combatantId) {
+      updateCombatants((prev) =>
+        prev.map((c) => {
+          if (c.id !== action.combatantId) return c;
+          return { ...c, ...action.rollbackSnapshot };
+        })
+      );
+    }
+  }, []);
+
+  const { startAckTimer, cancelAckTimer, getCombatantPendingStatus } = useActionAck({
+    resendBroadcast,
+    onActionFailed: handleActionFailed,
+    t: tRef.current,
+  });
+
+  // Pending state for the player's own combatant — drives visual feedback
+  const [pendingState, setPendingState] = useState<CombatantPendingState>({});
+  useEffect(() => {
+    // Subscribe to pending actions store changes
+    const unsub = usePendingActionsStore.subscribe(() => {
+      // Find the player's own combatant
+      const own = combatantsRef.current.find((c) => {
+        if (!c.is_player) return false;
+        if (c.session_token_id && c.session_token_id === effectiveTokenIdRef.current) return true;
+        if (registeredNameRef.current && c.name === registeredNameRef.current) return true;
+        return false;
+      });
+      if (own) {
+        setPendingState(getCombatantPendingStatus(own.id));
+      }
+    });
+    return unsub;
+  }, [getCombatantPendingStatus]);
+
+  // Clear pending actions on combat end
+  useEffect(() => {
+    if (!active) usePendingActionsStore.getState().clear();
+  }, [active]);
+
   // Generate signed URLs for a list of audio files (shared by initial fetch + refresh)
   const generateSignedUrls = useCallback(async (files: PlayerAudioFile[]): Promise<Record<string, string>> => {
     const supabase = createClient();
@@ -488,6 +541,13 @@ export function PlayerJoinClient({
   }, [tokenId, sessionId]);
 
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+  // Wire up resendBroadcast now that channelRef exists
+  resendBroadcastRef.current = (event: string, payload: Record<string, unknown>): boolean => {
+    const ch = channelRef.current;
+    if (!ch || connectionStatus !== "connected") return false;
+    ch.send({ type: "broadcast", event, payload });
+    return true;
+  };
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
   const reconnectBackoffRef = useRef(1000);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -666,18 +726,34 @@ export function PlayerJoinClient({
       return;
     }
 
-    // Broadcast to DM
-    ch.send({
-      type: "broadcast",
-      event: "player:hp_action",
-      payload: {
-        player_name: registeredName,
-        combatant_id: combatantId,
-        action,
-        amount,
-        sender_token_id: effectiveTokenId,
-      },
+    // Snapshot for rollback
+    const existing = combatantsRef.current.find((c) => c.id === combatantId);
+    const rollbackSnapshot = existing
+      ? { current_hp: existing.current_hp, temp_hp: existing.temp_hp }
+      : undefined;
+
+    // P1-fix: pre-generate action_id so it's stored in payload for retry
+    const actionId = generateActionId();
+    const broadcastPayload = {
+      player_name: registeredName,
+      combatant_id: combatantId,
+      action,
+      amount,
+      sender_token_id: effectiveTokenId,
+      action_id: actionId,
+    };
+    usePendingActionsStore.getState().addAction({
+      id: actionId,
+      type: "hp",
+      combatantId,
+      timestamp: Date.now(),
+      payload: broadcastPayload,
+      rollbackSnapshot,
     });
+
+    // Broadcast to DM
+    ch.send({ type: "broadcast", event: "player:hp_action", payload: broadcastPayload });
+    startAckTimer(actionId, "player:hp_action");
 
     // Optimistic local update with temp HP absorption
     hpActionOptimisticRef.current = Date.now();
@@ -706,7 +782,7 @@ export function PlayerJoinClient({
         return c;
       })
     );
-  }, [connectionStatus, registeredName, updateCombatants]);
+  }, [connectionStatus, registeredName, updateCombatants, startAckTimer]);
 
   // F-41: Initialize spell slots from prefilledCharacters when a matching character is registered
   // Called once when registeredName is resolved (via registration or reconnect)
@@ -820,6 +896,8 @@ export function PlayerJoinClient({
         const isHpActionProtected = Date.now() - hpActionOptimisticRef.current < 5000;
         // B3: Preserve optimistic conditions for 5s after broadcast
         const isConditionProtected = Date.now() - conditionOptimisticRef.current < 5000;
+        // Preserve optimistic reaction for 5s after toggle
+        const isReactionProtected = Date.now() - lastReactionToggleRef.current < 5000;
         // ALWAYS merge local state for runtime-only fields (reaction_used is not in DB)
         updateCombatants((prev) => {
           const serverList = data.combatants as PlayerCombatant[];
@@ -827,7 +905,8 @@ export function PlayerJoinClient({
             const local = prev.find((lc) => lc.id === sc.id);
             let merged = sc;
             // reaction_used is runtime-only (not in DB) — always preserve from local state
-            if (local && typeof local.reaction_used === "boolean" && sc.reaction_used === undefined) {
+            // Also protect during 5s window after optimistic toggle
+            if (local && typeof local.reaction_used === "boolean" && (sc.reaction_used === undefined || isReactionProtected)) {
               merged = { ...merged, reaction_used: local.reaction_used };
             }
             // Preserve optimistic death saves
@@ -975,6 +1054,14 @@ export function PlayerJoinClient({
           if (hpSeq > 0 && hpSeq <= lastSeqRef.current) return;
           if (hpSeq > 0) lastSeqRef.current = hpSeq;
 
+          // ACK: DM re-broadcast confirms our pending HP/death_save actions
+          if (payload.combatant_id) {
+            confirmActionsForCombatant(payload.combatant_id, "hp");
+            if (payload.death_saves) {
+              confirmActionsForCombatant(payload.combatant_id, "death_save");
+            }
+          }
+
           if (payload.combatant_id) {
             // HP delta visual feedback — calculate before updating state
             const existing = combatantsRef.current.find((c) => c.id === payload.combatant_id);
@@ -1052,6 +1139,8 @@ export function PlayerJoinClient({
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
           if (payload.combatant_id) {
+            // ACK: DM re-broadcast confirms our pending condition action
+            confirmActionsForCombatant(payload.combatant_id, "condition");
             conditionOptimisticRef.current = Date.now();
             updateCombatants((prev) =>
               prev.map((c) =>
@@ -1070,6 +1159,10 @@ export function PlayerJoinClient({
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
+          // ACK: DM re-broadcast confirms our pending reaction action
+          if (payload.combatant_id) {
+            confirmActionsForCombatant(payload.combatant_id, "reaction");
+          }
           if (payload.combatant_id && typeof payload.reaction_used === "boolean") {
             updateCombatants((prev) =>
               prev.map((c) =>
@@ -2465,6 +2558,7 @@ export function PlayerJoinClient({
           deathSaveResolution={deathSaveResolution}
           onHpAction={handleHpAction}
           connectionStatus={connectionStatus}
+          pendingState={pendingState}
           onEndTurn={() => {
             const ch = channelRef.current;
             if (!ch || connectionStatus !== "connected") {
@@ -2483,17 +2577,33 @@ export function PlayerJoinClient({
               toast.error(tRef.current("sync_offline"));
               return;
             }
-            // Broadcast to DM
-            ch.send({
-              type: "broadcast",
-              event: "player:death_save",
-              payload: {
-                player_name: registeredName,
-                combatant_id: combatantId,
-                result,
-                sender_token_id: effectiveTokenId,
-              },
+            // Snapshot for rollback
+            const existing = combatantsRef.current.find((c) => c.id === combatantId);
+            const rollbackSnapshot = existing?.death_saves
+              ? { death_saves: { ...existing.death_saves } }
+              : undefined;
+
+            // P1-fix: pre-generate action_id so it's stored in payload for retry
+            const actionId = generateActionId();
+            const broadcastPayload = {
+              player_name: registeredName,
+              combatant_id: combatantId,
+              result,
+              sender_token_id: effectiveTokenId,
+              action_id: actionId,
+            };
+            usePendingActionsStore.getState().addAction({
+              id: actionId,
+              type: "death_save",
+              combatantId,
+              timestamp: Date.now(),
+              payload: broadcastPayload,
+              rollbackSnapshot,
             });
+
+            ch.send({ type: "broadcast", event: "player:death_save", payload: broadcastPayload });
+            startAckTimer(actionId, "player:death_save");
+
             // Optimistic local update — show the dot immediately
             deathSaveOptimisticRef.current = Date.now();
             updateCombatants((prev) =>
@@ -2518,6 +2628,30 @@ export function PlayerJoinClient({
               toast.error(tRef.current("sync_offline"));
               return;
             }
+            // Snapshot for rollback
+            const existing = combatantsRef.current.find((c) => c.id === combatantId);
+            const rollbackSnapshot = existing
+              ? { conditions: [...existing.conditions] }
+              : undefined;
+
+            // P1-fix: pre-generate action_id so it's stored in payload for retry
+            const actionId = generateActionId();
+            const broadcastPayload = {
+              player_name: registeredName,
+              combatant_id: combatantId,
+              condition,
+              sender_token_id: effectiveTokenId,
+              action_id: actionId,
+            };
+            usePendingActionsStore.getState().addAction({
+              id: actionId,
+              type: "condition",
+              combatantId,
+              timestamp: Date.now(),
+              payload: broadcastPayload,
+              rollbackSnapshot,
+            });
+
             // Optimistic local update — toggle condition immediately for instant UI feedback
             conditionOptimisticRef.current = Date.now();
             updateCombatants((prev) =>
@@ -2532,16 +2666,8 @@ export function PlayerJoinClient({
                 };
               })
             );
-            ch.send({
-              type: "broadcast",
-              event: "player:self_condition_toggle",
-              payload: {
-                player_name: registeredName,
-                combatant_id: combatantId,
-                condition,
-                sender_token_id: effectiveTokenId,
-              },
-            });
+            ch.send({ type: "broadcast", event: "player:self_condition_toggle", payload: broadcastPayload });
+            startAckTimer(actionId, "player:self_condition_toggle");
           }}
           onToggleReaction={(combatantId) => {
             // B1: Check connection BEFORE optimistic update to avoid stale local state on failure
@@ -2558,6 +2684,25 @@ export function PlayerJoinClient({
             const current = combatantsRef.current.find((c) => c.id === combatantId);
             if (!current) return;
             const newValue = !current.reaction_used;
+
+            // P1-fix: pre-generate action_id so it's stored in payload for retry
+            const actionId = generateActionId();
+            const broadcastPayload = {
+              combatant_id: combatantId,
+              reaction_used: newValue,
+              player_name: registeredName,
+              sender_token_id: effectiveTokenId,
+              action_id: actionId,
+            };
+            usePendingActionsStore.getState().addAction({
+              id: actionId,
+              type: "reaction",
+              combatantId,
+              timestamp: Date.now(),
+              payload: broadcastPayload,
+              rollbackSnapshot: { reaction_used: current.reaction_used },
+            });
+
             // Optimistic local update
             updateCombatants((prev) =>
               prev.map((c) =>
@@ -2565,16 +2710,8 @@ export function PlayerJoinClient({
               )
             );
             // Broadcast to DM
-            ch.send({
-              type: "broadcast",
-              event: "combat:reaction_toggle",
-              payload: {
-                combatant_id: combatantId,
-                reaction_used: newValue,
-                player_name: registeredName,
-                sender_token_id: effectiveTokenId,
-              },
-            });
+            ch.send({ type: "broadcast", event: "combat:reaction_toggle", payload: broadcastPayload });
+            startAckTimer(actionId, "combat:reaction_toggle");
           }}
         />
       </div>

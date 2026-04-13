@@ -2311,6 +2311,8 @@
     "dm_offline_badge": "DM Offline",
     "dm_offline_title": "DM hasn't responded for over 90 seconds",
     "dm_offline_waiting": "Waiting for DM... Your data is safe, it will update automatically.",
+    "ack_retrying": "Resending to DM...",
+    "ack_failed": "Action may not have reached the DM. Let them know at the table!",
     "you_label": "you",
     "defeated": "Defeated",
     "note_placeholder": "e.g. Concentrating on Bless",

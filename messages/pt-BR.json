@@ -2311,6 +2311,8 @@
     "dm_offline_badge": "Mestre Offline",
     "dm_offline_title": "O mestre não responde há mais de 90 segundos",
     "dm_offline_waiting": "Aguardando mestre... Seus dados estão seguros, atualizará automaticamente.",
+    "ack_retrying": "Reenviando para o mestre...",
+    "ack_failed": "A ação pode não ter chegado ao mestre. Avise ele na mesa!",
     "you_label": "você",
     "defeated": "Derrotado",
     "note_placeholder": "ex: Concentrando em Bênção",

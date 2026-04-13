@@ -1175,11 +1175,24 @@ export function CombatSessionClient({
   const handleSetTempHpRef = useRef(handleSetTempHp);
   handleSetTempHpRef.current = handleSetTempHp;
 
+  // P5-fix: useRef so dedup Set survives effect re-runs (DM reconnect)
+  const processedActionIdsRef = useRef(new Set<string>());
+
   useEffect(() => {
     const sid = getSessionId();
     if (!sid || !is_active) return;
     const ch = getDmChannel(sid);
     let active = true;
+
+    // Idempotency dedup for player actions that are NOT idempotent (HP, death saves, conditions).
+    const trackActionId = (actionId: unknown): boolean => {
+      if (typeof actionId !== "string" || !actionId) return true; // no action_id → legacy, always process
+      if (processedActionIdsRef.current.has(actionId)) return false; // duplicate → skip
+      processedActionIdsRef.current.add(actionId);
+      // Auto-cleanup after 30s to prevent unbounded growth
+      setTimeout(() => processedActionIdsRef.current.delete(actionId as string), 30_000);
+      return true; // first time → process
+    };
 
     const handlePlayerEndTurn = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
@@ -1199,6 +1212,8 @@ export function CombatSessionClient({
     // Listen for player:death_save — player marked a death save on their turn
     const handlePlayerDeathSave = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
+      // Idempotency: skip duplicate retries from player ACK system
+      if (!trackActionId(payload.action_id)) return;
       const { combatant_id, result } = payload as { combatant_id: string; result: "success" | "failure" };
       if (!combatant_id || !result) return;
       // B3: Verify ownership — token ID first, then name fallback
@@ -1278,6 +1293,8 @@ export function CombatSessionClient({
       if (!active) return;
       // P1.05: Ignore HP actions during post-combat phase — encounter is already ending
       if (postCombatPhaseRef.current !== null) return;
+      // Idempotency: skip duplicate retries from player ACK system
+      if (!trackActionId(payload.action_id)) return;
 
       const { combatant_id, action, amount, player_name } = payload as {
         combatant_id: string;
@@ -1336,6 +1353,8 @@ export function CombatSessionClient({
     // Listen for player:self_condition_toggle — player self-applied a beneficial condition
     const handleSelfConditionToggle = ({ payload }: { payload: Record<string, unknown> }) => {
       if (!active) return;
+      // P2-fix: condition toggle is NOT idempotent — dedup retries
+      if (!trackActionId(payload.action_id)) return;
       const { combatant_id, condition, player_name } = payload as { combatant_id: string; condition: string; player_name: string };
       if (!combatant_id || !condition || typeof condition !== "string") return;
       // Security: only allow beneficial conditions + concentrating

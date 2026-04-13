@@ -18,6 +18,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
 import { TurnPushNotification } from "@/components/player/TurnPushNotification";
 import { PlayerCompendiumBrowser } from "@/components/player/PlayerCompendiumBrowser";
+import type { CombatantPendingState } from "@/hooks/use-action-ack";
 import { PlayerHpActions } from "@/components/player/PlayerHpActions";
 import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 import { ActiveEffectsBadges } from "@/components/player/ActiveEffectsBadges";
@@ -219,6 +220,8 @@ interface PlayerInitiativeBoardProps {
   onToggleReaction?: (combatantId: string) => void;
   /** Player's character ID for active effects display */
   characterId?: string;
+  /** Pending action states for visual feedback (optimistic ACK system) */
+  pendingState?: CombatantPendingState;
 }
 
 export function PlayerInitiativeBoard({
@@ -249,6 +252,7 @@ export function PlayerInitiativeBoard({
   onSelfConditionToggle,
   onToggleReaction,
   characterId,
+  pendingState,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const tc = useTranslations("combat");
@@ -721,7 +725,7 @@ export function PlayerInitiativeBoard({
                 <div className="mb-2">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-muted-foreground text-xs">{t("hp_label")}</span>
-                    <span className={`text-foreground text-2xl font-mono font-bold relative${hpDelta && hpDelta.combatantId === pc.id ? (hpDelta.type === "damage" ? " animate-[flash-red_150ms_ease-in-out_2]" : " animate-[flash-green_150ms_ease-in-out_2]") : ""}`}>
+                    <span className={`text-foreground text-2xl font-mono font-bold relative${hpDelta && hpDelta.combatantId === pc.id ? (hpDelta.type === "damage" ? " animate-[flash-red_150ms_ease-in-out_2]" : " animate-[flash-green_150ms_ease-in-out_2]") : ""}${pendingState?.hp === "pending" ? " animate-pending-pulse" : pendingState?.hp === "confirmed" ? " hp-confirmed-fade" : ""}${pendingState?.hp === "unconfirmed" ? " ring-1 ring-orange-400/60 rounded px-1" : ""}`}>
                       {currentHp}<span className="text-muted-foreground text-base font-normal"> / {maxHp}</span>
                       {hpThresholdKey && (
                         <span className="text-xs font-mono ml-2 text-muted-foreground">
@@ -798,11 +802,12 @@ export function PlayerInitiativeBoard({
                 {pc.conditions.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2" role="list" aria-label={`${pc.name} conditions`}>
                     {pc.conditions.map((condition) => (
-                      <ConditionBadge
-                        key={condition}
-                        condition={condition}
-                        rulesetVersion={(pc.ruleset_version as RulesetVersion) ?? rulesetVersion}
-                      />
+                      <span key={condition} className={pendingState?.condition === "pending" ? "opacity-70 [&>*]:border-dashed" : pendingState?.condition === "confirmed" ? "transition-opacity duration-300" : ""}>
+                        <ConditionBadge
+                          condition={condition}
+                          rulesetVersion={(pc.ruleset_version as RulesetVersion) ?? rulesetVersion}
+                        />
+                      </span>
                     ))}
                   </div>
                 )}
@@ -1175,7 +1180,7 @@ export function PlayerInitiativeBoard({
                         combatant.reaction_used
                           ? "bg-red-500 border-red-400/60"
                           : "bg-transparent border-emerald-500 hover:border-emerald-400"
-                      }`}
+                      }${pendingState?.reaction === "pending" ? " animate-reaction-blink" : ""}`}
                       aria-label={combatant.reaction_used ? tc("reaction_used") : tc("reaction_available")}
                     />
                   ) : (
