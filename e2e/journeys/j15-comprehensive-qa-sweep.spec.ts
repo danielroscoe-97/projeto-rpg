@@ -501,8 +501,8 @@ test.describe("J15-G — Combat Actions", () => {
       await editBtn.click();
       await page.waitForTimeout(1_500);
 
-      // Edit UI may be a dialog, popover, or inline form
-      const editUI = page.locator('[role="dialog"], [data-testid*="edit"], [data-testid*="stats"], input[type="number"]').first();
+      // Edit UI may be a dialog, popover, or inline form (hp-adjuster is the most common)
+      const editUI = page.locator('[role="dialog"], [data-testid="hp-adjuster"], [data-testid*="edit"], [data-testid*="stats"]').first();
       const hasUI = await editUI.isVisible({ timeout: 3_000 }).catch(() => false);
       // Close it
       await page.keyboard.press("Escape");
@@ -749,7 +749,7 @@ test.describe("J15-I — Compendium Details", () => {
     await page.goto("/app/compendium?tab=monsters");
     await page.waitForLoadState("domcontentloaded");
 
-    const searchInput = page.locator('input[placeholder*="Filtrar"], input[placeholder*="Filter"]').last();
+    const searchInput = page.locator('input[placeholder*="Filtrar"], input[placeholder*="Filter"]').first();
     await expect(searchInput).toBeVisible({ timeout: 20_000 });
     await searchInput.fill("Goblin");
     await page.waitForTimeout(2_000);
@@ -772,7 +772,7 @@ test.describe("J15-I — Compendium Details", () => {
     await page.goto("/app/compendium?tab=spells");
     await page.waitForLoadState("domcontentloaded");
 
-    const searchInput = page.locator('input[placeholder*="Filtrar"], input[placeholder*="Filter"]').last();
+    const searchInput = page.locator('input[placeholder*="Filtrar"], input[placeholder*="Filter"]').first();
     await expect(searchInput).toBeVisible({ timeout: 20_000 });
     await searchInput.fill("Fireball");
     await page.waitForTimeout(2_000);
