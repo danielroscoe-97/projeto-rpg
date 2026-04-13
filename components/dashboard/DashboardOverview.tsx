@@ -456,7 +456,7 @@ export function DashboardOverview({
                 <Link href="/app/onboarding">{t.dm_empty_cta_campaign}</Link>
               </Button>
               <Button variant="goldOutline" className="flex-1 min-h-[44px]" asChild>
-                <Link href="/try">{t.dm_empty_cta_quick}</Link>
+                <Link href="/app/session/new?quick=true">{t.dm_empty_cta_quick}</Link>
               </Button>
             </div>
           </div>
@@ -506,7 +506,7 @@ export function DashboardOverview({
               <Link href="/app/compendium" className="hover:text-amber-400 transition-colors inline-flex items-center gap-1">
                 {t.player_empty_explore} <ArrowRight className="w-3 h-3" />
               </Link>
-              <Link href="/try" className="hover:text-amber-400 transition-colors inline-flex items-center gap-1">
+              <Link href="/app/session/new?quick=true" className="hover:text-amber-400 transition-colors inline-flex items-center gap-1">
                 {t.player_empty_try} <ArrowRight className="w-3 h-3" />
               </Link>
             </div>

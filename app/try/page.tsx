@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { GuestCombatClient } from "@/components/guest/GuestCombatClient";
 import { SrdInitializer } from "@/components/srd/SrdInitializer";
 
@@ -27,16 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function TryPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    redirect("/app/session/new?quick=true");
-  }
-
+export default function TryPage() {
   return (
     <>
       <SrdInitializer />

@@ -528,7 +528,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               <span className="text-[11px] text-muted-foreground mt-1 leading-tight">{t("player_done_explore_desc")}</span>
             </Link>
             <Link
-              href="/try"
+              href="/app/session/new?quick=true"
               className="group flex flex-col items-center text-center p-4 rounded-xl border border-border bg-white/[0.02] hover:bg-white/[0.06] hover:border-gold/30 transition-all duration-200"
             >
               <Image
