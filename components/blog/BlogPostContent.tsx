@@ -2905,253 +2905,176 @@ export function BlogPost11() {
 
       <SectionDivider src="/art/blog/treated-nobg/mythjourneys-dnd-character-dragonborn-male-bard.png" alt="Dragonborn bardo" />
 
-      <H2>3 playlists cobrem 90% da sessão</H2>
+      <H2>O soundboard que ja vem no seu tracker</H2>
       <P>
-        Não tente ter uma trilha diferente pra cada cena. Você vai enlouquecer.
-        Monte{" "}
-        <strong>três playlists base</strong> que cobrem 90% de tudo que acontece
-        numa sessão. Essa abordagem vem diretamente do Sly Flourish e funciona
-        incrivelmente bem:
+        A maioria dos mestres que usa musica na mesa faz malabarismo: uma aba
+        pro Spotify, outra pro YouTube, outra pro combat tracker. Na hora H,
+        o goblin ataca e voce ta trocando de aba pra achar a playlist de
+        combate. O <ProdLink href="/try">Pocket DM</ProdLink> resolve isso
+        com um soundboard embutido direto no tracker. Sons de ambiente,
+        musicas tematicas, efeitos de ataque e magias, tudo com um clique,
+        sem sair da tela de combate.
       </P>
 
       <Img src="/art/blog/soundboard-ambiente.png" alt="Soundboard do Pocket DM — presets de ambiente: Fogueira, Tempestade, Vento, Dungeon, Taverna, Floresta e mais" />
 
-      <H3>1. Exploração e Viagem</H3>
       <P>
-        Trilhas calmas, instrumentais, com bastante espaço sonoro. Pense em
-        caminhadas por florestas, navegação, vilas pacatas, acampamentos
-        noturnos. O objetivo aqui é criar uma base suave que não compete com a
-        sua narração. Trilhas sonoras de jogos como <em>The Elder Scrolls:
-        Skyrim</em>, <em>The Witcher 3</em> e <em>Breath of the Wild</em> são
-        perfeitas para isso. No <ProdLink href="/try">Pocket DM</ProdLink>, os
-        presets de Floresta, Vento e Riacho fazem exatamente isso com um clique.
+        Sao 6 categorias de sons prontos pra usar:
+      </P>
+      <Ul>
+        <Li>
+          <strong>Ambiente:</strong> Fogueira, Tempestade, Vento, Dungeon,
+          Chuva, Taverna, Floresta, Oceano, Riacho. Sons continuos que criam
+          a camada de fundo perfeita pra qualquer cena. Clicou, ta tocando.
+        </Li>
+        <Li>
+          <strong>Musicas:</strong> Batalha Epica, Marcha de Guerra, Exploracao,
+          Dungeon Sombria, Misterio, Suspense, Corte Medieval e mais. Trilhas
+          tematicas produzidas pra RPG, sem vocal, no volume certo.
+        </Li>
+        <Li>
+          <strong>Ataques:</strong> Pancada, Golpe Sonico, Investida Devastadora,
+          Clivagem, Flecha Certeira, Golpe de Espada. Efeitos sonoros rapidos
+          pra pontuar momentos de combate. Quando o Fighter acerta um critico,
+          dispara o som do golpe e a mesa inteira sente.
+        </Li>
+        <Li>
+          <strong>Magias:</strong> efeitos sonoros de lancamento de magia,
+          explosoes arcanas, curas. Pro Wizard que acabou de soltar um Fireball,
+          o som faz toda a diferenca.
+        </Li>
+        <Li>
+          <strong>Epico:</strong> trilhas de boss fight, momentos grandiosos,
+          revelacoes. Reserve pra quando a cena pedir algo maior que o normal.
+        </Li>
+        <Li>
+          <strong>Mundo:</strong> sons de cidade, mercado, porto, estrada.
+          Pra construir o cenario antes do combate comecar.
+        </Li>
+      </Ul>
+
+      <Img src="/art/blog/soundboard-musicas.png" alt="Soundboard do Pocket DM — presets de musicas: Batalha Epica, Marcha de Guerra, Exploracao, Dungeon Sombria e mais" />
+
+      <P>
+        A sacada e que tudo isso roda na mesma tela do combate. Voce nao troca
+        de app, nao perde o turno, nao precisa de um segundo dispositivo. O
+        Paladin declara Smite, voce clica no dano e dispara o som de Golpe de
+        Espada. Tudo num fluxo so.
+      </P>
+
+      <Img src="/art/blog/soundboard-ataques.png" alt="Soundboard do Pocket DM — efeitos sonoros de ataques: Pancada, Golpe Sonico, Investida Devastadora, Cruz Sagrada e mais" />
+
+      <Tip linkHref="/try" linkText="Testar o soundboard">
+        O soundboard do Pocket DM e gratuito e funciona junto com o combat
+        tracker. Abre o combate, monta o encontro, e os sons ja estao ali
+        esperando. Um clique pra ambientar, um clique pra trocar pra combate,
+        um clique pro efeito de ataque. Zero setup.
+      </Tip>
+
+      <H2>3 camadas de som cobrem 90% da sessao</H2>
+      <P>
+        Nao tente ter uma trilha diferente pra cada cena. Voce vai enlouquecer.
+        Monte{" "}
+        <strong>tres camadas base</strong> que cobrem 90% de tudo que acontece
+        numa sessao. Essa abordagem vem do{" "}
+        <ExtLink href="https://slyflourish.com/three_ways_to_use_music_in_your_game.html">
+          Sly Flourish
+        </ExtLink>{" "}
+        e funciona incrivelmente bem — e com o soundboard do Pocket DM, cada
+        camada e um clique:
+      </P>
+
+      <H3>1. Exploracao e Viagem</H3>
+      <P>
+        Trilhas calmas, instrumentais, com bastante espaco sonoro. Pense em
+        caminhadas por florestas, navegacao, vilas pacatas, acampamentos
+        noturnos. O objetivo e criar uma base suave que nao compete com a
+        sua narracao. No Pocket DM, os presets de Floresta, Vento e Riacho
+        fazem exatamente isso. Se preferir trilhas de jogos, <em>Skyrim</em>,{" "}
+        <em>The Witcher 3</em> e <em>Breath of the Wild</em> sao perfeitas.
       </P>
       <Ul>
         <Li>Instrumentos: cordas, flauta, piano, harpa</Li>
         <Li>Andamento: lento a moderado</Li>
-        <Li>Volume: baixo, como um murmúrio de fundo</Li>
+        <Li>Volume: baixo, como um murmurio de fundo</Li>
       </Ul>
 
-      <H3>2. Tensão e Mistério</H3>
+      <H3>2. Tensao e Misterio</H3>
       <P>
         Sons sombrios, drones graves, cordas dissonantes. Use quando o grupo
-        entra em dungeons, investiga um crime, ou quando algo sinistro está
-        prestes a acontecer. A ideia é criar desconforto sutil, sem jump
-        scares, sem sustos, apenas aquela sensação de "tem algo errado aqui".
-        Trilhas de <em>Dark Souls</em>, <em>Bloodborne</em> e filmes de terror
-        atmosférico funcionam bem.
+        entra em dungeons, investiga um crime, ou quando algo sinistro esta
+        prestes a acontecer. No soundboard, os presets de Dungeon, Suspense
+        Sombrio e Misterio cobrem isso. A ideia e criar desconforto sutil —
+        sem jump scares, so aquela sensacao de {'"'}tem algo errado aqui{'"'}.
       </P>
       <Ul>
         <Li>Instrumentos: cello grave, coros distantes, sons ambientes (vento, goteiras, correntes)</Li>
-        <Li>Andamento: muito lento ou estático</Li>
-        <Li>Volume: baixo a médio, deixe os silêncios trabalharem</Li>
+        <Li>Andamento: muito lento ou estatico</Li>
+        <Li>Volume: baixo a medio, deixe os silencios trabalharem</Li>
       </Ul>
 
-      <H3>3. Combate e Ação</H3>
+      <H3>3. Combate e Acao</H3>
       <P>
-        Aqui é onde a música pode brilhar mais. Percussão pesada, metais
-        épicos, ritmo acelerado. A trilha de combate precisa ter energia sem
-        ter letra, porque músicas com vocal distraem quando o mestre está falando
-        o tempo todo. Trilhas de <em>Two Steps from Hell</em>,{" "}
-        <em>Immediate Music</em> e os combates de <em>God of War</em> são
-        referências clássicas. O soundboard do Pocket DM tem presets como
-        Batalha Épica, Marcha de Guerra e Batalha Final prontos pra disparar
-        no meio do combate.
+        Aqui e onde a musica pode brilhar mais. Percussao pesada, metais
+        epicos, ritmo acelerado. A trilha de combate precisa ter energia sem
+        ter letra, porque musicas com vocal distraem quando o mestre esta
+        narrando. No Pocket DM, Batalha Epica, Marcha de Guerra e Batalha
+        Final estao prontos pra disparar — e os efeitos de ataque (Pancada,
+        Golpe de Espada, Investida) adicionam impacto nos momentos certos.
       </P>
-
-      <Img src="/art/blog/soundboard-musicas.png" alt="Soundboard do Pocket DM — presets de músicas: Batalha Épica, Marcha de Guerra, Exploração, Dungeon Sombria e mais" />
       <Ul>
-        <Li>Instrumentos: percussão taiko, metais, cordas rápidas, coro épico</Li>
-        <Li>Andamento: rápido e constante</Li>
-        <Li>Volume: médio, alto o suficiente para sentir, baixo o suficiente para ouvir o mestre</Li>
+        <Li>Instrumentos: percussao taiko, metais, cordas rapidas, coro epico</Li>
+        <Li>Andamento: rapido e constante</Li>
+        <Li>Volume: medio, alto o suficiente para sentir, baixo o suficiente para ouvir o mestre</Li>
       </Ul>
 
       <Tip>
-        Comece sua sessão SEMPRE com a playlist de exploração. Ela é neutra o
-        suficiente para qualquer situação inicial e dá tempo de você ajustar
-        conforme a história se desenvolve. Trocar da exploração para o combate
-        na hora certa é um dos momentos mais satisfatórios da mesa.
+        Comece sua sessao SEMPRE com a camada de exploracao. Ela e neutra o
+        suficiente para qualquer situacao inicial. Trocar da exploracao para
+        o combate na hora certa e um dos momentos mais satisfatorios da mesa
+        — e no soundboard do Pocket DM, e literalmente um clique.
       </Tip>
 
-      <H2>Playlists extras pra momentos que merecem</H2>
+      <H2>Complementando com fontes externas</H2>
       <P>
-        Além das 3 base, vale ter algo separado pra momentos que se repetem:
-      </P>
-
-      <H3>Taverna e Cidade</H3>
-      <P>
-        Alaúde, violão medieval, percussão leve, risadas abafadas ao fundo.
-        O Spotify tem playlists excelentes como{" "}
-        <ExtLink href="https://open.spotify.com/playlist/7qkvzGNxLuxo4O2YBzWpnm">
-          Tavern Ambient | Medieval Fantasy
-        </ExtLink>{" "}
-        com mais de 80 faixas curadas. Quando os jogadores ouvem aquela
-        música, já sabem: é hora de roleplay, compras e fofoca na taverna.
-      </P>
-
-      <H3>Boss Fight</H3>
-      <P>
-        A boss fight merece uma trilha diferente do combate comum. Algo mais
-        grandioso, mais ameaçador, com mais camadas. Coros operáticos, breaks
-        dramáticos, mudanças de intensidade. As trilhas de bosses de{" "}
-        <em>Dark Souls III</em> e <em>Final Fantasy XIV</em> são
-        espetaculares para isso. Reserve uma playlist separada e use só para
-        o confronto final. Isso cria uma sensação de "essa luta é diferente"
-        que seus jogadores vão adorar.
-      </P>
-
-      <H3>Momentos Emocionais</H3>
-      <P>
-        A morte de um NPC querido, a revelação de uma traição, o reencontro
-        após uma jornada longa. Para esses momentos, piano solo ou cordas
-        delicadas funcionam melhor que qualquer orquestra. Menos é mais.
-        Trilhas de <em>Journey</em>, <em>Ori and the Blind Forest</em> e{" "}
-        <em>Spirited Away</em> são ouro puro aqui.
-      </P>
-
-      <H2>De graça e profissional: onde achar música boa</H2>
-      <P>
-        Não precisa gastar um centavo. Essas são as fontes que eu uso e
-        confio:
-      </P>
-
-      <H3>Tabletop Audio</H3>
-      <P>
-        O{" "}
-        <ExtLink href="https://tabletopaudio.com">
-          Tabletop Audio
-        </ExtLink>{" "}
-        é simplesmente a melhor fonte gratuita de ambientação sonora para RPG.
-        Ganhador de três ENnie Awards, o site oferece dezenas de ambientes de
-        10 minutos, desde "Dungeon I" e "Dark Forest" até "Tavern" e
-        "Starship Bridge". Tudo produzido profissionalmente, sem propagandas,
-        e licenciado sob Creative Commons. O SoundPad deles permite até misturar
-        efeitos sonoros em tempo real, criando paisagens sonoras customizadas.
-      </P>
-
-      <H3>YouTube: Canais Especializados</H3>
-      <P>
-        O YouTube é uma mina de ouro para música ambiente de RPG. Estes canais
-        são os que mais uso:
+        O soundboard do Pocket DM cobre o essencial direto no tracker, mas se
+        voce quiser expandir com playlists mais longas ou sons especificos,
+        estas fontes complementam bem:
       </P>
       <Ul>
         <Li>
-          <strong>Michael Ghelfi Studios:</strong> o maior criador de áudio
-          para TTRPG do mundo, com mais de 5.000 faixas e 160 mil inscritos.
-          Tem ambientes para literalmente qualquer cena que você imaginar.
-          Vencedor de ENnie Award.
+          <strong><ExtLink href="https://tabletopaudio.com">Tabletop Audio</ExtLink>:</strong>{" "}
+          melhor fonte gratuita de ambientacao, ganhador de tres ENnie Awards.
+          Dezenas de ambientes de 10 minutos + SoundPad pra misturar efeitos.
         </Li>
         <Li>
-          <strong>Bardify:</strong> focado especificamente em D&D, com
-          playlists organizadas por situação: viagem, cidade, dungeon,
-          combate. Excelente curadoria.
+          <strong>YouTube:</strong>{" "}
+          <ExtLink href="https://www.youtube.com/@MichaelGhelfiStudios">Michael Ghelfi Studios</ExtLink>{" "}
+          (5.000+ faixas),{" "}
+          <ExtLink href="https://www.youtube.com/@Bardify">Bardify</ExtLink>{" "}
+          (curadoria por situacao) e Sword Coast Soundscapes (ambientes canonicos de D&D).
         </Li>
         <Li>
-          <strong>Sword Coast Soundscapes:</strong> ambientes sonoros
-          baseados em locais canônicos de D&D como a Sword Coast, Underdark e
-          Waterdeep. Perfeito se você joga nos Reinos Esquecidos.
+          <strong>Spotify:</strong> busque {'"'}D&D ambient{'"'} ou {'"'}RPG combat music{'"'}.
+          A colecao do{" "}
+          <ExtLink href="https://www.michaelghelfistudios.com/spotify-playlists/">
+            Michael Ghelfi no Spotify
+          </ExtLink>{" "}
+          e a mais completa, com playlists por tipo de cena.
         </Li>
         <Li>
-          <strong>The Guild of Ambience:</strong> vídeos de 1 a 3 horas com
-          arte belíssima e paisagens sonoras imersivas. Ideal para deixar
-          rodando durante a sessão inteira.
+          <strong><ExtLink href="https://syrinscape.com">Syrinscape</ExtLink>:</strong>{" "}
+          motor de paisagem sonora profissional (US$ 12,99/mes). Mistura
+          musica + efeitos em tempo real. Vale se voce quer o maximo de
+          imersao e nao liga de pagar.
         </Li>
       </Ul>
-
-      <H3>Spotify: Playlists Prontas</H3>
-      <P>
-        Se você já usa Spotify, a solução mais rápida é buscar playlists
-        curadas. A coleção do{" "}
-        <ExtLink href="https://www.michaelghelfistudios.com/spotify-playlists/">
-          Michael Ghelfi Studios no Spotify
-        </ExtLink>{" "}
-        é a mais completa que eu conheço, com playlists separadas para
-        taverna, combate, exploração, mistério, mar, deserto, e muito mais.
-        O usuário <em>Ouranio Recordings</em> também tem uma playlist de
-        background para D&D com mais de 500 faixas e 54 mil saves.
-      </P>
 
       <Tip>
-        Baixe suas playlists favoritas para uso offline. Nada quebra mais a
-        imersão do que um anúncio do Spotify Premium no meio de um combate
-        épico contra um dragão. Se usa a versão gratuita, considere o YouTube
-        com bloqueador de anúncios ou o Tabletop Audio, que é 100% sem ads.
-      </Tip>
-
-      <H2>Pago: quando vale investir</H2>
-
-      <H3>Syrinscape</H3>
-      <P>
-        O{" "}
-        <ExtLink href="https://syrinscape.com">
-          Syrinscape
-        </ExtLink>{" "}
-        é a ferramenta profissional mais popular para áudio de RPG. Diferente
-        de uma playlist, ele funciona como um motor de paisagem sonora: você
-        ativa um "soundset" e ele mistura música, efeitos ambientes e sons
-        pontuais (espadas, rugidos, trovões) em tempo real. A versão gratuita
-        oferece uma biblioteca inicial de ambientes, e a assinatura SuperSyrin
-        (US$ 12,99/mês) desbloqueia milhares de soundsets e permite criar os
-        seus próprios. Ideal para mestres que querem o máximo de imersão
-        sonora e não se importam de investir.
-      </P>
-
-      <H3>Michael Ghelfi Studios (Patreon)</H3>
-      <P>
-        Se você já usa o conteúdo gratuito do Michael Ghelfi no YouTube e
-        quer mais, o Patreon dele oferece acesso a quase 400 faixas exclusivas,
-        além de loops curtos perfeitos para soundboards. É uma opção mais
-        acessível que o Syrinscape e com qualidade excepcional.
-      </P>
-
-      <H2>Na prática: o setup de 5 minutos</H2>
-      <P>
-        Chega de teoria. Aqui vai como montar isso na mesa sem complicar:
-      </P>
-
-      <H3>Equipamento Mínimo</H3>
-      <Ul>
-        <Li>
-          Uma <strong>caixa de som Bluetooth</strong> pequena (JBL Clip, Anker
-          Soundcore ou similar), posicionada no centro da mesa ou perto de
-          você
-        </Li>
-        <Li>
-          Seu <strong>celular ou tablet</strong> com as playlists preparadas,
-          separado do dispositivo que você usa para mestrar
-        </Li>
-        <Li>
-          Alternativamente, use o <strong>próprio notebook</strong> onde
-          roda seu combat tracker, com o volume ajustado independentemente
-        </Li>
-      </Ul>
-
-      <H3>Fluxo Durante a Sessão</H3>
-      <Ul>
-        <Li>
-          <strong>Pré-sessão:</strong> coloque a playlist de exploração/taverna
-          enquanto os jogadores chegam e se acomodam. Isso já cria clima.
-        </Li>
-        <Li>
-          <strong>Transições:</strong> troque de playlist quando a cena mudar.
-          Exploração {"->"} tensão {"->"} combate. Faça a troca com calma, sem pressa.
-        </Li>
-        <Li>
-          <strong>Pós-combate:</strong> volte para exploração ou coloque algo
-          heroico/melancólico dependendo do resultado. Não deixe a trilha de
-          combate tocando depois que a luta acabou.
-        </Li>
-      </Ul>
-
-      <Img src="/art/blog/soundboard-ataques.png" alt="Soundboard do Pocket DM — efeitos sonoros de ataques: Pancada, Golpe Sônico, Investida Devastadora, Cruz Sagrada e mais" />
-
-      <Tip linkHref="/try" linkText="Ver soundboard do Pocket DM">
-        O Pocket DM tem um soundboard completo integrado ao combat tracker:
-        sons de ambiente (Fogueira, Dungeon, Taverna), músicas temáticas
-        (Batalha Épica, Exploração, Suspense), efeitos de ataque (Golpe de
-        Espada, Flecha, Magnum Break) e até sons de magias. Tudo com um
-        clique, sem trocar de app, sem perder o foco do combate. É como
-        ter um DJ na mesa, só que o DJ é o seu tracker.
+        Se usar Spotify gratuito, baixe offline. Nada quebra mais a imersao
+        do que um anuncio no meio de um combate epico contra um dragao. O
+        soundboard do Pocket DM nao tem ads — e gratuito e funciona offline
+        depois de carregado.
       </Tip>
 
       <H2>A regra de ouro do volume (que todo mundo quebra)</H2>
@@ -3228,47 +3151,41 @@ export function BlogPost11() {
         é devastador.
       </Tip>
 
-      <H2>Nunca usou? Comece assim (leva 5 minutos)</H2>
+      <H2>Nunca usou? Comece assim (leva 2 minutos)</H2>
       <P>
-        Se você nunca colocou música na mesa e quer testar na próxima sessão:
+        Se voce nunca colocou musica na mesa e quer testar na proxima sessao:
       </P>
       <Ul>
         <Li>
-          Acesse o{" "}
-          <ExtLink href="https://tabletopaudio.com">Tabletop Audio</ExtLink>{" "}
-          e marque 3 ambientes: um de taverna, um de floresta/dungeon, um de
-          combate
+          Abra o <ProdLink href="/try">Pocket DM</ProdLink> e monte um
+          encontro rapido com qualquer monstro
         </Li>
         <Li>
-          No YouTube, busque "D&D combat music 1 hour" e salve um vídeo
+          Clique no soundboard e ative o preset de Taverna enquanto os
+          jogadores chegam
         </Li>
         <Li>
-          Separe uma caixa de som ou use os alto-falantes do notebook
+          Quando o combate comecar, troque pra Batalha Epica com um clique
         </Li>
         <Li>
-          Comece a sessão com o ambiente de taverna no volume mais baixo
-          possível
+          Dispare efeitos de ataque nos momentos certos — Golpe de Espada
+          no critico do Fighter, explosao no Fireball do Wizard
         </Li>
         <Li>
-          Quando o combate começar, troque para a trilha de combate e suba
-          levemente o volume
+          Pos-combate, volte pra Exploracao ou Floresta
         </Li>
         <Li>
-          Pronto. Você acabou de usar música ambiente pela primeira vez.
-          Refine nas próximas sessões.
+          Pronto. Voce acabou de usar musica ambiente pela primeira vez.
+          Sem setup, sem app separado, sem malabarismo de abas.
         </Li>
       </Ul>
 
       <P>
-        Três playlists, uma caixinha de som, e a consciência de quando subir,
-        baixar ou silenciar. É isso. Comece simples, experimente por 2-3
-        sessões, e vá refinando. Cada mesa tem sua personalidade sonora.
-        Você vai encontrar a da sua.
-      </P>
-      <P>
-        Se quiser combate + música no mesmo lugar, o{" "}
-        <ProdLink href="/try">Pocket DM</ProdLink> tem soundboard embutido
-        no tracker, sem trocar de app. Veja também as{" "}
+        Tres camadas de som, um soundboard embutido no tracker, e a
+        consciencia de quando subir, baixar ou silenciar. E isso. Comece
+        simples, experimente por 2-3 sessoes, e va refinando. Cada mesa tem
+        sua personalidade sonora. Voce vai encontrar a da sua. Veja tambem
+        as{" "}
         <IntLink slug="ferramentas-essenciais-mestre-dnd-5e">
           ferramentas essenciais pra mestres
         </IntLink>{" "}
