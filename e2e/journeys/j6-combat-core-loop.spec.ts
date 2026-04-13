@@ -92,10 +92,10 @@ test.describe("J6 — Combate Completo (Core Loop)", () => {
       { name: "Caster", hp: "25", ac: "12", init: "18" },
     ]);
 
-    // Look for condition toggle/button on a combatant
+    // Look for condition toggle/button on a combatant (testid: conditions-btn-{id})
     const conditionBtn = dmPage
       .locator(
-        '[data-testid^="condition-btn-"], [data-testid^="conditions-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
+        '[data-testid^="conditions-btn-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
       )
       .first();
 
@@ -105,10 +105,10 @@ test.describe("J6 — Combate Completo (Core Loop)", () => {
       // Condition selector/modal should appear
       await dmPage.waitForTimeout(1_000);
 
-      // Look for a specific condition to toggle
+      // Look for a specific condition to toggle (testid: condition-toggle-{name})
       const conditionOption = dmPage
         .locator(
-          'button:has-text("Frightened"), button:has-text("Amedrontado"), [data-testid*="frightened"], label:has-text("Frightened"), label:has-text("Amedrontado")'
+          '[data-testid="condition-toggle-frightened"], button:has-text("Frightened"), button:has-text("Amedrontado")'
         )
         .first();
 
@@ -118,10 +118,10 @@ test.describe("J6 — Combate Completo (Core Loop)", () => {
         await conditionOption.click();
         await dmPage.waitForTimeout(1_000);
 
-        // Close condition selector
+        // Close condition selector (testid: condition-close-btn)
         const closeBtn = dmPage
           .locator(
-            'button[aria-label="Close"], button:has-text("Fechar"), button:has-text("OK")'
+            '[data-testid="condition-close-btn"], button[aria-label="Close"], button:has-text("Fechar"), button:has-text("OK")'
           )
           .first();
         if (
@@ -176,21 +176,22 @@ test.describe("J6 — Combate Completo (Core Loop)", () => {
     );
     await expect(adjuster).toBeVisible({ timeout: 5_000 });
 
-    // Apply healing
-    const healInput = dmPage
-      .locator('input[type="number"], input[data-testid="hp-adjust-value"]')
-      .first();
+    // Switch to heal mode first (testid: hp-mode-heal)
+    const healModeBtn = dmPage.locator('[data-testid="hp-mode-heal"]');
+    if (await healModeBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await healModeBtn.click();
+      await dmPage.waitForTimeout(300);
+    }
+
+    // Fill heal amount (testid: hp-amount-input)
+    const healInput = dmPage.locator('[data-testid="hp-amount-input"]');
     if (await healInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await healInput.fill("5");
 
-      // Click heal button
-      const healBtn = dmPage
-        .locator(
-          'button:has-text("Cura"), button:has-text("Heal"), button:has-text("Curar")'
-        )
-        .first();
-      if (await healBtn.isVisible()) {
-        await healBtn.click();
+      // Click apply button (testid: hp-apply-btn)
+      const applyBtn = dmPage.locator('[data-testid="hp-apply-btn"]');
+      if (await applyBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await applyBtn.click();
         await dmPage.waitForTimeout(1_000);
       }
     }

@@ -443,10 +443,12 @@ test.describe("J20 — Player Communication", () => {
       ac: "18",
     });
 
-    // Find the DM postit sending UI
-    // Search for buttons/inputs related to messaging on the DM combat page
+    // Wait for DM page to reflect the new player combatant
+    await dmPage.waitForTimeout(3_000);
+
+    // Find the DM postit sending UI — buttons have data-testid="dm-postit-btn-{name}" or "dm-postit-btn-all"
     const postitBtn = dmPage.locator(
-      '[data-testid*="postit"], [data-testid*="message"], [data-testid*="broadcast"],' +
+      '[data-testid^="dm-postit-btn-"], [data-testid*="postit"], [data-testid*="message"], [data-testid*="broadcast"],' +
         'button:has-text("Mensagem"), button:has-text("Message"), button:has-text("Nota"),' +
         'button:has-text("Postit"), button:has-text("Send to players")'
     ).first();
@@ -536,9 +538,12 @@ test.describe("J20 — Player Communication", () => {
       ac: "18",
     });
 
+    // Wait for DM page to reflect the new player combatant
+    await dmPage.waitForTimeout(3_000);
+
     // Find and use DM postit UI (same discovery as B1)
     const postitBtn = dmPage.locator(
-      '[data-testid*="postit"], [data-testid*="message"], [data-testid*="broadcast"],' +
+      '[data-testid^="dm-postit-btn-"], [data-testid*="postit"], [data-testid*="message"], [data-testid*="broadcast"],' +
         'button:has-text("Mensagem"), button:has-text("Message"), button:has-text("Nota"),' +
         'button:has-text("Postit")'
     ).first();
@@ -624,9 +629,12 @@ test.describe("J20 — Player Communication", () => {
       ac: "18",
     });
 
+    // Wait for DM page to reflect the new player combatant
+    await dmPage.waitForTimeout(3_000);
+
     // Send a postit from DM (same discovery as B1)
     const postitBtn = dmPage.locator(
-      '[data-testid*="postit"], [data-testid*="message"], [data-testid*="broadcast"],' +
+      '[data-testid^="dm-postit-btn-"], [data-testid*="postit"], [data-testid*="message"], [data-testid*="broadcast"],' +
         'button:has-text("Mensagem"), button:has-text("Message"), button:has-text("Nota"),' +
         'button:has-text("Postit")'
     ).first();

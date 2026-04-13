@@ -151,7 +151,7 @@ test.describe("J14 — i18n pt-BR", () => {
     // Open condition picker
     const conditionBtn = page
       .locator(
-        '[data-testid^="condition-btn-"], [data-testid^="conditions-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
+        '[data-testid^="conditions-btn-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
       )
       .first();
 

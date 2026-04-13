@@ -201,10 +201,10 @@ test.describe("J9 — DM vs Player Visibility", () => {
       initiative: "15",
     });
 
-    // DM applies a condition
+    // DM applies a condition (testid: conditions-btn-{id})
     const conditionBtn = dmPage
       .locator(
-        '[data-testid^="condition-btn-"], [data-testid^="conditions-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
+        '[data-testid^="conditions-btn-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
       )
       .first();
 
@@ -212,10 +212,10 @@ test.describe("J9 — DM vs Player Visibility", () => {
       await conditionBtn.click();
       await dmPage.waitForTimeout(1_000);
 
-      // Select "Poisoned" / "Envenenado"
+      // Select "Poisoned" / "Envenenado" (testid: condition-toggle-poisoned)
       const poisonOption = dmPage
         .locator(
-          'button:has-text("Poisoned"), button:has-text("Envenenado"), label:has-text("Poisoned"), label:has-text("Envenenado"), [data-testid*="poisoned"]'
+          '[data-testid="condition-toggle-poisoned"], button:has-text("Poisoned"), button:has-text("Envenenado")'
         )
         .first();
 

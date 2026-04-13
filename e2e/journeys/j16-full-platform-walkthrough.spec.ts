@@ -244,12 +244,12 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
     const goblinAdjuster = dmPage.locator('[data-testid="hp-adjuster"]').last();
     await expect(goblinAdjuster).toBeVisible({ timeout: 5_000 });
 
-    const dmgInput = goblinAdjuster.locator('input[type="number"]').first();
+    const dmgInput = goblinAdjuster.locator('[data-testid="hp-amount-input"], input[type="number"]').first();
     if (await dmgInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await dmgInput.fill("10");
 
       const applyDmgBtn = goblinAdjuster
-        .locator('button:has-text("Dano"), button:has-text("Damage")')
+        .locator('[data-testid="hp-apply-btn"], button:has-text("Dano"), button:has-text("Damage")')
         .first();
       if (await applyDmgBtn.isVisible()) {
         await applyDmgBtn.click();
@@ -271,12 +271,18 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
     const tankAdjuster = dmPage.locator('[data-testid="hp-adjuster"]').first();
     await expect(tankAdjuster).toBeVisible({ timeout: 5_000 });
 
-    const healInput = tankAdjuster.locator('input[type="number"]').first();
+    const healInput = tankAdjuster.locator('[data-testid="hp-amount-input"], input[type="number"]').first();
     if (await healInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      // Switch to heal mode first
+      const healModeBtn = tankAdjuster.locator('[data-testid="hp-mode-heal"]');
+      if (await healModeBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await healModeBtn.click();
+        await tankAdjuster.page().waitForTimeout(300);
+      }
       await healInput.fill("15");
 
       const healBtn = tankAdjuster
-        .locator('button:has-text("Cura"), button:has-text("Heal"), button:has-text("Curar")')
+        .locator('[data-testid="hp-apply-btn"], button:has-text("Cura"), button:has-text("Heal"), button:has-text("Curar")')
         .first();
       if (await healBtn.isVisible()) {
         await healBtn.click();
@@ -294,7 +300,7 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
     // --- CONDIÇÃO ---
     const conditionBtn = dmPage
       .locator(
-        '[data-testid^="condition-btn-"], [data-testid^="conditions-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
+        '[data-testid^="conditions-btn-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
       )
       .first();
 
@@ -877,7 +883,7 @@ test.describe("BLOCO D — Visitante Puro (Sem Login, Sem Token)", () => {
       await hpBtn.click();
 
       const dmgInput = page
-        .locator('input[type="number"], input[data-testid="hp-adjust-value"], input[data-testid="hp-amount-input"]')
+        .locator('[data-testid="hp-amount-input"], input[type="number"]')
         .first();
       if (await dmgInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
         await dmgInput.fill("20");
@@ -1023,7 +1029,7 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
     await expect(adjuster).toBeVisible({ timeout: 5_000 });
 
     const dmgInput = dmPage.locator(
-      'input[data-testid="hp-amount-input"], input[data-testid="hp-adjust-value"], input[type="number"]'
+      '[data-testid="hp-amount-input"], input[type="number"]'
     ).first();
     await expect(dmgInput).toBeVisible({ timeout: 5_000 });
     await dmgInput.fill("90");
@@ -1090,7 +1096,7 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
     // DM aplica condição
     const conditionBtn = dmPage
       .locator(
-        '[data-testid^="condition-btn-"], [data-testid^="conditions-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
+        '[data-testid^="conditions-btn-"], button[aria-label*="condition"], button[aria-label*="Condição"]'
       )
       .first();
 
@@ -1233,7 +1239,7 @@ test.describe("BLOCO E — Cross-View Realtime (DM ↔ Player)", () => {
     const adjuster = dmPage.locator('[data-testid="hp-adjuster"]').first();
     await expect(adjuster).toBeVisible({ timeout: 5_000 });
 
-    const dmgInput = adjuster.locator('input[type="number"]').first();
+    const dmgInput = adjuster.locator('[data-testid="hp-amount-input"], input[type="number"]').first();
     if (await dmgInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await dmgInput.fill("10");
 

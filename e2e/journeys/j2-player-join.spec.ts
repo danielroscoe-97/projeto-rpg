@@ -69,7 +69,7 @@ test.describe("J2 — Player Recebe o Link", () => {
       // Look for damage input and apply
       const dmgInput = dmPage
         .locator(
-          'input[type="number"], input[data-testid="hp-adjust-value"]'
+          '[data-testid="hp-amount-input"], input[type="number"]'
         )
         .first();
       if (await dmgInput.isVisible({ timeout: 3_000 }).catch(() => false)) {

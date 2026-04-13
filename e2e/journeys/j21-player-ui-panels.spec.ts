@@ -155,9 +155,9 @@ test.describe("J21 — Player UI Panels", () => {
     const oraclePanel = playerPage.locator('[data-testid="player-oracle"]');
     await expect(oraclePanel).toBeVisible({ timeout: 10_000 });
 
-    // Find search input inside the panel
+    // Find search input inside the panel (cmdk renders with [cmdk-input] attr)
     const searchInput = oraclePanel
-      .locator('input[type="text"], input[type="search"], input[placeholder*="search"], input[placeholder*="Buscar"], input[placeholder*="buscar"]')
+      .locator('[cmdk-input], input[type="text"], input[type="search"], input[placeholder*="search"], input[placeholder*="Buscar"], input[placeholder*="buscar"]')
       .first();
     await expect(searchInput).toBeVisible({ timeout: 5_000 });
 
@@ -354,7 +354,7 @@ test.describe("J21 — Player UI Panels", () => {
 
     // Find a spell slot dot (clickable circle/button in the slot tracker)
     const slotDot = playerPage.locator(
-      '[data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
+      '[role="checkbox"][aria-checked], [data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
     ).first();
 
     const hasDot = await slotDot
@@ -428,7 +428,7 @@ test.describe("J21 — Player UI Panels", () => {
 
     // Find spell slot dots
     const slotDots = playerPage.locator(
-      '[data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
+      '[role="checkbox"][aria-checked], [data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
     );
 
     const dotCount = await slotDots.count();
@@ -446,9 +446,9 @@ test.describe("J21 — Player UI Panels", () => {
       await playerPage.waitForTimeout(300);
     }
 
-    // Find Long Rest button
+    // Find Long Rest button (may contain Moon icon + translated text, or just aria-label)
     const longRestBtn = playerPage.locator(
-      'button:has-text("Long Rest"), button:has-text("Descanso Longo"), button[aria-label*="Long Rest"], button[aria-label*="Descanso Longo"]'
+      'button:has-text("Long Rest"), button:has-text("Descanso Longo"), button:has-text("long_rest"), button[aria-label*="Long Rest"], button[aria-label*="Descanso Longo"], button[aria-label*="long_rest"]'
     ).first();
 
     const hasLongRest = await longRestBtn
@@ -510,7 +510,7 @@ test.describe("J21 — Player UI Panels", () => {
 
     // Find spell slot dots
     const slotDots = playerPage.locator(
-      '[data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
+      '[role="checkbox"][aria-checked], [data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
     );
 
     const dotCount = await slotDots.count();
@@ -537,7 +537,7 @@ test.describe("J21 — Player UI Panels", () => {
 
     // Find dots again after reload
     const reloadedDots = playerPage.locator(
-      '[data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
+      '[role="checkbox"][aria-checked], [data-testid*="spell-slot-dot"], [data-testid*="slot-dot"], [data-testid*="slot"] button, [class*="spell-slot"] button'
     );
 
     const reloadedCount = await reloadedDots.count();
@@ -1083,10 +1083,10 @@ test.describe("J21 — Player UI Panels", () => {
       playerPage.locator('[data-testid="player-view"]')
     ).toBeVisible({ timeout: 15_000 });
 
-    // Should show Round 1 / Rodada 1
+    // Should show Round 1 / Rodada 1 / R1 (compact format)
     const playerBody = await playerPage.textContent("body");
     const hasRound1 =
-      /Round\s*1/i.test(playerBody!) || /Rodada\s*1/i.test(playerBody!);
+      /Round\s*1/i.test(playerBody!) || /Rodada\s*1/i.test(playerBody!) || /\bR1\b/.test(playerBody!);
     expect(hasRound1).toBe(true);
 
     // DM advances turn through all combatants to complete a full round
@@ -1103,10 +1103,10 @@ test.describe("J21 — Player UI Panels", () => {
     // Wait for realtime propagation
     await playerPage.waitForTimeout(5_000);
 
-    // Should now show Round 2 / Rodada 2
+    // Should now show Round 2 / Rodada 2 / R2 (compact format)
     const updatedBody = await playerPage.textContent("body");
     const hasRound2 =
-      /Round\s*2/i.test(updatedBody!) || /Rodada\s*2/i.test(updatedBody!);
+      /Round\s*2/i.test(updatedBody!) || /Rodada\s*2/i.test(updatedBody!) || /\bR2\b/.test(updatedBody!);
     expect(hasRound2).toBe(true);
 
     await dmContext.close().catch(() => {});
