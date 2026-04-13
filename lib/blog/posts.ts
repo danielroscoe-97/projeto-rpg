@@ -433,6 +433,29 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "comparativo",
     image: "/art/blog/heroes-v2/initiative-tracker.png",
   },
+  {
+    slug: "best-initiative-tracker-dnd-5e-en",
+    title: "The Best Free D&D 5e Initiative Tracker — Ditch Paper for Good",
+    description:
+      "Tired of scribbling initiative on paper? Compare traditional methods vs digital and discover why a free initiative tracker changes your D&D 5e table. No sign-up, runs on your players' phones.",
+    date: "2026-04-12",
+    readingTime: "10 min",
+    keywords: [
+      "initiative tracker",
+      "initiative tracker 5e",
+      "initiative tracker dnd",
+      "best initiative tracker",
+      "free initiative tracker",
+      "dnd initiative tracker",
+      "d&d 5e initiative tracker",
+      "initiative tracker app",
+      "initiative tracker for DMs",
+      "digital initiative tracker D&D",
+    ],
+    ogTitle: "The Best Free D&D 5e Initiative Tracker — Ditch Paper for Good | Pocket DM",
+    category: "comparativo",
+    image: "/art/blog/heroes-v2/initiative-tracker.png",
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {

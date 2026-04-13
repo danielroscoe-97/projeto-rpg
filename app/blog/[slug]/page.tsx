@@ -26,6 +26,7 @@ import {
   BlogPost18,
   BlogPost19,
   BlogPost20,
+  BlogPost21,
 } from "@/components/blog/BlogPostContent";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
@@ -89,6 +90,7 @@ const CONTENT_MAP: Record<string, React.ComponentType> = {
   "7-erros-mestre-combate-dnd": BlogPost18,
   "iniciativa-dnd-5e-regras-variantes": BlogPost19,
   "best-initiative-tracker-dnd-5e": BlogPost20,
+  "best-initiative-tracker-dnd-5e-en": BlogPost21,
 };
 
 export const revalidate = 86400;
