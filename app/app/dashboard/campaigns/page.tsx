@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
-import { createClient, getAuthUser } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
+import { captureError } from "@/lib/errors/capture";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
@@ -15,18 +16,19 @@ import {
 } from "@/lib/supabase/campaign-membership";
 
 export default async function CampaignsPage() {
-  // Parallelize all independent setup (getAuthUser is cached per-request)
-  const [t, tSheet, user, supabase] = await Promise.all([
-    getTranslations("dashboard"),
-    getTranslations("sheet"),
-    getAuthUser(),
-    createClient(),
-  ]);
+  // Create a SINGLE supabase client and verify auth on it FIRST.
+  // This ensures the token refresh (if any) happens on the same client
+  // that will run all subsequent queries — avoids stale-token RLS failures
+  // that caused intermittent empty campaign lists.
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login");
 
-  // Fire all independent queries in parallel
-  const [userDataRes, memberships, pendingInvites, campaignsRes] = await Promise.all([
+  // Now parallelize translations + queries (all using the same authed client)
+  const [t, tSheet, userDataRes, memberships, pendingInvites, campaignsRes] = await Promise.all([
+    getTranslations("dashboard"),
+    getTranslations("sheet"),
     supabase.from("users").select("role, email").eq("id", user.id).maybeSingle(),
     getUserMemberships(user.id),
     getPendingInvites(user.email ?? ""),
@@ -46,6 +48,15 @@ export default async function CampaignsPage() {
   const userData = userDataRes.data;
   const userRole = (userData?.role as UserRole) ?? "both";
   const userEmail = userData?.email ?? user.email ?? "";
+
+  if (campaignsRes.error) {
+    captureError(new Error(`Failed to fetch campaigns: ${campaignsRes.error.message}`), {
+      component: "CampaignsPage",
+      action: "fetchCampaigns",
+      category: "database",
+      extra: { userId: user.id, code: campaignsRes.error.code },
+    });
+  }
   const rawCampaigns = campaignsRes.data;
 
   // Re-fetch pending invites with DB email if it differs from auth email
