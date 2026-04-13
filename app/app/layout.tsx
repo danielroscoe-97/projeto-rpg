@@ -1,35 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import dynamic from "next/dynamic";
 import { NavbarWithSync } from "@/components/layout/NavbarWithSync";
 import { LogoutButton } from "@/components/logout-button";
 import { SrdInitializer } from "@/components/srd/SrdInitializer";
 import { OracleSearchTrigger } from "@/components/oracle/OracleSearchTrigger";
 import { OracleAITrigger } from "@/components/oracle/OracleAITrigger";
+import { LazyOracleWidgets } from "@/components/oracle/LazyOracleWidgets";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { BookOpen, Skull, Sparkles, HeartPulse, Backpack, GraduationCap, Star } from "lucide-react";
-
-// Lazy-load heavy Oracle components — they use @dnd-kit, Fuse.js, etc.
-// and are not needed for initial page render.
-const FloatingCardContainer = dynamic(
-  () => import("@/components/oracle/FloatingCardContainer").then(m => ({ default: m.FloatingCardContainer })),
-  { ssr: false }
-);
-const CommandPalette = dynamic(
-  () => import("@/components/oracle/CommandPalette").then(m => ({ default: m.CommandPalette })),
-  { ssr: false }
-);
-const OracleAIModal = dynamic(
-  () => import("@/components/oracle/OracleAIModal").then(m => ({ default: m.OracleAIModal })),
-  { ssr: false }
-);
-const DiceHistoryPanel = dynamic(
-  () => import("@/components/dice/DiceHistoryPanel").then(m => ({ default: m.DiceHistoryPanel })),
-  { ssr: false }
-);
 
 export default async function AppLayout({
   children,
@@ -155,10 +136,7 @@ export default async function AppLayout({
       <SrdInitializer fullData={isBetaTester} />
       <ConnectionStatus />
       <ErrorBoundary name="Oracle">
-        <FloatingCardContainer />
-        <CommandPalette />
-        <OracleAIModal />
-        <DiceHistoryPanel />
+        <LazyOracleWidgets />
       </ErrorBoundary>
       <main id="main-content" className="flex-1 pt-[72px] p-6 pb-28 lg:pb-6">
         <ErrorBoundary name="MainContent">
