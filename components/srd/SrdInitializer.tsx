@@ -26,17 +26,17 @@ export function SrdInitializer({ fullData = false, eager = false }: { fullData?:
 
     // Defer SRD loading until the browser is idle, so the initial page
     // render and hydration complete without contention.
-    const schedule =
-      typeof window !== "undefined" && "requestIdleCallback" in window
-        ? (cb: () => void) => window.requestIdleCallback(cb, { timeout: 3000 })
-        : (cb: () => void) => window.setTimeout(cb, 2000);
+    const hasIdleCallback =
+      typeof window !== "undefined" && "requestIdleCallback" in window;
 
-    const id = schedule(() => useSrdStore.getState().initializeSrd());
+    const id = hasIdleCallback
+      ? window.requestIdleCallback(() => useSrdStore.getState().initializeSrd(), { timeout: 3000 })
+      : window.setTimeout(() => useSrdStore.getState().initializeSrd(), 2000);
 
     return () => {
-      if (typeof window !== "undefined" && "cancelIdleCallback" in window && typeof id === "number") {
-        window.cancelIdleCallback(id);
-      }
+      if (typeof window === "undefined") return;
+      if (hasIdleCallback) window.cancelIdleCallback(id as number);
+      else clearTimeout(id);
     };
   }, [fullData, eager]);
 

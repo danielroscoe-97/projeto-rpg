@@ -33,11 +33,7 @@ export default async function CompendiumRouteLayout({
   let hasDmAccess = false;
 
   if (user) {
-    const [
-      { count: dmMembershipCount },
-      { count: ownedCampaignCount },
-      { data: userRoleData },
-    ] = await Promise.all([
+    const [dmMembershipRes, ownedCampaignRes, userRoleRes] = await Promise.allSettled([
       supabase
         .from("campaign_members")
         .select("id", { count: "exact", head: true })
@@ -55,7 +51,9 @@ export default async function CompendiumRouteLayout({
         .maybeSingle(),
     ]);
 
-    const userDbRole = userRoleData?.role ?? "both";
+    const dmMembershipCount = dmMembershipRes.status === "fulfilled" ? dmMembershipRes.value.count : 0;
+    const ownedCampaignCount = ownedCampaignRes.status === "fulfilled" ? ownedCampaignRes.value.count : 0;
+    const userDbRole = userRoleRes.status === "fulfilled" ? (userRoleRes.value.data?.role ?? "both") : "both";
     hasDmAccess =
       (dmMembershipCount ?? 0) > 0 ||
       (ownedCampaignCount ?? 0) > 0 ||

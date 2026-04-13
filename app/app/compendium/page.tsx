@@ -109,15 +109,11 @@ function CompendiumContent() {
         ))}
       </div>
 
-      {/* Content */}
+      {/* Content — useTransition keeps previous tab visible while loading next */}
       {isLoading ? (
         <CompendiumSkeleton />
-      ) : isPending ? (
-        <div className="opacity-60 transition-opacity duration-200">
-          <CompendiumSkeleton />
-        </div>
       ) : (
-        <>
+        <div className={isPending ? "opacity-60 pointer-events-none transition-opacity duration-200" : ""}>
           {activeTab === "monsters" && <MonsterBrowser />}
           {activeTab === "spells" && <SpellBrowser />}
           {activeTab === "classes" && <ClassBrowser />}
@@ -126,7 +122,7 @@ function CompendiumContent() {
           {activeTab === "backgrounds" && <BackgroundBrowser />}
           {activeTab === "races" && <RaceBrowser />}
           {activeTab === "conditions" && <ConditionReference />}
-        </>
+        </div>
       )}
     </div>
   );
