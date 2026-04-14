@@ -16,6 +16,13 @@ export const metadata: Metadata = {
     "feitiços D&D",
     "magias dungeons and dragons",
     "compêndio de magias 5e",
+    "grimório D&D 5e",
+    "magias por classe D&D 5e",
+    "magias por nível D&D 5e",
+    "lista de magias gratis D&D",
+    "magias de mago 5e",
+    "magias de clérigo 5e",
+    "Pocket DM magias",
   ],
   alternates: {
     canonical: "https://pocketdm.com.br/magias",

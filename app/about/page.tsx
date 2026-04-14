@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "O Pocket DM é um combat & initiative tracker gratuito para D&D 5e, projetado para mesas presenciais. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores. Free D&D 5e initiative tracker.",
   alternates: {
-    canonical: "/about",
+    canonical: "https://pocketdm.com.br/about",
     languages: { "pt-BR": "/about", en: "/about" },
   },
 };

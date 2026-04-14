@@ -11,6 +11,19 @@ export const metadata: Metadata = {
   title: "Calculadora de Encontro D&D 5e — Dificuldade",
   description:
     "Calculadora de dificuldade de encontro grátis para D&D 5e. Adicione monstros de 1.100+ criaturas SRD, defina o tamanho e nível do grupo, e veja instantaneamente se o encontro é Fácil, Médio, Difícil ou Mortal.",
+  keywords: [
+    "calculadora de encontro D&D 5e",
+    "gerador de encontros D&D",
+    "calculadora de dificuldade D&D",
+    "construtor de encontros D&D 5e",
+    "encontros D&D 5e",
+    "dificuldade de encontro 5e",
+    "ferramentas para mestre D&D",
+    "calculadora CR D&D 5e",
+    "encontro fácil médio difícil mortal",
+    "encounter builder D&D gratis",
+    "Pocket DM calculadora",
+  ],
   openGraph: {
     title: "Calculadora de Encontro D&D 5e",
     description:

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Experimente o combat tracker D&D 5e sem criar conta. Iniciativa, HP, condições e magias em tempo real. Try the free D&D 5e combat tracker — no signup required.",
   alternates: {
-    canonical: "/try",
+    canonical: "https://pocketdm.com.br/try",
     languages: { "pt-BR": "/try", en: "/try" },
   },
   openGraph: {

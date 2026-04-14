@@ -131,7 +131,28 @@ export const metadata = {
   title: { absolute: "Pocket DM — Free D&D 5e Combat & Initiative Tracker | Rastreador de Combate" },
   description:
     "Free D&D 5e combat & initiative tracker — no sign-up required. Track initiative, HP, conditions, and spells in real time on your players' phones. The best initiative tracker for in-person RPG sessions. Rastreador de combate e iniciativa grátis.",
-  alternates: { canonical: "/" },
+  keywords: [
+    "Pocket DM",
+    "PocketDM",
+    "Pocket DM 5e",
+    "Pocket DM combat tracker",
+    "Pocket DM initiative tracker",
+    "D&D 5e combat tracker",
+    "D&D 5e initiative tracker",
+    "dnd combat tracker free",
+    "dnd initiative tracker free",
+    "combat tracker for in-person D&D",
+    "initiative tracker no sign up",
+    "best D&D combat tracker",
+    "best initiative tracker 5e",
+    "HP tracker D&D 5e",
+    "condition tracker D&D",
+    "rastreador de combate D&D 5e",
+    "rastreador de iniciativa D&D 5e",
+    "combat tracker D&D gratis",
+    "ferramentas para mestre de RPG",
+  ],
+  alternates: { canonical: "https://pocketdm.com.br/" },
 };
 
 // ── Hero ─────────────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     alternates: {
-      canonical: "/methodology/spell-tiers",
+      canonical: "https://pocketdm.com.br/methodology/spell-tiers",
       languages: {
         "pt-BR": "/methodology/spell-tiers",
         en: "/methodology/spell-tiers",

@@ -23,6 +23,13 @@ export const metadata: Metadata = {
     "ficha de monstro D&D",
     "D&D 5e bestiary",
     "monstros dungeons and dragons",
+    "lista de monstros D&D 5e",
+    "banco de dados monstros D&D",
+    "monstros por CR D&D 5e",
+    "bestiário online gratis D&D",
+    "livro dos monstros 5e",
+    "criaturas D&D 5e",
+    "Pocket DM monstros",
   ],
   alternates: {
     canonical: "https://pocketdm.com.br/monstros",

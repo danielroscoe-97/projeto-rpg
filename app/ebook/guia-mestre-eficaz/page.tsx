@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "dicas combate D&D 5e",
   ],
   alternates: {
-    canonical: "/ebook/guia-mestre-eficaz",
+    canonical: "https://pocketdm.com.br/ebook/guia-mestre-eficaz",
     languages: {
       "pt-BR": "/ebook/guia-mestre-eficaz",
     },

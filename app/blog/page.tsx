@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "como mestrar D&D",
   ],
   alternates: {
-    canonical: "/blog",
+    canonical: "https://pocketdm.com.br/blog",
     languages: { "pt-BR": "/blog", en: "/blog" },
   },
 };

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     "best initiative tracker free",
   ],
   alternates: {
-    canonical: "/faq",
+    canonical: "https://pocketdm.com.br/faq",
     languages: { "pt-BR": "/faq", en: "/faq" },
   },
 };

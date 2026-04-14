@@ -10,8 +10,7 @@ import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 import { ErrorTrackingProvider } from "@/components/ErrorTrackingProvider";
 import "./globals.css";
 
-const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
-  || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
 
 const siteTitle = "Pocket DM — Combat & Initiative Tracker D&D 5e | Rastreador de Combate";
 const siteTitleSocial = "Pocket DM — Master your table.";
@@ -26,6 +25,14 @@ export const metadata: Metadata = {
   },
   description: siteDescription,
   keywords: [
+    "Pocket DM",
+    "PocketDM",
+    "Pocket DM 5e",
+    "Pocket DM RPG",
+    "Pocket DM combat tracker",
+    "Pocket DM initiative tracker",
+    "Pocket DM combat",
+    "pocketdm.com.br",
     "combat tracker",
     "initiative tracker",
     "D&D 5e",
@@ -38,12 +45,14 @@ export const metadata: Metadata = {
     "dnd combat tracker",
     "dnd initiative tracker",
     "d&d initiative tracker free",
+    "d&d 5e combat tracker free",
     "gerenciador de combate RPG",
     "ferramentas para mestre de RPG",
     "app para mestre de RPG",
     "encounter tracker",
     "combat tracker presencial",
-    "Pocket DM",
+    "rastreador de combate d&d 5e",
+    "rastreador de iniciativa d&d 5e online gratis",
   ],
   manifest: "/manifest.json",
   icons: {
@@ -77,13 +86,13 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://pocketdm.com.br/",
     types: {
       "application/rss+xml": "/blog/rss",
     },
     languages: {
-      "pt-BR": "/",
-      en: "/",
+      "pt-BR": "https://pocketdm.com.br/",
+      en: "https://pocketdm.com.br/",
     },
   },
   openGraph: {

@@ -45,6 +45,10 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          {
+            key: "Content-Language",
+            value: "pt-BR, en",
+          },
           // CSP is set dynamically in middleware.ts with a per-request nonce (NFR11).
         ],
       },

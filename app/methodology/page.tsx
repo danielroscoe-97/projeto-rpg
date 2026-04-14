@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t("meta_title"),
     description: t("meta_description"),
     alternates: {
-      canonical: "/methodology",
+      canonical: "https://pocketdm.com.br/methodology",
       languages: { "pt-BR": "/methodology", en: "/methodology" },
     },
     openGraph: {
