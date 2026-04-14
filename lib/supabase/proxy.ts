@@ -5,7 +5,9 @@ import { checkRateLimit } from "../rate-limit";
 
 /** Routes that never need a Supabase session refresh.
  *  Skipping auth here avoids AbortError on fast client-side navigations
- *  between public pages (BUG-003). */
+ *  between public pages (BUG-003).
+ *  SEO-CRITICAL: Googlebot has no Supabase cookies — running session refresh
+ *  on public pages can cause redirect errors that block indexation. */
 const PUBLIC_PREFIXES = [
   "/api/health",
   "/compendium",
@@ -14,6 +16,45 @@ const PUBLIC_PREFIXES = [
   "/try",
   "/srd",
   "/join",
+  // Public compendium pages (EN)
+  "/monsters",
+  "/spells",
+  "/classes",
+  "/races",
+  "/feats",
+  "/backgrounds",
+  "/items",
+  "/conditions",
+  "/diseases",
+  "/damage-types",
+  "/ability-scores",
+  "/actions",
+  "/rules",
+  "/dice",
+  "/encounter-builder",
+  // Public compendium pages (PT-BR)
+  "/monstros",
+  "/magias",
+  "/classes-pt",
+  "/racas",
+  "/talentos",
+  "/antecedentes",
+  "/itens",
+  "/condicoes",
+  "/doencas",
+  "/tipos-de-dano",
+  "/atributos",
+  "/acoes-em-combate",
+  "/regras",
+  "/dados",
+  "/calculadora-encontro",
+  // Other public pages
+  "/about",
+  "/faq",
+  "/pricing",
+  "/ebook",
+  "/legal",
+  "/r/",
 ];
 
 export async function updateSession(request: NextRequest) {
@@ -21,7 +62,8 @@ export async function updateSession(request: NextRequest) {
 
   // BUG-003: Skip Supabase auth refresh on purely public routes — avoids
   // AbortError when the browser cancels the fetch during fast navigation.
-  if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
+  // SEO-CRITICAL: Also prevents redirect errors for Googlebot (no Supabase cookies).
+  if (pathname === "/" || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next({ request });
   }
 
