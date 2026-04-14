@@ -156,6 +156,8 @@ export default function FaqPage() {
   const jsonLdFaq = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    description:
+      "Respostas para as perguntas mais comuns sobre o Pocket DM — combat tracker gratuito para D&D 5e. Como funciona, preços, funcionalidades, compatibilidade e mais.",
     mainEntity: ALL_FAQ_ITEMS.map((item) => ({
       "@type": "Question",
       name: item.q,

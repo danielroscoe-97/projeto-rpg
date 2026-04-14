@@ -35,8 +35,16 @@ export default async function SpellTiersPage() {
     "@context": "https://schema.org",
     "@type": "Dataset",
     name: t("spell_ranking_title"),
-    description: t("spell_ranking_subtitle"),
+    description: t("spell_ranking_dataset_description"),
     url: "https://pocketdm.com.br/methodology/spell-tiers",
+    license: "https://creativecommons.org/licenses/by/4.0/",
+    keywords: [
+      "D&D 5e",
+      "spell tier list",
+      "spell ranking",
+      "SRD 5.1",
+      "community votes",
+    ],
     creator: {
       "@type": "Organization",
       name: "Pocket DM",

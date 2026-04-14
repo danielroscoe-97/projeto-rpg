@@ -3932,6 +3932,7 @@
     "mini_vote_voted": "Your vote",
     "spell_ranking_title": "Spell Tier Rankings",
     "spell_ranking_subtitle": "How the community rates D&D 5e spells",
+    "spell_ranking_dataset_description": "Community-driven tier ranking of D&D 5e spells based on player and DM votes. Every SRD 5.1 spell is rated into tiers (S, A, B, C, D, F) reflecting collective gameplay experience and tactical value.",
     "spell_ranking_no_votes": "No votes yet — be the first! Visit any spell page to vote.",
     "spell_ranking_consensus": "Consensus",
     "spell_ranking_votes": "votes",
