@@ -142,6 +142,7 @@ function formatGp(cp?: number): string {
 interface ItemEntry {
   id: string;
   name: string;
+  namePt?: string;
   type: string;
   rarity: string;
   isMagic: boolean;
@@ -173,7 +174,11 @@ interface PublicItemGridProps {
 
 export function PublicItemGrid({ items, locale = "en" }: PublicItemGridProps) {
   const [descLang, setDescLang] = useLocalePreference(locale);
+  const isPt = descLang === "pt-BR";
   const l = LABELS[descLang];
+
+  /** Display name for an item based on current locale */
+  const dn = useCallback((item: ItemEntry) => isPt ? (item.namePt ?? item.name) : item.name, [isPt]);
 
   const [query, setQuery] = useState("");
   const [magicFilter, setMagicFilter] = useState<"all" | "magic" | "mundane">("all");
@@ -193,7 +198,7 @@ export function PublicItemGrid({ items, locale = "en" }: PublicItemGridProps) {
 
     if (query) {
       const q = query.toLowerCase();
-      result = result.filter((i) => i.name.toLowerCase().includes(q));
+      result = result.filter((i) => i.name.toLowerCase().includes(q) || (i.namePt && i.namePt.toLowerCase().includes(q)));
     }
     if (magicFilter === "magic") result = result.filter((i) => i.isMagic);
     else if (magicFilter === "mundane") result = result.filter((i) => !i.isMagic);
@@ -205,11 +210,11 @@ export function PublicItemGrid({ items, locale = "en" }: PublicItemGridProps) {
     if (rarityFilter) result = result.filter((i) => i.rarity === rarityFilter);
 
     const sorted = [...result];
-    if (sortBy === "value") sorted.sort((a, b) => (a.value ?? 0) - (b.value ?? 0) || a.name.localeCompare(b.name));
-    else if (sortBy === "rarity") sorted.sort((a, b) => (RARITY_ORDER[a.rarity] ?? 0) - (RARITY_ORDER[b.rarity] ?? 0) || a.name.localeCompare(b.name));
-    else sorted.sort((a, b) => a.name.localeCompare(b.name));
+    if (sortBy === "value") sorted.sort((a, b) => (a.value ?? 0) - (b.value ?? 0) || dn(a).localeCompare(dn(b)));
+    else if (sortBy === "rarity") sorted.sort((a, b) => (RARITY_ORDER[a.rarity] ?? 0) - (RARITY_ORDER[b.rarity] ?? 0) || dn(a).localeCompare(dn(b)));
+    else sorted.sort((a, b) => dn(a).localeCompare(dn(b)));
     return sorted;
-  }, [items, query, magicFilter, typeGroupFilter, rarityFilter, sortBy]);
+  }, [items, query, magicFilter, typeGroupFilter, rarityFilter, sortBy, dn]);
 
   const selectedItem = useMemo(() => {
     if (!selectedId) return null;
@@ -415,8 +420,11 @@ export function PublicItemGrid({ items, locale = "en" }: PublicItemGridProps) {
                 >
                   <span className="font-medium text-sm flex-1 min-w-0 truncate">
                     {item.isMagic && <span className="text-gold mr-1">&#10022;</span>}
-                    {item.name}
+                    {dn(item)}
                   </span>
+                  {isPt && item.namePt && item.namePt !== item.name && (
+                    <span className="text-[10px] text-gray-500 italic hidden xl:inline truncate max-w-[120px]">{item.name}</span>
+                  )}
                   <span className="text-[11px] text-gray-400 w-28 text-right truncate hidden xl:inline">
                     {formatTypeName(item.type)}
                   </span>
@@ -479,7 +487,7 @@ export function PublicItemGrid({ items, locale = "en" }: PublicItemGridProps) {
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm text-foreground flex-1 min-w-0 truncate">
                       {item.isMagic && <span className="text-gold mr-1">&#10022;</span>}
-                      {item.name}
+                      {dn(item)}
                     </span>
                     {item.rarity !== "none" && (
                       <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded ${RARITY_BADGE[item.rarity] ?? ""}`}>
@@ -524,14 +532,21 @@ export function PublicItemGrid({ items, locale = "en" }: PublicItemGridProps) {
 
 function ItemDetailPanel({ item, l, locale = "en", compact }: { item: ItemEntry; l: typeof LABELS["en"]; locale?: Locale; compact?: boolean }) {
   const titleSize = compact ? "text-lg" : "text-xl";
+  const isPt = locale === "pt-BR";
+  const displayName = isPt ? (item.namePt ?? item.name) : item.name;
+  const secondaryName = isPt ? item.name : (item.namePt && item.namePt !== item.name ? item.namePt : null);
 
   return (
     <div className={compact ? "" : "p-5"}>
       {/* Name + badges */}
-      <h3 className={`${titleSize} font-bold text-foreground font-[family-name:var(--font-cinzel)] mb-2`}>
+      <h3 className={`${titleSize} font-bold text-foreground font-[family-name:var(--font-cinzel)] mb-1`}>
         {item.isMagic && <span className="text-gold mr-1.5">&#10022;</span>}
-        {item.name}
+        {displayName}
       </h3>
+      {secondaryName && (
+        <p className="text-xs text-gray-500 italic mb-2">{secondaryName}</p>
+      )}
+      {!secondaryName && <div className="mb-2" />}
 
       <div className="flex flex-wrap gap-1.5 mb-4">
         <span className="text-[10px] font-medium bg-white/[0.06] text-gray-300 rounded px-2 py-0.5">

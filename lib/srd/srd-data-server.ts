@@ -82,6 +82,34 @@ export function getSpellHigherLevelsPt(enSlug: string): string | undefined {
   return getSpellDescPtMap()[enSlug]?.higher_levels ?? undefined;
 }
 
+// ── PT-BR item names ──────────────────────────────────────────────
+let itemDescPtMap: Record<string, { name_pt: string }> | null = null;
+
+function getItemDescPtMap(): Record<string, { name_pt: string }> {
+  if (itemDescPtMap) return itemDescPtMap;
+  try {
+    itemDescPtMap = JSON.parse(readFileSync(join(process.cwd(), "data/srd/item-descriptions-pt.json"), "utf-8"));
+  } catch {
+    itemDescPtMap = {};
+  }
+  return itemDescPtMap!;
+}
+
+/** Get PT-BR display name for an item (by EN id/slug). Falls back to original name. */
+export function getItemNamePt(enId: string, fallback: string): string {
+  return getItemDescPtMap()[enId]?.name_pt ?? fallback;
+}
+
+/** Get full item PT name map (id → name_pt) for bulk usage. */
+export function getItemPtNameMap(): Record<string, string> {
+  const map = getItemDescPtMap();
+  const result: Record<string, string> = {};
+  for (const [id, data] of Object.entries(map)) {
+    if (data.name_pt) result[id] = data.name_pt;
+  }
+  return result;
+}
+
 const SRD_DIR = join(process.cwd(), "data", "srd");
 
 // ── SRD whitelists (slug-based) ─────────────────────────────────

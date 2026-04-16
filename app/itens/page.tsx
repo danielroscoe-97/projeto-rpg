@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getSrdItems } from "@/lib/srd/srd-data-server";
+import { getSrdItems, getItemPtNameMap, toSlug } from "@/lib/srd/srd-data-server";
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicItemGrid } from "@/components/public/PublicItemGrid";
 import { PublicFooter } from "@/components/public/PublicFooter";
@@ -37,11 +37,13 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 export default function ItensIndexPage() {
+  const ptNameMap = getItemPtNameMap();
   const items = getSrdItems()
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((item) => ({
       id: item.id,
       name: item.name,
+      namePt: ptNameMap[toSlug(item.name)] ?? item.name,
       type: item.type,
       rarity: item.rarity,
       isMagic: item.isMagic,
