@@ -1,12 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { SrdItem } from "@/lib/srd/srd-loader";
 import { useTranslations } from "next-intl";
 import { LinkedText } from "@/components/oracle/LinkedText";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { RARITY_PT, WEAPON_CATEGORY_PT } from "@/lib/i18n/item-labels";
+import { loadItemNamesPt } from "@/lib/srd/translation-loader";
 
 interface ItemCardProps {
   item: SrdItem;
   variant?: "card" | "inline";
+  locale?: "en" | "pt-BR";
+  /** Pre-resolved PT-BR name (avoids async load inside card) */
+  namePt?: string;
 }
 
 const RARITY_COLORS: Record<string, string> = {
@@ -49,8 +56,25 @@ function formatWeight(lb: number): string {
   return `${Number.isInteger(lb) ? lb : lb.toFixed(1)} lb.`;
 }
 
-export function ItemCard({ item, variant = "card" }: ItemCardProps) {
+export function ItemCard({ item, variant = "card", locale, namePt }: ItemCardProps) {
   const t = useTranslations("compendium");
+  const [defaultLocale] = useLocalePreference("pt-BR");
+  const effectiveLocale = locale ?? defaultLocale;
+  const isPt = effectiveLocale === "pt-BR";
+
+  // Lazy-load item name translations when locale is PT-BR
+  const [itemNamesMap, setItemNamesMap] = useState<Record<string, string> | null>(null);
+  useEffect(() => {
+    if (isPt && !namePt) {
+      loadItemNamesPt().then(setItemNamesMap).catch(() => {});
+    }
+  }, [isPt, namePt]);
+
+  // Resolved PT name: prop > async map > fallback to English
+  const displayName = isPt
+    ? (namePt ?? itemNamesMap?.[item.id] ?? item.name)
+    : item.name;
+
   const isInline = variant === "inline";
   const rarityColor = RARITY_COLORS[item.rarity] || "text-muted-foreground";
   const borderColor = RARITY_BORDER[item.rarity] || "border-t-gray-600";
@@ -61,11 +85,15 @@ export function ItemCard({ item, variant = "card" }: ItemCardProps) {
   // Subtitle line
   const subtitleParts: string[] = [];
   if (item.weaponCategory) {
-    subtitleParts.push(t(`item_weapon_${item.weaponCategory}`));
+    subtitleParts.push(
+      isPt ? (WEAPON_CATEGORY_PT[item.weaponCategory] ?? t(`item_weapon_${item.weaponCategory}`)) : t(`item_weapon_${item.weaponCategory}`)
+    );
   }
   subtitleParts.push(typeLabel);
   if (item.isMagic && item.rarity !== "none") {
-    subtitleParts.push(t(`item_rarity_${item.rarity.replace(/\s+/g, "_")}`));
+    subtitleParts.push(
+      isPt ? (RARITY_PT[item.rarity] ?? t(`item_rarity_${item.rarity.replace(/\s+/g, "_")}`)) : t(`item_rarity_${item.rarity.replace(/\s+/g, "_")}`)
+    );
   }
   const subtitle = subtitleParts.join(", ");
 
@@ -73,7 +101,7 @@ export function ItemCard({ item, variant = "card" }: ItemCardProps) {
     <div className={`stat-card-5e ${isInline ? "stat-card-5e--inline" : ""} border-t-2 ${item.isMagic ? borderColor : "border-t-gray-600"}`}>
       {/* Header */}
       <div className="card-header">
-        <h3 className="card-name">{item.name}</h3>
+        <h3 className="card-name">{displayName}</h3>
         <p className={`text-xs italic ${rarityColor}`}>
           {subtitle}
         </p>

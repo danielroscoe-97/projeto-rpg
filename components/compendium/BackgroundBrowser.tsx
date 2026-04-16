@@ -1,15 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { Search, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { loadBackgroundNamesPt, getNamePt } from "@/lib/srd/translation-loader";
 
 export function BackgroundBrowser() {
   const t = useTranslations("compendium");
   const backgrounds = useSrdStore((s) => s.backgrounds);
   const [nameFilter, setNameFilter] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  // ── PT-BR translation support ──────────────────────────────────────
+  const [descLang, setDescLang] = useLocalePreference("pt-BR");
+  const [bgNamesPt, setBgNamesPt] = useState<Record<string, string> | null>(null);
+  const isPt = descLang === "pt-BR";
+
+  useEffect(() => {
+    if (isPt) loadBackgroundNamesPt().then(setBgNamesPt);
+  }, [isPt]);
 
   const filtered = useMemo(() => {
     let result = backgrounds;
@@ -18,11 +30,13 @@ export function BackgroundBrowser() {
       result = result.filter(
         (b) =>
           b.name.toLowerCase().includes(lower) ||
+          (bgNamesPt && getNamePt(bgNamesPt, b.id, "").toLowerCase().includes(lower)) ||
           b.skill_proficiencies.some((sp) => sp.toLowerCase().includes(lower))
       );
     }
-    return [...result].sort((a, b) => a.name.localeCompare(b.name));
-  }, [backgrounds, nameFilter]);
+    const dn = (b: typeof result[number]) => isPt ? getNamePt(bgNamesPt, b.id, b.name) : b.name;
+    return [...result].sort((a, b) => dn(a).localeCompare(dn(b)));
+  }, [backgrounds, nameFilter, bgNamesPt, isPt]);
 
   return (
     <div className="space-y-4">
@@ -38,9 +52,12 @@ export function BackgroundBrowser() {
         />
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        {t("backgrounds_count", { count: filtered.length })}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          {t("backgrounds_count", { count: filtered.length })}
+        </p>
+        <LanguageToggle locale={descLang} onToggle={setDescLang} size="sm" />
+      </div>
 
       <div className="space-y-2">
         {filtered.map((bg) => (
@@ -59,7 +76,7 @@ export function BackgroundBrowser() {
               ) : (
                 <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
               )}
-              <span id={`background-${bg.id}`} className="font-medium text-foreground text-sm">{bg.name}</span>
+              <span id={`background-${bg.id}`} className="font-medium text-foreground text-sm">{isPt ? getNamePt(bgNamesPt, bg.id, bg.name) : bg.name}</span>
               {bg.skill_proficiencies.length > 0 && (
                 <span className="ml-auto text-xs text-muted-foreground shrink-0 hidden sm:block">
                   {bg.skill_proficiencies.join(", ")}

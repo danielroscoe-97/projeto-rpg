@@ -10,6 +10,10 @@ import { MonsterToken } from "@/components/srd/MonsterToken";
 import { MonsterADayBadge } from "@/components/compendium/MonsterADayBadge";
 import { useContentAccess } from "@/lib/hooks/use-content-access";
 import { ExternalContentGate } from "@/components/import/ExternalContentGate";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { loadMonsterNamesPt, getNamePt } from "@/lib/srd/translation-loader";
+import { translateType, translateSize } from "@/lib/i18n/dnd-terms-ptbr";
 import { toast } from "sonner";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 
@@ -57,15 +61,18 @@ interface MonsterRowProps {
   items: SrdMonster[];
   selectedKey: string | null;
   onSelect: (m: SrdMonster) => void;
+  monsterNamesPt: Record<string, string> | null;
+  isPt: boolean;
 }
 
 /* ---- Virtualized row component (react-window v2 API) ---- */
 function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
-  const { index, style, items, selectedKey, onSelect, ariaAttributes } = props;
+  const { index, style, items, selectedKey, onSelect, monsterNamesPt, isPt, ariaAttributes } = props;
   const m = items[index];
   if (!m) return null;
   const key = rowKey(m);
   const isSelected = key === selectedKey;
+  const name = isPt ? getNamePt(monsterNamesPt, m.id, m.name) : m.name;
 
   return (
     <button
@@ -88,7 +95,7 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
         isMonsterADay={!!m.monster_a_day_url}
       />
       <span className="font-medium text-sm flex-1 min-w-0 truncate">
-        {m.name}
+        {name}
       </span>
       <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden lg:inline">
         {m.type.split("(")[0].trim()}
@@ -117,6 +124,13 @@ export function MonsterBrowser() {
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const { canAccess, isAuthenticated, isLoading: accessLoading, onGateCompleted } = useContentAccess();
   const [gateOpen, setGateOpen] = useState(false);
+
+  // Language toggle
+  const [descLang, setDescLang] = useLocalePreference("pt-BR");
+  const [monsterNamesPt, setMonsterNamesPt] = useState<Record<string, string> | null>(null);
+  const isPt = descLang === "pt-BR";
+  useEffect(() => { if (isPt) loadMonsterNamesPt().then(setMonsterNamesPt); }, [isPt]);
+  const displayName = (m: SrdMonster) => isPt ? getNamePt(monsterNamesPt, m.id, m.name) : m.name;
 
   // Filters
   const [nameFilter, setNameFilter] = useState("");
@@ -182,7 +196,10 @@ export function MonsterBrowser() {
 
     if (nameFilter) {
       const q = nameFilter.toLowerCase();
-      result = result.filter((m) => m.name.toLowerCase().includes(q));
+      result = result.filter((m) =>
+        m.name.toLowerCase().includes(q) ||
+        (isPt && getNamePt(monsterNamesPt, m.id, m.name).toLowerCase().includes(q))
+      );
     }
 
     if (crRanges.size > 0) {
@@ -205,8 +222,8 @@ export function MonsterBrowser() {
       result = result.filter((m) => m.size && sizes.has(m.size));
     }
 
-    return [...result].sort((a, b) => a.name.localeCompare(b.name));
-  }, [sourceFiltered, nameFilter, crRanges, types, sizes]);
+    return [...result].sort((a, b) => displayName(a).localeCompare(displayName(b)));
+  }, [sourceFiltered, nameFilter, crRanges, types, sizes, isPt, monsterNamesPt]);
 
   // Derive selected monster; clear selectedKey if filtered out
   const selectedMonster = useMemo(() => {
@@ -253,13 +270,17 @@ export function MonsterBrowser() {
     items: filtered,
     selectedKey,
     onSelect: handleDesktopSelect,
-  }), [filtered, selectedKey, handleDesktopSelect]);
+    monsterNamesPt,
+    isPt,
+  }), [filtered, selectedKey, handleDesktopSelect, monsterNamesPt, isPt]);
 
   const mobileRowProps = useMemo<MonsterRowProps>(() => ({
     items: filtered,
     selectedKey,
     onSelect: handleMobileSelect,
-  }), [filtered, selectedKey, handleMobileSelect]);
+    monsterNamesPt,
+    isPt,
+  }), [filtered, selectedKey, handleMobileSelect, monsterNamesPt, isPt]);
 
   // ---- Filter bar ----
   const filterBar = (
@@ -330,7 +351,7 @@ export function MonsterBrowser() {
           <FilterGroup label={t("filter_type")}>
             {CREATURE_TYPES.map((type) => (
               <Chip key={type} active={types.has(type)} onClick={() => toggleSet(types, type, setTypes)}>
-                {type}
+                {isPt ? translateType(type) : type}
               </Chip>
             ))}
           </FilterGroup>
@@ -338,15 +359,18 @@ export function MonsterBrowser() {
           <FilterGroup label={t("filter_size")}>
             {SIZES.map((s) => (
               <Chip key={s} active={sizes.has(s)} onClick={() => toggleSet(sizes, s, setSizes)}>
-                {s}
+                {isPt ? translateSize(s) : s}
               </Chip>
             ))}
           </FilterGroup>
         </div>
       )}
 
-      <div className="text-[11px] text-muted-foreground">
-        {t("showing_results", { count: filtered.length, total: sourceFiltered.length })}
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] text-muted-foreground">
+          {t("showing_results", { count: filtered.length, total: sourceFiltered.length })}
+        </span>
+        <LanguageToggle locale={descLang} onToggle={setDescLang} size="sm" />
       </div>
       <div className="sr-only" role="status" aria-live="polite">
         {t("monsters_found_aria", { count: filtered.length })}
@@ -378,7 +402,7 @@ export function MonsterBrowser() {
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 inline-block mr-1"><path d="M8.5 1.5a.5.5 0 0 0-1 0v4.396L4.12 7.673a.5.5 0 0 0-.27.444v1.266a.5.5 0 0 0 .63.484L7.5 9.18V13l-1.354 1.354a.5.5 0 0 0 .354.854h3a.5.5 0 0 0 .354-.854L8.5 13V9.18l3.02.687a.5.5 0 0 0 .63-.484V8.117a.5.5 0 0 0-.27-.444L8.5 5.896V1.5z"/></svg>{t("pin_card")}
           </button>
         </div>
-        <MonsterStatBlock monster={selectedMonster} variant="inline" />
+        <MonsterStatBlock monster={selectedMonster} variant="inline" locale={descLang} />
       </div>
     );
   }
@@ -447,7 +471,7 @@ export function MonsterBrowser() {
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 inline-block mr-1"><path d="M8.5 1.5a.5.5 0 0 0-1 0v4.396L4.12 7.673a.5.5 0 0 0-.27.444v1.266a.5.5 0 0 0 .63.484L7.5 9.18V13l-1.354 1.354a.5.5 0 0 0 .354.854h3a.5.5 0 0 0 .354-.854L8.5 13V9.18l3.02.687a.5.5 0 0 0 .63-.484V8.117a.5.5 0 0 0-.27-.444L8.5 5.896V1.5z"/></svg>{t("pin_card")}
                 </button>
               </div>
-              <MonsterStatBlock monster={selectedMonster} variant="inline" />
+              <MonsterStatBlock monster={selectedMonster} variant="inline" locale={descLang} />
             </div>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">

@@ -6,6 +6,9 @@ import { List as VirtualList, type RowComponentProps } from "react-window";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { ItemCard } from "@/components/oracle/ItemCard";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { loadItemNamesPt, getNamePt } from "@/lib/srd/translation-loader";
 import type { SrdItem, ItemType, ItemRarity } from "@/lib/srd/srd-loader";
 
 const MOBILE_PAGE_SIZE = 50;
@@ -84,11 +87,13 @@ interface ItemRowProps {
   selectedKey: string | null;
   onSelect: (item: SrdItem) => void;
   t: ReturnType<typeof import("next-intl").useTranslations>;
+  itemNamesPt: Record<string, string> | null;
+  isPt: boolean;
 }
 
 /* ---- Virtualized row component (react-window v2 API) ---- */
 function ItemRow(props: RowComponentProps<ItemRowProps>) {
-  const { index, style, items, selectedKey, onSelect, t, ariaAttributes } = props;
+  const { index, style, items, selectedKey, onSelect, t, itemNamesPt, isPt, ariaAttributes } = props;
   const item = items[index];
   if (!item) return null;
   const key = rowKey(item);
@@ -107,7 +112,7 @@ function ItemRow(props: RowComponentProps<ItemRowProps>) {
       }`}
     >
       <span className="font-medium text-sm flex-1 min-w-0 truncate">
-        {item.name}
+        {isPt ? getNamePt(itemNamesPt, item.id, item.name) : item.name}
       </span>
       <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden lg:inline">
         {t(`item_type_${item.type.replace(/-/g, "_")}`)}
@@ -135,6 +140,15 @@ export function ItemBrowser() {
   const t = useTranslations("compendium");
   const items = useSrdStore((s) => s.items);
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+
+  // ── PT-BR translation support ──────────────────────────────────────
+  const [descLang, setDescLang] = useLocalePreference("pt-BR");
+  const [itemNamesPt, setItemNamesPt] = useState<Record<string, string> | null>(null);
+  const isPt = descLang === "pt-BR";
+
+  useEffect(() => {
+    if (isPt) loadItemNamesPt().then(setItemNamesPt);
+  }, [isPt]);
 
   // Filters
   const [nameFilter, setNameFilter] = useState("");
@@ -183,7 +197,10 @@ export function ItemBrowser() {
 
     if (nameFilter) {
       const q = nameFilter.toLowerCase();
-      result = result.filter((i) => i.name.toLowerCase().includes(q));
+      result = result.filter((i) =>
+        i.name.toLowerCase().includes(q) ||
+        (itemNamesPt && getNamePt(itemNamesPt, i.id, "").toLowerCase().includes(q))
+      );
     }
     if (magicFilter === "mundane") result = result.filter((i) => !i.isMagic);
     else if (magicFilter === "magic") result = result.filter((i) => i.isMagic);
@@ -193,11 +210,12 @@ export function ItemBrowser() {
     if (editionFilter !== "all") result = result.filter((i) => i.edition === editionFilter);
 
     const sorted = [...result];
-    if (sortBy === "value") sorted.sort((a, b) => (a.value ?? 0) - (b.value ?? 0) || a.name.localeCompare(b.name));
-    else if (sortBy === "rarity") sorted.sort((a, b) => (RARITY_ORDER[a.rarity] ?? 0) - (RARITY_ORDER[b.rarity] ?? 0) || a.name.localeCompare(b.name));
-    else sorted.sort((a, b) => a.name.localeCompare(b.name));
+    const dn = (i: SrdItem) => isPt ? getNamePt(itemNamesPt, i.id, i.name) : i.name;
+    if (sortBy === "value") sorted.sort((a, b) => (a.value ?? 0) - (b.value ?? 0) || dn(a).localeCompare(dn(b)));
+    else if (sortBy === "rarity") sorted.sort((a, b) => (RARITY_ORDER[a.rarity] ?? 0) - (RARITY_ORDER[b.rarity] ?? 0) || dn(a).localeCompare(dn(b)));
+    else sorted.sort((a, b) => dn(a).localeCompare(dn(b)));
     return sorted;
-  }, [items, nameFilter, magicFilter, types, rarities, attuneOnly, editionFilter, sortBy]);
+  }, [items, nameFilter, magicFilter, types, rarities, attuneOnly, editionFilter, sortBy, itemNamesPt, isPt]);
 
   const selectedItem = useMemo(() => {
     if (!selectedKey) return null;
@@ -232,8 +250,8 @@ export function ItemBrowser() {
 
   // Row props for virtual list
   const desktopRowProps = useMemo<ItemRowProps>(() => ({
-    items: filtered, selectedKey, onSelect: handleDesktopSelect, t,
-  }), [filtered, selectedKey, handleDesktopSelect, t]);
+    items: filtered, selectedKey, onSelect: handleDesktopSelect, t, itemNamesPt, isPt,
+  }), [filtered, selectedKey, handleDesktopSelect, t, itemNamesPt, isPt]);
 
   // ── Filter bar ────────────────────────────────────────────────────
   const filterBar = (
@@ -333,10 +351,11 @@ export function ItemBrowser() {
         <div className="sr-only" role="status" aria-live="polite">
           {t("items_found_aria", { count: filtered.length })}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <Chip active={sortBy === "name"} onClick={() => setSortBy("name")}>{t("sort_name")}</Chip>
           <Chip active={sortBy === "value"} onClick={() => setSortBy("value")}>{t("sort_value")}</Chip>
           <Chip active={sortBy === "rarity"} onClick={() => setSortBy("rarity")}>{t("sort_rarity")}</Chip>
+          <LanguageToggle locale={descLang} onToggle={setDescLang} size="sm" />
         </div>
       </div>
     </div>
@@ -359,7 +378,7 @@ export function ItemBrowser() {
         }`}
       >
         <span className="font-medium text-sm flex-1 min-w-0 truncate">
-          {item.name}
+          {isPt ? getNamePt(itemNamesPt, item.id, item.name) : item.name}
         </span>
         <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden lg:inline">
           {t(`item_type_${item.type.replace(/-/g, "_")}`)}
@@ -406,7 +425,7 @@ export function ItemBrowser() {
             📌 {t("pin_card")}
           </button>
         </div>
-        <ItemCard item={selectedItem} variant="inline" />
+        <ItemCard item={selectedItem} variant="inline" locale={descLang} namePt={isPt ? getNamePt(itemNamesPt, selectedItem.id, selectedItem.name) : undefined} />
       </div>
     );
   }
@@ -479,7 +498,7 @@ export function ItemBrowser() {
                   📌 {t("pin_card")}
                 </button>
               </div>
-              <ItemCard item={selectedItem} variant="inline" />
+              <ItemCard item={selectedItem} variant="inline" locale={descLang} namePt={isPt ? getNamePt(itemNamesPt, selectedItem.id, selectedItem.name) : undefined} />
             </div>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">

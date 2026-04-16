@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
@@ -8,6 +8,10 @@ import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { useContentAccess } from "@/lib/hooks/use-content-access";
 import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { SpellCard } from "@/components/oracle/SpellCard";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { loadSpellNamesPt, getNamePt } from "@/lib/srd/translation-loader";
+import { SCHOOL_PT, CLASS_PT } from "@/lib/i18n/spell-labels";
 import { toast } from "sonner";
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -15,16 +19,16 @@ import type { RulesetVersion } from "@/lib/types/database";
 const MOBILE_PAGE_SIZE = 50;
 
 const SPELL_LEVELS = [
-  { value: 0, label: "Cantrip" },
-  { value: 1, label: "1st" },
-  { value: 2, label: "2nd" },
-  { value: 3, label: "3rd" },
-  { value: 4, label: "4th" },
-  { value: 5, label: "5th" },
-  { value: 6, label: "6th" },
-  { value: 7, label: "7th" },
-  { value: 8, label: "8th" },
-  { value: 9, label: "9th" },
+  { value: 0, label: "Cantrip", labelPt: "Truque" },
+  { value: 1, label: "1st", labelPt: "1\u00ba" },
+  { value: 2, label: "2nd", labelPt: "2\u00ba" },
+  { value: 3, label: "3rd", labelPt: "3\u00ba" },
+  { value: 4, label: "4th", labelPt: "4\u00ba" },
+  { value: 5, label: "5th", labelPt: "5\u00ba" },
+  { value: 6, label: "6th", labelPt: "6\u00ba" },
+  { value: 7, label: "7th", labelPt: "7\u00ba" },
+  { value: 8, label: "8th", labelPt: "8\u00ba" },
+  { value: 9, label: "9th", labelPt: "9\u00ba" },
 ];
 
 const SCHOOLS = [
@@ -60,6 +64,15 @@ export function SpellBrowser() {
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
   const { canAccess, isAuthenticated, onGateCompleted } = useContentAccess();
   const [gateOpen, setGateOpen] = useState(false);
+
+  // ── PT-BR translation support ──────────────────────────────────────
+  const [descLang, setDescLang] = useLocalePreference("pt-BR");
+  const [spellNamesPt, setSpellNamesPt] = useState<Record<string, string> | null>(null);
+  const isPt = descLang === "pt-BR";
+
+  useEffect(() => {
+    if (isPt) loadSpellNamesPt().then(setSpellNamesPt);
+  }, [isPt]);
 
   // Count hidden non-SRD spells for the gating banner
   const hiddenSpellCount = !showNonSrd ? allSpells.filter((s) => s.is_srd === false).length : 0;
@@ -105,7 +118,10 @@ export function SpellBrowser() {
 
     if (nameFilter) {
       const q = nameFilter.toLowerCase();
-      result = result.filter((s) => s.name.toLowerCase().includes(q));
+      result = result.filter((s) =>
+        s.name.toLowerCase().includes(q) ||
+        (spellNamesPt && getNamePt(spellNamesPt, s.id, "").toLowerCase().includes(q))
+      );
     }
 
     if (versionFilter !== "all") {
@@ -129,11 +145,12 @@ export function SpellBrowser() {
     if (ritualOnly) result = result.filter((s) => s.ritual);
     if (concentrationOnly) result = result.filter((s) => s.concentration);
 
+    const dn = (s: SrdSpell) => isPt ? getNamePt(spellNamesPt, s.id, s.name) : s.name;
     if (sortBy === "level") {
-      return [...result].sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
+      return [...result].sort((a, b) => a.level - b.level || dn(a).localeCompare(dn(b)));
     }
-    return [...result].sort((a, b) => a.name.localeCompare(b.name));
-  }, [spells, nameFilter, versionFilter, levels, schools, classes, ritualOnly, concentrationOnly, sortBy]);
+    return [...result].sort((a, b) => dn(a).localeCompare(dn(b)));
+  }, [spells, nameFilter, versionFilter, levels, schools, classes, ritualOnly, concentrationOnly, sortBy, spellNamesPt, isPt]);
 
   // Derive selected spell; clear when filtered out
   const selectedSpell = useMemo(() => {
@@ -210,7 +227,7 @@ export function SpellBrowser() {
           <FilterGroup label={t("filter_level")}>
             {SPELL_LEVELS.map((l) => (
               <Chip key={l.value} active={levels.has(l.value)} onClick={() => toggleNumSet(levels, l.value, setLevels)}>
-                {l.label}
+                {isPt ? l.labelPt : l.label}
               </Chip>
             ))}
           </FilterGroup>
@@ -218,7 +235,7 @@ export function SpellBrowser() {
           <FilterGroup label={t("filter_school")}>
             {SCHOOLS.map((s) => (
               <Chip key={s} active={schools.has(s)} onClick={() => toggleStrSet(schools, s, setSchools)}>
-                {s}
+                {isPt ? (SCHOOL_PT[s] ?? s) : s}
               </Chip>
             ))}
           </FilterGroup>
@@ -226,7 +243,7 @@ export function SpellBrowser() {
           <FilterGroup label={t("filter_class")}>
             {CLASSES.map((c) => (
               <Chip key={c} active={classes.has(c)} onClick={() => toggleStrSet(classes, c, setClasses)}>
-                {c}
+                {isPt ? (CLASS_PT[c] ?? c) : c}
               </Chip>
             ))}
           </FilterGroup>
@@ -250,9 +267,10 @@ export function SpellBrowser() {
         <div className="sr-only" role="status" aria-live="polite">
           {t("spells_found_aria", { count: filtered.length })}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <Chip active={sortBy === "name"} onClick={() => setSortBy("name")}>{t("sort_name")}</Chip>
           <Chip active={sortBy === "level"} onClick={() => setSortBy("level")}>{t("sort_level")}</Chip>
+          <LanguageToggle locale={descLang} onToggle={setDescLang} size="sm" />
         </div>
       </div>
 
@@ -295,10 +313,10 @@ export function SpellBrowser() {
         }`}
       >
         <span className="font-medium text-sm flex-1 min-w-0 truncate">
-          {spell.name}
+          {isPt ? getNamePt(spellNamesPt, spell.id, spell.name) : spell.name}
         </span>
         <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden lg:inline">
-          {formatSpellLevel(spell.level, t)} · {spell.school}
+          {formatSpellLevel(spell.level, t)} · {isPt ? (SCHOOL_PT[spell.school] ?? spell.school) : spell.school}
         </span>
         <span className="text-[11px] text-muted-foreground whitespace-nowrap lg:hidden">
           {spell.level === 0 ? "C" : spell.level}
@@ -346,7 +364,7 @@ export function SpellBrowser() {
                 📌 {t("pin_card")}
               </button>
             </div>
-            <SpellCard spell={selectedSpell} variant="inline" />
+            <SpellCard spell={selectedSpell} variant="inline" locale={descLang} />
           </>
         ) : (
           <>
@@ -409,7 +427,7 @@ export function SpellBrowser() {
                   📌 {t("pin_card")}
                 </button>
               </div>
-              <SpellCard spell={selectedSpell} variant="inline" />
+              <SpellCard spell={selectedSpell} variant="inline" locale={descLang} />
             </div>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">

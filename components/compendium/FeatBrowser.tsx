@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { Search, Pin, ChevronDown, ChevronRight } from "lucide-react";
 import { LinkedText } from "@/components/oracle/LinkedText";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { loadFeatNamesPt, getNamePt } from "@/lib/srd/translation-loader";
 
 type PrereqFilter = "all" | "has_prereq" | "no_prereq";
 
@@ -17,19 +20,32 @@ export function FeatBrowser() {
   const [prereqFilter, setPrereqFilter] = useState<PrereqFilter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // ── PT-BR translation support ──────────────────────────────────────
+  const [descLang, setDescLang] = useLocalePreference("pt-BR");
+  const [featNamesPt, setFeatNamesPt] = useState<Record<string, string> | null>(null);
+  const isPt = descLang === "pt-BR";
+
+  useEffect(() => {
+    if (isPt) loadFeatNamesPt().then(setFeatNamesPt);
+  }, [isPt]);
+
   const filtered = useMemo(() => {
     let result = feats;
     if (nameFilter) {
       const lower = nameFilter.toLowerCase();
-      result = result.filter((f) => f.name.toLowerCase().includes(lower));
+      result = result.filter((f) =>
+        f.name.toLowerCase().includes(lower) ||
+        (featNamesPt && getNamePt(featNamesPt, f.id, "").toLowerCase().includes(lower))
+      );
     }
     if (prereqFilter === "has_prereq") {
       result = result.filter((f) => f.prerequisite != null);
     } else if (prereqFilter === "no_prereq") {
       result = result.filter((f) => f.prerequisite == null);
     }
-    return [...result].sort((a, b) => a.name.localeCompare(b.name));
-  }, [feats, nameFilter, prereqFilter]);
+    const dn = (f: typeof result[number]) => isPt ? getNamePt(featNamesPt, f.id, f.name) : f.name;
+    return [...result].sort((a, b) => dn(a).localeCompare(dn(b)));
+  }, [feats, nameFilter, prereqFilter, featNamesPt, isPt]);
 
   return (
     <div className="space-y-4">
@@ -63,9 +79,12 @@ export function FeatBrowser() {
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        {t("feats_count", { count: filtered.length })}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          {t("feats_count", { count: filtered.length })}
+        </p>
+        <LanguageToggle locale={descLang} onToggle={setDescLang} size="sm" />
+      </div>
 
       <div className="space-y-2">
         {filtered.map((feat) => (
@@ -84,7 +103,7 @@ export function FeatBrowser() {
               ) : (
                 <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
               )}
-              <span className="font-medium text-foreground text-sm">{feat.name}</span>
+              <span className="font-medium text-foreground text-sm">{isPt ? getNamePt(featNamesPt, feat.id, feat.name) : feat.name}</span>
               {feat.prerequisite && (
                 <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
                   {t("feats_prerequisite")}

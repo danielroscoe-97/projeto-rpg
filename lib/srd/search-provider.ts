@@ -39,6 +39,15 @@ export interface SrdSearchProvider {
   mergeImportedMonsters(data: SrdMonster[]): void;
   mergeImportedSpells(data: SrdSpell[]): void;
 
+  /** Inject PT-BR name translations and rebuild Fuse indexes for bilingual search */
+  injectTranslationsAndRebuild(translations: {
+    monsters?: Record<string, string>;
+    spells?: Record<string, string>;
+    items?: Record<string, string>;
+    feats?: Record<string, string>;
+    backgrounds?: Record<string, string>;
+  }): void;
+
   /** Whether the provider is ready to serve queries. */
   isReady(): boolean;
 }

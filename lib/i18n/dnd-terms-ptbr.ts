@@ -216,8 +216,8 @@ export function translateSenses(text: string | null | undefined): string {
   return translateWithPairs(text, SENSE_MAP);
 }
 
-export function translateSpeed(speed: Record<string, string | number> | undefined): string {
-  if (!speed) return "30 ft.";
+export function translateSpeed(speed: Record<string, string | number> | undefined): string | null {
+  if (!speed) return null;
   return Object.entries(speed)
     .map(([k, v]) => {
       const label = SPEED_TYPE_MAP[k] ?? k;

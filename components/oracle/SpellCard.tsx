@@ -2,11 +2,15 @@
 
 import type { SrdSpell } from "@/lib/srd/srd-loader";
 import { LinkedText } from "@/components/oracle/LinkedText";
+import { useSpellTranslation } from "@/lib/hooks/useSpellTranslation";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { SPELL_LABELS, CLASS_PT, formatSpellLevelLocale } from "@/lib/i18n/spell-labels";
 import "@/styles/stat-card-5e.css";
 
 export interface SpellCardProps {
   spell: SrdSpell;
   variant?: "inline" | "card";
+  locale?: "en" | "pt-BR";
   onClose?: () => void;
   /** @deprecated Use onFocus instead */
   onPin?: () => void;
@@ -16,6 +20,7 @@ export interface SpellCardProps {
   onMinimize?: () => void;
 }
 
+/** @deprecated Use formatSpellLevelLocale from @/lib/i18n/spell-labels instead */
 export function formatSpellLevel(level: number, school: string): string {
   if (level === 0) return `${school} Cantrip`;
   const lastTwo = level % 100;
@@ -36,6 +41,7 @@ export function formatSpellLevel(level: number, school: string): string {
 export function SpellCard({
   spell,
   variant = "inline",
+  locale,
   onClose,
   onPin,
   onFocus,
@@ -44,9 +50,19 @@ export function SpellCard({
   onMinimize,
 }: SpellCardProps) {
   const isCard = variant === "card";
+  const [defaultLocale] = useLocalePreference("pt-BR");
+  const effectiveLocale = locale ?? defaultLocale;
+
+  const { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDescription, getHigherLevels } =
+    useSpellTranslation(spell.id, effectiveLocale);
+
+  const SL = SPELL_LABELS[translated ? "pt-BR" : "en"];
+
+  const descriptionText = getDescription(spell.description);
+  const higherLevelsText = getHigherLevels(spell.higher_levels);
 
   const durationDisplay = spell.concentration
-    ? `Concentration, ${spell.duration}`
+    ? `${SL.concentration}, ${spell.duration}`
     : spell.duration;
 
   return (
@@ -80,12 +96,44 @@ export function SpellCard({
       )}
 
       <div className="card-body">
+        {/* Language toggle */}
+        <div className="flex items-center gap-2 text-xs text-[var(--5e-text-muted)] mb-3">
+          <span className="shrink-0">
+            {translated ? (
+              effectiveLocale === "pt-BR"
+                ? <>Ficha em <span className="text-[var(--5e-accent-gold)]">PT-BR</span></>
+                : <>Showing <span className="text-[var(--5e-accent-gold)]">PT-BR</span> translation</>
+            ) : (
+              effectiveLocale === "pt-BR"
+                ? <>Ficha em ingl&ecirc;s (RAW)</>
+                : <>Stat block in <span className="text-[var(--5e-accent-gold)]">English</span></>
+            )}
+          </span>
+          <button
+            onClick={toggle}
+            className="shrink-0 px-2 py-0.5 rounded border border-[var(--5e-accent-gold)]/30 text-[var(--5e-accent-gold)] hover:bg-[var(--5e-accent-gold)]/10 transition-colors"
+          >
+            {translated
+              ? (effectiveLocale === "pt-BR" ? "Ver em ingl\u00eas" : "View in English")
+              : (effectiveLocale === "pt-BR" ? "Traduzir" : "View in PT-BR")
+            }
+          </button>
+          {!translated && !globalPtBR && effectiveLocale === "pt-BR" && (
+            <button
+              onClick={setGlobalPtBR}
+              className="shrink-0 text-[var(--5e-text-muted)] underline hover:text-[var(--5e-text)] transition-colors"
+            >
+              Sempre PT-BR
+            </button>
+          )}
+        </div>
+
         {/* Name */}
-        <h3 className="card-name" data-testid="spell-name">{spell.name}</h3>
+        <h3 className="card-name" data-testid="spell-name">{getName(spell.name)}</h3>
 
         {/* Level + School */}
         <p className="card-subtitle" data-testid="spell-level-school">
-          {formatSpellLevel(spell.level, spell.school)}
+          {formatSpellLevelLocale(spell.level, spell.school, translated ? "pt-BR" : "en")}
         </p>
 
         <hr className="card-divider" />
@@ -93,19 +141,19 @@ export function SpellCard({
         {/* Properties */}
         <div data-testid="spell-properties">
           <p className="prop-line">
-            <span className="prop-label">Casting Time: </span>
+            <span className="prop-label">{SL.castingTime}: </span>
             <span className="prop-value">{spell.casting_time}</span>
           </p>
           <p className="prop-line">
-            <span className="prop-label">Range: </span>
+            <span className="prop-label">{SL.range}: </span>
             <span className="prop-value">{spell.range}</span>
           </p>
           <p className="prop-line">
-            <span className="prop-label">Components: </span>
+            <span className="prop-label">{SL.components}: </span>
             <span className="prop-value">{spell.components}</span>
           </p>
           <p className="prop-line">
-            <span className="prop-label">Duration: </span>
+            <span className="prop-label">{SL.duration}: </span>
             <span className="prop-value">{durationDisplay}</span>
           </p>
         </div>
@@ -114,7 +162,7 @@ export function SpellCard({
 
         {/* Description */}
         <div className="trait-block" data-testid="spell-description">
-          {spell.description.split("\n\n").map((paragraph, i) => (
+          {descriptionText.split("\n\n").map((paragraph, i) => (
             <p key={i} className="trait-desc" style={{ marginBottom: "0.5em" }}>
               <LinkedText text={paragraph} rulesetVersion={spell.ruleset_version} />
             </p>
@@ -122,12 +170,12 @@ export function SpellCard({
         </div>
 
         {/* At Higher Levels */}
-        {spell.higher_levels && (
+        {higherLevelsText && (
           <>
             <div className="trait-block" data-testid="spell-higher-levels">
-              <span className="trait-name">At Higher Levels. </span>
+              <span className="trait-name">{SL.atHigherLevels} </span>
               <span className="trait-desc">
-                <LinkedText text={spell.higher_levels} rulesetVersion={spell.ruleset_version} />
+                <LinkedText text={higherLevelsText} rulesetVersion={spell.ruleset_version} />
               </span>
             </div>
           </>
@@ -137,8 +185,10 @@ export function SpellCard({
 
         {/* Classes */}
         <p className="prop-line" data-testid="spell-classes">
-          <span className="prop-label">Classes: </span>
-          <span className="prop-value">{spell.classes.join(", ")}</span>
+          <span className="prop-label">{SL.classes}: </span>
+          <span className="prop-value">
+            {spell.classes.map((cls) => translated ? (CLASS_PT[cls] ?? cls) : cls).join(", ")}
+          </span>
         </p>
 
         {/* Badges */}
@@ -146,12 +196,12 @@ export function SpellCard({
           <div style={{ display: "flex", gap: "6px", marginTop: "6px" }} data-testid="spell-badges">
             {spell.ritual && (
               <span className="prop-label" style={{ fontSize: "0.75em", border: "1px solid var(--5e-accent-blue)", borderRadius: "3px", padding: "1px 6px" }}>
-                Ritual
+                {translated ? "Ritual" : "Ritual"}
               </span>
             )}
             {spell.concentration && (
               <span className="prop-label" style={{ fontSize: "0.75em", border: "1px solid var(--5e-accent-blue)", borderRadius: "3px", padding: "1px 6px" }}>
-                Concentration
+                {translated ? "Concentra\u00e7\u00e3o" : "Concentration"}
               </span>
             )}
           </div>

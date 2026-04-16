@@ -138,6 +138,16 @@ export class FuseSearchProvider implements SrdSearchProvider {
     return search.getAllRaces();
   }
 
+  injectTranslationsAndRebuild(translations: {
+    monsters?: Record<string, string>;
+    spells?: Record<string, string>;
+    items?: Record<string, string>;
+    feats?: Record<string, string>;
+    backgrounds?: Record<string, string>;
+  }): void {
+    search.injectTranslationsAndRebuild(translations);
+  }
+
   isReady(): boolean {
     // Fuse provider is ready as soon as indexes are built.
     // We proxy to getAllConditions as a simple readiness check —

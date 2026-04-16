@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { Search, ChevronDown, ChevronRight, Eye } from "lucide-react";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import type { SrdRace } from "@/lib/srd/srd-loader";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -62,12 +64,14 @@ function AbilityBonusPills({ bonuses }: { bonuses: string }) {
 
 // ── RaceRow ───────────────────────────────────────────────────────────────────
 
-function RaceRow({ race, isExpanded, onToggle }: {
+function RaceRow({ race, isExpanded, onToggle, isPt }: {
   race: SrdRace;
   isExpanded: boolean;
   onToggle: () => void;
+  isPt: boolean;
 }) {
   const t = useTranslations("compendium");
+  const displayName = isPt ? (race.namePt ?? race.name) : race.name;
 
   return (
     <div className="border border-white/[0.08] rounded-lg bg-white/[0.02] overflow-hidden">
@@ -82,7 +86,7 @@ function RaceRow({ race, isExpanded, onToggle }: {
         ) : (
           <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
         )}
-        <span id={`race-${race.id}`} className="font-medium text-foreground text-sm">{race.name}</span>
+        <span id={`race-${race.id}`} className="font-medium text-foreground text-sm">{displayName}</span>
         <span className="ml-auto flex items-center gap-2 shrink-0">
           <span className="text-xs text-muted-foreground">{formatSize(race.size)}</span>
           {race.ability_bonuses && (
@@ -168,6 +172,10 @@ export function RaceBrowser() {
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // ── PT-BR translation support ──────────────────────────────────────
+  const [descLang, setDescLang] = useLocalePreference("pt-BR");
+  const isPt = descLang === "pt-BR";
+
   const filtered = useMemo(() => {
     let result = races;
     if (nameFilter) {
@@ -175,6 +183,7 @@ export function RaceBrowser() {
       result = result.filter(
         (r) =>
           r.name.toLowerCase().includes(lower) ||
+          (r.namePt?.toLowerCase()?.includes(lower) ?? false) ||
           (r.ability_bonuses?.toLowerCase()?.includes(lower) ?? false)
       );
     }
@@ -228,9 +237,12 @@ export function RaceBrowser() {
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        {t("races_count", { count: filtered.length, unique: uniqueNames })}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          {t("races_count", { count: filtered.length, unique: uniqueNames })}
+        </p>
+        <LanguageToggle locale={descLang} onToggle={setDescLang} size="sm" />
+      </div>
 
       {/* Race list */}
       <div className="space-y-2">
@@ -240,6 +252,7 @@ export function RaceBrowser() {
             race={race}
             isExpanded={expanded === race.id}
             onToggle={() => toggleExpanded(race.id)}
+            isPt={isPt}
           />
         ))}
         {filtered.length === 0 && (

@@ -7,6 +7,20 @@ import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { DiceText } from "@/components/dice/DiceText";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
+import { useMonsterTranslation } from "@/lib/hooks/useMonsterTranslation";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
+import { STAT_LABELS } from "@/lib/i18n/stat-labels";
+import {
+  translateSize,
+  translateType,
+  translateAlignment,
+  translateDamageString,
+  translateConditionString,
+  translateSkills,
+  translateSavingThrows,
+  translateSenses,
+  translateSpeed,
+} from "@/lib/i18n/dnd-terms-ptbr";
 import "@/styles/stat-card-5e.css";
 
 // ---------------------------------------------------------------------------
@@ -185,6 +199,8 @@ export interface MonsterStatBlockProps {
   pageUrl?: string;
   /** Override description renderer — used by LinkedText/DiceText integration */
   renderDesc?: (text: string, rulesetVersion: RulesetVersion, actionName?: string) => React.ReactNode;
+  /** Locale for PT-BR translation support */
+  locale?: "en" | "pt-BR";
 }
 
 export function MonsterStatBlock({
@@ -198,16 +214,45 @@ export function MonsterStatBlock({
   onClose,
   pageUrl,
   renderDesc: renderDescProp,
+  locale,
 }: MonsterStatBlockProps) {
+  // Translation support
+  const [defaultLocale] = useLocalePreference("pt-BR");
+  const effectiveLocale = locale ?? defaultLocale;
+  const { translated, globalPtBR, toggle, setGlobalPtBR, getName, getDesc } = useMonsterTranslation(monster.id, effectiveLocale);
+  const L = STAT_LABELS[translated ? "pt-BR" : "en"];
+  const tr = translated;
+
   const isMonsterADay = !!monster.monster_a_day_url;
   const pb = calculateProficiencyBonus(monster.cr);
   const dexMod = monster.dex !== undefined ? abilityModNum(monster.dex) : null;
 
-  const speedStr = monster.speed
+  const speedStrEn = monster.speed
     ? Object.entries(monster.speed)
         .map(([k, v]) => (k === "walk" ? String(v) : `${k} ${v}`))
         .join(", ")
     : null;
+  const speedStr = tr ? translateSpeed(monster.speed) : speedStrEn;
+
+  // Translated D&D terms
+  const skillsStr = tr
+    ? translateSkills(monster.skills)
+    : null;
+  const savingThrowsStr = tr
+    ? translateSavingThrows(monster.saving_throws)
+    : monster.saving_throws
+      ? Object.entries(monster.saving_throws)
+          .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)} ${v >= 0 ? "+" : ""}${v}`)
+          .join(", ")
+      : null;
+  const damageVuln = tr ? translateDamageString(monster.damage_vulnerabilities) : monster.damage_vulnerabilities;
+  const damageRes = tr ? translateDamageString(monster.damage_resistances) : monster.damage_resistances;
+  const damageImm = tr ? translateDamageString(monster.damage_immunities) : monster.damage_immunities;
+  const conditionImm = tr ? translateConditionString(monster.condition_immunities) : monster.condition_immunities;
+  const sensesStr = tr ? translateSenses(monster.senses) : monster.senses;
+  const sizeStr = tr ? translateSize(monster.size) : monster.size;
+  const typeStr = tr ? translateType(monster.type) : monster.type;
+  const alignmentStr = tr ? translateAlignment(monster.alignment) : monster.alignment;
 
   const skillEntries = monster.skills
     ? Object.entries(monster.skills).map(([k, v]) => ({
@@ -268,6 +313,29 @@ export function MonsterStatBlock({
         </div>
       )}
 
+      {/* Language toggle */}
+      <div className="flex items-center gap-2 text-xs text-[var(--5e-text-muted)] mb-3">
+        <span className="shrink-0">
+          {translated ? (
+            effectiveLocale === "pt-BR"
+              ? <>Ficha em <span className="text-[var(--5e-accent-gold)]">PT-BR</span></>
+              : <>Showing <span className="text-[var(--5e-accent-gold)]">PT-BR</span> translation</>
+          ) : (
+            effectiveLocale === "pt-BR"
+              ? <>Ficha em ingl&ecirc;s (RAW)</>
+              : <>Stat block in <span className="text-[var(--5e-accent-gold)]">English</span></>
+          )}
+        </span>
+        <button onClick={toggle} className="shrink-0 px-2 py-0.5 rounded border border-[var(--5e-accent-gold)]/30 text-[var(--5e-accent-gold)] hover:bg-[var(--5e-accent-gold)]/10 transition-colors">
+          {translated ? (effectiveLocale === "pt-BR" ? "Ver em ingl\u00EAs" : "View in English") : (effectiveLocale === "pt-BR" ? "Traduzir" : "View in PT-BR")}
+        </button>
+        {!translated && !globalPtBR && effectiveLocale === "pt-BR" && (
+          <button onClick={setGlobalPtBR} className="shrink-0 text-[var(--5e-text-muted)] underline hover:text-[var(--5e-text)] transition-colors">
+            Sempre PT-BR
+          </button>
+        )}
+      </div>
+
       {/* Header with token */}
       <div className="flex items-start gap-3">
         <MonsterToken
@@ -280,7 +348,7 @@ export function MonsterStatBlock({
         />
         <div className="flex-1 min-w-0">
           <div className="card-name flex items-center gap-2 flex-wrap">
-            <span>{monster.name}</span>
+            <span>{getName(monster.name)}</span>
             {isMonsterADay && (
               <a
                 href={monster.monster_a_day_url ?? undefined}
@@ -294,8 +362,8 @@ export function MonsterStatBlock({
             )}
           </div>
           <div className="card-subtitle">
-            {monster.size} {monster.type}
-            {monster.alignment ? `, ${monster.alignment}` : ""}
+            {sizeStr} {typeStr}
+            {alignmentStr ? `, ${alignmentStr}` : ""}
           </div>
         </div>
       </div>
@@ -303,9 +371,9 @@ export function MonsterStatBlock({
       <CardDivider />
 
       {/* Core stats */}
-      <PropLine label="AC" value={String(monster.armor_class)} />
+      <PropLine label={L.armorClass} value={String(monster.armor_class)} />
       <p className="prop-line">
-        <span className="prop-label">HP </span>
+        <span className="prop-label">{L.hitPoints} </span>
         <span className="prop-value">
           {monster.hp_formula ? (
             <>
@@ -322,7 +390,7 @@ export function MonsterStatBlock({
       </p>
       {dexMod !== null && (
         <p className="prop-line">
-          <span className="prop-label">Initiative </span>
+          <span className="prop-label">{L.initiative} </span>
           <span className="prop-value">
             <ClickableRoll
               notation={`1d20${dexMod >= 0 ? "+" : ""}${dexMod}`}
@@ -334,7 +402,7 @@ export function MonsterStatBlock({
           </span>
         </p>
       )}
-      {speedStr && <PropLine label="Speed" value={speedStr} />}
+      {speedStr && <PropLine label={L.speed} value={speedStr} />}
 
       {/* Ability scores table — divider only when table will render */}
       {ABILITY_KEYS.every((k) => monster[k] != null) && (
@@ -346,44 +414,51 @@ export function MonsterStatBlock({
 
       {/* Properties */}
       <CardDivider />
-      {skillEntries && skillEntries.length > 0 && (
-        <p className="prop-line">
-          <span className="prop-label">Skills </span>
-          <span className="prop-value">
-            {skillEntries.map((skill, i) => (
-              <span key={skill.name}>
-                {i > 0 && ", "}
-                {skill.name}{" "}
-                <ClickableRoll
-                  notation={`1d20${skill.modifier >= 0 ? "+" : ""}${skill.modifier}`}
-                  label={`${skill.name} check`}
-                  source={monster.name}
-                >
-                  {skill.modifier >= 0 ? "+" : ""}{skill.modifier}
-                </ClickableRoll>
-              </span>
-            ))}
-          </span>
-        </p>
+      {savingThrowsStr && (
+        <PropLine label={L.savingThrows} value={savingThrowsStr} />
       )}
-      {monster.damage_vulnerabilities && (
-        <PropLine label="Damage Vulnerabilities" value={monster.damage_vulnerabilities} />
+      {tr && skillsStr ? (
+        <PropLine label={L.skills} value={skillsStr} />
+      ) : (
+        skillEntries && skillEntries.length > 0 && (
+          <p className="prop-line">
+            <span className="prop-label">{L.skills} </span>
+            <span className="prop-value">
+              {skillEntries.map((skill, i) => (
+                <span key={skill.name}>
+                  {i > 0 && ", "}
+                  {skill.name}{" "}
+                  <ClickableRoll
+                    notation={`1d20${skill.modifier >= 0 ? "+" : ""}${skill.modifier}`}
+                    label={`${skill.name} check`}
+                    source={monster.name}
+                  >
+                    {skill.modifier >= 0 ? "+" : ""}{skill.modifier}
+                  </ClickableRoll>
+                </span>
+              ))}
+            </span>
+          </p>
+        )
       )}
-      {monster.damage_resistances && (
-        <PropLine label="Damage Resistances" value={monster.damage_resistances} />
+      {damageVuln && (
+        <PropLine label={L.damageVulnerabilities} value={damageVuln} />
       )}
-      {monster.damage_immunities && (
-        <PropLine label="Damage Immunities" value={monster.damage_immunities} />
+      {damageRes && (
+        <PropLine label={L.damageResistances} value={damageRes} />
       )}
-      {monster.condition_immunities && (
-        <PropLine label="Condition Immunities" value={monster.condition_immunities} />
+      {damageImm && (
+        <PropLine label={L.damageImmunities} value={damageImm} />
       )}
-      {monster.senses && <PropLine label="Senses" value={monster.senses} />}
-      {monster.languages && <PropLine label="Languages" value={monster.languages} />}
-      <PropLine label="CR" value={crDisplay} />
+      {conditionImm && (
+        <PropLine label={L.conditionImmunities} value={conditionImm} />
+      )}
+      {sensesStr && <PropLine label={L.senses} value={sensesStr} />}
+      {monster.languages && <PropLine label={L.languages} value={monster.languages} />}
+      <PropLine label={L.challenge} value={crDisplay} />
       {monster.source && (
         <p className="prop-line">
-          <span className="prop-label">Source </span>
+          <span className="prop-label">{L.source} </span>
           <span className="prop-value">
             <span
               className={
@@ -407,32 +482,44 @@ export function MonsterStatBlock({
 
       {/* Sections */}
       <SectionBlock
-        title="Traits"
-        items={monster.special_abilities ?? []}
+        title={L.traits}
+        items={(monster.special_abilities ?? []).map((item) => ({
+          name: item.name,
+          desc: getDesc("special_abilities", item.name, item.desc),
+        }))}
         renderDesc={renderDesc}
       />
       <SectionBlock
-        title="Actions"
-        items={monster.actions ?? []}
+        title={L.actions}
+        items={(monster.actions ?? []).map((item) => ({
+          name: item.name,
+          desc: getDesc("actions", item.name, item.desc),
+        }))}
         renderDesc={renderDesc}
       />
       <SectionBlock
-        title="Reactions"
-        items={monster.reactions ?? []}
+        title={L.reactions}
+        items={(monster.reactions ?? []).map((item) => ({
+          name: item.name,
+          desc: getDesc("reactions", item.name, item.desc),
+        }))}
         renderDesc={renderDesc}
       />
       {monster.legendary_actions && monster.legendary_actions.length > 0 && (
         <>
           <CardDivider />
-          <h4 className="section-header">Legendary Actions</h4>
+          <h4 className="section-header">{L.legendaryActions}</h4>
           <p className="trait-desc" style={{ marginBottom: "0.5em" }}>
-            {`The ${monster.name} can take legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The ${monster.name} regains spent legendary actions at the start of its turn.`}
+            {tr
+              ? `${getName(monster.name)} pode realizar ações lendárias, escolhendo dentre as opções abaixo. Apenas uma opção de ação lendária pode ser usada por vez e somente no final do turno de outra criatura. ${getName(monster.name)} recupera ações lendárias gastas no início de seu turno.`
+              : `The ${monster.name} can take legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The ${monster.name} regains spent legendary actions at the start of its turn.`
+            }
           </p>
           <div>
             {monster.legendary_actions.map((item) => (
               <p key={item.name} className="trait-block">
                 <span className="trait-name">{item.name}. </span>
-                <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
+                <span className="trait-desc">{renderDesc(getDesc("legendary_actions", item.name, item.desc), item.name)}</span>
               </p>
             ))}
           </div>
@@ -443,17 +530,17 @@ export function MonsterStatBlock({
       {monster.lair_actions && monster.lair_actions.length > 0 && (
         <>
           <CardDivider />
-          <h4 className="section-header">Lair Actions</h4>
+          <h4 className="section-header">{L.lairActions}</h4>
           {monster.lair_actions_intro && (
             <p className="trait-desc" style={{ marginBottom: "0.5em", fontStyle: "italic" }}>
-              {renderDesc(monster.lair_actions_intro, "Lair Actions")}
+              {renderDesc(getDesc("lair_actions", "_intro", monster.lair_actions_intro), "Lair Actions")}
             </p>
           )}
           <div>
             {monster.lair_actions.map((item, i) => (
               <p key={item.name || i} className="trait-block">
                 {item.name && <span className="trait-name">{item.name}. </span>}
-                <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
+                <span className="trait-desc">{renderDesc(getDesc("lair_actions", item.name, item.desc), item.name)}</span>
               </p>
             ))}
           </div>
@@ -464,17 +551,17 @@ export function MonsterStatBlock({
       {monster.regional_effects && monster.regional_effects.length > 0 && (
         <>
           <CardDivider />
-          <h4 className="section-header">Regional Effects</h4>
+          <h4 className="section-header">{L.regionalEffects}</h4>
           {monster.regional_effects_intro && (
             <p className="trait-desc" style={{ marginBottom: "0.5em", fontStyle: "italic" }}>
-              {renderDesc(monster.regional_effects_intro, "Regional Effects")}
+              {renderDesc(getDesc("regional_effects", "_intro", monster.regional_effects_intro), "Regional Effects")}
             </p>
           )}
           <div>
             {monster.regional_effects.map((item, i) => (
               <p key={item.name || i} className="trait-block">
                 {item.name && <span className="trait-name">{item.name}. </span>}
-                <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
+                <span className="trait-desc">{renderDesc(getDesc("regional_effects", item.name, item.desc), item.name)}</span>
               </p>
             ))}
           </div>

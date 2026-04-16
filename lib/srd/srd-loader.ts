@@ -12,6 +12,8 @@ export interface SrdMonster extends SrdMonsterADayFields {
   // --- Search fields ---
   id: string;
   name: string;
+  /** PT-BR translated name — injected at runtime by translation-loader */
+  name_pt?: string;
   /** Maps from DB challenge_rating */
   cr: string;
   type: string;
@@ -62,6 +64,8 @@ export interface SrdMonster extends SrdMonsterADayFields {
 export interface SrdSpell {
   id: string;
   name: string;
+  /** PT-BR translated name — injected at runtime by translation-loader */
+  name_pt?: string;
   ruleset_version: RulesetVersion;
   /** Source book abbreviation (e.g. "PHB", "XGE", "TCE") */
   source?: string;
@@ -124,6 +128,8 @@ export type ItemType =
 export interface SrdItem {
   id: string;
   name: string;
+  /** PT-BR translated name — injected at runtime by translation-loader */
+  name_pt?: string;
   source: string;
   type: ItemType;
   rarity: ItemRarity;
@@ -207,6 +213,8 @@ export interface SrdRaceTrait {
 export interface SrdRace {
   id: string;
   name: string;
+  /** PT-BR translated name (when available in the data) */
+  namePt?: string;
   source: string;
   ruleset_version: RulesetVersion;
   /** Size abbreviations: "T" | "S" | "M" | "L" | "H" | "G" */

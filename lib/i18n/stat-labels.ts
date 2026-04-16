@@ -1,0 +1,51 @@
+// Bilingual stat block labels — shared between Public and Auth compendium
+// Extracted from PublicMonsterStatBlock to avoid duplication
+
+export const STAT_LABELS = {
+  "en": {
+    armorClass: "Armor Class",
+    hitPoints: "Hit Points",
+    speed: "Speed",
+    initiative: "Initiative",
+    savingThrows: "Saving Throws",
+    skills: "Skills",
+    damageVulnerabilities: "Damage Vulnerabilities",
+    damageResistances: "Damage Resistances",
+    damageImmunities: "Damage Immunities",
+    conditionImmunities: "Condition Immunities",
+    senses: "Senses",
+    languages: "Languages",
+    challenge: "Challenge",
+    source: "Source",
+    actions: "Actions",
+    reactions: "Reactions",
+    legendaryActions: "Legendary Actions",
+    lairActions: "Lair Actions",
+    regionalEffects: "Regional Effects",
+    traits: "Traits",
+  },
+  "pt-BR": {
+    armorClass: "Classe de Armadura",
+    hitPoints: "Pontos de Vida",
+    speed: "Velocidade",
+    initiative: "Iniciativa",
+    savingThrows: "Testes de Resistência",
+    skills: "Perícias",
+    damageVulnerabilities: "Vulnerabilidades a Dano",
+    damageResistances: "Resistências a Dano",
+    damageImmunities: "Imunidades a Dano",
+    conditionImmunities: "Imunidades a Condição",
+    senses: "Sentidos",
+    languages: "Idiomas",
+    challenge: "Nível de Desafio",
+    source: "Fonte",
+    actions: "Ações",
+    reactions: "Reações",
+    legendaryActions: "Ações Lendárias",
+    lairActions: "Ações de Covil",
+    regionalEffects: "Efeitos Regionais",
+    traits: "Traços",
+  },
+} as const;
+
+export type StatLabelKey = keyof (typeof STAT_LABELS)["en"];

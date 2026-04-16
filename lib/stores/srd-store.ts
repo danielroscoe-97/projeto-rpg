@@ -253,6 +253,36 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
           }
 
           set({ feats, backgrounds, races });
+
+          // Phase 2c: Load PT-BR translation names and inject into Fuse indexes
+          // This enables bilingual search (finding "Dragão Vermelho" for "Adult Red Dragon")
+          try {
+            const {
+              loadMonsterNamesPt,
+              loadSpellNamesPt,
+              loadItemNamesPt,
+              loadFeatNamesPt,
+              loadBackgroundNamesPt,
+            } = await import("@/lib/srd/translation-loader");
+
+            const [monsterPt, spellPt, itemPt, featPt, bgPt] = await Promise.all([
+              loadMonsterNamesPt(),
+              loadSpellNamesPt(),
+              loadItemNamesPt(),
+              loadFeatNamesPt(),
+              loadBackgroundNamesPt(),
+            ]);
+
+            srdSearchProvider.injectTranslationsAndRebuild({
+              monsters: Object.keys(monsterPt).length > 0 ? monsterPt : undefined,
+              spells: Object.keys(spellPt).length > 0 ? spellPt : undefined,
+              items: Object.keys(itemPt).length > 0 ? itemPt : undefined,
+              feats: Object.keys(featPt).length > 0 ? featPt : undefined,
+              backgrounds: Object.keys(bgPt).length > 0 ? bgPt : undefined,
+            });
+          } catch {
+            // Translation injection failure is non-critical — search stays EN-only
+          }
         } catch {
           // Feats/backgrounds/races load failure is non-critical
         }
@@ -264,6 +294,14 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
           const madMonsters = await loadMadMonsters();
           if (madMonsters.length > 0) {
             srdSearchProvider.mergeImportedMonsters(madMonsters);
+            // Re-inject PT-BR translations for MAD entries
+            try {
+              const { getMonsterNamesPtSync } = await import("@/lib/srd/translation-loader");
+              const monsterPt = getMonsterNamesPtSync();
+              if (monsterPt) {
+                srdSearchProvider.injectTranslationsAndRebuild({ monsters: monsterPt });
+              }
+            } catch { /* non-critical */ }
             set((state) => ({ monsters: [...state.monsters, ...madMonsters] }));
           }
         } catch {
@@ -318,6 +356,19 @@ export const useSrdStore = create<SrdStore>((set, get) => ({
       // Rebuild indexes with all loaded data
       srdSearchProvider.buildMonsterIndex(mergedMonsters);
       srdSearchProvider.buildSpellIndex(mergedSpells);
+
+      // Re-inject PT-BR translations for the new entries so bilingual search works
+      try {
+        const { getMonsterNamesPtSync, getSpellNamesPtSync } = await import("@/lib/srd/translation-loader");
+        const monsterPt = getMonsterNamesPtSync();
+        const spellPt = getSpellNamesPtSync();
+        if (monsterPt || spellPt) {
+          srdSearchProvider.injectTranslationsAndRebuild({
+            monsters: monsterPt ?? undefined,
+            spells: spellPt ?? undefined,
+          });
+        }
+      } catch { /* non-critical */ }
 
       set({
         monsters: mergedMonsters,

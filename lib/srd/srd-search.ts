@@ -9,6 +9,8 @@ export type { SrdMonster, SrdSpell, SrdItem, SrdRace };
 export interface SrdFeatEntry {
   id: string;
   name: string;
+  /** PT-BR translated name — injected at runtime by translation-loader */
+  name_pt?: string;
   description: string;
   prerequisite: string | null;
   source: string;
@@ -19,6 +21,8 @@ export interface SrdFeatEntry {
 export interface SrdBackgroundEntry {
   id: string;
   name: string;
+  /** PT-BR translated name — injected at runtime by translation-loader */
+  name_pt?: string;
   description: string;
   source: string;
   skill_proficiencies: string[];
@@ -48,9 +52,10 @@ let monsterCrossref: Record<string, string> = {};
 
 const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
   keys: [
-    { name: "name", weight: 0.5 },
-    { name: "type", weight: 0.3 },
-    { name: "cr", weight: 0.2 },
+    { name: "name", weight: 0.45 },
+    { name: "name_pt", weight: 0.25 },
+    { name: "type", weight: 0.2 },
+    { name: "cr", weight: 0.1 },
   ],
   threshold: 0.35,
   ignoreLocation: true,
@@ -60,9 +65,10 @@ const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
 
 const ITEM_OPTIONS: IFuseOptions<SrdItem> = {
   keys: [
-    { name: "name", weight: 0.5 },
-    { name: "type", weight: 0.3 },
-    { name: "rarity", weight: 0.2 },
+    { name: "name", weight: 0.45 },
+    { name: "name_pt", weight: 0.25 },
+    { name: "type", weight: 0.2 },
+    { name: "rarity", weight: 0.1 },
   ],
   threshold: 0.3,
   includeScore: true,
@@ -71,9 +77,10 @@ const ITEM_OPTIONS: IFuseOptions<SrdItem> = {
 
 const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
   keys: [
-    { name: "name", weight: 0.6 },
-    { name: "classes", weight: 0.2 },
-    { name: "school", weight: 0.2 },
+    { name: "name", weight: 0.45 },
+    { name: "name_pt", weight: 0.25 },
+    { name: "classes", weight: 0.15 },
+    { name: "school", weight: 0.15 },
   ],
   threshold: 0.35,
   ignoreLocation: true,
@@ -83,8 +90,9 @@ const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
 
 const FEAT_OPTIONS: IFuseOptions<SrdFeatEntry> = {
   keys: [
-    { name: "name", weight: 0.6 },
-    { name: "description", weight: 0.3 },
+    { name: "name", weight: 0.45 },
+    { name: "name_pt", weight: 0.25 },
+    { name: "description", weight: 0.2 },
     { name: "source", weight: 0.1 },
   ],
   threshold: 0.35,
@@ -95,8 +103,9 @@ const FEAT_OPTIONS: IFuseOptions<SrdFeatEntry> = {
 
 const BACKGROUND_OPTIONS: IFuseOptions<SrdBackgroundEntry> = {
   keys: [
-    { name: "name", weight: 0.6 },
-    { name: "skill_proficiencies", weight: 0.3 },
+    { name: "name", weight: 0.45 },
+    { name: "name_pt", weight: 0.25 },
+    { name: "skill_proficiencies", weight: 0.2 },
     { name: "source", weight: 0.1 },
   ],
   threshold: 0.35,
@@ -107,10 +116,11 @@ const BACKGROUND_OPTIONS: IFuseOptions<SrdBackgroundEntry> = {
 
 const RACE_OPTIONS: IFuseOptions<SrdRace> = {
   keys: [
-    { name: "name", weight: 0.6 },
-    { name: "ability_bonuses", weight: 0.2 },
+    { name: "name", weight: 0.45 },
+    { name: "namePt", weight: 0.25 },
+    { name: "ability_bonuses", weight: 0.15 },
     { name: "source", weight: 0.1 },
-    { name: "languages", weight: 0.1 },
+    { name: "languages", weight: 0.05 },
   ],
   threshold: 0.35,
   ignoreLocation: true,
@@ -345,6 +355,57 @@ export function mergeImportedMonsters(imported: SrdMonster[]): void {
 export function mergeImportedSpells(imported: SrdSpell[]): void {
   imported.forEach((s) => spellMap.set(`${s.id}:${s.ruleset_version}`, s));
   spellIndex = new Fuse(Array.from(spellMap.values()), SPELL_OPTIONS);
+}
+
+// ── PT-BR translation injection ──────────────────────────────────────────────
+
+/**
+ * Inject name_pt into existing data objects and rebuild Fuse indexes.
+ * Called from srd-store Phase 2 after translation files load.
+ * name_pt fields are added in-place (mutating) for zero-copy efficiency.
+ */
+export function injectTranslationsAndRebuild(translations: {
+  monsters?: Record<string, string>;
+  spells?: Record<string, string>;
+  items?: Record<string, string>;
+  feats?: Record<string, string>;
+  backgrounds?: Record<string, string>;
+}): void {
+  if (translations.monsters && monsterMap.size > 0) {
+    for (const m of monsterMap.values()) {
+      const pt = translations.monsters[m.id];
+      if (pt) m.name_pt = pt;
+    }
+    monsterIndex = new Fuse(Array.from(monsterMap.values()), MONSTER_OPTIONS);
+  }
+  if (translations.spells && spellMap.size > 0) {
+    for (const s of spellMap.values()) {
+      const pt = translations.spells[s.id];
+      if (pt) s.name_pt = pt;
+    }
+    spellIndex = new Fuse(Array.from(spellMap.values()), SPELL_OPTIONS);
+  }
+  if (translations.items && itemMap.size > 0) {
+    for (const i of itemMap.values()) {
+      const pt = translations.items[i.id];
+      if (pt) i.name_pt = pt;
+    }
+    itemIndex = new Fuse(Array.from(itemMap.values()), ITEM_OPTIONS);
+  }
+  if (translations.feats && featMap.size > 0) {
+    for (const f of featMap.values()) {
+      const pt = translations.feats[f.id];
+      if (pt) f.name_pt = pt;
+    }
+    featIndex = new Fuse(Array.from(featMap.values()), FEAT_OPTIONS);
+  }
+  if (translations.backgrounds && backgroundMap.size > 0) {
+    for (const b of backgroundMap.values()) {
+      const pt = translations.backgrounds[b.id];
+      if (pt) b.name_pt = pt;
+    }
+    backgroundIndex = new Fuse(Array.from(backgroundMap.values()), BACKGROUND_OPTIONS);
+  }
 }
 
 /** Resets singleton indexes — for testing only. */

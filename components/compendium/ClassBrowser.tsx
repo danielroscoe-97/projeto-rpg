@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { ClassIcon } from "@/components/character/ClassIcon";
 import { ChevronDown, ChevronRight, Search } from "lucide-react";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import type { SrdClass } from "@/lib/types/srd-class";
 
 type RoleFilter = "all" | SrdClass["role"];
@@ -26,9 +28,11 @@ const ROLE_BORDER: Record<SrdClass["role"], string> = {
 
 export function ClassBrowser() {
   const t = useTranslations("compendium");
-  const locale = useLocale();
-  const isPt = locale === "pt-BR";
   const classes = useSrdStore((s) => s.classes);
+
+  // ── PT-BR translation support ──────────────────────────────────────
+  const [descLang, setDescLang] = useLocalePreference("pt-BR");
+  const isPt = descLang === "pt-BR";
 
   // Filters
   const [nameFilter, setNameFilter] = useState("");
@@ -115,8 +119,11 @@ export function ClassBrowser() {
         </div>
       )}
 
-      <div className="text-[11px] text-muted-foreground">
-        {t("showing_results", { count: filtered.length, total: classes.length })}
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] text-muted-foreground">
+          {t("showing_results", { count: filtered.length, total: classes.length })}
+        </span>
+        <LanguageToggle locale={descLang} onToggle={setDescLang} size="sm" />
       </div>
       <div className="sr-only" role="status" aria-live="polite">
         {t("classes_found_aria", { count: filtered.length })}
