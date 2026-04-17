@@ -119,6 +119,15 @@ export async function acceptInviteAction(data: AcceptInviteData) {
       });
 
     if (charError) throw charError;
+
+    trackServerEvent("character:created", {
+      userId: user.id,
+      properties: {
+        mode: "auth",
+        source: "/invite",
+        campaign_id: invite.campaign_id,
+      },
+    });
   }
 
   const { error: inviteError } = await service

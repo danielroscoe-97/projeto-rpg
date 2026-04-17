@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { captureError } from "@/lib/errors/capture";
 import { withRateLimit } from "@/lib/rate-limit";
 import { sendCampaignInviteEmail } from "@/lib/notifications/campaign-invite";
+import { trackServerEvent } from "@/lib/analytics/track-server";
 
 const MAX_INVITES_PER_DAY = 20;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -85,6 +86,15 @@ const postHandler: Parameters<typeof withRateLimit>[0] = async function postHand
       campaignName: campaign.name,
       inviteLink,
       inviteToken: token,
+    });
+
+    trackServerEvent("dm:invite_sent", {
+      userId: user.id,
+      properties: {
+        campaign_id: campaignId,
+        email_sent: emailSent,
+      },
+      req: request,
     });
 
     // D3: Include email_sent flag so frontend can show fallback "copy link" if email failed

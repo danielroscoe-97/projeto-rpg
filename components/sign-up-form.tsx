@@ -110,6 +110,11 @@ export function SignUpForm({
         setIsLoading(false);
         return;
       }
+      trackEvent("auth:signup", {
+        role: selectedRole,
+        source: inviteToken ? "/invite" : joinCode ? "/join" : signupContext || "direct",
+        method: "email",
+      });
       let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}&role=${encodeURIComponent(selectedRole || "both")}`;
       if (joinCode) {
         successUrl += `&join_code=${encodeURIComponent(joinCode)}`;

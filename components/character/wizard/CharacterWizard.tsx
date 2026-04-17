@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics/track";
 import { WizardStepIdentity } from "./WizardStepIdentity";
 import { WizardStepStats } from "./WizardStepStats";
 import { WizardStepPreview } from "./WizardStepPreview";
@@ -88,6 +89,12 @@ export function CharacterWizard({
     setSubmitting(true);
     try {
       await onComplete(data);
+      trackEvent("character:created", {
+        class: data.characterClass,
+        race: data.race,
+        level: data.level,
+        has_stats: data.maxHp !== null && data.ac !== null,
+      });
     } catch {
       toast.error(t("error_creating"));
       setSubmitting(false);
