@@ -89,6 +89,52 @@ All sprints merged and deployed to production (`pocketdm.com.br`).
 - ℹ️ `/monstros` → no rich result (CollectionPage isn't a rich-result type; breadcrumbs added after test)
 - ✅ `/monsters/axe-beak` → Article + BreadcrumbList detected
 
+### Sprint 3.7 — Migration Cleanup (post-audit, 2026-04-17)
+
+**Context:** An audit of Sprint 1-3 discovered that the docs said "migrated all JSON-LD renderers to `jsonLdScriptProps`" but in reality only ~18 of ~51 emitters had been migrated. 4 SRD detail pages had inline scripts with NO `</script>` escape (XSS vulnerable). Many pages had `item: "/"` and `url: "/"` (relative) inside JSON-LD, which Google Rich Results ignores. Sprint 3.7 closed the gap.
+
+**Shipped — 5 sequential commits:**
+
+1. **Lib foundation** (commit 1/5)
+   - ✅ [lib/seo/metadata.ts](../lib/seo/metadata.ts) `articleLd` — dropped redundant `name` field (Google uses `headline` for Article).
+   - ✅ [app/sitemap.ts](../app/sitemap.ts) + [app/robots.ts](../app/robots.ts) — now import `SITE_URL` from `lib/seo/site-url.ts` instead of re-declaring `process.env.NEXT_PUBLIC_SITE_URL || "https://..."` (single source of truth).
+
+2. **SRD detail pages** (commit 2/5) — 10 files migrated to `jsonLdScriptProps()`:
+   - `monsters/[slug]`, `monstros/[slug]`, `spells/[slug]`, `magias/[slug]` (these 4 had NO escape — XSS fix)
+   - `feats/[slug]`, `talentos/[slug]`, `backgrounds/[slug]`, `antecedentes/[slug]`, `items/[slug]`, `itens/[slug]` (had escape, now use the helper uniformly)
+
+3. **Races / classes / subclasses** (commit 3/5) — 6 files fully refactored from inline JSON-LD to the builders (`articleLd` + `breadcrumbList` + `jsonLdScriptProps`). Net: –196 LOC.
+   - `races/[slug]`, `racas/[slug]`, `classes/[slug]`, `classes-pt/[slug]`, `classes/[slug]/subclasses/[subSlug]`, `classes-pt/[slug]/subclasses/[subSlug]`
+
+4. **Landing / tool pages** (commit 4/5) — 20 pages migrated via batch scripts (`.claude/worktrees/migrate_jsonld.py` + `migrate_absolute_urls.py`):
+   - Tools: `dice/dados`, `encounter-builder/calculadora-encontro`
+   - References: `ability-scores/atributos`, `actions/acoes-em-combate`, `rules/regras`, `conditions/condicoes`, `diseases/doencas`, `damage-types/tipos-de-dano`
+   - Content: `methodology`, `methodology/spell-tiers`, `about`, `ebook/guia-mestre-eficaz`
+   - **Schemas preserved** (WebApplication for tools, ItemList for atributos, ResearchProject for methodology) — NOT downgraded to Article.
+   - Absolute URLs applied to `url`/`item` values inside JSON-LD (siteUrl() wrap). openGraph URLs remain relative (resolve via metadataBase).
+
+5. **Docs update** (commit 5/5, this one) — this section.
+
+**Final validation:**
+```bash
+grep -rn 'dangerouslySetInnerHTML.*JSON.stringify' app/
+# → 0 results
+
+grep -rn 'item: "/' app/
+# → 0 results
+
+grep -rn 'url: "/"' app/
+# → 1 result (app/layout.tsx openGraph — correct, resolves via metadataBase)
+
+rtk npx tsc --noEmit
+# → 0 errors
+```
+
+**After 3.7:**
+- 100% of app/ pages use `jsonLdScriptProps()` (XSS-safe, uniform).
+- All JSON-LD URLs are absolute (Google Rich Results renders BreadcrumbList).
+- `SITE_URL` is the single source of truth for the canonical domain.
+
 ---
 
 ## ✅ Originally planned vs delivered
