@@ -4,52 +4,75 @@
 -- Problem: `encounters.started_at` is sometimes NULL because:
 --   1. Old rows predate the schema adding started_at.
 --   2. Potential paths that set is_active=true without touching started_at.
+--   3. Direct INSERT of is_active=true rows (no UPDATE transition fires).
 -- Downstream aggregators report "duration 18s" falsely for NULL rows.
 --
 -- Fix:
---   (1) Backfill: use created_at as a proxy for encounters already closed
---       (is_active=false) with NULL started_at. This is the best retroactive
---       signal we have; forward-looking rows are handled by the trigger below.
---   (2) Trigger: on the transition is_active false -> true, auto-populate
---       started_at if it is NULL. Explicit `started_at: now()` in the app
---       code (lib/supabase/session.ts) remains the preferred path; the
---       trigger is a safety net for any future caller that forgets.
+--   (1) Backfill ended encounters: use created_at as a proxy for encounters
+--       already closed (is_active=false) with NULL started_at. This is the
+--       best retroactive signal we have.
+--   (2) Backfill active-but-NULL encounters: same proxy for any encounter
+--       currently active with NULL started_at. Prevents silent metric gaps
+--       for rows created before this migration.
+--   (3) Trigger: on INSERT OR UPDATE, auto-populate started_at whenever an
+--       encounter is (or becomes) active with a NULL started_at. Explicit
+--       `started_at: now()` in the app code (lib/supabase/session.ts) remains
+--       the preferred path; the trigger is a safety net.
 
--- (1) Backfill.
+-- (1) Backfill ended encounters.
 update encounters
 set started_at = created_at
 where started_at is null
   and is_active = false;
 
--- (2) Trigger function.
+-- (2) Backfill encounters currently active with NULL started_at
+--     (closes NTH1 gap from S5.6 code review — prevents silent metric gaps).
+update encounters
+set started_at = created_at
+where started_at is null
+  and is_active = true;
+
+-- (3) Trigger function. Handles both INSERT and UPDATE:
+--     - INSERT: if is_active=true and started_at IS NULL, populate.
+--     - UPDATE: only on the transition is_active false -> true.
 create or replace function ensure_encounter_started_at()
 returns trigger
 language plpgsql
 as $$
 begin
-  if new.is_active = true
-     and old.is_active = false
-     and new.started_at is null then
-    new.started_at := now();
+  if tg_op = 'INSERT' then
+    if new.is_active = true and new.started_at is null then
+      new.started_at := now();
+    end if;
+  elsif tg_op = 'UPDATE' then
+    if new.is_active = true
+       and old.is_active is distinct from new.is_active
+       and new.started_at is null then
+      new.started_at := now();
+    end if;
   end if;
   return new;
 end;
 $$;
 
--- (3) Trigger binding. Fires only when is_active changes to avoid
---     unnecessary work on unrelated column updates.
+-- (4) Trigger binding. Fires on INSERT OR UPDATE; the function body gates
+--     which transitions actually mutate the row. WHEN clause dropped because
+--     INSERT has no OLD row (would make the condition always true anyway),
+--     and keeping the logic in one place simplifies reasoning.
 drop trigger if exists encounter_started_at_trigger on encounters;
 create trigger encounter_started_at_trigger
-  before update on encounters
+  before insert or update on encounters
   for each row
-  when (old.is_active is distinct from new.is_active)
   execute function ensure_encounter_started_at();
 
 -- Rollback:
 --   drop trigger if exists encounter_started_at_trigger on encounters;
 --   drop function if exists ensure_encounter_started_at();
---   (Backfill is NOT reversible; accepted because the prior values were NULL.)
+--   (Both backfills — ended and active — are NOT reversible; accepted because
+--    the prior values were NULL and the proxy (created_at) is a strict
+--    improvement over nulls for duration reporting.)
 
 -- Smoke test (manual, run in staging):
 --   select count(*) from encounters where started_at is null and is_active = false;
---   -- Expect 0 after this migration applies.
+--   select count(*) from encounters where started_at is null and is_active = true;
+--   -- Expect 0 in both after this migration applies.

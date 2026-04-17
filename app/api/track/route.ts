@@ -74,6 +74,10 @@ const ALLOWED_EVENTS = new Set([
   "guest:upsell_shown",
   "guest:post_combat_upsell_shown",
   "guest:recap_save_signup",
+  // Guest recap (S5.4)
+  "guest:recap_persisted",
+  "guest:recap_banner_shown",
+  "guest:recap_banner_clicked",
   // Campaign lifecycle (server-side)
   "campaign:created_with_wizard",
   "campaign:invite_accepted",

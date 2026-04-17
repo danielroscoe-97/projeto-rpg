@@ -1651,8 +1651,12 @@ export function GuestCombatClient() {
         {lastRecapBanner && !guestPostCombatPhase && (
           <div className="w-full max-w-6xl mx-auto px-2 pt-2">
             <div className="bg-gold/10 border border-gold/30 rounded px-4 py-2 flex items-center justify-between gap-2 text-sm">
-              <span className="text-foreground/90 truncate">
-                {tg("last_recap_banner_title")}
+              <span className="text-foreground/90 truncate min-w-0">
+                {tg("last_recap_banner_title", {
+                  name:
+                    lastRecapBanner.encounterLabel?.trim() ||
+                    tg("try_encounter_name"),
+                })}
               </span>
               <div className="flex items-center gap-2 shrink-0">
                 <button

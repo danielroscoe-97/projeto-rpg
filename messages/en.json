@@ -2852,7 +2852,7 @@
     "expired_body": "Create a free account to save your combats and play without time limits.",
     "expired_cta_signup": "Create free account",
     "expired_cta_reset": "Start new combat",
-    "last_recap_banner_title": "Last combat recap available",
+    "last_recap_banner_title": "Recap available: {name}",
     "last_recap_banner_cta": "View recap",
     "last_recap_banner_dismiss": "Dismiss"
   },

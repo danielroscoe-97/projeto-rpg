@@ -26,10 +26,14 @@ export function saveGuestLastRecap(
 ): void {
   if (typeof window === "undefined") return;
   try {
+    // Defensive: never persist an empty label — banner falls back on read-side
+    // but keeping data clean at write-time avoids surprises in downstream consumers.
+    const safeLabel =
+      encounterLabel?.trim() || report.encounterName?.trim() || "";
     const payload: GuestLastRecapPayload = {
       report,
       savedAt: Date.now(),
-      encounterLabel,
+      encounterLabel: safeLabel,
     };
     window.localStorage.setItem(GUEST_LAST_RECAP_KEY, JSON.stringify(payload));
   } catch {
