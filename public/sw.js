@@ -4,7 +4,7 @@
 // on the legacy client get the new `combat:combatant_add_reorder` handler
 // before the `ff_combatant_add_reorder` flag is flipped in prod. Mixed-fleet
 // without this bump produces silent breakage (new DM → old player sees no add).
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v4";
 const APP_SHELL_CACHE = `app-shell-${CACHE_VERSION}`;
 const SRD_CACHE = `srd-${CACHE_VERSION}`;
 const AUDIO_CACHE = `audio-${CACHE_VERSION}`;

@@ -48,6 +48,12 @@ import { applyGroupRename } from "@/lib/utils/group-rename";
 import { playTurnSfx } from "@/lib/utils/turn-sfx";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { trackEvent } from "@/lib/analytics/track";
+import {
+  saveGuestLastRecap,
+  clearGuestLastRecap,
+  readGuestLastRecap,
+  type GuestLastRecapPayload,
+} from "@/components/guest/guest-last-recap";
 
 interface AddRowForm {
   initiative: string;
@@ -860,6 +866,8 @@ export function GuestCombatClient() {
   const [guestPostCombatPhase, setGuestPostCombatPhase] = useState<GuestPostCombatPhase>(null);
   // Track whether upsell was opened from post-combat context (needs reset on dismiss)
   const [isPostCombatUpsell, setIsPostCombatUpsell] = useState(false);
+  // S5.4 — persisted last recap banner (guest-only). Null when no recent recap.
+  const [lastRecapBanner, setLastRecapBanner] = useState<GuestLastRecapPayload | null>(null);
 
   // BUG-I2: Mutual exclusion — derived state prevents log during any post-combat phase
   const effectiveShowActionLog = showActionLog && !guestPostCombatPhase;
@@ -870,6 +878,46 @@ export function GuestCombatClient() {
     typeof window !== "undefined"
       ? `${window.location.origin}/auth/confirm?from=guest-combat`
       : undefined;
+
+  // S5.4 — on mount, if a last-recap is stored <24h ago, surface a banner.
+  // Expired payloads are cleared as a side effect of readGuestLastRecap().
+  useEffect(() => {
+    const stored = readGuestLastRecap();
+    if (!stored) return;
+    setLastRecapBanner(stored);
+    try {
+      trackEvent("guest:recap_banner_shown", {
+        age_hours: (Date.now() - stored.savedAt) / (60 * 60 * 1000),
+      });
+    } catch {
+      // analytics failure must never block UI
+    }
+    // Run once on mount — banner is dismissed or viewed via explicit handlers.
+  }, []);
+
+  // S5.4 — rehydrate the stored recap and open the leaderboard view.
+  const handleViewLastRecap = useCallback(() => {
+    if (!lastRecapBanner) return;
+    try {
+      trackEvent("guest:recap_banner_clicked", { action: "view" });
+    } catch {
+      // ignore analytics errors
+    }
+    setGuestCombatReport(lastRecapBanner.report);
+    setGuestPostCombatPhase("leaderboard");
+    setLastRecapBanner(null);
+  }, [lastRecapBanner]);
+
+  // S5.4 — user dismissed the banner explicitly; drop persisted copy.
+  const handleDismissLastRecap = useCallback(() => {
+    try {
+      trackEvent("guest:recap_banner_clicked", { action: "dismiss" });
+    } catch {
+      // ignore analytics errors
+    }
+    clearGuestLastRecap();
+    setLastRecapBanner(null);
+  }, []);
 
   const {
     phase,
@@ -1523,6 +1571,8 @@ export function GuestCombatClient() {
       const hasGuestLogActivity = stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0 || s.totalHealing > 0 || s.knockouts > 0);
       const hasGuestHpChanges = guestStore.combatants.some((c) => c.current_hp < c.max_hp || c.is_defeated);
       if (hasGuestLogActivity || hasGuestHpChanges) {
+        // S5.7 polish: thread log entries so First Blood award is emitted in guest flow.
+        const logEntries = useCombatLogStore.getState().entries;
         // Build CombatReport for the new Recap UI
         const report = buildCombatReportFromStats({
           stats,
@@ -1531,6 +1581,7 @@ export function GuestCombatClient() {
           combatDuration: duration,
           roundNumber: guestStore.roundNumber,
           turnTimeSnapshots: guestStore.turnTimeSnapshots,
+          entries: logEntries,
           t,
         });
         trackEvent("guest:combat_ended", {
@@ -1541,6 +1592,18 @@ export function GuestCombatClient() {
         setGuestCombatReport(report);
         setShowActionLog(false); // Close action log to avoid overlapping with recap
         setGuestPostCombatPhase("leaderboard"); // C.15: Start post-combat flow
+        // S5.4 — persist last recap so user can recover after closing the tab.
+        {
+          const encounterLabel = report.encounterName || tg("try_encounter_name");
+          saveGuestLastRecap(report, encounterLabel);
+          try {
+            trackEvent("guest:recap_persisted", {
+              report_size: JSON.stringify(report).length,
+            });
+          } catch {
+            // analytics failure must never break combat flow
+          }
+        }
       } else {
         // No meaningful combat activity — show sign-up CTA instead of silent reset
         trackEvent("guest:combat_ended", {
@@ -1564,6 +1627,9 @@ export function GuestCombatClient() {
   const handleGuestDismissAll = useCallback(() => {
     setGuestPostCombatPhase(null);
     setGuestCombatReport(null);
+    // S5.4 — user explicitly closed the recap; drop the persisted copy.
+    clearGuestLastRecap();
+    setLastRecapBanner(null);
     openPostCombatUpsell();
   }, [openPostCombatUpsell]);
 
@@ -1583,6 +1649,37 @@ export function GuestCombatClient() {
   if (phase === "setup" || phase === "ended") {
     return (
       <>
+        {lastRecapBanner && !guestPostCombatPhase && (
+          <div className="w-full max-w-6xl mx-auto px-2 pt-2">
+            <div className="bg-gold/10 border border-gold/30 rounded px-4 py-2 flex items-center justify-between gap-2 text-sm">
+              <span className="text-foreground/90 truncate min-w-0">
+                {tg("last_recap_banner_title", {
+                  name:
+                    lastRecapBanner.encounterLabel?.trim() ||
+                    tg("try_encounter_name"),
+                })}
+              </span>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleViewLastRecap}
+                  className="px-3 py-1 rounded bg-gold text-black font-medium text-xs hover:bg-gold/90 min-h-[32px]"
+                  data-testid="guest-last-recap-view-btn"
+                >
+                  {tg("last_recap_banner_cta")}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDismissLastRecap}
+                  className="px-3 py-1 rounded text-muted-foreground hover:text-foreground text-xs min-h-[32px]"
+                  data-testid="guest-last-recap-dismiss-btn"
+                >
+                  {tg("last_recap_banner_dismiss")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <GuestEncounterSetup
           onStartCombat={handleStartCombat}
           onShareUpsell={() => { setUpsellTrigger("player-link"); setUpsellOpen(true); }}

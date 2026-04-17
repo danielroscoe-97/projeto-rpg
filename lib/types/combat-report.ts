@@ -4,6 +4,10 @@ import type { CombatantStats } from "@/lib/utils/combat-stats";
 
 export type AwardType =
   | "mvp"
+  | "first_blood"
+  // S5.7: "assassin" retained as a legacy alias for backward compatibility
+  // with recaps persisted under `encounters.recap_snapshot` (migration 136).
+  // Render layer maps it to the "First Blood" label/icon.
   | "assassin"
   | "tank"
   | "healer"

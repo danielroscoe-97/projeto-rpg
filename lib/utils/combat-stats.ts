@@ -79,8 +79,13 @@ export function computeCombatStats(
       }
     }
 
-    if (entry.type === "defeat" && entry.targetName) {
-      getOrCreate(entry.targetName).knockouts += 1;
+    // S5.7 bug fix: knockouts must be attributed to the KILLER (actorName),
+    // not the victim (targetName). Self-defeats (actor === target, e.g. area
+    // damage without clear actor or narrative suicide) are skipped.
+    if (entry.type === "defeat" && entry.actorName && entry.targetName) {
+      if (entry.actorName !== entry.targetName) {
+        getOrCreate(entry.actorName).knockouts += 1;
+      }
     }
 
     // Count turns per combatant
@@ -437,11 +442,44 @@ export function detectNarratives(
 }
 
 /**
+ * S5.7 — First Blood: the first defeat of the combat, attributed to the killer.
+ * Returns null if nobody has killed anyone yet.
+ * Considers only defeats where actor !== target (skips self-defeats).
+ *
+ * Entries are expected in chronological insertion order; in case of same-round
+ * ties, insertion order decides the winner.
+ */
+export function findFirstBlood(entries: CombatLogEntry[]): {
+  actorName: string;
+  targetName: string;
+  round: number;
+} | null {
+  const firstDefeat = entries.find(
+    (e) =>
+      e.type === "defeat" &&
+      !!e.actorName &&
+      !!e.targetName &&
+      e.actorName !== e.targetName,
+  );
+  if (!firstDefeat) return null;
+  return {
+    actorName: firstDefeat.actorName!,
+    targetName: firstDefeat.targetName!,
+    round: firstDefeat.round,
+  };
+}
+
+/**
  * Build awards list from computed stats.
+ *
+ * S5.7: accepts `entries` to compute First Blood (temporal, not count-based).
+ * Pass an empty array to skip the First Blood award (e.g. guest mode without
+ * log entries — rare, most guest flows have log entries).
  */
 export function buildAwards(
   stats: CombatantStats[],
   t: (key: string, values?: Record<string, string | number>) => string,
+  entries: CombatLogEntry[] = [],
 ): CombatReportAward[] {
   const awards: CombatReportAward[] = [];
 
@@ -456,14 +494,17 @@ export function buildAwards(
     });
   }
 
-  // Assassin — most knockouts
-  const assassin = getTopForStat(stats, "knockouts");
-  if (assassin) {
+  // First Blood — first kill of the combat (S5.7 replaces Assassin)
+  const firstBlood = findFirstBlood(entries);
+  if (firstBlood) {
     awards.push({
-      type: "assassin",
-      combatantName: assassin.name,
-      value: assassin.knockouts,
-      displayValue: t("recap_award_value_kills", { value: assassin.knockouts }),
+      type: "first_blood",
+      combatantName: firstBlood.actorName,
+      value: firstBlood.round,
+      displayValue: t("recap_award_value_first_blood", {
+        target: firstBlood.targetName,
+        round: firstBlood.round,
+      }),
     });
   }
 
@@ -593,7 +634,7 @@ export function buildCombatReport(opts: {
   }
 
   // Awards
-  const awards = buildAwards(rankings, t);
+  const awards = buildAwards(rankings, t, entries);
 
   // Narratives
   const narratives = detectNarratives(entries, combatants, t);
@@ -643,8 +684,14 @@ export function buildCombatReport(opts: {
 }
 
 /**
- * Build a CombatReport from pre-computed CombatantStats (for guest mode without log entries).
- * Awards and summary are computed from stats; narratives require combatant state for near_death detection.
+ * Build a CombatReport from pre-computed CombatantStats (guest mode live path).
+ *
+ * S5.7 polish: `entries` is optional for backward compatibility but SHOULD be
+ * threaded from the guest combat log store so First Blood is emitted. When
+ * omitted, the report is still valid but will skip the First Blood award.
+ *
+ * Awards and summary are computed from stats; narratives require combatant
+ * state for near_death detection (full narrative set requires log entries).
  */
 export function buildCombatReportFromStats(opts: {
   stats: CombatantStats[];
@@ -653,9 +700,10 @@ export function buildCombatReportFromStats(opts: {
   combatDuration: number;
   roundNumber: number;
   turnTimeSnapshots?: Record<number, Record<string, number>>;
+  entries?: CombatLogEntry[];
   t: (key: string, values?: Record<string, string | number>) => string;
 }): CombatReport {
-  const { stats, combatants, encounterName, combatDuration, roundNumber, turnTimeSnapshots, t } = opts;
+  const { stats, combatants, encounterName, combatDuration, roundNumber, turnTimeSnapshots, entries, t } = opts;
 
   // Defensive: ensure stats use real names (not display_name) by cross-referencing combatants.
   // Only remap if the stat name is NOT already a valid combatant real name (avoids false positives).
@@ -675,7 +723,7 @@ export function buildCombatReportFromStats(opts: {
     }
   }
 
-  const awards = buildAwards(stats, t);
+  const awards = buildAwards(stats, t, entries ?? []);
 
   // Guest mode: limited narratives (no log entries for clutch_save/one_shot)
   // Only detect near_death from combatant final state
@@ -740,9 +788,13 @@ export function formatRecapShareText(report: CombatReport): string {
   lines.push("");
 
   // Awards
+  // S5.7: "assassin" is kept as a legacy alias for backward compatibility with
+  // recaps persisted under encounters.recap_snapshot (migration 136).
+  // New recaps emit `first_blood`; legacy rendering falls back to this alias.
   const awardEmojis: Record<string, string> = {
     mvp: "\ud83c\udfc6",
-    assassin: "\ud83d\udc80",
+    first_blood: "\ud83d\udc80",
+    assassin: "\ud83d\udc80", // legacy alias -> renders as First Blood
     tank: "\ud83d\udee1\ufe0f",
     healer: "\ud83d\udc9a",
     crit_king: "\ud83c\udfaf",
@@ -752,7 +804,8 @@ export function formatRecapShareText(report: CombatReport): string {
   };
   const awardLabels: Record<string, string> = {
     mvp: "MVP",
-    assassin: "Assassin",
+    first_blood: "First Blood",
+    assassin: "First Blood", // legacy alias
     tank: "Tank",
     healer: "Healer",
     crit_king: "Crit King",
