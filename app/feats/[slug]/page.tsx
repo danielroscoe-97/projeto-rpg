@@ -6,7 +6,7 @@ import { PublicFeatDetail } from "@/components/public/PublicFeatDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdFeats, getFeatBySlug } from "@/lib/srd/srd-data-server";
-import { featMetadata, articleLd, breadcrumbList , jsonLdScriptProps} from "@/lib/seo/metadata";
+import { featMetadata, articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return getSrdFeats().map((f) => ({ slug: f.id }));

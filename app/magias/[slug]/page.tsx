@@ -20,7 +20,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { getSpellTier } from "@/lib/srd/spell-tiers";
 import Link from "next/link";
-import { spellMetadata, articleLd, breadcrumbList , jsonLdScriptProps} from "@/lib/seo/metadata";
+import { spellMetadata, articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {

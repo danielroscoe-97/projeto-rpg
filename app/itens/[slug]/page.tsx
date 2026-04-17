@@ -6,7 +6,7 @@ import { PublicItemDetail } from "@/components/public/PublicItemDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdItems, getItemBySlug } from "@/lib/srd/srd-data-server";
-import { itemMetadata, articleLd, breadcrumbList , jsonLdScriptProps} from "@/lib/seo/metadata";
+import { itemMetadata, articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return getSrdItems()
