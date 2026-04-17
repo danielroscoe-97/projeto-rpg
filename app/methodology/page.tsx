@@ -14,6 +14,8 @@ import { createClient } from "@/lib/supabase/server";
 import { captureError } from "@/lib/errors/capture";
 import { getTranslations } from "next-intl/server";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
+import { siteUrl } from "@/lib/seo/site-url";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("methodology");
   return {
@@ -113,20 +115,17 @@ export default async function MethodologyPage() {
     name: "Pocket DM Methodology",
     description:
       "Data-driven encounter difficulty calculation based on real combat data from thousands of D&D 5e sessions.",
-    url: "/methodology",
+    url: siteUrl("/methodology"),
     funder: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "/",
+      url: siteUrl("/"),
     },
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script {...jsonLdScriptProps(jsonLd)} />
       <Navbar
         brand="Pocket DM"
         brandHref="/"

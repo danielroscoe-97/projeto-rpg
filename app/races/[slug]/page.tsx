@@ -6,6 +6,7 @@ import { getRaceSlugs, getRaceData } from "@/lib/srd/races-data";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import Link from "next/link";
+import { articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export function generateStaticParams() {
@@ -56,60 +57,28 @@ export async function generateMetadata({
 
 // ── JSON-LD ────────────────────────────────────────────────────────
 function RaceJsonLd({ race, slug }: { race: NonNullable<ReturnType<typeof getRaceData>>; slug: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${race.nameEn} — D&D 5e Race`,
-    headline: `${race.nameEn} — D&D 5e Race`,
-    description: `${race.nameEn}, ${race.size} race with ${race.abilityBonuses.map((b) => `${b.ability} ${b.bonus}`).join(", ")}. Speed ${race.speed} ft.`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-      logo: {
-        "@type": "ImageObject",
-        url: "/icons/icon-512.png",
-      },
-    },
-    inLanguage: "en",
-  };
+  const name = `${race.nameEn} — D&D 5e Race`;
+  const description = `${race.nameEn}, ${race.size} race with ${race.abilityBonuses.map((b) => `${b.ability} ${b.bonus}`).join(", ")}. Speed ${race.speed} ft.`;
+  const path = `/races/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Races",
-        item: "/races",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: race.nameEn,
-        item: `/races/${slug}`,
-      },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: "/opengraph-image",
+    locale: "en",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Races", path: "/races" },
+    { name: race.nameEn, path },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }

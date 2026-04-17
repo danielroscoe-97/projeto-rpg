@@ -10,6 +10,7 @@ import {
   getAllClassesFull,
   getSubclass,
 } from "@/lib/srd/class-data-server";
+import { articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -80,66 +81,29 @@ function SubclassJsonLd({
   slug: string;
   subSlug: string;
 }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${sub.name_pt} — Subclasse de ${cls.name_pt}`,
-    headline: `${sub.name_pt} — Subclasse de ${cls.name_pt} | D&D 5e`,
-    description: `${sub.name_pt}: ${sub.description_pt}`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-      logo: {
-        "@type": "ImageObject",
-        url: "/icons/icon-512.png",
-      },
-    },
-    inLanguage: "pt-BR",
-  };
+  const name = `${sub.name_pt} — Subclasse de ${cls.name_pt} | D&D 5e`;
+  const description = `${sub.name_pt}: ${sub.description_pt}`;
+  const path = `/classes-pt/${slug}/subclasses/${subSlug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Classes",
-        item: "/classes-pt",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: cls.name_pt,
-        item: `/classes-pt/${slug}`,
-      },
-      {
-        "@type": "ListItem",
-        position: 4,
-        name: sub.name_pt,
-        item: `/classes-pt/${slug}/subclasses/${subSlug}`,
-      },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: "/opengraph-image",
+    locale: "pt-BR",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Classes", path: "/classes-pt" },
+    { name: cls.name_pt, path: `/classes-pt/${slug}` },
+    { name: sub.name_pt, path },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }

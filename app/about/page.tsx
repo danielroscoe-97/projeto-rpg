@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
+import { siteUrl } from "@/lib/seo/site-url";
 export const metadata: Metadata = {
   title: "Sobre — Combat & Initiative Tracker Gratuito para D&D 5e",
   description:
@@ -18,7 +20,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Pocket DM",
-    url: "/",
+    url: siteUrl("/"),
     logo: "/icons/icon-512.png",
     foundingDate: "2026",
     description:
@@ -41,7 +43,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     name: "Sobre o Pocket DM",
-    url: "/about",
+    url: siteUrl("/about"),
     description:
       "O Pocket DM é um combat & initiative tracker gratuito para D&D 5e, projetado para mesas presenciais.",
     mainEntity: {
@@ -50,7 +52,7 @@ export default function AboutPage() {
       applicationCategory: "GameApplication",
       applicationSubCategory: "D&D 5e Combat & Initiative Tracker",
       operatingSystem: "Web, iOS, Android (PWA)",
-      url: "/",
+      url: siteUrl("/"),
       offers: {
         "@type": "Offer",
         price: "0",
@@ -79,14 +81,8 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebPage) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdOrganization)} />
+      <script {...jsonLdScriptProps(jsonLdWebPage)} />
       <Navbar
         brand="Pocket DM"
         brandHref="/"

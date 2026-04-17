@@ -15,12 +15,13 @@ import { getRaceSlugs } from "@/lib/srd/races-data";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import classesData from "@/data/srd/classes-srd.json";
 import subclassesData from "@/data/srd/subclasses-srd.json";
+import { SITE_URL } from "@/lib/seo/site-url";
 
 // Force static generation so `lastModified` is captured at build time,
 // not at first request (which would happen with dynamic rendering).
 export const dynamic = "force-static";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+const BASE_URL = SITE_URL;
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 

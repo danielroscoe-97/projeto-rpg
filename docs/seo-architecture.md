@@ -2,7 +2,7 @@
 
 **Canonical reference for future agents working on SEO in this project.**
 
-Last updated: 2026-04-17 (post Sprint 3)
+Last updated: 2026-04-17 (post Sprint 3.7 — all 51 JSON-LD emitters use `jsonLdScriptProps`; all `url`/`item` inside JSON-LD go through `siteUrl()`).
 
 ---
 

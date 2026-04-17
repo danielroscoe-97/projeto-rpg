@@ -5,6 +5,8 @@ import { Footer } from "@/components/marketing/Footer";
 import { SpellTierRanking } from "@/components/methodology/SpellTierRanking";
 import { getTranslations } from "next-intl/server";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
+import { siteUrl } from "@/lib/seo/site-url";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("methodology");
   const title = t("spell_ranking_title");
@@ -36,7 +38,7 @@ export default async function SpellTiersPage() {
     "@type": "Dataset",
     name: t("spell_ranking_title"),
     description: t("spell_ranking_dataset_description"),
-    url: "/methodology/spell-tiers",
+    url: siteUrl("/methodology/spell-tiers"),
     license: "https://creativecommons.org/licenses/by/4.0/",
     keywords: [
       "D&D 5e",
@@ -48,16 +50,13 @@ export default async function SpellTiersPage() {
     creator: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "/",
+      url: siteUrl("/"),
     },
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script {...jsonLdScriptProps(jsonLd)} />
       <Navbar
         brand="Pocket DM"
         brandHref="/"

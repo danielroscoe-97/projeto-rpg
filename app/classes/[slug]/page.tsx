@@ -10,6 +10,7 @@ import {
   getAllClassesFull,
   getSubclassesForClass,
 } from "@/lib/srd/class-data-server";
+import { articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -81,60 +82,28 @@ function ClassJsonLd({
   cls: NonNullable<ReturnType<typeof getClassFull>>;
   slug: string;
 }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${cls.name} — D&D 5e Class Guide`,
-    headline: `${cls.name} — D&D 5e Class Guide`,
-    description: `${cls.name}: ${cls.description_en} Hit Die: ${cls.hit_die}. Primary Ability: ${cls.primary_ability}.`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-      logo: {
-        "@type": "ImageObject",
-        url: "/icons/icon-512.png",
-      },
-    },
-    inLanguage: "en",
-  };
+  const name = `${cls.name} — D&D 5e Class Guide`;
+  const description = `${cls.name}: ${cls.description_en} Hit Die: ${cls.hit_die}. Primary Ability: ${cls.primary_ability}.`;
+  const path = `/classes/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Classes",
-        item: "/classes",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: cls.name,
-        item: `/classes/${slug}`,
-      },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: "/opengraph-image",
+    locale: "en",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Classes", path: "/classes" },
+    { name: cls.name, path },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }

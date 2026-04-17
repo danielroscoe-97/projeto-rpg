@@ -260,7 +260,6 @@ export function articleLd({
   return {
     "@context": "https://schema.org",
     "@type": "Article",
-    name,
     headline: name,
     description,
     image: siteUrl(imagePath),

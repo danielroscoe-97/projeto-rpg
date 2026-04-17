@@ -6,7 +6,7 @@ import { PublicItemDetail } from "@/components/public/PublicItemDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdItems, getItemBySlug } from "@/lib/srd/srd-data-server";
-import { itemMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
+import { itemMetadata, articleLd, breadcrumbList , jsonLdScriptProps} from "@/lib/seo/metadata";
 
 // Only generate the first 200 statically; the rest are on-demand ISR.
 export function generateStaticParams() {
@@ -55,14 +55,8 @@ function ItemJsonLd({ item, slug }: { item: { name: string; type: string; rarity
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle).replace(/</g, "\\u003c") }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb).replace(/</g, "\\u003c") }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }

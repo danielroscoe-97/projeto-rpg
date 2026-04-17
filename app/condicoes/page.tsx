@@ -6,6 +6,8 @@ import conditionsData from "@/data/srd/conditions.json";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
+import { siteUrl } from "@/lib/seo/site-url";
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "Condições D&D 5e — Referência Rápida",
@@ -55,16 +57,13 @@ function ConditionsJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "/",
+      url: siteUrl("/"),
     },
     inLanguage: "pt-BR",
   };
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <script {...jsonLdScriptProps(jsonLd)} />
   );
 }
 

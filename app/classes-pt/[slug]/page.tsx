@@ -10,6 +10,7 @@ import {
   getAllClassesFull,
   getSubclassesForClass,
 } from "@/lib/srd/class-data-server";
+import { articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -72,60 +73,28 @@ function ClassJsonLd({
   cls: NonNullable<ReturnType<typeof getClassFull>>;
   slug: string;
 }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${cls.name_pt} — Classe D&D 5e`,
-    headline: `${cls.name_pt} — Classe D&D 5e`,
-    description: `${cls.name_pt}: ${cls.description_pt}`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-      logo: {
-        "@type": "ImageObject",
-        url: "/icons/icon-512.png",
-      },
-    },
-    inLanguage: "pt-BR",
-  };
+  const name = `${cls.name_pt} — Classe D&D 5e`;
+  const description = `${cls.name_pt}: ${cls.description_pt}`;
+  const path = `/classes-pt/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Classes",
-        item: "/classes-pt",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: cls.name_pt,
-        item: `/classes-pt/${slug}`,
-      },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: "/opengraph-image",
+    locale: "pt-BR",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Classes", path: "/classes-pt" },
+    { name: cls.name_pt, path },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }
