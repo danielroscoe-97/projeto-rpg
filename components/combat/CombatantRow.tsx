@@ -475,7 +475,17 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => { if (showActions) openInlineEdit("current", String(combatant.current_hp)); }}
-                className={`text-muted-foreground min-h-[44px] sm:min-h-[28px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                // Finding 7 QW2 (beta-test-3, sprint plan S1.5): when HP is in
+                // the CRITICAL tier (<= 10% of max), escalate the HP number to
+                // white + semibold so it reads clearly against the red critical
+                // frame. Mirrors Track E's palette semantics (text-white on
+                // alert surfaces) for the DM view specifically; player view is
+                // handled elsewhere.
+                className={`min-h-[44px] sm:min-h-[28px] inline-flex items-center ${
+                  isCritical
+                    ? `text-white font-semibold ${showActions ? "hover:text-white cursor-pointer" : "cursor-default"}`
+                    : `text-muted-foreground ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`
+                }`}
                 title={showActions ? t("edit_current_hp_title") : undefined}
                 data-testid={`current-hp-btn-${combatant.id}`}
               >
