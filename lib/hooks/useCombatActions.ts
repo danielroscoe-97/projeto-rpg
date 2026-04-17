@@ -74,11 +74,42 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       const { encounter_id, current_turn_index: prevIdx, round_number: prevRound } = snap;
       if (!encounter_id) return;
 
+      // Finding 5 (spike 2026-04-17): notify CombatantRow panels that the turn
+      // is advancing so they can close any panel that's not on the upcoming
+      // actor's row. Prevents the auto-scroll guard in CombatList from
+      // aborting because a stale panel remained open after an HP edit.
+      if (typeof window !== "undefined") {
+        try {
+          window.dispatchEvent(
+            new CustomEvent("combat:turn-advancing", {
+              detail: { prev_turn_index: prevIdx },
+            }),
+          );
+        } catch {
+          /* non-fatal — environments without CustomEvent fall back to guard */
+        }
+      }
+
       advanceTurn();
       playTurnSfx();
       const postAdvance = useCombatStore.getState();
       const { current_turn_index: nextIdx, round_number: nextRound, combatants } = postAdvance;
       if (nextIdx === prevIdx && nextRound === prevRound) return;
+
+      // Fire a companion event with the resolved next index so panels that
+      // want row-aware close logic (e.g. keep the incoming actor's panel) can
+      // react without re-reading the store themselves.
+      if (typeof window !== "undefined") {
+        try {
+          window.dispatchEvent(
+            new CustomEvent("combat:turn-advanced", {
+              detail: { prev_turn_index: prevIdx, next_turn_index: nextIdx },
+            }),
+          );
+        } catch {
+          /* non-fatal */
+        }
+      }
 
       // Auto-expand group when turn advances to a grouped combatant
       const nextCombatant = combatants[nextIdx];

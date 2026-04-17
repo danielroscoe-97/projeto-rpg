@@ -150,6 +150,22 @@ export const CombatantRow = memo(function CombatantRow({
     if (combatant.is_defeated) setOpenPanel(null);
   }, [combatant.is_defeated]);
 
+  // Finding 5 (spike 2026-04-17): when turn advances, proactively close panels
+  // on rows that are NOT the incoming actor. This unblocks the DM auto-scroll
+  // refined guard in CombatSessionClient. Panel on the incoming actor stays
+  // open so DM edits in progress aren't wiped.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = (evt: Event) => {
+      const detail = (evt as CustomEvent<{ next_turn_index?: number }>).detail;
+      const nextIdx = detail?.next_turn_index;
+      if (typeof nextIdx !== "number" || typeof index !== "number") return;
+      if (index !== nextIdx) setOpenPanel(null);
+    };
+    window.addEventListener("combat:turn-advanced", handler as EventListener);
+    return () => window.removeEventListener("combat:turn-advanced", handler as EventListener);
+  }, [index]);
+
   // --- Lair Action: special minimal row with expandable lair actions list ---
   if (combatant.is_lair_action) {
     const lairMonsters: SrdMonster[] = [];
