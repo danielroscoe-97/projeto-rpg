@@ -63,6 +63,11 @@ describe("parseRecharge", () => {
     expect(parseRecharge("Weird Move (Recharge 1)")).toBeNull();
     expect(parseRecharge("Weird Move (Recharge 9)")).toBeNull();
   });
+
+  it("returns null when action name resolves to empty key", () => {
+    // e.g., input is ONLY the recharge suffix — no action name prefix
+    expect(parseRecharge("(Recharge 5-6)")).toBeNull();
+  });
 });
 
 describe("rollRecharge", () => {
