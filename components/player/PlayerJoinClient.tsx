@@ -205,6 +205,10 @@ export function PlayerJoinClient({
   // P1.02: Track deferred session:ended when leaderboard/poll is active
   const pendingSessionEndRef = useRef(false);
   const combatStatsActiveRef = useRef(false);
+  // S1.1: Encounter id for a recap hydrated from /api/session/[id]/latest-recap.
+  // Used to key the `recap-seen-${sessionId}-${encounterId}` sessionStorage
+  // flag so refreshing the page doesn't reopen a recap the player closed.
+  const hydratedRecapEncounterIdRef = useRef<string | null>(null);
   // Tracks if player rated inline in the recap — skips standalone DifficultyPoll if so
   const playerRatedInlineRef = useRef(false);
   const turnIndexRef = useRef(currentTurnIndex);
@@ -1702,6 +1706,71 @@ export function PlayerJoinClient({
     return () => { cancelled = true; clearTimeout(timer); };
   }, [isRegistered, active, sessionId, updateCombatants, updateTurnIndex]);
 
+  // S1.1: Post-combat recap hydration (Finding 1).
+  // When the DM ends combat while the player's tab is hidden / reconnecting,
+  // the `session:combat_recap` broadcast can be lost. We hit the durable
+  // `/api/session/[id]/latest-recap` endpoint once per session to recover the
+  // Wrapped experience.
+  //
+  // Guarded by:
+  //   - authReady + sessionId (same contract as the other player effects).
+  //   - combat NOT active (we only hydrate when no live encounter is running).
+  //   - `recap-seen-${sessionId}-${encounter_id}` sessionStorage key — once
+  //     the player closes the modal we never reopen it (survives refresh).
+  //   - In-memory de-dupe with the existing broadcast path: we only set state
+  //     if we don't already have a recap from the broadcast listener.
+  useEffect(() => {
+    if (!authReady || !sessionId) return;
+    if (active) return; // Live combat — broadcast path handles it.
+    if (combatRecapReport) return; // Already showing.
+
+    let cancelled = false;
+
+    const hydrate = async () => {
+      try {
+        const res = await fetch(`/api/session/${sessionId}/latest-recap`);
+        if (cancelled || !res.ok) return;
+        const body = await res.json().catch(() => null);
+        const recapData = body?.data;
+        if (!recapData?.recap || !recapData?.encounter_id) return;
+
+        const seenKey = `recap-seen-${sessionId}-${recapData.encounter_id}`;
+        try {
+          if (sessionStorage.getItem(seenKey)) return;
+        } catch { /* sessionStorage unavailable — proceed */ }
+
+        // De-dupe with broadcast: if the broadcast listener already set
+        // combatRecapReport for THIS encounter, bail out.
+        if (combatRecapReport) return;
+
+        const recap = recapData.recap as CombatReport;
+        // Populate combatStatsData so the Recap modal path renders. The shape
+        // mirrors the `session:combat_stats` broadcast.
+        setCombatStatsData({
+          stats: (recap.rankings ?? []) as CombatantStats[],
+          encounterName: recap.encounterName ?? "",
+          rounds: recap.summary?.totalRounds ?? 0,
+          combatDuration: recap.summary?.totalDuration ?? 0,
+        });
+        combatStatsActiveRef.current = true;
+        hydratedRecapEncounterIdRef.current = recapData.encounter_id as string;
+        setCombatRecapReport(recap);
+
+        // Observability — distinguishes durable recovery from broadcast
+        // delivery so we can measure the feature's value post-deploy.
+        trackEvent("recap.served_from_db", {
+          session_id: sessionId,
+          encounter_id: recapData.encounter_id,
+        });
+      } catch {
+        // Best-effort. Broadcast remains the happy path.
+      }
+    };
+
+    void hydrate();
+    return () => { cancelled = true; };
+  }, [authReady, sessionId, active, combatRecapReport]);
+
   // DM stale detection — checks dm_last_seen_at via polling.
   // If DM hasn't heartbeated for >90s, shows "DM offline" indicator.
   // Exponential backoff on errors: 30s → 60s → 120s cap.
@@ -2158,11 +2227,20 @@ export function PlayerJoinClient({
             handlePollVote(vote);
           }}
           onClose={() => {
+            // S1.1: Mark recap-seen so the durable /latest-recap hydration
+            // never reopens this encounter's recap after refresh.
+            const seenEid = hydratedRecapEncounterIdRef.current;
+            if (seenEid) {
+              try {
+                sessionStorage.setItem(`recap-seen-${sessionId}-${seenEid}`, "1");
+              } catch { /* sessionStorage unavailable — ignore */ }
+            }
             setCombatRecapReport(null);
             if (playerRatedInlineRef.current) {
               // Already rated inline — skip DifficultyPoll, go straight to awaiting
               setCombatStatsData(null);
               combatStatsActiveRef.current = false;
+              hydratedRecapEncounterIdRef.current = null;
               if (pendingSessionEndRef.current) {
                 pendingSessionEndRef.current = false;
                 setSessionEnded(true);
@@ -2197,6 +2275,7 @@ export function PlayerJoinClient({
           setCombatRecapReport(null);
           setShowPoll(false);
           combatStatsActiveRef.current = false; // P1.02: poll flow done
+          hydratedRecapEncounterIdRef.current = null; // S1.1: reset for next encounter
           if (pendingSessionEndRef.current) {
             // session:ended was deferred — process it now
             pendingSessionEndRef.current = false;
@@ -2210,6 +2289,7 @@ export function PlayerJoinClient({
           setCombatRecapReport(null);
           setShowPoll(false);
           combatStatsActiveRef.current = false; // P1.02: poll flow done
+          hydratedRecapEncounterIdRef.current = null; // S1.1: reset for next encounter
           if (pendingSessionEndRef.current) {
             pendingSessionEndRef.current = false;
             setSessionEnded(true);

@@ -316,6 +316,35 @@ export function CombatSessionClient({
               actors: n.actors.map(mapName),
             })),
           };
+          // S1.1: Persist player-safe recap to DB BEFORE the broadcast so
+          // late-reconnecting players can fetch it via
+          // GET /api/session/[id]/latest-recap. Fire-and-forget with one
+          // retry; never blocks the DM post-combat UX. Broadcast continues
+          // below as the happy-path delivery.
+          const encIdForRecap = useCombatStore.getState().encounter_id;
+          if (encIdForRecap) {
+            void (async () => {
+              const doPost = () =>
+                fetch(`/api/encounters/${encIdForRecap}/recap`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ report: playerSafeReport }),
+                });
+              try {
+                const res = await doPost();
+                if (!res.ok && res.status !== 409) {
+                  // One retry after 2s for transient failures (network blip,
+                  // cold start). 4xx non-409 are not retried.
+                  if (res.status >= 500) {
+                    await new Promise((r) => setTimeout(r, 2000));
+                    await doPost().catch(() => { /* best-effort */ });
+                  }
+                }
+              } catch {
+                // Best-effort. Broadcast remains the happy path.
+              }
+            })();
+          }
           broadcastEvent(sid, {
             type: "session:combat_recap",
             report: playerSafeReport,
