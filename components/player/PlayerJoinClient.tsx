@@ -18,6 +18,7 @@ import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
 import { persistPlayerIdentity, loadPlayerIdentity, clearPlayerIdentity } from "@/lib/player-identity-storage";
 import { classifyReconnect } from "@/lib/realtime/reconnect-classifier";
+import { fetchOrchestrator, type FetchPriority } from "@/lib/realtime/fetch-orchestrator";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type {
   SanitizedStateSync,
@@ -219,14 +220,8 @@ export function PlayerJoinClient({
   // Stores recursive setTimeout handles — named "pollInterval" for semantic clarity but uses setTimeout under the hood
   const pollIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollFallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // R1: In-flight guard — prevents overlapping /state requests (thundering herd)
-  const fetchInFlightRef = useRef(false);
-  // R2: Circuit breaker — after 3 consecutive failures, drop to 30s probe interval
-  const consecutiveFailsRef = useRef(0);
-  // Finding 4 (spike 2026-04-17): throttle timestamp for fetchFullState.
-  // Throttled calls (poll, turn-poll, visibility churn) must wait 5s between
-  // hits; emergency calls (recovery paths) bypass this guard.
-  const lastFetchAtRef = useRef(0);
+  // S3.5: in-flight guard / throttle timestamp / circuit breaker now owned by
+  // the singleton `fetchOrchestrator`. See `lib/realtime/fetch-orchestrator.ts`.
   const turnPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTurnBroadcastRef = useRef<number>(0);
   // Broadcast sequence tracking — discard out-of-order events for critical state (turn advance)
@@ -631,12 +626,12 @@ export function PlayerJoinClient({
   const connStateRef = useRef<ConnectionState>("RECONNECTING");
   const pollBackoffRef = useRef(2000);
   // Ref to fetchFullState — breaks circular dependency (fetchFullState defined later).
-  // Finding 4: the ref-based callers below pass `priority: "emergency"` for
-  // recovery paths (POLLING_FALLBACK loop, channel revive). Throttled calls
+  // S3.5: ref-based callers below pass `priority: "emergency"` for recovery
+  // paths (POLLING_FALLBACK loop, channel revive). Throttled/background calls
   // go through the direct `fetchFullState(...)` invocation.
   const fetchFullStateRef = useRef<(
     eid: string,
-    opts?: { priority?: "emergency" | "throttled" },
+    opts?: { priority?: FetchPriority; caller?: string },
   ) => Promise<void>>(async () => {});
 
   const stopAllPolling = useCallback(() => {
@@ -651,14 +646,14 @@ export function PlayerJoinClient({
     const schedule = () => {
       pollIntervalRef.current = setTimeout(() => {
         if (connStateRef.current !== "POLLING_FALLBACK") return;
-        // Finding 4: POLLING_FALLBACK means the channel is dead — bypass throttle
-        fetchFullStateRef.current(eid, { priority: "emergency" });
+        // S3.5: POLLING_FALLBACK means the channel is dead — bypass throttle
+        fetchFullStateRef.current(eid, { priority: "emergency", caller: "polling_fallback" });
         pollBackoffRef.current = Math.min(pollBackoffRef.current * 2, 30000);
         schedule();
       }, pollBackoffRef.current);
     };
     if (connStateRef.current === "POLLING_FALLBACK") {
-      fetchFullStateRef.current(eid, { priority: "emergency" });
+      fetchFullStateRef.current(eid, { priority: "emergency", caller: "polling_fallback_kickoff" });
     }
     schedule();
   }, []);
@@ -671,7 +666,8 @@ export function PlayerJoinClient({
     if (next === "CONNECTED") {
       stopAllPolling();
       pollBackoffRef.current = 2000;
-      consecutiveFailsRef.current = 0; // R2: Reset circuit breaker on reconnect
+      // S3.5: circuit breaker reset is handled by the orchestrator itself —
+      // a successful emergency fetch after SUBSCRIBED will close the circuit.
     }
     if (next === "POLLING_FALLBACK") {
       startPollingWithBackoff(encounterIdRef.current);
@@ -867,150 +863,136 @@ export function PlayerJoinClient({
 
   // Full state fetch via API — used on reconnect & polling fallback.
   // Uses /api/session/[id]/state which sanitizes monster data server-side.
-  // R1: In-flight guard prevents overlapping requests.
-  // R2: Circuit breaker drops to 30s probe after 3 consecutive fails.
-  // R3: Auto-refresh anonymous auth on 401.
-  // Finding 4 (spike 2026-04-17): priority-aware throttle. Default callers
-  // (polling, turn-poll, visibility churn) are throttled to 1 call per 5s.
-  // Recovery paths (auto-join, late-join, visibility reconnect, network
-  // recovery, channel SUBSCRIBED reconcile) pass { priority: "emergency" }
-  // to bypass the throttle — reconnection must never be blocked.
+  //
+  // S3.5 (2026-04-17): the transport layer (throttle, dedup, in-flight coalescing,
+  // circuit breaker, 401 recovery hook) is now owned by `fetchOrchestrator`.
+  // fetchFullState itself is only responsible for mapping the envelope back
+  // into component state (round/turn/combatants/dm_plan + auto-join fallback).
+  //
+  // `opts.caller` is REQUIRED in new call-sites — it drives telemetry and dedup.
+  // `opts.priority` replaces the legacy "throttled"/"emergency" pair with the
+  // full 4-tier vocabulary (emergency / high / throttled / background).
   const fetchFullState = useCallback(async (
     _eid: string,
-    opts: { priority?: "emergency" | "throttled" } = {},
+    opts: { priority?: FetchPriority; caller?: string } = {},
   ) => {
-    const priority = opts.priority ?? "throttled";
-    // Throttle guard: drop throttled calls inside 5s of the last successful
-    // or in-flight kickoff. Emergency calls always proceed.
-    if (priority === "throttled") {
-      const since = Date.now() - lastFetchAtRef.current;
-      if (since < 5_000) return;
+    const priority: FetchPriority = opts.priority ?? "throttled";
+    const caller = opts.caller ?? "legacy_unlabelled";
+
+    const data = await fetchOrchestrator.fetch({
+      encounterId: sessionId,
+      priority,
+      caller,
+    });
+    // Null = dropped (throttle / dedup / circuit) or network failure.
+    // No side effects — the caller already has recent data or will retry on
+    // the next tick.
+    if (!data) return;
+
+    if (data.encounter) {
+      const enc = data.encounter as {
+        round_number?: number;
+        current_turn_index?: number;
+        is_active?: boolean;
+        id?: string;
+      };
+      setRound(enc.round_number ?? 1);
+      updateTurnIndex(enc.current_turn_index ?? 0);
+      setActive(enc.is_active ?? false);
+      if (enc.id) setCurrentEncounterId(enc.id);
     }
-    // R1: Skip if another request is already in-flight
-    if (fetchInFlightRef.current) return;
-    fetchInFlightRef.current = true;
-    // NOTE (code-review track-c MEDIUM #3): `lastFetchAtRef` is only bumped
-    // AFTER the fetch succeeds (or after a non-401 response lands). If the
-    // emergency call fails, we do NOT want to block throttled retries for
-    // the next 5s — recovery should stay nimble.
-    try {
-      let res = await fetch(`/api/session/${sessionId}/state`);
-
-      // R3: Auth auto-refresh — refresh expired token and retry once on 401.
-      // MUST use refreshSession() (not signInAnonymously) to keep the same anon_user_id
-      // that's linked to the session_token in the DB.
-      if (res.status === 401) {
-        const supabase = createClient();
-        const { error: refreshError } = await supabase.auth.refreshSession();
-        if (!refreshError) {
-          res = await fetch(`/api/session/${sessionId}/state`);
-        }
-      }
-
-      if (!res.ok) {
-        // R2: Track consecutive failures for circuit breaker
-        consecutiveFailsRef.current++;
-        if (consecutiveFailsRef.current >= 3) {
-          pollBackoffRef.current = 30_000; // circuit open: probe every 30s
-        }
-        // Do NOT update lastFetchAtRef — let subsequent throttled calls retry
-        // without artificial 5s delay when the emergency fetch failed.
-        return;
-      }
-
-      // R2: Reset circuit breaker on success
-      consecutiveFailsRef.current = 0;
-      // Success: stamp the throttle window now so background poll/turn-poll
-      // doesn't pile on for the next 5s.
-      lastFetchAtRef.current = Date.now();
-
-      const { data } = await res.json();
-      if (!data) return;
-      if (data.encounter) {
-        setRound(data.encounter.round_number ?? 1);
-        updateTurnIndex(data.encounter.current_turn_index ?? 0);
-        setActive(data.encounter.is_active ?? false);
-        if (data.encounter.id) setCurrentEncounterId(data.encounter.id);
-      }
-      if (data.combatants) {
-        // Preserve optimistic death saves for 5s after player click
-        const isDeathSaveProtected = Date.now() - deathSaveOptimisticRef.current < 5000;
-        // C.13: Preserve optimistic HP action for 5s after player self-report
-        const isHpActionProtected = Date.now() - hpActionOptimisticRef.current < 5000;
-        // B3: Preserve optimistic conditions for 5s after broadcast
-        const isConditionProtected = Date.now() - conditionOptimisticRef.current < 5000;
-        // Preserve optimistic reaction for 5s after toggle
-        const isReactionProtected = Date.now() - lastReactionToggleRef.current < 5000;
-        // ALWAYS merge local state for runtime-only fields (reaction_used is not in DB)
-        updateCombatants((prev) => {
-          const serverList = data.combatants as PlayerCombatant[];
-          return serverList.map((sc) => {
-            const local = prev.find((lc) => lc.id === sc.id);
-            let merged = sc;
-            // reaction_used is runtime-only (not in DB) — always preserve from local state
-            // Also protect during 5s window after optimistic toggle
-            if (local && typeof local.reaction_used === "boolean" && (sc.reaction_used === undefined || isReactionProtected)) {
-              merged = { ...merged, reaction_used: local.reaction_used };
+    if (data.combatants) {
+      // Preserve optimistic death saves for 5s after player click
+      const isDeathSaveProtected = Date.now() - deathSaveOptimisticRef.current < 5000;
+      // C.13: Preserve optimistic HP action for 5s after player self-report
+      const isHpActionProtected = Date.now() - hpActionOptimisticRef.current < 5000;
+      // B3: Preserve optimistic conditions for 5s after broadcast
+      const isConditionProtected = Date.now() - conditionOptimisticRef.current < 5000;
+      // Preserve optimistic reaction for 5s after toggle
+      const isReactionProtected = Date.now() - lastReactionToggleRef.current < 5000;
+      // ALWAYS merge local state for runtime-only fields (reaction_used is not in DB)
+      updateCombatants((prev) => {
+        const serverList = data.combatants as PlayerCombatant[];
+        return serverList.map((sc) => {
+          const local = prev.find((lc) => lc.id === sc.id);
+          let merged = sc;
+          // reaction_used is runtime-only (not in DB) — always preserve from local state
+          // Also protect during 5s window after optimistic toggle
+          if (local && typeof local.reaction_used === "boolean" && (sc.reaction_used === undefined || isReactionProtected)) {
+            merged = { ...merged, reaction_used: local.reaction_used };
+          }
+          // Preserve optimistic death saves
+          if (isDeathSaveProtected && local?.death_saves && sc.death_saves) {
+            const localTotal = (local.death_saves.successes ?? 0) + (local.death_saves.failures ?? 0);
+            const serverTotal = (sc.death_saves.successes ?? 0) + (sc.death_saves.failures ?? 0);
+            if (localTotal > serverTotal) {
+              merged = { ...merged, death_saves: local.death_saves };
             }
-            // Preserve optimistic death saves
-            if (isDeathSaveProtected && local?.death_saves && sc.death_saves) {
-              const localTotal = (local.death_saves.successes ?? 0) + (local.death_saves.failures ?? 0);
-              const serverTotal = (sc.death_saves.successes ?? 0) + (sc.death_saves.failures ?? 0);
-              if (localTotal > serverTotal) {
-                merged = { ...merged, death_saves: local.death_saves };
-              }
-            }
-            // P1.03: Preserve optimistic HP only for the specific combatant that was acted on
-            if (isHpActionProtected && local && sc.id === lastHpActionCombatantRef.current) {
-              merged = { ...merged, current_hp: local.current_hp, temp_hp: local.temp_hp };
-            }
-            // B3: Preserve conditions from broadcast over potentially stale server data
-            if (isConditionProtected && local?.conditions) {
-              merged = { ...merged, conditions: local.conditions, condition_durations: local.condition_durations };
-            }
-            return merged;
-          });
+          }
+          // P1.03: Preserve optimistic HP only for the specific combatant that was acted on
+          if (isHpActionProtected && local && sc.id === lastHpActionCombatantRef.current) {
+            merged = { ...merged, current_hp: local.current_hp, temp_hp: local.temp_hp };
+          }
+          // B3: Preserve conditions from broadcast over potentially stale server data
+          if (isConditionProtected && local?.conditions) {
+            merged = { ...merged, conditions: local.conditions, condition_durations: local.condition_durations };
+          }
+          return merged;
         });
+      });
+    }
+    // Mesa model: update DM plan from API response
+    if (data.dm_plan) {
+      useSubscriptionStore.getState().setSessionDmPlan(
+        (["free","pro","mesa"].includes(data.dm_plan as string) ? (data.dm_plan as string) : "free") as Plan
+      );
+    }
+    // A.6: Auto-join fallback via polling — same logic as state_sync handler
+    const enc = data.encounter as
+      | { is_active?: boolean; id?: string }
+      | null
+      | undefined;
+    if (
+      enc?.is_active &&
+      enc?.id &&
+      Array.isArray(data.combatants) &&
+      (data.combatants as PlayerCombatant[]).length > 0 &&
+      isRegisteredRef.current &&
+      pendingRegistrationRef.current &&
+      !autoJoinInProgressRef.current
+    ) {
+      const regName = pendingRegistrationRef.current.name;
+      const tokenId = effectiveTokenIdRef.current;
+      // B3: Match by session_token_id first (ID-based), then fallback to name
+      const alreadyIn = (data.combatants as PlayerCombatant[]).some(
+        (c) => c.is_player && (c.session_token_id === tokenId || c.name === regName)
+      );
+      if (!alreadyIn) {
+        autoJoinInProgressRef.current = true;
+        registerPlayerCombatant(effectiveTokenId, sessionId, pendingRegistrationRef.current)
+          .then(() => { autoJoinInProgressRef.current = false; pendingRegistrationRef.current = null; })
+          .catch(() => { autoJoinInProgressRef.current = false; });
       }
-      // Mesa model: update DM plan from API response
-      if (data.dm_plan) {
-        useSubscriptionStore.getState().setSessionDmPlan(
-          (["free","pro","mesa"].includes(data.dm_plan) ? data.dm_plan : "free") as Plan
-        );
-      }
-      // A.6: Auto-join fallback via polling — same logic as state_sync handler
-      if (
-        data.encounter?.is_active &&
-        data.encounter?.id &&
-        data.combatants?.length > 0 &&
-        isRegisteredRef.current &&
-        pendingRegistrationRef.current &&
-        !autoJoinInProgressRef.current
-      ) {
-        const regName = pendingRegistrationRef.current.name;
-        const tokenId = effectiveTokenIdRef.current;
-        // B3: Match by session_token_id first (ID-based), then fallback to name
-        const alreadyIn = (data.combatants as PlayerCombatant[]).some(
-          (c) => c.is_player && (c.session_token_id === tokenId || c.name === regName)
-        );
-        if (!alreadyIn) {
-          autoJoinInProgressRef.current = true;
-          registerPlayerCombatant(effectiveTokenId, sessionId, pendingRegistrationRef.current)
-            .then(() => { autoJoinInProgressRef.current = false; pendingRegistrationRef.current = null; })
-            .catch(() => { autoJoinInProgressRef.current = false; });
-        }
-      }
-    } catch {
-      // R2: Track failure for circuit breaker
-      consecutiveFailsRef.current++;
-      if (consecutiveFailsRef.current >= 3) {
-        pollBackoffRef.current = 30_000;
-      }
-    } finally {
-      // R1: Release in-flight guard
-      fetchInFlightRef.current = false;
     }
   }, [sessionId, updateTurnIndex, updateCombatants, effectiveTokenId]);
+
+  // S3.5: wire the 401 auth-refresh hook into the orchestrator.
+  // MUST use refreshSession() (not signInAnonymously) to preserve the anon_user_id
+  // that's linked to the session_token in the DB.
+  useEffect(() => {
+    fetchOrchestrator.setUnauthorizedHandler(async () => {
+      try {
+        const supabase = createClient();
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        return !refreshError;
+      } catch {
+        return false;
+      }
+    });
+    return () => {
+      fetchOrchestrator.setUnauthorizedHandler(null);
+    };
+  }, []);
 
   // A.1: Keep ref in sync for state machine polling
   fetchFullStateRef.current = fetchFullState;
@@ -1280,9 +1262,9 @@ export function PlayerJoinClient({
                   .catch(() => { /* Token may already be marked — ignore */ });
               }
               // CAT-1: Fetch full state to hydrate combat board after acceptance
-              // Finding 4: late-join acceptance is a recovery path — bypass throttle
+              // S3.5: late-join acceptance is a recovery path — bypass throttle
               if (encounterIdRef.current) {
-                fetchFullState(encounterIdRef.current, { priority: "emergency" }).catch(() => { /* best-effort */ });
+                fetchFullState(encounterIdRef.current, { priority: "emergency", caller: "late_join:cat_1" }).catch(() => { /* best-effort */ });
               }
             }
           }
@@ -1379,8 +1361,8 @@ export function PlayerJoinClient({
           setDmOffline(false);
 
           // 4. Fallback: if the initiative_map references IDs we don't have,
-          // schedule an emergency fetchFullState. Debounced by fetchInFlightRef
-          // (already set inside fetchFullState) so rapid adds don't storm the endpoint.
+          // schedule an emergency fetchFullState. The orchestrator's dedup/coalesce
+          // prevents storming the endpoint on rapid repeats.
           if (inconsistencyDetected) {
             trackEvent("combat:combatant_add_desync_detected", {
               encounter_id: payload.encounter_id,
@@ -1389,7 +1371,9 @@ export function PlayerJoinClient({
             if (eid) {
               // 500ms debounce to let any in-flight second combined event land first.
               setTimeout(() => {
-                fetchFullState(eid).catch(() => { /* best-effort */ });
+                // S3.5 callers map: Finding 2 (desync critical) — emergency.
+                fetchFullState(eid, { priority: "emergency", caller: "combat:combatant_add_reorder_fallback" })
+                  .catch(() => { /* best-effort */ });
               }, 500);
             }
           }
@@ -1486,9 +1470,9 @@ export function PlayerJoinClient({
                 .catch(() => { /* Token may already be marked — ignore */ });
             }
             // Fetch full state to hydrate the combat board
-            // Finding 4: late-join response is a recovery path — bypass throttle
+            // S3.5: late-join response is a recovery path — bypass throttle
             if (encounterIdRef.current) {
-              fetchFullState(encounterIdRef.current, { priority: "emergency" }).catch(() => { /* best-effort */ });
+              fetchFullState(encounterIdRef.current, { priority: "emergency", caller: "late_join:response_accepted" }).catch(() => { /* best-effort */ });
             }
           } else if (!payload.accepted) {
             setLateJoinStatus("rejected");
@@ -1620,14 +1604,14 @@ export function PlayerJoinClient({
             // A.1: Transition to CONNECTED — stops all polling, fetches reconciliation state
             transitionTo("CONNECTED", "SUBSCRIBED");
             if (encounterIdRef.current) {
-              // Finding 4: channel SUBSCRIBED handshake is a recovery path —
+              // S3.5: channel SUBSCRIBED handshake is a recovery path —
               // bypass throttle so reconciliation isn't delayed.
-              fetchFullState(encounterIdRef.current, { priority: "emergency" });
+              fetchFullState(encounterIdRef.current, { priority: "emergency", caller: "channel_subscribed" });
               // DESYNC-FIX-3: Second fetch after 1s to catch broadcasts lost during
               // the subscribe handshake (50-200ms window where events can be missed).
               setTimeout(() => {
                 if (encounterIdRef.current && connStateRef.current === "CONNECTED") {
-                  fetchFullState(encounterIdRef.current, { priority: "emergency" });
+                  fetchFullState(encounterIdRef.current, { priority: "emergency", caller: "channel_subscribed_catchup" });
                 }
               }, 1000);
             }
@@ -1697,60 +1681,66 @@ export function PlayerJoinClient({
     let pollDelay = 5000;
 
     const poll = async () => {
-      try {
-        if (cancelled || lateJoinRegisteredRef.current) return; // Already resolved or unmounted
-        const res = await fetch(`/api/session/${sessionId}/state`);
-        if (cancelled) return;
-        if (!res.ok) {
-          // Backoff on server errors: 5s → 10s → 20s → 30s cap
-          pollDelay = Math.min(pollDelay * 2, 30000);
-          return;
-        }
-        pollDelay = 5000; // Reset on success
-        const { data } = await res.json();
-        if (!data?.combatants || !lateJoinDataRef.current || cancelled) return;
-
-        const playerName = lateJoinDataRef.current.name;
-        const tokenId = effectiveTokenIdRef.current;
-        // B3: Match by session_token_id first (ID-based), then fallback to name
-        const found = data.combatants.find(
-          (c: { is_player?: boolean; name?: string; session_token_id?: string | null }) =>
-            c.is_player && (c.session_token_id === tokenId || c.name === playerName)
-        );
-
-        if (found && !lateJoinRegisteredRef.current && !cancelled) {
-          lateJoinRegisteredRef.current = true;
-          lateJoinFinalStatusRef.current = true; // A.4: guard against timer overwrite
-          if (lateJoinTimeoutRef.current) {
-            clearTimeout(lateJoinTimeoutRef.current);
-            lateJoinTimeoutRef.current = null;
-          }
-          if (lateJoinMaxTimeoutRef.current) {
-            clearTimeout(lateJoinMaxTimeoutRef.current);
-            lateJoinMaxTimeoutRef.current = null;
-          }
-          lateJoinRequestIdRef.current = null;
-          setLateJoinStatus("accepted");
-          setIsRegistered(true);
-          setRegisteredName(playerName);
-          persistPlayerIdentity(sessionId, effectiveTokenId, playerName);
-          // Only mark token — combatant already created by DM
-          markPlayerToken(effectiveTokenId, sessionId, playerName)
-            .catch(() => { /* Token may already be marked — ignore */ });
-          // Hydrate full combat state from server response so player sees the board immediately
-          if (data.encounter) {
-            setRound(data.encounter.round_number ?? 1);
-            updateTurnIndex(data.encounter.current_turn_index ?? 0);
-            setActive(data.encounter.is_active ?? false);
-            if (data.encounter.id) setCurrentEncounterId(data.encounter.id);
-          }
-          if (data.combatants) {
-            updateCombatants(data.combatants);
-          }
-        }
-      } catch {
-        // Network error — backoff
+      if (cancelled || lateJoinRegisteredRef.current) return; // Already resolved or unmounted
+      // S3.5: late-join polling routed through the orchestrator (background).
+      // The dedicated post-accept fetch (inside late_join_response / combatant_add
+      // handlers) remains "emergency" so acceptance hydrates instantly.
+      // `fetchOrchestrator.fetch()` never throws — returns null on drop/failure.
+      const data = await fetchOrchestrator.fetch({
+        encounterId: sessionId,
+        priority: "background",
+        caller: "late_join_poll",
+      });
+      if (cancelled) return;
+      if (!data) {
+        // Dropped/failed — mirror the pre-S3.5 backoff curve.
         pollDelay = Math.min(pollDelay * 2, 30000);
+        return;
+      }
+      pollDelay = 5000; // Reset on success
+      const combatants = data.combatants as
+        | Array<{ is_player?: boolean; name?: string; session_token_id?: string | null }>
+        | undefined;
+      if (!combatants || !lateJoinDataRef.current || cancelled) return;
+
+      const playerName = lateJoinDataRef.current.name;
+      const tokenId = effectiveTokenIdRef.current;
+      // B3: Match by session_token_id first (ID-based), then fallback to name
+      const found = combatants.find(
+        (c) => c.is_player && (c.session_token_id === tokenId || c.name === playerName)
+      );
+
+      if (found && !lateJoinRegisteredRef.current && !cancelled) {
+        lateJoinRegisteredRef.current = true;
+        lateJoinFinalStatusRef.current = true; // A.4: guard against timer overwrite
+        if (lateJoinTimeoutRef.current) {
+          clearTimeout(lateJoinTimeoutRef.current);
+          lateJoinTimeoutRef.current = null;
+        }
+        if (lateJoinMaxTimeoutRef.current) {
+          clearTimeout(lateJoinMaxTimeoutRef.current);
+          lateJoinMaxTimeoutRef.current = null;
+        }
+        lateJoinRequestIdRef.current = null;
+        setLateJoinStatus("accepted");
+        setIsRegistered(true);
+        setRegisteredName(playerName);
+        persistPlayerIdentity(sessionId, effectiveTokenId, playerName);
+        // Only mark token — combatant already created by DM
+        markPlayerToken(effectiveTokenId, sessionId, playerName)
+          .catch(() => { /* Token may already be marked — ignore */ });
+        // Hydrate full combat state from server response so player sees the board immediately
+        const enc = data.encounter as
+          | { round_number?: number; current_turn_index?: number; is_active?: boolean; id?: string }
+          | null
+          | undefined;
+        if (enc) {
+          setRound(enc.round_number ?? 1);
+          updateTurnIndex(enc.current_turn_index ?? 0);
+          setActive(enc.is_active ?? false);
+          if (enc.id) setCurrentEncounterId(enc.id);
+        }
+        updateCombatants(data.combatants as PlayerCombatant[]);
       }
     };
 
@@ -1807,6 +1797,8 @@ export function PlayerJoinClient({
 
   // Lobby polling — fallback when broadcast `combat:started` is missed.
   // Polls session state with exponential backoff on errors: 5s → 10s → 20s → 30s cap.
+  // S3.5: routed through `fetchOrchestrator` with priority=background so that
+  // 8 tabs polling in sync cannot produce more than 4 req/minute at the endpoint.
   useEffect(() => {
     if (!isRegistered || active || !sessionId) return;
 
@@ -1816,30 +1808,42 @@ export function PlayerJoinClient({
 
     const poll = async () => {
       if (cancelled || document.visibilityState === "hidden") return;
-      try {
-        const res = await fetch(`/api/session/${sessionId}/state`);
-        if (cancelled) return;
-        if (!res.ok) { delay = Math.min(delay * 2, 30000); return; }
-        delay = 5000; // Reset on success
-        const { data } = await res.json();
-        if (data?.encounter?.is_active && data?.encounter?.id) {
-          setActive(true);
-          setCurrentEncounterId(data.encounter.id);
-          if (data.combatants) updateCombatants(data.combatants);
-          if (data.encounter.round_number) setRound(data.encounter.round_number);
-          if (data.encounter.current_turn_index !== undefined) updateTurnIndex(data.encounter.current_turn_index);
-        }
-        // BT2-04: Update lobby player list from session tokens (source of truth)
-        if (data?.lobby_players && Array.isArray(data.lobby_players)) {
-          const serverPlayers = (data.lobby_players as Array<{ id: string; player_name: string }>)
-            .filter((t) => !!t.player_name)
-            .map((t) => ({ id: t.id, name: t.player_name }));
-          setJoinedPlayers((prev) => {
-            if (prev.length === serverPlayers.length && prev.every((p, i) => p.id === serverPlayers[i]?.id)) return prev;
-            return serverPlayers;
-          });
-        }
-      } catch { delay = Math.min(delay * 2, 30000); }
+      const data = await fetchOrchestrator.fetch({
+        encounterId: sessionId,
+        priority: "background",
+        caller: "lobby_poll",
+      });
+      if (cancelled) return;
+      if (!data) {
+        // Dropped by orchestrator (throttle/circuit) OR network fail. Backoff
+        // on presumed-failure; next tick the orchestrator will allow us through
+        // once its 15s window elapses. Using the same backoff cap maintains
+        // the prior recovery envelope.
+        delay = Math.min(delay * 2, 30000);
+        return;
+      }
+      delay = 5000; // Reset on success
+      const enc = data.encounter as
+        | { is_active?: boolean; id?: string; round_number?: number; current_turn_index?: number }
+        | null
+        | undefined;
+      if (enc?.is_active && enc?.id) {
+        setActive(true);
+        setCurrentEncounterId(enc.id);
+        if (data.combatants) updateCombatants(data.combatants as PlayerCombatant[]);
+        if (enc.round_number) setRound(enc.round_number);
+        if (enc.current_turn_index !== undefined) updateTurnIndex(enc.current_turn_index);
+      }
+      // BT2-04: Update lobby player list from session tokens (source of truth)
+      if (data.lobby_players && Array.isArray(data.lobby_players)) {
+        const serverPlayers = (data.lobby_players as Array<{ id: string; player_name: string }>)
+          .filter((t) => !!t.player_name)
+          .map((t) => ({ id: t.id, name: t.player_name }));
+        setJoinedPlayers((prev) => {
+          if (prev.length === serverPlayers.length && prev.every((p, i) => p.id === serverPlayers[i]?.id)) return prev;
+          return serverPlayers;
+        });
+      }
     };
 
     const schedule = () => {
@@ -2069,12 +2073,13 @@ export function PlayerJoinClient({
       };
       if (encounterIdRef.current) {
         try {
-          await fetchFullState(encounterIdRef.current, { priority: "emergency" });
+          // S3.5: visibility_change:visible must not be blocked by throttle (HIGH-4).
+          await fetchFullState(encounterIdRef.current, { priority: "emergency", caller: "visibility_change:visible" });
           emitReconnectTelemetry();
         } catch {
           await new Promise((r) => setTimeout(r, 2000));
           try {
-            await fetchFullState(encounterIdRef.current!, { priority: "emergency" });
+            await fetchFullState(encounterIdRef.current!, { priority: "emergency", caller: "visibility_change:visible_retry" });
             emitReconnectTelemetry();
           } catch { /* give up */ }
         }
@@ -2115,7 +2120,8 @@ export function PlayerJoinClient({
       // "high" confidence since `navigator.onLine` flipping is unambiguous.
       if (encounterIdRef.current) {
         try {
-          await fetchFullState(encounterIdRef.current, { priority: "emergency" });
+          // S3.5: network_recovery is always an emergency — channel was dead.
+          await fetchFullState(encounterIdRef.current, { priority: "emergency", caller: "network_recovery" });
           if (isRegisteredRef.current) {
             trackEvent("player:reconnected", {
               session_id: sessionId,
@@ -2223,7 +2229,8 @@ export function PlayerJoinClient({
       }
       // RECONNECTING — don't fetch, wait for transition
       if (connStateRef.current === "RECONNECTING") return;
-      fetchFullState(eid);
+      // S3.5: turn_poll is high priority — active UX, needs reactive updates.
+      fetchFullState(eid, { priority: "high", caller: "turn_poll" });
     }, connStateRef.current === "CONNECTED" ? 30000 : 10000); // 30s connected, 10s fallback (was 15s/3s)
     return () => {
       if (turnPollRef.current) {
