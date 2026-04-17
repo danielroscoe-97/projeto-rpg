@@ -4,6 +4,8 @@ import { PublicAbilityScoresGrid } from "@/components/public/PublicAbilityScores
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
+import { siteUrl } from "@/lib/seo/site-url";
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "D&D 5e Ability Scores & Modifier Calculator",
@@ -60,15 +62,12 @@ function AbilityScoresJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "/",
+      url: siteUrl("/"),
     },
   };
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <script {...jsonLdScriptProps(jsonLd)} />
   );
 }
 

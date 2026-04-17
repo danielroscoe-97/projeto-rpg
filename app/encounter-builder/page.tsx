@@ -5,6 +5,8 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 import { getSrdMonsters, toSlug } from "@/lib/srd/srd-data-server";
 import { PublicFooter } from "@/components/public/PublicFooter";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
+import { siteUrl } from "@/lib/seo/site-url";
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "D&D 5e Encounter Builder — Difficulty Calculator",
@@ -66,15 +68,12 @@ function EncounterBuilderJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "/",
+      url: siteUrl("/"),
     },
   };
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <script {...jsonLdScriptProps(jsonLd)} />
   );
 }
 

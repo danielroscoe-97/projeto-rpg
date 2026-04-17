@@ -4,6 +4,8 @@ import { PublicActionsGrid } from "@/components/public/PublicActionsGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
+import { siteUrl } from "@/lib/seo/site-url";
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "D&D 5e Actions in Combat — Quick Reference",
@@ -64,15 +66,12 @@ function ActionsJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "/",
+      url: siteUrl("/"),
     },
   };
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <script {...jsonLdScriptProps(jsonLd)} />
   );
 }
 

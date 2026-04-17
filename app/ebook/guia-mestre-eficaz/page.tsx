@@ -6,6 +6,7 @@ import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
 import { EbookCTA } from "@/components/blog/EbookCTA";
 import { BLOG_NAV_LINKS } from "@/lib/blog/blog-nav-links";
 
+import { jsonLdScriptProps } from "@/lib/seo/metadata";
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "/";
 
 export const metadata: Metadata = {
@@ -200,18 +201,9 @@ export default function EbookPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(faqJsonLd)} />
+      <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
       <Navbar
         brand="Pocket DM"
         brandHref="/"
