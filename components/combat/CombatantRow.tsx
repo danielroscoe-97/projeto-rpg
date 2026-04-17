@@ -154,16 +154,35 @@ export const CombatantRow = memo(function CombatantRow({
   // on rows that are NOT the incoming actor. This unblocks the DM auto-scroll
   // refined guard in CombatSessionClient. Panel on the incoming actor stays
   // open so DM edits in progress aren't wiped.
+  //
+  // Two-phase coordination:
+  //   `combat:turn-advancing` — fired BEFORE `advanceTurn()`. Close the panel
+  //      on the OUTGOING row (prev_turn_index) so the auto-scroll guard that
+  //      runs on the next render has a clean slate. We don't know next_turn_index
+  //      yet at this point.
+  //   `combat:turn-advanced`  — fired AFTER `advanceTurn()`. Close the panel on
+  //      any row that is not the incoming actor; keeps panels on the new actor
+  //      open so DM edits in progress survive the transition.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const handler = (evt: Event) => {
+    const handleAdvancing = (evt: Event) => {
+      const detail = (evt as CustomEvent<{ prev_turn_index?: number }>).detail;
+      const prevIdx = detail?.prev_turn_index;
+      if (typeof prevIdx !== "number" || typeof index !== "number") return;
+      if (index === prevIdx) setOpenPanel(null);
+    };
+    const handleAdvanced = (evt: Event) => {
       const detail = (evt as CustomEvent<{ next_turn_index?: number }>).detail;
       const nextIdx = detail?.next_turn_index;
       if (typeof nextIdx !== "number" || typeof index !== "number") return;
       if (index !== nextIdx) setOpenPanel(null);
     };
-    window.addEventListener("combat:turn-advanced", handler as EventListener);
-    return () => window.removeEventListener("combat:turn-advanced", handler as EventListener);
+    window.addEventListener("combat:turn-advancing", handleAdvancing as EventListener);
+    window.addEventListener("combat:turn-advanced", handleAdvanced as EventListener);
+    return () => {
+      window.removeEventListener("combat:turn-advancing", handleAdvancing as EventListener);
+      window.removeEventListener("combat:turn-advanced", handleAdvanced as EventListener);
+    };
   }, [index]);
 
   // --- Lair Action: special minimal row with expandable lair actions list ---
