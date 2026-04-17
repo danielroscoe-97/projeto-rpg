@@ -2183,6 +2183,7 @@
     "custom_condition_desc_placeholder": "Description (optional)",
     "custom_condition_apply": "Apply",
     "custom_condition_aria": "Custom condition: {name}",
+    "custom_condition_limits_hint": "Name up to 32 characters. Description up to 200.",
     "quick_actions_label": "Quick action (this turn)",
     "action_dodge": "Dodge",
     "action_dash": "Dash",

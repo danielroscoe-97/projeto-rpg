@@ -6,7 +6,7 @@
  *   DELETE /api/favorites  body { kind, slug }  → 204 No Content
  *
  * All routes require a non-anonymous auth user (anon users rejected with 401).
- * Rate limit: 30/min per route+IP.
+ * Rate limit: 30/min per user_id (falls back to IP if auth resolution fails).
  *
  * Hard cap of 50 favorites per kind per user (defense-in-depth; client also
  * enforces). 409 on limit, 409 on duplicate.
@@ -159,7 +159,24 @@ const deleteHandler: Parameters<typeof withRateLimit>[0] = async function delete
   }
 };
 
-const rateLimitConfig = { max: 30, window: "1 m" } as const;
+// S5.2 B1 fix: key rate limiter by user_id (not IP) so shared NAT / corporate
+// / dorm networks don't collectively throttle, and so the same user hopping
+// between IPs (mobile → wifi) doesn't reset their bucket. Falls back to IP
+// when auth resolution fails — that path 401s downstream anyway.
+const rateLimitConfig = {
+  max: 30,
+  window: "1 m" as const,
+  identifier: async (req: NextRequest): Promise<string | null> => {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.auth.getUser();
+      if (data.user && !data.user.is_anonymous) return `user:${data.user.id}`;
+    } catch {
+      /* fall through to IP bucket */
+    }
+    return null;
+  },
+};
 export const GET = withRateLimit(getHandler, rateLimitConfig);
 export const POST = withRateLimit(postHandler, rateLimitConfig);
 export const DELETE = withRateLimit(deleteHandler, rateLimitConfig);

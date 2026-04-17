@@ -2183,6 +2183,7 @@
     "custom_condition_desc_placeholder": "Descrição (opcional)",
     "custom_condition_apply": "Aplicar",
     "custom_condition_aria": "Condição customizada: {name}",
+    "custom_condition_limits_hint": "Nome até 32 caracteres. Descrição até 200.",
     "quick_actions_label": "Ação rápida (este turno)",
     "action_dodge": "Esquivar",
     "action_dash": "Disparada",

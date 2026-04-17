@@ -119,6 +119,22 @@ export function useFavorites(kind: FavoriteKind) {
     void reload();
   }, [reload]);
 
+  // S5.2 B3: cross-device sync — refetch on tab focus / visibility change so a
+  // user with Device A adding a favorite sees it on Device B after returning
+  // to the tab. Guest/anon stays local-only (no cross-device concept).
+  useEffect(() => {
+    if (!auth.isAuth) return;
+    const handler = () => {
+      if (document.visibilityState === "visible") void reload();
+    };
+    window.addEventListener("focus", handler);
+    document.addEventListener("visibilitychange", handler);
+    return () => {
+      window.removeEventListener("focus", handler);
+      document.removeEventListener("visibilitychange", handler);
+    };
+  }, [auth.isAuth, reload]);
+
   // ---- Subscribe to local-store changes (guest/anon) ---------------
   useEffect(() => {
     if (auth.isAuth) return;
@@ -161,12 +177,37 @@ export function useFavorites(kind: FavoriteKind) {
           body: JSON.stringify({ kind, slug }),
         });
         if (res.status === 409) {
+          // S5.2 S3: differentiate already_favorite (idempotent) vs limit_reached
+          try {
+            const body = await res.json();
+            if (body?.error === "already_favorite") {
+              trackEvent("favorites:added", { kind });
+              await reload();
+              return true;
+            }
+          } catch { /* malformed body — fall through to limit_reached */ }
           setLimitReached(true);
           trackEvent("favorites:limit_reached", { kind });
           await reload();
           return false;
         }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        // S5.2 B2: replace optimistic entry with real server row so favorited_at
+        // is canonical and sort order (newest-first) stays stable across reloads.
+        try {
+          const body = await res.json();
+          const serverRow = body?.favorite ?? null;
+          if (serverRow && typeof serverRow === "object") {
+            const parsed: Favorite = {
+              kind,
+              slug,
+              favorited_at: typeof serverRow.favorited_at === "string"
+                ? Date.parse(serverRow.favorited_at)
+                : Date.now(),
+            };
+            setFavorites((prev) => [parsed, ...prev.filter((f) => f.slug !== slug)]);
+          }
+        } catch { /* optimistic stays — next reload() will correct */ }
         trackEvent("favorites:added", { kind });
         return true;
       } catch {

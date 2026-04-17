@@ -479,8 +479,15 @@ export function PlayerInitiativeBoard({
   // `combatants` would re-fire on any HP/condition edit.
   const [pulseTurnId, setPulseTurnId] = useState<string | null>(null);
   const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // S4.1 P1: mirror DM/Guest first-render guard — player arriving mid-combat
+  // (reconnect, late-join) should NOT flash the pulse on mount.
+  const isFirstPulseRender = useRef(true);
   useEffect(() => {
     turnRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (isFirstPulseRender.current) {
+      isFirstPulseRender.current = false;
+      return;
+    }
     const current = combatants[currentTurnIndex];
     if (current) {
       setPulseTurnId(current.id);
