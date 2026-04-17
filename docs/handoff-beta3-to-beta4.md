@@ -21,8 +21,11 @@ Cada doc é auto-suficiente. Lê todos antes de codar.
 3. **[docs/epic-2-combat-ux-hotfixes.md](epic-2-combat-ux-hotfixes.md)** — UX spec v2 (14 hotfixes, H1/H2/H3/H4/H7 shippados, H5/H6/H8/H9/H10/H11/H12/H13/H14 pendentes)
 4. **[docs/sprint-plan-beta3-remediation.md](sprint-plan-beta3-remediation.md)** — Sprint plan completo (Sprints 1-2 feitos; 3-4-5 pendentes)
 5. **[docs/spec-feedback-retroactive-voting.md](spec-feedback-retroactive-voting.md)** — Votação (já shippada, referência)
-6. **[docs/code-review-final-2026-04-17.md](code-review-final-2026-04-17.md)** — Review end-to-end do que já subiu (pontos de atenção)
-7. **[CLAUDE.md](../CLAUDE.md)** — Regras IMUTÁVEIS:
+6. **[docs/spec-polymorph-wildshape.md](spec-polymorph-wildshape.md)** — Polymorph + Wild Shape (~16h, migration 139, feature flag `ff_transformation_v1`)
+7. **[docs/spec-favorites.md](spec-favorites.md)** — Favoritos (~12h, reusa pattern de `audio_favorites` migration 135)
+8. **[docs/content-adds-beta3-items.md](content-adds-beta3-items.md)** — Rod/Fragmento/Braceletes já traduzidos + bug sistêmico descoberto
+9. **[docs/code-review-final-2026-04-17.md](code-review-final-2026-04-17.md)** — Review end-to-end do que já subiu (pontos de atenção)
+10. **[CLAUDE.md](../CLAUDE.md)** — Regras IMUTÁVEIS:
    - Combat Parity Rule (Guest/Anon/Auth em toda UI)
    - Resilient Reconnection (Zero-Drop Guarantee)
    - SRD Content Compliance (nenhum conteúdo não-SRD em páginas públicas)
@@ -119,14 +122,24 @@ Reviews adversariais de cada track shippado (pra entender padrões de qualidade 
 
 Alguns destes exigem decisão/validação do Dani antes. Se beta 4 for usar, shipa; se não, deixa bucket.
 
-#### S5.1 — Polymorph / transformação do jogador
-- **Feedback:** "Jogador se transformar num monstro, seja via polymorf... segunda barrinha de vida que vai começar a morrer antes... ele pode conseguir virar um grupo quando ele transformar"
-- **Status:** Não tem spec detalhada. Precisa spec + validação com DMs (Lucas pediu, é o único que pediu até agora).
-- **Sugestão:** Implementar primeiro a versão mínima "transformar virando grupo de 1 com 2 HP bars", fecha 80% da dor.
+#### S5.1 — Polymorph + Wild Shape ✅ SPEC PRONTA
+- **Feedback:** "Jogador se transformar num monstro, seja via polymorf... segunda barrinha de vida que vai começar a morrer antes..."
+- **Dani confirmou:** entra em beta 4. Cobre polymorph (spell) E wild shape (druida feature).
+- **Spec completa:** [docs/spec-polymorph-wildshape.md](spec-polymorph-wildshape.md)
+- **Estimativa:** ~16h (não 10-12h original — wildshape overflow + 2 HP bars + parity 3-mode são complexos)
+- **Plano B se apertar:** só Polymorph em B4, Wild Shape em B5 → economiza ~3h
+- Migration 139 (próxima livre), feature flag `ff_transformation_v1` default OFF
+- **Critical:** `combatants.monster_id` é TEXT (não UUID) desde migration 014. Spec já corrigiu.
 
-#### S5.2 — Favoritar monstros/itens/condições
+#### S5.2 — Favoritar monstros/itens/spells/condições ✅ SPEC PRONTA
 - **Feedback:** "Favoritar as fichas dos monstros... dentro do combate pra ele aparecer como um atalho"
-- **Status:** Não tem spec. Precisa definir: persistência (DB vs localStorage), UX de acesso rápido, limite de favoritos.
+- **Dani confirmou:** entra em beta 4.
+- **Spec completa:** [docs/spec-favorites.md](spec-favorites.md)
+- **Estimativa:** ~12h (não 8h — scope real inclui 4 card components + 4 browsers + 3 modos + drawer + widget público)
+- **Key insight:** projeto **já tem `audio_favorites`** (migration 135) + `favorites-store.ts` com pattern idêntico (guest localStorage + auth DB + rate limit). Spec manda **copiar o padrão** em vez de reinventar.
+- Limite 200/tipo (baseado em P95 real), widget público com SRD filter obrigatório
+- Anon player: localStorage (efêmero), não DB
+- **Cortes se apertar:** widget público + PATCH reorder → out-of-scope fallback
 
 #### S5.3 — Richard / dice roller clicável
 - **Feedback:** "O Richard não tá dando pra clicar, ele tem que dar pra clicar pra ser o D6, né?"
@@ -138,10 +151,25 @@ Alguns destes exigem decisão/validação do Dani antes. Se beta 4 for usar, shi
 - **Spec:** [spike-beta-test-3-2026-04-17.md Finding 9](spike-beta-test-3-2026-04-17.md)
 - Salvar recap em localStorage com TTL 24h
 
-#### S5.5 — Content additions
-- **Feedback:** "Faltam itens: Rod of the Pact Keeper, Bracers of Illusionist, Astral Shards"
-- **Não é código** — é data addition no Supabase (`items` table) + filter-srd-public.ts re-run se for SRD
-- **⚠️ Critical:** SRD Compliance — só adicionar em `public/srd/` se realmente é SRD 5.1 / SRD 2024 / MAD. Rod of Pact Keeper = DMG → `data/srd/` só, gated via `/api/srd/full/`
+#### S5.5 — Content additions ✅ ENTREGUE (commit `b2dbdfb`, em branch `seo/sprint-4-1-core-web-vitals`)
+- **Descoberta:** os 3 itens **JÁ EXISTIAM** em `data/srd/items.json` com `srd: false`. O bug era **tradução PT-BR ausente**.
+- **Identificações corrigidas:**
+  1. "Rod of the Pact Keeper" → 6 variantes (DMG 2014 + DMG 2024, +1/+2/+3)
+  2. "Bracers of Illusionist" → TYPO. Nome correto: **"Illusionist's Bracers"** (fonte GGR, não DMG)
+  3. "Astral Shards" → singular: **"Astral Shard"** (fonte TCE, não Spelljammer)
+- **Arquivo alterado:** `data/srd/item-descriptions-pt.json` (+8 entradas PT-BR)
+- **Doc:** [docs/content-adds-beta3-items.md](content-adds-beta3-items.md)
+- **SRD Compliance:** CLEAN (`public/srd/items.json` inalterado, 0 vazamentos)
+
+#### S5.5b — 🚨 BUG SISTÊMICO DESCOBERTO (alta prioridade pro beta 4)
+- **Local:** [lib/srd/srd-search.ts:388-394](../lib/srd/srd-search.ts#L388-L394) `injectTranslationsAndRebuild`
+- **Bug:** faz lookup `translations.items[i.id]` mas `item-descriptions-pt.json` está indexado por `toSlug(name)` (sem sufixo de fonte).
+- **Impacto:** afeta busca PT-BR de **TODOS os 2707 itens**. Provavelmente também explica por que outros conteúdos PT-BR do Lucas não apareciam na busca.
+- **Opções de fix:**
+  - A) Regenerar `item-descriptions-pt.json` com chaves por id (breaking)
+  - B) Mudar `srd-search.ts:388-394` pra tentar slug-fallback primeiro antes do id
+  - Recomendado: B (compat back, low risk)
+- **Estimativa:** ~1-2h incluindo testes
 
 #### S5.6 — Encounter duration telemetry (Finding 8)
 - **Feedback:** SUMMARY.md reportou "duração média 18s" enganador porque `started_at` NULL
