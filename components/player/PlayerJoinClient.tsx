@@ -260,9 +260,11 @@ export function PlayerJoinClient({
   const pendingRegistrationRef = useRef<{ name: string; initiative: number; hp: number | null; ac: number | null } | null>(null);
   const isRegisteredRef = useRef(isRegistered);
   const autoJoinInProgressRef = useRef(false);
-  const combatStartTrackedRef = useRef(false);
+  const combatStartTrackedRef = useRef(isActive);
+  const activeRef = useRef(isActive);
   // Keep ref in sync
   useEffect(() => { isRegisteredRef.current = isRegistered; }, [isRegistered]);
+  useEffect(() => { activeRef.current = active; }, [active]);
   // Resilient reconnection state
   const [reconnectingAs, setReconnectingAs] = useState<string | null>(null);
   const [sessionRevoked, setSessionRevoked] = useState(false);
@@ -1003,10 +1005,12 @@ export function PlayerJoinClient({
           dmLastSeenRef.current = Date.now();
           setDmOffline(false);
           // state_sync means combat is active — update state to exit lobby
-          if (!combatStartTrackedRef.current) {
+          // Only track on the inactive→active transition (not on reconnect to live combat)
+          if (!combatStartTrackedRef.current && !activeRef.current) {
             combatStartTrackedRef.current = true;
             trackEvent("player:combat_started", {
               mode: isRegisteredRef.current ? "auth" : "anon",
+              source: campaignId ? "/invite" : "/join",
               combatant_count: payload.combatants?.length ?? 0,
             });
           }

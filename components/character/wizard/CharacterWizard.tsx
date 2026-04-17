@@ -50,6 +50,7 @@ interface CharacterWizardProps {
 type Step = 1 | 2 | 3;
 
 export function CharacterWizard({
+  campaignId,
   campaignName,
   onComplete,
   onCancel,
@@ -90,6 +91,8 @@ export function CharacterWizard({
     try {
       await onComplete(data);
       trackEvent("character:created", {
+        mode: "auth",
+        source: campaignId ? "campaign" : "standalone",
         class: data.characterClass,
         race: data.race,
         level: data.level,
