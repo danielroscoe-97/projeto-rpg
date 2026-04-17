@@ -2,6 +2,27 @@
 
 Snapshot before Sprint 1 (Canonical Foundation). Use this to measure delta over 30/60/90 days.
 
+---
+
+## 🔒 Canonical domain decision (locked 2026-04-17)
+
+**Canonical: `https://pocketdm.com.br`** — apex, no www.
+
+| Variant | Redirects to | Status |
+|---|---|---|
+| `https://pocketdm.com.br` | — | ✅ canonical |
+| `https://www.pocketdm.com.br` | `https://pocketdm.com.br/` | 301 |
+| `http://pocketdm.com.br` | `https://pocketdm.com.br/` | 308 |
+| `http://www.pocketdm.com.br` | `https://www.pocketdm.com.br/` → apex | 308 → 301 |
+
+**Configured at:** Vercel Dashboard → Project → Settings → Domains.
+
+**`NEXT_PUBLIC_SITE_URL=https://pocketdm.com.br`** in all 3 Vercel environments.
+
+**See:** [seo-architecture.md](./seo-architecture.md) for full rationale and switch procedure.
+
+---
+
 ## Search Console (últimos 28 dias, corte 2026-04-17)
 
 ### Performance geral

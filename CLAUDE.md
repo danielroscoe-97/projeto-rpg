@@ -277,4 +277,38 @@ O SRD 5.1 (Systems Reference Document) é licenciado sob **CC-BY-4.0** pela Wiza
 2. Rodar `npx tsx scripts/filter-srd-public.ts` para atualizar `public/srd/`
 3. Verificar contagem: monsters ~1122 (419 SRD + 346 SRD 2024 + 357 MAD), spells ~604
 4. Se os números subirem significativamente, investigar se conteúdo não-SRD vazou
+
+# SEO Canonical Decisions — REGRAS IMUTÁVEIS
+
+**Spec completo:** `docs/seo-architecture.md`
+
+## Decisões travadas (não reverter sem review)
+
+1. **Canônico é apex** — `https://pocketdm.com.br` (sem www). Vercel redireciona www/http → apex.
+2. **Estratégia de locale é Opção B** — URLs semânticas por idioma (`/monstros` vs `/monsters`), NÃO route-prefix (`/en/*`). 83% do tráfego é BR; PT-BR é default.
+3. **Fonte única para URLs** — `lib/seo/site-url.ts` (`SITE_URL` + `siteUrl(path)`). Metadata Next.js usa paths relativos (`metadataBase` resolve); JSON-LD usa `siteUrl()` (absoluto).
+4. **Todo `<script type="application/ld+json">` usa `jsonLdScriptProps(data)`** — consistência de escape `</script>` (XSS safety).
+5. **Metadata de detail pages usa builders tipados** — `monsterMetadata`, `spellMetadata`, `featMetadata`, `backgroundMetadata`, `itemMetadata` em `lib/seo/metadata.ts`.
+
+## Anti-Patterns — PROIBIDO
+
+```
+// ❌ NUNCA hardcodar domínio em páginas → usar siteUrl() ou path relativo
+// ❌ NUNCA emitir JSON-LD sem jsonLdScriptProps() → XSS risk
+// ❌ NUNCA introduzir prefixo de locale (/en/*, /pt-BR/*) → conflito com decisão 2
+// ❌ NUNCA restaurar array `keywords` em metadata → Google ignora desde 2009
+// ❌ NUNCA adicionar aggregateRating fake → penalidade do Google
+// ❌ NUNCA adicionar `/*?*` em robots.txt → canonical tag já resolve UTMs
+// ❌ NUNCA mudar canônico (www ↔ apex) casualmente → 2-4 semanas de reindexação perdida
+// ✅ SEMPRE rodar `tsc --noEmit` após mudar qualquer coisa em lib/seo/ ou app/**/page.tsx
+// ✅ SEMPRE testar em https://search.google.com/test/rich-results/ pós-deploy
+```
+
+## Ao Alterar SEO
+
+1. Consultar `docs/seo-architecture.md` ANTES de mexer
+2. Se for refactor de metadata: usar os builders em `lib/seo/metadata.ts` — não duplicar lógica
+3. Se for rota nova: seguir padrão `articleLd()` + `breadcrumbList()` como em `/monsters/[slug]`
+4. Validar com Rich Results Test após deploy
+5. Comparar posições das query-anchors listadas em `docs/seo-baseline-2026-04-17.md` após 14-30 dias
 5. Verificar build com `tsc --noEmit`
