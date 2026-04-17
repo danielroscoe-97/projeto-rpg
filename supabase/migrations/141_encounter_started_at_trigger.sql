@@ -72,7 +72,30 @@ create trigger encounter_started_at_trigger
 --    the prior values were NULL and the proxy (created_at) is a strict
 --    improvement over nulls for duration reporting.)
 
--- Smoke test (manual, run in staging):
+-- Smoke test (manual, run in staging AND prod after apply):
+--
+--   -- 1. Backfill coverage — both queries must return 0.
 --   select count(*) from encounters where started_at is null and is_active = false;
 --   select count(*) from encounters where started_at is null and is_active = true;
---   -- Expect 0 in both after this migration applies.
+--
+--   -- 2. Trigger binding exists.
+--   select trigger_name, event_manipulation, action_timing
+--     from information_schema.triggers
+--    where trigger_name = 'encounter_started_at_trigger';
+--   -- Expect 2 rows: one BEFORE INSERT, one BEFORE UPDATE.
+--
+--   -- 3. Trigger works end-to-end on UPDATE path:
+--   --    Pick any closed encounter (is_active=false), force started_at=null,
+--   --    then transition is_active=true, read back started_at — must be populated.
+--   --    (Do this on a test row only; wrap in a transaction + rollback on prod.)
+--   begin;
+--     update encounters set started_at = null, is_active = false where id = '<test-id>';
+--     update encounters set is_active = true where id = '<test-id>';
+--     select started_at from encounters where id = '<test-id>'; -- must be NOT NULL
+--   rollback;
+--
+--   -- 4. Trigger works on INSERT path:
+--   begin;
+--     insert into encounters (campaign_id, is_active, started_at, ...) values (...);
+--     select started_at from encounters order by created_at desc limit 1;
+--   rollback;

@@ -2247,7 +2247,7 @@ export function PlayerJoinClient({
       if (connStateRef.current === "RECONNECTING") return;
       // S3.5: turn_poll is high priority — active UX, needs reactive updates.
       fetchFullState(eid, { priority: "high", caller: "turn_poll" });
-    }, connStateRef.current === "CONNECTED" ? 30000 : 10000); // 30s connected, 10s fallback (was 15s/3s)
+    }, connStateRef.current === "CONNECTED" ? 30000 : 10000); // S3.5 (2026-04-17): loosened from 15s/3s → 30s/10s. Broadcast-driven updates (combat:turn_advanced, combat:state_update) carry live state within 2s when CONNECTED; polling is a safety net. Monitor fetch_orchestrator:dropped volume — a drop-rate falling off proportionally confirms the change is the cause, not a regression.
     return () => {
       if (turnPollRef.current) {
         clearInterval(turnPollRef.current);
