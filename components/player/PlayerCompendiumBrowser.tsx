@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull, Globe, Sword, Star, Zap, ScrollText, Users } from "lucide-react";
+import { trackEvent } from "@/lib/analytics/track";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { SpellCard } from "@/components/oracle/SpellCard";
@@ -54,6 +55,7 @@ export function PlayerCompendiumBrowser({
   rulesetVersion,
 }: PlayerCompendiumBrowserProps) {
   const t = useTranslations("combat");
+  const locale = useLocale();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<CompendiumTab>("all");
@@ -308,6 +310,25 @@ export function PlayerCompendiumBrowser({
     }
     return results.sort((a, b) => a.item.name.localeCompare(b.item.name));
   }, [spells, monsters, conditions, items, feats, abilities, races, backgrounds, globalFilter]);
+
+  // S3.6 telemetry — fire `compendium:search_missed` when a non-trivial query
+  // returns zero results, to measure the injector-fix's impact post-deploy.
+  // Debounced to avoid per-keystroke noise; only fires for queries ≥2 chars.
+  useEffect(() => {
+    const q = globalFilter.trim();
+    if (q.length < 2) return;
+    const timer = window.setTimeout(() => {
+      if (globalResults.length === 0) {
+        trackEvent("compendium:search_missed", {
+          query_length: q.length,
+          language: locale,
+          result_count_zero: true,
+          surface: "player_compendium",
+        });
+      }
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [globalFilter, globalResults.length, locale]);
 
   const displayedSpells = filteredSpells.slice(0, displayCount);
   const spellTotalCount = spells.length;

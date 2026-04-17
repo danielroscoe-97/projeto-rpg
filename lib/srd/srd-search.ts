@@ -2,6 +2,7 @@ import Fuse, { type IFuseOptions, type FuseResult } from "fuse.js";
 import type { SrdMonster, SrdSpell, SrdCondition, SrdItem, SrdRace } from "./srd-loader";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { SrdAbility } from "@/lib/data/srd-abilities";
+import { toSlug } from "@/lib/utils/monster";
 
 export type { SrdMonster, SrdSpell, SrdItem, SrdRace };
 
@@ -363,6 +364,13 @@ export function mergeImportedSpells(imported: SrdSpell[]): void {
  * Inject name_pt into existing data objects and rebuild Fuse indexes.
  * Called from srd-store Phase 2 after translation files load.
  * name_pt fields are added in-place (mutating) for zero-copy efficiency.
+ *
+ * Lookup order: `entity.id` first (backwards compat), then `toSlug(entity.name)`
+ * as a fallback. This is required because translation files in `data/srd/` are
+ * keyed by slug (e.g. `rod-of-the-pact-keeper`) while SRD ids carry a source
+ * suffix (e.g. `1-rod-of-the-pact-keeper-dmg`). Without the fallback, ~100%
+ * of monsters/spells and ~93% of items never received PT-BR names, so the
+ * Fuse index had no PT-BR tokens to match user queries like "Velociraptor".
  */
 export function injectTranslationsAndRebuild(translations: {
   monsters?: Record<string, string>;
@@ -372,36 +380,41 @@ export function injectTranslationsAndRebuild(translations: {
   backgrounds?: Record<string, string>;
 }): void {
   if (translations.monsters && monsterMap.size > 0) {
+    const map = translations.monsters;
     for (const m of monsterMap.values()) {
-      const pt = translations.monsters[m.id];
+      const pt = map[m.id] ?? map[toSlug(m.name)];
       if (pt) m.name_pt = pt;
     }
     monsterIndex = new Fuse(Array.from(monsterMap.values()), MONSTER_OPTIONS);
   }
   if (translations.spells && spellMap.size > 0) {
+    const map = translations.spells;
     for (const s of spellMap.values()) {
-      const pt = translations.spells[s.id];
+      const pt = map[s.id] ?? map[toSlug(s.name)];
       if (pt) s.name_pt = pt;
     }
     spellIndex = new Fuse(Array.from(spellMap.values()), SPELL_OPTIONS);
   }
   if (translations.items && itemMap.size > 0) {
+    const map = translations.items;
     for (const i of itemMap.values()) {
-      const pt = translations.items[i.id];
+      const pt = map[i.id] ?? map[toSlug(i.name)];
       if (pt) i.name_pt = pt;
     }
     itemIndex = new Fuse(Array.from(itemMap.values()), ITEM_OPTIONS);
   }
   if (translations.feats && featMap.size > 0) {
+    const map = translations.feats;
     for (const f of featMap.values()) {
-      const pt = translations.feats[f.id];
+      const pt = map[f.id] ?? map[toSlug(f.name)];
       if (pt) f.name_pt = pt;
     }
     featIndex = new Fuse(Array.from(featMap.values()), FEAT_OPTIONS);
   }
   if (translations.backgrounds && backgroundMap.size > 0) {
+    const map = translations.backgrounds;
     for (const b of backgroundMap.values()) {
-      const pt = translations.backgrounds[b.id];
+      const pt = map[b.id] ?? map[toSlug(b.name)];
       if (pt) b.name_pt = pt;
     }
     backgroundIndex = new Fuse(Array.from(backgroundMap.values()), BACKGROUND_OPTIONS);
