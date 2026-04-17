@@ -1262,7 +1262,21 @@ export function PlayerJoinClient({
           if (!payload.combatant || !payload.initiative_map) return;
 
           const incoming = payload.combatant as PlayerCombatant;
-          let inconsistencyDetected = false;
+
+          // B-1 FIX: Compute inconsistency SYNCHRONOUSLY against `combatantsRef.current`
+          // BEFORE calling the state updater. React does not guarantee the updater runs
+          // synchronously inside a supabase broadcast callback (which is outside the React
+          // event system), so reading a flag set inside the updater may race. The ref is
+          // always current; the reducer output is pure and idempotent.
+          const currentIds = new Set(combatantsRef.current.map((c) => c.id));
+          // B-2 FIX: Hidden placeholder IDs (prefixed "hidden:") are opaque slots — never
+          // treat them as unknown/desync triggers. They represent DM combatants the player
+          // must not see, but whose initiative slot preserves ordering.
+          const inconsistencyDetected = payload.initiative_map.some((entry) => {
+            if (entry.id === incoming.id) return false; // incoming will be present after insert
+            if (entry.id.startsWith("hidden:")) return false; // opaque slot, not a miss
+            return !currentIds.has(entry.id);
+          });
 
           updateCombatants((prev) => {
             // 1. Insert or merge the new combatant (dedup mirrors the legacy handler).
@@ -1278,24 +1292,13 @@ export function PlayerJoinClient({
             }
 
             // 2. Apply the reorder by looking up each local combatant's new initiative_order.
-            // Any ID in the map that isn't local (e.g. a hidden DM combatant we don't know about)
-            // is ignored. Any local ID missing from the map retains its previous order.
+            // Any ID in the map that isn't local (e.g. a hidden DM combatant we don't know about,
+            // represented as a "hidden:" placeholder) is ignored for sorting. Any local ID
+            // missing from the map retains its previous order.
             const orderById = new Map<string, number>();
             for (const entry of payload.initiative_map) {
               if (entry.initiative_order !== null) {
                 orderById.set(entry.id, entry.initiative_order);
-              }
-            }
-
-            // Detect inconsistency: map references IDs not in our list. Non-fatal — we just
-            // know a recovery fetch is prudent. Hidden combatants legitimately produce this
-            // signal, but so do genuinely missed events, so we conservatively trigger recovery.
-            for (const entry of payload.initiative_map) {
-              if (!next.some((c) => c.id === entry.id)) {
-                // Skip the new combatant we just inserted — it's always present now.
-                if (entry.id !== incoming.id) {
-                  inconsistencyDetected = true;
-                }
               }
             }
 
