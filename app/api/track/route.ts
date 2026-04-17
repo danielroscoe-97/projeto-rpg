@@ -42,6 +42,9 @@ const ALLOWED_EVENTS = new Set([
   // Compendium
   "compendium:visited",
   "compendium:search_missed",
+  "compendium:login_nudge_shown",
+  "compendium:login_nudge_cta_clicked",
+  "compendium:login_nudge_dismissed",
   // Public search
   "public:omnisearch",
   // Settings

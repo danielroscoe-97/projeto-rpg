@@ -1957,6 +1957,8 @@ export function GuestCombatClient() {
         open={compendiumOpen}
         onOpenChange={setCompendiumOpen}
         rulesetVersion={midCombatRuleset}
+        mode="guest"
+        returnUrl="/try"
       />
 
       <CombatActionLog open={effectiveShowActionLog} onClose={() => setShowActionLog(false)} />

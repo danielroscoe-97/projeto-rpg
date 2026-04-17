@@ -412,16 +412,27 @@ export function PlayerJoinClient({
   }, [authReady, generateSignedUrls, scheduleUrlRefresh]);
 
   // Hydrate audio favorites store (works for both anon and auth)
+  // Also drives S4.4 login-nudge mode via `isRealAuthUser` state.
+  const [isRealAuthUser, setIsRealAuthUser] = useState<boolean | null>(null);
   useEffect(() => {
     if (!authReady) return;
     async function hydrateFavorites() {
       const supabase = createClient();
       const { data: { user: u } } = await supabase.auth.getUser();
+      // Canonical auth detection — NOT `authReady && authUserId` (anon users have a UID too).
       const isRealAuth = !!u && !u.is_anonymous;
+      setIsRealAuthUser(isRealAuth);
       useFavoritesStore.getState().hydrate(isRealAuth);
     }
     hydrateFavorites();
   }, [authReady]);
+
+  // S4.4 — Compendium login-nudge context derivation.
+  // "authenticated" → real user (banner suppressed)
+  // "anonymous"     → signed-in anon user (is_anonymous=true) → CTA "Log in"
+  // Null state before auth resolves → default to "authenticated" (no flash banner).
+  const compendiumMode: "guest" | "anonymous" | "authenticated" =
+    isRealAuthUser === true ? "authenticated" : isRealAuthUser === false ? "anonymous" : "authenticated";
 
   // Mesa model: seed session DM plan into subscription store
   useEffect(() => {
@@ -2827,6 +2838,8 @@ export function PlayerJoinClient({
           rulesetVersion={rulesetVersion}
           combatLog={combatLog}
           nextCombatantId={nextCombatantId}
+          compendiumMode={compendiumMode}
+          compendiumReturnUrl={`/join/${tokenId}`}
           onPlayerNote={(combatantId, note) => {
             // Broadcast player note to DM via realtime channel
             if (channelRef.current) {

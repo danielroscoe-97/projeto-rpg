@@ -17,6 +17,7 @@ import type { SrdFeatEntry } from "@/lib/srd/srd-search";
 import { SRD_ABILITIES, type SrdAbility } from "@/lib/data/srd-abilities";
 import type { RulesetVersion } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
+import { CompendiumLoginNudge, type CompendiumNudgeMode } from "@/components/player/CompendiumLoginNudge";
 
 const LEVELS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 const PAGE_SIZE = 50;
@@ -46,6 +47,16 @@ interface PlayerCompendiumBrowserProps {
   playerClass?: string;
   /** Ruleset version for default filter */
   rulesetVersion?: RulesetVersion;
+  /**
+   * Auth-mode context for the S4.4 login nudge banner.
+   * - "guest" → no Supabase user at all (guest combat)
+   * - "anonymous" → signed in as Supabase anon user (is_anonymous: true)
+   * - "authenticated" → real auth user (banner suppressed)
+   * Defaults to "authenticated" so callers that don't opt-in never show a nudge.
+   */
+  mode?: CompendiumNudgeMode;
+  /** Internal path to return to after login/signup. Sanitized before use. */
+  returnUrl?: string;
 }
 
 export function PlayerCompendiumBrowser({
@@ -53,6 +64,8 @@ export function PlayerCompendiumBrowser({
   onOpenChange,
   playerClass,
   rulesetVersion,
+  mode = "authenticated",
+  returnUrl,
 }: PlayerCompendiumBrowserProps) {
   const t = useTranslations("combat");
   const locale = useLocale();
@@ -395,6 +408,11 @@ export function PlayerCompendiumBrowser({
         <VisuallyHidden.Root>
           <DialogTitle>{t("compendium_title")}</DialogTitle>
         </VisuallyHidden.Root>
+
+        {/* S4.4 — Login nudge for guest/anon users. Suppressed for auth. */}
+        {!inDetail && mode !== "authenticated" ? (
+          <CompendiumLoginNudge mode={mode} returnUrl={returnUrl} />
+        ) : null}
 
         {inDetail ? (
           /* ── Detail View ── */
