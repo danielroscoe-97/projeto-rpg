@@ -1644,6 +1644,16 @@
     "version_confirm_hp_warning": "HP atual ({currentHp}) excede o novo máximo ({newMaxHp}). O HP será limitado.",
     "version_confirm_cancel": "Cancelar",
     "version_confirm_switch": "Trocar Versão",
+    "recharge": {
+      "depleted_tooltip": "Rolar d6 para recarregar (precisa {threshold}+)",
+      "available_tooltip": "Marcar como usada",
+      "rolled": "{action} rolou {roll}",
+      "success": "{action} recarregada!",
+      "failed": "{action} ainda aguarda recharge ({roll}/{threshold})",
+      "depleted_label": "Esgotada",
+      "used_by": "{caster} usou {action}",
+      "aria_button": "Estado de recharge de {action}"
+    },
     "remove_aria": "Remover combatente",
     "remove_button": "Remover",
     "ac_label": "CA",

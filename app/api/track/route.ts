@@ -24,6 +24,8 @@ const ALLOWED_EVENTS = new Set([
   "combat:condition_toggled",
   "combat:combatant_added",
   "combat:combatant_removed",
+  "combat:recharge_used",
+  "combat:recharge_rolled",
   // Oracle
   "oracle:search",
   "oracle:result_click",

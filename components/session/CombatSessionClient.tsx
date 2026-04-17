@@ -1704,6 +1704,11 @@ export function CombatSessionClient({
             if (c) broadcastEvent(sid, { type: "combat:reaction_toggle", combatant_id: id, reaction_used: c.reaction_used });
           }
         }}
+        // S5.3 — Recharge dice (DM-only, no broadcast needed: state is client-side)
+        onSetRechargeState={(id, actionKey, depleted, threshold) =>
+          useCombatStore.getState().setRechargeState(id, actionKey, depleted, threshold)
+        }
+        currentRound={round_number}
         onAddDeathSaveSuccess={(id) => {
           useCombatStore.getState().addDeathSaveSuccess(id);
           const sid = getSessionId();
@@ -1872,6 +1877,10 @@ interface CombatListProps {
   onToggleReaction?: (id: string) => void;
   onAddDeathSaveSuccess?: (id: string) => void;
   onAddDeathSaveFailure?: (id: string) => void;
+  /** S5.3 — Recharge dice state setter. */
+  onSetRechargeState?: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
+  /** S5.3 — Current round for combat-log entries. */
+  currentRound?: number;
   expandedGroups: Record<string, boolean>;
   onToggleGroupExpanded: (groupId: string) => void;
   onSetGroupInitiative: (groupId: string, value: number) => void;
@@ -1901,6 +1910,8 @@ function CombatList({
   onToggleReaction,
   onAddDeathSaveSuccess,
   onAddDeathSaveFailure,
+  onSetRechargeState,
+  currentRound,
   expandedGroups,
   onToggleGroupExpanded,
   onSetGroupInitiative,
@@ -1969,6 +1980,8 @@ function CombatList({
                 onToggleReaction={onToggleReaction}
                 onAddDeathSaveSuccess={onAddDeathSaveSuccess}
                 onAddDeathSaveFailure={onAddDeathSaveFailure}
+                onSetRechargeState={onSetRechargeState}
+                currentRound={currentRound}
               />
             </div>
           );
@@ -2017,6 +2030,8 @@ function CombatList({
                       onToggleReaction={onToggleReaction}
                       onAddDeathSaveSuccess={onAddDeathSaveSuccess}
                       onAddDeathSaveFailure={onAddDeathSaveFailure}
+                      onSetRechargeState={onSetRechargeState}
+                      currentRound={currentRound}
                     />
                   </div>
                 );
