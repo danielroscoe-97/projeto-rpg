@@ -1779,6 +1779,7 @@ export function CombatSessionClient({
             campaignId={campaignId ?? undefined}
             encounterId={useCombatStore.getState().encounter_id ?? undefined}
             previousDurationMs={previousDurationMs}
+            sessionId={sessionId ?? undefined}
           />
         )}
       </AnimatePresence>
