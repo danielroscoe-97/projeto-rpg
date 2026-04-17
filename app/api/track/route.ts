@@ -41,6 +41,9 @@ const ALLOWED_EVENTS = new Set([
   "player:session_token_created",
   // Compendium
   "compendium:visited",
+  "compendium:login_nudge_shown",
+  "compendium:login_nudge_cta_clicked",
+  "compendium:login_nudge_dismissed",
   // Public search
   "public:omnisearch",
   // Settings
