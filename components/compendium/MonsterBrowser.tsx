@@ -8,6 +8,7 @@ import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { MonsterADayBadge } from "@/components/compendium/MonsterADayBadge";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import { useContentAccess } from "@/lib/hooks/use-content-access";
 import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
@@ -106,11 +107,7 @@ function MonsterRow(props: RowComponentProps<MonsterRowProps>) {
       {m.monster_a_day_url ? (
         <MonsterADayBadge url={m.monster_a_day_url} />
       ) : (
-        <span className={`text-[9px] font-mono px-1 py-0.5 rounded ${
-          m.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
-        }`}>
-          {m.ruleset_version}
-        </span>
+        <VersionBadge version={m.ruleset_version} isSrd={m.is_srd} />
       )}
     </button>
   );

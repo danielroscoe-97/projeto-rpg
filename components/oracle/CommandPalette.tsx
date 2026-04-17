@@ -13,6 +13,7 @@ import type { SrdMonster, SrdSpell } from "@/lib/srd/srd-loader";
 import type { SrdCondition } from "@/lib/srd/srd-loader";
 import { Skull, Sparkles, HeartPulse, X, Sword, Star, ScrollText, Zap } from "lucide-react";
 import { MonsterToken } from "@/components/srd/MonsterToken";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 
 const MAX_RESULTS_PER_GROUP = 5;
 const DEBOUNCE_MS = 150;
@@ -328,11 +329,7 @@ export function CommandPalette() {
                         CR {formatCR(r.item.cr)} · {r.item.type}
                       </span>
                     </div>
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                      r.item.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
-                    }`}>
-                      {r.item.ruleset_version}
-                    </span>
+                    <VersionBadge version={r.item.ruleset_version} isSrd={r.item.is_srd} size="md" />
                   </Command.Item>
                 ))}
               </Command.Group>
@@ -364,11 +361,7 @@ export function CommandPalette() {
                       {r.item.ritual && (
                         <span className="text-[10px] text-teal-400" title="Ritual">®</span>
                       )}
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                        r.item.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
-                      }`}>
-                        {r.item.ruleset_version}
-                      </span>
+                      <VersionBadge version={r.item.ruleset_version} isSrd={r.item.is_srd} size="md" />
                     </div>
                   </Command.Item>
                 ))}

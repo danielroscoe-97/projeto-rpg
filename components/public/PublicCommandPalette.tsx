@@ -17,6 +17,7 @@ import { useSrdStore } from "@/lib/stores/srd-store";
 import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal";
 import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
 import { MonsterToken } from "@/components/srd/MonsterToken";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import { toSlug } from "@/lib/utils/monster";
 import { isFullDataMode } from "@/lib/srd/srd-mode";
 import type { SrdMonster, SrdSpell, SrdCondition } from "@/lib/srd/srd-loader";
@@ -496,15 +497,11 @@ export function PublicCommandPalette({ locale }: PublicCommandPaletteProps) {
                           Beta
                         </span>
                       )}
-                      <span
-                        className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                          r.item.ruleset_version === "2024"
-                            ? "bg-blue-900/40 text-blue-400"
-                            : "bg-white/[0.06] text-muted-foreground"
-                        }`}
-                      >
-                        {r.item.ruleset_version}
-                      </span>
+                      <VersionBadge
+                        version={r.item.ruleset_version}
+                        isSrd={isSrdContent(r.item)}
+                        size="md"
+                      />
                     </div>
                   </Command.Item>
                 ))}
@@ -546,15 +543,11 @@ export function PublicCommandPalette({ locale }: PublicCommandPaletteProps) {
                           Beta
                         </span>
                       )}
-                      <span
-                        className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                          r.item.ruleset_version === "2024"
-                            ? "bg-blue-900/40 text-blue-400"
-                            : "bg-white/[0.06] text-muted-foreground"
-                        }`}
-                      >
-                        {r.item.ruleset_version}
-                      </span>
+                      <VersionBadge
+                        version={r.item.ruleset_version}
+                        isSrd={isSrdContent(r.item)}
+                        size="md"
+                      />
                     </div>
                   </Command.Item>
                 ))}

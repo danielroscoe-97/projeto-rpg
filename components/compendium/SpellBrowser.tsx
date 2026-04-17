@@ -8,6 +8,7 @@ import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { useContentAccess } from "@/lib/hooks/use-content-access";
 import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { SpellCard } from "@/components/oracle/SpellCard";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { loadSpellNamesPt, getNamePt } from "@/lib/srd/translation-loader";
@@ -327,11 +328,7 @@ export function SpellBrowser() {
         {spell.ritual && (
           <span className="text-[10px] text-teal-400" title="Ritual">®</span>
         )}
-        <span className={`text-[9px] font-mono px-1 py-0.5 rounded ${
-          spell.ruleset_version === "2024" ? "bg-blue-900/40 text-blue-400" : "bg-white/[0.06] text-muted-foreground"
-        }`}>
-          {spell.ruleset_version}
-        </span>
+        <VersionBadge version={spell.ruleset_version} isSrd={spell.is_srd} />
       </button>
     );
   };

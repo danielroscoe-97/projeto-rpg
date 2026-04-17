@@ -7,6 +7,7 @@ import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { DiceText } from "@/components/dice/DiceText";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import { useMonsterTranslation } from "@/lib/hooks/useMonsterTranslation";
 import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { STAT_LABELS } from "@/lib/i18n/stat-labels";
@@ -355,6 +356,13 @@ export function MonsterStatBlock({
         <div className="flex-1 min-w-0">
           <div className="card-name flex items-center gap-2 flex-wrap">
             <span>{getName(monster.name)}</span>
+            {monster.ruleset_version && (
+              <VersionBadge
+                version={monster.ruleset_version}
+                isSrd={monster.is_srd}
+                size="md"
+              />
+            )}
             {isMonsterADay && (
               <a
                 href={monster.monster_a_day_url ?? undefined}
@@ -478,9 +486,11 @@ export function MonsterStatBlock({
               {getSourceName(monster.source)}
             </span>
             {monster.ruleset_version && (
-              <span className="ml-1.5 text-[10px] opacity-60">
-                ({monster.ruleset_version})
-              </span>
+              <VersionBadge
+                version={monster.ruleset_version}
+                isSrd={monster.is_srd}
+                className="ml-1.5"
+              />
             )}
           </span>
         </p>

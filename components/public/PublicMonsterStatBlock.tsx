@@ -19,6 +19,7 @@ import {
 } from "@/lib/i18n/dnd-terms-ptbr";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import "@/styles/stat-card-5e.css";
 
 // ── Known terms for internal linking ──────────────────────────────────
@@ -184,9 +185,11 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
               {getName(monster.name)}
             </h1>
             {monster.ruleset_version && (
-              <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none border border-[var(--5e-accent-gold)]/20 text-[var(--5e-accent-gold)]/70 bg-[var(--5e-accent-gold)]/5">
-                {monster.ruleset_version}
-              </span>
+              <VersionBadge
+                version={monster.ruleset_version}
+                isSrd={monster.is_srd}
+                size="md"
+              />
             )}
           </div>
           <p className="text-[var(--5e-text-muted)] text-sm italic">
