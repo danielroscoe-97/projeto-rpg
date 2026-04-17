@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import { PageViewTracker } from "@/components/analytics/PageViewTracker";
+import { WebVitalsTracker } from "@/components/analytics/WebVitalsTracker";
 import { ErrorTrackingProvider } from "@/components/ErrorTrackingProvider";
 import "./globals.css";
 
@@ -179,6 +180,7 @@ export default async function RootLayout({
           <PageViewTracker />
         </Suspense>
         <Analytics />
+        <WebVitalsTracker />
         <Toaster richColors position="top-right" />
 <div id="floating-cards-root" />
       </body>
