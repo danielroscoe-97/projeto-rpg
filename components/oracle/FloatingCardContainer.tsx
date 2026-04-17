@@ -733,7 +733,7 @@ export function FloatingCardContainer() {
             fontSize: 20,
             fontWeight: 700,
             background: "rgba(146, 38, 16, 0.25)",
-            color: "#fff",
+            color: "white",
             border: "1px solid rgba(201, 169, 89, 0.8)",
             borderRadius: 6,
             padding: "0 10px",
