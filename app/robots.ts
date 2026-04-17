@@ -17,10 +17,13 @@ export default function robots(): MetadataRoute.Robots {
           "/join/",
           "/invite/",
           "/try/combat/",
+          "/r/",
           "/srd/",
+          "/*?*",
         ],
       },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
+    host: BASE_URL,
   };
 }
