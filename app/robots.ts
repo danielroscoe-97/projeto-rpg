@@ -19,7 +19,6 @@ export default function robots(): MetadataRoute.Robots {
           "/try/combat/",
           "/r/",
           "/srd/",
-          "/*?*",
         ],
       },
     ],

@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import { statSync } from "node:fs";
+import path from "node:path";
 import {
   getSrdMonstersDeduped,
   getSrdSpellsDeduped,
@@ -14,19 +16,41 @@ import { BLOG_POSTS } from "@/lib/blog/posts";
 import classesData from "@/data/srd/classes-srd.json";
 import subclassesData from "@/data/srd/subclasses-srd.json";
 
+// Force static generation so `lastModified` is captured at build time,
+// not at first request (which would happen with dynamic rendering).
+export const dynamic = "force-static";
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
-
-// SRD content is a static snapshot of the SRD 5.1 — it does not change between
-// deploys unless the bundles are regenerated. Use the last SRD regeneration
-// date so Google does not rediscover 2,000+ URLs as "changed" on every deploy.
-const SRD_LAST_UPDATED = new Date("2026-04-10");
-
-// Build time for static pages — tied to deploy, not request time.
-const BUILD_TIME = new Date();
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 
+// Derive SRD freshness from actual bundle mtime so regenerating content
+// (filter-srd-public.ts, generate-srd-bundles.ts) propagates to Google.
+function getSrdLastUpdated(): Date {
+  const bundleFiles = [
+    "monsters-2014.json",
+    "monsters-2024.json",
+    "spells-2014.json",
+    "spells-2024.json",
+    "classes-srd.json",
+    "backgrounds.json",
+  ];
+  let latest = 0;
+  for (const file of bundleFiles) {
+    try {
+      const mtime = statSync(path.join(process.cwd(), "data", "srd", file)).mtimeMs;
+      if (mtime > latest) latest = mtime;
+    } catch {
+      // File may be missing in some environments (CI without data checkout) —
+      // fall through to build time.
+    }
+  }
+  return latest > 0 ? new Date(latest) : new Date();
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
+  const BUILD_TIME = new Date();
+  const SRD_LAST_UPDATED = getSrdLastUpdated();
   // ── Static pages ─────────────────────────────────────────────────
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: BUILD_TIME, changeFrequency: "weekly", priority: 1.0 },
@@ -100,7 +124,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // ── SRD detail pages — static content, low change frequency ─────
-  // Priority 0.5 so they don't cannibalize crawl budget from indexes/blog.
+  // (Google ignores `priority`, but `lastModified` + `changeFrequency` still matter.)
   const srdDetail = (url: string): SitemapEntry => ({
     url,
     lastModified: SRD_LAST_UPDATED,
