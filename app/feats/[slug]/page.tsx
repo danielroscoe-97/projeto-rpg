@@ -6,6 +6,7 @@ import { PublicFeatDetail } from "@/components/public/PublicFeatDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdFeats, getFeatBySlug } from "@/lib/srd/srd-data-server";
+import { featMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return getSrdFeats().map((f) => ({ slug: f.id }));
@@ -22,60 +23,27 @@ export async function generateMetadata({
   const { slug } = await params;
   const feat = getFeatBySlug(slug);
   if (!feat) return { title: "Feat Not Found" };
-
-  const title = `${feat.name} — D&D 5e Feat`;
-  const description = `${feat.name}${feat.prerequisite ? ` (Prerequisite: ${feat.prerequisite})` : ""}. ${feat.description.slice(0, 140)}…`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title: `${title} | Pocket DM`,
-      description,
-      type: "article",
-      url: `https://pocketdm.com.br/feats/${slug}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${title} | Pocket DM`,
-      description,
-    },
-    alternates: {
-      canonical: `https://pocketdm.com.br/feats/${slug}`,
-      languages: {
-        en: `https://pocketdm.com.br/feats/${slug}`,
-        "pt-BR": `https://pocketdm.com.br/talentos/${slug}`,
-      },
-    },
-  };
+  return featMetadata(feat, { slug, locale: "en" });
 }
 
 function FeatJsonLd({ feat, slug }: { feat: { name: string; description: string; prerequisite: string | null }; slug: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${feat.name} — D&D 5e Feat`,
-    headline: `${feat.name} — D&D 5e Feat`,
-    description: `${feat.name}${feat.prerequisite ? ` (Prerequisite: ${feat.prerequisite})` : ""}. D&D 5e SRD feat.`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "https://pocketdm.com.br",
-      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
-    },
-    inLanguage: "en",
-  };
+  const name = `${feat.name} — D&D 5e Feat`;
+  const description = `${feat.name}${feat.prerequisite ? ` (Prerequisite: ${feat.prerequisite})` : ""}. D&D 5e SRD feat.`;
+  const path = `/feats/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Feats", item: "https://pocketdm.com.br/feats" },
-      { "@type": "ListItem", position: 3, name: feat.name, item: `https://pocketdm.com.br/feats/${slug}` },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: `/opengraph-image`,
+    locale: "en",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Feats", path: "/feats" },
+    { name: feat.name, path },
+  ]);
 
   return (
     <>

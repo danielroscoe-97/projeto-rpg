@@ -17,6 +17,7 @@ import monsterLore from "@/data/srd/monster-lore.json";
 import monsterLorePt from "@/data/srd/monster-lore-pt.json";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 import Link from "next/link";
+import { monsterMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -39,57 +40,34 @@ export async function generateMetadata({
 
   const enSlug = toSlug(monster.name);
   const ptName = (monsterNamesPt as Record<string, { name?: string }>)[enSlug]?.name ?? monster.name;
-  const title = `${ptName} — Ficha D&D 5e`;
-  const description = `${ptName}, ${monster.size} ${monster.type}, CR ${monster.cr}. CA ${monster.armor_class}, PV ${monster.hit_points}. Ficha completa com rolador de dados interativo.`;
 
-  return {
-    title,
-    description,
-    openGraph: {
-      title: `${title} | Pocket DM`,
-      description,
-      type: "article",
-      url: `https://pocketdm.com.br/monstros/${slug}`,
-    },
-    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
-    alternates: {
-      canonical: `https://pocketdm.com.br/monstros/${slug}`,
-      languages: {
-        "en": `https://pocketdm.com.br/monsters/${enSlug}`,
-        "pt-BR": `https://pocketdm.com.br/monstros/${slug}`,
-      },
-    },
-  };
+  return monsterMetadata(monster, {
+    slug: enSlug,
+    ptSlug: slug,
+    ptName,
+    locale: "pt-BR",
+  });
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
 function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnType<typeof getMonsterBySlugPt>>; ptName: string; slug: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${ptName} — Ficha D&D 5e`,
-    headline: `${ptName} — Ficha D&D 5e`,
-    description: `${ptName}, ${monster.size} ${monster.type}, CR ${monster.cr}.`,
-    image: `https://pocketdm.com.br/monstros/${slug}/opengraph-image`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "https://pocketdm.com.br",
-      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
-    },
-    inLanguage: "pt-BR",
-  };
+  const name = `${ptName} — CR ${monster.cr} Ficha D&D 5e`;
+  const description = `${ptName}, ${monster.size ?? ""} ${monster.type}, CR ${monster.cr}.`;
+  const path = `/monstros/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Início", item: "https://pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Monstros", item: "https://pocketdm.com.br/monstros" },
-      { "@type": "ListItem", position: 3, name: ptName, item: `https://pocketdm.com.br/monstros/${slug}` },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: `/monstros/${slug}/opengraph-image`,
+    locale: "pt-BR",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Monstros", path: "/monstros" },
+    { name: ptName, path },
+  ]);
 
   return (
     <>

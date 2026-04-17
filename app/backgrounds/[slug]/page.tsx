@@ -6,6 +6,7 @@ import { PublicBackgroundDetail } from "@/components/public/PublicBackgroundDeta
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdBackgrounds, getBackgroundBySlug } from "@/lib/srd/srd-data-server";
+import { backgroundMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return getSrdBackgrounds().map((b) => ({ slug: b.id }));
@@ -22,61 +23,27 @@ export async function generateMetadata({
   const { slug } = await params;
   const bg = getBackgroundBySlug(slug);
   if (!bg) return { title: "Background Not Found" };
-
-  const skills = bg.skill_proficiencies.join(", ");
-  const title = `${bg.name} — D&D 5e Background`;
-  const description = `${bg.name}: ${skills}${bg.feature_name ? `. Feature: ${bg.feature_name}` : ""}. D&D 5e SRD background.`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title: `${title} | Pocket DM`,
-      description,
-      type: "article",
-      url: `https://pocketdm.com.br/backgrounds/${slug}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${title} | Pocket DM`,
-      description,
-    },
-    alternates: {
-      canonical: `https://pocketdm.com.br/backgrounds/${slug}`,
-      languages: {
-        en: `https://pocketdm.com.br/backgrounds/${slug}`,
-        "pt-BR": `https://pocketdm.com.br/antecedentes/${slug}`,
-      },
-    },
-  };
+  return backgroundMetadata(bg, { slug, locale: "en" });
 }
 
 function BackgroundJsonLd({ bg, slug }: { bg: { name: string; skill_proficiencies: string[]; feature_name: string | null }; slug: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${bg.name} — D&D 5e Background`,
-    headline: `${bg.name} — D&D 5e Background`,
-    description: `${bg.name}: ${bg.skill_proficiencies.join(", ")}${bg.feature_name ? `. Feature: ${bg.feature_name}` : ""}.`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "https://pocketdm.com.br",
-      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
-    },
-    inLanguage: "en",
-  };
+  const name = `${bg.name} — D&D 5e Background`;
+  const description = `${bg.name}: ${bg.skill_proficiencies.join(", ")}${bg.feature_name ? `. Feature: ${bg.feature_name}` : ""}.`;
+  const path = `/backgrounds/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Backgrounds", item: "https://pocketdm.com.br/backgrounds" },
-      { "@type": "ListItem", position: 3, name: bg.name, item: `https://pocketdm.com.br/backgrounds/${slug}` },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: `/opengraph-image`,
+    locale: "en",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Backgrounds", path: "/backgrounds" },
+    { name: bg.name, path },
+  ]);
 
   return (
     <>

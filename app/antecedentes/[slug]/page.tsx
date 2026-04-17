@@ -6,6 +6,7 @@ import { PublicBackgroundDetail } from "@/components/public/PublicBackgroundDeta
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdBackgrounds, getBackgroundBySlug } from "@/lib/srd/srd-data-server";
+import { backgroundMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return getSrdBackgrounds().map((b) => ({ slug: b.id }));
@@ -22,61 +23,27 @@ export async function generateMetadata({
   const { slug } = await params;
   const bg = getBackgroundBySlug(slug);
   if (!bg) return { title: "Antecedente Não Encontrado" };
-
-  const skills = bg.skill_proficiencies.join(", ");
-  const title = `${bg.name} — Antecedente D&D 5e`;
-  const description = `${bg.name}: ${skills}${bg.feature_name ? `. Característica: ${bg.feature_name}` : ""}. Antecedente SRD do D&D 5e.`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title: `${title} | Pocket DM`,
-      description,
-      type: "article",
-      url: `https://pocketdm.com.br/antecedentes/${slug}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${title} | Pocket DM`,
-      description,
-    },
-    alternates: {
-      canonical: `https://pocketdm.com.br/antecedentes/${slug}`,
-      languages: {
-        en: `https://pocketdm.com.br/backgrounds/${slug}`,
-        "pt-BR": `https://pocketdm.com.br/antecedentes/${slug}`,
-      },
-    },
-  };
+  return backgroundMetadata(bg, { slug, locale: "pt-BR" });
 }
 
 function BackgroundJsonLd({ bg, slug }: { bg: { name: string; skill_proficiencies: string[]; feature_name: string | null }; slug: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${bg.name} — Antecedente D&D 5e`,
-    headline: `${bg.name} — Antecedente D&D 5e`,
-    description: `${bg.name}: ${bg.skill_proficiencies.join(", ")}${bg.feature_name ? `. Característica: ${bg.feature_name}` : ""}.`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "https://pocketdm.com.br",
-      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
-    },
-    inLanguage: "pt-BR",
-  };
+  const name = `${bg.name} — Antecedente D&D 5e`;
+  const description = `${bg.name}: ${bg.skill_proficiencies.join(", ")}${bg.feature_name ? `. Característica: ${bg.feature_name}` : ""}.`;
+  const path = `/antecedentes/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Antecedentes", item: "https://pocketdm.com.br/antecedentes" },
-      { "@type": "ListItem", position: 3, name: bg.name, item: `https://pocketdm.com.br/antecedentes/${slug}` },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: `/opengraph-image`,
+    locale: "pt-BR",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Antecedentes", path: "/antecedentes" },
+    { name: bg.name, path },
+  ]);
 
   return (
     <>
