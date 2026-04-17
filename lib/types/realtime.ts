@@ -8,6 +8,7 @@ export type RealtimeEventType =
   | "combat:turn_advance"
   | "combat:condition_change"
   | "combat:combatant_add"
+  | "combat:combatant_add_reorder"
   | "combat:combatant_remove"
   | "combat:initiative_reorder"
   | "combat:version_switch"
@@ -72,6 +73,35 @@ export interface RealtimeConditionChange {
 export interface RealtimeCombatantAdd {
   type: "combat:combatant_add";
   combatant: Combatant;
+}
+
+/**
+ * S1.2 — Atomic combatant-add + initiative-reorder event.
+ *
+ * Replaces the legacy `combat:combatant_add` + `session:state_sync` pair that
+ * was raced by `broadcastViaServer` (2 senders, partial FIFO). Emitted by the
+ * DM as a single broadcast, and opted out of server-side re-broadcast in
+ * `lib/realtime/broadcast.ts` so there is exactly one in-flight copy.
+ *
+ * Feature-flagged via `ff_combatant_add_reorder` (see `lib/flags.ts`).
+ * Handler on player side applies combatant add + reorder + turn_index in a
+ * single React state update, eliminating mid-combat desync.
+ */
+export interface RealtimeCombatantAddReorder {
+  type: "combat:combatant_add_reorder";
+  /** The newly added combatant (already sanitized on DM side when emitted to players). */
+  combatant: Combatant;
+  /**
+   * Initiative-order map for every combatant AFTER the add + sort.
+   * Player uses this to reorder its local list without needing a full state_sync.
+   * `initiative_order` may be `null` for combatants that haven't been hydrated yet
+   * (rare — mirrors `Combatant.initiative_order`'s own nullability).
+   */
+  initiative_map: Array<{ id: string; initiative_order: number | null }>;
+  /** Adjusted turn index accounting for the reinsertion of the current-turn combatant. */
+  current_turn_index: number;
+  round_number: number;
+  encounter_id: string;
 }
 
 export interface RealtimeCombatantRemove {
@@ -302,6 +332,7 @@ export type RealtimeEvent =
   | RealtimeTurnAdvance
   | RealtimeConditionChange
   | RealtimeCombatantAdd
+  | RealtimeCombatantAddReorder
   | RealtimeCombatantRemove
   | RealtimeInitiativeReorder
   | RealtimeVersionSwitch
@@ -365,6 +396,23 @@ export interface SanitizedCombatantAdd {
   combatant: SanitizedCombatant;
 }
 
+/**
+ * S1.2 — Player-safe version of combat:combatant_add_reorder.
+ *
+ * `initiative_map` contains IDs + orders for ALL combatants (including hidden
+ * ones in the DM's list). The player applies it by matching IDs in its local
+ * (already-filtered) list; unknown IDs are ignored. If the map contains an ID
+ * not in the player list (hidden combatant), it's skipped without error.
+ */
+export interface SanitizedCombatantAddReorder {
+  type: "combat:combatant_add_reorder";
+  combatant: SanitizedCombatant;
+  initiative_map: Array<{ id: string; initiative_order: number | null }>;
+  current_turn_index: number;
+  round_number: number;
+  encounter_id: string;
+}
+
 /** Player-safe version of session:state_sync */
 export interface SanitizedStateSync {
   type: "session:state_sync";
@@ -410,6 +458,7 @@ export interface SanitizedStatsUpdate {
 /** Union of all sanitized event types that can be broadcast to players */
 export type SanitizedEvent =
   | SanitizedCombatantAdd
+  | SanitizedCombatantAddReorder
   | SanitizedStateSync
   | SanitizedInitiativeReorder
   | SanitizedPlayerHpUpdate
