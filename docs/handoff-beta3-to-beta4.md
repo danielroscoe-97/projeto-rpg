@@ -128,10 +128,32 @@ Alguns destes exigem decisão/validação do Dani antes. Se beta 4 for usar, shi
 - **Feedback:** "Favoritar as fichas dos monstros... dentro do combate pra ele aparecer como um atalho"
 - **Status:** Não tem spec. Precisa definir: persistência (DB vs localStorage), UX de acesso rápido, limite de favoritos.
 
-#### S5.3 — Richard / dice roller clicável
-- **Feedback:** "O Richard não tá dando pra clicar, ele tem que dar pra clicar pra ser o D6, né?"
-- **⚠️ BLOCKED:** Contexto ambíguo. Dani: identifique com o Lucas o que é "Richard" — é o ClickableRoll do dice component? É um nome de jogador? Um NPC específico? Antes de mexer, precisa clarificação.
-- Spec parcial: [epic-2-combat-ux-hotfixes.md H13](epic-2-combat-ux-hotfixes.md)
+#### S5.3 — Recharge clicável nas habilidades de monstro (ex-"Richard") ✅ UNBLOCKED
+- **Feedback:** "O [Recharge] não tá dando pra clicar, ele tem que dar pra clicar pra ser o D6, né?"
+- **Contexto:** A transcrição do áudio do Lucas registrou "Recharge" como "Richard". Mecânica D&D: habilidades com "(Recharge X)" ou "(Recharge 5–6)" após uso ficam depleted; no início do próximo turno, rola d6, se ≥ threshold → recarrega. Exemplos: Breath Weapons de dragões, Reel do Roper, Swallow.
+- **Scope de implementação (~3-5h):**
+  - Parser que detecta `(Recharge X)`, `(Recharge X-Y)`, `(Recharge X–Y)` no nome da ação
+  - Componente `RechargeableAction` wrappando a action no stat block quando tem recharge
+  - Estado **por combatente × por ability** (in-combat only, não precisa persistir entre combates): `depleted: boolean`
+  - Click quando depleted → rola d6, mostra resultado animado, compara com threshold, atualiza estado
+  - Click quando available → marca depleted (manual, após uso da ability)
+  - Visual: available = normal; depleted = opacity 50% + ícone de "esperando recharge"
+  - DM e guest: estado em Zustand local do combate
+  - Auth players: precisa? (players normalmente não vêem ficha full do monstro) — investigar
+- **Arquivos afetados:**
+  - `components/oracle/MonsterStatBlock.tsx` (linha que renderiza actions)
+  - Novo: `components/combat/RechargeableAction.tsx` + parser helper em `lib/combat/parse-recharge.ts`
+  - Store: `lib/stores/combat-store.ts` (guest) ou state no CombatSessionClient (DM)
+- **i18n keys:** `combat.recharge_depleted`, `combat.recharge_available`, `combat.recharge_rolled`, `combat.recharge_success`, `combat.recharge_failed`
+- **Parity:**
+  - Guest (DM solo): ✅
+  - DM em Anon/Auth: ✅ (quem controla monstros)
+  - Players: N/A (não controlam monstros, a não ser que tenham sido polymorphados — edge case)
+- **Testes:**
+  - Unit: parse-recharge regex covers todas as variações
+  - Unit: roll d6 threshold logic
+  - e2e: DM com dragão, usa breath, vira depleted, clica para recharge, roll 5+, recarrega
+- Spec completa vale ser escrita antes de começar — 1h de spec + 4h dev
 
 #### S5.4 — Guest recap persistence (Finding 9)
 - **Feedback:** Guest não salva recap em localStorage → perde se refresh
