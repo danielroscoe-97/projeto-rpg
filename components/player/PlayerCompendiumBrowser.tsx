@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Search, X, ArrowLeft, ChevronDown, Sparkles, HeartPulse, Skull, Globe, Sword, Star, Zap, ScrollText, Users } from "lucide-react";
 import { trackEvent } from "@/lib/analytics/track";
@@ -326,22 +326,42 @@ export function PlayerCompendiumBrowser({
 
   // S3.6 telemetry — fire `compendium:search_missed` when a non-trivial query
   // returns zero results, to measure the injector-fix's impact post-deploy.
-  // Debounced to avoid per-keystroke noise; only fires for queries ≥2 chars.
-  useEffect(() => {
+  //
+  // Wave-1 review #5: progressive typing ("v" → "ve" → "vel" → "velo") used to
+  // inflate the missed-search dashboards by firing one event per 600ms-debounced
+  // keystroke. We now only fire after the user has actually stopped typing —
+  // either 2s idle OR on blur — and dedupe by exact query string so a single
+  // "final" query fires at most once.
+  const lastEmittedQueryRef = useRef<string>("");
+  const idleTimerRef = useRef<number | null>(null);
+
+  const maybeEmitSearchMissed = useCallback(() => {
     const q = globalFilter.trim();
     if (q.length < 2) return;
-    const timer = window.setTimeout(() => {
-      if (globalResults.length === 0) {
-        trackEvent("compendium:search_missed", {
-          query_length: q.length,
-          language: locale,
-          result_count_zero: true,
-          surface: "player_compendium",
-        });
-      }
-    }, 600);
-    return () => window.clearTimeout(timer);
+    if (globalResults.length !== 0) return;
+    if (lastEmittedQueryRef.current === q) return;
+    lastEmittedQueryRef.current = q;
+    trackEvent("compendium:search_missed", {
+      query_length: q.length,
+      language: locale,
+      result_count_zero: true,
+      surface: "player_compendium",
+    });
   }, [globalFilter, globalResults.length, locale]);
+
+  // Trigger A — 2s idle after last query change.
+  useEffect(() => {
+    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = window.setTimeout(maybeEmitSearchMissed, 2_000);
+    return () => {
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    };
+  }, [globalFilter, maybeEmitSearchMissed]);
+
+  // Trigger B — input blur. Wired below on the global-search input's onBlur.
+  const handleSearchBlur = useCallback(() => {
+    maybeEmitSearchMissed();
+  }, [maybeEmitSearchMissed]);
 
   const displayedSpells = filteredSpells.slice(0, displayCount);
   const spellTotalCount = spells.length;
@@ -596,6 +616,7 @@ export function PlayerCompendiumBrowser({
                         setGlobalFilter(e.target.value);
                         setGlobalDisplayCount(PAGE_SIZE);
                       }}
+                      onBlur={handleSearchBlur}
                       placeholder={t("compendium_search_all")}
                       className="w-full h-9 pl-8 pr-8 text-sm bg-black/30 border border-white/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/50"
                       autoFocus

@@ -283,24 +283,44 @@ export function MonsterSearchPanel({
   // S3.6 telemetry — fire `compendium:search_missed` when a non-trivial query
   // returns zero results (monsters AND campaign players), to measure the i18n
   // injector-fix's impact post-deploy.
-  // Debounced to avoid per-keystroke noise; only fires for queries ≥2 chars.
-  useEffect(() => {
+  //
+  // Wave-1 review #5: progressive typing ("v" → "ve" → "vel" → "velo") used to
+  // inflate the missed-search dashboards by firing one event per 600ms-debounced
+  // keystroke. We now only fire after the user has actually stopped typing —
+  // either 2s idle OR on blur — and dedupe by exact query string so a single
+  // "final" query fires at most once.
+  const lastEmittedQueryRef = useRef<string>("");
+  const idleTimerRef = useRef<number | null>(null);
+
+  const maybeEmitSearchMissed = useCallback(() => {
     const q = query.trim();
     if (q.length < 2 || isLoading) return;
-    const timer = window.setTimeout(() => {
-      const playerMatch =
-        campaignPlayers?.some((p) => p.name.toLowerCase().includes(q.toLowerCase())) ?? false;
-      if (results.length === 0 && !playerMatch) {
-        trackEvent("compendium:search_missed", {
-          query_length: q.length,
-          language: locale,
-          result_count_zero: true,
-          surface: "monster_search_panel",
-        });
-      }
-    }, 600);
-    return () => window.clearTimeout(timer);
-  }, [results, query, isLoading, locale, campaignPlayers]);
+    const playerMatch =
+      campaignPlayers?.some((p) => p.name.toLowerCase().includes(q.toLowerCase())) ?? false;
+    if (results.length !== 0 || playerMatch) return;
+    if (lastEmittedQueryRef.current === q) return;
+    lastEmittedQueryRef.current = q;
+    trackEvent("compendium:search_missed", {
+      query_length: q.length,
+      language: locale,
+      result_count_zero: true,
+      surface: "monster_search_panel",
+    });
+  }, [query, results, isLoading, locale, campaignPlayers]);
+
+  // Trigger A — 2s idle after last query change.
+  useEffect(() => {
+    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = window.setTimeout(maybeEmitSearchMissed, 2_000);
+    return () => {
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    };
+  }, [query, maybeEmitSearchMissed]);
+
+  // Trigger B — input blur. Wired below on the search input's onBlur.
+  const handleSearchBlur = useCallback(() => {
+    maybeEmitSearchMissed();
+  }, [maybeEmitSearchMissed]);
 
   // Filter + search with debounce
   useEffect(() => {
@@ -542,6 +562,7 @@ export function MonsterSearchPanel({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
+          onBlur={handleSearchBlur}
           placeholder={placeholder ?? t("search_monsters_placeholder")}
           className="w-full bg-card border border-gold/30 rounded px-3 py-2 text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-gold/60 focus:border-gold/60 transition-colors"
           autoFocus
