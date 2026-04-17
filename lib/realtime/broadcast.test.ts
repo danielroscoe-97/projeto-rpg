@@ -40,7 +40,8 @@ jest.mock("@/lib/realtime/offline-queue", () => ({
   replayQueue: jest.fn(),
 }));
 
-import { broadcastEvent, cleanupDmChannel, getDmChannel } from "./broadcast";
+import { broadcastEvent, cleanupDmChannel, getDmChannel, registerHiddenLookup, shouldSkipServerBroadcast } from "./broadcast";
+import { broadcastViaServer } from "./broadcast-server";
 
 /** Flush microtask queue so broadcastViaServer.then() resolves */
 const flush = () => new Promise((r) => setTimeout(r, 0));
@@ -257,5 +258,164 @@ describe("broadcastEvent – combat:stats_update sanitization (B1-2)", () => {
 
     const payload = mockSend.mock.calls[0][0].payload;
     expect(payload.name).toBe("Aragorn II");
+  });
+});
+
+describe("S1.2 — combat:combatant_add_reorder", () => {
+  const addReorderEvent = {
+    type: "combat:combatant_add_reorder",
+    combatant: monsterCombatant,
+    initiative_map: [
+      { id: "hero", initiative_order: 0 },
+      { id: "m1", initiative_order: 1 },
+    ],
+    current_turn_index: 0,
+    round_number: 1,
+    encounter_id: "enc-1",
+  } as const;
+
+  it("sanitizes the combatant in the payload", async () => {
+    getDmChannel("session-1");
+    broadcastEvent("session-1", addReorderEvent);
+
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    const payload = mockSend.mock.calls[0][0].payload;
+    expect(payload.type).toBe("combat:combatant_add_reorder");
+    // Real monster name replaced with display_name.
+    expect(payload.combatant.name).toBe("Mysterious Creature");
+    expect(payload.combatant.dm_notes).toBeUndefined();
+    // Exact HP is stripped; hp_status is added.
+    expect(payload.combatant.current_hp).toBeUndefined();
+    expect(payload.combatant.hp_status).toBeDefined();
+    // Initiative map (no hidden registered) + turn_index + round_number + encounter_id pass through.
+    expect(payload.initiative_map).toEqual([
+      { id: "hero", initiative_order: 0 },
+      { id: "m1", initiative_order: 1 },
+    ]);
+    expect(payload.current_turn_index).toBe(0);
+    expect(payload.round_number).toBe(1);
+    expect(payload.encounter_id).toBe("enc-1");
+  });
+
+  it("B-2: masks hidden combatant IDs in initiative_map with opaque placeholders", () => {
+    // Register a hidden-lookup that marks "hiddenMonster" as hidden.
+    registerHiddenLookup((id) => id === "hiddenMonster");
+
+    getDmChannel("session-1");
+    broadcastEvent("session-1", {
+      ...addReorderEvent,
+      initiative_map: [
+        { id: "hero", initiative_order: 0 },
+        { id: "hiddenMonster", initiative_order: 1 }, // MUST be masked
+        { id: "m1", initiative_order: 2 },
+      ],
+    });
+
+    const payload = mockSend.mock.calls[0][0].payload;
+    // The visible IDs pass through unchanged.
+    expect(payload.initiative_map).toEqual(
+      expect.arrayContaining([
+        { id: "hero", initiative_order: 0 },
+        { id: "m1", initiative_order: 2 },
+      ]),
+    );
+    // The hidden ID is replaced with a "hidden:" prefixed opaque placeholder.
+    const maskedEntry = payload.initiative_map.find((e: { id: string }) => e.id.startsWith("hidden:"));
+    expect(maskedEntry).toBeDefined();
+    expect(maskedEntry.is_hidden).toBe(true);
+    expect(maskedEntry.initiative_order).toBe(1);
+    // The raw hidden ID is NEVER in the payload.
+    expect(JSON.stringify(payload.initiative_map)).not.toContain("hiddenMonster");
+
+    // Clean up lookup so later tests aren't poisoned.
+    registerHiddenLookup(() => false);
+  });
+
+  it("B-2: masked placeholder is STABLE across broadcasts (same hidden ID → same mask)", () => {
+    registerHiddenLookup((id) => id === "hiddenA");
+
+    getDmChannel("session-1");
+    broadcastEvent("session-1", {
+      ...addReorderEvent,
+      initiative_map: [{ id: "hiddenA", initiative_order: 0 }],
+    });
+    const mask1 = mockSend.mock.calls[0][0].payload.initiative_map[0].id;
+
+    mockSend.mockClear();
+    broadcastEvent("session-1", {
+      ...addReorderEvent,
+      initiative_map: [{ id: "hiddenA", initiative_order: 5 }],
+    });
+    const mask2 = mockSend.mock.calls[0][0].payload.initiative_map[0].id;
+
+    expect(mask1).toBe(mask2);
+    expect(mask1.startsWith("hidden:")).toBe(true);
+
+    registerHiddenLookup(() => false);
+  });
+
+  it("suppresses the broadcast entirely when the new combatant is hidden", () => {
+    getDmChannel("session-1");
+    broadcastEvent("session-1", {
+      ...addReorderEvent,
+      combatant: { ...monsterCombatant, is_hidden: true },
+    });
+    expect(mockSend).not.toHaveBeenCalled();
+  });
+
+  it("opts out of server-side re-broadcast (FIFO guarantee)", async () => {
+    (broadcastViaServer as jest.Mock).mockClear();
+    getDmChannel("session-1");
+    broadcastEvent("session-1", addReorderEvent);
+    await flush();
+
+    // Client-direct send fires.
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    // Server path MUST NOT fire — this is the whole point of the opt-out.
+    expect(broadcastViaServer).not.toHaveBeenCalled();
+  });
+
+  it("legacy combatant_add still uses the server path (regression — flag OFF behaviour)", async () => {
+    (broadcastViaServer as jest.Mock).mockClear();
+    getDmChannel("session-1");
+    broadcastEvent("session-1", { type: "combat:combatant_add", combatant: monsterCombatant });
+    await flush();
+
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    // Legacy path MUST still call broadcastViaServer — otherwise we'd break
+    // flag-OFF clients that rely on server sanitization.
+    expect(broadcastViaServer).toHaveBeenCalledTimes(1);
+  });
+
+  describe("shouldSkipServerBroadcast", () => {
+    it("returns true for combat:combatant_add_reorder", () => {
+      expect(
+        shouldSkipServerBroadcast({
+          type: "combat:combatant_add_reorder",
+          combatant: monsterCombatant,
+          initiative_map: [],
+          current_turn_index: 0,
+          round_number: 1,
+          encounter_id: "enc",
+        }),
+      ).toBe(true);
+    });
+
+    it("returns false for legacy combat:combatant_add", () => {
+      expect(
+        shouldSkipServerBroadcast({ type: "combat:combatant_add", combatant: monsterCombatant }),
+      ).toBe(false);
+    });
+
+    it("returns false for session:state_sync", () => {
+      expect(
+        shouldSkipServerBroadcast({
+          type: "session:state_sync",
+          combatants: [],
+          current_turn_index: 0,
+          round_number: 1,
+        }),
+      ).toBe(false);
+    });
   });
 });

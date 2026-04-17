@@ -19,6 +19,7 @@ import {
   persistHidden,
 } from "@/lib/supabase/session";
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
+import { isFeatureFlagEnabled } from "@/lib/flags";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { isConcentrating, showConcentrationCheck } from "@/lib/combat/concentration";
@@ -451,24 +452,80 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     const added = sorted.find((c) => !existingIds.has(c.id));
     if (added && snap.encounter_id) {
-      broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
       trackEvent("combat:combatant_added", { name: added.name, is_player: added.is_player });
 
-      // BT2-03: Broadcast full state sync after add so players get correct
-      // initiative order (player-side just appends to end without sorting)
-      const syncState = useCombatStore.getState();
-      broadcastEvent(getSessionId(), {
-        type: "session:state_sync",
-        combatants: syncState.combatants,
-        current_turn_index: syncState.current_turn_index,
-        round_number: syncState.round_number,
-        encounter_id: syncState.encounter_id!,
-      });
+      // S1.2: Gate the atomic combined broadcast behind ff_combatant_add_reorder.
+      // Flag OFF (default): emit legacy pair (combatant_add + state_sync) — backwards-compatible.
+      // Flag ON: emit single combat:combatant_add_reorder event (opted out of server re-broadcast).
+      //
+      // Rollout plan (see docs/sprint-plan-beta3-remediation.md S1.2):
+      //   Deploy 1: player client ships new handler alongside old — soak 24h for PWA cache update.
+      //   Deploy 2: DM flag ON in staging → Lucas.
+      //   Deploy 3: DM flag ON in prod.
+      //   D+7: remove legacy combatant_add emit + handler.
+      const flagOn = isFeatureFlagEnabled("ff_combatant_add_reorder");
 
-      persistNewCombatant(snap.encounter_id, added).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-      persistInitiativeOrder(
-        sorted.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
-      ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+      // B-3 FIX: persist BEFORE broadcast. Previously the order was
+      // broadcast → fire-and-forget persist. If a player's fallback
+      // fetchFullState fired while persist was still in flight, it could
+      // reconcile a stale DB snapshot and remove the just-added combatant
+      // from the UI (combatant appeared then disappeared).
+      //
+      // Locally, the combatant is ALREADY in the Zustand store (snap.addCombatant
+      // above), so DM UX shows the add immediately. The extra ~50-150ms before
+      // players see it is an acceptable trade for consistency: the player UI
+      // only ever sees confirmed state.
+      //
+      // Captured locals so the IIFE closure doesn't retain snap/sorted references
+      // longer than necessary, and to defend against snap.encounter_id non-null
+      // assertion regressing (B-7).
+      const encounterId = snap.encounter_id;
+      const initiativeSnapshot = sorted.map((c) => ({ id: c.id, initiative_order: c.initiative_order }));
+
+      void (async () => {
+        try {
+          await persistNewCombatant(encounterId, added);
+          await persistInitiativeOrder(initiativeSnapshot);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Failed to save.");
+          // Persist failed — do NOT broadcast. Player will stay in sync
+          // with DB (which doesn't have the combatant) and DM will see the
+          // error. On retry the flow runs from the top.
+          return;
+        }
+
+        // DB is now consistent. Safe to broadcast — any subsequent
+        // fetchFullState will see the added combatant.
+        if (flagOn) {
+          const syncState = useCombatStore.getState();
+          // Single atomic broadcast — replaces combatant_add + state_sync pair.
+          broadcastEvent(getSessionId(), {
+            type: "combat:combatant_add_reorder",
+            combatant: added,
+            initiative_map: syncState.combatants.map((c) => ({
+              id: c.id,
+              initiative_order: c.initiative_order,
+            })),
+            current_turn_index: syncState.current_turn_index,
+            round_number: syncState.round_number,
+            encounter_id: encounterId,
+          });
+        } else {
+          // Legacy path (backwards-compatible during rollout).
+          broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
+
+          // BT2-03: Broadcast full state sync after add so players get correct
+          // initiative order (player-side just appends to end without sorting)
+          const syncState = useCombatStore.getState();
+          broadcastEvent(getSessionId(), {
+            type: "session:state_sync",
+            combatants: syncState.combatants,
+            current_turn_index: syncState.current_turn_index,
+            round_number: syncState.round_number,
+            encounter_id: encounterId,
+          });
+        }
+      })();
     }
   }, [setError, getSessionId]);
 

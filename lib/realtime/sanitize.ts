@@ -10,6 +10,7 @@ import type {
   SanitizedEvent,
   SanitizedCombatant,
   SanitizedCombatantAdd,
+  SanitizedCombatantAddReorder,
   SanitizedStateSync,
   SanitizedInitiativeReorder,
   SanitizedPlayerHpUpdate,
@@ -82,6 +83,24 @@ export function sanitizePayloadServer(
     const result: SanitizedCombatantAdd = {
       type: event.type,
       combatant: sanitizeCombatant(event.combatant),
+    };
+    return result;
+  }
+
+  // S1.2: combat:combatant_add_reorder — atomic add + reorder
+  if (event.type === "combat:combatant_add_reorder") {
+    if (event.combatant.is_hidden) return null;
+    // B-2 FIX: mask hidden combatant IDs in initiative_map (same rule as
+    // client-side sanitizePayload). Preserves order; avoids leak + false-positive
+    // desync on player.
+    const sanitizedMap = sanitizeInitiativeMapForPlayers(event.initiative_map, allCombatants);
+    const result: SanitizedCombatantAddReorder = {
+      type: event.type,
+      combatant: sanitizeCombatant(event.combatant),
+      initiative_map: sanitizedMap,
+      current_turn_index: adjustTurnIndex(event.current_turn_index, allCombatants),
+      round_number: event.round_number,
+      encounter_id: event.encounter_id,
     };
     return result;
   }
@@ -200,6 +219,39 @@ export function sanitizePayloadServer(
 
   // Everything else passes through unchanged
   return event;
+}
+
+/** B-2: Stable opaque placeholder ID for a hidden combatant.
+ *  Deterministic FNV-1a hash so the same hidden combatant maps to the same
+ *  placeholder on every broadcast. Pairs with the client helper in broadcast.ts. */
+function maskHiddenId(id: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return `hidden:${h.toString(36)}`;
+}
+
+/** B-2: Sanitize initiative_map server-side.
+ *  Replaces hidden combatants' real IDs with opaque placeholders. */
+export function sanitizeInitiativeMapForPlayers(
+  map: ReadonlyArray<{ id: string; initiative_order: number | null }>,
+  allCombatants?: Combatant[],
+): Array<{ id: string; initiative_order: number | null; is_hidden?: true }> {
+  if (!allCombatants) {
+    // Without knowledge of which combatants are hidden, we cannot safely sanitize.
+    // Pass through — callers must ensure allCombatants is provided for any event
+    // whose payload carries an initiative_map referencing potentially-hidden IDs.
+    return map.map((e) => ({ id: e.id, initiative_order: e.initiative_order }));
+  }
+  const hiddenIds = new Set(allCombatants.filter((c) => c.is_hidden).map((c) => c.id));
+  return map.map((entry) => {
+    if (hiddenIds.has(entry.id)) {
+      return { id: maskHiddenId(entry.id), initiative_order: entry.initiative_order, is_hidden: true };
+    }
+    return { id: entry.id, initiative_order: entry.initiative_order };
+  });
 }
 
 function adjustTurnIndex(dmIndex: number, allCombatants?: Combatant[]): number {

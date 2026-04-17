@@ -1,6 +1,10 @@
 /// <reference lib="webworker" />
 
-const CACHE_VERSION = "v2";
+// S1.2 (Track B / Finding 2 fix): bump invalidates old PWA caches so players
+// on the legacy client get the new `combat:combatant_add_reorder` handler
+// before the `ff_combatant_add_reorder` flag is flipped in prod. Mixed-fleet
+// without this bump produces silent breakage (new DM → old player sees no add).
+const CACHE_VERSION = "v3";
 const APP_SHELL_CACHE = `app-shell-${CACHE_VERSION}`;
 const SRD_CACHE = `srd-${CACHE_VERSION}`;
 const AUDIO_CACHE = `audio-${CACHE_VERSION}`;

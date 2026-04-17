@@ -22,6 +22,7 @@ import type { PlayerAudioFile } from "@/lib/types/audio";
 import type {
   SanitizedStateSync,
   SanitizedCombatantAdd,
+  SanitizedCombatantAddReorder,
   SanitizedStatsUpdate,
   SanitizedInitiativeReorder,
   RealtimeTurnAdvance,
@@ -1283,6 +1284,113 @@ export function PlayerJoinClient({
               if (encounterIdRef.current) {
                 fetchFullState(encounterIdRef.current, { priority: "emergency" }).catch(() => { /* best-effort */ });
               }
+            }
+          }
+        })
+        .on("broadcast", { event: "combat:combatant_add_reorder" }, ({ payload }: { payload: SanitizedCombatantAddReorder & { _seq?: number } }) => {
+          // S1.2: Atomic combatant add + reorder + turn_index update in a single
+          // React state transaction. Replaces the legacy combatant_add + state_sync
+          // pair that raced on the receiver due to broadcastViaServer's dual sender.
+          //
+          // This handler coexists with the legacy `combat:combatant_add` handler
+          // during the rollout window (see sprint-plan-beta3-remediation.md S1.2).
+          // Old DM clients keep emitting the pair; new DM clients (flag on) emit
+          // only this event. Old player clients ignore this event (safe no-op).
+          const seq = typeof payload._seq === "number" ? payload._seq : 0;
+          if (seq > 0 && seq <= lastSeqRef.current) return;
+          if (seq > 0) lastSeqRef.current = seq;
+
+          if (!payload.combatant || !payload.initiative_map) return;
+
+          const incoming = payload.combatant as PlayerCombatant;
+
+          // B-1 FIX: Compute inconsistency SYNCHRONOUSLY against `combatantsRef.current`
+          // BEFORE calling the state updater. React does not guarantee the updater runs
+          // synchronously inside a supabase broadcast callback (which is outside the React
+          // event system), so reading a flag set inside the updater may race. The ref is
+          // always current; the reducer output is pure and idempotent.
+          const currentIds = new Set(combatantsRef.current.map((c) => c.id));
+          // B-2 FIX: Hidden placeholder IDs (prefixed "hidden:") are opaque slots — never
+          // treat them as unknown/desync triggers. They represent DM combatants the player
+          // must not see, but whose initiative slot preserves ordering.
+          const inconsistencyDetected = payload.initiative_map.some((entry) => {
+            if (entry.id === incoming.id) return false; // incoming will be present after insert
+            if (entry.id.startsWith("hidden:")) return false; // opaque slot, not a miss
+            return !currentIds.has(entry.id);
+          });
+
+          updateCombatants((prev) => {
+            // 1. Insert or merge the new combatant (dedup mirrors the legacy handler).
+            const existingIndex = prev.findIndex((c) => c.id === incoming.id);
+            let next: PlayerCombatant[];
+            if (existingIndex !== -1) {
+              if (process.env.NODE_ENV !== "production") {
+                console.warn(`[PlayerJoinClient] Dedup: combatant_add_reorder for existing ID ${incoming.id} — merging`);
+              }
+              next = prev.map((c, i) => (i === existingIndex ? { ...c, ...incoming } : c));
+            } else {
+              next = [...prev, incoming];
+            }
+
+            // 2. Apply the reorder by looking up each local combatant's new initiative_order.
+            // Any ID in the map that isn't local (e.g. a hidden DM combatant we don't know about,
+            // represented as a "hidden:" placeholder) is ignored for sorting. Any local ID
+            // missing from the map retains its previous order.
+            const orderById = new Map<string, number>();
+            for (const entry of payload.initiative_map) {
+              if (entry.initiative_order !== null) {
+                orderById.set(entry.id, entry.initiative_order);
+              }
+            }
+
+            const reordered = [...next].sort((a, b) => {
+              const ao = orderById.get(a.id);
+              const bo = orderById.get(b.id);
+              // Fallback: combatants not in the map keep their relative order after known ones.
+              if (ao === undefined && bo === undefined) {
+                return (a.initiative_order ?? 0) - (b.initiative_order ?? 0);
+              }
+              if (ao === undefined) return 1;
+              if (bo === undefined) return -1;
+              return ao - bo;
+            });
+
+            // Write the new initiative_order back onto our local combatants so subsequent
+            // state_sync / fetchFullState merges stay consistent.
+            return reordered.map((c) => {
+              const o = orderById.get(c.id);
+              return o !== undefined ? { ...c, initiative_order: o } : c;
+            });
+          });
+
+          // 3. Turn index + round — applied in the same synchronous tick so React
+          // batches them with the combatants update above (single commit).
+          if (typeof payload.current_turn_index === "number") {
+            updateTurnIndex(payload.current_turn_index);
+          }
+          if (typeof payload.round_number === "number") {
+            setRound(payload.round_number);
+          }
+          if (payload.encounter_id) {
+            setCurrentEncounterId(payload.encounter_id);
+          }
+          // DM broadcast is a heartbeat signal.
+          dmLastSeenRef.current = Date.now();
+          setDmOffline(false);
+
+          // 4. Fallback: if the initiative_map references IDs we don't have,
+          // schedule an emergency fetchFullState. Debounced by fetchInFlightRef
+          // (already set inside fetchFullState) so rapid adds don't storm the endpoint.
+          if (inconsistencyDetected) {
+            trackEvent("combat:combatant_add_desync_detected", {
+              encounter_id: payload.encounter_id,
+            });
+            const eid = encounterIdRef.current;
+            if (eid) {
+              // 500ms debounce to let any in-flight second combined event land first.
+              setTimeout(() => {
+                fetchFullState(eid).catch(() => { /* best-effort */ });
+              }, 500);
             }
           }
         })

@@ -5,6 +5,7 @@ import type {
   SanitizedEvent,
   SanitizedCombatant,
   SanitizedCombatantAdd,
+  SanitizedCombatantAddReorder,
   SanitizedStateSync,
   SanitizedInitiativeReorder,
   SanitizedPlayerHpUpdate,
@@ -174,6 +175,31 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
     return result;
   }
 
+  // S1.2: combat:combatant_add_reorder — single atomic broadcast replacing
+  // the legacy combatant_add + state_sync pair.
+  if (event.type === "combat:combatant_add_reorder") {
+    // Suppress entirely if the new combatant is hidden from players.
+    if (event.combatant.is_hidden) {
+      return null;
+    }
+    // B-2 FIX: initiative_map may reference hidden combatants. Raw passthrough
+    // would (a) leak presence/position of hidden combatants to players, and
+    // (b) make the player handler flag every add in a session with ≥1 hidden
+    // combatant as a desync (flooding fetchFullState). Mask hidden IDs with
+    // stable opaque placeholders ("hidden:<hash>") so order is preserved
+    // without revealing identity.
+    const sanitizedMap = sanitizeInitiativeMapForPlayers(event.initiative_map);
+    const result: SanitizedCombatantAddReorder = {
+      type: event.type,
+      combatant: sanitizeCombatant(event.combatant),
+      initiative_map: sanitizedMap,
+      current_turn_index: adjustTurnIndexForPlayers(event.current_turn_index),
+      round_number: event.round_number,
+      encounter_id: event.encounter_id,
+    };
+    return result;
+  }
+
   // combat:hidden_change — when revealing, broadcast as combatant_add; when hiding, broadcast as combatant_remove
   // This is handled by the caller (useCombatActions), so hidden_change never reaches sanitizePayload directly.
   // But as a safety net, block it from leaking raw hidden state to players.
@@ -307,6 +333,35 @@ function isCombatantHidden(combatantId: string): boolean {
   return _hiddenLookup ? _hiddenLookup(combatantId) : false;
 }
 
+/** B-2: Produce a stable opaque placeholder ID for a hidden combatant.
+ *  Using a simple hash so the same hidden combatant reliably gets the same
+ *  placeholder across broadcasts (supports client dedup + idempotent reducer).
+ *  Not cryptographic — just deterministic. Length kept short to avoid payload
+ *  bloat when a session has many hidden combatants. */
+function maskHiddenId(id: string): string {
+  let h = 2166136261; // FNV-1a 32-bit offset basis
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return `hidden:${h.toString(36)}`;
+}
+
+/** B-2: Sanitize an initiative_map for player broadcast.
+ *  Replaces any hidden combatant's real ID with an opaque placeholder that
+ *  preserves order without leaking identity or falsely flagging desync on
+ *  the player. */
+function sanitizeInitiativeMapForPlayers(
+  map: ReadonlyArray<{ id: string; initiative_order: number | null }>,
+): Array<{ id: string; initiative_order: number | null; is_hidden?: true }> {
+  return map.map((entry) => {
+    if (isCombatantHidden(entry.id)) {
+      return { id: maskHiddenId(entry.id), initiative_order: entry.initiative_order, is_hidden: true };
+    }
+    return { id: entry.id, initiative_order: entry.initiative_order };
+  });
+}
+
 /** Adjust a DM-side turn index to the player-visible index (excluding hidden combatants).
  *  Returns -1 if the turn is on a hidden combatant (signals "DM's turn" to players). */
 function adjustTurnIndexForPlayers(dmIndex: number): number {
@@ -407,9 +462,34 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     waitForChannel().then(doSend);
   }
 
+  // S1.2: Opt-out of server-side re-broadcast for events where a single
+  // ordered sender is critical. `broadcastViaServer` runs in parallel to
+  // the client-direct path, producing 2 senders with partial FIFO — that's
+  // the root cause of the combatant_add_reorder race condition. The payload
+  // is already fully sanitized here (sanitizePayload above), and
+  // SanitizedCombatantAddReorder carries no DM-only fields, so it's safe
+  // to skip the server re-broadcast.
+  if (shouldSkipServerBroadcast(event)) {
+    return;
+  }
+
   // Server-side broadcast for secure sanitization (anti-metagaming gate).
   // Fire-and-forget: supplementary to client-side broadcast.
   broadcastViaServer(sessionId, event).catch(() => {});
+}
+
+/**
+ * S1.2 — Event types that MUST NOT go through the server re-broadcast path.
+ *
+ * The server broadcast adds a second ordered sender (server → channel vs
+ * client → channel), which breaks FIFO assumptions on the receiver side.
+ * For events that are already fully sanitized client-side AND whose ordering
+ * is load-bearing (race-prone rapid emits), skip the server path.
+ *
+ * Exported for tests.
+ */
+export function shouldSkipServerBroadcast(event: RealtimeEvent): boolean {
+  return event.type === "combat:combatant_add_reorder";
 }
 
 /** Replay queued offline actions for a session.
