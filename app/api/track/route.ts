@@ -26,6 +26,8 @@ const ALLOWED_EVENTS = new Set([
   "combat:combatant_removed",
   "combat:recharge_used",
   "combat:recharge_rolled",
+  // Combat — S4.2 custom conditions (LGPD: name_length only, never the raw name)
+  "combat:custom_condition_applied",
   // Oracle
   "oracle:search",
   "oracle:result_click",

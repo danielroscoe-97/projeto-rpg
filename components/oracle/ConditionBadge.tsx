@@ -5,10 +5,11 @@ import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { RulesetVersion } from "@/lib/types/database";
 import type { LucideIcon } from "lucide-react";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
+import { isCustomCondition, parseCustomCondition } from "@/lib/combat/custom-conditions";
 import {
   EyeOff, Heart, AlertTriangle, Grip, CircleX, Eye,
   Zap, Mountain, Droplet, ArrowDown, Link, Star, Moon,
-  Focus,
+  Focus, Sparkles,
 } from "lucide-react";
 
 /** Condition icon mapping for WCAG 2.1 AA 1.4.1 — not color-only */
@@ -61,6 +62,37 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove, t
   const t = useTranslations("combat");
   const tc = useTranslations("conditions");
   const pinCard = usePinnedCardsStore((s) => s.pinCard);
+
+  // S4.2: detect DM-authored custom condition BEFORE concentrating/exhaustion
+  // parsers. Custom format is `custom:Name|Description`.
+  if (isCustomCondition(condition)) {
+    const { name, description } = parseCustomCondition(condition);
+    const ariaLabel = description
+      ? `${t("custom_condition_aria", { name })}. ${description}`
+      : t("custom_condition_aria", { name });
+    return (
+      <span
+        className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium bg-gold/15 text-gold border border-gold/30"
+        title={description ?? name}
+        aria-label={ariaLabel}
+        data-testid={`condition-badge-custom-${name.toLowerCase().replace(/\s+/g, "-")}`}
+      >
+        <Sparkles className="w-3 h-3 shrink-0" aria-hidden="true" />
+        <span className="truncate max-w-[140px]">{name}</span>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onRemove(condition); }}
+            className="ml-0.5 hover:text-red-400 transition-colors text-gold/70 text-[10px] leading-none min-w-[16px] min-h-[16px] flex items-center justify-center"
+            aria-label={t("condition_remove_aria", { name })}
+            data-testid={`condition-remove-custom-${name.toLowerCase().replace(/\s+/g, "-")}`}
+          >
+            ✕
+          </button>
+        )}
+      </span>
+    );
+  }
 
   // Handle "concentrating" and "concentrating:SpellName" as a special condition
   const isConcentration = condition === "concentrating" || condition.startsWith("concentrating:");

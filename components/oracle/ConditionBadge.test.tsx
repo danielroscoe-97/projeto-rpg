@@ -63,4 +63,27 @@ describe("ConditionBadge", () => {
     render(<ConditionBadge condition="Stunned" />);
     expect(screen.getByTestId("condition-badge-stunned")).toBeInTheDocument();
   });
+
+  // S4.2 — custom conditions rendering path
+  describe("S4.2 custom conditions", () => {
+    it("renders custom:Name badge with sparkle + name text (no description)", () => {
+      render(<ConditionBadge condition="custom:Bless" />);
+      expect(screen.getByText("Bless")).toBeInTheDocument();
+      expect(screen.getByTestId("condition-badge-custom-bless")).toBeInTheDocument();
+    });
+
+    it("renders custom:Name|Desc with description in the title tooltip", () => {
+      render(<ConditionBadge condition="custom:Bless|Abençoado" />);
+      const badge = screen.getByTestId("condition-badge-custom-bless");
+      expect(badge).toHaveAttribute("title", "Abençoado");
+    });
+
+    it("does NOT dispatch to concentration rendering path for `custom:concentrating|X`", () => {
+      render(<ConditionBadge condition="custom:concentrating|X" />);
+      // If the concentration branch had taken over, the test id would be
+      // `condition-badge-concentrating`. We expect the custom branch:
+      expect(screen.getByTestId("condition-badge-custom-concentrating")).toBeInTheDocument();
+      expect(screen.queryByTestId("condition-badge-concentrating")).toBeNull();
+    });
+  });
 });

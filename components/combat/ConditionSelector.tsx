@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Focus } from "lucide-react";
+import { Focus, Sparkles } from "lucide-react";
 import { CONDITION_ICONS } from "@/components/oracle/ConditionBadge";
 import { isConcentrating, getConcentrationSpell } from "@/lib/combat/concentration";
+import {
+  formatCustomCondition,
+  CUSTOM_NAME_MAX_LENGTH,
+  CUSTOM_DESC_MAX_LENGTH,
+} from "@/lib/combat/custom-conditions";
+import { isFeatureFlagEnabled } from "@/lib/flags";
+import { trackEvent } from "@/lib/analytics/track";
 
 const ALL_CONDITIONS = [
   "Blinded",
@@ -53,6 +60,29 @@ export function ConditionSelector({
   const currentSpell = getConcentrationSpell(activeConditions) ?? "";
   const [showSpellInput, setShowSpellInput] = useState(false);
   const [spellName, setSpellName] = useState(currentSpell);
+
+  // S4.2 — Custom conditions (feature-flagged)
+  const customEnabled = isFeatureFlagEnabled("ff_custom_conditions_v1");
+  const [customName, setCustomName] = useState("");
+  const [customDesc, setCustomDesc] = useState("");
+
+  const applyCustomCondition = () => {
+    const trimmed = customName.trim();
+    if (trimmed.length === 0) return;
+    try {
+      const str = formatCustomCondition(trimmed, customDesc);
+      onToggle(str);
+      // LGPD: log length only — never the raw name.
+      trackEvent("combat:custom_condition_applied", {
+        flag_on: true,
+        name_length: trimmed.length,
+      });
+      setCustomName("");
+      setCustomDesc("");
+    } catch {
+      /* defensive — formatCustomCondition throws only on empty, already guarded */
+    }
+  };
 
   const handleConcentrationToggle = () => {
     if (concentrating) {
@@ -182,6 +212,61 @@ export function ConditionSelector({
           })}
         </div>
       </div>
+
+      {/* S4.2 — Custom conditions (DM only; flag-gated) */}
+      {customEnabled && (
+        <div
+          className="mt-2 pt-2 border-t border-white/[0.06]"
+          data-testid="custom-condition-section"
+        >
+          <p className="text-[10px] text-gold/80 font-medium uppercase tracking-wider mb-1 flex items-center gap-1">
+            <Sparkles className="w-3 h-3" aria-hidden="true" />
+            {tcombat("custom_condition_label")}
+          </p>
+          <div className="flex items-center gap-1 flex-wrap">
+            <input
+              type="text"
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") applyCustomCondition();
+                if (e.key === "Escape") { setCustomName(""); setCustomDesc(""); }
+              }}
+              placeholder={tcombat("custom_condition_name_placeholder")}
+              maxLength={CUSTOM_NAME_MAX_LENGTH}
+              aria-describedby="custom-cond-limit-hint"
+              className="bg-transparent border border-gold/30 rounded px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-gold/50 flex-1 min-w-[120px]"
+              data-testid="custom-condition-name"
+            />
+            <input
+              type="text"
+              value={customDesc}
+              onChange={(e) => setCustomDesc(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") applyCustomCondition();
+                if (e.key === "Escape") { setCustomName(""); setCustomDesc(""); }
+              }}
+              placeholder={tcombat("custom_condition_desc_placeholder")}
+              maxLength={CUSTOM_DESC_MAX_LENGTH}
+              className="bg-transparent border border-gold/30 rounded px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-gold/50 flex-1 min-w-[160px]"
+              data-testid="custom-condition-desc"
+            />
+            <button
+              type="button"
+              disabled={!customName.trim()}
+              onClick={applyCustomCondition}
+              className="min-h-[44px] sm:min-h-[32px] px-3 text-xs rounded bg-gold text-surface-primary hover:bg-gold/90 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gold/50"
+              aria-label={tcombat("custom_condition_aria", { name: customName.trim() || tcombat("custom_condition_label") })}
+              data-testid="custom-condition-apply"
+            >
+              {tcombat("custom_condition_apply")}
+            </button>
+            <span id="custom-cond-limit-hint" className="sr-only">
+              {tcombat("custom_condition_limits_hint")}
+            </span>
+          </div>
+        </div>
+      )}
 
       <button
         type="button"
