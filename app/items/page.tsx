@@ -4,6 +4,7 @@ import { getSrdItems, getItemPtNameMap, toSlug } from "@/lib/srd/srd-data-server
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicItemGrid } from "@/components/public/PublicItemGrid";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Items Compendium — SRD Equipment & Magic Items",
@@ -67,29 +68,14 @@ export default function ItemsIndexPage() {
       sentient: item.sentient,
     }));
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+  const jsonLd = collectionPageLd({
     name: "D&D 5e Items Compendium",
     description:
       "Complete D&D 5e SRD item compendium with weapons, armor, magic items, and adventuring gear.",
-    url: "/items",
-    inLanguage: "en",
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: items.length,
-      itemListElement: items.slice(0, 10).map((item, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        name: item.name,
-      })),
-    },
-  };
+    path: "/items",
+    locale: "en",
+    items: items.map((it) => ({ name: it.name, path: `/items/${it.id}` })),
+  });
 
   return (
     <>

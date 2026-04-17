@@ -5,6 +5,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicFeatGrid } from "@/components/public/PublicFeatGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Feats — SRD Character Feats",
@@ -41,24 +42,14 @@ export const metadata: Metadata = {
 
 export const revalidate = 86400;
 
-function FeatsJsonLd({ count }: { count: number }) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+function FeatsJsonLd({ feats }: { feats: Array<{ id: string; name: string }> }) {
+  const jsonLd = collectionPageLd({
     name: "D&D 5e Feats",
     description: "All SRD character feats for D&D 5th Edition",
-    url: "/feats",
-    inLanguage: "en",
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: count,
-    },
-  };
+    path: "/feats",
+    locale: "en",
+    items: feats.map((f) => ({ name: f.name, path: `/feats/${f.id}` })),
+  });
 
   return (
     <script
@@ -84,7 +75,7 @@ export default function FeatsPage() {
 
   return (
     <>
-      <FeatsJsonLd count={feats.length} />
+      <FeatsJsonLd feats={feats} />
 
       <div className="min-h-screen bg-background">
         <PublicNav breadcrumbs={[{ label: "Feats" }]} />

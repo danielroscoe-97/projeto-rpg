@@ -11,6 +11,7 @@ import { PublicFooter } from "@/components/public/PublicFooter";
 import { MonsterHeroCount } from "@/components/public/MonsterHeroCount";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 import monsterSlugsPt from "@/data/srd/monster-names-pt.json";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Bestiário D&D 5e — Lista de Monstros SRD",
@@ -83,25 +84,13 @@ export default function MonstrosIndexPage() {
     if (allPtSlugs[slug]) ptSlugMap[slug] = allPtSlugs[slug];
   }
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+  const jsonLd = collectionPageLd({
     name: "Bestiário D&D 5e — Monstros SRD",
     description: "Bestiário completo do D&D 5e com blocos de estatísticas interativos e roladores de dados.",
-    url: "/monstros",
-    inLanguage: "pt-BR",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: monsters.length,
-      itemListElement: monsters.slice(0, 10).map((m, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        url: `/monstros/${m.slug}`,
-        name: m.name,
-      })),
-    },
-  };
+    path: "/monstros",
+    locale: "pt-BR",
+    items: monsters.map((m) => ({ name: m.name, path: `/monstros/${m.slug}` })),
+  });
 
   return (
     <>

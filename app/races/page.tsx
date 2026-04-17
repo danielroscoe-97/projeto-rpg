@@ -4,6 +4,7 @@ import { PublicRacesIndex } from "@/components/public/PublicRacesIndex";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -56,26 +57,16 @@ const RACE_NAMES = [
 ];
 
 function RacesJsonLd() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
+  const jsonLd = collectionPageLd({
     name: "D&D 5e Races",
-    description:
-      "All player character races in the D&D 5th Edition SRD",
-    numberOfItems: RACE_NAMES.length,
-    itemListElement: RACE_NAMES.map((name, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
+    description: "All player character races in the D&D 5th Edition SRD",
+    path: "/races",
+    locale: "en",
+    items: RACE_NAMES.map((name) => ({
       name,
-      url: `/races/${name.toLowerCase().replace(/\s+/g, "-")}`,
+      path: `/races/${name.toLowerCase().replace(/\s+/g, "-")}`,
     })),
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-    },
-  };
+  });
 
   return (
     <script

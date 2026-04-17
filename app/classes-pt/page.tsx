@@ -5,6 +5,7 @@ import { PublicClassesIndex } from "@/components/public/PublicClassesIndex";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getAllClassesFull } from "@/lib/srd/class-data-server";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -46,27 +47,13 @@ export const revalidate = 86400;
 // ── JSON-LD ────────────────────────────────────────────────────────
 function ClassesJsonLd() {
   const classes = getAllClassesFull();
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
+  const jsonLd = collectionPageLd({
     name: "Classes D&D 5e",
-    description:
-      "Todas as classes de personagem jogável no SRD do D&D 5ª Edição",
-    numberOfItems: classes.length,
-    itemListElement: classes.map((cls, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: cls.name_pt,
-      url: `/classes-pt/${cls.id}`,
-    })),
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-    },
-    inLanguage: "pt-BR",
-  };
+    description: "Todas as classes de personagem jogável no SRD do D&D 5ª Edição",
+    path: "/classes-pt",
+    locale: "pt-BR",
+    items: classes.map((cls) => ({ name: cls.name_pt, path: `/classes-pt/${cls.id}` })),
+  });
 
   return (
     <script

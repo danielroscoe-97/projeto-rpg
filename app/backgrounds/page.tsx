@@ -5,6 +5,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicBackgroundGrid } from "@/components/public/PublicBackgroundGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Backgrounds — SRD Character Backgrounds",
@@ -41,24 +42,14 @@ export const metadata: Metadata = {
 
 export const revalidate = 86400;
 
-function BackgroundsJsonLd({ count }: { count: number }) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+function BackgroundsJsonLd({ bgs }: { bgs: Array<{ id: string; name: string }> }) {
+  const jsonLd = collectionPageLd({
     name: "D&D 5e Backgrounds",
     description: "All SRD character backgrounds for D&D 5th Edition",
-    url: "/backgrounds",
-    inLanguage: "en",
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: count,
-    },
-  };
+    path: "/backgrounds",
+    locale: "en",
+    items: bgs.map((b) => ({ name: b.name, path: `/backgrounds/${b.id}` })),
+  });
 
   return (
     <script
@@ -86,7 +77,7 @@ export default function BackgroundsPage() {
 
   return (
     <>
-      <BackgroundsJsonLd count={backgrounds.length} />
+      <BackgroundsJsonLd bgs={backgrounds} />
 
       <div className="min-h-screen bg-background">
         <PublicNav breadcrumbs={[{ label: "Backgrounds" }]} />

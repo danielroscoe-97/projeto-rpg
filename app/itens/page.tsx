@@ -4,6 +4,7 @@ import { getSrdItems, getItemPtNameMap, toSlug } from "@/lib/srd/srd-data-server
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicItemGrid } from "@/components/public/PublicItemGrid";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Itens D&D 5e — Compêndio de Equipamentos SRD",
@@ -66,29 +67,14 @@ export default function ItensIndexPage() {
       sentient: item.sentient,
     }));
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+  const jsonLd = collectionPageLd({
     name: "Compêndio de Itens D&D 5e",
     description:
       "Compêndio completo de itens D&D 5e SRD com armas, armaduras, itens mágicos e equipamentos de aventura.",
-    url: "/itens",
-    inLanguage: "pt-BR",
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: items.length,
-      itemListElement: items.slice(0, 10).map((item, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        name: item.name,
-      })),
-    },
-  };
+    path: "/itens",
+    locale: "pt-BR",
+    items: items.map((it) => ({ name: it.name, path: `/itens/${it.id}` })),
+  });
 
   return (
     <>

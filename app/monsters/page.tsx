@@ -7,6 +7,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { CompendiumMonsterHydrator } from "@/components/public/CompendiumMonsterHydrator";
 import { MonsterHeroCount } from "@/components/public/MonsterHeroCount";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Monster Compendium — SRD Bestiary",
@@ -79,25 +80,13 @@ export default function MonstersIndexPage() {
     if (allPtSlugs[slug]) ptSlugMap[slug] = allPtSlugs[slug];
   }
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+  const jsonLd = collectionPageLd({
     name: "D&D 5e Monster Compendium",
     description: "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers.",
-    url: "/monsters",
-    inLanguage: "en",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: monsters.length,
-      itemListElement: monsters.slice(0, 10).map((m, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        url: `/monsters/${m.slug}`,
-        name: m.name,
-      })),
-    },
-  };
+    path: "/monsters",
+    locale: "en",
+    items: monsters.map((m) => ({ name: m.name, path: `/monsters/${m.slug}` })),
+  });
 
   return (
     <>

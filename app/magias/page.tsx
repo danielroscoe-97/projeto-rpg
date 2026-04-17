@@ -4,6 +4,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Magias D&D 5e — Compêndio SRD",
@@ -70,25 +71,13 @@ export default function MagiasIndexPage() {
       };
     });
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+  const jsonLd = collectionPageLd({
     name: "Compêndio de Magias D&D 5e",
     description: "Compêndio completo de magias do D&D 5e com descrições, alcance, componentes e tier de poder.",
-    url: "/magias",
-    inLanguage: "pt-BR",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: spells.length,
-      itemListElement: spells.slice(0, 10).map((s, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        url: `/magias/${s.slug}`,
-        name: s.name,
-      })),
-    },
-  };
+    path: "/magias",
+    locale: "pt-BR",
+    items: spells.map((s) => ({ name: s.name, path: `/magias/${s.slug}` })),
+  });
 
   return (
     <>

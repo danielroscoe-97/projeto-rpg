@@ -5,6 +5,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicFeatGrid } from "@/components/public/PublicFeatGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Talentos D&D 5e — Talentos de Personagem SRD",
@@ -41,24 +42,14 @@ export const metadata: Metadata = {
 
 export const revalidate = 86400;
 
-function FeatsJsonLd({ count }: { count: number }) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+function FeatsJsonLd({ feats }: { feats: Array<{ id: string; name: string }> }) {
+  const jsonLd = collectionPageLd({
     name: "Talentos D&D 5e",
     description: "Todos os talentos SRD de personagem do D&D 5ª Edição",
-    url: "/talentos",
-    inLanguage: "pt-BR",
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "/",
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: count,
-    },
-  };
+    path: "/talentos",
+    locale: "pt-BR",
+    items: feats.map((f) => ({ name: f.name, path: `/talentos/${f.id}` })),
+  });
 
   return (
     <script
@@ -84,7 +75,7 @@ export default function TalentosPage() {
 
   return (
     <>
-      <FeatsJsonLd count={feats.length} />
+      <FeatsJsonLd feats={feats} />
 
       <div className="min-h-screen bg-background">
         <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Talentos" }]} />

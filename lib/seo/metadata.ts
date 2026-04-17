@@ -270,3 +270,134 @@ export function articleLd({
     mainEntityOfPage: siteUrl(path),
   };
 }
+
+// ── WebSite + Organization + WebApplication (homepage) ────────────────
+export function websiteLd({
+  description,
+  searchPath,
+}: {
+  description?: string;
+  searchPath?: string;
+}) {
+  const node: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Pocket DM",
+    alternateName: "Pocket DM — Combat Tracker D&D 5e",
+    url: SITE_URL,
+  };
+  if (description) node.description = description;
+  if (searchPath) {
+    node.potentialAction = {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: siteUrl(`${searchPath}?q={search_term_string}`),
+      },
+      "query-input": "required name=search_term_string",
+    };
+  }
+  return node;
+}
+
+export function organizationLd({
+  description,
+  sameAs,
+}: {
+  description?: string;
+  sameAs?: string[];
+}) {
+  const node: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Pocket DM",
+    url: SITE_URL,
+    logo: siteUrl("/icons/icon-512.png"),
+  };
+  if (description) node.description = description;
+  if (sameAs && sameAs.length > 0) node.sameAs = sameAs;
+  return node;
+}
+
+export function webApplicationLd({
+  description,
+  featureList,
+}: {
+  description?: string;
+  featureList?: string[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Pocket DM",
+    url: SITE_URL,
+    applicationCategory: "GameApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "BRL",
+    },
+    ...(description ? { description } : {}),
+    ...(featureList ? { featureList } : {}),
+  };
+}
+
+// ── CollectionPage (compendium indexes) ───────────────────────────────
+export function collectionPageLd({
+  name,
+  description,
+  path,
+  locale,
+  items,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  locale: Locale;
+  items: Array<{ name: string; path: string }>;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    description,
+    url: siteUrl(path),
+    inLanguage: locale,
+    publisher: {
+      "@type": "Organization",
+      name: "Pocket DM",
+      url: SITE_URL,
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: items.length,
+      itemListElement: items.slice(0, 10).map((it, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: it.name,
+        url: siteUrl(it.path),
+      })),
+    },
+  };
+}
+
+// ── FAQPage ───────────────────────────────────────────────────────────
+export function faqPageLd({
+  questions,
+}: {
+  questions: Array<{ question: string; answer: string }>;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: questions.map((q) => ({
+      "@type": "Question",
+      name: q.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: q.answer,
+      },
+    })),
+  };
+}

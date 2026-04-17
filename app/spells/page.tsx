@@ -4,6 +4,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
+import { collectionPageLd } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Spell Compendium — SRD Spell List",
@@ -69,25 +70,13 @@ export default function SpellsIndexPage() {
       };
     });
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
+  const jsonLd = collectionPageLd({
     name: "D&D 5e Spell Compendium",
     description: "Complete D&D 5e SRD spell compendium with descriptions, damage, range, and components.",
-    url: "/spells",
-    inLanguage: "en",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: spells.length,
-      itemListElement: spells.slice(0, 10).map((s, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        url: `/spells/${s.slug}`,
-        name: s.name,
-      })),
-    },
-  };
+    path: "/spells",
+    locale: "en",
+    items: spells.map((s) => ({ name: s.name, path: `/spells/${s.slug}` })),
+  });
 
   return (
     <>
