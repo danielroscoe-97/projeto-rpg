@@ -141,6 +141,8 @@ interface GuestCombatActions {
   hydrateCombatants: (combatants: Combatant[]) => void;
   checkExpiry: () => boolean;
   toggleTimerPause: () => void;
+  /** S5.3 — Set recharge state for an ability on a combatant. In-combat only. */
+  setRechargeState: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
 }
 
 type GuestCombatStore = GuestCombatState & GuestCombatActions;
@@ -560,6 +562,24 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
           }
           return { isPaused: true, pausedAt: Date.now() };
         }),
+
+      // S5.3 — Recharge dice state
+      setRechargeState: (id, actionKey, depleted, threshold) => {
+        if (guardExpired()) return;
+        set((state) => ({
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            const current = c.rechargeState ?? {};
+            return {
+              ...c,
+              rechargeState: {
+                ...current,
+                [actionKey]: { depleted, threshold },
+              },
+            };
+          }),
+        }));
+      },
     };
     },
     {

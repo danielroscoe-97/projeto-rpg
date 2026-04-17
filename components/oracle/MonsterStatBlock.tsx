@@ -6,6 +6,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { DiceText } from "@/components/dice/DiceText";
 import { MonsterToken } from "@/components/srd/MonsterToken";
+import { RechargeableAction, type CombatantContext } from "@/components/combat/RechargeableAction";
 import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
 import { VersionBadge } from "@/components/ui/VersionBadge";
 import { useMonsterTranslation } from "@/lib/hooks/useMonsterTranslation";
@@ -176,10 +177,18 @@ function SectionBlock({
   title,
   items,
   renderDesc,
+  combatantContext,
 }: {
   title: string;
   items: { name: string; desc: string }[];
   renderDesc: (desc: string, actionName: string) => React.ReactNode;
+  /**
+   * When provided, each item is wrapped in a RechargeableAction that shows a
+   * Recharge toggle button for actions whose name matches `(Recharge X)` /
+   * `(Recharge X-Y)`. In compendium (read-only) contexts, leave undefined —
+   * items render as plain trait blocks.
+   */
+  combatantContext?: CombatantContext;
 }) {
   if (!items || items.length === 0) return null;
   return (
@@ -187,12 +196,21 @@ function SectionBlock({
       <CardDivider />
       <h4 className="section-header">{title}</h4>
       <div>
-        {items.map((item) => (
-          <p key={item.name} className="trait-block">
-            <span className="trait-name">{item.name}. </span>
-            <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
-          </p>
-        ))}
+        {items.map((item) =>
+          combatantContext ? (
+            <RechargeableAction
+              key={item.name}
+              actionName={item.name}
+              desc={renderDesc(item.desc, item.name)}
+              combatant={combatantContext}
+            />
+          ) : (
+            <p key={item.name} className="trait-block">
+              <span className="trait-name">{item.name}. </span>
+              <span className="trait-desc">{renderDesc(item.desc, item.name)}</span>
+            </p>
+          ),
+        )}
       </div>
     </>
   );
@@ -218,6 +236,16 @@ export interface MonsterStatBlockProps {
   renderDesc?: (text: string, rulesetVersion: RulesetVersion, actionName?: string) => React.ReactNode;
   /** Locale for PT-BR translation support */
   locale?: "en" | "pt-BR";
+  /**
+   * When provided (combat context only), enables the Recharge toggle button
+   * on actions whose name matches `(Recharge X)` / `(Recharge X-Y)`.
+   *
+   * Pass `undefined` in compendium / read-only contexts — the stat block then
+   * renders actions as plain trait blocks (no buttons, no state).
+   *
+   * S5.3 — DM-only UI; players don't control monsters.
+   */
+  combatantContext?: CombatantContext;
 }
 
 export function MonsterStatBlock({
@@ -232,6 +260,7 @@ export function MonsterStatBlock({
   pageUrl,
   renderDesc: renderDescProp,
   locale,
+  combatantContext,
 }: MonsterStatBlockProps) {
   // Translation support
   const [defaultLocale] = useLocalePreference("pt-BR");
@@ -531,6 +560,7 @@ export function MonsterStatBlock({
           desc: getDesc("actions", item.name, item.desc),
         }))}
         renderDesc={renderDesc}
+        combatantContext={combatantContext}
       />
       <SectionBlock
         title={L.reactions}

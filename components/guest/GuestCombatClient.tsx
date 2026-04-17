@@ -901,6 +901,7 @@ export function GuestCombatClient() {
     setGroupInitiative,
     setLegendaryActionsUsed,
     toggleReaction,
+    setRechargeState,
   } = useGuestCombatStore();
 
   // ─── Undo stack (Story 1.1) ─────────────────────────────────────────────────
@@ -1849,6 +1850,8 @@ export function GuestCombatClient() {
                   onAdvanceTurn={handleAdvanceTurn}
                   onSetLegendaryActionsUsed={setLegendaryActionsUsed}
                   onToggleReaction={toggleReaction}
+                  onSetRechargeState={setRechargeState}
+                  currentRound={roundNumber}
                 />
               );
             }}
@@ -1892,6 +1895,8 @@ export function GuestCombatClient() {
                       onAdvanceTurn={handleAdvanceTurn}
                       onSetLegendaryActionsUsed={setLegendaryActionsUsed}
                       onToggleReaction={toggleReaction}
+                      onSetRechargeState={setRechargeState}
+                      currentRound={roundNumber}
                     />
                   ))}
                 </MonsterGroupHeader>

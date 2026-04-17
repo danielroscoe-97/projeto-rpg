@@ -59,6 +59,15 @@ export interface CombatantRowProps {
   onSetLegendaryActionsUsed?: (id: string, count: number) => void;
   /** Toggle reaction used/available for a combatant. */
   onToggleReaction?: (id: string) => void;
+  /**
+   * S5.3 — Set a combatant's per-ability recharge state (depleted flag + threshold).
+   * Passed through to MonsterStatBlock as `combatantContext.onRechargeToggle`.
+   * When undefined, the stat block renders actions without Recharge buttons
+   * (compendium / read-only behavior).
+   */
+  onSetRechargeState?: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
+  /** Current round number (for combat log entries). S5.3. */
+  currentRound?: number;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -90,6 +99,8 @@ export const CombatantRow = memo(function CombatantRow({
   onAdvanceTurn,
   onSetLegendaryActionsUsed,
   onToggleReaction,
+  onSetRechargeState,
+  currentRound,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -995,7 +1006,22 @@ export const CombatantRow = memo(function CombatantRow({
               </div>
 
               {/* Full stat block */}
-              <MonsterStatBlock monster={fullMonster} />
+              <MonsterStatBlock
+                monster={fullMonster}
+                combatantContext={
+                  onSetRechargeState
+                    ? {
+                        id: combatant.id,
+                        name: combatant.display_name ?? combatant.name,
+                        monsterSlug: combatant.monster_id ?? undefined,
+                        rechargeState: combatant.rechargeState,
+                        onRechargeToggle: (actionKey, depleted, threshold) =>
+                          onSetRechargeState(combatant.id, actionKey, depleted, threshold),
+                        round: currentRound,
+                      }
+                    : undefined
+                }
+              />
             </div>
           </motion.div>
         )}

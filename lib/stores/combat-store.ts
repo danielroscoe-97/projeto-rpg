@@ -589,6 +589,22 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
       try { const raw = localStorage.getItem("combat-timers"); const parsed = raw ? JSON.parse(raw) : {}; localStorage.setItem("combat-timers", JSON.stringify({ ...parsed, isPaused: true, pausedAt: now })); } catch { /* */ }
       return { isPaused: true, pausedAt: now };
     }),
+
+  // S5.3 — Recharge dice state
+  setRechargeState: (id, actionKey, depleted, threshold) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        const current = c.rechargeState ?? {};
+        return {
+          ...c,
+          rechargeState: {
+            ...current,
+            [actionKey]: { depleted, threshold },
+          },
+        };
+      }),
+    })),
 })));
 
 // Auto-persist combat state to localStorage on changes.

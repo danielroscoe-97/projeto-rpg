@@ -59,6 +59,17 @@ export interface Combatant {
   reaction_used: boolean;
   /** True for the synthetic "Lair Actions" entry at initiative 20. Not a real creature. */
   is_lair_action?: boolean;
+  /**
+   * S5.3 — Recharge dice tracking. Key = snake_case action name (see
+   * `parseRecharge()` in `lib/combat/parse-recharge.ts`); value = current
+   * depleted flag + the d6 threshold needed to recharge.
+   *
+   * In-combat only — NOT persisted across encounters. Cleared when the
+   * encounter ends (see `clearEncounter` / `resetCombat`). Per-instance:
+   * each combatant has its own independent state even when multiple use
+   * the same monster slug.
+   */
+  rechargeState?: Record<string, { depleted: boolean; threshold: number }>;
 }
 
 export type UndoEntry =
@@ -177,6 +188,12 @@ export interface CombatActions {
   setReactionUsed: (id: string, used: boolean) => void;
   /** CTA-12: Toggle combat timer pause. On pause: freeze timers. On resume: shift timestamps forward by pause duration. */
   toggleTimerPause: () => void;
+  /**
+   * S5.3 — Set the recharge state for a specific ability on a combatant.
+   * `depleted = true` marks it as used; `false` marks it as available again.
+   * Creates the per-combatant map as needed. In-combat only (reset on clearEncounter).
+   */
+  setRechargeState: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
 }
 
 // --- CP.1.1: Parsed Monster Action Types ---
