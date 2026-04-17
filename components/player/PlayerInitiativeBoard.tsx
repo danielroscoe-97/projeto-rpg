@@ -220,6 +220,14 @@ interface PlayerInitiativeBoardProps {
   characterId?: string;
   /** Pending action states for visual feedback (optimistic ACK system) */
   pendingState?: CombatantPendingState;
+  /**
+   * S4.4 — Auth-mode context for the compendium login nudge banner.
+   * Derived by the caller from `!!user && !user.is_anonymous` (see PlayerJoinClient).
+   * Defaults to "authenticated" so the banner is suppressed by default.
+   */
+  compendiumMode?: "guest" | "anonymous" | "authenticated";
+  /** Internal return-url for the login nudge CTA (e.g. `/join/<token>`). */
+  compendiumReturnUrl?: string;
 }
 
 export function PlayerInitiativeBoard({
@@ -251,6 +259,8 @@ export function PlayerInitiativeBoard({
   onToggleReaction,
   characterId,
   pendingState,
+  compendiumMode = "authenticated",
+  compendiumReturnUrl,
 }: PlayerInitiativeBoardProps) {
   const t = useTranslations("player");
   const tc = useTranslations("combat");
@@ -1373,6 +1383,8 @@ export function PlayerInitiativeBoard({
         onOpenChange={setCompendiumOpen}
         playerClass={primaryPlayerChar?.class}
         rulesetVersion={rulesetVersion}
+        mode={compendiumMode}
+        returnUrl={compendiumReturnUrl}
       />
 
       <CombatActionLog open={showActionLog} onClose={() => setShowActionLog(false)} playerId={ownChar?.id} />

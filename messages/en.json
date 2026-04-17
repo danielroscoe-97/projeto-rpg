@@ -2644,6 +2644,11 @@
   "compendium": {
     "title": "Compendium",
     "subtitle": "SRD 5e Reference",
+    "login_nudge_title": "Public SRD compendium",
+    "login_nudge_desc": "Log in for full compendium, homebrew items and PT-BR translations.",
+    "login_nudge_cta_guest": "Sign up free",
+    "login_nudge_cta_anon": "Log in",
+    "login_nudge_dismiss": "Dismiss",
     "nav_dashboard": "Dashboard",
     "nav_home": "Pocket DM Home",
     "tab_monsters": "Monsters",

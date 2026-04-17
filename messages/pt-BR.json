@@ -2644,6 +2644,11 @@
   "compendium": {
     "title": "Compêndio",
     "subtitle": "Guia de Referência SRD 5e",
+    "login_nudge_title": "Compêndio SRD público",
+    "login_nudge_desc": "Entre para acessar compêndio completo, itens homebrew e traduções PT-BR.",
+    "login_nudge_cta_guest": "Criar conta grátis",
+    "login_nudge_cta_anon": "Entrar",
+    "login_nudge_dismiss": "Dispensar",
     "nav_dashboard": "Dashboard",
     "nav_home": "Página Inicial",
     "tab_monsters": "Monstros",
