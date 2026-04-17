@@ -41,6 +41,8 @@ interface CharacterWizardProps {
   campaignId?: string | null;
   /** Campaign name for display */
   campaignName?: string;
+  /** Tracking mode for analytics. Defaults to "auth" (only caller today). */
+  mode?: "auth" | "guest" | "anon";
   /** Callback after character is created successfully. Receives the data to persist. */
   onComplete: (data: WizardCharacterData) => Promise<void>;
   /** Callback to close/cancel the wizard */
@@ -52,6 +54,7 @@ type Step = 1 | 2 | 3;
 export function CharacterWizard({
   campaignId,
   campaignName,
+  mode = "auth",
   onComplete,
   onCancel,
 }: CharacterWizardProps) {
@@ -91,7 +94,7 @@ export function CharacterWizard({
     try {
       await onComplete(data);
       trackEvent("character:created", {
-        mode: "auth",
+        mode,
         source: campaignId ? "campaign" : "standalone",
         class: data.characterClass,
         race: data.race,
@@ -102,7 +105,7 @@ export function CharacterWizard({
       toast.error(t("error_creating"));
       setSubmitting(false);
     }
-  }, [data, onComplete, t]);
+  }, [data, onComplete, t, mode, campaignId]);
 
   const skipStats = useCallback(() => {
     setStep(3);

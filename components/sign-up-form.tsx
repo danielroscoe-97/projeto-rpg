@@ -110,9 +110,13 @@ export function SignUpForm({
         setIsLoading(false);
         return;
       }
+      const ALLOWED_CONTEXTS = ["campaign_join"] as const;
+      const safeContext = (ALLOWED_CONTEXTS as readonly string[]).includes(signupContext ?? "")
+        ? signupContext
+        : null;
       trackEvent("auth:signup", {
         role: selectedRole,
-        source: inviteToken ? "/invite" : joinCode ? "/join" : signupContext || "direct",
+        source: inviteToken ? "/invite" : joinCode ? "/join" : safeContext ?? "direct",
         method: "email",
       });
       let successUrl = `/auth/sign-up-success?email=${encodeURIComponent(email)}&role=${encodeURIComponent(selectedRole || "both")}`;
