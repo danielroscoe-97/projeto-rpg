@@ -3780,6 +3780,7 @@
     "retro_no_encounters_detail": "Quando o mestre encerrar um combate, este link mostra as opções de voto.",
     "retro_error_rate_limited": "Muitas tentativas. Espere um instante e tente de novo.",
     "retro_error_submit": "Erro ao enviar o voto. Tente novamente.",
+    "retro_back_home": "Voltar para a PocketDM",
     "copy_link_button": "Copiar link de feedback pro grupo",
     "copy_link_success": "Link copiado!",
     "copy_link_error": "Não consegui copiar. Copie manualmente."

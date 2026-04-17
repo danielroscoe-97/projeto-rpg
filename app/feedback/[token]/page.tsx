@@ -1,8 +1,18 @@
 export const dynamic = "force-dynamic";
 
+import type { Metadata } from "next";
 import { createServiceClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { FeedbackClient } from "./FeedbackClient";
+
+/**
+ * Explicit noindex — the page exposes sessionName + dmName to anyone
+ * holding a valid session_tokens.token, so we must keep it out of any
+ * public index (Google, Bing, Archive.org, etc.).
+ */
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 interface FeedbackPageProps {
   params: Promise<{ token: string }>;
@@ -41,6 +51,7 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
       <ErrorScreen
         title={t("retro_error_invalid_title")}
         detail={t("retro_error_invalid_detail")}
+        backLabel={t("retro_back_home")}
       />
     );
   }
@@ -50,6 +61,7 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
       <ErrorScreen
         title={t("retro_error_expired_title")}
         detail={t("retro_error_expired_detail")}
+        backLabel={t("retro_back_home")}
       />
     );
   }
@@ -76,6 +88,7 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
       <ErrorScreen
         title={t("retro_error_invalid_title")}
         detail={t("retro_error_invalid_detail")}
+        backLabel={t("retro_back_home")}
       />
     );
   }
@@ -87,6 +100,7 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
       <ErrorScreen
         title={t("retro_no_encounters_title")}
         detail={t("retro_no_encounters_detail")}
+        backLabel={t("retro_back_home")}
       />
     );
   }
@@ -121,7 +135,15 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
   return <FeedbackClient data={pageData} />;
 }
 
-function ErrorScreen({ title, detail }: { title: string; detail: string }) {
+function ErrorScreen({
+  title,
+  detail,
+  backLabel,
+}: {
+  title: string;
+  detail: string;
+  backLabel: string;
+}) {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-sm w-full text-center space-y-3">
@@ -131,7 +153,7 @@ function ErrorScreen({ title, detail }: { title: string; detail: string }) {
           href="/try"
           className="inline-block mt-4 text-sm text-gold hover:text-gold/80 underline"
         >
-          Voltar para a PocketDM
+          {backLabel}
         </a>
       </div>
     </div>

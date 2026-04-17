@@ -3776,6 +3776,7 @@
     "retro_no_encounters_detail": "When your DM ends a combat, this link will show voting options.",
     "retro_error_rate_limited": "Too many attempts. Wait a moment and try again.",
     "retro_error_submit": "Couldn't submit your vote. Please try again.",
+    "retro_back_home": "Back to PocketDM",
     "copy_link_button": "Copy feedback link for the group",
     "copy_link_success": "Link copied!",
     "copy_link_error": "Couldn't copy. Please copy manually.",
