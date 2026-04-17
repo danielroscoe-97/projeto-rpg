@@ -16,6 +16,7 @@ const PUBLIC_PREFIXES = [
   "/try",
   "/srd",
   "/join",
+  "/feedback",
   // Public compendium pages (EN)
   "/monsters",
   "/spells",
