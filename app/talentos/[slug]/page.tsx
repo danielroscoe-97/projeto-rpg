@@ -6,7 +6,7 @@ import { PublicFeatDetail } from "@/components/public/PublicFeatDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdFeats, getFeatBySlug } from "@/lib/srd/srd-data-server";
-import { featMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
+import { featMetadata, articleLd, breadcrumbList , jsonLdScriptProps} from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return getSrdFeats().map((f) => ({ slug: f.id }));
@@ -47,14 +47,8 @@ function FeatJsonLd({ feat, slug }: { feat: { name: string; prerequisite: string
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle).replace(/</g, "\\u003c") }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb).replace(/</g, "\\u003c") }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }

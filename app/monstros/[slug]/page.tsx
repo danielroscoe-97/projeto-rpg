@@ -17,7 +17,7 @@ import monsterLore from "@/data/srd/monster-lore.json";
 import monsterLorePt from "@/data/srd/monster-lore-pt.json";
 import monsterNamesPt from "@/data/srd/monster-descriptions-pt.json";
 import Link from "next/link";
-import { monsterMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
+import { monsterMetadata, articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -72,14 +72,8 @@ function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnT
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }

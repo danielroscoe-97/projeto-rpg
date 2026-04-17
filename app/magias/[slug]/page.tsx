@@ -20,7 +20,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { getSpellTier } from "@/lib/srd/spell-tiers";
 import Link from "next/link";
-import { spellMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
+import { spellMetadata, articleLd, breadcrumbList , jsonLdScriptProps} from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -74,14 +74,8 @@ function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<ty
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }

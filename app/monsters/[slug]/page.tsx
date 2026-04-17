@@ -15,7 +15,7 @@ import { PublicCTA } from "@/components/public/PublicCTA";
 import { MonsterADayAttribution } from "@/components/public/MonsterADayAttribution";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import monsterLore from "@/data/srd/monster-lore.json";
-import { monsterMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
+import { monsterMetadata, articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -64,14 +64,8 @@ function MonsterJsonLd({ monster, slug }: { monster: NonNullable<ReturnType<type
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     </>
   );
 }
