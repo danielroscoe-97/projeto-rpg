@@ -74,11 +74,9 @@ function HpStatusBadge({ status, percentage }: { status: string; percentage?: nu
   const style = (HP_STATUS_STYLES as Record<string, (typeof HP_STATUS_STYLES)[keyof typeof HP_STATUS_STYLES]>)[status] ?? HP_STATUS_STYLES.LIGHT;
   const label = t(`hp_status_${status.toLowerCase()}` as Parameters<typeof t>[0]);
 
-  const isCriticalStatus = status === "CRITICAL";
-
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm lg:text-xs font-medium ${style.colorClass} ${style.bgClass}${isCriticalStatus ? " [text-shadow:_0_0_6px_rgba(0,0,0,0.9),_0_0_2px_rgba(0,0,0,0.8)]" : ""}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm lg:text-xs font-semibold ${style.colorClass} ${style.bgClass}`}
       aria-label={`${label}${percentage != null ? ` ${percentage}%` : ""}`}
     >
       {style.icon === "heartpulse" ? (

@@ -28,7 +28,7 @@ export const HP_STATUS_STYLES: Record<HpStatus, HpStatusStyle> = {
   LIGHT:    { colorClass: "text-green-400",   bgClass: "bg-green-400/10",   barClass: "bg-green-500",   icon: "heart",      labelKey: "hp_light",    pct: ">70%" },
   MODERATE: { colorClass: "text-amber-400",   bgClass: "bg-amber-400/10",   barClass: "bg-amber-400",   icon: "warning",    labelKey: "hp_moderate", pct: ">40%" },
   HEAVY:    { colorClass: "text-red-500",     bgClass: "bg-red-500/10",     barClass: "bg-red-500",     icon: "danger",     labelKey: "hp_heavy",    pct: ">10%" },
-  CRITICAL: { colorClass: "text-red-200",     bgClass: "bg-red-950/50",     barClass: "bg-red-900",     icon: "skull",      labelKey: "hp_critical", pct: "≤10%" },
+  CRITICAL: { colorClass: "text-white",       bgClass: "bg-red-700",        barClass: "bg-red-600",     icon: "skull",      labelKey: "hp_critical", pct: "≤10%" },
 };
 
 /** Calculate the HP status tier for a combatant. */
