@@ -278,26 +278,26 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           </p>
         )}
         {damageVuln && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-vulnerability">
+            <span className="prop-label">{L.damageVulnerabilities}</span>{" "}
             <LinkedTerms text={damageVuln} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageRes && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-resistance">
+            <span className="prop-label">{L.damageResistances}</span>{" "}
             <LinkedTerms text={damageRes} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageImm && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-immunity">
+            <span className="prop-label">{L.damageImmunities}</span>{" "}
             <LinkedTerms text={damageImm} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {conditionImm && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-immunity">
+            <span className="prop-label">{L.conditionImmunities}</span>{" "}
             <LinkedTerms text={conditionImm} knownTerms={t ? CONDITIONS_PT : CONDITIONS} href={t ? "/condicoes" : "/conditions"} isPt={!!t} />
           </p>
         )}

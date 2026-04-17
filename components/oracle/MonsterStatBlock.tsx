@@ -81,9 +81,25 @@ function CardDivider() {
   return <hr className="card-divider" />;
 }
 
-function PropLine({ label, value }: { label: string; value: string }) {
+function PropLine({
+  label,
+  value,
+  variant,
+}: {
+  label: string;
+  value: string;
+  /**
+   * H4 (beta-3): optional defense variant applies a left-border accent
+   * + tinted bg. Works regardless of where the row is rendered, so Track
+   * C can relocate resistances without touching this component.
+   */
+  variant?: "resistance" | "immunity" | "vulnerability";
+}) {
+  const variantClass = variant
+    ? ` prop-defense prop-defense-${variant}`
+    : "";
   return (
-    <p className="prop-line">
+    <p className={`prop-line${variantClass}`}>
       <span className="prop-label">{label} </span>
       <span className="prop-value">{value}</span>
     </p>
@@ -456,16 +472,16 @@ export function MonsterStatBlock({
         )
       )}
       {damageVuln && (
-        <PropLine label={L.damageVulnerabilities} value={damageVuln} />
+        <PropLine label={L.damageVulnerabilities} value={damageVuln} variant="vulnerability" />
       )}
       {damageRes && (
-        <PropLine label={L.damageResistances} value={damageRes} />
+        <PropLine label={L.damageResistances} value={damageRes} variant="resistance" />
       )}
       {damageImm && (
-        <PropLine label={L.damageImmunities} value={damageImm} />
+        <PropLine label={L.damageImmunities} value={damageImm} variant="immunity" />
       )}
       {conditionImm && (
-        <PropLine label={L.conditionImmunities} value={conditionImm} />
+        <PropLine label={L.conditionImmunities} value={conditionImm} variant="immunity" />
       )}
       {sensesStr && <PropLine label={L.senses} value={sensesStr} />}
       {monster.languages && <PropLine label={L.languages} value={monster.languages} />}
