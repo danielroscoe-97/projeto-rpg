@@ -5953,5 +5953,29 @@
   },
   "zulkoon": {
     "name_pt": "Zulkoon"
+  },
+  "1-rod-of-the-pact-keeper-dmg": {
+    "name_pt": "Bastão do Selo de Pacto +1"
+  },
+  "2-rod-of-the-pact-keeper-dmg": {
+    "name_pt": "Bastão do Selo de Pacto +2"
+  },
+  "3-rod-of-the-pact-keeper-dmg": {
+    "name_pt": "Bastão do Selo de Pacto +3"
+  },
+  "1-rod-of-the-pact-keeper-xdmg": {
+    "name_pt": "Bastão do Selo de Pacto +1"
+  },
+  "2-rod-of-the-pact-keeper-xdmg": {
+    "name_pt": "Bastão do Selo de Pacto +2"
+  },
+  "3-rod-of-the-pact-keeper-xdmg": {
+    "name_pt": "Bastão do Selo de Pacto +3"
+  },
+  "astral-shard-tce": {
+    "name_pt": "Fragmento Astral"
+  },
+  "illusionist-s-bracers-ggr": {
+    "name_pt": "Braceletes do Ilusionista"
   }
 }
