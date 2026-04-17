@@ -150,6 +150,17 @@ type RateLimitConfig = {
    * Anonymous and unauthenticated requests still get rate-limited.
    */
   skipForAuthenticated?: boolean;
+  /**
+   * Optional custom identifier resolver. When provided, the returned string
+   * replaces the default `${prefix}:${ip}` identifier. Useful when a route
+   * must rate-limit by a body/query field (e.g. a public feedback token)
+   * instead of by IP (which collides for NAT users sharing a network).
+   *
+   * Must be safe to call without blocking request processing — callers
+   * commonly clone/peek the body. Return null to fall back to IP-based
+   * identification.
+   */
+  identifier?: (request: NextRequest) => Promise<string | null> | string | null;
 };
 
 /**
@@ -190,9 +201,21 @@ export function withRateLimit(
     }
 
     try {
-      const ip = await getClientIp(request);
       const prefix = config.prefix || request.nextUrl.pathname;
-      const identifier = `${prefix}:${ip}`;
+      let identifier: string;
+
+      if (config.identifier) {
+        const custom = await config.identifier(request);
+        if (custom) {
+          identifier = `${prefix}:${custom}`;
+        } else {
+          const ip = await getClientIp(request);
+          identifier = `${prefix}:${ip}`;
+        }
+      } else {
+        const ip = await getClientIp(request);
+        identifier = `${prefix}:${ip}`;
+      }
 
       const result = await limiter.limit(identifier);
 
