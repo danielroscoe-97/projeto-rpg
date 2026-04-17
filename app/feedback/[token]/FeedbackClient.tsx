@@ -8,6 +8,36 @@ import { DifficultyRatingStrip } from "@/components/combat/DifficultyRatingStrip
 import { trackEvent } from "@/lib/analytics/track";
 
 const NOTES_MAX = 280;
+const FINGERPRINT_STORAGE_KEY = "pocketdm:feedback_voter_id";
+
+/** RFC4122 v4 UUID check — defence-in-depth against malformed localStorage. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * Return a stable voter fingerprint UUID for this browser. Generated on
+ * first visit and persisted in localStorage. Used as a discriminator in
+ * `encounter_votes` so multiple players sharing one /feedback/[token] link
+ * each get their own vote row.
+ */
+function getOrCreateVoterFingerprint(): string {
+  if (typeof window === "undefined") {
+    // SSR — should never be called here, but be defensive.
+    return crypto.randomUUID();
+  }
+  try {
+    const existing = window.localStorage.getItem(FINGERPRINT_STORAGE_KEY);
+    if (existing && UUID_RE.test(existing)) {
+      return existing;
+    }
+    const fresh = crypto.randomUUID();
+    window.localStorage.setItem(FINGERPRINT_STORAGE_KEY, fresh);
+    return fresh;
+  } catch {
+    // localStorage blocked (private mode / quota) — fall back to an
+    // ephemeral UUID. Votes still work; reloads create a new row.
+    return crypto.randomUUID();
+  }
+}
 
 type EndedEncounter = {
   id: string;
@@ -36,6 +66,12 @@ export function FeedbackClient({ data }: { data: PageData }) {
   const [notes, setNotes] = useState<string>("");
   const [phase, setPhase] = useState<Phase>("voting");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [voterFingerprint, setVoterFingerprint] = useState<string | null>(null);
+
+  // Read/generate the voter fingerprint once, client-side only.
+  useEffect(() => {
+    setVoterFingerprint(getOrCreateVoterFingerprint());
+  }, []);
 
   // Analytics: page viewed (fire once on mount)
   useEffect(() => {
@@ -63,6 +99,7 @@ export function FeedbackClient({ data }: { data: PageData }) {
 
   const handleSubmit = async () => {
     if (!vote || !selectedEncounterId) return;
+    const fingerprint = voterFingerprint ?? getOrCreateVoterFingerprint();
 
     setPhase("submitting");
     setErrorMsg(null);
@@ -75,6 +112,7 @@ export function FeedbackClient({ data }: { data: PageData }) {
           token: data.token,
           encounter_id: selectedEncounterId,
           vote,
+          voter_fingerprint: fingerprint,
           notes: notes.trim() || undefined,
         }),
       });
