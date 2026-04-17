@@ -226,7 +226,7 @@ describe("CombatantRow", () => {
     it("is dark (CRITICAL) when HP ≤ 10%", () => {
       const c: Combatant = { ...BASE_PLAYER, current_hp: 3, max_hp: 40 };
       render(<CombatantRow combatant={c} isCurrentTurn={false} />);
-      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-red-900");
+      expect(screen.getByTestId("hp-bar-c1")).toHaveClass("bg-red-600");
     });
   });
 
