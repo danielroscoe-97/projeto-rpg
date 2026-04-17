@@ -170,7 +170,7 @@ const ICONIC: { slug: string; name: string; level: string; blurb: string }[] = [
 
 const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string; name: string }[] }[] = [
   {
-    slug: "mago",
+    slug: "wizard",
     name: "Mago (Wizard)",
     color: "text-blue-400",
     top: [
@@ -184,7 +184,7 @@ const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string
     ],
   },
   {
-    slug: "clerigo",
+    slug: "cleric",
     name: "Clérigo (Cleric)",
     color: "text-amber-400",
     top: [
@@ -197,7 +197,7 @@ const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string
     ],
   },
   {
-    slug: "druida",
+    slug: "druid",
     name: "Druida (Druid)",
     color: "text-emerald-400",
     top: [
@@ -208,7 +208,7 @@ const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string
     ],
   },
   {
-    slug: "bardo",
+    slug: "bard",
     name: "Bardo (Bard)",
     color: "text-rose-400",
     top: [
@@ -219,7 +219,7 @@ const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string
     ],
   },
   {
-    slug: "feiticeiro",
+    slug: "sorcerer",
     name: "Feiticeiro (Sorcerer)",
     color: "text-purple-400",
     top: [
@@ -231,7 +231,7 @@ const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string
     ],
   },
   {
-    slug: "bruxo",
+    slug: "warlock",
     name: "Bruxo (Warlock)",
     color: "text-violet-400",
     top: [
@@ -241,7 +241,7 @@ const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string
     ],
   },
   {
-    slug: "paladino",
+    slug: "paladin",
     name: "Paladino (Paladin)",
     color: "text-yellow-300",
     top: [
@@ -250,7 +250,7 @@ const BY_CLASS: { slug: string; name: string; color: string; top: { slug: string
     ],
   },
   {
-    slug: "patrulheiro",
+    slug: "ranger",
     name: "Patrulheiro (Ranger)",
     color: "text-green-300",
     top: [
