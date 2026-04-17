@@ -19,6 +19,7 @@ import {
   persistHidden,
 } from "@/lib/supabase/session";
 import { broadcastEvent, cleanupDmChannel } from "@/lib/realtime/broadcast";
+import { isFeatureFlagEnabled } from "@/lib/flags";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { isConcentrating, showConcentrationCheck } from "@/lib/combat/concentration";
@@ -420,24 +421,62 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
 
     const added = sorted.find((c) => !existingIds.has(c.id));
     if (added && snap.encounter_id) {
-      broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
       trackEvent("combat:combatant_added", { name: added.name, is_player: added.is_player });
 
-      // BT2-03: Broadcast full state sync after add so players get correct
-      // initiative order (player-side just appends to end without sorting)
-      const syncState = useCombatStore.getState();
-      broadcastEvent(getSessionId(), {
-        type: "session:state_sync",
-        combatants: syncState.combatants,
-        current_turn_index: syncState.current_turn_index,
-        round_number: syncState.round_number,
-        encounter_id: syncState.encounter_id!,
-      });
+      // S1.2: Gate the atomic combined broadcast behind ff_combatant_add_reorder.
+      // Flag OFF (default): emit legacy pair (combatant_add + state_sync) — backwards-compatible.
+      // Flag ON: emit single combat:combatant_add_reorder event (opted out of server re-broadcast).
+      //
+      // Rollout plan (see docs/sprint-plan-beta3-remediation.md S1.2):
+      //   Deploy 1: player client ships new handler alongside old — soak 24h for PWA cache update.
+      //   Deploy 2: DM flag ON in staging → Lucas.
+      //   Deploy 3: DM flag ON in prod.
+      //   D+7: remove legacy combatant_add emit + handler.
+      const flagOn = isFeatureFlagEnabled("ff_combatant_add_reorder");
 
-      persistNewCombatant(snap.encounter_id, added).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
-      persistInitiativeOrder(
-        sorted.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))
-      ).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+      if (flagOn) {
+        const syncState = useCombatStore.getState();
+        // Single atomic broadcast — replaces combatant_add + state_sync pair.
+        broadcastEvent(getSessionId(), {
+          type: "combat:combatant_add_reorder",
+          combatant: added,
+          initiative_map: syncState.combatants.map((c) => ({
+            id: c.id,
+            initiative_order: c.initiative_order,
+          })),
+          current_turn_index: syncState.current_turn_index,
+          round_number: syncState.round_number,
+          encounter_id: syncState.encounter_id!,
+        });
+      } else {
+        // Legacy path (backwards-compatible during rollout).
+        broadcastEvent(getSessionId(), { type: "combat:combatant_add", combatant: added });
+
+        // BT2-03: Broadcast full state sync after add so players get correct
+        // initiative order (player-side just appends to end without sorting)
+        const syncState = useCombatStore.getState();
+        broadcastEvent(getSessionId(), {
+          type: "session:state_sync",
+          combatants: syncState.combatants,
+          current_turn_index: syncState.current_turn_index,
+          round_number: syncState.round_number,
+          encounter_id: syncState.encounter_id!,
+        });
+      }
+
+      // S1.2: sequence DB persists so no concurrent fetchFullState can capture
+      // a half-persisted state (new combatant inserted but initiative_order not
+      // updated, or vice versa). Fire-and-forget IIFE keeps the hook sync.
+      void (async () => {
+        try {
+          await persistNewCombatant(snap.encounter_id!, added);
+          await persistInitiativeOrder(
+            sorted.map((c) => ({ id: c.id, initiative_order: c.initiative_order })),
+          );
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Failed to save.");
+        }
+      })();
     }
   }, [setError, getSessionId]);
 
