@@ -11,14 +11,13 @@ import { cn } from "@/lib/utils";
  * - Gold highlight ONLY when `version === "2024" && isSrd === true`.
  *   This protects SRD Compliance: non-SRD 2024 content must NEVER be
  *   visually promoted on public pages.
- * - Non-SRD entities render a NEUTRAL zinc/outline style, regardless of
- *   version. That means:
- *     - 2024 non-SRD (e.g. VGM/MPMM/MTF 2024 reprints) → neutral
- *     - 2014 non-SRD → neutral
- *     - 2014 SRD → neutral (subtle gold-dim)
- *     - 2024 SRD → full gold (the "new edition" cue)
+ * - Everything else renders the NEUTRAL zinc/outline style. The matrix:
+ *     - 2024 SRD          → gold (the "new edition" cue)
+ *     - 2024 non-SRD (VGM/MPMM/MTF reprints, etc.) → neutral zinc
+ *     - 2014 SRD          → neutral zinc
+ *     - 2014 non-SRD      → neutral zinc
  * - Visual hierarchy is load-bearing: a DM scanning a list should see
- *   SRD 2024 monsters pop out while non-SRD entries stay muted.
+ *   SRD 2024 monsters pop out while all other entries stay muted.
  */
 export type RulesetVersion = "2014" | "2024" | string;
 
