@@ -119,30 +119,74 @@ All sprints merged and deployed to production (`pocketdm.com.br`).
 
 ---
 
-## ❌ NOT done (Sprint 4 scope — deferred)
+## ✅ Sprint 4 — Escala e Marketing (DONE 2026-04-17)
 
-These were in the original 4-sprint plan but were not executed. Documenting here so a future agent can pick up:
+### T4.1 — Core Web Vitals instrumentation
 
-### Sprint 4 — Escala e Monitoramento (originally proposed)
+**Commit:** `55e29c47 feat(seo): sprint 4.1 — Core Web Vitals instrumentation`
 
-1. **Blog dinâmico** — Migrate `app/blog/[slug]/page.tsx` from hardcoded `CONTENT_MAP` to file-based MDX discovery. Currently every new blog post requires editing the `CONTENT_MAP` array; scalability friction.
+- ✅ Instalado `web-vitals@^5.2.0` (~5KB, free, open-source)
+- ✅ [components/analytics/WebVitalsTracker.tsx](../components/analytics/WebVitalsTracker.tsx) — `"use client"`, monta `onLCP/onCLS/onINP/onFCP/onTTFB` e emite custom events via `@vercel/analytics` `track()`
+- ✅ Produção-only (`process.env.NODE_ENV === "production"`) — não polui dev
+- ✅ CLS multiplicado por 1000 antes do envio (Vercel Analytics só aceita inteiros — preserva resolução sub-unitária)
+- ✅ Montado em [app/layout.tsx](../app/layout.tsx) dentro do `<body>`
+- ✅ Typecheck limpo
 
-2. **Internal linking audit** — Verify monster detail pages link to:
-   - Related monsters (same CR, same type)
-   - Spells the monster casts
-   - Classes/backgrounds that reference them
-   Dense internal graphs help Google crawl and distribute authority.
+Substitui Vercel Speed Insights (revertido no commit `c77b0fb` — pago, fora do plano Pro).
 
-3. **Hub pages for cauda-longa**:
-   - `/guias/bestiário-dnd-5e` — evergreen cluster page
-   - `/guias/lista-magias-dnd-5e` — spell cluster
-   These pages capture long-tail queries GSC shows are being searched (e.g., "monstros por CR d&d 5e").
+### T4.2 — Blog dinâmico MDX (SKIP intencional, documentado)
 
-4. **RSS feed URL audit** — Verify `app/blog/rss/route.ts` emits absolute apex URLs.
+**Decisão:** Não executado neste sprint. Justificativa:
 
-5. **Monitoring dashboard** — `docs/seo-monitoring.md` with weekly query-anchor tracking (position deltas, CTR changes). Optional: Looker Studio connected to GSC API.
+- `components/blog/BlogPostContent.tsx` é um monolito de **325KB / 6735 linhas / 21 componentes React** com customização heavy (`H2`, `H3`, `Img`, `ExtLink`, `IntLink`, `ProdLink`, `Tip`, `BuildVariantProvider`, `BuildVariantToggle`, `Variant`, `StrategyBox`, `EbookCTA`, `CATEGORY_CTA` — 15+ componentes específicos)
+- Migrar pra MDX exigiria: mapear todos esses componentes via `components` prop do pipeline MDX + rewrite do JSX custom de cada post em markdown
+- Effort real: ~15-20h (spec estimava 3h — subestimado)
+- Risco: quebrar 21 URLs que têm tráfego no GSC baseline (spec alerta: "mudá-los é suicídio")
+- Trade-off: valor de "adicionar novo post em 1 lugar" é baixo — posts novos são infrequentes; risco > benefício
 
-6. **Core Web Vitals instrumentation** — Replace reverted Vercel Speed Insights with custom `web-vitals` npm package → Vercel Analytics custom events (or Sentry Performance).
+**Alternativa recomendada (future sprint):** Split incremental do monolito em 21 arquivos `components/blog/posts/post-{slug}.tsx` mantendo o formato React, com registry em `lib/blog/posts.ts` co-locando slug + lazy-load. Entrega 80% do valor do MDX (scalability) com ~5% do risco (URL preservadas, componentes preservados).
+
+### T4.3 — Hub pages long-tail
+
+**Commit:** `e92ebdc2` (bundled commit — ver nota abaixo)
+
+- ✅ [app/guias/bestiario-dnd-5e/page.tsx](../app/guias/bestiario-dnd-5e/page.tsx) — H1 "Bestiário D&D 5e Completo — 1.122 Monstros com Stat Blocks"
+  - Seções: intro SRD 5.1, monstros por CR (5 tiers), monstros por tipo (5 categorias), 6 icônicos, como usar, CTA
+  - ~950 palavras originais PT-BR
+  - ~40 links internos (`/monstros/*`, `/magias`, `/itens`, `/blog/*`, etc.)
+  - JSON-LD: `articleLd` + `breadcrumbList` via `jsonLdScriptProps` (XSS-safe)
+
+- ✅ [app/guias/lista-magias-dnd-5e/page.tsx](../app/guias/lista-magias-dnd-5e/page.tsx) — H1 "Lista de Magias D&D 5e — Grimório Completo por Classe e Nível"
+  - Seções: intro (como funciona magia), por nível (truques a 9), por classe (8 conjuradores), 6 icônicas, como usar no tracker, CTA
+  - ~1100 palavras originais PT-BR
+  - ~45 links internos (`/magias/*`, `/classes-pt/*`, outros hubs)
+  - JSON-LD: `articleLd` + `breadcrumbList` via `jsonLdScriptProps`
+
+- ✅ [app/sitemap.ts](../app/sitemap.ts) — 2 entradas novas adicionadas em `staticPages`, priority 0.8, monthly
+
+**Nota sobre o commit**: As 3 mudanças acima foram bundled no commit `e92ebdc2 fix(feedback): allow changing vote before submit` junto com um fix não-relacionado de `DifficultyRatingStrip`. Commit message é misleading. Pode ser limpo com `git rebase -i` e `--edit` da mensagem se for relevante para auditoria.
+
+### T4.4 — Monitoring dashboard
+
+**Criado:** [docs/seo-monitoring.md](./seo-monitoring.md)
+
+- ✅ Ritual semanal (segunda-feira, 15 min) — GSC Performance + spot check queries-âncora
+- ✅ Tabela de query-âncora tracking (17 queries, baseline + 30/60/90d columns)
+- ✅ Metas agregadas (cliques, impressões, CTR, indexed URLs) — do baseline
+- ✅ Links úteis (GSC, Rich Results Test pros URLs-sample, Vercel Analytics)
+- ✅ 4 gatilhos de alerta de regressão (posição, indexação, CTR, CWV)
+- ✅ Instruções opcionais pra Looker Studio se escala passar de 30 queries
+
+**Comparações marcadas no calendário:**
+- 2026-05-17 — 30d
+- 2026-06-17 — 60d
+- 2026-07-17 — 90d
+
+### Outros items originalmente listados pra Sprint 4 (deferred)
+
+1. **Internal linking audit automatizado** — Verificar que monster detail pages linkam pra magias/classes relacionadas. Não executado neste sprint (depende de análise manual ou script de cross-reference). Nota: os dois hubs novos (T4.3) já criam uma densa rede de links internos manuais pra monsters e spells icônicos.
+
+2. **RSS feed URL audit** — `app/blog/rss/route.ts` não foi auditado. Risk check pendente (emite apex URLs? verificar antes do próximo deploy).
 
 ### Other deferred items
 
