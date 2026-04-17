@@ -217,6 +217,10 @@ export function PlayerJoinClient({
   const fetchInFlightRef = useRef(false);
   // R2: Circuit breaker — after 3 consecutive failures, drop to 30s probe interval
   const consecutiveFailsRef = useRef(0);
+  // Finding 4 (spike 2026-04-17): throttle timestamp for fetchFullState.
+  // Throttled calls (poll, turn-poll, visibility churn) must wait 5s between
+  // hits; emergency calls (recovery paths) bypass this guard.
+  const lastFetchAtRef = useRef(0);
   const turnPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastTurnBroadcastRef = useRef<number>(0);
   // Broadcast sequence tracking — discard out-of-order events for critical state (turn advance)
@@ -620,8 +624,14 @@ export function PlayerJoinClient({
   type ConnectionState = "CONNECTED" | "RECONNECTING" | "POLLING_FALLBACK";
   const connStateRef = useRef<ConnectionState>("RECONNECTING");
   const pollBackoffRef = useRef(2000);
-  // Ref to fetchFullState — breaks circular dependency (fetchFullState defined later)
-  const fetchFullStateRef = useRef<(eid: string) => Promise<void>>(async () => {});
+  // Ref to fetchFullState — breaks circular dependency (fetchFullState defined later).
+  // Finding 4: the ref-based callers below pass `priority: "emergency"` for
+  // recovery paths (POLLING_FALLBACK loop, channel revive). Throttled calls
+  // go through the direct `fetchFullState(...)` invocation.
+  const fetchFullStateRef = useRef<(
+    eid: string,
+    opts?: { priority?: "emergency" | "throttled" },
+  ) => Promise<void>>(async () => {});
 
   const stopAllPolling = useCallback(() => {
     if (pollIntervalRef.current) { clearTimeout(pollIntervalRef.current); pollIntervalRef.current = null; }
@@ -635,13 +645,14 @@ export function PlayerJoinClient({
     const schedule = () => {
       pollIntervalRef.current = setTimeout(() => {
         if (connStateRef.current !== "POLLING_FALLBACK") return;
-        fetchFullStateRef.current(eid);
+        // Finding 4: POLLING_FALLBACK means the channel is dead — bypass throttle
+        fetchFullStateRef.current(eid, { priority: "emergency" });
         pollBackoffRef.current = Math.min(pollBackoffRef.current * 2, 30000);
         schedule();
       }, pollBackoffRef.current);
     };
     if (connStateRef.current === "POLLING_FALLBACK") {
-      fetchFullStateRef.current(eid);
+      fetchFullStateRef.current(eid, { priority: "emergency" });
     }
     schedule();
   }, []);
@@ -853,10 +864,26 @@ export function PlayerJoinClient({
   // R1: In-flight guard prevents overlapping requests.
   // R2: Circuit breaker drops to 30s probe after 3 consecutive fails.
   // R3: Auto-refresh anonymous auth on 401.
-  const fetchFullState = useCallback(async (_eid: string) => {
+  // Finding 4 (spike 2026-04-17): priority-aware throttle. Default callers
+  // (polling, turn-poll, visibility churn) are throttled to 1 call per 5s.
+  // Recovery paths (auto-join, late-join, visibility reconnect, network
+  // recovery, channel SUBSCRIBED reconcile) pass { priority: "emergency" }
+  // to bypass the throttle — reconnection must never be blocked.
+  const fetchFullState = useCallback(async (
+    _eid: string,
+    opts: { priority?: "emergency" | "throttled" } = {},
+  ) => {
+    const priority = opts.priority ?? "throttled";
+    // Throttle guard: drop throttled calls inside 5s of the last successful
+    // or in-flight kickoff. Emergency calls always proceed.
+    if (priority === "throttled") {
+      const since = Date.now() - lastFetchAtRef.current;
+      if (since < 5_000) return;
+    }
     // R1: Skip if another request is already in-flight
     if (fetchInFlightRef.current) return;
     fetchInFlightRef.current = true;
+    lastFetchAtRef.current = Date.now();
     try {
       let res = await fetch(`/api/session/${sessionId}/state`);
 
@@ -1239,8 +1266,9 @@ export function PlayerJoinClient({
                   .catch(() => { /* Token may already be marked — ignore */ });
               }
               // CAT-1: Fetch full state to hydrate combat board after acceptance
+              // Finding 4: late-join acceptance is a recovery path — bypass throttle
               if (encounterIdRef.current) {
-                fetchFullState(encounterIdRef.current).catch(() => { /* best-effort */ });
+                fetchFullState(encounterIdRef.current, { priority: "emergency" }).catch(() => { /* best-effort */ });
               }
             }
           }
@@ -1337,8 +1365,9 @@ export function PlayerJoinClient({
                 .catch(() => { /* Token may already be marked — ignore */ });
             }
             // Fetch full state to hydrate the combat board
+            // Finding 4: late-join response is a recovery path — bypass throttle
             if (encounterIdRef.current) {
-              fetchFullState(encounterIdRef.current).catch(() => { /* best-effort */ });
+              fetchFullState(encounterIdRef.current, { priority: "emergency" }).catch(() => { /* best-effort */ });
             }
           } else if (!payload.accepted) {
             setLateJoinStatus("rejected");
@@ -1470,12 +1499,14 @@ export function PlayerJoinClient({
             // A.1: Transition to CONNECTED — stops all polling, fetches reconciliation state
             transitionTo("CONNECTED", "SUBSCRIBED");
             if (encounterIdRef.current) {
-              fetchFullState(encounterIdRef.current);
+              // Finding 4: channel SUBSCRIBED handshake is a recovery path —
+              // bypass throttle so reconciliation isn't delayed.
+              fetchFullState(encounterIdRef.current, { priority: "emergency" });
               // DESYNC-FIX-3: Second fetch after 1s to catch broadcasts lost during
               // the subscribe handshake (50-200ms window where events can be missed).
               setTimeout(() => {
                 if (encounterIdRef.current && connStateRef.current === "CONNECTED") {
-                  fetchFullState(encounterIdRef.current);
+                  fetchFullState(encounterIdRef.current, { priority: "emergency" });
                 }
               }, 1000);
             }
@@ -1812,19 +1843,49 @@ export function PlayerJoinClient({
 
       // A.1: AWAIT fetch BEFORE reconnecting channel — prevents stale delta calculations
       // Retry once after 2s if first attempt fails (transient network on wake)
+      // Finding 4 (spike 2026-04-17): classify the reconnect into 3 tiers so the
+      // reconnection funnel isn't polluted by harmless tab-switches. Tier 1
+      // (noise) fires `player:resumed`; tiers 2/3 fire `player:reconnected`
+      // with a confidence property so dashboards can filter.
+      const wasDisconnected = disconnectedAtRef.current !== null;
+      const hiddenMs = hiddenAtRef.current ? Date.now() - hiddenAtRef.current : 0;
+      const channelState = channelRef.current ? (channelRef.current as unknown as { state?: string }).state : undefined;
+      const emitReconnectTelemetry = () => {
+        if (!isRegisteredRef.current) return;
+        if (wasDisconnected || (channelState !== undefined && channelState !== "joined")) {
+          // Tier 3 — real recovery signal (channel was down or we saw a disconnect)
+          trackEvent("player:reconnected", {
+            session_id: sessionId,
+            method: "channel_recovery",
+            hidden_ms: hiddenMs,
+            confidence: "high",
+          });
+        } else if (hiddenMs > 30_000) {
+          // Tier 2 — ambiguous (long background; mobile may have killed the socket)
+          trackEvent("player:reconnected", {
+            session_id: sessionId,
+            method: "long_background",
+            hidden_ms: hiddenMs,
+            confidence: "medium",
+          });
+        } else {
+          // Tier 1 — noise (trivial tab-switch). Emit separate event, keep
+          // reconnection funnel clean.
+          trackEvent("player:resumed", {
+            session_id: sessionId,
+            hidden_ms: hiddenMs,
+          });
+        }
+      };
       if (encounterIdRef.current) {
         try {
-          await fetchFullState(encounterIdRef.current);
-          if (isRegisteredRef.current) {
-            trackEvent("player:reconnected", { session_id: sessionId, method: "visibility_change" });
-          }
+          await fetchFullState(encounterIdRef.current, { priority: "emergency" });
+          emitReconnectTelemetry();
         } catch {
           await new Promise((r) => setTimeout(r, 2000));
           try {
-            await fetchFullState(encounterIdRef.current!);
-            if (isRegisteredRef.current) {
-              trackEvent("player:reconnected", { session_id: sessionId, method: "visibility_change" });
-            }
+            await fetchFullState(encounterIdRef.current!, { priority: "emergency" });
+            emitReconnectTelemetry();
           } catch { /* give up */ }
         }
       }
@@ -1859,12 +1920,18 @@ export function PlayerJoinClient({
       }
       // Immediate heartbeat to clear any stale last_seen_at
       heartbeatRef.current?.();
-      // Sync full state
+      // Sync full state — network recovery is always an emergency (channel was
+      // down while offline). Keep the `network_recovery` method label as
+      // "high" confidence since `navigator.onLine` flipping is unambiguous.
       if (encounterIdRef.current) {
         try {
-          await fetchFullState(encounterIdRef.current);
+          await fetchFullState(encounterIdRef.current, { priority: "emergency" });
           if (isRegisteredRef.current) {
-            trackEvent("player:reconnected", { session_id: sessionId, method: "network_recovery" });
+            trackEvent("player:reconnected", {
+              session_id: sessionId,
+              method: "network_recovery",
+              confidence: "high",
+            });
           }
         } catch { /* best-effort */ }
       }
