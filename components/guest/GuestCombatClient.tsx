@@ -1140,8 +1140,12 @@ export function GuestCombatClient() {
     };
   }, [phase]);
 
-  // Auto-scroll to active combatant when turn advances (skip initial mount)
+  // Auto-scroll to active combatant when turn advances (skip initial mount).
+  // S4.1: also sets `pulseTurnId` for a 1s brand-gold ring pulse. CSS handles
+  // `prefers-reduced-motion`.
   const isFirstTurnRef = useRef(true);
+  const [pulseTurnId, setPulseTurnId] = useState<string | null>(null);
+  const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (phase !== "combat") return;
     if (isFirstTurnRef.current) {
@@ -1149,10 +1153,31 @@ export function GuestCombatClient() {
       return;
     }
     requestAnimationFrame(() => {
-      const activeCard = document.querySelector('[aria-current="true"]') as HTMLElement | null;
-      activeCard?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const el = document.querySelector(`[data-combatant-index="${currentTurnIndex}"]`) as HTMLElement | null;
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      const snap = useGuestCombatStore.getState();
+      const current = snap.combatants[snap.currentTurnIndex];
+      if (current) {
+        setPulseTurnId(current.id);
+        if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+        pulseTimerRef.current = setTimeout(() => {
+          setPulseTurnId(null);
+          pulseTimerRef.current = null;
+        }, 1100);
+      }
     });
+    // NOTE: deps are `[currentTurnIndex, phase]` only by design — do NOT add
+    // `combatants`, otherwise scroll+pulse fires on every HP edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTurnIndex, phase]);
+
+  // S4.1: cleanup pulse timer on unmount
+  useEffect(() => {
+    return () => {
+      if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+    };
+  }, []);
 
   const handleStartCombat = useCallback(() => {
     const store = useGuestCombatStore.getState();
@@ -1923,33 +1948,36 @@ export function GuestCombatClient() {
             onReorder={handleReorderCombatants}
             renderItem={(c, dragHandleProps) => {
               const index = combatantIndexMap.get(c.id) ?? -1;
+              const pulseClass = pulseTurnId === c.id ? "animate-turn-pulse block rounded-md" : "";
               return (
-                <CombatantRow
-                  combatant={c}
-                  isCurrentTurn={index === currentTurnIndex}
-                  showActions
-                  dragHandleProps={dragHandleProps}
-                  onApplyDamage={handleApplyDamage}
-                  onApplyHealing={handleApplyHealing}
-                  onSetTempHp={handleSetTempHp}
-                  onToggleCondition={handleToggleCondition}
-                  onSetDefeated={handleSetDefeated}
-                  onRemoveCombatant={handleRemoveCombatant}
-                  onUpdateStats={handleUpdateStats}
-                  onSetInitiative={handleSetInitiative}
-                  onUpdateDmNotes={handleUpdateDmNotes}
-                  onUpdatePlayerNotes={handleUpdatePlayerNotes}
-                  allCombatants={combatants}
-                  onApplyToMultiple={handleApplyToMultiple}
-                  onToggleHidden={handleToggleHidden}
-                  onAddDeathSaveSuccess={addDeathSaveSuccess}
-                  onAddDeathSaveFailure={addDeathSaveFailure}
-                  onAdvanceTurn={handleAdvanceTurn}
-                  onSetLegendaryActionsUsed={setLegendaryActionsUsed}
-                  onToggleReaction={toggleReaction}
-                  onSetRechargeState={setRechargeState}
-                  currentRound={roundNumber}
-                />
+                <div className={pulseClass}>
+                  <CombatantRow
+                    combatant={c}
+                    isCurrentTurn={index === currentTurnIndex}
+                    showActions
+                    dragHandleProps={dragHandleProps}
+                    onApplyDamage={handleApplyDamage}
+                    onApplyHealing={handleApplyHealing}
+                    onSetTempHp={handleSetTempHp}
+                    onToggleCondition={handleToggleCondition}
+                    onSetDefeated={handleSetDefeated}
+                    onRemoveCombatant={handleRemoveCombatant}
+                    onUpdateStats={handleUpdateStats}
+                    onSetInitiative={handleSetInitiative}
+                    onUpdateDmNotes={handleUpdateDmNotes}
+                    onUpdatePlayerNotes={handleUpdatePlayerNotes}
+                    allCombatants={combatants}
+                    onApplyToMultiple={handleApplyToMultiple}
+                    onToggleHidden={handleToggleHidden}
+                    onAddDeathSaveSuccess={addDeathSaveSuccess}
+                    onAddDeathSaveFailure={addDeathSaveFailure}
+                    onAdvanceTurn={handleAdvanceTurn}
+                    onSetLegendaryActionsUsed={setLegendaryActionsUsed}
+                    onToggleReaction={toggleReaction}
+                    onSetRechargeState={setRechargeState}
+                    currentRound={roundNumber}
+                  />
+                </div>
               );
             }}
             renderGroup={(groupId, members, dragHandleProps) => {
@@ -1967,35 +1995,39 @@ export function GuestCombatClient() {
                   onSetGroupInitiative={(value) => setGroupInitiative(groupId, value)}
                   isCurrentTurn={isCurrentTurn}
                 >
-                  {members.map((c, i) => (
-                    <CombatantRow
-                      key={c.id}
-                      combatant={c}
-                      isCurrentTurn={(combatantIndexMap.get(c.id) ?? -1) === currentTurnIndex}
-                      showActions
-                      dragHandleProps={i === 0 ? dragHandleProps : {}}
-                      onApplyDamage={handleApplyDamage}
-                      onApplyHealing={handleApplyHealing}
-                      onSetTempHp={handleSetTempHp}
-                      onToggleCondition={handleToggleCondition}
-                      onSetDefeated={handleSetDefeated}
-                      onRemoveCombatant={handleRemoveCombatant}
-                      onUpdateStats={handleUpdateStats}
-                      onSetInitiative={handleSetInitiative}
-                      onUpdateDmNotes={handleUpdateDmNotes}
-                      onUpdatePlayerNotes={handleUpdatePlayerNotes}
-                      allCombatants={combatants}
-                      onApplyToMultiple={handleApplyToMultiple}
-                      onToggleHidden={handleToggleHidden}
-                      onAddDeathSaveSuccess={addDeathSaveSuccess}
-                      onAddDeathSaveFailure={addDeathSaveFailure}
-                      onAdvanceTurn={handleAdvanceTurn}
-                      onSetLegendaryActionsUsed={setLegendaryActionsUsed}
-                      onToggleReaction={toggleReaction}
-                      onSetRechargeState={setRechargeState}
-                      currentRound={roundNumber}
-                    />
-                  ))}
+                  {members.map((c, i) => {
+                    const pulseClass = pulseTurnId === c.id ? "animate-turn-pulse block rounded-md" : "";
+                    return (
+                      <div key={c.id} className={pulseClass}>
+                        <CombatantRow
+                          combatant={c}
+                          isCurrentTurn={(combatantIndexMap.get(c.id) ?? -1) === currentTurnIndex}
+                          showActions
+                          dragHandleProps={i === 0 ? dragHandleProps : {}}
+                          onApplyDamage={handleApplyDamage}
+                          onApplyHealing={handleApplyHealing}
+                          onSetTempHp={handleSetTempHp}
+                          onToggleCondition={handleToggleCondition}
+                          onSetDefeated={handleSetDefeated}
+                          onRemoveCombatant={handleRemoveCombatant}
+                          onUpdateStats={handleUpdateStats}
+                          onSetInitiative={handleSetInitiative}
+                          onUpdateDmNotes={handleUpdateDmNotes}
+                          onUpdatePlayerNotes={handleUpdatePlayerNotes}
+                          allCombatants={combatants}
+                          onApplyToMultiple={handleApplyToMultiple}
+                          onToggleHidden={handleToggleHidden}
+                          onAddDeathSaveSuccess={addDeathSaveSuccess}
+                          onAddDeathSaveFailure={addDeathSaveFailure}
+                          onAdvanceTurn={handleAdvanceTurn}
+                          onSetLegendaryActionsUsed={setLegendaryActionsUsed}
+                          onToggleReaction={toggleReaction}
+                          onSetRechargeState={setRechargeState}
+                          currentRound={roundNumber}
+                        />
+                      </div>
+                    );
+                  })}
                 </MonsterGroupHeader>
               );
             }}
