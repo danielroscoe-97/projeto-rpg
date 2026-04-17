@@ -31,9 +31,11 @@ interface CombatRecapProps {
   initialRating?: number | null;
   /** JO-04: Anonymous player CTA to join the campaign after combat */
   onJoinCampaign?: () => void;
+  /** DM-only: session id used to expose "copy feedback link" in the recap actions */
+  sessionId?: string;
 }
 
-export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign }: CombatRecapProps) {
+export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign, sessionId }: CombatRecapProps) {
   const t = useTranslations("combat");
   const [phase, setPhase] = useState<RecapPhase>(() => {
     if (report.awards.length === 0) return "details";
@@ -162,6 +164,7 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
                   onRate={onRate}
                   initialRating={initialRating}
                   onJoinCampaign={onJoinCampaign}
+                  sessionId={sessionId}
                 />
               </motion.div>
             )}

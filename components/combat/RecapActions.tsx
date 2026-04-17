@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Share2, RotateCcw, BookmarkPlus, Save, Check, Loader2, UserPlus } from "lucide-react";
+import { Share2, RotateCcw, BookmarkPlus, Save, Check, Loader2, UserPlus, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { formatRecapShareText } from "@/lib/utils/combat-stats";
@@ -27,12 +27,16 @@ interface RecapActionsProps {
   initialRating?: number | null;
   /** JO-04: Anonymous player CTA to join the campaign */
   onJoinCampaign?: () => void;
+  /** DM-only: session id used to fetch the retroactive feedback share link */
+  sessionId?: string;
 }
 
-export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign }: RecapActionsProps) {
+export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign, sessionId }: RecapActionsProps) {
   const t = useTranslations("combat");
+  const tFeedback = useTranslations("feedback");
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [isCopyingLink, setIsCopyingLink] = useState(false);
   // Already saved if auto-save ran with a campaign linked
   const [isSaved, setIsSaved] = useState(!!(existingShareUrl && campaignId));
   const [hasRated, setHasRated] = useState(initialRating != null);
@@ -63,6 +67,38 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
       // Clipboard also failed — silent fail
     }
   }, [report, t]);
+
+  const handleCopyFeedbackLink = useCallback(async () => {
+    if (!sessionId) return;
+    setIsCopyingLink(true);
+    try {
+      const res = await fetch(`/api/session/${sessionId}/feedback-link`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body = (await res.json()) as { url?: string };
+      if (!body.url) throw new Error("missing_url");
+
+      // Prefer native share on mobile if available
+      if (typeof navigator !== "undefined" && navigator.share) {
+        try {
+          await navigator.share({ url: body.url, text: tFeedback("copy_link_button") });
+          toast.success(tFeedback("copy_link_success"));
+          return;
+        } catch {
+          // User cancelled — fall through to clipboard
+        }
+      }
+
+      await navigator.clipboard.writeText(body.url);
+      toast.success(tFeedback("copy_link_success"));
+    } catch {
+      toast.error(tFeedback("copy_link_error"));
+    } finally {
+      setIsCopyingLink(false);
+    }
+  }, [sessionId, tFeedback]);
 
   const handleSaveCombat = useCallback(async () => {
     if (!campaignId) {
@@ -144,6 +180,20 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
             onSelect={(vote) => { setHasRated(true); onRate(vote); }}
           />
         </div>
+      )}
+
+      {/* DM-only: copy retroactive feedback link for the player group */}
+      {sessionId && (
+        <button
+          type="button"
+          onClick={handleCopyFeedbackLink}
+          disabled={isCopyingLink}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-gold/30 text-gold hover:bg-gold/10 transition-colors text-sm font-medium min-h-[44px] disabled:opacity-50"
+          data-testid="recap-feedback-link-btn"
+        >
+          {isCopyingLink ? <Loader2 className="size-4 animate-spin" /> : <BarChart3 className="size-4" />}
+          {tFeedback("copy_link_button")}
+        </button>
       )}
 
       {/* Action row — Share text + Save combat (auth only) + New combat */}
