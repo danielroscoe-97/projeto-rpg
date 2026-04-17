@@ -23,7 +23,9 @@ export type FeatureFlagKey =
   /** S3.1 — new HP threshold bands (reserved). */
   | "ff_hp_thresholds_v2"
   /** S4.2 — custom conditions v1 (reserved). */
-  | "ff_custom_conditions_v1";
+  | "ff_custom_conditions_v1"
+  /** S5.2 — favoritar monstros/itens/condições (reserved). */
+  | "ff_favorites_v1";
 
 /**
  * Hard-coded defaults. Keep these `false` until the soak period has elapsed.
@@ -33,6 +35,7 @@ const DEFAULTS: Record<FeatureFlagKey, boolean> = {
   ff_combatant_add_reorder: false,
   ff_hp_thresholds_v2: false,
   ff_custom_conditions_v1: false,
+  ff_favorites_v1: false,
 };
 
 const TRUTHY = new Set(["1", "true", "on", "yes"]);

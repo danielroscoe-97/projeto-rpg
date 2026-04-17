@@ -2822,6 +2822,14 @@
     "login_nudge_cta_anon": "Entrar",
     "login_nudge_dismiss": "Dispensar"
   },
+  "favorites": {
+    "tab_label": "Favoritos",
+    "empty_state": "Nenhum favorito ainda. Clique na ⭐ para começar.",
+    "favorite_aria": "Favoritar {name}",
+    "unfavorite_aria": "Remover {name} dos favoritos",
+    "limit_reached": "Limite de {max} favoritos por categoria atingido.",
+    "filter_toggle": "Mostrar só favoritos"
+  },
   "guest": {
     "guest_notice": "Modo Visitante — seus dados não serão salvos na nuvem.",
     "time_warning": "Restam apenas {minutes} min! Crie sua conta para não perder nada.",

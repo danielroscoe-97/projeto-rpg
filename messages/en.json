@@ -2822,6 +2822,14 @@
     "login_nudge_cta_anon": "Log in",
     "login_nudge_dismiss": "Dismiss"
   },
+  "favorites": {
+    "tab_label": "Favorites",
+    "empty_state": "No favorites yet. Click ⭐ to start.",
+    "favorite_aria": "Favorite {name}",
+    "unfavorite_aria": "Remove {name} from favorites",
+    "limit_reached": "Reached the {max}-favorite limit for this category.",
+    "filter_toggle": "Show favorites only"
+  },
   "guest": {
     "guest_notice": "Guest mode — your combat won't be saved.",
     "time_warning": "Only {minutes} min left! Sign up to save your combat.",

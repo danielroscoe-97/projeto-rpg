@@ -28,6 +28,11 @@ const ALLOWED_EVENTS = new Set([
   "combat:recharge_rolled",
   // Combat — S4.2 custom conditions (LGPD: name_length only, never the raw name)
   "combat:custom_condition_applied",
+  // Favorites — S5.2
+  "favorites:added",
+  "favorites:removed",
+  "favorites:tab_opened",
+  "favorites:limit_reached",
   // Oracle
   "oracle:search",
   "oracle:result_click",
