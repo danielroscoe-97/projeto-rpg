@@ -1,4 +1,7 @@
--- Migration 136: Backfill content_whitelist for beta testers created after migration 114.
+-- Migration 137: Backfill content_whitelist for beta testers created after migration 114.
+-- (Renumbered from 136 → 137 during beta 3 remediation merge coordination:
+-- Track A keeps 136, Track C takes 137, Track F takes 138. Functionally
+-- identical to the 136 version that was never shipped.)
 --
 -- Context (spike 2026-04-17, Finding 6): migration 114 whitelisted every
 -- existing auth.users row at the time. Accounts created since then (e.g. Lucas
@@ -31,7 +34,7 @@ INSERT INTO content_whitelist (user_id, granted_by, notes)
 SELECT
   au.id,
   (SELECT id FROM auth.users WHERE email = 'danielroscoe97@gmail.com'),
-  'Beta tester — full SRD whitelist via migration 136 (backfill post-114)'
+  'Beta tester — full SRD whitelist via migration 137 (backfill post-114)'
 FROM auth.users au
 WHERE au.email IS NOT NULL
   AND au.email != 'daniel@awsales.io'

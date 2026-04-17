@@ -73,10 +73,10 @@ When a tester asks for access mid-beta and can't wait for the next cycle:
 3. **Do not `UPDATE` or `INSERT` directly in the Supabase dashboard.** We
    always want the change tracked in git.
 
-### Option C — Broad backfill (like migration 136)
+### Option C — Broad backfill (like migration 137)
 
 When a batch of users accumulated between migrations and the admin decides
-to re-broaden the net, author a migration with the same predicate as 114/136
+to re-broaden the net, author a migration with the same predicate as 114/137
 (email exists, not the internal admin alias) and ship it. Keep a paragraph
 in the migration header describing *why* the backfill is happening.
 
@@ -112,6 +112,7 @@ The decision is captured as a PM bucket item; until then, this policy stands.
   policy enforces).
 - `supabase/migrations/114_whitelist_all_existing_users.sql` — the initial
   backfill.
-- `supabase/migrations/136_backfill_whitelist_post_114.sql` — the spike
-  2026-04-17 re-whitelist.
+- `supabase/migrations/137_backfill_whitelist_post_114.sql` — the spike
+  2026-04-17 re-whitelist (renumbered from 136 during merge coordination
+  with Tracks A and F).
 - `docs/spike-beta-test-3-2026-04-17.md` — Finding 6 (root cause analysis).
