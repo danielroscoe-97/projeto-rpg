@@ -12,6 +12,7 @@ import { LpPricingSection } from "@/components/marketing/LpPricingSection";
 import { LandingLoggedInNav } from "@/components/marketing/LandingLoggedInNav";
 import { LandingAuthRecovery } from "@/components/marketing/LandingAuthRecovery";
 import { createClient } from "@/lib/supabase/server";
+import { websiteLd, organizationLd, webApplicationLd, faqPageLd } from "@/lib/seo/metadata";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TFunc = (key: string) => string;
@@ -1449,46 +1450,17 @@ export default async function LandingPage() {
     authFailed = true;
   }
 
-  const jsonLdWebSite = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Pocket DM",
-    alternateName: "Pocket DM — Combat Tracker D&D 5e",
-    url: "/",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: "/monsters?q={search_term_string}",
-      },
-      "query-input": "required name=search_term_string",
-    },
-  };
-
-  const jsonLdOrganization = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Pocket DM",
-    url: "/",
-    logo: "/icons/icon-512.png",
-    sameAs: [
-      "https://www.instagram.com/pocket.dm",
-    ],
+  const jsonLdWebSite = websiteLd({
     description: t("meta_description"),
-  };
+    searchPath: "/monsters",
+  });
 
-  const jsonLdWebApplication = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "Pocket DM",
-    url: "/",
-    applicationCategory: "GameApplication",
-    operatingSystem: "Web",
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "BRL",
-    },
+  const jsonLdOrganization = organizationLd({
+    description: t("meta_description"),
+    sameAs: ["https://www.instagram.com/pocket.dm"],
+  });
+
+  const jsonLdWebApplication = webApplicationLd({
     description: t("meta_description"),
     featureList: [
       "Rastreador de iniciativa em tempo real",
@@ -1498,54 +1470,17 @@ export default async function LandingPage() {
       "Música ambiente integrada",
       "Sem cadastro para começar",
     ],
-  };
+  });
 
-  const jsonLdFaq = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: t("faq_1_question"),
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: t("faq_1_answer"),
-        },
-      },
-      {
-        "@type": "Question",
-        name: t("faq_2_question"),
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: t("faq_2_answer"),
-        },
-      },
-      {
-        "@type": "Question",
-        name: t("faq_3_question"),
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: t("faq_3_answer"),
-        },
-      },
-      {
-        "@type": "Question",
-        name: t("faq_4_question"),
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: t("faq_4_answer"),
-        },
-      },
-      {
-        "@type": "Question",
-        name: t("faq_5_question"),
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: t("faq_5_answer"),
-        },
-      },
+  const jsonLdFaq = faqPageLd({
+    questions: [
+      { question: t("faq_1_question"), answer: t("faq_1_answer") },
+      { question: t("faq_2_question"), answer: t("faq_2_answer") },
+      { question: t("faq_3_question"), answer: t("faq_3_answer") },
+      { question: t("faq_4_question"), answer: t("faq_4_answer") },
+      { question: t("faq_5_question"), answer: t("faq_5_answer") },
     ],
-  };
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
