@@ -76,6 +76,14 @@ All sprints merged and deployed to production (`pocketdm.com.br`).
 **Added in `9017355`:**
 - ✅ **BreadcrumbList JSON-LD on all 14 index pages** — enables SERP breadcrumb rich result ("Início › Monstros" instead of raw path)
 
+### Sprint 3.6 — Blog migration (post-audit)
+
+**Context:** During Sprint 3 the blog was overlooked in the JSON-LD helper migration. Caught in a subsequent audit and fixed.
+
+**Shipped:**
+- ✅ [app/blog/[slug]/page.tsx](../app/blog/[slug]/page.tsx) — migrated to `articleLd()` + `breadcrumbList()` + `jsonLdScriptProps()`. XSS escape now consistent with rest of the site. Removed inline `BASE_URL` constant in favor of `siteUrl()` via the builders.
+- ✅ [app/blog/page.tsx](../app/blog/page.tsx) — added `CollectionPage` JSON-LD (listing all 21 posts) + `BreadcrumbList`. Previously had no structured data.
+
 **Validated manually by user on Rich Results Test (2026-04-17):**
 - ✅ `/` → WebApplication detected, warning about optional `aggregateRating` only
 - ℹ️ `/monstros` → no rich result (CollectionPage isn't a rich-result type; breadcrumbs added after test)

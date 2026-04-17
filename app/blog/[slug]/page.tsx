@@ -33,8 +33,7 @@ import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
 import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
 import { CATEGORY_CTA } from "@/lib/blog/feature-links";
 import { EbookCTA } from "@/components/blog/EbookCTA";
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "/";
+import { articleLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
@@ -120,62 +119,31 @@ export default async function BlogPostPage({
   const prevPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
   const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Pocket DM",
-        item: BASE_URL,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blog",
-        item: `${BASE_URL}/blog`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: `${BASE_URL}/blog/${post.slug}`,
-      },
-    ],
-  };
+  const isEnglish = slug.endsWith("-en");
+  const postPath = `/blog/${post.slug}`;
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Pocket DM", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: postPath },
+  ]);
 
   const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.description,
+    ...articleLd({
+      name: post.title,
+      description: post.description,
+      path: postPath,
+      imagePath: `${postPath}/opengraph-image`,
+      locale: isEnglish ? "en" : "pt-BR",
+    }),
     datePublished: post.date,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      logo: {
-        "@type": "ImageObject",
-        url: `${BASE_URL}/icons/icon-512.png`,
-      },
-    },
-    image: `${BASE_URL}/blog/${post.slug}/opengraph-image`,
-    mainEntityOfPage: `${BASE_URL}/blog/${post.slug}`,
-    inLanguage: slug.endsWith("-en") ? "en-US" : "pt-BR",
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <ReadingProgress />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdArticle) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
+      <script {...jsonLdScriptProps(jsonLdArticle)} />
       <BlogNavbar />
 
       <main className="flex-1 pt-[72px]">
