@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Complete reference for all SRD backgrounds in D&D 5th Edition with skills, features, and equipment.",
     type: "website",
-    url: "https://pocketdm.com.br/backgrounds",
+    url: "/backgrounds",
   },
   twitter: {
     card: "summary_large_image",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     description: "Complete reference for all SRD backgrounds in D&D 5th Edition.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/backgrounds",
+    canonical: "/backgrounds",
     languages: {
-      en: "https://pocketdm.com.br/backgrounds",
-      "pt-BR": "https://pocketdm.com.br/antecedentes",
+      en: "/backgrounds",
+      "pt-BR": "/antecedentes",
     },
   },
 };
@@ -47,12 +47,12 @@ function BackgroundsJsonLd({ count }: { count: number }) {
     "@type": "CollectionPage",
     name: "D&D 5e Backgrounds",
     description: "All SRD character backgrounds for D&D 5th Edition",
-    url: "https://pocketdm.com.br/backgrounds",
+    url: "/backgrounds",
     inLanguage: "en",
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     mainEntity: {
       "@type": "ItemList",

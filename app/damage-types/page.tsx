@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "All 13 damage types in D&D 5e with resistances, immunities, and common sources.",
     type: "website",
-    url: "https://pocketdm.com.br/damage-types",
+    url: "/damage-types",
   },
   twitter: {
     card: "summary_large_image",
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
       "All 13 damage types in D&D 5e with resistances, immunities, and common sources.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/damage-types",
+    canonical: "/damage-types",
     languages: {
-      en: "https://pocketdm.com.br/damage-types",
-      "pt-BR": "https://pocketdm.com.br/tipos-de-dano",
+      en: "/damage-types",
+      "pt-BR": "/tipos-de-dano",
     },
   },
 };
@@ -67,7 +67,7 @@ function DamageTypesJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

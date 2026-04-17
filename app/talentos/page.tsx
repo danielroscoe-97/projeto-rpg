@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa de todos os talentos SRD do D&D 5ª Edição com pré-requisitos e descrições.",
     type: "website",
-    url: "https://pocketdm.com.br/talentos",
+    url: "/talentos",
   },
   twitter: {
     card: "summary_large_image",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     description: "Referência completa de todos os talentos SRD do D&D 5ª Edição.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/talentos",
+    canonical: "/talentos",
     languages: {
-      en: "https://pocketdm.com.br/feats",
-      "pt-BR": "https://pocketdm.com.br/talentos",
+      en: "/feats",
+      "pt-BR": "/talentos",
     },
   },
 };
@@ -47,12 +47,12 @@ function FeatsJsonLd({ count }: { count: number }) {
     "@type": "CollectionPage",
     name: "Talentos D&D 5e",
     description: "Todos os talentos SRD de personagem do D&D 5ª Edição",
-    url: "https://pocketdm.com.br/talentos",
+    url: "/talentos",
     inLanguage: "pt-BR",
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     mainEntity: {
       "@type": "ItemList",

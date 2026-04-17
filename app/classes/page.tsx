@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "All 12 SRD classes with hit dice, proficiencies, and subclasses. Free reference.",
     type: "website",
-    url: "https://pocketdm.com.br/classes",
+    url: "/classes",
   },
   twitter: {
     card: "summary_large_image",
@@ -41,10 +41,10 @@ export const metadata: Metadata = {
       "All 12 SRD classes with hit dice, proficiencies, and subclasses.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/classes",
+    canonical: "/classes",
     languages: {
-      en: "https://pocketdm.com.br/classes",
-      "pt-BR": "https://pocketdm.com.br/classes-pt",
+      en: "/classes",
+      "pt-BR": "/classes-pt",
     },
   },
 };
@@ -66,16 +66,16 @@ function ClassesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name: c.name,
-      url: `https://pocketdm.com.br/classes/${c.id}`,
+      url: `/classes/${c.id}`,
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
       logo: {
         "@type": "ImageObject",
-        url: "https://pocketdm.com.br/icons/icon-512.png",
+        url: "/icons/icon-512.png",
       },
     },
     inLanguage: "en",

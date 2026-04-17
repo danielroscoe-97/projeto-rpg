@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     "Pocket DM spells",
   ],
   alternates: {
-    canonical: "https://pocketdm.com.br/spells",
+    canonical: "/spells",
     languages: {
-      en: "https://pocketdm.com.br/spells",
-      "pt-BR": "https://pocketdm.com.br/magias",
+      en: "/spells",
+      "pt-BR": "/magias",
     },
   },
   openGraph: {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     description:
       "Complete D&D 5e SRD spell compendium with descriptions, range, components, and damage. Filter by level, school, and class.",
     type: "website",
-    url: "https://pocketdm.com.br/spells",
+    url: "/spells",
   },
 };
 
@@ -74,16 +74,16 @@ export default function SpellsIndexPage() {
     "@type": "CollectionPage",
     name: "D&D 5e Spell Compendium",
     description: "Complete D&D 5e SRD spell compendium with descriptions, damage, range, and components.",
-    url: "https://pocketdm.com.br/spells",
+    url: "/spells",
     inLanguage: "en",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: spells.length,
       itemListElement: spells.slice(0, 10).map((s, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `https://pocketdm.com.br/spells/${s.slug}`,
+        url: `/spells/${s.slug}`,
         name: s.name,
       })),
     },

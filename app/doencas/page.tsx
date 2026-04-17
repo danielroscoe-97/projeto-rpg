@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa de todas as doenças do D&D 5e com comparação 2014/2024.",
     type: "website",
-    url: "https://pocketdm.com.br/doencas",
+    url: "/doencas",
   },
   twitter: {
     card: "summary_large_image",
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
       "Referência completa de todas as doenças do D&D 5e com comparação 2014/2024.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/doencas",
+    canonical: "/doencas",
     languages: {
-      en: "https://pocketdm.com.br/diseases",
-      "pt-BR": "https://pocketdm.com.br/doencas",
+      en: "/diseases",
+      "pt-BR": "/doencas",
     },
   },
 };
@@ -61,7 +61,7 @@ function DiseasesJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };

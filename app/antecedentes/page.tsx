@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa de todos os antecedentes SRD do D&D 5ª Edição com perícias, características e equipamento.",
     type: "website",
-    url: "https://pocketdm.com.br/antecedentes",
+    url: "/antecedentes",
   },
   twitter: {
     card: "summary_large_image",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     description: "Referência completa de todos os antecedentes SRD do D&D 5ª Edição.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/antecedentes",
+    canonical: "/antecedentes",
     languages: {
-      en: "https://pocketdm.com.br/backgrounds",
-      "pt-BR": "https://pocketdm.com.br/antecedentes",
+      en: "/backgrounds",
+      "pt-BR": "/antecedentes",
     },
   },
 };
@@ -47,12 +47,12 @@ function BackgroundsJsonLd({ count }: { count: number }) {
     "@type": "CollectionPage",
     name: "Antecedentes D&D 5e",
     description: "Todos os antecedentes SRD de personagem do D&D 5ª Edição",
-    url: "https://pocketdm.com.br/antecedentes",
+    url: "/antecedentes",
     inLanguage: "pt-BR",
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     mainEntity: {
       "@type": "ItemList",

@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: "website",
-      url: `https://pocketdm.com.br/r/${code}`,
+      url: `/r/${code}`,
     },
     twitter: { card: "summary_large_image" },
   };

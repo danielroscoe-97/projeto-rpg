@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Complete reference for all 9 SRD races in D&D 5th Edition with ability scores and traits.",
     type: "website",
-    url: "https://pocketdm.com.br/races",
+    url: "/races",
   },
   twitter: {
     card: "summary_large_image",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
       "Complete reference for all 9 SRD races in D&D 5th Edition.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/races",
+    canonical: "/races",
     languages: {
-      en: "https://pocketdm.com.br/races",
-      "pt-BR": "https://pocketdm.com.br/racas",
+      en: "/races",
+      "pt-BR": "/racas",
     },
   },
 };
@@ -67,13 +67,13 @@ function RacesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name,
-      url: `https://pocketdm.com.br/races/${name.toLowerCase().replace(/\s+/g, "-")}`,
+      url: `/races/${name.toLowerCase().replace(/\s+/g, "-")}`,
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

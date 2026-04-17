@@ -18,6 +18,7 @@ import { PublicFooter } from "@/components/public/PublicFooter";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { getSpellTier } from "@/lib/srd/spell-tiers";
+import { spellMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -36,53 +37,32 @@ export async function generateMetadata({
   const spell = getSpellBySlug(slug);
   if (!spell) return { title: "Spell Not Found" };
 
-  const levelStr = spell.level === 0 ? "Cantrip" : `Level ${spell.level}`;
-  const title = `${spell.name} — D&D 5e Spell`;
-  const desc = spell.description ? spell.description.slice(0, 150) : "";
-  const description = `${spell.name}, ${levelStr} ${spell.school}. ${spell.casting_time}, ${spell.range}.${desc ? ` ${desc}...` : ""}`;
-
-  return {
-    title,
-    description,
-    openGraph: { title: `${title} | Pocket DM`, description, type: "article", url: `https://pocketdm.com.br/spells/${slug}` },
-    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
-    alternates: {
-      canonical: `https://pocketdm.com.br/spells/${slug}`,
-      languages: {
-        en: `https://pocketdm.com.br/spells/${slug}`,
-        "pt-BR": `https://pocketdm.com.br/magias/${toSpellSlugPt(toSlug(spell.name))}`,
-      },
-    },
-  };
+  return spellMetadata(spell, {
+    slug,
+    ptSlug: toSpellSlugPt(toSlug(spell.name)),
+    locale: "en",
+  });
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
 function SpellJsonLd({ spell, slug }: { spell: NonNullable<ReturnType<typeof getSpellBySlug>>; slug: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${spell.name} — D&D 5e Spell`,
-    headline: `${spell.name} — D&D 5e Spell`,
-    description: `${spell.name}. ${spell.description.slice(0, 200)}`,
-    image: `https://pocketdm.com.br/spells/${slug}/opengraph-image`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "https://pocketdm.com.br",
-      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
-    },
-  };
+  const name = `${spell.name} — D&D 5e Spell`;
+  const description = `${spell.name}. ${spell.description.slice(0, 200)}`;
+  const path = `/spells/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Spells", item: "https://pocketdm.com.br/spells" },
-      { "@type": "ListItem", position: 3, name: spell.name, item: `https://pocketdm.com.br/spells/${slug}` },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: `/spells/${slug}/opengraph-image`,
+    locale: "en",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Spells", path: "/spells" },
+    { name: spell.name, path },
+  ]);
 
   return (
     <>

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description:
       "Todos os seis atributos explicados com calculadora interativa de modificador, perícias associadas, testes de resistência e usos comuns.",
     type: "website",
-    url: "https://pocketdm.com.br/atributos",
+    url: "/atributos",
   },
   twitter: {
     card: "summary_large_image",
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
       "Todos os seis atributos explicados com calculadora interativa de modificador, perícias associadas, testes de resistência e usos comuns.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/atributos",
+    canonical: "/atributos",
     languages: {
-      en: "https://pocketdm.com.br/ability-scores",
-      "pt-BR": "https://pocketdm.com.br/atributos",
+      en: "/ability-scores",
+      "pt-BR": "/atributos",
     },
   },
 };
@@ -61,7 +61,7 @@ function AtributosJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };

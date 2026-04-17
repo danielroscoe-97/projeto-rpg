@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Complete D&D 5e rules reference with visual diagrams, interactive death save tracker, and cover guide. Free SRD 5.1 content.",
     type: "website",
-    url: "https://pocketdm.com.br/rules",
+    url: "/rules",
   },
   twitter: {
     card: "summary_large_image",
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
       "Complete D&D 5e rules reference with visual diagrams and interactive tools. Free SRD 5.1 content.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/rules",
+    canonical: "/rules",
     languages: {
-      en: "https://pocketdm.com.br/rules",
-      "pt-BR": "https://pocketdm.com.br/regras",
+      en: "/rules",
+      "pt-BR": "/regras",
     },
   },
 };
@@ -84,7 +84,7 @@ function RulesJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

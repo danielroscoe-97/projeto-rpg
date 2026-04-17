@@ -10,7 +10,7 @@ import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 import { ErrorTrackingProvider } from "@/components/ErrorTrackingProvider";
 import "./globals.css";
 
-const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL || "/";
 
 const siteTitle = "Pocket DM — Combat & Initiative Tracker D&D 5e | Rastreador de Combate";
 const siteTitleSocial = "Pocket DM — Master your table.";
@@ -86,13 +86,13 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/",
+    canonical: "/",
     types: {
       "application/rss+xml": "/blog/rss",
     },
     languages: {
-      "pt-BR": "https://pocketdm.com.br/",
-      en: "https://pocketdm.com.br/",
+      "pt-BR": "/",
+      en: "/",
     },
   },
   openGraph: {

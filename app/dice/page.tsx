@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     description:
       "Free online dice roller with advantage, critical, presets, and roll history.",
     type: "website",
-    url: "https://pocketdm.com.br/dice",
+    url: "/dice",
   },
   twitter: {
     card: "summary_large_image",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
       "Free online dice roller with advantage, critical, presets, and roll history.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/dice",
+    canonical: "/dice",
     languages: {
-      en: "https://pocketdm.com.br/dice",
-      "pt-BR": "https://pocketdm.com.br/dados",
+      en: "/dice",
+      "pt-BR": "/dados",
     },
   },
 };
@@ -60,7 +60,7 @@ function DiceRollerJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

@@ -152,7 +152,7 @@ export const metadata = {
     "combat tracker D&D gratis",
     "ferramentas para mestre de RPG",
   ],
-  alternates: { canonical: "https://pocketdm.com.br/" },
+  alternates: { canonical: "/" },
 };
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
@@ -1454,12 +1454,12 @@ export default async function LandingPage() {
     "@type": "WebSite",
     name: "Pocket DM",
     alternateName: "Pocket DM — Combat Tracker D&D 5e",
-    url: "https://pocketdm.com.br",
+    url: "/",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://pocketdm.com.br/monsters?q={search_term_string}",
+        urlTemplate: "/monsters?q={search_term_string}",
       },
       "query-input": "required name=search_term_string",
     },
@@ -1469,8 +1469,8 @@ export default async function LandingPage() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Pocket DM",
-    url: "https://pocketdm.com.br",
-    logo: "https://pocketdm.com.br/icons/icon-512.png",
+    url: "/",
+    logo: "/icons/icon-512.png",
     sameAs: [
       "https://www.instagram.com/pocket.dm",
     ],
@@ -1481,7 +1481,7 @@ export default async function LandingPage() {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "Pocket DM",
-    url: "https://pocketdm.com.br",
+    url: "/",
     applicationCategory: "GameApplication",
     operatingSystem: "Web",
     offers: {

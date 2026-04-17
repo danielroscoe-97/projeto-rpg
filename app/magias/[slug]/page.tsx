@@ -20,6 +20,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { getSpellTier } from "@/lib/srd/spell-tiers";
 import Link from "next/link";
+import { spellMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
 
 // ── Static generation ──────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -42,59 +43,34 @@ export async function generateMetadata({
 
   const enSlug = toSlug(spell.name);
   const ptName = getSpellNamePt(enSlug, spell.name);
-  const levelStr = spell.level === 0 ? "Truque" : `Nível ${spell.level}`;
-  const title = `${ptName} — Magia D&D 5e`;
-  const ptDesc = getSpellDescriptionPt(enSlug);
-  const description = `${ptName}, ${levelStr} de ${spell.school}. ${spell.casting_time}, alcance ${spell.range}.${(ptDesc ?? spell.description) ? ` ${(ptDesc ?? spell.description).slice(0, 120)}...` : ""}`;
 
-  return {
-    title,
-    description,
-    openGraph: {
-      title: `${title} | Pocket DM`,
-      description,
-      type: "article",
-      url: `https://pocketdm.com.br/magias/${slug}`,
-    },
-    twitter: { card: "summary_large_image", title: `${title} | Pocket DM`, description },
-    alternates: {
-      canonical: `https://pocketdm.com.br/magias/${slug}`,
-      languages: {
-        "en": `https://pocketdm.com.br/spells/${enSlug}`,
-        "pt-BR": `https://pocketdm.com.br/magias/${slug}`,
-      },
-    },
-  };
+  return spellMetadata(spell, {
+    slug: enSlug,
+    ptSlug: slug,
+    ptName,
+    locale: "pt-BR",
+  });
 }
 
 // ── JSON-LD ────────────────────────────────────────────────────────
 function SpellJsonLd({ spell, slug, ptName }: { spell: NonNullable<ReturnType<typeof getSpellBySlugPt>>; slug: string; ptName: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${ptName} — Magia D&D 5e`,
-    headline: `${ptName} — Magia D&D 5e`,
-    description: `${ptName}. ${spell.description.slice(0, 200)}`,
-    image: `https://pocketdm.com.br/magias/${slug}/opengraph-image`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "https://pocketdm.com.br",
-      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
-    },
-    inLanguage: "pt-BR",
-  };
+  const name = `${ptName} — Magia D&D 5e`;
+  const description = `${ptName}. ${spell.description.slice(0, 200)}`;
+  const path = `/magias/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Início", item: "https://pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Magias", item: "https://pocketdm.com.br/magias" },
-      { "@type": "ListItem", position: 3, name: ptName, item: `https://pocketdm.com.br/magias/${slug}` },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: `/magias/${slug}/opengraph-image`,
+    locale: "pt-BR",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Magias", path: "/magias" },
+    { name: ptName, path },
+  ]);
 
   return (
     <>

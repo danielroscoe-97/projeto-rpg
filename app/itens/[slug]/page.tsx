@@ -6,6 +6,7 @@ import { PublicItemDetail } from "@/components/public/PublicItemDetail";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getSrdItems, getItemBySlug } from "@/lib/srd/srd-data-server";
+import { itemMetadata, articleLd, breadcrumbList } from "@/lib/seo/metadata";
 
 export function generateStaticParams() {
   return getSrdItems()
@@ -34,61 +35,27 @@ export async function generateMetadata({
   const { slug } = await params;
   const item = getItemBySlug(slug);
   if (!item) return { title: "Item Não Encontrado" };
-
-  const rarity = item.rarity !== "none" ? ` (${RARITY_PT[item.rarity] ?? item.rarity})` : "";
-  const title = `${item.name} — Item D&D 5e`;
-  const description = `${item.name}${rarity}. ${formatTypeName(item.type)}. ${item.entries[0]?.slice(0, 120) ?? ""}`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title: `${title} | Pocket DM`,
-      description,
-      type: "article",
-      url: `https://pocketdm.com.br/itens/${slug}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${title} | Pocket DM`,
-      description,
-    },
-    alternates: {
-      canonical: `https://pocketdm.com.br/itens/${slug}`,
-      languages: {
-        en: `https://pocketdm.com.br/items/${slug}`,
-        "pt-BR": `https://pocketdm.com.br/itens/${slug}`,
-      },
-    },
-  };
+  return itemMetadata(item, { slug, locale: "pt-BR" });
 }
 
 function ItemJsonLd({ item, slug }: { item: { name: string; type: string; rarity: string }; slug: string }) {
-  const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    name: `${item.name} — Item D&D 5e`,
-    headline: `${item.name} — Item D&D 5e`,
-    description: `${item.name}, ${formatTypeName(item.type)}${item.rarity !== "none" ? `, ${RARITY_PT[item.rarity] ?? item.rarity}` : ""}. Item SRD do D&D 5e.`,
-    author: { "@type": "Organization", name: "Pocket DM" },
-    publisher: {
-      "@type": "Organization",
-      name: "Pocket DM",
-      url: "https://pocketdm.com.br",
-      logo: { "@type": "ImageObject", url: "https://pocketdm.com.br/icons/icon-512.png" },
-    },
-    inLanguage: "pt-BR",
-  };
+  const name = `${item.name} — Item D&D 5e`;
+  const description = `${item.name}, ${formatTypeName(item.type)}${item.rarity !== "none" ? `, ${RARITY_PT[item.rarity] ?? item.rarity}` : ""}. Item SRD do D&D 5e.`;
+  const path = `/itens/${slug}`;
 
-  const jsonLdBreadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://pocketdm.com.br" },
-      { "@type": "ListItem", position: 2, name: "Itens", item: "https://pocketdm.com.br/itens" },
-      { "@type": "ListItem", position: 3, name: item.name, item: `https://pocketdm.com.br/itens/${slug}` },
-    ],
-  };
+  const jsonLdArticle = articleLd({
+    name,
+    description,
+    path,
+    imagePath: `/opengraph-image`,
+    locale: "pt-BR",
+  });
+
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Itens", path: "/itens" },
+    { name: item.name, path },
+  ]);
 
   return (
     <>

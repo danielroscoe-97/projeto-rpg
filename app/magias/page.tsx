@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     "Pocket DM magias",
   ],
   alternates: {
-    canonical: "https://pocketdm.com.br/magias",
+    canonical: "/magias",
     languages: {
-      "en": "https://pocketdm.com.br/spells",
-      "pt-BR": "https://pocketdm.com.br/magias",
+      "en": "/spells",
+      "pt-BR": "/magias",
     },
   },
   openGraph: {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     description:
       "Compêndio completo de magias do D&D 5e com descrições, alcance, componentes e tier de poder. Filtre por nível, escola e classe.",
     type: "website",
-    url: "https://pocketdm.com.br/magias",
+    url: "/magias",
   },
 };
 
@@ -75,16 +75,16 @@ export default function MagiasIndexPage() {
     "@type": "CollectionPage",
     name: "Compêndio de Magias D&D 5e",
     description: "Compêndio completo de magias do D&D 5e com descrições, alcance, componentes e tier de poder.",
-    url: "https://pocketdm.com.br/magias",
+    url: "/magias",
     inLanguage: "pt-BR",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: spells.length,
       itemListElement: spells.slice(0, 10).map((s, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `https://pocketdm.com.br/magias/${s.slug}`,
+        url: `/magias/${s.slug}`,
         name: s.name,
       })),
     },

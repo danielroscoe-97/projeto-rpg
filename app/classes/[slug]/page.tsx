@@ -56,7 +56,7 @@ export async function generateMetadata({
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://pocketdm.com.br/classes/${slug}`,
+      url: `/classes/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
@@ -64,10 +64,10 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://pocketdm.com.br/classes/${slug}`,
+      canonical: `/classes/${slug}`,
       languages: {
-        en: `https://pocketdm.com.br/classes/${slug}`,
-        "pt-BR": `https://pocketdm.com.br/classes-pt/${slug}`,
+        en: `/classes/${slug}`,
+        "pt-BR": `/classes-pt/${slug}`,
       },
     },
   };
@@ -91,10 +91,10 @@ function ClassJsonLd({
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
       logo: {
         "@type": "ImageObject",
-        url: "https://pocketdm.com.br/icons/icon-512.png",
+        url: "/icons/icon-512.png",
       },
     },
     inLanguage: "en",
@@ -108,19 +108,19 @@ function ClassJsonLd({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://pocketdm.com.br",
+        item: "/",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Classes",
-        item: "https://pocketdm.com.br/classes",
+        item: "/classes",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: cls.name,
-        item: `https://pocketdm.com.br/classes/${slug}`,
+        item: `/classes/${slug}`,
       },
     ],
   };

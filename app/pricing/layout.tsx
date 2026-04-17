@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "Comece grátis com o Pocket DM — combat tracker completo para D&D 5e. Plano Pro para campanhas ilimitadas, áudio ambiente e features exclusivas. Pricing for D&D 5e combat tracker.",
   alternates: {
-    canonical: "https://pocketdm.com.br/pricing",
+    canonical: "/pricing",
     languages: { "pt-BR": "/pricing", en: "/pricing" },
   },
 };
