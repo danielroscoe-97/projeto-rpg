@@ -306,7 +306,13 @@ export function MonsterStatBlock({
             </button>
           )}
           {onClose && (
-            <button type="button" onClick={onClose} aria-label="Close card" title="Close">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close card"
+              title="Close"
+              className="toolbar-close"
+            >
               ×
             </button>
           )}

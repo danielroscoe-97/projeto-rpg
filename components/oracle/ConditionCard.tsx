@@ -130,7 +130,13 @@ export function ConditionCard({
             </button>
           )}
           {onClose && (
-            <button type="button" onClick={onClose} aria-label="Close condition card" data-testid="condition-close-btn">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close condition card"
+              data-testid="condition-close-btn"
+              className="toolbar-close"
+            >
               ×
             </button>
           )}
