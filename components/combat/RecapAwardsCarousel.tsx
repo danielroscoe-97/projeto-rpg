@@ -6,8 +6,11 @@ import { useTranslations } from "next-intl";
 import { Crown, Skull, Shield, Heart, Target, Dice5, Zap, Timer, ChevronRight } from "lucide-react";
 import type { CombatReportAward, AwardType } from "@/lib/types/combat-report";
 
+// S5.7: "assassin" retained as a legacy alias (same icon/colors) for
+// backward compatibility with recaps persisted pre-First Blood rename.
 const AWARD_CONFIG: Record<AwardType, { icon: typeof Crown; color: string; bg: string }> = {
   mvp: { icon: Crown, color: "text-gold", bg: "bg-gold/20 border-gold/40" },
+  first_blood: { icon: Skull, color: "text-red-400", bg: "bg-red-400/10 border-red-400/30" },
   assassin: { icon: Skull, color: "text-red-400", bg: "bg-red-400/10 border-red-400/30" },
   tank: { icon: Shield, color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/30" },
   healer: { icon: Heart, color: "text-green-400", bg: "bg-green-400/10 border-green-400/30" },

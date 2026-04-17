@@ -75,9 +75,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { className?: string }>;
 
+// S5.7: "assassin" retained as legacy alias -> renders as "First Blood".
 const AWARD_ICONS: Record<string, IconComponent> = {
   mvp: Trophy,
-  assassin: Skull,
+  first_blood: Skull,
+  assassin: Skull, // legacy alias
   tank: Shield,
   healer: Heart,
   crit_king: Target,
@@ -88,7 +90,8 @@ const AWARD_ICONS: Record<string, IconComponent> = {
 
 const AWARD_LABELS: Record<string, string> = {
   mvp: "MVP",
-  assassin: "Assassin",
+  first_blood: "First Blood",
+  assassin: "First Blood", // legacy alias
   tank: "Tank",
   healer: "Healer",
   crit_king: "Crit King",

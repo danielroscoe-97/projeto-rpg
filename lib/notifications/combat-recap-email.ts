@@ -34,9 +34,12 @@ export async function sendCombatRecapEmail(payload: CombatRecapEmailPayload): Pr
 }
 
 // ─── Award labels (PT-BR) ──────────────────────────────────────────
+// S5.7: "assassin" retained as a legacy alias for backward compatibility
+// with older persisted recaps (pre-First Blood rename).
 const AWARD_LABELS: Record<string, { icon: string; label: string }> = {
   mvp: { icon: "\u{1F3C6}", label: "MVP" },
-  assassin: { icon: "\u{1F5E1}\uFE0F", label: "Assassino" },
+  first_blood: { icon: "\u{1F5E1}\uFE0F", label: "First Blood" },
+  assassin: { icon: "\u{1F5E1}\uFE0F", label: "First Blood" }, // legacy alias
   tank: { icon: "\u{1F6E1}\uFE0F", label: "Tanque" },
   healer: { icon: "\u2764\uFE0F", label: "Curandeiro" },
   crit_king: { icon: "\u{1F3AF}", label: "Rei dos Cr\u00edticos" },

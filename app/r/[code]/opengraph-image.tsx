@@ -7,9 +7,11 @@ export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+// S5.7: "assassin" kept as legacy alias -> same skull icon as first_blood.
 const AWARD_EMOJIS: Record<string, string> = {
   mvp: "\ud83c\udfc6",
-  assassin: "\ud83d\udc80",
+  first_blood: "\ud83d\udc80",
+  assassin: "\ud83d\udc80", // legacy alias
   tank: "\ud83d\udee1\ufe0f",
   healer: "\ud83d\udc9a",
   crit_king: "\ud83c\udfaf",
