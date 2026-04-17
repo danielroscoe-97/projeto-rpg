@@ -10,6 +10,7 @@ import type {
   SanitizedEvent,
   SanitizedCombatant,
   SanitizedCombatantAdd,
+  SanitizedCombatantAddReorder,
   SanitizedStateSync,
   SanitizedInitiativeReorder,
   SanitizedPlayerHpUpdate,
@@ -82,6 +83,20 @@ export function sanitizePayloadServer(
     const result: SanitizedCombatantAdd = {
       type: event.type,
       combatant: sanitizeCombatant(event.combatant),
+    };
+    return result;
+  }
+
+  // S1.2: combat:combatant_add_reorder — atomic add + reorder
+  if (event.type === "combat:combatant_add_reorder") {
+    if (event.combatant.is_hidden) return null;
+    const result: SanitizedCombatantAddReorder = {
+      type: event.type,
+      combatant: sanitizeCombatant(event.combatant),
+      initiative_map: event.initiative_map,
+      current_turn_index: adjustTurnIndex(event.current_turn_index, allCombatants),
+      round_number: event.round_number,
+      encounter_id: event.encounter_id,
     };
     return result;
   }

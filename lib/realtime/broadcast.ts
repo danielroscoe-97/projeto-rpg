@@ -5,6 +5,7 @@ import type {
   SanitizedEvent,
   SanitizedCombatant,
   SanitizedCombatantAdd,
+  SanitizedCombatantAddReorder,
   SanitizedStateSync,
   SanitizedInitiativeReorder,
   SanitizedPlayerHpUpdate,
@@ -170,6 +171,25 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
     const result: SanitizedCombatantAdd = {
       type: event.type,
       combatant: sanitizeCombatant(event.combatant),
+    };
+    return result;
+  }
+
+  // S1.2: combat:combatant_add_reorder — single atomic broadcast replacing
+  // the legacy combatant_add + state_sync pair.
+  if (event.type === "combat:combatant_add_reorder") {
+    // Suppress entirely if the new combatant is hidden from players.
+    if (event.combatant.is_hidden) {
+      return null;
+    }
+    const result: SanitizedCombatantAddReorder = {
+      type: event.type,
+      combatant: sanitizeCombatant(event.combatant),
+      // initiative_map carries only IDs + numeric orders — already safe. Pass through.
+      initiative_map: event.initiative_map,
+      current_turn_index: adjustTurnIndexForPlayers(event.current_turn_index),
+      round_number: event.round_number,
+      encounter_id: event.encounter_id,
     };
     return result;
   }
@@ -407,9 +427,34 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     waitForChannel().then(doSend);
   }
 
+  // S1.2: Opt-out of server-side re-broadcast for events where a single
+  // ordered sender is critical. `broadcastViaServer` runs in parallel to
+  // the client-direct path, producing 2 senders with partial FIFO — that's
+  // the root cause of the combatant_add_reorder race condition. The payload
+  // is already fully sanitized here (sanitizePayload above), and
+  // SanitizedCombatantAddReorder carries no DM-only fields, so it's safe
+  // to skip the server re-broadcast.
+  if (shouldSkipServerBroadcast(event)) {
+    return;
+  }
+
   // Server-side broadcast for secure sanitization (anti-metagaming gate).
   // Fire-and-forget: supplementary to client-side broadcast.
   broadcastViaServer(sessionId, event).catch(() => {});
+}
+
+/**
+ * S1.2 — Event types that MUST NOT go through the server re-broadcast path.
+ *
+ * The server broadcast adds a second ordered sender (server → channel vs
+ * client → channel), which breaks FIFO assumptions on the receiver side.
+ * For events that are already fully sanitized client-side AND whose ordering
+ * is load-bearing (race-prone rapid emits), skip the server path.
+ *
+ * Exported for tests.
+ */
+export function shouldSkipServerBroadcast(event: RealtimeEvent): boolean {
+  return event.type === "combat:combatant_add_reorder";
 }
 
 /** Replay queued offline actions for a session.
