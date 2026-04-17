@@ -150,6 +150,41 @@ export const CombatantRow = memo(function CombatantRow({
     if (combatant.is_defeated) setOpenPanel(null);
   }, [combatant.is_defeated]);
 
+  // Finding 5 (spike 2026-04-17): when turn advances, proactively close panels
+  // on rows that are NOT the incoming actor. This unblocks the DM auto-scroll
+  // refined guard in CombatSessionClient. Panel on the incoming actor stays
+  // open so DM edits in progress aren't wiped.
+  //
+  // Two-phase coordination:
+  //   `combat:turn-advancing` — fired BEFORE `advanceTurn()`. Close the panel
+  //      on the OUTGOING row (prev_turn_index) so the auto-scroll guard that
+  //      runs on the next render has a clean slate. We don't know next_turn_index
+  //      yet at this point.
+  //   `combat:turn-advanced`  — fired AFTER `advanceTurn()`. Close the panel on
+  //      any row that is not the incoming actor; keeps panels on the new actor
+  //      open so DM edits in progress survive the transition.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleAdvancing = (evt: Event) => {
+      const detail = (evt as CustomEvent<{ prev_turn_index?: number }>).detail;
+      const prevIdx = detail?.prev_turn_index;
+      if (typeof prevIdx !== "number" || typeof index !== "number") return;
+      if (index === prevIdx) setOpenPanel(null);
+    };
+    const handleAdvanced = (evt: Event) => {
+      const detail = (evt as CustomEvent<{ next_turn_index?: number }>).detail;
+      const nextIdx = detail?.next_turn_index;
+      if (typeof nextIdx !== "number" || typeof index !== "number") return;
+      if (index !== nextIdx) setOpenPanel(null);
+    };
+    window.addEventListener("combat:turn-advancing", handleAdvancing as EventListener);
+    window.addEventListener("combat:turn-advanced", handleAdvanced as EventListener);
+    return () => {
+      window.removeEventListener("combat:turn-advancing", handleAdvancing as EventListener);
+      window.removeEventListener("combat:turn-advanced", handleAdvanced as EventListener);
+    };
+  }, [index]);
+
   // --- Lair Action: special minimal row with expandable lair actions list ---
   if (combatant.is_lair_action) {
     const lairMonsters: SrdMonster[] = [];
@@ -459,7 +494,17 @@ export const CombatantRow = memo(function CombatantRow({
               <button
                 type="button"
                 onClick={() => { if (showActions) openInlineEdit("current", String(combatant.current_hp)); }}
-                className={`text-muted-foreground min-h-[44px] sm:min-h-[28px] inline-flex items-center ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`}
+                // Finding 7 QW2 (beta-test-3, sprint plan S1.5): when HP is in
+                // the CRITICAL tier (<= 10% of max), escalate the HP number to
+                // white + semibold so it reads clearly against the red critical
+                // frame. Mirrors Track E's palette semantics (text-white on
+                // alert surfaces) for the DM view specifically; player view is
+                // handled elsewhere.
+                className={`min-h-[44px] sm:min-h-[28px] inline-flex items-center ${
+                  isCritical
+                    ? `text-white font-semibold ${showActions ? "hover:text-white cursor-pointer" : "cursor-default"}`
+                    : `text-muted-foreground ${showActions ? "hover:text-gold cursor-pointer" : "cursor-default"}`
+                }`}
                 title={showActions ? t("edit_current_hp_title") : undefined}
                 data-testid={`current-hp-btn-${combatant.id}`}
               >

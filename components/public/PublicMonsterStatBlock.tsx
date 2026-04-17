@@ -235,6 +235,33 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
             {dexMod >= 0 ? `+${dexMod}` : `${dexMod}`}
           </ClickableRoll>
         </p>
+        {/* Resistances / vulnerabilities / immunities — positioned after Speed/Initiative,
+            before Abilities, to match 5e Tools / D&D Beyond reading order
+            (Finding 7, spike 2026-04-17). Parity with MonsterStatBlock (auth/guest combat). */}
+        {damageVuln && (
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
+            <LinkedTerms text={damageVuln} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
+          </p>
+        )}
+        {damageRes && (
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
+            <LinkedTerms text={damageRes} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
+          </p>
+        )}
+        {damageImm && (
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
+            <LinkedTerms text={damageImm} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
+          </p>
+        )}
+        {conditionImm && (
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
+            <LinkedTerms text={conditionImm} knownTerms={t ? CONDITIONS_PT : CONDITIONS} href={t ? "/condicoes" : "/conditions"} isPt={!!t} />
+          </p>
+        )}
       </div>
 
       <hr className="card-divider" />
@@ -274,30 +301,8 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
             {skills}
           </p>
         )}
-        {damageVuln && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
-            <LinkedTerms text={damageVuln} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
-          </p>
-        )}
-        {damageRes && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
-            <LinkedTerms text={damageRes} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
-          </p>
-        )}
-        {damageImm && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
-            <LinkedTerms text={damageImm} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
-          </p>
-        )}
-        {conditionImm && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
-            <LinkedTerms text={conditionImm} knownTerms={t ? CONDITIONS_PT : CONDITIONS} href={t ? "/condicoes" : "/conditions"} isPt={!!t} />
-          </p>
-        )}
+        {/* damageVuln / damageRes / damageImm / conditionImm moved above the
+            ability scores block per Finding 7 (spike 2026-04-17). */}
         {sensesStr && (
           <p>
             <strong className="text-[var(--5e-accent-red)]">{L.senses}</strong>{" "}

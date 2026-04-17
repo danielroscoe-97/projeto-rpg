@@ -404,6 +404,21 @@ export function MonsterStatBlock({
       )}
       {speedStr && <PropLine label={L.speed} value={speedStr} />}
 
+      {/* Resistances / vulnerabilities / immunities — positioned after Speed, before Abilities
+          to match 5e Tools / D&D Beyond reading order (Finding 7, spike 2026-04-17). */}
+      {damageVuln && (
+        <PropLine label={L.damageVulnerabilities} value={damageVuln} />
+      )}
+      {damageRes && (
+        <PropLine label={L.damageResistances} value={damageRes} />
+      )}
+      {damageImm && (
+        <PropLine label={L.damageImmunities} value={damageImm} />
+      )}
+      {conditionImm && (
+        <PropLine label={L.conditionImmunities} value={conditionImm} />
+      )}
+
       {/* Ability scores table — divider only when table will render */}
       {ABILITY_KEYS.every((k) => monster[k] != null) && (
         <>
@@ -440,18 +455,6 @@ export function MonsterStatBlock({
             </span>
           </p>
         )
-      )}
-      {damageVuln && (
-        <PropLine label={L.damageVulnerabilities} value={damageVuln} />
-      )}
-      {damageRes && (
-        <PropLine label={L.damageResistances} value={damageRes} />
-      )}
-      {damageImm && (
-        <PropLine label={L.damageImmunities} value={damageImm} />
-      )}
-      {conditionImm && (
-        <PropLine label={L.conditionImmunities} value={conditionImm} />
       )}
       {sensesStr && <PropLine label={L.senses} value={sensesStr} />}
       {monster.languages && <PropLine label={L.languages} value={monster.languages} />}

@@ -1911,8 +1911,19 @@ function CombatList({
       isFirstRender.current = false;
       return;
     }
+    // Finding 5 (spike 2026-04-17): the prior guard `[data-panel-open="true"]`
+    // aborted whenever ANY row had an open panel. The DM almost always has some
+    // panel open, so auto-scroll effectively never ran. Refined semantics: only
+    // abort if the open panel lives on the CURRENT-turn row (DM is editing the
+    // actor whose turn just arrived — don't yank them). Panels on other rows
+    // are proactively closed via the `combat:turn-advancing` CustomEvent fired
+    // from `handleAdvanceTurn` (see lib/hooks/useCombatActions.ts).
     requestAnimationFrame(() => {
-      if (document.querySelector('[data-panel-open="true"]')) return;
+      const openPanel = document.querySelector('[data-panel-open="true"]') as HTMLElement | null;
+      if (openPanel) {
+        const openIdx = openPanel.getAttribute("data-combatant-index");
+        if (openIdx !== null && parseInt(openIdx, 10) === currentTurnIndex) return;
+      }
       const el = document.querySelector(`[data-combatant-index="${currentTurnIndex}"]`) as HTMLElement | null;
       el?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
