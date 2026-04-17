@@ -17,6 +17,7 @@ import type { Plan } from "@/lib/types/subscription";
 import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
 import { persistPlayerIdentity, loadPlayerIdentity, clearPlayerIdentity } from "@/lib/player-identity-storage";
+import { classifyReconnect } from "@/lib/realtime/reconnect-classifier";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type {
   SanitizedStateSync,
@@ -883,7 +884,10 @@ export function PlayerJoinClient({
     // R1: Skip if another request is already in-flight
     if (fetchInFlightRef.current) return;
     fetchInFlightRef.current = true;
-    lastFetchAtRef.current = Date.now();
+    // NOTE (code-review track-c MEDIUM #3): `lastFetchAtRef` is only bumped
+    // AFTER the fetch succeeds (or after a non-401 response lands). If the
+    // emergency call fails, we do NOT want to block throttled retries for
+    // the next 5s — recovery should stay nimble.
     try {
       let res = await fetch(`/api/session/${sessionId}/state`);
 
@@ -904,11 +908,16 @@ export function PlayerJoinClient({
         if (consecutiveFailsRef.current >= 3) {
           pollBackoffRef.current = 30_000; // circuit open: probe every 30s
         }
+        // Do NOT update lastFetchAtRef — let subsequent throttled calls retry
+        // without artificial 5s delay when the emergency fetch failed.
         return;
       }
 
       // R2: Reset circuit breaker on success
       consecutiveFailsRef.current = 0;
+      // Success: stamp the throttle window now so background poll/turn-poll
+      // doesn't pile on for the next 5s.
+      lastFetchAtRef.current = Date.now();
 
       const { data } = await res.json();
       if (!data) return;
@@ -1804,6 +1813,11 @@ export function PlayerJoinClient({
       }
 
       // === VISIBLE: reconnect and sync ===
+      // Finding 4 (spike 2026-04-17): capture `hiddenMs` BEFORE resetting
+      // `hiddenAtRef` so the 3-tier classification below can actually see
+      // the elapsed time. Previous ordering read `hiddenAtRef.current` after
+      // it had already been nulled, collapsing every reconnect into Tier 1.
+      const hiddenMs = hiddenAtRef.current ? Date.now() - hiddenAtRef.current : 0;
       hiddenAtRef.current = null;
 
       // Broadcast player:active so DM knows we're back
@@ -1848,32 +1862,31 @@ export function PlayerJoinClient({
       // (noise) fires `player:resumed`; tiers 2/3 fire `player:reconnected`
       // with a confidence property so dashboards can filter.
       const wasDisconnected = disconnectedAtRef.current !== null;
-      const hiddenMs = hiddenAtRef.current ? Date.now() - hiddenAtRef.current : 0;
-      const channelState = channelRef.current ? (channelRef.current as unknown as { state?: string }).state : undefined;
+      // `hiddenMs` captured above, before `hiddenAtRef.current = null` reset.
+      // TODO: `state` is not part of the public `RealtimeChannel` API — replace
+      // with an event-driven ref updated via `channel.subscribe((status) => ...)`
+      // once we settle on a stable handshake signal.
+      const channelState = channelRef.current
+        ? (channelRef.current as unknown as { state?: string }).state
+        : undefined;
       const emitReconnectTelemetry = () => {
         if (!isRegisteredRef.current) return;
-        if (wasDisconnected || (channelState !== undefined && channelState !== "joined")) {
-          // Tier 3 — real recovery signal (channel was down or we saw a disconnect)
-          trackEvent("player:reconnected", {
-            session_id: sessionId,
-            method: "channel_recovery",
-            hidden_ms: hiddenMs,
-            confidence: "high",
-          });
-        } else if (hiddenMs > 30_000) {
-          // Tier 2 — ambiguous (long background; mobile may have killed the socket)
-          trackEvent("player:reconnected", {
-            session_id: sessionId,
-            method: "long_background",
-            hidden_ms: hiddenMs,
-            confidence: "medium",
-          });
-        } else {
-          // Tier 1 — noise (trivial tab-switch). Emit separate event, keep
-          // reconnection funnel clean.
+        const tier = classifyReconnect({ hiddenMs, wasDisconnected, channelState });
+        if (tier.event === "player:resumed") {
+          // Tier 1 — noise (trivial tab-switch). Emit separate event so the
+          // reconnection funnel stays clean. Includes `confidence: "noise"`
+          // for schema symmetry with the other tiers.
           trackEvent("player:resumed", {
             session_id: sessionId,
-            hidden_ms: hiddenMs,
+            hidden_ms: tier.hiddenMs,
+            confidence: tier.confidence,
+          });
+        } else {
+          trackEvent("player:reconnected", {
+            session_id: sessionId,
+            method: tier.method,
+            hidden_ms: tier.hiddenMs,
+            confidence: tier.confidence,
           });
         }
       };
