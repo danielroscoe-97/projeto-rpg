@@ -399,15 +399,16 @@ export interface SanitizedCombatantAdd {
 /**
  * S1.2 — Player-safe version of combat:combatant_add_reorder.
  *
- * `initiative_map` contains IDs + orders for ALL combatants (including hidden
- * ones in the DM's list). The player applies it by matching IDs in its local
- * (already-filtered) list; unknown IDs are ignored. If the map contains an ID
- * not in the player list (hidden combatant), it's skipped without error.
+ * `initiative_map` is sanitized before send: hidden combatants' real IDs are
+ * replaced with opaque "hidden:<hash>" placeholders (marked via optional
+ * `is_hidden: true`). Visible combatants pass through with their real IDs.
+ * The player applies the map by matching its local (already-filtered) list;
+ * opaque placeholders are ignored for sorting and never flagged as desync.
  */
 export interface SanitizedCombatantAddReorder {
   type: "combat:combatant_add_reorder";
   combatant: SanitizedCombatant;
-  initiative_map: Array<{ id: string; initiative_order: number | null }>;
+  initiative_map: Array<{ id: string; initiative_order: number | null; is_hidden?: true }>;
   current_turn_index: number;
   round_number: number;
   encounter_id: string;

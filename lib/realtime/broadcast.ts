@@ -182,11 +182,17 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
     if (event.combatant.is_hidden) {
       return null;
     }
+    // B-2 FIX: initiative_map may reference hidden combatants. Raw passthrough
+    // would (a) leak presence/position of hidden combatants to players, and
+    // (b) make the player handler flag every add in a session with ≥1 hidden
+    // combatant as a desync (flooding fetchFullState). Mask hidden IDs with
+    // stable opaque placeholders ("hidden:<hash>") so order is preserved
+    // without revealing identity.
+    const sanitizedMap = sanitizeInitiativeMapForPlayers(event.initiative_map);
     const result: SanitizedCombatantAddReorder = {
       type: event.type,
       combatant: sanitizeCombatant(event.combatant),
-      // initiative_map carries only IDs + numeric orders — already safe. Pass through.
-      initiative_map: event.initiative_map,
+      initiative_map: sanitizedMap,
       current_turn_index: adjustTurnIndexForPlayers(event.current_turn_index),
       round_number: event.round_number,
       encounter_id: event.encounter_id,
@@ -325,6 +331,35 @@ export function registerHiddenLookup(fn: (id: string) => boolean, combatantsGett
 
 function isCombatantHidden(combatantId: string): boolean {
   return _hiddenLookup ? _hiddenLookup(combatantId) : false;
+}
+
+/** B-2: Produce a stable opaque placeholder ID for a hidden combatant.
+ *  Using a simple hash so the same hidden combatant reliably gets the same
+ *  placeholder across broadcasts (supports client dedup + idempotent reducer).
+ *  Not cryptographic — just deterministic. Length kept short to avoid payload
+ *  bloat when a session has many hidden combatants. */
+function maskHiddenId(id: string): string {
+  let h = 2166136261; // FNV-1a 32-bit offset basis
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return `hidden:${h.toString(36)}`;
+}
+
+/** B-2: Sanitize an initiative_map for player broadcast.
+ *  Replaces any hidden combatant's real ID with an opaque placeholder that
+ *  preserves order without leaking identity or falsely flagging desync on
+ *  the player. */
+function sanitizeInitiativeMapForPlayers(
+  map: ReadonlyArray<{ id: string; initiative_order: number | null }>,
+): Array<{ id: string; initiative_order: number | null; is_hidden?: true }> {
+  return map.map((entry) => {
+    if (isCombatantHidden(entry.id)) {
+      return { id: maskHiddenId(entry.id), initiative_order: entry.initiative_order, is_hidden: true };
+    }
+    return { id: entry.id, initiative_order: entry.initiative_order };
+  });
 }
 
 /** Adjust a DM-side turn index to the player-visible index (excluding hidden combatants).

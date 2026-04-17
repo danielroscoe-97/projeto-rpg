@@ -34,14 +34,26 @@ type PlayerCombatant = {
  * `.on("broadcast", { event: "combat:combatant_add_reorder" }, ...)`.
  *
  * Returned `inconsistencyDetected` is set when `initiative_map` references
- * an ID not in the local list (after insertion).
+ * a non-hidden ID not in the local list (after insertion). Opaque
+ * "hidden:<hash>" placeholders are ignored (B-2 contract).
+ *
+ * Note: the real handler computes `inconsistencyDetected` BEFORE calling
+ * setState (B-1 fix). This pure reducer composes both pieces for test
+ * ergonomics — assertion semantics are identical.
  */
 export function reduceCombatantAddReorder(
   prev: PlayerCombatant[],
   payload: SanitizedCombatantAddReorder,
 ): { next: PlayerCombatant[]; inconsistencyDetected: boolean } {
   const incoming = payload.combatant as unknown as PlayerCombatant;
-  let inconsistencyDetected = false;
+
+  // Inconsistency computed against PREV synchronously (B-1 contract).
+  const prevIds = new Set(prev.map((c) => c.id));
+  const inconsistencyDetected = payload.initiative_map.some((entry) => {
+    if (entry.id === incoming.id) return false; // always present after insert
+    if (entry.id.startsWith("hidden:")) return false; // opaque slot, not a miss
+    return !prevIds.has(entry.id);
+  });
 
   const existingIndex = prev.findIndex((c) => c.id === incoming.id);
   let next: PlayerCombatant[];
@@ -55,14 +67,6 @@ export function reduceCombatantAddReorder(
   for (const entry of payload.initiative_map) {
     if (entry.initiative_order !== null) {
       orderById.set(entry.id, entry.initiative_order);
-    }
-  }
-
-  for (const entry of payload.initiative_map) {
-    if (!next.some((c) => c.id === entry.id)) {
-      if (entry.id !== incoming.id) {
-        inconsistencyDetected = true;
-      }
     }
   }
 
@@ -307,6 +311,48 @@ describe("combat:combatant_add_reorder — reducer", () => {
     }).next;
 
     expect(state.map((c) => c.id)).toEqual(["v2", "v1", "hero", "v3"]);
+  });
+
+  // ── B-2: Hidden combatants represented by opaque placeholders ───────────
+  test("opaque 'hidden:*' placeholders in initiative_map do NOT trigger inconsistency (B-2)", () => {
+    // Simulate a sanitized payload where the DM has 2 hidden monsters.
+    // They appear in the map as `hidden:<hash>` placeholders — the player
+    // MUST treat them as opaque slots and NEVER mark them as desync.
+    const prev = [
+      makeCombatant({ id: "hero", initiative_order: 0 }),
+    ];
+    const payload = makePayload({
+      combatant: makeSanitizedCombatant({ id: "new" }),
+      initiative_map: [
+        { id: "hidden:abc123", initiative_order: 0, is_hidden: true },
+        { id: "new", initiative_order: 1 },
+        { id: "hero", initiative_order: 2 },
+        { id: "hidden:def456", initiative_order: 3, is_hidden: true },
+      ],
+    });
+
+    const { inconsistencyDetected, next } = reduceCombatantAddReorder(prev, payload);
+    // CRITICAL: no fetchFullState trigger despite unknown IDs in map.
+    expect(inconsistencyDetected).toBe(false);
+    // Player list contains only visible combatants; placeholders don't become entries.
+    expect(next.map((c) => c.id).sort()).toEqual(["hero", "new"]);
+    // Reorder still places `new` before `hero` because new.order=1 < hero.order=2.
+    expect(next[0].id).toBe("new");
+    expect(next[1].id).toBe("hero");
+  });
+
+  test("real unknown IDs still flag inconsistency (hidden placeholders don't mask real desync)", () => {
+    const prev = [makeCombatant({ id: "hero", initiative_order: 0 })];
+    const payload = makePayload({
+      combatant: makeSanitizedCombatant({ id: "new" }),
+      initiative_map: [
+        { id: "hidden:abc", initiative_order: 0, is_hidden: true }, // ok
+        { id: "real-missing", initiative_order: 1 }, // real desync
+        { id: "new", initiative_order: 2 },
+      ],
+    });
+    const { inconsistencyDetected } = reduceCombatantAddReorder(prev, payload);
+    expect(inconsistencyDetected).toBe(true);
   });
 
   test("handles events arriving in reverse order (defense-in-depth regression test)", () => {
