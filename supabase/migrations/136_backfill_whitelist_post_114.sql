@@ -10,9 +10,17 @@
 --   - except the internal admin alias `daniel@awsales.io`,
 --   - credited to the admin `danielroscoe97@gmail.com`.
 --
--- Re-runnable: ON CONFLICT DO UPDATE clears any previous revoke and refreshes
--- the audit note, so running the migration twice is a no-op for the target
--- table (besides `updated_at`-like bumps via `notes`).
+-- IDEMPOTENCY: Re-runnable via ON CONFLICT (user_id) DO UPDATE. Running the
+-- migration twice is a no-op for the target table besides refreshing `notes`.
+--
+-- ⚠ WARNING — ON CONFLICT DO UPDATE clears `revoked_at`:
+--   This migration will RE-GRANT access to any user whose whitelist row was
+--   previously revoked. This is INTENTIONAL per the beta 3 policy in
+--   `docs/beta-whitelist-policy.md` — the broad backfill resets the baseline
+--   so every auth user with an email is back on the list. Operators MUST
+--   audit `SELECT user_id, revoked_at FROM content_whitelist WHERE
+--   revoked_at IS NOT NULL;` BEFORE shipping this migration, and manually
+--   re-revoke any user that should stay off the list.
 --
 -- CRITICAL (CLAUDE.md SRD Content Compliance): we do NOT install an
 -- `AFTER INSERT ON auth.users` trigger here. Beta whitelist stays a curated
