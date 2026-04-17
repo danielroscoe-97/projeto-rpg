@@ -19,6 +19,7 @@ import {
 } from "@/lib/i18n/dnd-terms-ptbr";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import "@/styles/stat-card-5e.css";
 
 // ── Known terms for internal linking ──────────────────────────────────
@@ -184,9 +185,11 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
               {getName(monster.name)}
             </h1>
             {monster.ruleset_version && (
-              <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none border border-[var(--5e-accent-gold)]/20 text-[var(--5e-accent-gold)]/70 bg-[var(--5e-accent-gold)]/5">
-                {monster.ruleset_version}
-              </span>
+              <VersionBadge
+                version={monster.ruleset_version}
+                isSrd={monster.is_srd}
+                size="md"
+              />
             )}
           </div>
           <p className="text-[var(--5e-text-muted)] text-sm italic">
@@ -239,26 +242,26 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
             before Abilities, to match 5e Tools / D&D Beyond reading order
             (Finding 7, spike 2026-04-17). Parity with MonsterStatBlock (auth/guest combat). */}
         {damageVuln && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-vulnerability">
+            <span className="prop-label">{L.damageVulnerabilities}</span>{" "}
             <LinkedTerms text={damageVuln} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageRes && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-resistance">
+            <span className="prop-label">{L.damageResistances}</span>{" "}
             <LinkedTerms text={damageRes} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageImm && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-immunity">
+            <span className="prop-label">{L.damageImmunities}</span>{" "}
             <LinkedTerms text={damageImm} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {conditionImm && (
-          <p>
-            <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
+          <p className="prop-line prop-defense prop-defense-immunity">
+            <span className="prop-label">{L.conditionImmunities}</span>{" "}
             <LinkedTerms text={conditionImm} knownTerms={t ? CONDITIONS_PT : CONDITIONS} href={t ? "/condicoes" : "/conditions"} isPt={!!t} />
           </p>
         )}

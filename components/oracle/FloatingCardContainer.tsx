@@ -176,6 +176,7 @@ function MinimizedCard({
           onClick={onClose}
           aria-label="Close card"
           title="Close"
+          className="toolbar-close"
         >
           ×
         </button>
@@ -211,7 +212,7 @@ function PinnedMonsterCard({
     return (
       <div className="stat-card-5e card-floating" data-testid="card-not-found">
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">
+          <button type="button" onClick={onClose} aria-label="Close card" className="toolbar-close">
             ×
           </button>
         </div>
@@ -265,7 +266,7 @@ function PinnedSpellCard({
         data-testid="card-not-found"
       >
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">
+          <button type="button" onClick={onClose} aria-label="Close card" className="toolbar-close">
             ×
           </button>
         </div>
@@ -312,7 +313,7 @@ function PinnedConditionCard({
         data-testid="card-not-found"
       >
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">
+          <button type="button" onClick={onClose} aria-label="Close card" className="toolbar-close">
             ×
           </button>
         </div>
@@ -357,7 +358,7 @@ function PinnedItemCard({
     return (
       <div className="stat-card-5e card-floating" data-testid="card-not-found">
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">
+          <button type="button" onClick={onClose} aria-label="Close card" className="toolbar-close">
             ×
           </button>
         </div>
@@ -400,6 +401,7 @@ function PinnedItemCard({
           onClick={onClose}
           aria-label="Close card"
           title="Close"
+          className="toolbar-close"
         >
           ×
         </button>
@@ -432,7 +434,7 @@ function PinnedFeatCard({
     return (
       <div className="stat-card-5e card-floating" data-testid="card-not-found">
         <div className="card-toolbar">
-          <button type="button" onClick={onClose} aria-label="Close card">
+          <button type="button" onClick={onClose} aria-label="Close card" className="toolbar-close">
             ×
           </button>
         </div>
@@ -475,6 +477,7 @@ function PinnedFeatCard({
           onClick={onClose}
           aria-label="Close card"
           title="Close"
+          className="toolbar-close"
         >
           ×
         </button>
@@ -722,11 +725,18 @@ export function FloatingCardContainer() {
             top: 12,
             right: 12,
             zIndex: 10000,
-            background: "rgba(0,0,0,0.6)",
-            color: "#e8e4d0",
-            border: "1px solid rgba(232,228,208,0.3)",
-            borderRadius: 4,
-            padding: "4px 10px",
+            minWidth: 44,
+            minHeight: 44,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 20,
+            fontWeight: 700,
+            background: "rgba(146, 38, 16, 0.25)",
+            color: "white",
+            border: "1px solid rgba(201, 169, 89, 0.8)",
+            borderRadius: 6,
+            padding: "0 10px",
             cursor: "pointer",
           }}
           aria-label="Close card"

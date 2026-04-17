@@ -125,7 +125,13 @@ export function OracleAICard({
             </button>
           )}
           {onClose && (
-            <button type="button" onClick={onClose} aria-label={t("close")} data-testid="oracle-ai-close-btn">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t("close")}
+              data-testid="oracle-ai-close-btn"
+              className="toolbar-close"
+            >
               ×
             </button>
           )}

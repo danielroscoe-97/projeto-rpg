@@ -51,13 +51,16 @@
     0 0 8px rgba(146, 38, 16, 0.3);
 }
 
-/* ---- Card Toolbar (pin, minimize, close) ---- */
+/* ---- Card Toolbar (pin, minimize, close) ----
+   H2 (beta-3): differentiated close button — 44x44 touch target w/
+   gold accent ring, other toolbar buttons 36x36. Addresses DM
+   feedback that close was missable mid-combat. */
 .stat-card-5e .card-toolbar {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 6px;
+  right: 6px;
   display: flex;
-  gap: 4px;
+  gap: 6px;
   z-index: 1;
 }
 
@@ -65,14 +68,14 @@
   background: transparent;
   border: 1px solid rgba(232, 228, 208, 0.2);
   color: var(--5e-text-muted);
-  border-radius: 3px;
-  width: 24px;
-  height: 24px;
+  border-radius: 4px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1;
   padding: 0;
   transition:
@@ -89,7 +92,36 @@
 
 .stat-card-5e .card-toolbar button:focus-visible {
   outline: 2px solid var(--5e-accent-gold);
-  outline-offset: 1px;
+  outline-offset: 2px;
+}
+
+/* Close button — promoted to 44x44 w/ accent ring for discoverability */
+.stat-card-5e .card-toolbar button.toolbar-close {
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--5e-text);
+  border-color: var(--5e-accent-gold);
+  background-color: rgba(201, 169, 89, 0.08);
+}
+
+.stat-card-5e .card-toolbar button.toolbar-close:hover {
+  background-color: rgba(146, 38, 16, 0.2);
+  border-color: var(--5e-accent-red);
+  color: #fff;
+}
+
+.stat-card-5e .card-toolbar button.toolbar-close:focus-visible {
+  outline: 2px solid var(--5e-accent-red);
+  outline-offset: 2px;
+}
+
+/* Mobile: tighten toolbar gap, keep close ≥44x44 */
+@media (max-width: 767px) {
+  .stat-card-5e .card-toolbar {
+    gap: 4px;
+  }
 }
 
 /* ---- Monster Name ---- */
@@ -199,6 +231,44 @@
 .stat-card-5e .prop-value {
   font-weight: 400;
   color: var(--5e-text-muted);
+}
+
+/* ---- Defense prop-lines (resistances/immunities/vulnerabilities) ----
+   H4 (beta-3): DM feedback — these crucial tactical stats need to pop,
+   regardless of whether they live near AC/HP or inside the properties
+   block. Position-agnostic styling so Track C can relocate freely. */
+.stat-card-5e .prop-line.prop-defense {
+  padding: 2px 6px;
+  border-left: 3px solid transparent;
+  border-radius: 0 3px 3px 0;
+  margin: 3px 0;
+}
+
+/* Resistances — blue (damage taken is halved) */
+.stat-card-5e .prop-line.prop-defense-resistance {
+  border-left-color: var(--5e-accent-blue);
+  background-color: rgba(58, 110, 165, 0.06);
+}
+.stat-card-5e .prop-line.prop-defense-resistance .prop-label {
+  color: var(--5e-header-blue);
+}
+
+/* Immunities — gold (cannot be affected) */
+.stat-card-5e .prop-line.prop-defense-immunity {
+  border-left-color: var(--5e-accent-gold);
+  background-color: rgba(201, 169, 89, 0.06);
+}
+.stat-card-5e .prop-line.prop-defense-immunity .prop-label {
+  color: var(--5e-accent-gold);
+}
+
+/* Vulnerabilities — red (takes double damage) */
+.stat-card-5e .prop-line.prop-defense-vulnerability {
+  border-left-color: var(--5e-accent-red);
+  background-color: rgba(146, 38, 16, 0.08);
+}
+.stat-card-5e .prop-line.prop-defense-vulnerability .prop-label {
+  color: var(--5e-header-red);
 }
 
 /* ---- Trait / Action Blocks ---- */

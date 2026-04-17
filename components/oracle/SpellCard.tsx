@@ -88,7 +88,13 @@ export function SpellCard({
             </button>
           )}
           {onClose && (
-            <button type="button" onClick={onClose} aria-label="Close spell card" data-testid="spell-close-btn">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close spell card"
+              data-testid="spell-close-btn"
+              className="toolbar-close"
+            >
               ×
             </button>
           )}

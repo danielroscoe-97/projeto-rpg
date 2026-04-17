@@ -7,6 +7,7 @@ import { ClickableRoll } from "@/components/dice/ClickableRoll";
 import { DiceText } from "@/components/dice/DiceText";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { getSourceName, getSourceCategory } from "@/lib/utils/monster-source";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import { useMonsterTranslation } from "@/lib/hooks/useMonsterTranslation";
 import { useLocalePreference } from "@/lib/hooks/useLocalePreference";
 import { STAT_LABELS } from "@/lib/i18n/stat-labels";
@@ -80,9 +81,25 @@ function CardDivider() {
   return <hr className="card-divider" />;
 }
 
-function PropLine({ label, value }: { label: string; value: string }) {
+function PropLine({
+  label,
+  value,
+  variant,
+}: {
+  label: string;
+  value: string;
+  /**
+   * H4 (beta-3): optional defense variant applies a left-border accent
+   * + tinted bg. Works regardless of where the row is rendered, so Track
+   * C can relocate resistances without touching this component.
+   */
+  variant?: "resistance" | "immunity" | "vulnerability";
+}) {
+  const variantClass = variant
+    ? ` prop-defense prop-defense-${variant}`
+    : "";
   return (
-    <p className="prop-line">
+    <p className={`prop-line${variantClass}`}>
       <span className="prop-label">{label} </span>
       <span className="prop-value">{value}</span>
     </p>
@@ -306,7 +323,13 @@ export function MonsterStatBlock({
             </button>
           )}
           {onClose && (
-            <button type="button" onClick={onClose} aria-label="Close card" title="Close">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close card"
+              title="Close"
+              className="toolbar-close"
+            >
               ×
             </button>
           )}
@@ -349,6 +372,13 @@ export function MonsterStatBlock({
         <div className="flex-1 min-w-0">
           <div className="card-name flex items-center gap-2 flex-wrap">
             <span>{getName(monster.name)}</span>
+            {monster.ruleset_version && (
+              <VersionBadge
+                version={monster.ruleset_version}
+                isSrd={monster.is_srd}
+                size="md"
+              />
+            )}
             {isMonsterADay && (
               <a
                 href={monster.monster_a_day_url ?? undefined}
@@ -407,16 +437,16 @@ export function MonsterStatBlock({
       {/* Resistances / vulnerabilities / immunities — positioned after Speed, before Abilities
           to match 5e Tools / D&D Beyond reading order (Finding 7, spike 2026-04-17). */}
       {damageVuln && (
-        <PropLine label={L.damageVulnerabilities} value={damageVuln} />
+        <PropLine label={L.damageVulnerabilities} value={damageVuln} variant="vulnerability" />
       )}
       {damageRes && (
-        <PropLine label={L.damageResistances} value={damageRes} />
+        <PropLine label={L.damageResistances} value={damageRes} variant="resistance" />
       )}
       {damageImm && (
-        <PropLine label={L.damageImmunities} value={damageImm} />
+        <PropLine label={L.damageImmunities} value={damageImm} variant="immunity" />
       )}
       {conditionImm && (
-        <PropLine label={L.conditionImmunities} value={conditionImm} />
+        <PropLine label={L.conditionImmunities} value={conditionImm} variant="immunity" />
       )}
 
       {/* Ability scores table — divider only when table will render */}
@@ -475,9 +505,11 @@ export function MonsterStatBlock({
               {getSourceName(monster.source)}
             </span>
             {monster.ruleset_version && (
-              <span className="ml-1.5 text-[10px] opacity-60">
-                ({monster.ruleset_version})
-              </span>
+              <VersionBadge
+                version={monster.ruleset_version}
+                isSrd={monster.is_srd}
+                className="ml-1.5"
+              />
             )}
           </span>
         </p>
