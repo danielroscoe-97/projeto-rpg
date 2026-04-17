@@ -311,7 +311,7 @@ export function organizationLd({
     "@type": "Organization",
     name: "Pocket DM",
     url: SITE_URL,
-    logo: siteUrl("/icons/icon-512.png"),
+    logo: { "@type": "ImageObject", url: siteUrl("/icons/icon-512.png") },
   };
   if (description) node.description = description;
   if (sameAs && sameAs.length > 0) node.sameAs = sameAs;

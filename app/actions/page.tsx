@@ -61,6 +61,7 @@ function ActionsJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name,
+      url: siteUrl(`/actions#${name.toLowerCase().replace(/\s+/g, "-")}`),
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {

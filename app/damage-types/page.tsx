@@ -64,6 +64,7 @@ function DamageTypesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name,
+      url: siteUrl(`/damage-types#${name.toLowerCase()}`),
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {

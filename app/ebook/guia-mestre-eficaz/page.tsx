@@ -7,24 +7,12 @@ import { EbookCTA } from "@/components/blog/EbookCTA";
 import { BLOG_NAV_LINKS } from "@/lib/blog/blog-nav-links";
 
 import { jsonLdScriptProps } from "@/lib/seo/metadata";
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "/";
+import { siteUrl } from "@/lib/seo/site-url";
 
 export const metadata: Metadata = {
   title: "Guia do Mestre Eficaz no Combate — E-book Gratuito D&D 5e",
   description:
     "E-book gratuito com 5 capítulos práticos para transformar seus combates de D&D 5e. Iniciativa automática, HP em tempo real, encontros em 60 segundos. Baixe o PDF agora.",
-  keywords: [
-    "guia mestre D&D",
-    "e-book D&D 5e gratuito",
-    "combat tracker guia",
-    "como mestrar combate D&D",
-    "Pocket DM guia",
-    "combate rápido D&D 5e",
-    "iniciativa automática D&D",
-    "HP em tempo real D&D",
-    "guia mestre eficaz combate",
-    "dicas combate D&D 5e",
-  ],
   alternates: {
     canonical: "/ebook/guia-mestre-eficaz",
     languages: {
@@ -131,21 +119,21 @@ export default function EbookPage() {
     author: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: BASE_URL,
+      url: siteUrl("/"),
     },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: BASE_URL,
-      logo: { "@type": "ImageObject", url: `${BASE_URL}/icons/icon-192.png` },
+      url: siteUrl("/"),
+      logo: { "@type": "ImageObject", url: siteUrl("/icons/icon-192.png") },
     },
     inLanguage: "pt-BR",
     genre: "Role-Playing Games",
     numberOfPages: 11,
     bookFormat: "https://schema.org/EBook",
     isAccessibleForFree: true,
-    url: `${BASE_URL}/ebook/guia-mestre-eficaz`,
-    image: `${BASE_URL}/art/blog/combat-hp-panel.png`,
+    url: siteUrl("/ebook/guia-mestre-eficaz"),
+    image: siteUrl("/art/blog/combat-hp-panel.png"),
     offers: {
       "@type": "Offer",
       price: "0",
@@ -189,12 +177,12 @@ export default function EbookPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Blog", item: `${BASE_URL}/blog` },
+      { "@type": "ListItem", position: 1, name: "Blog", item: siteUrl("/blog") },
       {
         "@type": "ListItem",
         position: 2,
         name: "Guia do Mestre Eficaz no Combate",
-        item: `${BASE_URL}/ebook/guia-mestre-eficaz`,
+        item: siteUrl("/ebook/guia-mestre-eficaz"),
       },
     ],
   };

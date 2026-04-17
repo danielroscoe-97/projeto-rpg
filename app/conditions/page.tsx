@@ -38,7 +38,7 @@ export const revalidate = 86400;
 
 // ── JSON-LD ────────────────────────────────────────────────────────
 function ConditionsJsonLd() {
-  const conditions = (conditionsData as Array<{ name: string; category: string; ruleset_version: string }>)
+  const conditions = (conditionsData as Array<{ id: string; name: string; category: string; ruleset_version: string }>)
     .filter((c) => c.category === "condition" && c.ruleset_version === "2024");
 
   const jsonLd = {
@@ -51,6 +51,7 @@ function ConditionsJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name: c.name,
+      url: siteUrl(`/conditions#${c.id}`),
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {

@@ -65,6 +65,7 @@ function DamageTypesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name,
+      url: siteUrl(`/tipos-de-dano#${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`),
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {

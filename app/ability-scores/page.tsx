@@ -57,6 +57,7 @@ function AbilityScoresJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name,
+      url: siteUrl(`/ability-scores#${name.toLowerCase()}`),
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {

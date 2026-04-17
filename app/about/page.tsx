@@ -21,19 +21,10 @@ export default function AboutPage() {
     "@type": "Organization",
     name: "Pocket DM",
     url: siteUrl("/"),
-    logo: siteUrl("/icons/icon-512.png"),
+    logo: { "@type": "ImageObject", url: siteUrl("/icons/icon-512.png") },
     foundingDate: "2026",
     description:
       "Pocket DM é o combat & initiative tracker gratuito para D&D 5e focado em mesas presenciais. Criado no Brasil para mestres e jogadores de RPG de todo o mundo.",
-    knowsAbout: [
-      "Dungeons & Dragons 5th Edition",
-      "TTRPG Combat Management",
-      "D&D 5e Initiative Tracking",
-      "Initiative Tracker Tools",
-      "RPG Digital Tools",
-      "D&D 5e Monsters",
-      "D&D 5e Spells",
-    ],
     sameAs: [
       "https://www.instagram.com/pocket.dm",
     ],
@@ -50,8 +41,7 @@ export default function AboutPage() {
       "@type": "SoftwareApplication",
       name: "Pocket DM",
       applicationCategory: "GameApplication",
-      applicationSubCategory: "D&D 5e Combat & Initiative Tracker",
-      operatingSystem: "Web, iOS, Android (PWA)",
+      operatingSystem: "Web",
       url: siteUrl("/"),
       offers: {
         "@type": "Offer",
@@ -73,7 +63,6 @@ export default function AboutPage() {
         "Convite por link para jogadores",
         "Interface dark mode otimizada para mesa",
       ],
-      availableOnDevice: "Web Browser, Mobile Browser",
       softwareVersion: "1.0",
       inLanguage: ["pt-BR", "en"],
     },

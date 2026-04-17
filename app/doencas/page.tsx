@@ -41,6 +41,7 @@ export const revalidate = 86400;
 function DiseasesJsonLd() {
   const diseases = (
     conditionsData as Array<{
+      id: string;
       name: string;
       category: string;
       ruleset_version: string;
@@ -58,6 +59,7 @@ function DiseasesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name: c.name,
+      url: siteUrl(`/doencas#${c.id}`),
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
