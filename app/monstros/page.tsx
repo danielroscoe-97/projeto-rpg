@@ -32,10 +32,10 @@ export const metadata: Metadata = {
     "Pocket DM monstros",
   ],
   alternates: {
-    canonical: "https://pocketdm.com.br/monstros",
+    canonical: "/monstros",
     languages: {
-      "en": "https://pocketdm.com.br/monsters",
-      "pt-BR": "https://pocketdm.com.br/monstros",
+      "en": "/monsters",
+      "pt-BR": "/monstros",
     },
   },
   openGraph: {
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description:
       "Bestiário completo do D&D 5e com blocos de estatísticas interativos e roladores de dados. Filtre por CR, tipo e muito mais.",
     type: "website",
-    url: "https://pocketdm.com.br/monstros",
+    url: "/monstros",
   },
 };
 
@@ -88,16 +88,16 @@ export default function MonstrosIndexPage() {
     "@type": "CollectionPage",
     name: "Bestiário D&D 5e — Monstros SRD",
     description: "Bestiário completo do D&D 5e com blocos de estatísticas interativos e roladores de dados.",
-    url: "https://pocketdm.com.br/monstros",
+    url: "/monstros",
     inLanguage: "pt-BR",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: monsters.length,
       itemListElement: monsters.slice(0, 10).map((m, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `https://pocketdm.com.br/monstros/${m.slug}`,
+        url: `/monstros/${m.slug}`,
         name: m.name,
       })),
     },

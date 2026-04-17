@@ -37,7 +37,7 @@ export async function generateMetadata({
       title: `${title} | Pocket DM`,
       description,
       type: "article",
-      url: `https://pocketdm.com.br/races/${slug}`,
+      url: `/races/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
@@ -45,10 +45,10 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://pocketdm.com.br/races/${slug}`,
+      canonical: `/races/${slug}`,
       languages: {
-        en: `https://pocketdm.com.br/races/${slug}`,
-        "pt-BR": `https://pocketdm.com.br/racas/${slug}`,
+        en: `/races/${slug}`,
+        "pt-BR": `/racas/${slug}`,
       },
     },
   };
@@ -66,10 +66,10 @@ function RaceJsonLd({ race, slug }: { race: NonNullable<ReturnType<typeof getRac
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
       logo: {
         "@type": "ImageObject",
-        url: "https://pocketdm.com.br/icons/icon-512.png",
+        url: "/icons/icon-512.png",
       },
     },
     inLanguage: "en",
@@ -83,19 +83,19 @@ function RaceJsonLd({ race, slug }: { race: NonNullable<ReturnType<typeof getRac
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://pocketdm.com.br",
+        item: "/",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Races",
-        item: "https://pocketdm.com.br/races",
+        item: "/races",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: race.nameEn,
-        item: `https://pocketdm.com.br/races/${slug}`,
+        item: `/races/${slug}`,
       },
     ],
   };

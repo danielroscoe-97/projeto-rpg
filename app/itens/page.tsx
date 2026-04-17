@@ -19,10 +19,10 @@ export const metadata: Metadata = {
     "equipamento de aventura D&D",
   ],
   alternates: {
-    canonical: "https://pocketdm.com.br/itens",
+    canonical: "/itens",
     languages: {
-      en: "https://pocketdm.com.br/items",
-      "pt-BR": "https://pocketdm.com.br/itens",
+      en: "/items",
+      "pt-BR": "/itens",
     },
   },
   openGraph: {
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     description:
       "Compêndio completo de itens D&D 5e SRD — armas, armaduras, itens mágicos, poções e equipamentos de aventura. Busque e filtre por tipo e raridade.",
     type: "website",
-    url: "https://pocketdm.com.br/itens",
+    url: "/itens",
   },
 };
 
@@ -72,12 +72,12 @@ export default function ItensIndexPage() {
     name: "Compêndio de Itens D&D 5e",
     description:
       "Compêndio completo de itens D&D 5e SRD com armas, armaduras, itens mágicos e equipamentos de aventura.",
-    url: "https://pocketdm.com.br/itens",
+    url: "/itens",
     inLanguage: "pt-BR",
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     mainEntity: {
       "@type": "ItemList",

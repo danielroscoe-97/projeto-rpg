@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description:
       "Todos os 13 tipos de dano do D&D 5e com resistências, imunidades e fontes comuns.",
     type: "website",
-    url: "https://pocketdm.com.br/tipos-de-dano",
+    url: "/tipos-de-dano",
   },
   twitter: {
     card: "summary_large_image",
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
       "Todos os 13 tipos de dano do D&D 5e com resistências, imunidades e fontes comuns.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/tipos-de-dano",
+    canonical: "/tipos-de-dano",
     languages: {
-      en: "https://pocketdm.com.br/damage-types",
-      "pt-BR": "https://pocketdm.com.br/tipos-de-dano",
+      en: "/damage-types",
+      "pt-BR": "/tipos-de-dano",
     },
   },
 };
@@ -68,7 +68,7 @@ function DamageTypesJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };

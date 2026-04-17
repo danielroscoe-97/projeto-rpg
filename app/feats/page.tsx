@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Complete reference for all SRD feats in D&D 5th Edition with prerequisites and descriptions.",
     type: "website",
-    url: "https://pocketdm.com.br/feats",
+    url: "/feats",
   },
   twitter: {
     card: "summary_large_image",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     description: "Complete reference for all SRD feats in D&D 5th Edition.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/feats",
+    canonical: "/feats",
     languages: {
-      en: "https://pocketdm.com.br/feats",
-      "pt-BR": "https://pocketdm.com.br/talentos",
+      en: "/feats",
+      "pt-BR": "/talentos",
     },
   },
 };
@@ -47,12 +47,12 @@ function FeatsJsonLd({ count }: { count: number }) {
     "@type": "CollectionPage",
     name: "D&D 5e Feats",
     description: "All SRD character feats for D&D 5th Edition",
-    url: "https://pocketdm.com.br/feats",
+    url: "/feats",
     inLanguage: "en",
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     mainEntity: {
       "@type": "ItemList",

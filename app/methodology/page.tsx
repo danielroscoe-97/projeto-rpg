@@ -20,13 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t("meta_title"),
     description: t("meta_description"),
     alternates: {
-      canonical: "https://pocketdm.com.br/methodology",
+      canonical: "/methodology",
       languages: { "pt-BR": "/methodology", en: "/methodology" },
     },
     openGraph: {
       title: t("meta_title"),
       description: t("meta_description"),
-      url: "https://pocketdm.com.br/methodology",
+      url: "/methodology",
       type: "website",
     },
   };
@@ -113,11 +113,11 @@ export default async function MethodologyPage() {
     name: "Pocket DM Methodology",
     description:
       "Data-driven encounter difficulty calculation based on real combat data from thousands of D&D 5e sessions.",
-    url: "https://pocketdm.com.br/methodology",
+    url: "/methodology",
     funder: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "All six ability scores explained with interactive modifier calculator, associated skills, saving throws, and common uses.",
     type: "website",
-    url: "https://pocketdm.com.br/ability-scores",
+    url: "/ability-scores",
   },
   twitter: {
     card: "summary_large_image",
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
       "All six ability scores explained with interactive modifier calculator, associated skills, saving throws, and common uses.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/ability-scores",
+    canonical: "/ability-scores",
     languages: {
-      en: "https://pocketdm.com.br/ability-scores",
-      "pt-BR": "https://pocketdm.com.br/atributos",
+      en: "/ability-scores",
+      "pt-BR": "/atributos",
     },
   },
 };
@@ -60,7 +60,7 @@ function AbilityScoresJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

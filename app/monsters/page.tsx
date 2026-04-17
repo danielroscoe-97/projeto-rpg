@@ -28,10 +28,10 @@ export const metadata: Metadata = {
     "Pocket DM monsters",
   ],
   alternates: {
-    canonical: "https://pocketdm.com.br/monsters",
+    canonical: "/monsters",
     languages: {
-      en: "https://pocketdm.com.br/monsters",
-      "pt-BR": "https://pocketdm.com.br/monstros",
+      en: "/monsters",
+      "pt-BR": "/monstros",
     },
   },
   openGraph: {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description:
       "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers. Search by CR, creature type, and name.",
     type: "website",
-    url: "https://pocketdm.com.br/monsters",
+    url: "/monsters",
   },
 };
 
@@ -84,16 +84,16 @@ export default function MonstersIndexPage() {
     "@type": "CollectionPage",
     name: "D&D 5e Monster Compendium",
     description: "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers.",
-    url: "https://pocketdm.com.br/monsters",
+    url: "/monsters",
     inLanguage: "en",
-    publisher: { "@type": "Organization", name: "Pocket DM", url: "https://pocketdm.com.br" },
+    publisher: { "@type": "Organization", name: "Pocket DM", url: "/" },
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: monsters.length,
       itemListElement: monsters.slice(0, 10).map((m, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `https://pocketdm.com.br/monsters/${m.slug}`,
+        url: `/monsters/${m.slug}`,
         name: m.name,
       })),
     },

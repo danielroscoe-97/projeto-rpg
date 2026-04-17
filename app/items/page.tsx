@@ -20,10 +20,10 @@ export const metadata: Metadata = {
     "D&D adventuring gear",
   ],
   alternates: {
-    canonical: "https://pocketdm.com.br/items",
+    canonical: "/items",
     languages: {
-      en: "https://pocketdm.com.br/items",
-      "pt-BR": "https://pocketdm.com.br/itens",
+      en: "/items",
+      "pt-BR": "/itens",
     },
   },
   openGraph: {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description:
       "Complete D&D 5e SRD item compendium — weapons, armor, magic items, potions, and adventuring gear. Search and filter by type and rarity.",
     type: "website",
-    url: "https://pocketdm.com.br/items",
+    url: "/items",
   },
 };
 
@@ -73,12 +73,12 @@ export default function ItemsIndexPage() {
     name: "D&D 5e Items Compendium",
     description:
       "Complete D&D 5e SRD item compendium with weapons, armor, magic items, and adventuring gear.",
-    url: "https://pocketdm.com.br/items",
+    url: "/items",
     inLanguage: "en",
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     mainEntity: {
       "@type": "ItemList",

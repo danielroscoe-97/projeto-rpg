@@ -6,7 +6,7 @@ import { BlogNavAuthSlot } from "@/components/blog/BlogNavAuthSlot";
 import { EbookCTA } from "@/components/blog/EbookCTA";
 import { BLOG_NAV_LINKS } from "@/lib/blog/blog-nav-links";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pocketdm.com.br";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "/";
 
 export const metadata: Metadata = {
   title: "Guia do Mestre Eficaz no Combate — E-book Gratuito D&D 5e",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "dicas combate D&D 5e",
   ],
   alternates: {
-    canonical: "https://pocketdm.com.br/ebook/guia-mestre-eficaz",
+    canonical: "/ebook/guia-mestre-eficaz",
     languages: {
       "pt-BR": "/ebook/guia-mestre-eficaz",
     },

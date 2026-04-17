@@ -52,7 +52,8 @@ export async function generateMetadata({
 // ── JSON-LD ────────────────────────────────────────────────────────
 function MonsterJsonLd({ monster, ptName, slug }: { monster: NonNullable<ReturnType<typeof getMonsterBySlugPt>>; ptName: string; slug: string }) {
   const name = `${ptName} — CR ${monster.cr} Ficha D&D 5e`;
-  const description = `${ptName}, ${monster.size ?? ""} ${monster.type}, CR ${monster.cr}.`;
+  const sizeType = [monster.size, monster.type].filter(Boolean).join(" ");
+  const description = `${ptName}, ${sizeType}, CR ${monster.cr}.`;
   const path = `/monstros/${slug}`;
 
   const jsonLdArticle = articleLd({

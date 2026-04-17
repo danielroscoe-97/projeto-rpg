@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     description:
       "Free encounter builder with 1,100+ SRD monsters and instant difficulty calculation.",
     type: "website",
-    url: "https://pocketdm.com.br/encounter-builder",
+    url: "/encounter-builder",
   },
   twitter: {
     card: "summary_large_image",
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
       "Free encounter builder with 1,100+ SRD monsters and instant difficulty calculation.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/encounter-builder",
+    canonical: "/encounter-builder",
     languages: {
-      en: "https://pocketdm.com.br/encounter-builder",
-      "pt-BR": "https://pocketdm.com.br/calculadora-encontro",
+      en: "/encounter-builder",
+      "pt-BR": "/calculadora-encontro",
     },
   },
 };
@@ -66,7 +66,7 @@ function EncounterBuilderJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

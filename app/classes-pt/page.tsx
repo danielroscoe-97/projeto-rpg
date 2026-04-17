@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa das 12 classes SRD do D&D 5ª Edição com habilidades e subclasses.",
     type: "website",
-    url: "https://pocketdm.com.br/classes-pt",
+    url: "/classes-pt",
   },
   twitter: {
     card: "summary_large_image",
@@ -33,10 +33,10 @@ export const metadata: Metadata = {
       "Referência completa das 12 classes SRD do D&D 5ª Edição.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/classes-pt",
+    canonical: "/classes-pt",
     languages: {
-      en: "https://pocketdm.com.br/classes",
-      "pt-BR": "https://pocketdm.com.br/classes-pt",
+      en: "/classes",
+      "pt-BR": "/classes-pt",
     },
   },
 };
@@ -57,13 +57,13 @@ function ClassesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name: cls.name_pt,
-      url: `https://pocketdm.com.br/classes-pt/${cls.id}`,
+      url: `/classes-pt/${cls.id}`,
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };

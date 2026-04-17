@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "O Pocket DM é um combat & initiative tracker gratuito para D&D 5e, projetado para mesas presenciais. Gerencie iniciativa, HP, condições e magias em tempo real no celular dos seus jogadores. Free D&D 5e initiative tracker.",
   alternates: {
-    canonical: "https://pocketdm.com.br/about",
+    canonical: "/about",
     languages: { "pt-BR": "/about", en: "/about" },
   },
 };
@@ -18,8 +18,8 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Pocket DM",
-    url: "https://pocketdm.com.br",
-    logo: "https://pocketdm.com.br/icons/icon-512.png",
+    url: "/",
+    logo: "/icons/icon-512.png",
     foundingDate: "2026",
     description:
       "Pocket DM é o combat & initiative tracker gratuito para D&D 5e focado em mesas presenciais. Criado no Brasil para mestres e jogadores de RPG de todo o mundo.",
@@ -41,7 +41,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     name: "Sobre o Pocket DM",
-    url: "https://pocketdm.com.br/about",
+    url: "/about",
     description:
       "O Pocket DM é um combat & initiative tracker gratuito para D&D 5e, projetado para mesas presenciais.",
     mainEntity: {
@@ -50,7 +50,7 @@ export default function AboutPage() {
       applicationCategory: "GameApplication",
       applicationSubCategory: "D&D 5e Combat & Initiative Tracker",
       operatingSystem: "Web, iOS, Android (PWA)",
-      url: "https://pocketdm.com.br",
+      url: "/",
       offers: {
         "@type": "Offer",
         price: "0",

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa das 9 raças SRD do D&D 5ª Edição com atributos e traços.",
     type: "website",
-    url: "https://pocketdm.com.br/racas",
+    url: "/racas",
   },
   twitter: {
     card: "summary_large_image",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
       "Referência completa das 9 raças SRD do D&D 5ª Edição.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/racas",
+    canonical: "/racas",
     languages: {
-      en: "https://pocketdm.com.br/races",
-      "pt-BR": "https://pocketdm.com.br/racas",
+      en: "/races",
+      "pt-BR": "/racas",
     },
   },
 };
@@ -79,13 +79,13 @@ function RacesJsonLd() {
       "@type": "ListItem",
       position: i + 1,
       name,
-      url: `https://pocketdm.com.br/racas/${RACE_SLUGS[i]}`,
+      url: `/racas/${RACE_SLUGS[i]}`,
     })),
     author: { "@type": "Organization", name: "Pocket DM" },
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };

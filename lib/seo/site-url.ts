@@ -21,6 +21,8 @@ export function siteUrl(pathOrUrl: string): string {
   if (/^https?:\/\//i.test(pathOrUrl)) {
     return pathOrUrl;
   }
-  const path = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`;
+  // Collapse any leading slashes (including protocol-relative `//foo.com/...`)
+  // so we always produce a well-formed absolute URL.
+  const path = "/" + pathOrUrl.replace(/^\/+/, "");
   return `${SITE_URL}${path}`;
 }

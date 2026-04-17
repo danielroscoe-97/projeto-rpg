@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description:
       "Referência completa de todas as condições do D&D 5e com comparação 2014/2024.",
     type: "website",
-    url: "https://pocketdm.com.br/condicoes",
+    url: "/condicoes",
   },
   twitter: {
     card: "summary_large_image",
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
       "Referência completa de todas as condições do D&D 5e com comparação 2014/2024.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/condicoes",
+    canonical: "/condicoes",
     languages: {
-      en: "https://pocketdm.com.br/conditions",
-      "pt-BR": "https://pocketdm.com.br/condicoes",
+      en: "/conditions",
+      "pt-BR": "/condicoes",
     },
   },
 };
@@ -55,7 +55,7 @@ function ConditionsJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };

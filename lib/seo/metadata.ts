@@ -21,14 +21,12 @@ export function buildMetadata({
   path,
   alternatePath,
   locale,
-  keywords,
 }: {
   title: string;
   description: string;
   path: string;
   alternatePath?: string;
   locale: Locale;
-  keywords?: string[];
 }): Metadata {
   const canonical = path;
   const ogLocale = locale === "pt-BR" ? "pt_BR" : "en_US";
@@ -40,7 +38,6 @@ export function buildMetadata({
   return {
     title,
     description,
-    keywords,
     alternates: {
       canonical,
       languages,
@@ -73,16 +70,11 @@ export function monsterMetadata(
       ? `${displayName} — CR ${monster.cr} Ficha D&D 5e`
       : `${displayName} — CR ${monster.cr} D&D 5e Stat Block`;
 
-  const size = monster.size ?? "";
+  const sizeType = [monster.size, monster.type].filter(Boolean).join(" ");
   const description =
     locale === "pt-BR"
-      ? `Ficha de ${displayName}: ${size} ${monster.type}, CA ${monster.armor_class}, PV ${monster.hit_points}, CR ${monster.cr}. Rolador de dados interativo. Bestiário D&D 5e grátis.`
-      : `${displayName} stat block: ${size} ${monster.type}, AC ${monster.armor_class}, HP ${monster.hit_points}, CR ${monster.cr}. Interactive dice roller. Free D&D 5e bestiary.`;
-
-  const keywords =
-    locale === "pt-BR"
-      ? [displayName, `${displayName} D&D 5e`, `${displayName} ficha`, `${displayName} stat block`, "bestiário D&D 5e", "monstros D&D 5e"]
-      : [displayName, `${displayName} 5e`, `${displayName} stat block`, `${displayName} D&D`, "D&D 5e bestiary", "5e monsters"];
+      ? `Ficha de ${displayName}: ${sizeType}, CA ${monster.armor_class}, PV ${monster.hit_points}, CR ${monster.cr}. Rolador de dados interativo. Bestiário D&D 5e grátis.`
+      : `${displayName} stat block: ${sizeType}, AC ${monster.armor_class}, HP ${monster.hit_points}, CR ${monster.cr}. Interactive dice roller. Free D&D 5e bestiary.`;
 
   return buildMetadata({
     title,
@@ -90,7 +82,6 @@ export function monsterMetadata(
     path: locale === "pt-BR" ? `/monstros/${ptSlug}` : `/monsters/${slug}`,
     alternatePath: locale === "pt-BR" ? `/monsters/${slug}` : `/monstros/${ptSlug}`,
     locale,
-    keywords,
   });
 }
 
@@ -136,18 +127,12 @@ export function spellMetadata(
       ? `${displayName} D&D 5e: ${levelLabel.toLowerCase()} ${schoolPt.toLowerCase()}, ${spell.casting_time}, ${spell.range}.${descSnippet ? ` ${descSnippet}...` : ""}`
       : `${displayName} 5e: ${levelLabel.toLowerCase()} ${spell.school.toLowerCase()}, ${spell.casting_time}, ${spell.range}.${descSnippet ? ` ${descSnippet}...` : ""}`;
 
-  const keywords =
-    locale === "pt-BR"
-      ? [displayName, `${displayName} D&D 5e`, `${displayName} magia`, "magias D&D 5e", `magias de ${schoolPt.toLowerCase()} D&D`]
-      : [displayName, `${displayName} 5e`, `${displayName} spell`, "D&D 5e spells", `5e ${spell.school.toLowerCase()} spells`];
-
   return buildMetadata({
     title,
-    description: description.slice(0, 300), // Let Google truncate; stay under sensible cap
+    description: description.slice(0, 300),
     path: locale === "pt-BR" ? `/magias/${ptSlug}` : `/spells/${slug}`,
     alternatePath: locale === "pt-BR" ? `/spells/${slug}` : `/magias/${ptSlug}`,
     locale,
-    keywords,
   });
 }
 
@@ -170,18 +155,12 @@ export function featMetadata(
       ? `Talento ${displayName} D&D 5e.${descSnippet ? ` ${descSnippet}...` : ""}${feat.prerequisite ? ` Pré-requisito: ${feat.prerequisite}.` : ""}`
       : `${displayName} D&D 5e feat.${descSnippet ? ` ${descSnippet}...` : ""}${feat.prerequisite ? ` Prerequisite: ${feat.prerequisite}.` : ""}`;
 
-  const keywords =
-    locale === "pt-BR"
-      ? [displayName, `${displayName} D&D 5e`, "talentos D&D 5e", "feats 5e"]
-      : [displayName, `${displayName} 5e`, `${displayName} feat`, "D&D 5e feats"];
-
   return buildMetadata({
     title,
     description: description.slice(0, 300),
     path: locale === "pt-BR" ? `/talentos/${slug}` : `/feats/${slug}`,
     alternatePath: locale === "pt-BR" ? `/feats/${slug}` : `/talentos/${slug}`,
     locale,
-    keywords,
   });
 }
 

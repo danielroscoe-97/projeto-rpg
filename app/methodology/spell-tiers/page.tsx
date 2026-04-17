@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     alternates: {
-      canonical: "https://pocketdm.com.br/methodology/spell-tiers",
+      canonical: "/methodology/spell-tiers",
       languages: {
         "pt-BR": "/methodology/spell-tiers",
         en: "/methodology/spell-tiers",
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: "https://pocketdm.com.br/methodology/spell-tiers",
+      url: "/methodology/spell-tiers",
       type: "website",
     },
   };
@@ -36,7 +36,7 @@ export default async function SpellTiersPage() {
     "@type": "Dataset",
     name: t("spell_ranking_title"),
     description: t("spell_ranking_dataset_description"),
-    url: "https://pocketdm.com.br/methodology/spell-tiers",
+    url: "/methodology/spell-tiers",
     license: "https://creativecommons.org/licenses/by/4.0/",
     keywords: [
       "D&D 5e",
@@ -48,7 +48,7 @@ export default async function SpellTiersPage() {
     creator: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
   };
 

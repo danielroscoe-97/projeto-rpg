@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     description:
       "Rolador de dados grátis com vantagem, crítico, presets e histórico.",
     type: "website",
-    url: "https://pocketdm.com.br/dados",
+    url: "/dados",
   },
   twitter: {
     card: "summary_large_image",
@@ -35,10 +35,10 @@ export const metadata: Metadata = {
       "Rolador de dados grátis com vantagem, crítico, presets e histórico.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/dados",
+    canonical: "/dados",
     languages: {
-      en: "https://pocketdm.com.br/dice",
-      "pt-BR": "https://pocketdm.com.br/dados",
+      en: "/dice",
+      "pt-BR": "/dados",
     },
   },
 };
@@ -61,7 +61,7 @@ function DiceRollerJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };

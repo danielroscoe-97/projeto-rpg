@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     description:
       "Calculadora de encontro grátis com 1.100+ monstros SRD e cálculo de dificuldade instantâneo.",
     type: "website",
-    url: "https://pocketdm.com.br/calculadora-encontro",
+    url: "/calculadora-encontro",
   },
   twitter: {
     card: "summary_large_image",
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
       "Calculadora de encontro grátis com 1.100+ monstros SRD e cálculo de dificuldade instantâneo.",
   },
   alternates: {
-    canonical: "https://pocketdm.com.br/calculadora-encontro",
+    canonical: "/calculadora-encontro",
     languages: {
-      en: "https://pocketdm.com.br/encounter-builder",
-      "pt-BR": "https://pocketdm.com.br/calculadora-encontro",
+      en: "/encounter-builder",
+      "pt-BR": "/calculadora-encontro",
     },
   },
 };
@@ -66,7 +66,7 @@ function EncounterBuilderJsonLd() {
     publisher: {
       "@type": "Organization",
       name: "Pocket DM",
-      url: "https://pocketdm.com.br",
+      url: "/",
     },
     inLanguage: "pt-BR",
   };
