@@ -10,12 +10,17 @@ interface DifficultyRatingStripProps {
   initialValue?: number | null;
   /** Compact: icon-only (recap inline). Full: icon + label (standalone poll). */
   compact?: boolean;
+  /** When true, user can reselect/change vote after initial click.
+   *  Use for pages with explicit submit (e.g. /feedback/[token]).
+   *  Default false matches in-session poll behavior (one-shot commit). */
+  allowChange?: boolean;
 }
 
-export function DifficultyRatingStrip({ onSelect, initialValue = null, compact = false }: DifficultyRatingStripProps) {
+export function DifficultyRatingStrip({ onSelect, initialValue = null, compact = false, allowChange = false }: DifficultyRatingStripProps) {
   const t = useTranslations("combat");
   const [selected, setSelected] = useState<number | null>(initialValue);
   const hasSelected = selected !== null;
+  const isLocked = hasSelected && !allowChange;
 
   return (
     <div className={cn("flex justify-center", compact ? "gap-1.5" : "gap-2")}>
@@ -26,12 +31,12 @@ export function DifficultyRatingStrip({ onSelect, initialValue = null, compact =
             key={opt.value}
             type="button"
             onClick={() => {
-              if (!hasSelected) {
+              if (!isLocked) {
                 setSelected(opt.value);
                 onSelect(opt.value);
               }
             }}
-            disabled={hasSelected}
+            disabled={isLocked}
             className={cn(
               "flex flex-col items-center rounded-lg border transition-all touch-manipulation",
               compact
@@ -39,7 +44,7 @@ export function DifficultyRatingStrip({ onSelect, initialValue = null, compact =
                 : "gap-1.5 px-2.5 py-2.5 min-h-[44px]",
               selected === opt.value
                 ? opt.bgActive
-                : hasSelected
+                : isLocked
                   ? "opacity-20 border-white/5"
                   : `border-white/10 hover:border-white/20 ${opt.color}`
             )}

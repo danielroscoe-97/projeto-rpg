@@ -60,6 +60,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/try`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/methodology`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/methodology/spell-tiers`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/guias/bestiario-dnd-5e`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/guias/lista-magias-dnd-5e`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.8 },
   ];
 
   // ── Compendium indexes (EN) ──────────────────────────────────────

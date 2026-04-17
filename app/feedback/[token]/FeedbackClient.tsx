@@ -245,6 +245,7 @@ export function FeedbackClient({ data }: { data: PageData }) {
           <DifficultyRatingStrip
             initialValue={vote ?? null}
             onSelect={(v) => setVote(v)}
+            allowChange
           />
         </div>
 
