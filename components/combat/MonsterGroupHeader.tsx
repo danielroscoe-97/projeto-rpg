@@ -4,8 +4,87 @@ import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronRight, ChevronDown, Shield } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { getHpBarColor } from "@/lib/utils/hp-status";
 import type { Combatant } from "@/lib/types/combat";
+
+/**
+ * Per-member health snapshot used by the group header to drive display
+ * (pips, badges, colors — owned by Track D/E visual layer).
+ *
+ * Kept deliberately simple: raw HP values + derived pct/tier so downstream
+ * components don't have to re-reason about math.
+ */
+export interface GroupHealthMember {
+  id: string;
+  current_hp: number;
+  max_hp: number;
+  is_defeated: boolean;
+  /** current_hp / max_hp clamped to [0, 1]; 0 when max_hp === 0 */
+  pct: number;
+  /** healthy (>50%), warning (≤50%), critical (≤25%), unknown (max_hp <= 0) */
+  tier: "healthy" | "warning" | "critical" | "unknown";
+}
+
+export interface GroupHealth {
+  /** Per-member breakdown (alive only). */
+  members: GroupHealthMember[];
+  /** Minimum current_hp among alive members (0 if none alive). */
+  min: number;
+  /** Maximum current_hp among alive members (0 if none alive). */
+  max: number;
+  /** Median current_hp among alive members (0 if none alive). */
+  median: number;
+  /** Members with tier === "critical". */
+  criticalCount: number;
+  /** Alive member count (is_defeated === false). */
+  membersAlive: number;
+  /** Total member count (alive + defeated). */
+  membersTotal: number;
+}
+
+function computeTier(hp: number, maxHp: number): GroupHealthMember["tier"] {
+  if (maxHp <= 0) return "unknown";
+  const pct = hp / maxHp;
+  if (pct <= 0.25) return "critical";
+  if (pct <= 0.5) return "warning";
+  return "healthy";
+}
+
+/** Pure helper — exported for unit tests. */
+export function buildGroupHealth(members: Combatant[]): GroupHealth {
+  const alive = members.filter((m) => !m.is_defeated);
+  const breakdown: GroupHealthMember[] = alive.map((m) => ({
+    id: m.id,
+    current_hp: m.current_hp,
+    max_hp: m.max_hp,
+    is_defeated: m.is_defeated,
+    pct: m.max_hp > 0 ? Math.max(0, Math.min(1, m.current_hp / m.max_hp)) : 0,
+    tier: computeTier(m.current_hp, m.max_hp),
+  }));
+
+  const hps = breakdown.map((m) => m.current_hp);
+  let min = 0;
+  let max = 0;
+  let median = 0;
+  if (hps.length > 0) {
+    min = Math.min(...hps);
+    max = Math.max(...hps);
+    const sorted = [...hps].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    median = sorted.length % 2 === 0
+      ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+      : sorted[mid];
+  }
+
+  return {
+    members: breakdown,
+    min,
+    max,
+    median,
+    criticalCount: breakdown.filter((m) => m.tier === "critical").length,
+    membersAlive: alive.length,
+    membersTotal: members.length,
+  };
+}
 
 interface MonsterGroupHeaderProps {
   /** The base monster name (e.g. "Goblin") */
@@ -40,15 +119,14 @@ export function MonsterGroupHeader({
   const [editingInit, setEditingInit] = useState(false);
   const [initValue, setInitValue] = useState("");
 
+  // Finding 3 (spike 2026-04-17): no longer sum current_hp across members —
+  // summed HP masks which individual monster is critical. Instead expose a
+  // granular `groupHealth` shape (min/max/median/criticalCount) that the
+  // visual layer (UX spec H9, Track D/E) consumes for pip/dot/badge rendering.
+  const groupHealth = buildGroupHealth(members);
   const activeMembers = members.filter((m) => !m.is_defeated);
-  const totalMembers = members.length;
-  const allDefeated = activeMembers.length === 0;
-
-  // Aggregated HP for collapsed view
-  const totalCurrentHp = activeMembers.reduce((sum, m) => sum + m.current_hp, 0);
-  const totalMaxHp = activeMembers.reduce((sum, m) => sum + m.max_hp, 0);
-  const hpPct = totalMaxHp > 0 ? Math.max(0, Math.min(1, totalCurrentHp / totalMaxHp)) : 0;
-  const hpBarColor = totalMaxHp > 0 ? getHpBarColor(totalCurrentHp, totalMaxHp) : "bg-zinc-600";
+  const totalMembers = groupHealth.membersTotal;
+  const allDefeated = groupHealth.membersAlive === 0;
 
   // Condition summary for collapsed view
   const conditionCounts = new Map<string, number>();
@@ -162,18 +240,35 @@ export function MonsterGroupHeader({
           </span>
         )}
 
-        {/* Aggregated HP bar (collapsed only) */}
-        {!isExpanded && (
-          <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Group HP summary (collapsed only).
+            Finding 3: replaced summed HP bar with min–max range + critical count so
+            DM can spot which member is in trouble without expanding the group.
+            Visual pips/dots final pass is owned by Track D (UX spec H9) — these
+            data-* attributes let that layer render without re-computing. */}
+        {!isExpanded && groupHealth.membersAlive > 0 && (
+          <div
+            className="flex items-center gap-2 flex-shrink-0"
+            data-group-health-min={groupHealth.min}
+            data-group-health-max={groupHealth.max}
+            data-group-health-median={groupHealth.median}
+            data-group-health-critical={groupHealth.criticalCount}
+            data-group-health-alive={groupHealth.membersAlive}
+            data-group-health-total={groupHealth.membersTotal}
+          >
             <span className="text-xs font-mono text-muted-foreground">
-              {totalCurrentHp}/{totalMaxHp}
+              {groupHealth.min === groupHealth.max
+                ? `${groupHealth.min} HP`
+                : `${groupHealth.min}–${groupHealth.max} HP`}
             </span>
-            <div className="w-20 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${hpBarColor}`}
-                style={{ width: `${hpPct * 100}%` }}
-              />
-            </div>
+            {groupHealth.criticalCount > 0 && (
+              <span
+                className="text-[10px] px-1 py-0.5 rounded bg-red-900/30 text-red-400 font-medium"
+                title={`${groupHealth.criticalCount} crítico(s)`}
+                aria-label={`${groupHealth.criticalCount} critical`}
+              >
+                {groupHealth.criticalCount} !
+              </span>
+            )}
           </div>
         )}
 
