@@ -119,11 +119,14 @@ export default async function BlogPostPage({
   const prevPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
   const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
+  // `-en` slug suffix is the current signal for English posts. Fragile if
+  // an EN post is ever added without the suffix — check lib/blog/posts.ts
+  // naming convention before changing.
   const isEnglish = slug.endsWith("-en");
   const postPath = `/blog/${post.slug}`;
 
   const jsonLdBreadcrumb = breadcrumbList([
-    { name: "Pocket DM", path: "/" },
+    { name: isEnglish ? "Home" : "Início", path: "/" },
     { name: "Blog", path: "/blog" },
     { name: post.title, path: postPath },
   ]);

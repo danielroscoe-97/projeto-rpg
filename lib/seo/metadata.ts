@@ -371,7 +371,10 @@ export function collectionPageLd({
     },
     mainEntity: {
       "@type": "ItemList",
-      numberOfItems: items.length,
+      // Must match itemListElement.length — Google flags mismatches as
+      // structured-data incoherence. We cap at 10 items to keep schemas
+      // SERP-sized; total collection size is not required.
+      numberOfItems: Math.min(items.length, 10),
       itemListElement: items.slice(0, 10).map((it, i) => ({
         "@type": "ListItem",
         position: i + 1,
