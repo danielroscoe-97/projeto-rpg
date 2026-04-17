@@ -90,6 +90,11 @@ const ALLOWED_EVENTS = new Set([
   "email:first_combat_sent",
   "email:combat_recap_sent",
   "email:invite_accepted_sent",
+  // Fetch orchestrator (S3.5)
+  "fetch_orchestrator:hit",
+  "fetch_orchestrator:dropped",
+  "fetch_orchestrator:circuit_open",
+  "fetch_orchestrator:circuit_close",
 ]);
 
 // In-process rate limiter: 60 events/min per IP
