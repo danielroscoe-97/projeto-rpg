@@ -4,7 +4,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Spell Compendium — SRD Spell List",
@@ -77,10 +77,15 @@ export default function SpellsIndexPage() {
     locale: "en",
     items: spells.map((s) => ({ name: s.name, path: `/spells/${s.slug}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Spells", path: "/spells" },
+  ]);
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     <div className="min-h-screen bg-background">
       <PublicNav breadcrumbs={[{ label: "Spells" }]} />
 

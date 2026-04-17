@@ -5,7 +5,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicFeatGrid } from "@/components/public/PublicFeatGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Talentos D&D 5e — Talentos de Personagem SRD",
@@ -50,14 +50,16 @@ function FeatsJsonLd({ feats }: { feats: Array<{ id: string; name: string }> }) 
     locale: "pt-BR",
     items: feats.map((f) => ({ name: f.name, path: `/talentos/${f.id}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Talentos", path: "/talentos" },
+  ]);
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-      }}
-    />
+    <>
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
+    </>
   );
 }
 

@@ -5,7 +5,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicBackgroundGrid } from "@/components/public/PublicBackgroundGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Backgrounds — SRD Character Backgrounds",
@@ -50,14 +50,16 @@ function BackgroundsJsonLd({ bgs }: { bgs: Array<{ id: string; name: string }> }
     locale: "en",
     items: bgs.map((b) => ({ name: b.name, path: `/backgrounds/${b.id}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Backgrounds", path: "/backgrounds" },
+  ]);
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-      }}
-    />
+    <>
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
+    </>
   );
 }
 

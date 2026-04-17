@@ -4,7 +4,7 @@ import { PublicRacesIndex } from "@/components/public/PublicRacesIndex";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -79,12 +79,16 @@ function RacesJsonLd() {
       path: `/racas/${RACE_SLUGS[i]}`,
     })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Raças", path: "/racas" },
+  ]);
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <>
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
+    </>
   );
 }
 

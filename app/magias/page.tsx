@@ -4,7 +4,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicSpellGrid } from "@/components/public/PublicSpellGrid";
 import Link from "next/link";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Magias D&D 5e — Compêndio SRD",
@@ -78,10 +78,15 @@ export default function MagiasIndexPage() {
     locale: "pt-BR",
     items: spells.map((s) => ({ name: s.name, path: `/magias/${s.slug}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Magias", path: "/magias" },
+  ]);
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     <div className="min-h-screen bg-background">
       <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Magias" }]} />
 

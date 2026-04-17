@@ -385,10 +385,12 @@ export function collectionPageLd({
 // ── FAQPage ───────────────────────────────────────────────────────────
 export function faqPageLd({
   questions,
+  description,
 }: {
   questions: Array<{ question: string; answer: string }>;
+  description?: string;
 }) {
-  return {
+  const node: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: questions.map((q) => ({
@@ -399,5 +401,24 @@ export function faqPageLd({
         text: q.answer,
       },
     })),
+  };
+  if (description) node.description = description;
+  return node;
+}
+
+// ── JSON-LD script renderer ───────────────────────────────────────────
+/**
+ * Return props for a JSON-LD <script> tag with consistent XSS-safe escaping.
+ * Always use this rather than inline `dangerouslySetInnerHTML` — every caller
+ * forgetting the `</` escape creates a latent script-injection risk.
+ *
+ * Usage: `<script {...jsonLdScriptProps(myLd)} />`
+ */
+export function jsonLdScriptProps(data: unknown) {
+  return {
+    type: "application/ld+json" as const,
+    dangerouslySetInnerHTML: {
+      __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+    },
   };
 }

@@ -5,7 +5,7 @@ import { PublicClassesIndex } from "@/components/public/PublicClassesIndex";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { getAllClassesFull } from "@/lib/srd/class-data-server";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // ── Metadata ───────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -63,12 +63,16 @@ function ClassesJsonLd() {
     locale: "en",
     items: classes.map((c) => ({ name: c.name, path: `/classes/${c.id}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Classes", path: "/classes" },
+  ]);
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <>
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
+    </>
   );
 }
 

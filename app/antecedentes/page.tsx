@@ -5,7 +5,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { PublicBackgroundGrid } from "@/components/public/PublicBackgroundGrid";
 import { PublicCTA } from "@/components/public/PublicCTA";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Antecedentes D&D 5e — Antecedentes de Personagem SRD",
@@ -50,14 +50,16 @@ function BackgroundsJsonLd({ bgs }: { bgs: Array<{ id: string; name: string }> }
     locale: "pt-BR",
     items: bgs.map((b) => ({ name: b.name, path: `/antecedentes/${b.id}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Antecedentes", path: "/antecedentes" },
+  ]);
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-      }}
-    />
+    <>
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
+    </>
   );
 }
 

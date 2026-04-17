@@ -7,7 +7,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { CompendiumMonsterHydrator } from "@/components/public/CompendiumMonsterHydrator";
 import { MonsterHeroCount } from "@/components/public/MonsterHeroCount";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "D&D 5e Monster Compendium — SRD Bestiary",
@@ -87,10 +87,15 @@ export default function MonstersIndexPage() {
     locale: "en",
     items: monsters.map((m) => ({ name: m.name, path: `/monsters/${m.slug}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Monsters", path: "/monsters" },
+  ]);
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
     <div className="min-h-screen bg-background">
       <PublicNav breadcrumbs={[{ label: "Monsters" }]} />
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/marketing/Footer";
-import { faqPageLd } from "@/lib/seo/metadata";
+import { faqPageLd, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title:
@@ -156,14 +156,13 @@ const ALL_FAQ_ITEMS = FAQ_CATEGORIES.flatMap((c) => c.items);
 export default function FaqPage() {
   const jsonLdFaq = faqPageLd({
     questions: ALL_FAQ_ITEMS.map((item) => ({ question: item.q, answer: item.a })),
+    description:
+      "Respostas para as perguntas mais comuns sobre o Pocket DM — combat tracker gratuito para D&D 5e. Como funciona, preços, funcionalidades, compatibilidade e mais.",
   });
 
   return (
     <div className="min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdFaq)} />
       <Navbar
         brand="Pocket DM"
         brandHref="/"

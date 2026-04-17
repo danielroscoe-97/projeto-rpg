@@ -12,7 +12,7 @@ import { LpPricingSection } from "@/components/marketing/LpPricingSection";
 import { LandingLoggedInNav } from "@/components/marketing/LandingLoggedInNav";
 import { LandingAuthRecovery } from "@/components/marketing/LandingAuthRecovery";
 import { createClient } from "@/lib/supabase/server";
-import { websiteLd, organizationLd, webApplicationLd, faqPageLd } from "@/lib/seo/metadata";
+import { websiteLd, organizationLd, webApplicationLd, faqPageLd, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TFunc = (key: string) => string;
@@ -1484,22 +1484,10 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebApplication) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
-      />
+      <script {...jsonLdScriptProps(jsonLdWebSite)} />
+      <script {...jsonLdScriptProps(jsonLdOrganization)} />
+      <script {...jsonLdScriptProps(jsonLdWebApplication)} />
+      <script {...jsonLdScriptProps(jsonLdFaq)} />
 <Navbar
         brand="Pocket DM"
         brandHref="/"

@@ -4,7 +4,7 @@ import { getSrdItems, getItemPtNameMap, toSlug } from "@/lib/srd/srd-data-server
 import { PublicNav } from "@/components/public/PublicNav";
 import { PublicItemGrid } from "@/components/public/PublicItemGrid";
 import { PublicFooter } from "@/components/public/PublicFooter";
-import { collectionPageLd } from "@/lib/seo/metadata";
+import { collectionPageLd, breadcrumbList, jsonLdScriptProps } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = {
   title: "Itens D&D 5e — Compêndio de Equipamentos SRD",
@@ -75,15 +75,15 @@ export default function ItensIndexPage() {
     locale: "pt-BR",
     items: items.map((it) => ({ name: it.name, path: `/itens/${it.id}` })),
   });
+  const jsonLdBreadcrumb = breadcrumbList([
+    { name: "Início", path: "/" },
+    { name: "Itens", path: "/itens" },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
+      <script {...jsonLdScriptProps(jsonLd)} />
+      <script {...jsonLdScriptProps(jsonLdBreadcrumb)} />
       <div className="min-h-screen bg-background">
         <PublicNav locale="pt-BR" breadcrumbs={[{ label: "Itens" }]} />
 
