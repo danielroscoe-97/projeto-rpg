@@ -151,8 +151,14 @@ export class FetchOrchestrator {
     const minInterval = INTERVALS[req.priority];
     if (req.priority !== "emergency" && this.lastFetchAt > 0) {
       const since = this.now() - this.lastFetchAt;
-      // If an in-flight request exists we should not reject — we'll coalesce below.
-      if (since < minInterval && !this.inFlight) {
+      // Only bypass the throttle when the in-flight request is for the SAME
+      // encounterId — that's the only case where we can coalesce below. If an
+      // in-flight exists for a different encounterId, coalescing won't apply
+      // and falling through would start a parallel fetch, violating the
+      // throttle window. In that case, drop as throttled.
+      const canCoalesce =
+        this.inFlight !== null && this.inFlightKey === req.encounterId;
+      if (since < minInterval && !canCoalesce) {
         this.emitDropped(req, "throttle");
         return null;
       }

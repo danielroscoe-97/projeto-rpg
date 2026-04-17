@@ -947,7 +947,12 @@ export function PlayerJoinClient({
         (["free","pro","mesa"].includes(data.dm_plan as string) ? (data.dm_plan as string) : "free") as Plan
       );
     }
-    // A.6: Auto-join fallback via polling — same logic as state_sync handler
+    // A.6: Auto-join fallback via polling — same logic as state_sync handler.
+    // auto_join:detected: no fetch required here — this branch runs as a
+    // side-effect of an already-orchestrated fetchFullState response, and the
+    // recovery action is a registerPlayerCombatant() call (separate code flow,
+    // not routed through fetchOrchestrator). The triggering fetch is labelled
+    // by its own caller (e.g. turn_poll / late_join:* / visibility_change:*).
     const enc = data.encounter as
       | { is_active?: boolean; id?: string }
       | null
@@ -989,9 +994,9 @@ export function PlayerJoinClient({
         return false;
       }
     });
-    return () => {
-      fetchOrchestrator.setUnauthorizedHandler(null);
-    };
+    // Do not null the orchestrator's handler in cleanup — under StrictMode's
+    // mount→unmount→mount sequence that creates a window where concurrent
+    // 401s would fail to recover. The next mount overwrites with its own.
   }, []);
 
   // A.1: Keep ref in sync for state machine polling
