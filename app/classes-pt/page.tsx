@@ -12,14 +12,6 @@ export const metadata: Metadata = {
   title: "Classes D&D 5e — Guia Completo de Classes SRD",
   description:
     "Todas as 12 classes SRD do D&D 5e: Bárbaro, Bardo, Clérigo, Druida, Guerreiro, Monge, Paladino, Patrulheiro, Ladino, Feiticeiro, Bruxo e Mago. Tabelas de progressão, habilidades e subclasses.",
-  keywords: [
-    "classes D&D 5e",
-    "classes de personagem D&D",
-    "classes SRD 5e",
-    "bárbaro guerreiro mago",
-    "classes jogáveis D&D",
-    "guia de classes D&D",
-  ],
   openGraph: {
     title: "Classes D&D 5e — Guia Completo de Classes SRD",
     description:

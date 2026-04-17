@@ -12,20 +12,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Encounter Builder — Difficulty Calculator",
   description:
     "Free encounter difficulty calculator and initiative tracker for D&D 5e. Add monsters from 1,100+ SRD creatures, set party size and level, and instantly see if your encounter is Easy, Medium, Hard, or Deadly.",
-  keywords: [
-    "encounter builder D&D 5e",
-    "encounter calculator D&D 5e",
-    "D&D encounter difficulty calculator",
-    "encounter builder free",
-    "D&D 5e encounter generator",
-    "combat encounter builder",
-    "DM encounter tools",
-    "D&D encounter planner",
-    "encounter difficulty 5e",
-    "easy medium hard deadly D&D",
-    "CR calculator D&D 5e",
-    "Pocket DM encounter builder",
-  ],
   openGraph: {
     title: "D&D 5e Encounter Builder — Difficulty Calculator",
     description:

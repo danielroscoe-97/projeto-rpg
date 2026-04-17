@@ -11,14 +11,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Feats — SRD Character Feats",
   description:
     "All SRD feats for D&D 5e — character abilities, boons, and special talents. Search and filter by prerequisite. Free under CC-BY-4.0.",
-  keywords: [
-    "D&D 5e feats",
-    "dnd feats list",
-    "SRD feats",
-    "D&D character feats",
-    "5e boons",
-    "D&D talents",
-  ],
   openGraph: {
     title: "D&D 5e Feats — SRD Character Feats",
     description:

@@ -11,14 +11,6 @@ export const metadata: Metadata = {
   title: "Talentos D&D 5e — Talentos de Personagem SRD",
   description:
     "Todos os talentos SRD do D&D 5e — habilidades especiais, bênçãos e talentos de personagem. Busque e filtre por pré-requisito. Conteúdo livre sob CC-BY-4.0.",
-  keywords: [
-    "talentos D&D 5e",
-    "lista de talentos dnd",
-    "talentos SRD",
-    "talentos de personagem D&D",
-    "bênçãos 5e",
-    "feats D&D português",
-  ],
   openGraph: {
     title: "Talentos D&D 5e — Talentos de Personagem SRD",
     description:

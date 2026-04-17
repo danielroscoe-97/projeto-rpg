@@ -12,22 +12,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Classes — SRD Class Reference",
   description:
     "Complete reference for all 12 D&D 5e SRD classes: Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, and Wizard. Hit dice, proficiencies, saving throws, and subclasses.",
-  keywords: [
-    "D&D 5e classes",
-    "dnd classes",
-    "SRD classes",
-    "D&D class list",
-    "5e class reference",
-    "D&D 5e class guide",
-    "barbarian 5e",
-    "wizard 5e",
-    "fighter 5e",
-    "rogue 5e",
-    "cleric 5e",
-    "all D&D classes",
-    "D&D subclasses 5e",
-    "Pocket DM classes",
-  ],
   openGraph: {
     title: "D&D 5e Classes — SRD Class Reference",
     description:

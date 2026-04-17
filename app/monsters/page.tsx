@@ -13,21 +13,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Monster Compendium — SRD Bestiary",
   description:
     "Complete D&D 5e SRD monster compendium with interactive stat blocks and dice rollers. Search by CR, creature type, and name. Free bestiary for game masters.",
-  keywords: [
-    "D&D 5e monsters",
-    "dnd bestiary",
-    "SRD monsters",
-    "monster stat blocks 5e",
-    "5e monster list",
-    "D&D monster database",
-    "D&D 5e monster compendium",
-    "monster manual 5e free",
-    "D&D monsters by CR",
-    "D&D creature list",
-    "dnd 5e bestiary online",
-    "free monster stat blocks D&D",
-    "Pocket DM monsters",
-  ],
   alternates: {
     canonical: "/monsters",
     languages: {

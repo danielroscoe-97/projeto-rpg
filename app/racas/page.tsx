@@ -11,14 +11,6 @@ export const metadata: Metadata = {
   title: "Raças D&D 5e — Espécies de Personagem Jogador",
   description:
     "Todas as 9 raças SRD do D&D 5e: Anão, Elfo, Halfling, Humano, Draconato, Gnomo, Meio-Elfo, Meio-Orc e Tiefling. Atributos, traços raciais e sub-raças.",
-  keywords: [
-    "raças D&D 5e",
-    "raças de personagem D&D",
-    "raças SRD 5e",
-    "anão elfo halfling",
-    "espécies D&D 5e",
-    "raças jogáveis D&D",
-  ],
   openGraph: {
     title: "Raças D&D 5e — Espécies de Personagem Jogador",
     description:

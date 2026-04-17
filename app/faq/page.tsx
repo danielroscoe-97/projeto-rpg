@@ -9,18 +9,6 @@ export const metadata: Metadata = {
     "Perguntas Frequentes — Pocket DM | Combat Tracker D&D 5e",
   description:
     "Respostas para as perguntas mais comuns sobre o Pocket DM — combat tracker gratuito para D&D 5e. Como funciona, preços, funcionalidades, compatibilidade e mais. FAQ for D&D 5e combat tracker.",
-  keywords: [
-    "pocket dm faq",
-    "combat tracker D&D perguntas",
-    "rastreador de combate RPG",
-    "como usar combat tracker",
-    "ferramentas mestre RPG",
-    "D&D 5e combat tracker free",
-    "initiative tracker D&D",
-    "initiative tracker 5e",
-    "rastreador de iniciativa D&D 5e",
-    "best initiative tracker free",
-  ],
   alternates: {
     canonical: "/faq",
     languages: { "pt-BR": "/faq", en: "/faq" },

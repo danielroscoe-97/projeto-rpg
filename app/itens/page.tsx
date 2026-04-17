@@ -10,15 +10,6 @@ export const metadata: Metadata = {
   title: "Itens D&D 5e — Compêndio de Equipamentos SRD",
   description:
     "Compêndio completo de itens D&D 5e SRD — armas, armaduras, itens mágicos, poções e equipamentos de aventura. Busque e filtre por tipo e raridade. Gratuito.",
-  keywords: [
-    "itens D&D 5e",
-    "itens mágicos D&D",
-    "equipamentos SRD",
-    "armas D&D 5e",
-    "armaduras D&D 5e",
-    "poções D&D",
-    "equipamento de aventura D&D",
-  ],
   alternates: {
     canonical: "/itens",
     languages: {

@@ -42,12 +42,6 @@ export async function generateMetadata({
   return {
     title,
     description,
-    keywords: [
-      `${sub.name_pt} 5e`,
-      `${sub.name_pt} ${cls.name_pt}`,
-      `subclasse ${cls.name_pt}`,
-      "subclasses D&D 5e",
-    ],
     openGraph: {
       title: `${title} | Pocket DM`,
       description,

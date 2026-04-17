@@ -10,16 +10,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Items Compendium — SRD Equipment & Magic Items",
   description:
     "Complete D&D 5e SRD item compendium — weapons, armor, magic items, potions, and adventuring gear. Search and filter by type and rarity. Free under CC-BY-4.0.",
-  keywords: [
-    "D&D 5e items",
-    "dnd magic items",
-    "SRD items",
-    "D&D equipment",
-    "5e weapons",
-    "5e armor",
-    "D&D potions",
-    "D&D adventuring gear",
-  ],
   alternates: {
     canonical: "/items",
     languages: {

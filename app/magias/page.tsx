@@ -10,21 +10,6 @@ export const metadata: Metadata = {
   title: "Magias D&D 5e — Compêndio SRD",
   description:
     "Compêndio completo de magias do D&D 5e com descrições, alcance, componentes e tier de poder. Filtre por nível, escola e classe. Gratuito.",
-  keywords: [
-    "magias D&D 5e",
-    "lista de magias D&D",
-    "magias SRD 5e",
-    "feitiços D&D",
-    "magias dungeons and dragons",
-    "compêndio de magias 5e",
-    "grimório D&D 5e",
-    "magias por classe D&D 5e",
-    "magias por nível D&D 5e",
-    "lista de magias gratis D&D",
-    "magias de mago 5e",
-    "magias de clérigo 5e",
-    "Pocket DM magias",
-  ],
   alternates: {
     canonical: "/magias",
     languages: {

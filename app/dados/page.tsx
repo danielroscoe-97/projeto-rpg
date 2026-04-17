@@ -12,17 +12,6 @@ export const metadata: Metadata = {
   title: "Rolador de Dados D&D 5e — Role Online",
   description:
     "Rolador de dados grátis para D&D 5e. Role d4, d6, d8, d10, d12, d20, d100 com vantagem, desvantagem, acerto crítico e resistência. Presets rápidos para ataques, dano e testes.",
-  keywords: [
-    "rolador de dados D&D 5e",
-    "rolar dados online",
-    "rolar d20 online",
-    "dados RPG online gratis",
-    "rolador de dados virtual",
-    "dados D&D online",
-    "rolar dados com vantagem",
-    "dados dungeons and dragons",
-    "Pocket DM dados",
-  ],
   openGraph: {
     title: "Rolador de Dados D&D 5e — Role Online",
     description:

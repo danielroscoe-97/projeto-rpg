@@ -11,14 +11,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Backgrounds — SRD Character Backgrounds",
   description:
     "All SRD backgrounds for D&D 5e — skill proficiencies, tool proficiencies, languages, equipment, and features. Free under CC-BY-4.0.",
-  keywords: [
-    "D&D 5e backgrounds",
-    "dnd backgrounds list",
-    "SRD backgrounds",
-    "D&D character backgrounds",
-    "5e background features",
-    "D&D background skills",
-  ],
   openGraph: {
     title: "D&D 5e Backgrounds — SRD Character Backgrounds",
     description:

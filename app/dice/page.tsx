@@ -11,17 +11,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Dice Roller — Roll Online",
   description:
     "Free online dice roller for D&D 5e. Roll d4, d6, d8, d10, d12, d20, d100 with advantage, disadvantage, critical hits, and resistance. Quick presets for attacks, damage, and ability checks.",
-  keywords: [
-    "dice roller D&D 5e",
-    "D&D dice roller online",
-    "roll d20 online",
-    "dnd dice roller free",
-    "virtual dice roller",
-    "d20 roller",
-    "dice roller with advantage",
-    "RPG dice roller online",
-    "Pocket DM dice",
-  ],
   openGraph: {
     title: "D&D 5e Dice Roller — Roll Online",
     description:

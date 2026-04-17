@@ -10,21 +10,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Spell Compendium — SRD Spell List",
   description:
     "Complete D&D 5e SRD spell compendium with descriptions, range, components, and damage. Filter by level, school, and class. Free spell reference for game masters and players.",
-  keywords: [
-    "D&D 5e spells",
-    "dnd spell list",
-    "SRD spells",
-    "5e spell compendium",
-    "D&D spell reference",
-    "D&D spell database",
-    "D&D 5e spell list by class",
-    "D&D 5e spell list by level",
-    "free D&D spell list",
-    "dnd spells online",
-    "wizard spells 5e",
-    "cleric spells 5e",
-    "Pocket DM spells",
-  ],
   alternates: {
     canonical: "/spells",
     languages: {

@@ -11,14 +11,6 @@ export const metadata: Metadata = {
   title: "Antecedentes D&D 5e — Antecedentes de Personagem SRD",
   description:
     "Todos os antecedentes SRD do D&D 5e — perícias, ferramentas, idiomas, equipamentos e características. Conteúdo livre sob CC-BY-4.0.",
-  keywords: [
-    "antecedentes D&D 5e",
-    "lista de antecedentes dnd",
-    "antecedentes SRD",
-    "backgrounds D&D português",
-    "características de antecedente",
-    "perícias antecedente D&D",
-  ],
   openGraph: {
     title: "Antecedentes D&D 5e — Antecedentes de Personagem SRD",
     description:

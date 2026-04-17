@@ -17,21 +17,6 @@ export const metadata: Metadata = {
   title: "Bestiário D&D 5e — Lista de Monstros SRD",
   description:
     "Bestiário completo do D&D 5e com blocos de estatísticas interativos, roladores de dados e descrições táticas. Filtre por CR, tipo e muito mais. Gratuito.",
-  keywords: [
-    "monstros D&D 5e",
-    "bestiário D&D",
-    "monstros SRD 5e",
-    "ficha de monstro D&D",
-    "D&D 5e bestiary",
-    "monstros dungeons and dragons",
-    "lista de monstros D&D 5e",
-    "banco de dados monstros D&D",
-    "monstros por CR D&D 5e",
-    "bestiário online gratis D&D",
-    "livro dos monstros 5e",
-    "criaturas D&D 5e",
-    "Pocket DM monstros",
-  ],
   alternates: {
     canonical: "/monstros",
     languages: {

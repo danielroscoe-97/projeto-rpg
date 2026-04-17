@@ -11,14 +11,6 @@ export const metadata: Metadata = {
   title: "D&D 5e Races — Player Character Species",
   description:
     "All 9 SRD races for D&D 5e: Dwarf, Elf, Halfling, Human, Dragonborn, Gnome, Half-Elf, Half-Orc, and Tiefling. Ability scores, traits, and subraces.",
-  keywords: [
-    "D&D 5e races",
-    "D&D character races",
-    "SRD races 5e",
-    "dwarf elf halfling",
-    "D&D 5e species",
-    "player character races",
-  ],
   openGraph: {
     title: "D&D 5e Races — Player Character Species",
     description:
