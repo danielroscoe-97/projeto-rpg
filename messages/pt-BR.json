@@ -2851,7 +2851,10 @@
     "expired_title": "Sessão expirada",
     "expired_body": "Crie uma conta gratuita para salvar seus combates e jogar sem limite de tempo.",
     "expired_cta_signup": "Criar conta grátis",
-    "expired_cta_reset": "Começar novo combate"
+    "expired_cta_reset": "Começar novo combate",
+    "last_recap_banner_title": "Recap do último combate disponível",
+    "last_recap_banner_cta": "Ver recap",
+    "last_recap_banner_dismiss": "Dispensar"
   },
   "presets": {
     "title": "Presets de Combate",
