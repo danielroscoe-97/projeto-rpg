@@ -87,6 +87,20 @@ test.describe("S1.2 — Rapid combatant add (beta3 Finding 2)", () => {
 
     // 3. DM rapidly adds 3 Velociraptors in <6s with varied initiatives.
     // Initiatives: 20 (first), 14 (mid), 5 (last) — testing non-sorted insertion.
+    //
+    // B-5 FIX: the old spec waited 5s after all adds and asserted final order.
+    // That tests "functionality" (does the player eventually converge?) NOT
+    // the race condition — after 5s of quiesce, even the broken legacy path
+    // converges via state_sync. The original bug was observed DURING the
+    // transient window, not after quiesce.
+    //
+    // New approach:
+    //   a) Capture the elapsed time as before (sanity check the window),
+    //   b) Poll for the expected UI state with a SHORT timeout budget — if
+    //      the feature is broken, the expected order never appears within
+    //      the window; the legacy race would fail this assertion,
+    //   c) No fixed `waitForTimeout(5_000)` — we use Playwright's `expect.poll`
+    //      which is deterministic (stops as soon as condition is met).
     const t0 = Date.now();
     await addCombatantMidCombat(dmPage, {
       name: "Velociraptor A",
@@ -107,29 +121,43 @@ test.describe("S1.2 — Rapid combatant add (beta3 Finding 2)", () => {
       initiative: "5",
     });
     const elapsed = Date.now() - t0;
-    // Soft assertion — if CI is slow this might exceed 6s but the test still
-    // exercises the race window; we warn rather than fail.
     if (elapsed > 8_000) {
       console.warn(`[rapid-add] 3 adds took ${elapsed}ms — wider than the 6s target window`);
     }
 
-    // 4. Wait for realtime to settle, then verify player-side order.
-    await playerPage.waitForTimeout(5_000);
+    // 4. Poll for correct order deterministically. Budget 2s — enough for
+    // broadcast delivery + React commit, but well below the 5s legacy-flush
+    // window so the race condition can't silently converge past us.
+    await expect
+      .poll(
+        async () => {
+          const names = await getPlayerCombatantNames(playerPage);
+          const vA = names.findIndex((n) => /Velociraptor A/i.test(n));
+          const vB = names.findIndex((n) => /Velociraptor B/i.test(n));
+          const vC = names.findIndex((n) => /Velociraptor C/i.test(n));
+          // All three must be present AND ordered by initiative.
+          if (vA < 0 || vB < 0 || vC < 0) return false;
+          return vA < vB && vB < vC;
+        },
+        {
+          timeout: 2_000,
+          intervals: [100, 150, 250],
+          message:
+            "Expected Velociraptors A, B, C ordered by initiative within 2s — " +
+            "likely a broadcast race / reducer regression.",
+        },
+      )
+      .toBe(true);
 
+    // Sanity: one more read to fail with a helpful diff if somehow poll succeeded
+    // but state mutated.
     const names = await getPlayerCombatantNames(playerPage);
-    // Expected by initiative: Velociraptor A (20), Hero/Player (12/10), Velociraptor B (14), Velociraptor C (5).
-    // Note: Hero's init 12 is between B's 14 and the test player's 10 — exact ordering depends on
-    // sanitized display_name vs real name. We only assert that:
-    //   a) all 3 Velociraptors show up (no lost broadcasts),
-    //   b) they are ordered by initiative relative to each other.
     const vA = names.findIndex((n) => /Velociraptor A/i.test(n));
     const vB = names.findIndex((n) => /Velociraptor B/i.test(n));
     const vC = names.findIndex((n) => /Velociraptor C/i.test(n));
-
     expect(vA).toBeGreaterThanOrEqual(0);
     expect(vB).toBeGreaterThanOrEqual(0);
     expect(vC).toBeGreaterThanOrEqual(0);
-    // A (init 20) before B (init 14) before C (init 5).
     expect(vA).toBeLessThan(vB);
     expect(vB).toBeLessThan(vC);
 
@@ -172,9 +200,20 @@ test.describe("S1.2 — Rapid combatant add (beta3 Finding 2)", () => {
       initiative: "15",
     });
 
-    await playerPage.waitForTimeout(5_000);
-    const names = await getPlayerCombatantNames(playerPage);
-    expect(names.some((n) => /Goblin/i.test(n))).toBe(true);
+    // B-5: deterministic poll (2s budget) instead of fixed 5s wait.
+    await expect
+      .poll(
+        async () => {
+          const names = await getPlayerCombatantNames(playerPage);
+          return names.some((n) => /Goblin/i.test(n));
+        },
+        {
+          timeout: 2_000,
+          intervals: [100, 150, 250],
+          message: "Expected Goblin to appear on player view within 2s (flag OFF path).",
+        },
+      )
+      .toBe(true);
 
     await dmContext.close().catch(() => {});
     await playerContext.close().catch(() => {});
