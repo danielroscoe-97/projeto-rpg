@@ -1570,6 +1570,8 @@ export function GuestCombatClient() {
       const hasGuestLogActivity = stats.length > 0 && stats.some((s) => s.totalDamageDealt > 0 || s.totalDamageReceived > 0 || s.totalHealing > 0 || s.knockouts > 0);
       const hasGuestHpChanges = guestStore.combatants.some((c) => c.current_hp < c.max_hp || c.is_defeated);
       if (hasGuestLogActivity || hasGuestHpChanges) {
+        // S5.7 polish: thread log entries so First Blood award is emitted in guest flow.
+        const logEntries = useCombatLogStore.getState().entries;
         // Build CombatReport for the new Recap UI
         const report = buildCombatReportFromStats({
           stats,
@@ -1578,6 +1580,7 @@ export function GuestCombatClient() {
           combatDuration: duration,
           roundNumber: guestStore.roundNumber,
           turnTimeSnapshots: guestStore.turnTimeSnapshots,
+          entries: logEntries,
           t,
         });
         trackEvent("guest:combat_ended", {

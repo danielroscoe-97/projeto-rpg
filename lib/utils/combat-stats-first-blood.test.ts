@@ -12,8 +12,10 @@ import {
   findFirstBlood,
   computeCombatStats,
   buildAwards,
+  buildCombatReportFromStats,
 } from "./combat-stats";
 import type { CombatLogEntry } from "@/lib/stores/combat-log-store";
+import type { Combatant } from "@/lib/types/combat";
 
 // Identity translator: returns the key so we can inspect which message was used.
 const tIdentity = (key: string, values?: Record<string, string | number>) => {
@@ -213,6 +215,95 @@ describe("buildAwards — First Blood emission (S5.7)", () => {
     const awards1 = buildAwards(stats, tIdentity, entries);
     const awards2 = buildAwards(stats, tIdentity, entries);
     expect(awards1).toEqual(awards2);
+  });
+});
+
+describe("buildCombatReportFromStats — guest path First Blood (S5.7 polish)", () => {
+  function combatant(overrides: Partial<Combatant> & Pick<Combatant, "id" | "name">): Combatant {
+    return {
+      id: overrides.id,
+      name: overrides.name,
+      current_hp: overrides.current_hp ?? 10,
+      max_hp: overrides.max_hp ?? 10,
+      temp_hp: overrides.temp_hp ?? 0,
+      ac: overrides.ac ?? 10,
+      spell_save_dc: overrides.spell_save_dc ?? null,
+      initiative: overrides.initiative ?? 10,
+      initiative_order: overrides.initiative_order ?? 0,
+      conditions: overrides.conditions ?? [],
+      ruleset_version: overrides.ruleset_version ?? null,
+      is_defeated: overrides.is_defeated ?? false,
+      is_hidden: overrides.is_hidden ?? false,
+      is_player: overrides.is_player ?? false,
+      monster_id: overrides.monster_id ?? null,
+      token_url: overrides.token_url ?? null,
+      creature_type: overrides.creature_type ?? null,
+      display_name: overrides.display_name ?? null,
+      monster_group_id: overrides.monster_group_id ?? null,
+      group_order: overrides.group_order ?? null,
+      dm_notes: overrides.dm_notes ?? "",
+      player_notes: overrides.player_notes ?? "",
+      player_character_id: overrides.player_character_id ?? null,
+      combatant_role: overrides.combatant_role ?? null,
+      legendary_actions_total: overrides.legendary_actions_total ?? null,
+      legendary_actions_used: overrides.legendary_actions_used ?? 0,
+      reaction_used: overrides.reaction_used ?? false,
+    } as Combatant;
+  }
+
+  it("emits first_blood award when entries are threaded from guest log store", () => {
+    const entries = [
+      entry({
+        type: "defeat",
+        actorName: "Aragorn",
+        targetName: "Orc",
+        round: 2,
+      }),
+    ];
+    const stats = computeCombatStats(entries);
+    const combatants = [
+      combatant({ id: "c1", name: "Aragorn", is_player: true }),
+      combatant({ id: "c2", name: "Orc", is_defeated: true, current_hp: 0 }),
+    ];
+    const report = buildCombatReportFromStats({
+      stats,
+      combatants,
+      encounterName: "Test Encounter",
+      combatDuration: 60000,
+      roundNumber: 2,
+      entries,
+      t: tIdentity,
+    });
+    const firstBloodAward = report.awards.find((a) => a.type === "first_blood");
+    expect(firstBloodAward).toBeDefined();
+    expect(firstBloodAward?.combatantName).toBe("Aragorn");
+    expect(firstBloodAward?.value).toBe(2);
+  });
+
+  it("omits first_blood award when entries are not threaded (backward compat)", () => {
+    const entries = [
+      entry({
+        type: "defeat",
+        actorName: "Aragorn",
+        targetName: "Orc",
+        round: 2,
+      }),
+    ];
+    const stats = computeCombatStats(entries);
+    const combatants = [
+      combatant({ id: "c1", name: "Aragorn", is_player: true }),
+      combatant({ id: "c2", name: "Orc", is_defeated: true, current_hp: 0 }),
+    ];
+    const report = buildCombatReportFromStats({
+      stats,
+      combatants,
+      encounterName: "Test Encounter",
+      combatDuration: 60000,
+      roundNumber: 2,
+      // entries intentionally omitted
+      t: tIdentity,
+    });
+    expect(report.awards.find((a) => a.type === "first_blood")).toBeUndefined();
   });
 });
 

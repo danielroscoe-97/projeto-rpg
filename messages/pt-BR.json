@@ -2009,7 +2009,7 @@
 
     "recap_award_value_damage": "{value} dano",
     "recap_award_value_kills": "{value, plural, one {# kill} other {# kills}}",
-    "recap_award_value_first_blood": "abateu {target} no round {round}",
+    "recap_award_value_first_blood": "abateu {target} na Rodada {round}",
     "recap_award_value_received": "{value} recebido",
     "recap_award_value_healed": "{value} curado",
     "recap_award_value_crits": "{value, plural, one {# crit} other {# crits}}",

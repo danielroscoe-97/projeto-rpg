@@ -684,8 +684,14 @@ export function buildCombatReport(opts: {
 }
 
 /**
- * Build a CombatReport from pre-computed CombatantStats (for guest mode without log entries).
- * Awards and summary are computed from stats; narratives require combatant state for near_death detection.
+ * Build a CombatReport from pre-computed CombatantStats (guest mode live path).
+ *
+ * S5.7 polish: `entries` is optional for backward compatibility but SHOULD be
+ * threaded from the guest combat log store so First Blood is emitted. When
+ * omitted, the report is still valid but will skip the First Blood award.
+ *
+ * Awards and summary are computed from stats; narratives require combatant
+ * state for near_death detection (full narrative set requires log entries).
  */
 export function buildCombatReportFromStats(opts: {
   stats: CombatantStats[];
@@ -694,9 +700,10 @@ export function buildCombatReportFromStats(opts: {
   combatDuration: number;
   roundNumber: number;
   turnTimeSnapshots?: Record<number, Record<string, number>>;
+  entries?: CombatLogEntry[];
   t: (key: string, values?: Record<string, string | number>) => string;
 }): CombatReport {
-  const { stats, combatants, encounterName, combatDuration, roundNumber, turnTimeSnapshots, t } = opts;
+  const { stats, combatants, encounterName, combatDuration, roundNumber, turnTimeSnapshots, entries, t } = opts;
 
   // Defensive: ensure stats use real names (not display_name) by cross-referencing combatants.
   // Only remap if the stat name is NOT already a valid combatant real name (avoids false positives).
@@ -716,7 +723,7 @@ export function buildCombatReportFromStats(opts: {
     }
   }
 
-  const awards = buildAwards(stats, t);
+  const awards = buildAwards(stats, t, entries ?? []);
 
   // Guest mode: limited narratives (no log entries for clutch_save/one_shot)
   // Only detect near_death from combatant final state
