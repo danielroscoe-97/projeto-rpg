@@ -473,10 +473,32 @@ export function PlayerInitiativeBoard({
     return map;
   }, [combatants, damagedRevealedIds, roundNumber, maxRevealedIndex, idsAtRound2Start]);
 
-  // Auto-scroll to current turn combatant when turn changes
+  // Auto-scroll to current turn combatant when turn changes.
+  // S4.1: also sets a brand-gold pulse for 1s on the active row. CSS handles
+  // `prefers-reduced-motion`. Deps are `[currentTurnIndex]` by design — adding
+  // `combatants` would re-fire on any HP/condition edit.
+  const [pulseTurnId, setPulseTurnId] = useState<string | null>(null);
+  const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     turnRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const current = combatants[currentTurnIndex];
+    if (current) {
+      setPulseTurnId(current.id);
+      if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+      pulseTimerRef.current = setTimeout(() => {
+        setPulseTurnId(null);
+        pulseTimerRef.current = null;
+      }, 1100);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTurnIndex]);
+
+  // S4.1: cleanup pulse timer on unmount
+  useEffect(() => {
+    return () => {
+      if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+    };
+  }, []);
 
   // Separate player characters from others for "own character" highlight
   const playerChars = combatants.filter((c) => c.is_player);
@@ -1083,6 +1105,8 @@ export function PlayerInitiativeBoard({
                 roundNumber === 1 && index === maxRevealedIndex ? "animate-fade-in" : ""
               } ${
                 isNewlyRevealed ? "ring-2 ring-gold/60 shadow-[0_0_16px_rgba(212,168,83,0.4)]" : ""
+              } ${
+                pulseTurnId === combatant.id ? "animate-turn-pulse" : ""
               }`}
               role="listitem"
               aria-current={isCurrentTurn ? true : undefined}

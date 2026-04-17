@@ -1918,6 +1918,9 @@ function CombatList({
   t,
 }: CombatListProps) {
   const isFirstRender = useRef(true);
+  // S4.1: visual pulse highlight on turn advance (1s one-shot) — brand gold.
+  const [pulseTurnId, setPulseTurnId] = useState<string | null>(null);
+  const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -1938,8 +1941,31 @@ function CombatList({
       }
       const el = document.querySelector(`[data-combatant-index="${currentTurnIndex}"]`) as HTMLElement | null;
       el?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      // S4.1: Pulse highlight on the newly active combatant (1s one-shot).
+      // `prefers-reduced-motion` is handled by the CSS media query; the class
+      // always mounts but the animation is suppressed for reduced-motion users.
+      const currentCombatantSnapshot = useCombatStore.getState().combatants[currentTurnIndex];
+      if (currentCombatantSnapshot) {
+        setPulseTurnId(currentCombatantSnapshot.id);
+        if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+        pulseTimerRef.current = setTimeout(() => {
+          setPulseTurnId(null);
+          pulseTimerRef.current = null;
+        }, 1100);
+      }
     });
+    // NOTE: deps are `[currentTurnIndex]` only by design — do NOT add `combatants`,
+    // otherwise scroll+pulse fires on every HP edit / condition toggle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTurnIndex]);
+
+  // S4.1: cleanup pulse timer on unmount
+  useEffect(() => {
+    return () => {
+      if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+    };
+  }, []);
 
   return (
     <div
@@ -1953,8 +1979,11 @@ function CombatList({
         onReorder={onReorder}
         renderItem={(c, dragHandleProps) => {
           const index = combatants.findIndex((x) => x.id === c.id);
+          const pulseClass = pulseTurnId === c.id ? "animate-turn-pulse" : "";
+          const focusClass = index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : "";
+          const wrapperClass = [pulseClass, focusClass].filter(Boolean).join(" ");
           return (
-            <div className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
+            <div className={wrapperClass}>
               <CombatantRow
                 combatant={c}
                 index={index}
@@ -2003,8 +2032,11 @@ function CombatList({
             >
               {members.map((c, i) => {
                 const index = combatants.findIndex((x) => x.id === c.id);
+                const pulseClass = pulseTurnId === c.id ? "animate-turn-pulse" : "";
+                const focusClass = index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : "";
+                const wrapperClass = [pulseClass, focusClass].filter(Boolean).join(" ");
                 return (
-                  <div key={c.id} className={index === focusedIndex ? "ring-1 ring-gold/40 rounded-lg" : ""}>
+                  <div key={c.id} className={wrapperClass}>
                     <CombatantRow
                       combatant={c}
                       index={index}
