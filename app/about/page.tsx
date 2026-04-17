@@ -21,7 +21,7 @@ export default function AboutPage() {
     "@type": "Organization",
     name: "Pocket DM",
     url: siteUrl("/"),
-    logo: "/icons/icon-512.png",
+    logo: siteUrl("/icons/icon-512.png"),
     foundingDate: "2026",
     description:
       "Pocket DM é o combat & initiative tracker gratuito para D&D 5e focado em mesas presenciais. Criado no Brasil para mestres e jogadores de RPG de todo o mundo.",
