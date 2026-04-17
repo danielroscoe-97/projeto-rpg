@@ -283,19 +283,23 @@ export function MonsterSearchPanel({
   // S3.6 telemetry — fire `compendium:search_missed` when a non-trivial query
   // returns zero results (monsters AND campaign players), to measure the i18n
   // injector-fix's impact post-deploy.
+  // Debounced to avoid per-keystroke noise; only fires for queries ≥2 chars.
   useEffect(() => {
     const q = query.trim();
     if (q.length < 2 || isLoading) return;
-    const playerMatch =
-      campaignPlayers?.some((p) => p.name.toLowerCase().includes(q.toLowerCase())) ?? false;
-    if (results.length === 0 && !playerMatch) {
-      trackEvent("compendium:search_missed", {
-        query_length: q.length,
-        language: locale,
-        result_count_zero: true,
-        surface: "monster_search_panel",
-      });
-    }
+    const timer = window.setTimeout(() => {
+      const playerMatch =
+        campaignPlayers?.some((p) => p.name.toLowerCase().includes(q.toLowerCase())) ?? false;
+      if (results.length === 0 && !playerMatch) {
+        trackEvent("compendium:search_missed", {
+          query_length: q.length,
+          language: locale,
+          result_count_zero: true,
+          surface: "monster_search_panel",
+        });
+      }
+    }, 600);
+    return () => window.clearTimeout(timer);
   }, [results, query, isLoading, locale, campaignPlayers]);
 
   // Filter + search with debounce
