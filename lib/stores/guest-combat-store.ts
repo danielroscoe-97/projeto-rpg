@@ -5,6 +5,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { sortByInitiative, assignInitiativeOrder } from "@/lib/utils/initiative";
 import { cleanupOrphanedLairEntry } from "@/lib/utils/lair-action";
 import { getMonsterById } from "@/lib/srd/srd-search";
+import { stripExpiringQuickActions } from "@/lib/combat/quick-actions";
 
 export type GuestCombatPhase = "setup" | "combat" | "ended";
 
@@ -337,14 +338,34 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
             if (!sorted[next].is_defeated) break;
           }
           if (sorted[next].is_defeated) return state;
-          // Increment condition durations for the combatant whose turn is starting
+          // S4.3 — Auto-cleanup `action:dodge` (RAW "until your next turn")
+          // on the combatant whose turn is starting. Dash/Help/Disengage/Hide/
+          // Ready are preserved — they expire logically (DM/player removes).
           const nextCombatant = sorted[next];
-          if (nextCombatant.conditions.length > 0 && nextCombatant.condition_durations) {
-            const updatedDurations = { ...nextCombatant.condition_durations };
-            for (const cond of nextCombatant.conditions) {
+          if (nextCombatant.conditions.length > 0) {
+            const cleanedConditions = stripExpiringQuickActions(
+              nextCombatant.conditions,
+            );
+            if (cleanedConditions.length !== nextCombatant.conditions.length) {
+              const removed = nextCombatant.conditions.filter(
+                (c) => !cleanedConditions.includes(c),
+              );
+              const cleanedDurations = { ...(nextCombatant.condition_durations ?? {}) };
+              for (const r of removed) delete cleanedDurations[r];
+              sorted[next] = {
+                ...nextCombatant,
+                conditions: cleanedConditions,
+                condition_durations: cleanedDurations,
+              };
+            }
+          }
+          // Increment condition durations for the combatant whose turn is starting
+          if (sorted[next].conditions.length > 0 && sorted[next].condition_durations) {
+            const updatedDurations = { ...sorted[next].condition_durations };
+            for (const cond of sorted[next].conditions) {
               if (cond in updatedDurations) updatedDurations[cond]++;
             }
-            sorted[next] = { ...nextCombatant, condition_durations: updatedDurations };
+            sorted[next] = { ...sorted[next], condition_durations: updatedDurations };
           }
           // Reset reaction for the combatant whose turn is starting
           sorted[next] = { ...sorted[next], reaction_used: false };

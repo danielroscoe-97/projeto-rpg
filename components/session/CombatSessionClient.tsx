@@ -56,6 +56,7 @@ import { AnimatePresence } from "framer-motion";
 import { PlayerDrawer } from "@/components/combat/PlayerDrawer";
 import { Users, ScrollText, Pause, Play } from "lucide-react";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
+import { isQuickAction } from "@/lib/combat/quick-actions";
 // WEATHER_DISABLED: import type { WeatherEffect } from "@/components/player/WeatherOverlay";
 import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
 import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
@@ -1386,9 +1387,12 @@ export function CombatSessionClient({
       if (!trackActionId(payload.action_id)) return;
       const { combatant_id, condition, player_name } = payload as { combatant_id: string; condition: string; player_name: string };
       if (!combatant_id || !condition || typeof condition !== "string") return;
-      // Security: only allow beneficial conditions + concentrating
+      // Security: only allow beneficial conditions + concentrating + quick actions.
+      // S4.3 — quick actions (action:dodge/dash/help/disengage/hide/ready) are
+      // player-self-apply safe (no PII, fixed catalogue). `custom:*` stays DM-only.
       const isAllowed = (BENEFICIAL_CONDITIONS as readonly string[]).includes(condition)
-        || condition === "concentrating" || condition.startsWith("concentrating:");
+        || condition === "concentrating" || condition.startsWith("concentrating:")
+        || isQuickAction(condition);
       if (!isAllowed) return;
       // Security: combatant must exist and be a player — use ID as primary key, token/name as confirmation
       const combatant = useCombatStore.getState().combatants.find((c) => c.id === combatant_id);

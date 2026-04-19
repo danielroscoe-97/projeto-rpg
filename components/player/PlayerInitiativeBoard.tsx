@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus, Users as UsersIcon, ArrowLeft, Timer as TimerIcon, type LucideIcon } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -25,6 +25,44 @@ import { ActiveEffectsBadges } from "@/components/player/ActiveEffectsBadges";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
+import {
+  QUICK_ACTIONS,
+  type QuickAction,
+  formatQuickAction,
+  isQuickAction,
+  isPlayerForbiddenCondition,
+} from "@/lib/combat/quick-actions";
+import { trackEvent } from "@/lib/analytics/track";
+
+/** Lucide icon per quick action — mirrors ConditionSelector. */
+const PLAYER_QUICK_ACTION_ICON: Record<QuickAction, LucideIcon> = {
+  dodge: Shield,
+  dash: Zap,
+  help: UsersIcon,
+  disengage: ArrowLeft,
+  hide: EyeOff,
+  ready: TimerIcon,
+};
+
+/**
+ * S4.3 — Guarded wrapper around `onSelfConditionToggle`.
+ *
+ * Player self-apply is restricted to:
+ *   - beneficial conditions (Blessed, Haste, …)
+ *   - concentrating (with or without spell tag)
+ *   - quick actions (action:dodge/dash/help/disengage/hide/ready)
+ *
+ * Explicitly REJECTS `custom:*` — custom conditions stay DM-only (H11 read-only
+ * for player). DM-side has a matching allowlist in `CombatSessionClient.tsx`
+ * (`handleSelfConditionToggle`) so a bypass at the UI layer would still be
+ * discarded server-side.
+ */
+function canPlayerSelfApply(condition: string): boolean {
+  if (isPlayerForbiddenCondition(condition)) return false;
+  if (isQuickAction(condition)) return true;
+  if (condition === "concentrating" || condition.startsWith("concentrating:")) return true;
+  return (BENEFICIAL_CONDITIONS as readonly string[]).includes(condition);
+}
 
 export interface CombatLogEntry {
   text: string;
@@ -275,6 +313,34 @@ export function PlayerInitiativeBoard({
     endTurnTimersRef.current = [];
   }, []);
   useEffect(() => { return () => clearEndTurnTimers(); }, [clearEndTurnTimers]);
+  /**
+   * S4.3 — Guarded self-condition toggle. Filters out `custom:*` (DM-only),
+   * fires `combat:quick_action_applied` telemetry for the 6 quick actions,
+   * then defers to the caller's `onSelfConditionToggle` (broadcast + optimistic
+   * update) when allowed.
+   */
+  const safeSelfToggle = useCallback(
+    (combatantId: string, condition: string) => {
+      if (!onSelfConditionToggle) return;
+      if (!canPlayerSelfApply(condition)) return;
+      if (isQuickAction(condition)) {
+        // Determine whether this is an apply (not currently active) → fire
+        // telemetry ONLY on add, to keep parity with DM-side behaviour.
+        const combatant = combatants.find((c) => c.id === combatantId);
+        const wasActive = combatant?.conditions.includes(condition) ?? false;
+        if (!wasActive) {
+          const kind = condition.slice("action:".length);
+          trackEvent("combat:quick_action_applied", {
+            action: kind,
+            applied_by: "self",
+          });
+        }
+      }
+      onSelfConditionToggle(combatantId, condition);
+    },
+    [onSelfConditionToggle, combatants],
+  );
+
   const handleEndTurn = useCallback(() => {
     if (endTurnState !== "idle" || !onEndTurn) return;
     setEndTurnState("pending");
@@ -848,6 +914,42 @@ export function PlayerInitiativeBoard({
                     ))}
                   </div>
                 )}
+                {/* S4.3 — Quick actions strip — desktop own-char card */}
+                {onSelfConditionToggle && (
+                  <div className="mt-2" data-testid="player-quick-actions">
+                    <p className="text-[10px] text-sky-300/70 font-medium uppercase tracking-wider mb-1">
+                      {tc("quick_actions_label")}
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {QUICK_ACTIONS.map((kind) => {
+                        const conditionStr = formatQuickAction(kind);
+                        const isActive = pc.conditions.includes(conditionStr);
+                        const Icon = PLAYER_QUICK_ACTION_ICON[kind];
+                        const label = tc(`action_${kind}`);
+                        const desc = tc(`action_${kind}_desc`);
+                        return (
+                          <button
+                            key={kind}
+                            type="button"
+                            onClick={() => safeSelfToggle(pc.id, conditionStr)}
+                            title={desc}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium min-h-[32px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400/50 ${
+                              isActive
+                                ? "bg-sky-600 text-white"
+                                : "bg-sky-900/20 text-sky-300/70 hover:bg-sky-900/40 hover:text-sky-200 border border-sky-500/30"
+                            }`}
+                            aria-pressed={isActive}
+                            aria-label={isActive ? tc("condition_remove_aria", { name: label }) : tc("condition_add_aria", { name: label })}
+                            data-testid={`player-quick-action-${kind}`}
+                          >
+                            <Icon className="w-3 h-3" aria-hidden="true" />
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 {/* Beneficial conditions self-picker — desktop own-char card (collapsed by default) */}
                 {onSelfConditionToggle && (
                   <div className="mt-2">
@@ -866,7 +968,7 @@ export function PlayerInitiativeBoard({
                           return (
                             <button
                               type="button"
-                              onClick={() => onSelfConditionToggle(pc.id, "concentrating")}
+                              onClick={() => safeSelfToggle(pc.id, "concentrating")}
                               className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
                                 isConcentrating
                                   ? "bg-purple-600 text-white"
@@ -886,7 +988,7 @@ export function PlayerInitiativeBoard({
                             <button
                               key={condition}
                               type="button"
-                              onClick={() => onSelfConditionToggle(pc.id, condition)}
+                              onClick={() => safeSelfToggle(pc.id, condition)}
                               className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
                                 isActive
                                   ? "bg-emerald-600 text-white"
@@ -1239,6 +1341,42 @@ export function PlayerInitiativeBoard({
               )}
 
               {/* Beneficial conditions self-picker — own character in list (collapsed by default) */}
+              {/* S4.3 — Quick actions strip — mobile own-char row */}
+              {isOwnChar && onSelfConditionToggle && (
+                <div className="mt-1.5" data-testid="player-quick-actions-mobile">
+                  <p className="text-[10px] text-sky-300/70 font-medium uppercase tracking-wider mb-1">
+                    {tc("quick_actions_label")}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {QUICK_ACTIONS.map((kind) => {
+                      const conditionStr = formatQuickAction(kind);
+                      const isActive = combatant.conditions.includes(conditionStr);
+                      const Icon = PLAYER_QUICK_ACTION_ICON[kind];
+                      const label = tc(`action_${kind}`);
+                      const desc = tc(`action_${kind}_desc`);
+                      return (
+                        <button
+                          key={kind}
+                          type="button"
+                          onClick={() => safeSelfToggle(combatant.id, conditionStr)}
+                          title={desc}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium min-h-[44px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400/50 ${
+                            isActive
+                              ? "bg-sky-600 text-white"
+                              : "bg-sky-900/20 text-sky-300/70 hover:bg-sky-900/40 hover:text-sky-200 border border-sky-500/30"
+                          }`}
+                          aria-pressed={isActive}
+                          aria-label={isActive ? tc("condition_remove_aria", { name: label }) : tc("condition_add_aria", { name: label })}
+                          data-testid={`player-quick-action-mobile-${kind}`}
+                        >
+                          <Icon className="w-3 h-3" aria-hidden="true" />
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               {isOwnChar && onSelfConditionToggle && (
                 <div className="mt-1.5">
                   <button
@@ -1256,7 +1394,7 @@ export function PlayerInitiativeBoard({
                         return (
                           <button
                             type="button"
-                            onClick={() => onSelfConditionToggle(combatant.id, "concentrating")}
+                            onClick={() => safeSelfToggle(combatant.id, "concentrating")}
                             className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
                               isConcentrating
                                 ? "bg-purple-600 text-white"
@@ -1276,7 +1414,7 @@ export function PlayerInitiativeBoard({
                           <button
                             key={condition}
                             type="button"
-                            onClick={() => onSelfConditionToggle(combatant.id, condition)}
+                            onClick={() => safeSelfToggle(combatant.id, condition)}
                             className={`inline-flex items-center px-2 py-0.5 text-[10px] rounded-full font-medium transition-all duration-200 ${
                               isActive
                                 ? "bg-emerald-600 text-white"

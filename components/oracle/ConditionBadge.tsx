@@ -6,11 +6,23 @@ import type { RulesetVersion } from "@/lib/types/database";
 import type { LucideIcon } from "lucide-react";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import { isCustomCondition, parseCustomCondition } from "@/lib/combat/custom-conditions";
+import { isQuickAction, getQuickActionKind, type QuickAction } from "@/lib/combat/quick-actions";
 import {
   EyeOff, Heart, AlertTriangle, Grip, CircleX, Eye,
   Zap, Mountain, Droplet, ArrowDown, Link, Star, Moon,
   Focus, Sparkles,
+  Shield, Users, ArrowLeft, Timer,
 } from "lucide-react";
+
+/** S4.3 — Quick-action icon map (matches ConditionSelector). */
+const QUICK_ACTION_BADGE_ICON: Record<QuickAction, LucideIcon> = {
+  dodge: Shield,
+  dash: Zap,
+  help: Users,
+  disengage: ArrowLeft,
+  hide: EyeOff,
+  ready: Timer,
+};
 
 /** Condition icon mapping for WCAG 2.1 AA 1.4.1 — not color-only */
 export const CONDITION_ICONS: Record<string, LucideIcon> = {
@@ -92,6 +104,40 @@ export function ConditionBadge({ condition, rulesetVersion = "2014", onRemove, t
         )}
       </span>
     );
+  }
+
+  // S4.3: detect quick action (action:dodge, action:dash, …) BEFORE the generic
+  // badge render so it gets its own blue tone + lucide icon (no raw prefix).
+  if (isQuickAction(condition)) {
+    const kind = getQuickActionKind(condition);
+    if (kind) {
+      const QAIcon = QUICK_ACTION_BADGE_ICON[kind];
+      const label = t(`action_${kind}`);
+      const desc = t(`action_${kind}_desc`);
+      return (
+        <span
+          className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium bg-sky-900/40 text-sky-200 border border-sky-500/40"
+          title={desc}
+          aria-label={`${label}. ${desc}`}
+          role="status"
+          data-testid={`condition-badge-action-${kind}`}
+        >
+          <QAIcon className="w-3 h-3 shrink-0" aria-hidden="true" />
+          <span>{label}</span>
+          {onRemove && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onRemove(condition); }}
+              className="ml-0.5 hover:text-red-400 transition-colors text-sky-200/70 text-[10px] leading-none min-w-[16px] min-h-[16px] flex items-center justify-center"
+              aria-label={t("condition_remove_aria", { name: label })}
+              data-testid={`condition-remove-action-${kind}`}
+            >
+              ✕
+            </button>
+          )}
+        </span>
+      );
+    }
   }
 
   // Handle "concentrating" and "concentrating:SpellName" as a special condition
