@@ -28,6 +28,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { PlayerCompendiumBrowser } from "@/components/player/PlayerCompendiumBrowser";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { assignInitiativeOrder, sortByInitiative, rollInitiativeForCombatant, dispatchInitiativeRoll, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
+import { computeBatchRemove } from "@/lib/combat/batch-remove";
 import { useInitiativeRolling } from "@/lib/hooks/useInitiativeRolling";
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import type { RulesetVersion } from "@/lib/types/database";
@@ -1321,6 +1322,40 @@ export function GuestCombatClient() {
     [removeCombatant, hydrateCombatants]
   );
 
+  // S3.4 — Batch remove (guest mode: store-only, no broadcasts). Mirrors the
+  // auth handleRemoveCombatantsBatch turn-index adjustment logic via the
+  // shared `computeBatchRemove` helper.
+  const handleRemoveGroupMembers = useCallback(
+    (ids: string[], kind: "clear_defeated" | "delete_group", groupId: string) => {
+      if (ids.length === 0) return;
+      const store = useGuestCombatStore.getState();
+      const { nextTurnIndex } = computeBatchRemove(
+        store.combatants,
+        store.currentTurnIndex,
+        ids,
+      );
+
+      for (const id of ids) removeCombatant(id);
+
+      const updated = useGuestCombatStore.getState().combatants;
+      const reordered = assignInitiativeOrder(updated);
+      hydrateCombatants(reordered);
+
+      if (reordered.length === 0) {
+        useGuestCombatStore.setState({ currentTurnIndex: 0 });
+      } else {
+        useGuestCombatStore.setState({ currentTurnIndex: nextTurnIndex });
+      }
+
+      trackEvent("combat:group_cleared", {
+        group_id: groupId,
+        kind,
+        member_count: ids.length,
+      });
+    },
+    [removeCombatant, hydrateCombatants]
+  );
+
   const handleApplyDamage = useCallback(
     (id: string, amount: number) => {
       const store = useGuestCombatStore.getState();
@@ -1994,6 +2029,8 @@ export function GuestCombatClient() {
                   groupInitiative={getGroupInitiative(members)}
                   onSetGroupInitiative={(value) => setGroupInitiative(groupId, value)}
                   isCurrentTurn={isCurrentTurn}
+                  onClearDefeated={(ids) => handleRemoveGroupMembers(ids, "clear_defeated", groupId)}
+                  onDeleteGroup={(ids) => handleRemoveGroupMembers(ids, "delete_group", groupId)}
                 >
                   {members.map((c, i) => {
                     const pulseClass = pulseTurnId === c.id ? "animate-turn-pulse block rounded-md" : "";
