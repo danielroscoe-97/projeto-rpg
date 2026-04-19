@@ -70,6 +70,46 @@ export interface Combatant {
    * the same monster slug.
    */
   rechargeState?: Record<string, { depleted: boolean; threshold: number }>;
+  /**
+   * S5.1 — Polymorph / Wild Shape transformation state.
+   *
+   * When `enabled`, the combatant is currently transformed. The UI renders
+   * TWO HP bars stacked: the form's HP on top (gold border), the original
+   * combatant HP below (desaturated). Damage subtracts from `temp_current_hp`
+   * first; when it reaches 0 the transformation ends.
+   *
+   * - `variant: "polymorph"` — Polymorph spell RAW: on form destruction the
+   *   spell ends and OVERFLOW DAMAGE IS DISCARDED (original HP intact).
+   * - `variant: "wildshape"` — Druid Wild Shape RAI (Sage Advice): on form
+   *   destruction the wildshape ends and OVERFLOW CARRIES to original HP.
+   *
+   * HpStatus tier is derived client-side from (`temp_current_hp`, `temp_max_hp`)
+   * via `deriveHpStatus()` — the HpStatus union is immutable (broadcast ABI rule).
+   *
+   * Healing while transformed ONLY increases `temp_current_hp` (original HP
+   * stays at whatever it was when transformation started). After revert,
+   * healing flows to original HP normally.
+   *
+   * Not persisted across encounters — reset on `clearEncounter` like
+   * `rechargeState`. Broadcast piggy-backs on `CombatStateBroadcast`
+   * (SW `CACHE_VERSION` bumped v4 → v5 for this ABI change).
+   */
+  polymorph?: {
+    /** True while the combatant is transformed. Remove the object to end. */
+    enabled: boolean;
+    /** Which transformation ruleset applies — governs overflow damage semantics. */
+    variant: "polymorph" | "wildshape";
+    /** Display name of the form (e.g. "Tyrannosaurus Rex", "Brown Bear"). */
+    form_name: string;
+    /** Current HP of the form. Damage subtracts from this first. */
+    temp_current_hp: number;
+    /** Max HP of the form. Used for HP bar pct + deriveHpStatus tier. */
+    temp_max_hp: number;
+    /** Optional display-only AC of the form. */
+    temp_ac?: number;
+    /** Round # when the transformation started — for debugging/timer. */
+    started_at_turn: number;
+  };
 }
 
 export type UndoEntry =
@@ -194,6 +234,20 @@ export interface CombatActions {
    * Creates the per-combatant map as needed. In-combat only (reset on clearEncounter).
    */
   setRechargeState: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
+  /**
+   * S5.1 — Apply a polymorph/wildshape transformation to a combatant.
+   * Sets `polymorph` with `enabled: true` and initializes `temp_current_hp = temp_max_hp`.
+   */
+  applyPolymorph: (
+    id: string,
+    params: { variant: "polymorph" | "wildshape"; form_name: string; temp_max_hp: number; temp_ac?: number }
+  ) => void;
+  /**
+   * S5.1 — End polymorph/wildshape (manual DM action OR form destruction).
+   * `reason` controls overflow carry: "damage" with Wildshape carries overflow
+   * to original HP; otherwise original HP is untouched.
+   */
+  endPolymorph: (id: string, reason: "manual" | "damage", overflow?: number) => void;
 }
 
 // --- CP.1.1: Parsed Monster Action Types ---

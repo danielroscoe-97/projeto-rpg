@@ -5,6 +5,12 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { sortByInitiative, assignInitiativeOrder } from "@/lib/utils/initiative";
 import { cleanupOrphanedLairEntry } from "@/lib/utils/lair-action";
 import { getMonsterById } from "@/lib/srd/srd-search";
+import {
+  applyPolymorphDamage,
+  applyPolymorphHealing,
+  createPolymorphState,
+  clearPolymorph,
+} from "@/lib/combat/polymorph";
 
 export type GuestCombatPhase = "setup" | "combat" | "ended";
 
@@ -143,6 +149,13 @@ interface GuestCombatActions {
   toggleTimerPause: () => void;
   /** S5.3 — Set recharge state for an ability on a combatant. In-combat only. */
   setRechargeState: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
+  /** S5.1 — Apply polymorph/wildshape to a combatant. */
+  applyPolymorph: (
+    id: string,
+    params: { variant: "polymorph" | "wildshape"; form_name: string; temp_max_hp: number; temp_ac?: number }
+  ) => void;
+  /** S5.1 — End polymorph (manual or damage). Overflow carry handled in applyDamage. */
+  endPolymorph: (id: string, reason: "manual" | "damage", overflow?: number) => void;
 }
 
 type GuestCombatStore = GuestCombatState & GuestCombatActions;
@@ -381,6 +394,10 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
+            // S5.1 — polymorphed combatants route damage to form HP first.
+            if (c.polymorph?.enabled) {
+              return applyPolymorphDamage(c, amount).next;
+            }
             let remaining = amount;
             let newTempHp = c.temp_hp;
             if (newTempHp > 0) {
@@ -398,9 +415,57 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
         set((state) => ({
           combatants: state.combatants.map((c) => {
             if (c.id !== id) return c;
+            // S5.1 — polymorphed combatants: healing only raises form HP.
+            if (c.polymorph?.enabled) {
+              return applyPolymorphHealing(c, amount);
+            }
             const newHp = Math.min(c.max_hp, c.current_hp + amount);
             const resetSaves = c.current_hp === 0 && newHp > 0;
             return { ...c, current_hp: newHp, ...(resetSaves ? { death_saves: undefined, is_defeated: false } : {}) };
+          }),
+        }));
+      },
+
+      // S5.1 — Polymorph / Wild Shape actions (guest parity with auth store).
+      applyPolymorph: (id, params) => {
+        if (guardExpired()) return;
+        set((state) => ({
+          combatants: state.combatants.map((c) =>
+            c.id === id
+              ? {
+                  ...c,
+                  polymorph: createPolymorphState({
+                    ...params,
+                    started_at_turn: state.roundNumber,
+                  }),
+                }
+              : c
+          ),
+        }));
+      },
+
+      endPolymorph: (id, reason, overflow) => {
+        if (guardExpired()) return;
+        set((state) => ({
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            if (!c.polymorph?.enabled) return c;
+            if (reason === "damage" && c.polymorph.variant === "wildshape" && overflow && overflow > 0) {
+              let carry = overflow;
+              let newTempHp = c.temp_hp;
+              if (newTempHp > 0) {
+                const absorbed = Math.min(newTempHp, carry);
+                newTempHp -= absorbed;
+                carry -= absorbed;
+              }
+              const cleared = clearPolymorph(c);
+              return {
+                ...cleared,
+                temp_hp: newTempHp,
+                current_hp: Math.max(0, cleared.current_hp - carry),
+              };
+            }
+            return clearPolymorph(c);
           }),
         }));
       },

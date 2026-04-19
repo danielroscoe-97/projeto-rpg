@@ -28,6 +28,9 @@ const ALLOWED_EVENTS = new Set([
   "combat:recharge_rolled",
   // Combat — S4.2 custom conditions (LGPD: name_length only, never the raw name)
   "combat:custom_condition_applied",
+  // Combat — S5.1 Polymorph / Wild Shape (LGPD: form_name_length only, no raw names)
+  "combat:polymorph_applied",
+  "combat:polymorph_ended",
   // Favorites — S5.2
   "favorites:added",
   "favorites:removed",
