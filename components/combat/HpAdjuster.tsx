@@ -25,6 +25,22 @@ interface HpAdjusterProps {
   primaryTargetId?: string;
   /** Callback to apply HP change to multiple targets at once. */
   onApplyToMultiple?: (targetIds: string[], amount: number, mode: HpMode) => void;
+  /**
+   * S5.1 — When defined, the adjuster renders a "Polymorph" section on top.
+   * Quick-adjust buttons apply damage to FORM HP (via `onApplyDamage` — the
+   * store's damage fast-path automatically routes to `polymorph.temp_current_hp`
+   * while `polymorph.enabled` is true). The section also exposes the
+   * "End transformation" button routed through `onEndPolymorph`.
+   */
+  polymorph?: {
+    enabled: boolean;
+    formName: string;
+    variant: "polymorph" | "wildshape";
+    tempCurrentHp: number;
+    tempMaxHp: number;
+  };
+  /** S5.1 — handler invoked when DM clicks "Encerrar transformação". */
+  onEndPolymorph?: () => void;
 }
 
 export function HpAdjuster({
@@ -35,8 +51,11 @@ export function HpAdjuster({
   allCombatants,
   primaryTargetId,
   onApplyToMultiple,
+  polymorph,
+  onEndPolymorph,
 }: HpAdjusterProps) {
   const t = useTranslations("combat");
+  const isPolymorphed = !!polymorph?.enabled;
   const [mode, setModeState] = useState<HpMode>(() => {
     // Read the pre-set mode (from keyboard shortcuts) then reset to default
     const initial = lastUsedMode;
@@ -141,6 +160,52 @@ export function HpAdjuster({
       className="mt-2 p-2 bg-white/[0.04] rounded-md"
       data-testid="hp-adjuster"
     >
+      {/* S5.1 — Polymorph section (visible only when transformed). The quick
+          buttons dispatch damage to the normal store path, which routes to
+          `polymorph.temp_current_hp` while `polymorph.enabled` is true. */}
+      {isPolymorphed && polymorph && (
+        <div
+          className="mb-2 p-2 rounded-md border border-gold/40 bg-gold/[0.06]"
+          data-testid="hp-adjuster-polymorph-section"
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-medium text-gold inline-flex items-center gap-1.5">
+              <span aria-hidden>🦋</span>
+              {t("polymorph.section_title")}
+              <span className="text-muted-foreground/80 font-normal ml-1">
+                · {polymorph.formName} ({polymorph.tempCurrentHp}/{polymorph.tempMaxHp})
+              </span>
+            </span>
+            {onEndPolymorph && (
+              <button
+                type="button"
+                onClick={onEndPolymorph}
+                className="px-2 py-1 text-xs rounded font-medium min-h-[32px] inline-flex items-center bg-gold text-surface-primary hover:bg-gold/90 transition-colors"
+                data-testid="hp-adjuster-end-polymorph"
+              >
+                {t("polymorph.end_button")}
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="text-[11px] text-muted-foreground mr-1">
+              {t("polymorph.form_hp_label")}
+            </span>
+            {[1, 5, 10].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => onApplyDamage(n)}
+                className="px-2 py-1 text-xs rounded font-mono min-h-[32px] bg-red-900/30 text-red-300 hover:bg-red-900/50 transition-colors"
+                data-testid={`hp-adjuster-poly-dmg-${n}`}
+              >
+                −{n}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-2">
         <div className="flex gap-1">
           {(["damage", "heal", "temp"] as const).map((m) => (

@@ -211,7 +211,39 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       }
     }
 
+    // S5.1 — capture polymorph state BEFORE the store mutates so we can
+    // detect form-destruction (polymorph.enabled flipped off) after damage.
+    const polyBefore = before.polymorph;
+
     snap.applyDamage(id, finalAmount);
+
+    // S5.1 — after damage, if the combatant WAS polymorphed and is no longer,
+    // the form was destroyed. Emit the telemetry + combat-log entry here so
+    // the hook is the single source of truth for user-facing polymorph-end
+    // events (manual end has its own handler below).
+    if (polyBefore?.enabled) {
+      const after = useCombatStore.getState().combatants.find((c) => c.id === id);
+      const polyStillOn = after?.polymorph?.enabled === true;
+      if (!polyStillOn) {
+        const roundNumber = useCombatStore.getState().round_number;
+        const turnsActive = Math.max(0, roundNumber - polyBefore.started_at_turn);
+        trackEvent("combat:polymorph_ended", {
+          reason: "damage",
+          variant: polyBefore.variant,
+          turns_active: turnsActive,
+        });
+        useCombatLogStore.getState().addEntry({
+          round: roundNumber,
+          type: "system",
+          actorName: "",
+          targetName: before.name,
+          description: t("polymorph.form_destroyed", {
+            form_name: polyBefore.form_name,
+            name: before.name,
+          }),
+        });
+      }
+    }
 
     // Compute expected post-damage values from snapshot (mirrors store logic)
     let remaining = finalAmount;
@@ -294,7 +326,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
         });
       }
     }
-  }, [setError, getSessionId]);
+  }, [setError, getSessionId, t]);
 
   const handleApplyHealing = useCallback((id: string, amount: number, source?: string) => {
     const snap = useCombatStore.getState();
@@ -756,6 +788,111 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [setError, getSessionId]);
 
+  /**
+   * S5.1 — Apply a polymorph/wildshape transformation to a combatant.
+   *
+   * Broadcasts a full `session:state_sync` event so player clients reflect the
+   * new two-HP-bar rendering (polymorph piggy-backs on state_sync — no new
+   * broadcast type). Telemetry payload is LGPD-safe: only `form_name_length`,
+   * never the raw form name.
+   *
+   * Parity: DM-only action (only the DM mutates); player clients render the
+   * reflected state. No persist to DB — polymorph is in-combat ephemeral
+   * (same rule as rechargeState).
+   */
+  const handlePolymorph = useCallback((
+    id: string,
+    params: { variant: "polymorph" | "wildshape"; form_name: string; form_max_hp: number; form_ac?: number }
+  ) => {
+    const snap = useCombatStore.getState();
+    const before = snap.combatants.find((c) => c.id === id);
+    if (!before) return;
+
+    snap.applyPolymorph(id, {
+      variant: params.variant,
+      form_name: params.form_name,
+      temp_max_hp: params.form_max_hp,
+      temp_ac: params.form_ac,
+    });
+
+    const roundNumber = useCombatStore.getState().round_number;
+    const targetKind: "player" | "monster" | "npc" = before.is_player
+      ? "player"
+      : before.monster_id
+        ? "monster"
+        : "npc";
+
+    trackEvent("combat:polymorph_applied", {
+      variant: params.variant,
+      form_name_length: params.form_name.length,
+      temp_max_hp: params.form_max_hp,
+      target_kind: targetKind,
+    });
+
+    useCombatLogStore.getState().addEntry({
+      round: roundNumber,
+      type: "system",
+      actorName: "",
+      targetName: before.name,
+      description: `${before.name} → ${params.form_name}`,
+    });
+
+    // Broadcast full state sync so players see the two-HP-bar rendering.
+    const syncState = useCombatStore.getState();
+    if (syncState.encounter_id) {
+      broadcastEvent(getSessionId(), {
+        type: "session:state_sync",
+        combatants: syncState.combatants,
+        current_turn_index: syncState.current_turn_index,
+        round_number: syncState.round_number,
+        encounter_id: syncState.encounter_id,
+      });
+    }
+  }, [getSessionId]);
+
+  /**
+   * S5.1 — End polymorph/wildshape manually (DM-triggered revert).
+   * Damage-triggered ends are handled inside `handleApplyDamage`.
+   */
+  const handleEndPolymorph = useCallback((id: string) => {
+    const snap = useCombatStore.getState();
+    const before = snap.combatants.find((c) => c.id === id);
+    if (!before?.polymorph?.enabled) return;
+
+    const variant = before.polymorph.variant;
+    const startedAtTurn = before.polymorph.started_at_turn;
+
+    snap.endPolymorph(id, "manual");
+
+    const roundNumber = useCombatStore.getState().round_number;
+    const turnsActive = Math.max(0, roundNumber - startedAtTurn);
+
+    trackEvent("combat:polymorph_ended", {
+      reason: "manual",
+      variant,
+      turns_active: turnsActive,
+    });
+
+    useCombatLogStore.getState().addEntry({
+      round: roundNumber,
+      type: "system",
+      actorName: "",
+      targetName: before.name,
+      description: t("polymorph.ended_manually", { name: before.name }),
+    });
+
+    const syncState = useCombatStore.getState();
+    if (syncState.encounter_id) {
+      broadcastEvent(getSessionId(), {
+        type: "session:state_sync",
+        combatants: syncState.combatants,
+        current_turn_index: syncState.current_turn_index,
+        round_number: syncState.round_number,
+        encounter_id: syncState.encounter_id,
+      });
+    }
+  }, [getSessionId, t]);
+
   return {
     turnPending,
     handleAdvanceTurn,
@@ -775,6 +912,8 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     handleToggleHidden,
     handleUndoLastAdd,
     handleEndEncounter,
+    handlePolymorph,
+    handleEndPolymorph,
     getSessionId,
   };
 }

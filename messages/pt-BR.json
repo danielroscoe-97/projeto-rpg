@@ -1747,9 +1747,15 @@
       "form_name_label": "Nome da forma",
       "form_max_hp": "HP máximo da forma",
       "apply": "Transformar",
+      "cancel": "Cancelar",
       "end_button": "Encerrar transformação",
       "form_destroyed": "{form_name} foi destruído; {name} volta à forma original",
-      "ended_manually": "{name} encerrou a transformação"
+      "ended_manually": "{name} encerrou a transformação",
+      "trigger_aria": "Transformar {name}",
+      "section_title": "Transformação",
+      "form_hp_label": "HP da forma",
+      "original_hp_label": "HP original",
+      "form_label": "Forma"
     },
     "inline_hp_hint": "Clique para editar HP rápido (negativo = dano, positivo = cura)",
     "edit_initiative_title": "Editar iniciativa",

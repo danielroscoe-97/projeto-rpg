@@ -68,6 +68,18 @@ export interface CombatantRowProps {
   onSetRechargeState?: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
   /** Current round number (for combat log entries). S5.3. */
   currentRound?: number;
+  /**
+   * S5.1 — Open the Polymorph / Wild Shape modal for this combatant. When
+   * undefined or the `ff_polymorph_v1` flag is OFF, the trigger button is
+   * not rendered. Parity: present on Guest + Anon-DM + Auth-DM clients.
+   */
+  onOpenPolymorph?: (id: string) => void;
+  /**
+   * S5.1 — End the transformation manually. Usually routed through the
+   * HpAdjuster's "End transformation" button; also exposed here in case
+   * the row offers a quick-revert shortcut elsewhere.
+   */
+  onEndPolymorph?: (id: string) => void;
   /** Props from @dnd-kit useSortable — spread on drag handle */
   dragHandleProps?: Record<string, unknown>;
 }
@@ -101,6 +113,8 @@ export const CombatantRow = memo(function CombatantRow({
   onToggleReaction,
   onSetRechargeState,
   currentRound,
+  onOpenPolymorph,
+  onEndPolymorph,
   dragHandleProps,
 }: CombatantRowProps) {
   const t = useTranslations("combat");
@@ -237,6 +251,20 @@ export const CombatantRow = memo(function CombatantRow({
   const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
   const hpThresholdKey = getHpThresholdKey(combatant.current_hp, combatant.max_hp);
   const hasTempHp = combatant.temp_hp > 0;
+  // S5.1 — Polymorph / Wild Shape: when active, render a second (form) HP bar
+  // ABOVE the original HP bar. Form HP color follows the same tier thresholds
+  // but the bar is decorated with a gold border so the DM visually recognizes
+  // it as "transformed" state. The ORIGINAL HP bar is rendered desaturated
+  // (opacity-60) below the form bar.
+  const poly = combatant.polymorph;
+  const isPolymorphed = !!poly?.enabled;
+  const polyHpPct =
+    poly && poly.temp_max_hp > 0
+      ? Math.max(0, Math.min(1, poly.temp_current_hp / poly.temp_max_hp))
+      : 0;
+  const polyHpBarColor = poly
+    ? getHpBarColor(poly.temp_current_hp, poly.temp_max_hp)
+    : hpBarColor;
   // Visual bar widths: temp HP extends the bar beyond normal max
   const totalPool = combatant.max_hp + combatant.temp_hp;
   const hpPctOfTotal = totalPool > 0 ? Math.max(0, Math.min(1, combatant.current_hp / totalPool)) : 0;
@@ -626,8 +654,49 @@ export const CombatantRow = memo(function CombatantRow({
           )}
         </div>
 
+        {/* S5.1 — Polymorph: form HP bar ABOVE the original bar with a gold border
+            + form-name label. The original HP bar below renders desaturated so
+            the DM visually parses "two bodies" quickly. */}
+        {isPolymorphed && poly && (
+          <div className="mb-1" data-testid={`polymorph-form-bar-${combatant.id}`}>
+            <div className="flex items-center justify-between mb-0.5 text-[10px] font-mono text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <span className="text-gold">🦋</span>
+                <span className="text-foreground">
+                  {poly.form_name}
+                </span>
+                <span className="text-muted-foreground/60">
+                  ({t(`polymorph.${poly.variant === "wildshape" ? "variant_wildshape" : "variant_polymorph"}`)})
+                </span>
+              </span>
+              <span>
+                {poly.temp_current_hp}/{poly.temp_max_hp}
+                {poly.temp_ac !== undefined && (
+                  <span className="ml-1 text-muted-foreground/60">
+                    · AC {poly.temp_ac}
+                  </span>
+                )}
+              </span>
+            </div>
+            <div
+              className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden border border-gold/40"
+              role="progressbar"
+              aria-valuenow={poly.temp_current_hp}
+              aria-valuemin={0}
+              aria-valuemax={poly.temp_max_hp}
+              aria-label={t("polymorph.form_hp_label") + " " + poly.form_name}
+            >
+              <div
+                className={`h-full transition-all rounded-full ${polyHpBarColor}`}
+                style={{ width: `${polyHpPct * 100}%` }}
+                data-testid={`polymorph-form-hp-bar-${combatant.id}`}
+              />
+            </div>
+          </div>
+        )}
+
         {/* HP bar with tooltip — purple segment for temp HP */}
-        <div className="mb-0.5">
+        <div className={`mb-0.5 ${isPolymorphed ? "opacity-60" : ""}`}>
           <div
             className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden cursor-help flex"
             role="progressbar"
@@ -826,6 +895,23 @@ export const CombatantRow = memo(function CombatantRow({
             >
               {t("edit_button")}
             </button>
+            {/* S5.1 — Polymorph trigger (flag-gated by caller via `onOpenPolymorph`). */}
+            {onOpenPolymorph && !combatant.is_defeated && (
+              <button
+                type="button"
+                onClick={() => onOpenPolymorph(combatant.id)}
+                className={`px-2 py-1 text-xs rounded font-medium min-h-[44px] sm:min-h-[28px] inline-flex items-center gap-1 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                  isPolymorphed
+                    ? "bg-gold/20 text-gold hover:bg-gold/30 border border-gold/40"
+                    : "bg-white/[0.06] text-muted-foreground hover:bg-white/[0.1]"
+                }`}
+                aria-label={t("polymorph.trigger_aria", { name: combatant.name })}
+                title={t("polymorph.trigger")}
+                data-testid={`polymorph-btn-${combatant.id}`}
+              >
+                🦋 {t("polymorph.trigger")}
+              </button>
+            )}
             {canSwitchVersion && (
               <>
                 <button
@@ -908,6 +994,22 @@ export const CombatantRow = memo(function CombatantRow({
             allCombatants={allCombatants}
             primaryTargetId={combatant.id}
             onApplyToMultiple={onApplyToMultiple}
+            // S5.1 — polymorph integration: adjuster renders a "Polymorph"
+            // section above the normal HP controls when the combatant is
+            // transformed. Quick-adjust buttons route to form HP; the
+            // "End transformation" button clears the polymorph state.
+            polymorph={
+              poly
+                ? {
+                    enabled: poly.enabled,
+                    formName: poly.form_name,
+                    variant: poly.variant,
+                    tempCurrentHp: poly.temp_current_hp,
+                    tempMaxHp: poly.temp_max_hp,
+                  }
+                : undefined
+            }
+            onEndPolymorph={onEndPolymorph ? () => onEndPolymorph(combatant.id) : undefined}
           />
         )}
 

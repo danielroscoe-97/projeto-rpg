@@ -1745,9 +1745,15 @@
       "form_name_label": "Form name",
       "form_max_hp": "Form max HP",
       "apply": "Transform",
+      "cancel": "Cancel",
       "end_button": "End transformation",
       "form_destroyed": "{form_name} was destroyed; {name} reverts to original form",
-      "ended_manually": "{name} ended transformation"
+      "ended_manually": "{name} ended transformation",
+      "trigger_aria": "Transform {name}",
+      "section_title": "Transformation",
+      "form_hp_label": "Form HP",
+      "original_hp_label": "Original HP",
+      "form_label": "Form"
     },
     "inline_hp_hint": "Click to quick-edit HP (negative = damage, positive = heal)",
     "edit_initiative_title": "Edit initiative",

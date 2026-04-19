@@ -16,6 +16,7 @@ import { CombatTimer } from "@/components/combat/CombatTimer";
 import { TurnTimer } from "@/components/combat/TurnTimer";
 // StickyTurnHeader removed — turn info now inline in round header (desktop) and compact row (mobile)
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
+import { PolymorphModal, shouldShowPolymorphTrigger } from "@/components/combat/PolymorphModal";
 import { CombatRecap } from "@/components/combat/CombatRecap";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
@@ -861,6 +862,8 @@ export function GuestCombatClient() {
   const [guestCombatReport, setGuestCombatReport] = useState<CombatReport | null>(null);
   const [compendiumOpen, setCompendiumOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
+  // S5.1 — Polymorph modal target (null = closed).
+  const [polymorphTargetId, setPolymorphTargetId] = useState<string | null>(null);
   // C.15/UX.04: Post-combat state machine (leaderboard → done, poll skipped for guest)
   type GuestPostCombatPhase = "leaderboard" | null;
   const [guestPostCombatPhase, setGuestPostCombatPhase] = useState<GuestPostCombatPhase>(null);
@@ -950,6 +953,8 @@ export function GuestCombatClient() {
     setLegendaryActionsUsed,
     toggleReaction,
     setRechargeState,
+    applyPolymorph,
+    endPolymorph,
   } = useGuestCombatStore();
 
   // ─── Undo stack (Story 1.1) ─────────────────────────────────────────────────
@@ -1327,6 +1332,9 @@ export function GuestCombatClient() {
       const actor = store.combatants[store.currentTurnIndex];
       const target = store.combatants.find((c) => c.id === id);
       if (target) pushHpUndo(target, "damage");
+      // S5.1 — capture polymorph state BEFORE the damage so we can detect
+      // form-destruction (polymorph.enabled flipped off) afterwards.
+      const polyBefore = target?.polymorph;
       // Calculate effective damage (clamped by temp_hp + current_hp)
       const effectiveDamage = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
       applyDamage(id, amount);
@@ -1341,6 +1349,26 @@ export function GuestCombatClient() {
           description: `${target.name} takes ${effectiveDamage} damage`,
           details: { damageAmount: effectiveDamage },
         });
+      }
+      // S5.1 — form destroyed via damage (guest parity).
+      if (polyBefore?.enabled && target) {
+        const after = useGuestCombatStore.getState().combatants.find((c) => c.id === id);
+        const polyStillOn = after?.polymorph?.enabled === true;
+        if (!polyStillOn) {
+          const turnsActive = Math.max(0, store.roundNumber - polyBefore.started_at_turn);
+          trackEvent("combat:polymorph_ended", {
+            reason: "damage",
+            variant: polyBefore.variant,
+            turns_active: turnsActive,
+          });
+          useCombatLogStore.getState().addEntry({
+            round: store.roundNumber,
+            type: "system",
+            actorName: "",
+            targetName: target.name,
+            description: `${polyBefore.form_name} was destroyed; ${target.name} reverts to original form`,
+          });
+        }
       }
     },
     [applyDamage, pushHpUndo]
@@ -1475,6 +1503,63 @@ export function GuestCombatClient() {
       }
     },
     [updateCombatantStats]
+  );
+  // S5.1 — guest polymorph handlers (parity with useCombatActions.handlePolymorph).
+  const handlePolymorph = useCallback(
+    (id: string, params: { variant: "polymorph" | "wildshape"; form_name: string; form_max_hp: number; form_ac?: number }) => {
+      const store = useGuestCombatStore.getState();
+      const before = store.combatants.find((c) => c.id === id);
+      if (!before) return;
+      applyPolymorph(id, {
+        variant: params.variant,
+        form_name: params.form_name,
+        temp_max_hp: params.form_max_hp,
+        temp_ac: params.form_ac,
+      });
+      const targetKind: "player" | "monster" | "npc" = before.is_player
+        ? "player"
+        : before.monster_id
+          ? "monster"
+          : "npc";
+      trackEvent("combat:polymorph_applied", {
+        variant: params.variant,
+        form_name_length: params.form_name.length,
+        temp_max_hp: params.form_max_hp,
+        target_kind: targetKind,
+      });
+      useCombatLogStore.getState().addEntry({
+        round: store.roundNumber,
+        type: "system",
+        actorName: "",
+        targetName: before.name,
+        description: `${before.name} → ${params.form_name}`,
+      });
+    },
+    [applyPolymorph]
+  );
+  const handleEndPolymorph = useCallback(
+    (id: string) => {
+      const store = useGuestCombatStore.getState();
+      const before = store.combatants.find((c) => c.id === id);
+      if (!before?.polymorph?.enabled) return;
+      const variant = before.polymorph.variant;
+      const startedAtTurn = before.polymorph.started_at_turn;
+      endPolymorph(id, "manual");
+      const turnsActive = Math.max(0, store.roundNumber - startedAtTurn);
+      trackEvent("combat:polymorph_ended", {
+        reason: "manual",
+        variant,
+        turns_active: turnsActive,
+      });
+      useCombatLogStore.getState().addEntry({
+        round: store.roundNumber,
+        type: "system",
+        actorName: "",
+        targetName: before.name,
+        description: `${before.name} ended transformation`,
+      });
+    },
+    [endPolymorph]
   );
   const handleReorderCombatants = useCallback(
     (newOrder: Combatant[], movedId?: string) => {
@@ -1976,6 +2061,8 @@ export function GuestCombatClient() {
                     onToggleReaction={toggleReaction}
                     onSetRechargeState={setRechargeState}
                     currentRound={roundNumber}
+                    onOpenPolymorph={shouldShowPolymorphTrigger() ? (id) => setPolymorphTargetId(id) : undefined}
+                    onEndPolymorph={shouldShowPolymorphTrigger() ? handleEndPolymorph : undefined}
                   />
                 </div>
               );
@@ -2024,6 +2111,8 @@ export function GuestCombatClient() {
                           onToggleReaction={toggleReaction}
                           onSetRechargeState={setRechargeState}
                           currentRound={roundNumber}
+                          onOpenPolymorph={shouldShowPolymorphTrigger() ? (id) => setPolymorphTargetId(id) : undefined}
+                          onEndPolymorph={shouldShowPolymorphTrigger() ? handleEndPolymorph : undefined}
                         />
                       </div>
                     );
@@ -2096,6 +2185,20 @@ export function GuestCombatClient() {
       />
 
       <CombatActionLog open={effectiveShowActionLog} onClose={() => setShowActionLog(false)} />
+
+      {/* S5.1 — Polymorph modal (guest parity). Flag-gated internally. */}
+      {polymorphTargetId && (
+        <PolymorphModal
+          open={polymorphTargetId !== null}
+          onOpenChange={(open) => { if (!open) setPolymorphTargetId(null); }}
+          combatantName={combatants.find((c) => c.id === polymorphTargetId)?.name ?? ""}
+          onApply={(payload) => {
+            if (!polymorphTargetId) return;
+            handlePolymorph(polymorphTargetId, payload);
+            setPolymorphTargetId(null);
+          }}
+        />
+      )}
     </>
   );
 }
