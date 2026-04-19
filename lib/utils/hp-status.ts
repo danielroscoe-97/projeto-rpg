@@ -42,6 +42,56 @@ export function getHpStatus(currentHp: number, maxHp: number): HpStatus {
   return "CRITICAL";
 }
 
+/**
+ * S3.1 — Same as `getHpStatus`, but with toggled threshold bands when the
+ * `ff_hp_thresholds_v2` feature flag is ON.
+ *
+ * - Flag OFF (default): legacy thresholds `LIGHT > 70%, MODERATE > 40%,
+ *   HEAVY > 10%, CRITICAL ≤ 10%`.
+ * - Flag ON: v2 thresholds `LIGHT > 75%, MODERATE > 50%, HEAVY > 25%,
+ *   CRITICAL ≤ 25%` — gives players more warning at each tier transition.
+ *
+ * The `HpStatus` union is **immutable** (broadcast ABI). "DEFEATED" is a
+ * display-only state derived via {@link deriveDisplayState}.
+ */
+export function getHpStatusWithFlag(
+  currentHp: number,
+  maxHp: number,
+  flagV2: boolean,
+): HpStatus {
+  if (maxHp <= 0) return "CRITICAL";
+  if (currentHp >= maxHp) return "FULL";
+  const pct = currentHp / maxHp;
+  if (flagV2) {
+    if (pct > 0.75) return "LIGHT";
+    if (pct > 0.5) return "MODERATE";
+    if (pct > 0.25) return "HEAVY";
+    return "CRITICAL";
+  }
+  if (pct > 0.7) return "LIGHT";
+  if (pct > 0.4) return "MODERATE";
+  if (pct > 0.1) return "HEAVY";
+  return "CRITICAL";
+}
+
+/**
+ * S3.1 — Client-side display state derived from the immutable `HpStatus` plus
+ * the combatant's current HP. Returns `"DEFEATED"` when HP hits 0 so UIs can
+ * render the skull/gray state without polluting the broadcast-carrying union.
+ *
+ * Never add `"DEFEATED"` to the `HpStatus` union — broadcast clients cache
+ * the narrower shape, and a new member would silently reject older PWA
+ * installations until the service worker rotates.
+ */
+export type HpDisplayState = HpStatus | "DEFEATED";
+
+export function deriveDisplayState(c: {
+  hp_status: HpStatus;
+  current_hp: number;
+}): HpDisplayState {
+  return c.current_hp <= 0 ? "DEFEATED" : c.hp_status;
+}
+
 /** Tailwind bg-color class for the HP progress bar. */
 export function getHpBarColor(currentHp: number, maxHp: number): string {
   if (maxHp <= 0) return "bg-gray-500";
