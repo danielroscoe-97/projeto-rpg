@@ -18,6 +18,24 @@ import { SRD_ABILITIES, type SrdAbility } from "@/lib/data/srd-abilities";
 import type { RulesetVersion } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 import { CompendiumLoginNudge, type CompendiumNudgeMode } from "@/components/player/CompendiumLoginNudge";
+// S5.2 — Favorites integration (ff_favorites_v1)
+import { isFeatureFlagEnabled } from "@/lib/flags";
+import { useFavorites } from "@/lib/favorites/use-favorites";
+import { FavoriteStar } from "@/components/favorites/FavoriteStar";
+import { FavoritesTab } from "@/components/favorites/FavoritesTab";
+
+/**
+ * Canonical slug format used by the favorites store. Mirrors the slugify in
+ * FavoritesTab so `<FavoriteStar>` writes and `FavoritesTab` reads agree.
+ */
+function favoriteSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 const LEVELS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 const PAGE_SIZE = 50;
@@ -28,7 +46,7 @@ const SRD_CLASSES = [
   "Warlock", "Wizard",
 ];
 
-type CompendiumTab = "all" | "spells" | "conditions" | "monsters" | "items" | "feats" | "abilities" | "races" | "backgrounds";
+type CompendiumTab = "favorites" | "all" | "spells" | "conditions" | "monsters" | "items" | "feats" | "abilities" | "races" | "backgrounds";
 
 type GlobalResult =
   | { kind: "spell"; item: SrdSpell }
@@ -68,10 +86,34 @@ export function PlayerCompendiumBrowser({
   returnUrl,
 }: PlayerCompendiumBrowserProps) {
   const t = useTranslations("combat");
+  const tFav = useTranslations("favorites");
   const locale = useLocale();
 
-  // Tab state
+  // S5.2 — favorites tab gating. Flag resolves per-render; safe on client.
+  const favoritesFlagOn = isFeatureFlagEnabled("ff_favorites_v1");
+  const { favorites: monsterFavs } = useFavorites("monster");
+  const { favorites: itemFavs } = useFavorites("item");
+  const { favorites: conditionFavs } = useFavorites("condition");
+  const totalFavoritesCount = monsterFavs.length + itemFavs.length + conditionFavs.length;
+
+  // Tab state — when flag is ON and user has ≥1 favorite, default to favorites tab
+  // so returning users see their saved content first. Otherwise default to "all".
   const [activeTab, setActiveTab] = useState<CompendiumTab>("all");
+  // Defer the default-tab decision until after the favorites hook has resolved
+  // at least once (hook seeds from localStorage synchronously for guest/anon,
+  // but auth users need a tick for the first fetch). We gate the switch on a
+  // mount-only ref so we don't re-trigger it later when the user manually
+  // navigates away.
+  const favoritesDefaultAppliedRef = useRef(false);
+  useEffect(() => {
+    if (favoritesDefaultAppliedRef.current) return;
+    if (!open) return;
+    if (!favoritesFlagOn) return;
+    if (totalFavoritesCount > 0) {
+      setActiveTab("favorites");
+    }
+    favoritesDefaultAppliedRef.current = true;
+  }, [open, favoritesFlagOn, totalFavoritesCount]);
 
   // Spells data
   const allSpells = useSrdStore((s) => s.spells);
@@ -175,6 +217,8 @@ export function PlayerCompendiumBrowser({
         setSelectedRace(null);
         setSelectedBackground(null);
         setActiveTab("all");
+        // S5.2 — allow the favorites-default logic to re-run on the next open.
+        favoritesDefaultAppliedRef.current = false;
         setDisplayCount(PAGE_SIZE);
         setMonsterDisplayCount(PAGE_SIZE);
         setMonsterNameFilter("");
@@ -406,6 +450,15 @@ export function PlayerCompendiumBrowser({
   const detailTitle = selectedSpell?.name ?? selectedMonster?.name ?? selectedCondition?.name ?? selectedItem?.name ?? selectedFeat?.name ?? selectedAbility?.name ?? selectedRace?.name ?? selectedBackground?.name ?? "";
 
   const tabItems: { key: CompendiumTab; icon: React.ReactNode; label: string }[] = [
+    // S5.2 — Favoritos tab is the FIRST tab when ff_favorites_v1 is ON.
+    // Flag OFF → tab is omitted entirely (legacy UX, zero visual regression).
+    ...(favoritesFlagOn
+      ? [{
+          key: "favorites" as const,
+          icon: <Star className="w-3.5 h-3.5 fill-current" />,
+          label: tFav("tab_label"),
+        }]
+      : []),
     { key: "all", icon: <Globe className="w-3.5 h-3.5" />, label: t("compendium_tab_all") },
     { key: "spells", icon: <Sparkles className="w-3.5 h-3.5" />, label: t("compendium_tab_spells") },
     { key: "conditions", icon: <HeartPulse className="w-3.5 h-3.5" />, label: t("compendium_tab_conditions") },
@@ -602,6 +655,20 @@ export function PlayerCompendiumBrowser({
                 </button>
               ))}
             </div>
+
+            {/* ── Favorites Tab (S5.2, ff_favorites_v1) ── */}
+            {activeTab === "favorites" && favoritesFlagOn && (
+              <div className="overflow-y-auto flex-1" data-testid="compendium-favorites-panel">
+                <FavoritesTab
+                  monsters={monsters}
+                  items={items}
+                  conditions={conditions}
+                  onSelectMonster={(m) => setSelectedMonster(m)}
+                  onSelectItem={(i) => setSelectedItem(i)}
+                  onSelectCondition={(c) => setSelectedCondition(c)}
+                />
+              </div>
+            )}
 
             {/* ── All Tab (Global Search) ── */}
             {activeTab === "all" && (
@@ -1108,13 +1175,17 @@ export function PlayerCompendiumBrowser({
                     </div>
                   ) : (
                     filteredConditions.map((condition) => (
-                      <button
+                      <div
                         key={condition.id}
-                        type="button"
-                        className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
-                        onClick={() => setSelectedCondition(condition)}
+                        className="relative w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
                       >
-                        <div className="min-w-0">
+                        <button
+                          type="button"
+                          className="absolute inset-0 w-full h-full"
+                          aria-label={condition.name}
+                          onClick={() => setSelectedCondition(condition)}
+                        />
+                        <div className="min-w-0 relative pointer-events-none">
                           <div className="text-sm font-medium text-foreground truncate">
                             {condition.name}
                           </div>
@@ -1122,8 +1193,18 @@ export function PlayerCompendiumBrowser({
                             {condition.description.slice(0, 80)}...
                           </div>
                         </div>
-                        <HeartPulse className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
-                      </button>
+                        <div className="flex items-center gap-1.5 shrink-0 relative">
+                          {favoritesFlagOn && (
+                            <FavoriteStar
+                              kind="condition"
+                              slug={favoriteSlug(condition.name)}
+                              name={condition.name}
+                              compact
+                            />
+                          )}
+                          <HeartPulse className="w-3.5 h-3.5 text-muted-foreground/40" />
+                        </div>
+                      </div>
                     ))
                   )}
                 </div>
@@ -1174,13 +1255,17 @@ export function PlayerCompendiumBrowser({
                   ) : (
                     <>
                       {displayedItems.map((item) => (
-                        <button
+                        <div
                           key={item.id}
-                          type="button"
-                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
-                          onClick={() => setSelectedItem(item)}
+                          className="relative w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
                         >
-                          <div className="min-w-0">
+                          <button
+                            type="button"
+                            className="absolute inset-0 w-full h-full"
+                            aria-label={item.name}
+                            onClick={() => setSelectedItem(item)}
+                          />
+                          <div className="min-w-0 relative pointer-events-none">
                             <div className="text-sm font-medium text-foreground truncate">
                               {item.name}
                             </div>
@@ -1191,13 +1276,21 @@ export function PlayerCompendiumBrowser({
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0 relative">
                             {item.reqAttune && (
                               <span className="text-[10px] text-purple-400 bg-purple-400/10 px-1.5 py-0.5 rounded">ATT</span>
                             )}
+                            {favoritesFlagOn && (
+                              <FavoriteStar
+                                kind="item"
+                                slug={favoriteSlug(item.name)}
+                                name={item.name}
+                                compact
+                              />
+                            )}
                             <Sword className="w-3.5 h-3.5 text-muted-foreground/40" />
                           </div>
-                        </button>
+                        </div>
                       ))}
 
                       {hasMoreItems && (
@@ -1585,13 +1678,17 @@ export function PlayerCompendiumBrowser({
                   ) : (
                     <>
                       {displayedMonsters.map((monster) => (
-                        <button
+                        <div
                           key={monster.id}
-                          type="button"
-                          className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
-                          onClick={() => setSelectedMonster(monster)}
+                          className="relative w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/[0.04] flex items-center justify-between gap-2 transition-colors"
                         >
-                          <div className="min-w-0">
+                          <button
+                            type="button"
+                            className="absolute inset-0 w-full h-full"
+                            aria-label={monster.name}
+                            onClick={() => setSelectedMonster(monster)}
+                          />
+                          <div className="min-w-0 relative pointer-events-none">
                             <div className="text-sm font-medium text-foreground truncate">
                               {monster.name}
                             </div>
@@ -1603,8 +1700,18 @@ export function PlayerCompendiumBrowser({
                               <span>{monster.size}</span>
                             </div>
                           </div>
-                          <Skull className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
-                        </button>
+                          <div className="flex items-center gap-1.5 shrink-0 relative">
+                            {favoritesFlagOn && (
+                              <FavoriteStar
+                                kind="monster"
+                                slug={favoriteSlug(monster.name)}
+                                name={monster.name}
+                                compact
+                              />
+                            )}
+                            <Skull className="w-3.5 h-3.5 text-muted-foreground/40" />
+                          </div>
+                        </div>
                       ))}
 
                       {hasMoreMonsters && (
