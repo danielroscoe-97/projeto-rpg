@@ -7,6 +7,7 @@ import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useTourStore } from "@/lib/stores/tour-store";
 import Fuse from "fuse.js";
 import { mergeImportedMonsters, getCrossVersionMonsterId, getMonsterById } from "@/lib/srd/srd-search";
+import { normalizeForSearch } from "@/lib/srd/normalize-query";
 import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
@@ -249,14 +250,16 @@ export function MonsterSearchPanel({
         if (!cancelled) {
           // Build a LOCAL Fuse instance so the SRD store's global index
           // rebuild (Phase 1 → 2024 only) doesn't overwrite our data.
+          // S3.3 — mirror srd-search MONSTER_OPTIONS: ignoreDiacritics + 0.4
           fuseRef.current = new Fuse(monsters, {
             keys: [
               { name: "name", weight: 0.5 },
               { name: "type", weight: 0.3 },
               { name: "cr", weight: 0.2 },
             ],
-            threshold: 0.35,
+            threshold: 0.4,
             ignoreLocation: true,
+            ignoreDiacritics: true,
             includeScore: true,
             minMatchCharLength: 2,
           });
@@ -295,8 +298,9 @@ export function MonsterSearchPanel({
   const maybeEmitSearchMissed = useCallback(() => {
     const q = query.trim();
     if (q.length < 2 || isLoading) return;
+    const playerNeedle = normalizeForSearch(q);
     const playerMatch =
-      campaignPlayers?.some((p) => p.name.toLowerCase().includes(q.toLowerCase())) ?? false;
+      campaignPlayers?.some((p) => normalizeForSearch(p.name).includes(playerNeedle)) ?? false;
     if (results.length !== 0 || playerMatch) return;
     if (lastEmittedQueryRef.current === q) return;
     lastEmittedQueryRef.current = q;
@@ -332,17 +336,20 @@ export function MonsterSearchPanel({
     }
 
     const timer = setTimeout(() => {
-      const q = query.trim().toLowerCase();
+      const rawQuery = query.trim();
+      const q = normalizeForSearch(rawQuery);
 
       let base: SrdMonster[];
 
       if (sourceFilter === "mad") {
-        // MAD-only: simple name search (no Fuse)
-        base = q ? madMonsters.filter((m) => m.name.toLowerCase().includes(q)) : madMonsters;
+        // MAD-only: simple accent-insensitive name search (no Fuse)
+        base = q
+          ? madMonsters.filter((m) => normalizeForSearch(m.name).includes(q))
+          : madMonsters;
       } else {
         // 5e.tools sources: use local Fuse when there's a query
-        base = q && fuseRef.current
-          ? fuseRef.current.search(query).map((r) => r.item)
+        base = rawQuery && fuseRef.current
+          ? fuseRef.current.search(rawQuery).map((r) => r.item)
           : allMonsters;
 
         if (sourceFilter === "srd") {
@@ -353,7 +360,7 @@ export function MonsterSearchPanel({
           // "all" = SRD + MAD
           base = base.filter((m) => m.is_srd !== false);
           const madMatches = q
-            ? madMonsters.filter((m) => m.name.toLowerCase().includes(q))
+            ? madMonsters.filter((m) => normalizeForSearch(m.name).includes(q))
             : madMonsters;
           base = [...base, ...madMatches];
         }
@@ -374,7 +381,7 @@ export function MonsterSearchPanel({
         });
       }
 
-      setResults(base.slice(0, q ? 8 : 20));
+      setResults(base.slice(0, rawQuery ? 8 : 20));
       setActiveIndex(-1);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
@@ -457,9 +464,14 @@ export function MonsterSearchPanel({
     }
   }, [t]);
 
-  // Filter campaign players by query
+  // Filter campaign players by query (accent-insensitive)
   const matchedPlayers = query.trim() && campaignPlayers
-    ? campaignPlayers.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()))
+    ? (() => {
+        const needle = normalizeForSearch(query);
+        return needle
+          ? campaignPlayers.filter((p) => normalizeForSearch(p.name).includes(needle))
+          : [];
+      })()
     : [];
 
   const handleManualSubmit = () => {
