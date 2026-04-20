@@ -44,6 +44,9 @@ yarn-error.log*
 .env
 .env.e2e
 
+# Google service account keys (GSC export) — never commit the raw JSON key
+*.gsa.json
+
 # vercel
 .vercel
 
