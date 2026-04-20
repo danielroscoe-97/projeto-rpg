@@ -91,39 +91,72 @@ export default async function DashboardPage() {
     updated_at: (e.updated_at ?? "") as string,
   }));
 
-  // Phase 2: Conditional queries (depend on role from Phase 1) — run in parallel
-  let checklistStatus = {
+  // Phase 2+3+Streak: Fire all role-conditional queries in ONE parallel wave.
+  // Previously these ran in three sequential phases (DM checklist → player checklist → streak).
+  // Now we build all promises upfront and await them together.
+  // Perf note (B04 SPIKE): this removes 150-250ms of sequential waterfall on dashboard load.
+  const isDmRoleForQueries = userRole !== "player";
+  const isPlayerRoleForQueries = userRole === "player" || userRole === "both";
+
+  // Player checklist inputs
+  const playerMemberships = memberships.filter((m) => m.role === "player");
+  const playerCampaignIds = playerMemberships.map((m) => m.campaign_id);
+  const shouldQueryPlayerChecklist = isPlayerRoleForQueries && playerMemberships.length > 0;
+
+  const [
+    inviteRes,
+    legendaryRes,
+    recapRes,
+    playerCharRes,
+    playerSessionRes,
+    streakWeeks,
+  ] = await Promise.all([
+    // DM checklist — only when DM role
+    isDmRoleForQueries
+      ? supabase
+          .from("session_tokens")
+          .select("id, sessions!inner(owner_id)", { count: "exact", head: true })
+          .eq("sessions.owner_id", user.id)
+          .not("player_name", "is", null)
+      : Promise.resolve({ count: 0 } as const),
+    isDmRoleForQueries
+      ? supabase
+          .from("combatants")
+          .select("id, encounters!inner(session_id, sessions!inner(owner_id))", { count: "exact", head: true })
+          .eq("encounters.sessions.owner_id", user.id)
+          .gt("legendary_actions_used", 0)
+      : Promise.resolve({ count: 0 } as const),
+    isDmRoleForQueries
+      ? supabase
+          .from("combat_reports")
+          .select("id", { count: "exact", head: true })
+          .eq("owner_id", user.id)
+      : Promise.resolve({ count: 0 } as const),
+    // Player checklist — only when player has memberships
+    shouldQueryPlayerChecklist
+      ? supabase
+          .from("player_characters")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .in("campaign_id", playerCampaignIds)
+      : Promise.resolve({ count: 0 } as const),
+    shouldQueryPlayerChecklist
+      ? supabase
+          .from("session_tokens")
+          .select("id", { count: "exact", head: true })
+          .eq("player_user_id", user.id)
+      : Promise.resolve({ count: 0 } as const),
+    // Streak — only for DM/both
+    isDmRoleForQueries ? computeStreak(supabase, user.id) : Promise.resolve(0),
+  ]);
+
+  const checklistStatus = {
     hasAccount: true,
     hasRunCombat: hasUsedCombat,
-    hasInvitedPlayer: false,
-    hasUsedLegendary: false,
-    hasViewedRecap: false,
+    hasInvitedPlayer: isDmRoleForQueries && (inviteRes.count ?? 0) > 0,
+    hasUsedLegendary: isDmRoleForQueries && (legendaryRes.count ?? 0) > 0,
+    hasViewedRecap: isDmRoleForQueries && (recapRes.count ?? 0) > 0,
   };
-
-  if (userRole !== "player") {
-    const [inviteRes, legendaryRes, recapRes] = await Promise.all([
-      supabase
-        .from("session_tokens")
-        .select("id, sessions!inner(owner_id)", { count: "exact", head: true })
-        .eq("sessions.owner_id", user.id)
-        .not("player_name", "is", null),
-      supabase
-        .from("combatants")
-        .select("id, encounters!inner(session_id, sessions!inner(owner_id))", { count: "exact", head: true })
-        .eq("encounters.sessions.owner_id", user.id)
-        .gt("legendary_actions_used", 0),
-      supabase
-        .from("combat_reports")
-        .select("id", { count: "exact", head: true })
-        .eq("owner_id", user.id),
-    ]);
-    checklistStatus = {
-      ...checklistStatus,
-      hasInvitedPlayer: (inviteRes.count ?? 0) > 0,
-      hasUsedLegendary: (legendaryRes.count ?? 0) > 0,
-      hasViewedRecap: (recapRes.count ?? 0) > 0,
-    };
-  }
 
   // Pre-translate strings for client component
   const translations = {
@@ -222,35 +255,13 @@ export default async function DashboardPage() {
     player_checklist_cta_waiting: tpc("cta_waiting"),
   };
 
-  // Player checklist data
-  const playerMemberships = memberships.filter((m) => m.role === "player");
+  // Player checklist data — built from results of parallel wave above
   const playerChecklistStatus = {
     hasAccount: true,
     hasCampaign: playerMemberships.length > 0,
-    hasCharacter: false,
-    hasAttendedSession: false,
+    hasCharacter: shouldQueryPlayerChecklist && (playerCharRes.count ?? 0) > 0,
+    hasAttendedSession: shouldQueryPlayerChecklist && (playerSessionRes.count ?? 0) > 0,
   };
-  if (userRole === "player" || userRole === "both") {
-    if (playerMemberships.length > 0) {
-      const campaignIds = playerMemberships.map((m) => m.campaign_id);
-      const [charRes, sessionRes] = await Promise.all([
-        supabase
-          .from("player_characters")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .in("campaign_id", campaignIds),
-        supabase
-          .from("session_tokens")
-          .select("id", { count: "exact", head: true })
-          .eq("player_user_id", user.id),
-      ]);
-      playerChecklistStatus.hasCharacter = (charRes.count ?? 0) > 0;
-      playerChecklistStatus.hasAttendedSession = (sessionRes.count ?? 0) > 0;
-    }
-  }
-
-  // F6: Streak counter
-  const streakWeeks = userRole !== "player" ? await computeStreak(supabase, user.id) : 0;
 
   // XP: Weekly streak bonus — pre-check cooldown to avoid wasting 3+ queries on every render
   if (streakWeeks >= 2) {
