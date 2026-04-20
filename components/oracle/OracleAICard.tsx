@@ -132,7 +132,7 @@ export function OracleAICard({
               data-testid="oracle-ai-close-btn"
               className="toolbar-close"
             >
-              ×
+              ✕
             </button>
           )}
         </div>

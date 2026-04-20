@@ -137,7 +137,7 @@ export function ConditionCard({
               data-testid="condition-close-btn"
               className="toolbar-close"
             >
-              ×
+              ✕
             </button>
           )}
         </div>

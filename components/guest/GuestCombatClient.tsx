@@ -1417,7 +1417,7 @@ export function GuestCombatClient() {
         }
       }
     },
-    [applyDamage, pushHpUndo]
+    [applyDamage, pushHpUndo, t]
   );
   const handleApplyHealing = useCallback(
     (id: string, amount: number) => {

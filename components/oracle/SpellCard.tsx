@@ -95,7 +95,7 @@ export function SpellCard({
               data-testid="spell-close-btn"
               className="toolbar-close"
             >
-              ×
+              ✕
             </button>
           )}
         </div>
