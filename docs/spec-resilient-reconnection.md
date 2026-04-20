@@ -1157,7 +1157,189 @@ DETECCAO DE SPLIT-BRAIN (bfcache stale):
 
 ---
 
-## 16. Changelog da Review
+## 16. Identity Upgrade — Cenario Especial de Reconexao
+
+> **Contexto**: Story 01-E do Epic `player-identity` (`docs/epics/player-identity/epic-01-identity-foundation.md` Area 2) introduz a saga de **upgrade anon -> auth**. Esta secao documenta como esse upgrade se encaixa no modelo de reconexao resiliente SEM violar nenhuma das regras imutaveis das secoes anteriores.
+>
+> **Principio fundamental**: o upgrade NAO e uma reconexao — e uma **promocao de identidade in-place**. A UUID (`auth.uid()`) e preservada por contrato (Epic 01 D1), portanto o canal realtime, presence, storage e `session_tokens.id` continuam validos. O "blip" de reconexao e apenas um reissue de JWT.
+>
+> **Referencia de implementacao**: `lib/supabase/player-identity.ts` (saga Phase 1 + Phase 3 idempotente, forward-recovery).
+
+### 16.1 Trigger e contrato com Phase 2
+
+`supabase.auth.updateUser({ email, password })` e chamado client-side com o JWT anonimo do proprio usuario (Phase 2 da saga — `lib/supabase/player-identity.ts:14-20`). O Supabase:
+
+1. Preserva `auth.users.id` (contrato D1 do Epic 01 — **UUID NAO muda**)
+2. Reissua JWT com `aud` promovido de "authenticated (anon)" para "authenticated (auth)"
+3. Grava email+password em `auth.users`
+
+Imediatamente apos o sucesso de `updateUser`, o client chama `POST /api/player-identity/upgrade` com o novo JWT. Server action executa `upgradePlayerIdentity()` (`lib/supabase/player-identity.ts:166-284`) que valida Phase 1 e dispara Phase 3.
+
+### 16.2 O que muda (e o que NAO muda) no upgrade
+
+| Superficie | Antes do upgrade | Depois do upgrade | Impacto reconexao |
+|---|---|---|---|
+| JWT `aud` | `authenticated` (classe anon) | `authenticated` (classe auth) | Realtime re-autentica canal (~500ms) |
+| `auth.uid()` | UUID anon | **MESMA UUID** (D1 preservada) | **Zero impacto** |
+| `session_tokens.id` | Estavel | Estavel | **Chave imutavel** — storage valido |
+| `session_tokens.user_id` | `NULL` | `= auth.uid()` | Hard-claim |
+| `session_tokens.anon_user_id` | Preenchido | Preservado (audit) | Split-brain fallback funciona |
+| `public.users` row | Pode nao existir | `INSERT ... role='player'` | Novo perfil |
+| `player_characters.user_id` | `NULL` (soft-claim) | `= auth.uid()` (hard) | Owner transferido |
+| `player_characters.claimed_by_session_token` | Preenchido (soft) | `NULL` (promovido) | Cleanup |
+| `campaign_members` | Pode nao existir | Inserido `role='player'` | Nova membership |
+| Storage `pocketdm:session:{sid}` | `{ tokenId, playerName }` | **Inalterado** | Reconnect-from-storage continua valido |
+| Presence channel | `track({ name, token_id })` | Mesmo track | **Nao interrompe** |
+
+**Consequencia chave**: as regras das secoes 4.2.1 (storage), 4.2.2 (mount ordem), e 4.2.5 (cadeia de fallback) **nao requerem nenhuma mudanca**. Storage nunca e limpo durante o upgrade.
+
+### 16.3 Perspectiva do DM
+
+- DM recebe broadcast `player:identity-upgraded` no canal `campaign:{campaignId}` (payload em `lib/supabase/player-identity.ts:700-738`):
+  ```json
+  {
+    "event": "player:identity-upgraded",
+    "sessionTokenId": "uuid-estavel",
+    "userId": "auth-uid",
+    "campaignId": "uuid",
+    "playerName": "Gandalf",
+    "displayName": "Daniel R.",
+    "timestamp": "2026-04-20T..."
+  }
+  ```
+- `PlayerStatus` renderiza `users.display_name` (nova fonte de verdade) em vez de `session_tokens.player_name`
+- **Presence permanece "online"** — upgrade e sinal de rename/badge, NAO um evento de reconexao
+- `combatants.player_character_id` permanece intacto — combate em andamento nao e afetado
+- Broadcast e **best-effort** (consistente com secao 3.3 / Quinn): se falhar, DM re-hidrata no proximo ciclo de stale detection (15s) ou no proximo fetchFullState
+
+### 16.4 Cadeia de reconexao durante upgrade (paralela a secao 4.2.5)
+
+```
+L1 — HAPPY PATH (~50ms, best case):
+  updateUser() success -> POST /upgrade -> Phase 3 success
+  -> broadcast player:identity-upgraded
+  -> DM ve rename. Presence ininterrupta. Player ve nada.
+
+L2 — REALTIME BLIP (~500ms, esperado):
+  updateUser() success -> canal realtime reconecta com novo JWT
+  -> untrack ~500ms -> re-track imediato
+  -> DM ve breve idle -> online. Player ve skeleton/spinner < 1s.
+
+L3 — SAGA PARTIAL FAILURE (~2s + recovery):
+  updateUser() success, Phase 3 falha em step 6-11
+  -> server marca users.upgrade_failed_at = now()
+     (`lib/supabase/player-identity.ts:675-690`)
+  -> client recebe 207 com retryable=true
+  -> no proximo mount (ou botao "Tentar novamente"), client dispara
+     POST /api/player-identity/upgrade-recovery
+  -> recovery chama recoverUpgradePlayerIdentity()
+     (`lib/supabase/player-identity.ts:587-669`)
+  -> DM nao ve mudanca ate recovery completar.
+  -> Player permanece funcional com identidade auth (JWT valido).
+
+L4 — CLIENT CRASHA MID-SAGA (entre updateUser e POST /upgrade):
+  updateUser() completou mas server saga nunca disparou.
+  - users.upgrade_failed_at e NULL (server nunca soube)
+  - session_tokens.user_id e NULL
+  - Mas auth.uid() ja e a identidade auth
+  -> No proximo mount: sessionStorage/localStorage ainda tem { tokenId }
+  -> reconnect-from-storage (4.2.2) dispara rejoinAsPlayer()
+  -> rejoinAsPlayer encontra token ativo, auto-approve
+  -> Client detecta "upgrade never completed" via session_tokens.user_id
+     IS NULL + auth.uid() matching session_tokens.anon_user_id
+     (preservada via D1!)
+  -> Client re-dispara POST /upgrade. Phase 1 idempotency check
+     (`lib/supabase/player-identity.ts:242-271`) reconhece estado parcial.
+
+L5 — TOTAL DISASTER (tudo crasha, storage limpo):
+  Tudo crashou entre updateUser success e client reabrindo.
+  localStorage + sessionStorage vazios.
+  -> User loga fresh (email+password) -> novo JWT auth
+  -> auth.uid() STILL matches session_tokens.anon_user_id (D1 preservada!)
+  -> Client detecta "upgrade never completed" via
+     session_tokens.user_id IS NULL AND auth.uid() matches anon_user_id
+  -> Auto-fires recovery endpoint no mount.
+  -> Saga Phase 3 completa backfill.
+```
+
+### 16.5 Protecao split-brain (Tab A + Tab B durante upgrade)
+
+A secao 5 documenta split-brain para bfcache. Upgrade adiciona um vetor novo: multiplas tabs da mesma sessao durante a saga.
+
+**Cenario**: Tab A faz upgrade, Tab B estava idle/hidden.
+
+1. **Tab A** completa `updateUser()` -> JWT novo no cookie compartilhado
+2. **Tab A** chama POST /upgrade -> Phase 3 executa -> `session_tokens.user_id = X`
+3. **Tab B** (ainda hidden, com JWT antigo em memoria):
+   - Proximo heartbeat: JWT em memoria e anon, mas cookie tem JWT auth
+   - `supabase.auth.getSession()` retorna o novo session (cookie wins)
+   - `auth.uid()` ainda e X (preservado por D1) -> heartbeat succeeds
+4. **Tab B** proximo `visibilitychange` -> "visible":
+   - Handler da secao 4.1.2 valida `token_owner`
+   - `token_owner` (`session_tokens.anon_user_id`) ainda == X
+   - `session_tokens.user_id` tambem == X
+   - `auth.uid()` == X -> **tudo bate**, continua normalmente
+
+**Phase 1 server-side reforca isso** (`lib/supabase/player-identity.ts:231-240`):
+```
+ownsViaAnon = tokenRow.anon_user_id === callerUserId
+ownsViaAuth = tokenRow.user_id === callerUserId
+if (!ownsViaAnon && !ownsViaAuth) -> reject
+```
+Isto aceita caller vindo **ou** pela identidade anon **ou** pela auth — ambas validas durante a transicao.
+
+**Zero intervencao manual**. Nenhuma tab ve tela de "sessao transferida" porque a UUID e unica e preservada.
+
+### 16.6 Edge cases
+
+| Cenario | Comportamento |
+|---|---|
+| Cookie loss durante saga (cookies limpos entre updateUser e POST /upgrade) | JWT anon do client invalida. Client reconecta via sessionStorage (secao 4.2.1 — `{ tokenId }` ainda valido). Se getSession() retornar null -> signInAnonymously() -> **novo anon UUID** -> rejoinAsPlayer() via nome -> auto-approve transfer -> client detecta upgrade pendente e dispara recovery. Saga completa. |
+| Nova tab abre durante saga | Tab A mid-saga, Tab B fresca. Tab B ve cookie JWT — pode ser anon (pre-updateUser) ou auth (pos-updateUser), depende do timing. Em ambos os casos, `auth.uid()` == X (D1). Tab B se registra normalmente. Quando broadcast `player:identity-upgraded` dispara, Tab B re-renderiza com `users.display_name` (ou ignora se ainda nao esta autenticada — UI degrada graciosamente). |
+| User revoga token mid-saga | DM revoga `is_active=false` durante Phase 3. Phase 3 usa service client — **bypassa RLS**, UPDATE completa. Revogacao afeta heartbeats futuros, NAO a saga em voo. Apos saga, client ve `session:revoked` broadcast e segue fluxo padrao da secao 6.7. |
+| `claimed_by_session_token` orfao | Se saga abortou antes do step 8 (`lib/supabase/player-identity.ts:352-397`), `player_characters.claimed_by_session_token` ainda aponta para o token. Recovery endpoint re-executa step 8 — WHERE clause `IN (SELECT id FROM session_tokens WHERE user_id = auth.uid())` trata o estado parcial. Idempotente. |
+| `updateUser` falha (email ja existe) | Phase 2 aborta antes do POST /upgrade. Nenhum side-effect server-side. Anon session permanece valida. Client mostra erro "email ja cadastrado", usuario pode trocar email ou cancelar. Zero cleanup necessario. |
+| Guest character migration falha (step 10) | `migrateGuestCharacterToAuth` lanca erro, saga retorna `migration_partial_failure` com `failed_step: 10`. Steps 6-9 ja commitaram (idempotentes). Recovery endpoint **omite** `guestCharacter` deliberadamente (`lib/supabase/player-identity.ts:658-660`) — evita double-insert. Usuario pode re-tentar guest character import manualmente pelo dashboard Epic 02. |
+
+### 16.7 Anti-patterns especificos do upgrade
+
+```
+// NUNCA mostrar "voce foi desconectado" durante upgrade
+//   -> JWT reissue e < 3s, dentro do tier silent-handle (secao 3.2)
+// NUNCA forcar signOut/signIn como parte do upgrade
+//   -> updateUser refresh e transparente, session_token_id preservado
+// NUNCA limpar pocketdm:session:{sid} do storage durante upgrade
+//   -> UUID preservada (D1), storage continua valido
+// NUNCA assumir que anon_user_id muda no upgrade
+//   -> Preservado por D1; e usado para audit + split-brain recovery (L4/L5)
+// NUNCA invalidar session_token_id em storage apos upgrade
+//   -> session_tokens.id e estavel; user_id e hard-claim adicional
+// NUNCA fazer o broadcast player:identity-upgraded bloquear Phase 3
+//   -> Broadcast e best-effort (`lib/supabase/player-identity.ts:565-568`),
+//      saga nao falha se realtime estiver caido
+// NUNCA chamar supabase.auth.updateUser server-side
+//   -> Phase 2 DEVE ser client-side (JWT proprio). Server faz so Phase 1+3.
+// NUNCA deixar Phase 3 nao-idempotente
+//   -> Todo step usa ON CONFLICT ou WHERE filter que no-op apos sucesso
+//      (ver `lib/supabase/player-identity.ts:26-39` — contrato explicito)
+```
+
+### 16.8 Integracao com criterios de aceite existentes (secao 10)
+
+Nenhum criterio P0/P1 da secao 10 precisa mudar. Adicionar aos testes de validacao (secao 11):
+
+| # | Cenario | Dispositivo | Passo | Resultado Esperado |
+|---|---------|-------------|-------|-------------------|
+| T16 | Upgrade anon->auth happy path | Desktop | Fluxo normal updateUser + POST /upgrade | < 1s, sem reconexao visivel, DM ve rename |
+| T17 | Upgrade com realtime blip | Rede lenta | updateUser -> canal reconecta com novo JWT | Skeleton < 1s, depois online |
+| T18 | Upgrade com saga partial failure | Qualquer | Forcar falha em step 9 (campaign_members) | Client recebe retryable=true, dispara recovery no proximo mount |
+| T19 | Client crash entre updateUser e POST | Qualquer | Fechar aba apos updateUser | No proximo mount: client detecta upgrade pendente e dispara recovery automaticamente |
+| T20 | Upgrade com total storage loss | Mobile + SO agressivo | Limpar storage apos updateUser, reabrir | Login fresh -> auth.uid() matches anon_user_id -> recovery dispara |
+| T21 | Split-brain tab A completa, tab B idle | Desktop | Tab A faz upgrade, tab B volta apos 2min | Tab B reconecta transparente, sem "sessao transferida" |
+
+---
+
+## 17. Changelog da Review
 
 | # | Origem | Problema | Resolucao |
 |---|--------|----------|-----------|
@@ -1173,4 +1355,5 @@ DETECCAO DE SPLIT-BRAIN (bfcache stale):
 | A2 | Amelia | session_nonce vs fetchFullState | Descartado nonce. Usa validacao de token_owner no visibilitychange (secao 5) |
 | A3 | Amelia | reconnect-from-storage precisa timeout | Timeout de 8s no rejoinAsPlayer, fallback para fluxo normal (secao 4.2.2) |
 | J1 | John | Overengineering tier > 30min | Simplificado: NUNCA exigir DM approval se token ativo. Eliminado tier intermediario (secao 3.1) |
+| P1 | Paige (2026-04-20) | Story 01-E — identity upgrade nao documentado no spec | Adicionada secao 16 "Identity Upgrade — Cenario Especial de Reconexao" cobrindo trigger/phase 2 split, matriz de mudancas, perspectiva DM, cadeia de fallbacks L1-L5, split-brain multi-tab, edge cases, anti-patterns, testes T16-T21 |
 | S1 | Sally | UX durante reconnect loading | Skeleton com nome + "Reconectando..." + fallback 5s para formulario (secao 3.2) |
