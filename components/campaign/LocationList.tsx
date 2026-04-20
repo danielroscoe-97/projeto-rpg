@@ -42,6 +42,8 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
   const [filter, setFilter] = useState<FilterMode>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<CampaignLocation | null>(null);
+  // Opened in read-only (view) mode when user clicks the card body.
+  const [viewingLocation, setViewingLocation] = useState<CampaignLocation | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignLocation | null>(null);
 
   const filteredLocations = locations.filter((loc) => {
@@ -114,6 +116,24 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
     setEditingLocation(null);
     setFormOpen(true);
   }, []);
+
+  // Save handler for the read-only view — used if the user flips to edit mode
+  // via the "Edit" button in the form footer.
+  const handleViewSave = useCallback(
+    async (data: LocationFormData) => {
+      if (!viewingLocation) return;
+      await updateLocation(viewingLocation.id, {
+        name: data.name,
+        description: data.description ?? "",
+        location_type: data.location_type,
+        is_discovered: data.is_discovered,
+        image_url: data.image_url,
+        is_visible_to_players: data.is_visible_to_players,
+      });
+      setViewingLocation(null);
+    },
+    [viewingLocation, updateLocation],
+  );
 
   // Loading state — skeleton cards
   if (loading) {
@@ -228,6 +248,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
               onEdit={openEditForm}
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}
+              onCardClick={setViewingLocation}
             />
           ))}
         </div>
@@ -252,6 +273,22 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
         location={editingLocation}
         onSave={editingLocation ? handleEdit : handleCreate}
       />
+
+      {/* Read-only view (card body click) — DM can flip to edit via button */}
+      {viewingLocation && (
+        <LocationForm
+          key={`view-${viewingLocation.id}`}
+          open={!!viewingLocation}
+          onOpenChange={(open) => {
+            if (!open) setViewingLocation(null);
+          }}
+          campaignId={campaignId}
+          location={viewingLocation}
+          readOnly
+          canEdit={isEditable}
+          onSave={handleViewSave}
+        />
+      )}
 
       {/* Delete confirmation */}
       <AlertDialog

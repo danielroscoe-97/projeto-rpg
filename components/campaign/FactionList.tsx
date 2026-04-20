@@ -74,6 +74,9 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
   const [editingFaction, setEditingFaction] = useState<CampaignFaction | null>(
     null,
   );
+  const [viewingFaction, setViewingFaction] = useState<CampaignFaction | null>(
+    null,
+  );
   const [deleteTarget, setDeleteTarget] = useState<CampaignFaction | null>(
     null,
   );
@@ -146,6 +149,21 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
     setEditingFaction(null);
     setFormOpen(true);
   }, []);
+
+  const handleViewSave = useCallback(
+    async (data: FactionFormData) => {
+      if (!viewingFaction) return;
+      await updateFaction(viewingFaction.id, {
+        name: data.name,
+        description: data.description ?? "",
+        alignment: data.alignment,
+        image_url: data.image_url,
+        is_visible_to_players: data.is_visible_to_players,
+      });
+      setViewingFaction(null);
+    },
+    [viewingFaction, updateFaction],
+  );
 
   if (loading) {
     return <FactionCardSkeleton count={3} />;
@@ -231,6 +249,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
               onEdit={openEditForm}
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}
+              onCardClick={setViewingFaction}
             />
           ))}
         </div>
@@ -255,6 +274,22 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
         faction={editingFaction}
         onSave={editingFaction ? handleEdit : handleCreate}
       />
+
+      {/* Read-only view (card body click) */}
+      {viewingFaction && (
+        <FactionForm
+          key={`view-${viewingFaction.id}`}
+          open={!!viewingFaction}
+          onOpenChange={(open) => {
+            if (!open) setViewingFaction(null);
+          }}
+          campaignId={campaignId}
+          faction={viewingFaction}
+          readOnly
+          canEdit={isEditable}
+          onSave={handleViewSave}
+        />
+      )}
 
       {/* Delete confirmation */}
       <AlertDialog

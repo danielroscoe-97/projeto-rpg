@@ -50,6 +50,7 @@ export function NpcList({ campaignId }: NpcListProps) {
   const [filter, setFilter] = useState<FilterMode>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [editingNpc, setEditingNpc] = useState<CampaignNpc | null>(null);
+  const [viewingNpc, setViewingNpc] = useState<CampaignNpc | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignNpc | null>(null);
 
   // Build related notes map per NPC
@@ -135,6 +136,21 @@ export function NpcList({ campaignId }: NpcListProps) {
     setEditingNpc(null);
     setFormOpen(true);
   }, []);
+
+  const handleViewSave = useCallback(
+    async (data: CampaignNpcInsert) => {
+      if (!viewingNpc) return;
+      await editNpc(viewingNpc.id, {
+        name: data.name,
+        description: data.description,
+        stats: data.stats,
+        avatar_url: data.avatar_url,
+        is_visible_to_players: data.is_visible_to_players,
+      });
+      setViewingNpc(null);
+    },
+    [viewingNpc, editNpc],
+  );
 
   if (loading) {
     return <NpcCardSkeleton count={3} />;
@@ -245,6 +261,7 @@ export function NpcList({ campaignId }: NpcListProps) {
               onEdit={openEditForm}
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}
+              onCardClick={setViewingNpc}
             />
           ))}
         </div>
@@ -269,6 +286,22 @@ export function NpcList({ campaignId }: NpcListProps) {
         npc={editingNpc}
         onSave={editingNpc ? handleEdit : handleCreate}
       />
+
+      {/* Read-only view (card body click) */}
+      {viewingNpc && (
+        <NpcForm
+          key={`view-${viewingNpc.id}`}
+          open={!!viewingNpc}
+          onOpenChange={(open) => {
+            if (!open) setViewingNpc(null);
+          }}
+          campaignId={campaignId}
+          npc={viewingNpc}
+          readOnly
+          canEdit
+          onSave={handleViewSave}
+        />
+      )}
 
       {/* Delete confirmation */}
       <AlertDialog

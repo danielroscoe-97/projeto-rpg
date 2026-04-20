@@ -64,6 +64,7 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
   const [filter, setFilter] = useState<FilterMode>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [editingQuest, setEditingQuest] = useState<CampaignQuest | null>(null);
+  const [viewingQuest, setViewingQuest] = useState<CampaignQuest | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignQuest | null>(null);
 
   /* ── Filtering ───────────────────────────────────────────────────────────── */
@@ -141,6 +142,24 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
     setEditingQuest(null);
     setFormOpen(true);
   }, []);
+
+  const handleViewSave = useCallback(
+    async (data: QuestFormData) => {
+      if (!viewingQuest) return;
+      await updateQuest(viewingQuest.id, {
+        title: data.title,
+        quest_type: data.quest_type,
+        status: data.status,
+        context: data.context,
+        objective: data.objective,
+        reward: data.reward,
+        image_url: data.image_url,
+        is_visible_to_players: data.is_visible_to_players,
+      });
+      setViewingQuest(null);
+    },
+    [viewingQuest, updateQuest],
+  );
 
   /* ── Filter config ───────────────────────────────────────────────────────── */
 
@@ -236,6 +255,7 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
               onEdit={openEditForm}
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}
+              onCardClick={setViewingQuest}
             />
           ))}
         </div>
@@ -260,6 +280,22 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
         quest={editingQuest}
         onSave={editingQuest ? handleEdit : handleCreate}
       />
+
+      {/* Read-only view (card body click) */}
+      {viewingQuest && (
+        <QuestForm
+          key={`view-${viewingQuest.id}`}
+          open={!!viewingQuest}
+          onOpenChange={(open) => {
+            if (!open) setViewingQuest(null);
+          }}
+          campaignId={campaignId}
+          quest={viewingQuest}
+          readOnly
+          canEdit={isEditable}
+          onSave={handleViewSave}
+        />
+      )}
 
       {/* Delete confirmation */}
       <AlertDialog
