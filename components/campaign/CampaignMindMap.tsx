@@ -1718,7 +1718,7 @@ export function CampaignMindMap({ campaignId, campaignName, focusNodeId, onClear
           }}
           nodeTypes={nodeTypes}
           defaultViewport={defaultViewport}
-          fitView
+          fitView={!focusNodeId}
           fitViewOptions={{ padding: 0.3 }}
           minZoom={0.3}
           maxZoom={2}
