@@ -89,6 +89,7 @@ import {
 } from "@/lib/supabase/encounter-snapshot";
 import type { EncounterPreset } from "@/lib/types/encounter-preset";
 import { incrementPresetUsage } from "@/lib/supabase/encounter-presets";
+import { dispatchCombatInvite } from "@/lib/supabase/combat-invite";
 
 interface CombatSessionClientProps {
   sessionId: string | null;
@@ -709,6 +710,14 @@ export function CombatSessionClient({
           round_number: 1,
           encounter_id: store.encounter_id!,
         });
+        // W5 (F19) — auto-invite logged-in campaign members (fire-and-forget).
+        // Quick Combat (campaignId=null) no-ops on the server (204).
+        if (campaignId && sessionId) {
+          dispatchCombatInvite({
+            sessionId,
+            encounterId: store.encounter_id!,
+          }).catch(() => { /* non-fatal */ });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : t("error_start_combat"));
       }
@@ -772,6 +781,14 @@ export function CombatSessionClient({
         round_number: 1,
         encounter_id: encounter_id,
       });
+      // W5 (F19) — auto-invite logged-in campaign members (fire-and-forget).
+      // Quick Combat (campaignId=null) no-ops on the server (204).
+      if (campaignId) {
+        dispatchCombatInvite({
+          sessionId: session_id,
+          encounterId: encounter_id,
+        }).catch(() => { /* non-fatal */ });
+      }
       router.replace(`/app/combat/${session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("error_start_combat"));
