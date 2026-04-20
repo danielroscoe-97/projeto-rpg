@@ -35,14 +35,32 @@ export function sanitizeCombatant(c: Combatant): SanitizedCombatant {
     };
   }
 
+  // S5.1 S2 fix — polymorph carries exact form HP numbers (`temp_current_hp`,
+  // `temp_max_hp`, `temp_ac`). For non-player combatants (monsters), exact
+  // numbers break the anti-metagaming rule just like base HP does. Zero out
+  // the numeric fields while preserving `form_name` + `enabled` so the
+  // player's two-bar render (showFullHp path) or form-name badge (other)
+  // still works qualitatively from percentage-derived `hp_status`.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { current_hp, max_hp, temp_hp, ac, spell_save_dc, ...safe } = base;
+  const { current_hp, max_hp, temp_hp, ac, spell_save_dc, polymorph, ...safe } = base;
 
   return {
     ...safe,
     name: display_name || base.name,
     hp_status: getHpStatus(c.current_hp, c.max_hp),
     hp_percentage: getHpPercentage(c.current_hp, c.max_hp),
+    ...(polymorph?.enabled
+      ? {
+          polymorph: {
+            enabled: true,
+            variant: polymorph.variant,
+            form_name: polymorph.form_name,
+            temp_current_hp: 0, // redacted — no metagaming leak
+            temp_max_hp: 0,
+            started_at_turn: polymorph.started_at_turn,
+          },
+        }
+      : {}),
   };
 }
 

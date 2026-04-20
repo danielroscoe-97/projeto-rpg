@@ -61,6 +61,16 @@ interface PlayerCombatant {
   death_saves?: { successes: number; failures: number };
   /** Turn count per condition — shown for other players only (anti-metagaming: hidden for monsters) */
   condition_durations?: Record<string, number>;
+  /** S5.1 — Polymorph / Wild Shape state (mirrored from server-side Combatant type). */
+  polymorph?: {
+    enabled: boolean;
+    variant: "polymorph" | "wildshape";
+    form_name: string;
+    temp_current_hp: number;
+    temp_max_hp: number;
+    temp_ac?: number;
+    started_at_turn: number;
+  };
   /** Whether this combatant has used their reaction this round */
   reaction_used?: boolean;
   /** Linked session_token ID — for ID-based reconnection (B3). */
@@ -1154,8 +1164,72 @@ export function PlayerInitiativeBoard({
                 )}
               </div>
 
-              {/* HP display — full bar for own character only, status badge for everyone else */}
-              {showFullHp ? (
+              {/* HP display — full bar for own character only, status badge for everyone else.
+                  S5.1 B2 fix: polymorphed combatants show TWO stacked bars — form HP on top
+                  (gold border to distinguish), original HP below (desaturated). Applies to
+                  own-char AND other players/monsters so parity with DM view holds. */}
+              {combatant.polymorph?.enabled && showFullHp ? (
+                <div className="mt-1.5 space-y-1.5">
+                  {/* Form HP bar (top, gold border) */}
+                  <div className="border border-gold/40 rounded px-1.5 py-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-gold/90 text-sm lg:text-xs font-medium truncate max-w-[60%]">
+                        {combatant.polymorph.form_name}
+                      </span>
+                      <span className="text-gold/90 text-base lg:text-sm font-mono">
+                        {combatant.polymorph.temp_current_hp} / {combatant.polymorph.temp_max_hp}
+                      </span>
+                    </div>
+                    <div
+                      className="h-3 lg:h-2 bg-white/[0.06] rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-valuenow={combatant.polymorph.temp_current_hp}
+                      aria-valuemin={0}
+                      aria-valuemax={combatant.polymorph.temp_max_hp}
+                      aria-label={`${combatant.polymorph.form_name} HP`}
+                    >
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${getHpBarColor(combatant.polymorph.temp_current_hp, combatant.polymorph.temp_max_hp)}`}
+                        style={{ width: `${Math.max(0, Math.min(100, (combatant.polymorph.temp_current_hp / Math.max(1, combatant.polymorph.temp_max_hp)) * 100))}%` }}
+                      />
+                    </div>
+                  </div>
+                  {/* Original HP bar (bottom, desaturated) */}
+                  <div className="opacity-60">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-muted-foreground text-sm lg:text-xs">{combatant.name}</span>
+                      <span className="text-muted-foreground text-sm lg:text-xs font-mono">
+                        {combatant.current_hp} / {combatant.max_hp}
+                      </span>
+                    </div>
+                    <div
+                      className="h-3 lg:h-2 bg-white/[0.06] rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-valuenow={combatant.current_hp}
+                      aria-valuemin={0}
+                      aria-valuemax={combatant.max_hp}
+                      aria-label={t("hp_aria", { name: combatant.name })}
+                    >
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${hpBarColor}`}
+                        style={{ width: `${hpPct * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : combatant.polymorph?.enabled ? (
+                // Non-own-char polymorphed (e.g., watching teammate transform) — show a
+                // form-HP badge pill + status of original. Keeps parity without leaking
+                // exact numbers across the party's metagaming boundary.
+                <div className="mt-1.5 flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border border-gold/40 text-gold bg-gold/10">
+                    🦋 {combatant.polymorph.form_name}
+                  </span>
+                  {(combatant.hp_status || otherPlayerHpStatus) && (
+                    <HpStatusBadge status={combatant.hp_status || otherPlayerHpStatus!} percentage={isPlayer ? otherPlayerHpPct : undefined} />
+                  )}
+                </div>
+              ) : showFullHp ? (
                 <div className="mt-1.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-muted-foreground text-sm lg:text-xs">{t("hp_label")}</span>

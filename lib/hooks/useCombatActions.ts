@@ -245,18 +245,70 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
       }
     }
 
-    // Compute expected post-damage values from snapshot (mirrors store logic)
+    // S5.1 B1 fix — when polymorphed, the store's applyDamage routes through
+    // applyPolymorphDamage (form HP first, then overflow by variant). The
+    // "new" original HP values computed below do NOT match what the store
+    // actually wrote. Sending them via combat:hp_update would rehydrate
+    // players + Supabase with wrong state. Emit a full state_sync instead so
+    // consumers see authoritative form-HP + original-HP together.
+    //
+    // Persist: polymorph state itself isn't DB-tracked (per spec, resets on
+    // clearEncounter). If the form survived, original HP didn't change — no
+    // DB write needed. If the form was destroyed (wildshape overflow hit
+    // current_hp), the store already applied it; re-read and persist the
+    // true values.
+    // Compute expected post-damage values. In the polymorph path these
+    // represent the AFTER-OVERFLOW original HP (wildshape carry) or
+    // unchanged original (polymorph spell discard). Used for death-save +
+    // auto-defeat triggers below, which should only fire on original-HP
+    // transitions.
     let remaining = finalAmount;
     let newTempHp = before.temp_hp;
-    if (newTempHp > 0) {
-      const absorbed = Math.min(newTempHp, remaining);
-      newTempHp -= absorbed;
-      remaining -= absorbed;
+    let newCurrentHp = before.current_hp;
+    if (polyBefore?.enabled) {
+      // Post-polymorph authoritative state is in the store after applyDamage.
+      const afterDmg = useCombatStore.getState().combatants.find((c) => c.id === id);
+      if (afterDmg) {
+        newCurrentHp = afterDmg.current_hp;
+        newTempHp = afterDmg.temp_hp;
+      }
+    } else {
+      if (newTempHp > 0) {
+        const absorbed = Math.min(newTempHp, remaining);
+        newTempHp -= absorbed;
+        remaining -= absorbed;
+      }
+      newCurrentHp = Math.max(0, before.current_hp - remaining);
     }
-    const newCurrentHp = Math.max(0, before.current_hp - remaining);
 
-    broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: newTempHp, max_hp: before.max_hp, is_player: before.is_player });
-    persistHpChange(id, newCurrentHp, newTempHp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    // S5.1 B1 fix — polymorphed combatants emit a full state_sync so players
+    // see form-HP + original-HP coherently. combat:hp_update would rehydrate
+    // players + Supabase with wrong values (it only carries original HP).
+    if (polyBefore?.enabled) {
+      const syncState = useCombatStore.getState();
+      if (syncState.encounter_id) {
+        broadcastEvent(getSessionId(), {
+          type: "session:state_sync",
+          combatants: syncState.combatants,
+          current_turn_index: syncState.current_turn_index,
+          round_number: syncState.round_number,
+          encounter_id: syncState.encounter_id,
+        });
+      }
+      // Persist ONLY when the form was destroyed (wildshape overflow hit
+      // original HP OR polymorph spell ended). Otherwise original HP is
+      // unchanged and there's nothing to write (polymorph state itself is
+      // not DB-tracked per spec).
+      const afterDmg = syncState.combatants.find((c) => c.id === id);
+      if (afterDmg && !afterDmg.polymorph?.enabled) {
+        persistHpChange(id, afterDmg.current_hp, afterDmg.temp_hp).catch((err) =>
+          setError(err instanceof Error ? err.message : "Failed to save."),
+        );
+      }
+    } else {
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: newTempHp, max_hp: before.max_hp, is_player: before.is_player });
+      persistHpChange(id, newCurrentHp, newTempHp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    }
 
     // CP.1.4: Log damage to combat log
     const roundNumber = useCombatStore.getState().round_number;
@@ -333,13 +385,32 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     const before = snap.combatants.find((x) => x.id === id);
     if (!before) return;
 
+    // S5.1 B1 fix — capture polymorph state before mutation so we route the
+    // broadcast/persist correctly (same rationale as handleApplyDamage).
+    const polyBefore = before.polymorph;
+
     snap.applyHealing(id, amount);
 
-    // Compute expected post-healing values from snapshot (mirrors store logic)
-    const newCurrentHp = Math.min(before.max_hp, before.current_hp + amount);
-
-    broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: before.temp_hp, max_hp: before.max_hp, is_player: before.is_player });
-    persistHpChange(id, newCurrentHp, before.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    if (polyBefore?.enabled) {
+      // Heal while polymorphed only raises form HP; original HP unchanged.
+      // Emit state_sync so players see the form's HP bar rise. No persist
+      // needed (original HP didn't change, polymorph state isn't DB-tracked).
+      const syncState = useCombatStore.getState();
+      if (syncState.encounter_id) {
+        broadcastEvent(getSessionId(), {
+          type: "session:state_sync",
+          combatants: syncState.combatants,
+          current_turn_index: syncState.current_turn_index,
+          round_number: syncState.round_number,
+          encounter_id: syncState.encounter_id,
+        });
+      }
+    } else {
+      // Compute expected post-healing values from snapshot (mirrors store logic)
+      const newCurrentHp = Math.min(before.max_hp, before.current_hp + amount);
+      broadcastEvent(getSessionId(), { type: "combat:hp_update", combatant_id: id, current_hp: newCurrentHp, temp_hp: before.temp_hp, max_hp: before.max_hp, is_player: before.is_player });
+      persistHpChange(id, newCurrentHp, before.temp_hp).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    }
 
     // CP.2.1: Log heal
     useCombatLogStore.getState().addEntry({

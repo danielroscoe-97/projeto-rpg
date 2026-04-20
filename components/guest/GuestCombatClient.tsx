@@ -1335,8 +1335,16 @@ export function GuestCombatClient() {
       // S5.1 — capture polymorph state BEFORE the damage so we can detect
       // form-destruction (polymorph.enabled flipped off) afterwards.
       const polyBefore = target?.polymorph;
-      // Calculate effective damage (clamped by temp_hp + current_hp)
-      const effectiveDamage = target ? Math.min(amount, target.temp_hp + target.current_hp) : amount;
+      // Calculate effective damage. S5.1 S3 fix: when polymorphed, the usable
+      // pool is the form's HP (+ any original temp_hp that can absorb
+      // wildshape overflow), NOT the original current_hp. Clamping against
+      // the wrong pool under-reports damage in the log (e.g. 100 damage to a
+      // form with temp_current_hp=50 shouldn't clamp to original max 40).
+      const effectiveDamage = target
+        ? polyBefore?.enabled
+          ? Math.min(amount, polyBefore.temp_current_hp + target.temp_hp + (polyBefore.variant === "wildshape" ? target.current_hp : 0))
+          : Math.min(amount, target.temp_hp + target.current_hp)
+        : amount;
       applyDamage(id, amount);
       if (actor && target) {
         const stats = useGuestCombatStats.getState();

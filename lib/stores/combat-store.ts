@@ -284,17 +284,22 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
   // S5.1 — Polymorph / Wild Shape actions.
   applyPolymorph: (id, params) =>
     set((state) => ({
-      combatants: state.combatants.map((c) =>
-        c.id === id
-          ? {
-              ...c,
-              polymorph: createPolymorphState({
-                ...params,
-                started_at_turn: state.round_number,
-              }),
-            }
-          : c
-      ),
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        // S5.1 S4 fix — refuse silent overwrite of an active transformation.
+        // The trigger UI should gate already-polymorphed combatants onto
+        // "End polymorph" first; if we got here with `polymorph.enabled`,
+        // treat it as a no-op so the caller can surface a toast / error
+        // instead of silently replacing a wildshape with a polymorph form.
+        if (c.polymorph?.enabled) return c;
+        return {
+          ...c,
+          polymorph: createPolymorphState({
+            ...params,
+            started_at_turn: state.round_number,
+          }),
+        };
+      }),
     })),
 
   endPolymorph: (id, reason, overflow) =>

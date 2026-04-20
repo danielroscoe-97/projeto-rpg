@@ -430,17 +430,19 @@ export const useGuestCombatStore = create<GuestCombatStore>()(
       applyPolymorph: (id, params) => {
         if (guardExpired()) return;
         set((state) => ({
-          combatants: state.combatants.map((c) =>
-            c.id === id
-              ? {
-                  ...c,
-                  polymorph: createPolymorphState({
-                    ...params,
-                    started_at_turn: state.roundNumber,
-                  }),
-                }
-              : c
-          ),
+          combatants: state.combatants.map((c) => {
+            if (c.id !== id) return c;
+            // S5.1 S4 fix — guest parity: no silent overwrite of an active
+            // transformation. DM must explicitly end first.
+            if (c.polymorph?.enabled) return c;
+            return {
+              ...c,
+              polymorph: createPolymorphState({
+                ...params,
+                started_at_turn: state.roundNumber,
+              }),
+            };
+          }),
         }));
       },
 
