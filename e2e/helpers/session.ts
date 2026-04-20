@@ -46,12 +46,12 @@ export async function goToNewSession(page: Page) {
 }
 
 /**
- * Generate share token on /session/new page.
+ * Generate share token on /combat/new page.
  * Flow: share-prepare-btn (creates session) → share-session-generate → share-session-url
  */
 export async function getShareToken(page: Page): Promise<string | null> {
   try {
-    // Step 1: On /session/new, click share-prepare-btn to create session
+    // Step 1: On /combat/new, click share-prepare-btn to create session
     const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
     await prepareBtn.scrollIntoViewIfNeeded();
     await expect(prepareBtn).toBeVisible({ timeout: 5_000 });

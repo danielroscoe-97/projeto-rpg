@@ -29,7 +29,7 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
 
     // Look for saved encounters, encounter links, or action buttons
     const contentLocator = page.locator(
-      '[data-testid="saved-encounters"], [data-testid^="encounter-link-"], a[href*="/app/combat/"], a[href*="session/new"], button:has-text("Nova"), button:has-text("New"), button:has-text("Criar"), nav'
+      '[data-testid="saved-encounters"], [data-testid^="encounter-link-"], a[href*="/app/combat/"], a[href*="combat/new"], button:has-text("Nova"), button:has-text("New"), button:has-text("Criar"), nav'
     ).first();
     await expect(contentLocator).toBeVisible({ timeout: 10_000 });
   });

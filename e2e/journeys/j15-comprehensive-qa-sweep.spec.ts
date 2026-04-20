@@ -191,7 +191,7 @@ test.describe("J15-C — Dashboard", () => {
     await page.waitForLoadState("networkidle").catch(() => {});
     await page.waitForTimeout(3_000);
 
-    const newBtn = page.locator('a[href*="/session/new"]').first();
+    const newBtn = page.locator('a[href*="/combat/new"]').first();
     await expect(newBtn).toBeVisible({ timeout: 30_000 });
     await newBtn.click();
     await page.waitForURL("**/app/combat/new", { timeout: 15_000 });

@@ -96,8 +96,8 @@ export async function startCombat(page: Page) {
   await startBtn.click();
 
   // Starting combat triggers: Supabase save → router.push(/app/combat/[id])
-  // Wait for the redirect away from /session/new first
-  await page.waitForURL(/\/app\/session\/(?!new)/, { timeout: 30_000, waitUntil: "domcontentloaded" }).catch(() => {});
+  // Wait for the redirect away from /combat/new first
+  await page.waitForURL(/\/app\/combat\/(?!new)/, { timeout: 30_000, waitUntil: "domcontentloaded" }).catch(() => {});
 
   // Wait for active combat view to appear after redirect + SSR hydration
   try {
