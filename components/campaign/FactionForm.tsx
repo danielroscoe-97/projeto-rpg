@@ -29,9 +29,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
+import type { CampaignFaction, CampaignLocation, FactionAlignment } from "@/lib/types/mind-map";
+import type { CampaignNpc } from "@/lib/types/campaign-npcs";
 import { FACTION_ALIGNMENTS } from "@/lib/types/mind-map";
 import type { FactionFormData } from "@/lib/hooks/use-campaign-factions";
+import { EntityTagSelector } from "./EntityTagSelector";
+
+/**
+ * Side-channel data emitted alongside the faction payload on save. Parent
+ * reconciles campaign_mind_map_edges based on deltas. See SPEC §2 Fase 3d.
+ */
+export interface FactionFormExtras {
+  /** Location id where this faction is headquartered; null clears the link. */
+  sedeLocationId: string | null;
+  /** NPC ids that are members of this faction (member_of). */
+  memberNpcIds: string[];
+}
 
 const ALIGNMENT_DOT_COLOR: Record<FactionAlignment, string> = {
   ally: "bg-emerald-400",
@@ -44,7 +57,15 @@ interface FactionFormProps {
   onOpenChange: (open: boolean) => void;
   campaignId: string;
   faction?: CampaignFaction | null;
-  onSave: (data: FactionFormData) => Promise<void>;
+  /** Locations to choose from for the "Sede" selector. Omit to hide. */
+  availableLocations?: CampaignLocation[];
+  /** NPCs to choose from for the "Membros" selector. Omit to hide. */
+  availableNpcs?: CampaignNpc[];
+  /** Initial HQ (edge headquarters_of target). Null/undefined = none. */
+  initialSedeLocationId?: string | null;
+  /** Initial members (edge member_of sources). Empty by default. */
+  initialMemberNpcIds?: string[];
+  onSave: (data: FactionFormData, extras: FactionFormExtras) => Promise<void>;
   /** When true, dialog opens in read-only mode (inputs disabled, Save hidden). */
   readOnly?: boolean;
   /** When true + `readOnly`, show an "Edit" button that flips into edit mode. */
@@ -56,10 +77,19 @@ export function FactionForm({
   onOpenChange,
   campaignId,
   faction,
+  availableLocations,
+  availableNpcs,
+  initialSedeLocationId,
+  initialMemberNpcIds,
   onSave,
   readOnly = false,
   canEdit = true,
 }: FactionFormProps) {
+  // campaignId is accepted for symmetry with NpcForm/LocationForm and future
+  // edge resolution that may need it inside the component; currently unused
+  // because edges are reconciled by the parent.
+  void campaignId;
+
   const t = useTranslations("factions");
   const tCommon = useTranslations("common");
 
@@ -72,6 +102,12 @@ export function FactionForm({
   const [visibleToPlayers, setVisibleToPlayers] = useState(
     faction?.is_visible_to_players ?? true,
   );
+  const [sedeLocationId, setSedeLocationId] = useState<string | null>(
+    initialSedeLocationId ?? null,
+  );
+  const [memberNpcIds, setMemberNpcIds] = useState<string[]>(
+    initialMemberNpcIds ?? [],
+  );
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);
@@ -82,7 +118,17 @@ export function FactionForm({
     setViewOnly(readOnly);
   }, [readOnly, open]);
 
+  const initialSedeKey = initialSedeLocationId ?? null;
+  const initialMembersKey = useMemo(
+    () => (initialMemberNpcIds ?? []).slice().sort().join("|"),
+    [initialMemberNpcIds],
+  );
+
   const isDirty = useMemo(() => {
+    const sedeDirty = sedeLocationId !== initialSedeKey;
+    const membersDirty =
+      memberNpcIds.slice().sort().join("|") !== initialMembersKey;
+
     const init = faction;
     if (!init) {
       return !!(
@@ -90,7 +136,9 @@ export function FactionForm({
         description ||
         alignment !== "neutral" ||
         imageUrl ||
-        !visibleToPlayers
+        !visibleToPlayers ||
+        sedeDirty ||
+        membersDirty
       );
     }
     return (
@@ -98,9 +146,22 @@ export function FactionForm({
       description !== (init.description ?? "") ||
       alignment !== (init.alignment ?? "neutral") ||
       imageUrl !== (init.image_url ?? "") ||
-      visibleToPlayers !== (init.is_visible_to_players ?? true)
+      visibleToPlayers !== (init.is_visible_to_players ?? true) ||
+      sedeDirty ||
+      membersDirty
     );
-  }, [faction, name, description, alignment, imageUrl, visibleToPlayers]);
+  }, [
+    faction,
+    name,
+    description,
+    alignment,
+    imageUrl,
+    visibleToPlayers,
+    sedeLocationId,
+    memberNpcIds,
+    initialSedeKey,
+    initialMembersKey,
+  ]);
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
@@ -134,7 +195,7 @@ export function FactionForm({
       setSaving(true);
       setSaveError(false);
       try {
-        await onSave(data);
+        await onSave(data, { sedeLocationId, memberNpcIds });
         onOpenChange(false);
       } catch {
         setSaveError(true);
@@ -142,7 +203,17 @@ export function FactionForm({
         setSaving(false);
       }
     },
-    [name, description, alignment, imageUrl, visibleToPlayers, onSave, onOpenChange],
+    [
+      name,
+      description,
+      alignment,
+      imageUrl,
+      visibleToPlayers,
+      sedeLocationId,
+      memberNpcIds,
+      onSave,
+      onOpenChange,
+    ],
   );
 
   const isEdit = !!faction;
@@ -216,6 +287,41 @@ export function FactionForm({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Sede (HQ location) — Fase 3d */}
+            {availableLocations && availableLocations.length > 0 && (
+              <EntityTagSelector
+                type="location"
+                availableItems={availableLocations.map((l) => ({
+                  id: l.id,
+                  name: l.name,
+                }))}
+                selectedIds={sedeLocationId ? [sedeLocationId] : []}
+                onChange={(ids) => setSedeLocationId(ids[0] ?? null)}
+                singleSelect
+                label={t("sede_label")}
+                helpText={t("sede_placeholder")}
+                noneLabel={t("sede_none")}
+                testIdPrefix="faction-sede"
+                disabled={viewOnly}
+              />
+            )}
+
+            {/* Membros (NPC multi-select) — Fase 3d */}
+            {availableNpcs && availableNpcs.length > 0 && (
+              <EntityTagSelector
+                type="npc"
+                availableItems={availableNpcs.map((n) => ({
+                  id: n.id,
+                  name: n.name,
+                }))}
+                selectedIds={memberNpcIds}
+                onChange={setMemberNpcIds}
+                label={t("membros_label")}
+                testIdPrefix="faction-membros"
+                disabled={viewOnly}
+              />
+            )}
 
             {/* Description */}
             <div className="space-y-1.5">
@@ -352,6 +458,8 @@ export function FactionForm({
                 setDescription(faction?.description ?? "");
                 setImageUrl(faction?.image_url ?? "");
                 setVisibleToPlayers(faction?.is_visible_to_players ?? true);
+                setSedeLocationId(initialSedeLocationId ?? null);
+                setMemberNpcIds(initialMemberNpcIds ?? []);
                 onOpenChange(false);
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

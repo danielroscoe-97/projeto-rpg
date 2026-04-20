@@ -10,9 +10,16 @@ import {
   Flag,
   ChevronDown,
   ChevronUp,
+  MapPin,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
+
+interface EntityRefItem {
+  id: string;
+  name: string;
+}
 
 const ALIGNMENT_LEFT_BORDER: Record<FactionAlignment, string> = {
   ally: "border-l-4 border-l-emerald-400",
@@ -35,6 +42,10 @@ const ALIGNMENT_BADGE: Record<FactionAlignment, string> = {
 interface FactionCardProps {
   faction: CampaignFaction;
   isEditable: boolean;
+  /** Headquarters location (headquarters_of edge target). Fase 3d. */
+  sede?: EntityRefItem | null;
+  /** Member NPCs (member_of edge sources). Fase 3d. */
+  members?: EntityRefItem[];
   onEdit: (faction: CampaignFaction) => void;
   onDelete: (faction: CampaignFaction) => void;
   onToggleVisibility: (faction: CampaignFaction) => void;
@@ -45,6 +56,8 @@ interface FactionCardProps {
 export function FactionCard({
   faction,
   isEditable,
+  sede,
+  members,
   onEdit,
   onDelete,
   onToggleVisibility,
@@ -53,7 +66,9 @@ export function FactionCard({
   const t = useTranslations("factions");
   const [expanded, setExpanded] = useState(false);
 
-  const hasExpandableContent = !!faction.description;
+  const memberCount = members?.length ?? 0;
+  const hasRelations = !!sede || memberCount > 0;
+  const hasExpandableContent = !!faction.description || hasRelations;
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Only trigger when the click target is the wrapper itself; clicks on
@@ -126,13 +141,35 @@ export function FactionCard({
               </h3>
             </div>
 
-            {/* Alignment badge */}
-            <span
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${ALIGNMENT_BADGE[faction.alignment]}`}
-            >
-              <Flag className="w-3 h-3" />
-              {t(`alignment_${faction.alignment}`)}
-            </span>
+            {/* Alignment badge + relation counters */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${ALIGNMENT_BADGE[faction.alignment]}`}
+              >
+                <Flag className="w-3 h-3" />
+                {t(`alignment_${faction.alignment}`)}
+              </span>
+              {memberCount > 0 && (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                  data-testid={`faction-member-count-${faction.id}`}
+                  title={t("membros_label")}
+                >
+                  <Users className="w-3 h-3" />
+                  {t("membros_count", { count: memberCount })}
+                </span>
+              )}
+              {sede && (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                  data-testid={`faction-sede-chip-${faction.id}`}
+                  title={t("sede_label")}
+                >
+                  <MapPin className="w-3 h-3" />
+                  {sede.name}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Actions — only if editable */}
@@ -220,11 +257,31 @@ export function FactionCard({
         )}
 
         {/* Expanded content */}
-        {expanded && faction.description && (
-          <div className="mt-3 animate-in fade-in slide-in-from-top-1 duration-200">
-            <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {faction.description}
-            </p>
+        {expanded && (
+          <div className="mt-3 space-y-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
+            {faction.description && (
+              <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                {faction.description}
+              </p>
+            )}
+            {memberCount > 0 && (
+              <div data-testid={`faction-members-${faction.id}`}>
+                <p className="text-[11px] font-medium text-muted-foreground/60 mb-1.5">
+                  {t("membros_label")}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {members!.map((m) => (
+                    <span
+                      key={m.id}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-amber-500/5 text-amber-300 border border-amber-500/15"
+                    >
+                      <Users className="w-3 h-3" />
+                      {m.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

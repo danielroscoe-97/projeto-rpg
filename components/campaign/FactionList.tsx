@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { FactionCard } from "./FactionCard";
 import { FactionForm } from "./FactionForm";
+import type { FactionFormExtras } from "./FactionForm";
 import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
+import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
+import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
+import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
+import { selectCounterpartyIds, findEdgeId } from "@/lib/types/entity-links";
+import {
+  upsertEntityLink,
+  unlinkEntities,
+} from "@/lib/supabase/entity-links";
 import { captureError } from "@/lib/errors/capture";
-import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
+import type { CampaignFaction } from "@/lib/types/mind-map";
 import type { FactionFormData } from "@/lib/hooks/use-campaign-factions";
 
 type FilterMode = "all" | "ally" | "neutral" | "hostile";
@@ -68,6 +77,9 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
   const t = useTranslations("factions");
   const { factions, loading, addFaction, updateFaction, deleteFaction } =
     useCampaignFactions(campaignId);
+  const { locations: availableLocations } = useCampaignLocations(campaignId);
+  const { npcs: availableNpcs } = useCampaignNpcs(campaignId);
+  const { edges, refetch: refetchEdges } = useCampaignEdges(campaignId);
 
   const [filter, setFilter] = useState<FilterMode>("all");
   const [formOpen, setFormOpen] = useState(false);
@@ -86,16 +98,145 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
     return f.alignment === filter;
   });
 
-  const handleCreate = useCallback(
-    async (data: FactionFormData) => {
-      await addFaction(data);
+  const factionSedeMap = useMemo<Map<string, string | null>>(() => {
+    const map = new Map<string, string | null>();
+    for (const f of factions) {
+      const [locationId] = selectCounterpartyIds(
+        edges,
+        { type: "faction", id: f.id },
+        {
+          direction: "outgoing",
+          counterpartyType: "location",
+          relationship: "headquarters_of",
+        },
+      );
+      map.set(f.id, locationId ?? null);
+    }
+    return map;
+  }, [edges, factions]);
+
+  const factionMembersMap = useMemo<Map<string, string[]>>(() => {
+    const map = new Map<string, string[]>();
+    for (const f of factions) {
+      const npcIds = selectCounterpartyIds(
+        edges,
+        { type: "faction", id: f.id },
+        {
+          direction: "incoming",
+          counterpartyType: "npc",
+          relationship: "member_of",
+        },
+      );
+      map.set(f.id, npcIds);
+    }
+    return map;
+  }, [edges, factions]);
+
+  /**
+   * Reconciles the headquarters_of + member_of edges for a faction against
+   * the form's extras. Idempotent via upsertEntityLink.
+   */
+  const syncFactionEdges = useCallback(
+    async (
+      factionId: string,
+      previousMembers: string[],
+      extras: FactionFormExtras,
+    ) => {
+      const tasks: Promise<unknown>[] = [];
+
+      // ----- Sede (headquarters_of → location) -----
+      const existingSede = selectCounterpartyIds(
+        edges,
+        { type: "faction", id: factionId },
+        {
+          direction: "outgoing",
+          counterpartyType: "location",
+          relationship: "headquarters_of",
+        },
+      )[0] ?? null;
+
+      if (extras.sedeLocationId !== existingSede) {
+        if (extras.sedeLocationId) {
+          tasks.push(
+            upsertEntityLink(
+              campaignId,
+              { type: "faction", id: factionId },
+              { type: "location", id: extras.sedeLocationId },
+              "headquarters_of",
+            ),
+          );
+        }
+        if (existingSede) {
+          const staleId = findEdgeId(
+            edges,
+            { type: "faction", id: factionId },
+            { type: "location", id: existingSede },
+            "headquarters_of",
+          );
+          if (staleId) tasks.push(unlinkEntities(staleId));
+        }
+      }
+
+      // ----- Membros (member_of incoming) -----
+      // Edges are npc→faction with relationship=member_of. From faction's
+      // perspective these are incoming. Upsert uses the npc as source.
+      const targetMembers = new Set(extras.memberNpcIds);
+      const currentMembers = new Set(previousMembers);
+
+      for (const npcId of targetMembers) {
+        if (!currentMembers.has(npcId)) {
+          tasks.push(
+            upsertEntityLink(
+              campaignId,
+              { type: "npc", id: npcId },
+              { type: "faction", id: factionId },
+              "member_of",
+            ),
+          );
+        }
+      }
+      for (const npcId of currentMembers) {
+        if (!targetMembers.has(npcId)) {
+          const staleId = findEdgeId(
+            edges,
+            { type: "npc", id: npcId },
+            { type: "faction", id: factionId },
+            "member_of",
+          );
+          if (staleId) tasks.push(unlinkEntities(staleId));
+        }
+      }
+
+      if (tasks.length > 0) {
+        await Promise.all(tasks);
+        await refetchEdges();
+      }
     },
-    [addFaction],
+    [campaignId, edges, refetchEdges],
+  );
+
+  const handleCreate = useCallback(
+    async (data: FactionFormData, extras: FactionFormExtras) => {
+      const { data: created, error } = await addFaction(data);
+      if (!error && created?.id) {
+        try {
+          await syncFactionEdges(created.id, [], extras);
+        } catch (err) {
+          captureError(err, {
+            component: "FactionList",
+            action: "syncFactionEdges.create",
+            category: "network",
+          });
+        }
+      }
+    },
+    [addFaction, syncFactionEdges],
   );
 
   const handleEdit = useCallback(
-    async (data: FactionFormData) => {
+    async (data: FactionFormData, extras: FactionFormExtras) => {
       if (!editingFaction) return;
+      const previousMembers = factionMembersMap.get(editingFaction.id) ?? [];
       await updateFaction(editingFaction.id, {
         name: data.name,
         description: data.description ?? "",
@@ -103,9 +244,18 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
         image_url: data.image_url,
         is_visible_to_players: data.is_visible_to_players,
       });
+      try {
+        await syncFactionEdges(editingFaction.id, previousMembers, extras);
+      } catch (err) {
+        captureError(err, {
+          component: "FactionList",
+          action: "syncFactionEdges.edit",
+          category: "network",
+        });
+      }
       setEditingFaction(null);
     },
-    [editingFaction, updateFaction],
+    [editingFaction, updateFaction, factionMembersMap, syncFactionEdges],
   );
 
   const handleDelete = useCallback(async () => {
@@ -151,8 +301,9 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
   }, []);
 
   const handleViewSave = useCallback(
-    async (data: FactionFormData) => {
+    async (data: FactionFormData, extras: FactionFormExtras) => {
       if (!viewingFaction) return;
+      const previousMembers = factionMembersMap.get(viewingFaction.id) ?? [];
       await updateFaction(viewingFaction.id, {
         name: data.name,
         description: data.description ?? "",
@@ -160,9 +311,18 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
         image_url: data.image_url,
         is_visible_to_players: data.is_visible_to_players,
       });
+      try {
+        await syncFactionEdges(viewingFaction.id, previousMembers, extras);
+      } catch (err) {
+        captureError(err, {
+          component: "FactionList",
+          action: "syncFactionEdges.view",
+          category: "network",
+        });
+      }
       setViewingFaction(null);
     },
-    [viewingFaction, updateFaction],
+    [viewingFaction, updateFaction, factionMembersMap, syncFactionEdges],
   );
 
   if (loading) {
@@ -241,17 +401,30 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
           data-testid="faction-container"
         >
-          {filteredFactions.map((faction) => (
-            <FactionCard
-              key={faction.id}
-              faction={faction}
-              isEditable={isEditable}
-              onEdit={openEditForm}
-              onDelete={setDeleteTarget}
-              onToggleVisibility={handleToggleVisibility}
-              onCardClick={setViewingFaction}
-            />
-          ))}
+          {filteredFactions.map((faction) => {
+            const sedeId = factionSedeMap.get(faction.id) ?? null;
+            const sede = sedeId
+              ? availableLocations.find((l) => l.id === sedeId)
+              : null;
+            const memberIds = factionMembersMap.get(faction.id) ?? [];
+            const members = memberIds
+              .map((id) => availableNpcs.find((n) => n.id === id))
+              .filter((n): n is NonNullable<typeof n> => !!n)
+              .map((n) => ({ id: n.id, name: n.name }));
+            return (
+              <FactionCard
+                key={faction.id}
+                faction={faction}
+                isEditable={isEditable}
+                sede={sede ? { id: sede.id, name: sede.name } : null}
+                members={members}
+                onEdit={openEditForm}
+                onDelete={setDeleteTarget}
+                onToggleVisibility={handleToggleVisibility}
+                onCardClick={setViewingFaction}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -272,6 +445,14 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
         }}
         campaignId={campaignId}
         faction={editingFaction}
+        availableLocations={availableLocations}
+        availableNpcs={availableNpcs}
+        initialSedeLocationId={
+          editingFaction ? factionSedeMap.get(editingFaction.id) ?? null : null
+        }
+        initialMemberNpcIds={
+          editingFaction ? factionMembersMap.get(editingFaction.id) ?? [] : []
+        }
         onSave={editingFaction ? handleEdit : handleCreate}
       />
 
@@ -285,6 +466,10 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
           }}
           campaignId={campaignId}
           faction={viewingFaction}
+          availableLocations={availableLocations}
+          availableNpcs={availableNpcs}
+          initialSedeLocationId={factionSedeMap.get(viewingFaction.id) ?? null}
+          initialMemberNpcIds={factionMembersMap.get(viewingFaction.id) ?? []}
           readOnly
           canEdit={isEditable}
           onSave={handleViewSave}
