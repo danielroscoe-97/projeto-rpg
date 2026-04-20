@@ -4,7 +4,7 @@ node_modules
 tsconfig.tsbuildinfo
 
 # Test files & config
-e2e
+/e2e
 __tests__
 __mocks__
 **/*.test.ts
