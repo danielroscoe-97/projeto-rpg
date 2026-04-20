@@ -17,6 +17,7 @@ import {
   recordDismissal,
   resetOnConversion,
   shouldShowCta,
+  migrateDismissalEntry,
   type DismissalRecord,
 } from "@/components/conversion/dismissal-store";
 
@@ -221,6 +222,99 @@ describe("dismissal-store", () => {
       } finally {
         Storage.prototype.removeItem = original;
       }
+    });
+  });
+
+  // M15 (code review fix) — atomic re-keying of dismissal entry for the
+  // `__guest__ → realCampaignId` transition post-upgrade.
+  describe("migrateDismissalEntry (M15)", () => {
+    it("moves the __guest__ entry under the new campaignId", () => {
+      seedStorage({
+        dismissalsByCampaign: {
+          __guest__: { count: 2, lastDismissedAt: daysAgo(1) },
+        },
+        lastSeenCampaign: "__guest__",
+      });
+
+      const migrated = migrateDismissalEntry("__guest__", "camp-real");
+      expect(migrated).toBe(true);
+
+      const record = readDismissalRecord();
+      expect(record?.dismissalsByCampaign.__guest__).toBeUndefined();
+      expect(record?.dismissalsByCampaign["camp-real"]).toEqual(
+        expect.objectContaining({ count: 2 }),
+      );
+      // lastSeenCampaign follows the migration.
+      expect(record?.lastSeenCampaign).toBe("camp-real");
+    });
+
+    it("merges counts when the destination already has an entry", () => {
+      const newer = daysAgo(1);
+      const older = daysAgo(5);
+      seedStorage({
+        dismissalsByCampaign: {
+          __guest__: { count: 2, lastDismissedAt: older },
+          "camp-real": { count: 1, lastDismissedAt: newer },
+        },
+        lastSeenCampaign: "camp-real",
+      });
+
+      migrateDismissalEntry("__guest__", "camp-real");
+
+      const record = readDismissalRecord();
+      expect(record?.dismissalsByCampaign.__guest__).toBeUndefined();
+      expect(record?.dismissalsByCampaign["camp-real"].count).toBe(3);
+      // Latest timestamp wins.
+      expect(record?.dismissalsByCampaign["camp-real"].lastDismissedAt).toBe(
+        newer,
+      );
+    });
+
+    it("returns false and leaves storage alone when fromId has no entry", () => {
+      seedStorage({
+        dismissalsByCampaign: {
+          "camp-real": { count: 1, lastDismissedAt: daysAgo(1) },
+        },
+        lastSeenCampaign: "camp-real",
+      });
+
+      const migrated = migrateDismissalEntry("__guest__", "camp-real");
+      expect(migrated).toBe(false);
+
+      const record = readDismissalRecord();
+      expect(record?.dismissalsByCampaign["camp-real"].count).toBe(1);
+    });
+
+    it("returns false when storage is empty (no record)", () => {
+      expect(migrateDismissalEntry("__guest__", "camp-real")).toBe(false);
+      expect(readDismissalRecord()).toBeNull();
+    });
+
+    it("is a no-op when fromId === toId", () => {
+      seedStorage({
+        dismissalsByCampaign: {
+          "camp-1": { count: 2, lastDismissedAt: daysAgo(1) },
+        },
+        lastSeenCampaign: "camp-1",
+      });
+      expect(migrateDismissalEntry("camp-1", "camp-1")).toBe(false);
+      const record = readDismissalRecord();
+      expect(record?.dismissalsByCampaign["camp-1"].count).toBe(2);
+    });
+
+    it("after migration, shouldShowCta on the new campaignId honors the migrated cap", () => {
+      seedStorage({
+        dismissalsByCampaign: {
+          __guest__: { count: 3, lastDismissedAt: daysAgo(30) },
+        },
+        lastSeenCampaign: "__guest__",
+      });
+      migrateDismissalEntry("__guest__", "camp-real");
+
+      // Cap of 3 carries over → CTA must NOT show for the real campaign.
+      expect(shouldShowCta("camp-real")).toBe(false);
+      // And the guest sentinel is now fresh (no entry).
+      expect(shouldShowCta("__guest__")).toBe(true);
     });
   });
 });

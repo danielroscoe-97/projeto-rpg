@@ -357,4 +357,84 @@ describe("CharacterPickerModal — pagination (Disponíveis tab)", () => {
     render(<CharacterPickerModal {...baseProps} open={false} />);
     expect(listClaimableMock).not.toHaveBeenCalled();
   });
+
+  // M3 (code review fix) — rapid double-click on load-more MUST NOT fire two
+  // concurrent fetches. The useRef-based inflight guard collapses the second
+  // click until the first page resolves.
+  it("M3: rapid double-click on load-more only fires one fetch (inflight guard)", async () => {
+    const firstPage = Array.from({ length: 20 }, (_, i) =>
+      makeChar(`a${i}`, `A ${i}`),
+    );
+    const secondPage = Array.from({ length: 10 }, (_, i) =>
+      makeChar(`b${i}`, `B ${i}`),
+    );
+
+    // First call resolves immediately so the initial render populates the
+    // 20-item page. Second call is a slow promise we control.
+    let resolveSecond: (v: {
+      characters: PC[];
+      total: number;
+      hasMore: boolean;
+      offset: number;
+      limit: number;
+    }) => void = () => {};
+    listClaimableMock
+      .mockResolvedValueOnce({
+        characters: firstPage,
+        total: 30,
+        hasMore: true,
+        offset: 0,
+        limit: 20,
+      })
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveSecond = resolve;
+          }),
+      );
+
+    const user = userEvent.setup();
+    render(<CharacterPickerModal {...baseProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("invite.picker.claim-card-a0")).toBeInTheDocument();
+    });
+
+    // Only the initial fetch should have happened so far.
+    expect(listClaimableMock).toHaveBeenCalledTimes(1);
+
+    const loadMoreBtn = screen.getByTestId("invite.picker.load-more-button");
+    // Rapid double-click — BEFORE resolving the inflight fetch.
+    await user.click(loadMoreBtn);
+    await user.click(loadMoreBtn);
+    await user.click(loadMoreBtn);
+
+    // The inflight guard must have collapsed the extra clicks: exactly one
+    // additional fetch is in-flight, so the mock count is 2 (initial + one
+    // load-more), NOT 4.
+    expect(listClaimableMock).toHaveBeenCalledTimes(2);
+
+    // Offset of the in-flight call must be the size of the first page.
+    expect(listClaimableMock).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ offset: 20 }),
+    );
+
+    // Resolve the second page and verify data appends correctly.
+    resolveSecond({
+      characters: secondPage,
+      total: 30,
+      hasMore: false,
+      offset: 20,
+      limit: 20,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("invite.picker.claim-card-b0")).toBeInTheDocument();
+    });
+
+    // Post-resolution: still exactly 2 total fetches (the swallowed clicks
+    // never turned into fetches).
+    expect(listClaimableMock).toHaveBeenCalledTimes(2);
+  });
 });

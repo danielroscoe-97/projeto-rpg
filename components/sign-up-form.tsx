@@ -48,6 +48,16 @@ export type SignUpFormProps = React.ComponentPropsWithoutRef<"div"> & {
   onRequestGoogleOAuth?: () => void;
   /** Override the testid namespace — modal uses `auth.modal`. */
   testIdPrefix?: string;
+  /**
+   * M6 (code review fix): controlled email + displayName bindings. When
+   * provided (AuthModal variant), the parent owns the values so login↔signup
+   * tab switches don't reset them. Password fields stay uncontrolled and
+   * reset on unmount (security).
+   */
+  email?: string;
+  onEmailChange?: (value: string) => void;
+  displayName?: string;
+  onDisplayNameChange?: (value: string) => void;
 };
 
 export function SignUpForm({
@@ -57,6 +67,10 @@ export function SignUpForm({
   upgradeContext,
   onRequestGoogleOAuth,
   testIdPrefix,
+  email: controlledEmail,
+  onEmailChange,
+  displayName: controlledDisplayName,
+  onDisplayNameChange,
   ...props
 }: SignUpFormProps) {
   const t = useTranslations("auth");
@@ -64,10 +78,22 @@ export function SignUpForm({
   const tc = useTranslations("common");
   const te = useTranslations("auth_errors");
   const ts = useTranslations("signup");
-  const [email, setEmail] = useState("");
+  // Controlled-or-uncontrolled email + displayName (M6 fix for AuthModal tab
+  // switching). Password + repeatPassword stay strictly local.
+  const [uncontrolledEmail, setUncontrolledEmail] = useState("");
+  const email = controlledEmail ?? uncontrolledEmail;
+  const setEmail = (value: string) => {
+    if (onEmailChange) onEmailChange(value);
+    else setUncontrolledEmail(value);
+  };
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [uncontrolledDisplayName, setUncontrolledDisplayName] = useState("");
+  const displayName = controlledDisplayName ?? uncontrolledDisplayName;
+  const setDisplayName = (value: string) => {
+    if (onDisplayNameChange) onDisplayNameChange(value);
+    else setUncontrolledDisplayName(value);
+  };
   const [selectedRole, setSelectedRole] = useState<"player" | "dm" | "both">("both");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

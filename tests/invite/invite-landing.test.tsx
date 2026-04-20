@@ -354,6 +354,51 @@ describe("InviteLanding", () => {
       expect(screen.getByTestId("mock-auth-modal")).toBeInTheDocument();
     });
 
+    // C3 (code review fix) — anon-warning is reachable before the picker
+    // auto-opens. When the user is anonymous we MUST NOT auto-open the picker
+    // over the anon-warning, otherwise the upgrade CTA is invisible.
+    it("C3: does NOT auto-open picker when isAnonymous=true (banner stays visible)", () => {
+      renderWithState({
+        state: "auth",
+        invite: BASE_INVITE,
+        user: makeAuthUser({ is_anonymous: true } as Partial<User>),
+        isAnonymous: true,
+      });
+
+      // Anon warning must be in the DOM ...
+      expect(
+        screen.getByTestId("invite.landing.anon-warning"),
+      ).toBeInTheDocument();
+      // ... and the picker must NOT auto-open.
+      expect(
+        screen.queryByTestId("mock-picker-modal"),
+      ).not.toBeInTheDocument();
+      // The "continue anonymous" CTA must be reachable.
+      expect(
+        screen.getByTestId("invite.landing.cta-continue-anon"),
+      ).toBeInTheDocument();
+    });
+
+    it("C3: clicking 'continue anonymous' opens the picker on demand", async () => {
+      const user = userEvent.setup();
+      renderWithState({
+        state: "auth",
+        invite: BASE_INVITE,
+        user: makeAuthUser({ is_anonymous: true } as Partial<User>),
+        isAnonymous: true,
+      });
+
+      // Picker closed initially.
+      expect(
+        screen.queryByTestId("mock-picker-modal"),
+      ).not.toBeInTheDocument();
+
+      await user.click(screen.getByTestId("invite.landing.cta-continue-anon"));
+
+      // Now the picker opens.
+      expect(screen.getByTestId("mock-picker-modal")).toBeInTheDocument();
+    });
+
     it("forwards picker 'claimed' result through acceptInviteAction", async () => {
       const user = userEvent.setup();
       mockAcceptInviteAction.mockResolvedValue(undefined);

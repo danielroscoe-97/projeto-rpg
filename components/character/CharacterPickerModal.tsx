@@ -139,6 +139,11 @@ function pickInitialMode(
  * Hook — paginated claimable fetch.
  * Returns stable callbacks so consuming components can re-render without
  * reinvoking effects. `load(0)` resets the page; `loadMore()` appends.
+ *
+ * M3 (code review fix): uses `useRef` for the canonical offset counter and an
+ * `inflight` guard so rapid double-clicks on "load more" CANNOT fire two
+ * concurrent fetches at the same stale offset. React state is still the render
+ * source of truth; the refs just arbitrate the fetch path.
  */
 function useClaimableCharactersPaginated(
   campaignId: string,
@@ -150,6 +155,12 @@ function useClaimableCharactersPaginated(
   const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Canonical offset (advances on each successful append/reset) + inflight
+  // guard. Refs beat useState here because the decision to fetch happens
+  // inside a callback that must NOT wait for a render to see the new value.
+  const offsetRef = useRef(0);
+  const inflightRef = useRef(false);
 
   const load = useCallback(
     async (
@@ -174,6 +185,11 @@ function useClaimableCharactersPaginated(
             ? result.characters
             : [...prev, ...result.characters],
         );
+        if (mode === "reset") {
+          offsetRef.current = result.characters.length;
+        } else {
+          offsetRef.current += result.characters.length;
+        }
         return result;
       } catch (err) {
         if (signal?.aborted) return null;
@@ -187,19 +203,29 @@ function useClaimableCharactersPaginated(
     [campaignId, pageSize],
   );
 
-  const loadedOnceRef = useRef(false);
   useEffect(() => {
     if (!enabled) return;
-    loadedOnceRef.current = true;
+    // Reset offset + inflight when enabling (open true → first fetch).
+    offsetRef.current = 0;
+    inflightRef.current = true;
     const controller = new AbortController();
-    void load(0, "reset", controller.signal);
+    void load(0, "reset", controller.signal).finally(() => {
+      inflightRef.current = false;
+    });
     return () => controller.abort();
   }, [enabled, load]);
 
-  const loadMore = useCallback(() => {
-    if (isLoading || !hasMore) return;
-    void load(characters.length, "append");
-  }, [isLoading, hasMore, characters.length, load]);
+  const loadMore = useCallback(async () => {
+    // Inflight guard: the FIRST thing we check — not React state, not props.
+    // Ensures rapid double-clicks collapse into a single fetch.
+    if (inflightRef.current || !hasMore) return;
+    inflightRef.current = true;
+    try {
+      await load(offsetRef.current, "append");
+    } finally {
+      inflightRef.current = false;
+    }
+  }, [hasMore, load]);
 
   return { characters, total, hasMore, isLoading, error, loadMore };
 }
@@ -207,6 +233,7 @@ function useClaimableCharactersPaginated(
 /**
  * Hook — paginated "Meus personagens" fetch (auth-only).
  * Mirror of `useClaimableCharactersPaginated`, targeting a different endpoint.
+ * Same M3 guard: useRef-based offset + inflight.
  */
 function useMyCharactersPaginated(enabled: boolean, pageSize: number) {
   const [characters, setCharacters] = useState<MyCharacterSummary[]>([]);
@@ -214,6 +241,9 @@ function useMyCharactersPaginated(enabled: boolean, pageSize: number) {
   const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const offsetRef = useRef(0);
+  const inflightRef = useRef(false);
 
   const load = useCallback(
     async (
@@ -237,6 +267,11 @@ function useMyCharactersPaginated(enabled: boolean, pageSize: number) {
             ? result.characters
             : [...prev, ...result.characters],
         );
+        if (mode === "reset") {
+          offsetRef.current = result.characters.length;
+        } else {
+          offsetRef.current += result.characters.length;
+        }
         return result;
       } catch (err) {
         if (signal?.aborted) return null;
@@ -252,15 +287,24 @@ function useMyCharactersPaginated(enabled: boolean, pageSize: number) {
 
   useEffect(() => {
     if (!enabled) return;
+    offsetRef.current = 0;
+    inflightRef.current = true;
     const controller = new AbortController();
-    void load(0, "reset", controller.signal);
+    void load(0, "reset", controller.signal).finally(() => {
+      inflightRef.current = false;
+    });
     return () => controller.abort();
   }, [enabled, load]);
 
-  const loadMore = useCallback(() => {
-    if (isLoading || !hasMore) return;
-    void load(characters.length, "append");
-  }, [isLoading, hasMore, characters.length, load]);
+  const loadMore = useCallback(async () => {
+    if (inflightRef.current || !hasMore) return;
+    inflightRef.current = true;
+    try {
+      await load(offsetRef.current, "append");
+    } finally {
+      inflightRef.current = false;
+    }
+  }, [hasMore, load]);
 
   return { characters, total, hasMore, isLoading, error, loadMore };
 }
