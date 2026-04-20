@@ -45,9 +45,12 @@ describe("Fuse config — ignoreDiacritics + threshold 0.4", () => {
     expect(SPELL_OPTIONS.threshold).toBe(0.4);
   });
 
-  it("ITEM_OPTIONS has ignoreDiacritics: true and threshold 0.4", () => {
+  it("ITEM_OPTIONS has ignoreDiacritics: true and threshold 0.35", () => {
     expect(ITEM_OPTIONS.ignoreDiacritics).toBe(true);
-    expect(ITEM_OPTIONS.threshold).toBe(0.4);
+    // S3.3 β' review fix: ITEM stays at 0.35 (not 0.4 like other configs)
+    // because its pre-S3.3 baseline was 0.3. The +0.05 nudge gives the
+    // diacritic-fold margin without over-relaxing short item queries.
+    expect(ITEM_OPTIONS.threshold).toBe(0.35);
   });
 
   it("FEAT/BACKGROUND/RACE/ABILITY all have ignoreDiacritics: true", () => {
