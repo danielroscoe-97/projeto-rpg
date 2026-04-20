@@ -49,8 +49,20 @@ export function InviteAcceptClient({
 
   // Auto-open on mount so the picker is immediately visible on the invite
   // landing (matches pre-refactor page-embedded behavior).
+  //
+  // Dead-end prevention (C2 from code review): at `/invite/[token]` the page
+  // has NO other UI behind the modal — if the user closes it (Escape, overlay
+  // click, X button), they'd land on a blank page with no way back. The
+  // pre-refactor inline form had no close path either, so we preserve that
+  // behavior here by ignoring close attempts. Only `setOpen(true)` reopens
+  // are honored; `setOpen(false)` is silently dropped.
   const [open, setOpen] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleOpenChange = useCallback((next: boolean) => {
+    // Ignore close attempts — see comment above `open` state.
+    if (next) setOpen(true);
+  }, []);
 
   const handleSelect = useCallback(
     async (result: CharacterPickerResult) => {
@@ -115,7 +127,7 @@ export function InviteAcceptClient({
       campaignId={campaignId}
       playerIdentity={{ userId }}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
       onSelect={handleSelect}
       existingCharacters={existingCharacters}
       unlinkedCharacters={unlinkedCharacters}

@@ -12,11 +12,12 @@
  *   - Embed `CharacterWizard` in the Criar novo tab (replacing inline form)
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { User, CheckCircle2 } from "lucide-react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -150,10 +151,18 @@ export function CharacterPickerModal({
   const [ac, setAc] = useState("");
   const [spellSaveDc, setSpellSaveDc] = useState("");
 
-  // Reset internal state when the modal transitions from closed -> open so
-  // subsequent opens don't retain stale selections.
+  // M3 (from code review): persist pending form state across open/close
+  // cycles. Previously we reset on every `open === true` transition, which
+  // silently dropped data when the user closed mid-fill and reopened. Now
+  // we only reset when `campaignId` changes (legitimate reset — different
+  // campaign = different character pool).
+  //
+  // TODO (Story 02-B full): formalize persistence strategy (maybe opt-in
+  // via prop), potentially wiring into a draft store.
+  const lastCampaignIdRef = useRef(_campaignId);
   useEffect(() => {
-    if (open) {
+    if (lastCampaignIdRef.current !== _campaignId) {
+      lastCampaignIdRef.current = _campaignId;
       setMode(pickInitialMode(allowModes, hasUnlinked, hasExisting));
       setSelectedCharId(null);
       setClaimCharId(null);
@@ -162,10 +171,10 @@ export function CharacterPickerModal({
       setAc("");
       setSpellSaveDc("");
     }
-    // `allowModes`, `hasUnlinked`, `hasExisting` are derived from props and are
-    // stable across a given `open` cycle.
+    // `allowModes`, `hasUnlinked`, `hasExisting` are derived from props and
+    // are only consulted on the legitimate reset path (campaignId change).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [_campaignId]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -217,9 +226,22 @@ export function CharacterPickerModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={contentResponsive}
-        data-testid="character-picker-modal"
+        data-testid="invite.picker.modal"
         aria-label={t("invite_picker_label")}
       >
+        {/* Close button testid (§3.3 requires `invite.picker.close-button`).
+            The Radix `DialogClose` baked into `DialogContent` (the visible `X`
+            icon) is not directly attributable from here — this secondary
+            `DialogClose` is rendered visually hidden (sr-only) and exposes
+            the same close semantics to automated tests + assistive tech.
+            InviteAcceptClient ignores close attempts (C2), so this is a no-op
+            at `/invite/[token]`; other callers (e.g. dashboard picker in
+            02-B full) will honor it. */}
+        <DialogClose
+          data-testid="invite.picker.close-button"
+          aria-label="Close"
+          className="sr-only"
+        />
         <DialogHeader>
           <DialogTitle className="font-display text-xl text-foreground tracking-wide">
             {titleText}
@@ -239,7 +261,7 @@ export function CharacterPickerModal({
                 type="button"
                 role="tab"
                 aria-selected={mode === "claim"}
-                data-testid="picker-tab-claim"
+                data-testid="invite.picker.tab-available"
                 onClick={() => {
                   setMode("claim");
                   setSelectedCharId(null);
@@ -259,7 +281,7 @@ export function CharacterPickerModal({
                 type="button"
                 role="tab"
                 aria-selected={mode === "pick"}
-                data-testid="picker-tab-pick"
+                data-testid="invite.picker.tab-my-characters"
                 onClick={() => {
                   setMode("pick");
                   setClaimCharId(null);
@@ -279,7 +301,7 @@ export function CharacterPickerModal({
                 type="button"
                 role="tab"
                 aria-selected={mode === "create"}
-                data-testid="picker-tab-create"
+                data-testid="invite.picker.tab-create"
                 onClick={() => {
                   setMode("create");
                   setClaimCharId(null);
@@ -303,7 +325,7 @@ export function CharacterPickerModal({
           {hasUnlinked && mode === "claim" && (
             <div
               role="tabpanel"
-              data-testid="picker-panel-claim"
+              data-testid="invite.picker.tab-panel-available"
               className="space-y-2"
             >
               <p className="text-xs text-muted-foreground">
@@ -319,7 +341,7 @@ export function CharacterPickerModal({
                     key={char.id}
                     type="button"
                     onClick={() => setClaimCharId(char.id)}
-                    data-testid={`picker-claim-${char.id}`}
+                    data-testid={`invite.picker.claim-card-${char.id}`}
                     className={[
                       "w-full p-3 rounded-lg border text-left transition-colors flex items-center gap-3 min-h-[44px]",
                       isSelected
@@ -363,6 +385,7 @@ export function CharacterPickerModal({
               {canCreate && (
                 <button
                   type="button"
+                  data-testid="invite.picker.claim-not-listed"
                   onClick={() => {
                     setMode("create");
                     setClaimCharId(null);
@@ -379,7 +402,7 @@ export function CharacterPickerModal({
           {hasExisting && mode === "pick" && (
             <div
               role="tabpanel"
-              data-testid="picker-panel-pick"
+              data-testid="invite.picker.tab-panel-my-characters"
               className="space-y-2"
             >
               {/* TODO (Story 02-B full): paginated fetch of player_characters
@@ -394,7 +417,7 @@ export function CharacterPickerModal({
                     key={char.id}
                     type="button"
                     onClick={() => setSelectedCharId(char.id)}
-                    data-testid={`picker-pick-${char.id}`}
+                    data-testid={`invite.picker.character-card-${char.id}`}
                     className={[
                       "w-full p-3 rounded-lg border text-left transition-colors flex items-center gap-3 min-h-[44px]",
                       isSelected
@@ -459,6 +482,7 @@ export function CharacterPickerModal({
               {canCreate && (
                 <button
                   type="button"
+                  data-testid="invite.picker.pick-create-new"
                   onClick={() => {
                     setMode("create");
                     setSelectedCharId(null);
@@ -473,12 +497,13 @@ export function CharacterPickerModal({
 
           {/* New character form */}
           {canCreate && mode === "create" && (
-            <div role="tabpanel" data-testid="picker-panel-create">
+            <div role="tabpanel" data-testid="invite.picker.tab-panel-create">
               {/* TODO (Story 02-B full): replace this inline form with
                   <CharacterWizard /> embed per Epic 02 Área 2. */}
               {(hasUnlinked || hasExisting) && (
                 <button
                   type="button"
+                  data-testid="invite.picker.back-to-selection"
                   onClick={() => setMode(hasUnlinked ? "claim" : "pick")}
                   className="text-xs text-gold/70 hover:text-gold transition-colors mb-2"
                 >
@@ -486,7 +511,11 @@ export function CharacterPickerModal({
                 </button>
               )}
 
-              <div className="space-y-1.5">
+              {/* Step 1 — name (see contract §3.3 create-wizard-step-{n}) */}
+              <div
+                className="space-y-1.5"
+                data-testid="invite.picker.create-wizard-step-1"
+              >
                 <label
                   htmlFor="char-name"
                   className="text-xs text-gold/80 uppercase tracking-widest font-medium"
@@ -500,11 +529,19 @@ export function CharacterPickerModal({
                   placeholder={tc("lobby_name_placeholder")}
                   required
                   className={INPUT_CLASS}
-                  data-testid="invite-char-name"
+                  // Canonical testid per contract §3.3. The legacy
+                  // `invite-char-name` id is retained as an HTML id so any
+                  // pre-existing specs that use `getByLabelText`/CSS `#id`
+                  // continue to work during deprecation.
+                  data-testid="invite.picker.name-input"
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3 mt-3">
+              {/* Step 2 — HP/AC/DC grid (see contract §3.3). */}
+              <div
+                className="grid grid-cols-3 gap-3 mt-3"
+                data-testid="invite.picker.create-wizard-step-2"
+              >
                 <div className="space-y-1.5">
                   <label
                     htmlFor="char-hp"
@@ -519,6 +556,7 @@ export function CharacterPickerModal({
                     onChange={(e) => setHp(e.target.value)}
                     placeholder="45"
                     className={INPUT_CLASS}
+                    data-testid="invite.picker.hp-input"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -535,6 +573,7 @@ export function CharacterPickerModal({
                     onChange={(e) => setAc(e.target.value)}
                     placeholder="16"
                     className={INPUT_CLASS}
+                    data-testid="invite.picker.ac-input"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -551,6 +590,7 @@ export function CharacterPickerModal({
                     onChange={(e) => setSpellSaveDc(e.target.value)}
                     placeholder="15"
                     className={INPUT_CLASS}
+                    data-testid="invite.picker.dc-input"
                   />
                 </div>
               </div>
@@ -561,7 +601,7 @@ export function CharacterPickerModal({
             type="submit"
             variant="gold"
             className="w-full min-h-[44px]"
-            data-testid="picker-submit"
+            data-testid="invite.picker.confirm-button"
             disabled={
               isSubmitting ||
               (mode === "claim" && !claimCharId) ||

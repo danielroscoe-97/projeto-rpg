@@ -44,7 +44,17 @@ jest.mock("@radix-ui/react-dialog", () => {
       </div>
     ),
     Title: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
-    Close: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    Close: ({
+      children,
+      ...props
+    }: {
+      children?: React.ReactNode;
+      [key: string]: unknown;
+    }) => (
+      <button type="button" {...props}>
+        {children}
+      </button>
+    ),
   };
 });
 
@@ -88,21 +98,27 @@ describe("CharacterPickerModal", () => {
       );
       expect(container).toBeEmptyDOMElement();
       expect(
-        screen.queryByTestId("character-picker-modal"),
+        screen.queryByTestId("invite.picker.modal"),
       ).not.toBeInTheDocument();
     });
 
     it("renders the modal with dialog role when open=true", () => {
       render(<CharacterPickerModal {...baseProps} />);
-      expect(screen.getByTestId("character-picker-modal")).toBeInTheDocument();
+      expect(screen.getByTestId("invite.picker.modal")).toBeInTheDocument();
       expect(screen.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
     });
 
     it("renders all 3 tabs by default (claim + pick + create)", () => {
       render(<CharacterPickerModal {...baseProps} />);
-      expect(screen.getByTestId("picker-tab-claim")).toBeInTheDocument();
-      expect(screen.getByTestId("picker-tab-pick")).toBeInTheDocument();
-      expect(screen.getByTestId("picker-tab-create")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-available"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-my-characters"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-create"),
+      ).toBeInTheDocument();
     });
 
     it("hides claim tab when allowModes excludes it", () => {
@@ -112,9 +128,15 @@ describe("CharacterPickerModal", () => {
           allowModes={["pick", "create"]}
         />,
       );
-      expect(screen.queryByTestId("picker-tab-claim")).not.toBeInTheDocument();
-      expect(screen.getByTestId("picker-tab-pick")).toBeInTheDocument();
-      expect(screen.getByTestId("picker-tab-create")).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("invite.picker.tab-available"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-my-characters"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-create"),
+      ).toBeInTheDocument();
     });
 
     it("hides pick tab when allowModes excludes it", () => {
@@ -124,50 +146,66 @@ describe("CharacterPickerModal", () => {
           allowModes={["claim", "create"]}
         />,
       );
-      expect(screen.queryByTestId("picker-tab-pick")).not.toBeInTheDocument();
-      expect(screen.getByTestId("picker-tab-claim")).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("invite.picker.tab-my-characters"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-available"),
+      ).toBeInTheDocument();
     });
 
     it("hides claim tab when there are no unlinked characters", () => {
       render(
         <CharacterPickerModal {...baseProps} unlinkedCharacters={[]} />,
       );
-      expect(screen.queryByTestId("picker-tab-claim")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("invite.picker.tab-available"),
+      ).not.toBeInTheDocument();
     });
 
     it("hides pick tab when there are no existing characters", () => {
       render(
         <CharacterPickerModal {...baseProps} existingCharacters={[]} />,
       );
-      expect(screen.queryByTestId("picker-tab-pick")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("invite.picker.tab-my-characters"),
+      ).not.toBeInTheDocument();
     });
 
     it("renders stats badges on unlinked character cards", () => {
       render(<CharacterPickerModal {...baseProps} />);
-      const claimBtn = screen.getByTestId("picker-claim-u1");
+      const claimBtn = screen.getByTestId("invite.picker.claim-card-u1");
       expect(within(claimBtn).getByText(/HP 45/)).toBeInTheDocument();
       expect(within(claimBtn).getByText(/AC 16/)).toBeInTheDocument();
+    });
+
+    it("exposes a close-button testid per contract §3.3", () => {
+      render(<CharacterPickerModal {...baseProps} />);
+      expect(
+        screen.getByTestId("invite.picker.close-button"),
+      ).toBeInTheDocument();
     });
   });
 
   describe("initial mode", () => {
     it("defaults to claim when unlinked characters exist", () => {
       render(<CharacterPickerModal {...baseProps} />);
-      expect(screen.getByTestId("picker-tab-claim")).toHaveAttribute(
+      expect(screen.getByTestId("invite.picker.tab-available")).toHaveAttribute(
         "aria-selected",
         "true",
       );
-      expect(screen.getByTestId("picker-panel-claim")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-panel-available"),
+      ).toBeInTheDocument();
     });
 
     it("defaults to pick when no unlinked but existing", () => {
       render(
         <CharacterPickerModal {...baseProps} unlinkedCharacters={[]} />,
       );
-      expect(screen.getByTestId("picker-tab-pick")).toHaveAttribute(
-        "aria-selected",
-        "true",
-      );
+      expect(
+        screen.getByTestId("invite.picker.tab-my-characters"),
+      ).toHaveAttribute("aria-selected", "true");
     });
 
     it("defaults to create when no unlinked and no existing", () => {
@@ -178,7 +216,9 @@ describe("CharacterPickerModal", () => {
           existingCharacters={[]}
         />,
       );
-      expect(screen.getByTestId("picker-panel-create")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("invite.picker.tab-panel-create"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -186,8 +226,8 @@ describe("CharacterPickerModal", () => {
     it("calls onSelect with claimed + characterId", async () => {
       const user = userEvent.setup();
       render(<CharacterPickerModal {...baseProps} />);
-      await user.click(screen.getByTestId("picker-claim-u2"));
-      await user.click(screen.getByTestId("picker-submit"));
+      await user.click(screen.getByTestId("invite.picker.claim-card-u2"));
+      await user.click(screen.getByTestId("invite.picker.confirm-button"));
       expect(baseProps.onSelect).toHaveBeenCalledTimes(1);
       expect(baseProps.onSelect).toHaveBeenCalledWith({
         mode: "claimed",
@@ -198,9 +238,9 @@ describe("CharacterPickerModal", () => {
     it("calls onSelect with picked + characterId after tab switch", async () => {
       const user = userEvent.setup();
       render(<CharacterPickerModal {...baseProps} />);
-      await user.click(screen.getByTestId("picker-tab-pick"));
-      await user.click(screen.getByTestId("picker-pick-e1"));
-      await user.click(screen.getByTestId("picker-submit"));
+      await user.click(screen.getByTestId("invite.picker.tab-my-characters"));
+      await user.click(screen.getByTestId("invite.picker.character-card-e1"));
+      await user.click(screen.getByTestId("invite.picker.confirm-button"));
       expect(baseProps.onSelect).toHaveBeenCalledWith({
         mode: "picked",
         characterId: "e1",
@@ -210,11 +250,14 @@ describe("CharacterPickerModal", () => {
     it("calls onSelect with created + characterData on create mode", async () => {
       const user = userEvent.setup();
       render(<CharacterPickerModal {...baseProps} />);
-      await user.click(screen.getByTestId("picker-tab-create"));
-      await user.type(screen.getByTestId("invite-char-name"), "Legolas");
-      await user.type(screen.getByLabelText("HP"), "55");
-      await user.type(screen.getByLabelText("AC"), "15");
-      await user.click(screen.getByTestId("picker-submit"));
+      await user.click(screen.getByTestId("invite.picker.tab-create"));
+      await user.type(
+        screen.getByTestId("invite.picker.name-input"),
+        "Legolas",
+      );
+      await user.type(screen.getByTestId("invite.picker.hp-input"), "55");
+      await user.type(screen.getByTestId("invite.picker.ac-input"), "15");
+      await user.click(screen.getByTestId("invite.picker.confirm-button"));
       expect(baseProps.onSelect).toHaveBeenCalledWith({
         mode: "created",
         characterData: {
@@ -230,7 +273,7 @@ describe("CharacterPickerModal", () => {
     it("does not call onSelect when claim mode has no selection", async () => {
       const user = userEvent.setup();
       render(<CharacterPickerModal {...baseProps} />);
-      const submit = screen.getByTestId("picker-submit");
+      const submit = screen.getByTestId("invite.picker.confirm-button");
       expect(submit).toBeDisabled();
       // Force click even though disabled — handler should short-circuit.
       await user.click(submit);
@@ -246,8 +289,10 @@ describe("CharacterPickerModal", () => {
           existingCharacters={[]}
         />,
       );
-      expect(screen.getByTestId("picker-submit")).toBeDisabled();
-      await user.click(screen.getByTestId("picker-submit"));
+      expect(
+        screen.getByTestId("invite.picker.confirm-button"),
+      ).toBeDisabled();
+      await user.click(screen.getByTestId("invite.picker.confirm-button"));
       expect(baseProps.onSelect).not.toHaveBeenCalled();
     });
   });
@@ -270,17 +315,41 @@ describe("CharacterPickerModal", () => {
       expect(baseProps.onOpenChange).toHaveBeenCalledWith(false);
     });
 
-    it("resets internal selection state on reopen", async () => {
+    // M3 fix (code review): reopening the picker MUST preserve pending form
+    // state so users who close mid-fill don't silently lose their data.
+    // Legitimate resets (campaignId change) are covered by the next test.
+    it("persists pending selection across close -> reopen (no silent data drop)", async () => {
       const user = userEvent.setup();
       const { rerender } = render(
         <CharacterPickerModal {...baseProps} open={true} />,
       );
-      await user.click(screen.getByTestId("picker-claim-u1"));
-      // Close and reopen
+      await user.click(screen.getByTestId("invite.picker.claim-card-u1"));
+      // Close and reopen — same campaignId, so the state should survive.
       rerender(<CharacterPickerModal {...baseProps} open={false} />);
       rerender(<CharacterPickerModal {...baseProps} open={true} />);
-      // After reopen, selection is cleared — submit stays disabled.
-      expect(screen.getByTestId("picker-submit")).toBeDisabled();
+      // Confirm button stays enabled because the claim selection persisted.
+      expect(
+        screen.getByTestId("invite.picker.confirm-button"),
+      ).not.toBeDisabled();
+    });
+
+    it("resets state when campaignId changes (legitimate reset)", async () => {
+      const user = userEvent.setup();
+      const { rerender } = render(
+        <CharacterPickerModal {...baseProps} open={true} />,
+      );
+      await user.click(screen.getByTestId("invite.picker.claim-card-u1"));
+      // Switch to a different campaign — pending state must be dropped.
+      rerender(
+        <CharacterPickerModal
+          {...baseProps}
+          open={true}
+          campaignId="camp-2"
+        />,
+      );
+      expect(
+        screen.getByTestId("invite.picker.confirm-button"),
+      ).toBeDisabled();
     });
   });
 
@@ -293,8 +362,12 @@ describe("CharacterPickerModal", () => {
       const dialog = screen.getByRole("dialog");
       expect(dialog).toHaveAttribute("aria-modal", "true");
       // Tabs and submit live inside it.
-      expect(within(dialog).getByTestId("picker-tab-claim")).toBeInTheDocument();
-      expect(within(dialog).getByTestId("picker-submit")).toBeInTheDocument();
+      expect(
+        within(dialog).getByTestId("invite.picker.tab-available"),
+      ).toBeInTheDocument();
+      expect(
+        within(dialog).getByTestId("invite.picker.confirm-button"),
+      ).toBeInTheDocument();
     });
 
     it("all interactive controls live inside the dialog region (no stray trigger outside)", () => {
@@ -351,7 +424,7 @@ describe("CharacterPickerModal", () => {
     it("has zero axe violations after switching to create tab", async () => {
       const user = userEvent.setup();
       const { container } = render(<CharacterPickerModal {...baseProps} />);
-      await user.click(screen.getByTestId("picker-tab-create"));
+      await user.click(screen.getByTestId("invite.picker.tab-create"));
       const result = await runAxe(container);
       if (!axe) return;
       expect(result.violations).toEqual([]);
