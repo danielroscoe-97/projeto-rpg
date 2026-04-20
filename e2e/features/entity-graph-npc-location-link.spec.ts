@@ -356,7 +356,12 @@ test.describe("P1 — Entity Graph: NPC ↔ Location", () => {
 
       const hasSelect = await moradaSelect.isVisible({ timeout: 2_000 }).catch(() => false);
       if (hasSelect) {
-        await moradaSelect.selectOption(state.locationId!);
+        // Radix SelectTrigger: click trigger, then click matching option by
+        // testid (portal-rendered, so addressable at page scope).
+        await moradaSelect.click();
+        await page
+          .locator(`[data-testid="npc-morada-option-${state.locationId}"]`)
+          .click();
       } else {
         const hasAdd = await moradaAdd.isVisible({ timeout: 2_000 }).catch(() => false);
         if (!hasAdd) {
@@ -426,7 +431,12 @@ test.describe("P1 — Entity Graph: NPC ↔ Location", () => {
       const moradaAdd = page.locator('[data-testid="npc-morada-add"]');
       const hasSelect = await moradaSelect.isVisible({ timeout: 2_000 }).catch(() => false);
       if (hasSelect) {
-        await moradaSelect.selectOption(state.locationId!);
+        // Radix SelectTrigger: click trigger, then click matching option by
+        // testid (portal-rendered, so addressable at page scope).
+        await moradaSelect.click();
+        await page
+          .locator(`[data-testid="npc-morada-option-${state.locationId}"]`)
+          .click();
       } else {
         const hasAdd = await moradaAdd.isVisible({ timeout: 2_000 }).catch(() => false);
         if (!hasAdd) {
@@ -441,18 +451,15 @@ test.describe("P1 — Entity Graph: NPC ↔ Location", () => {
         await option.click();
       }
 
-      // Double-click Save: two clicks ~50ms apart. The second click races
-      // with the in-flight upsert. If upsertEntityLink is idempotent
-      // (unique constraint + ON CONFLICT DO NOTHING), only one row lands.
+      // Double-click Save: fire both clicks before React batches the
+      // disabled-state update. Promise.all ensures they race the in-flight
+      // upsert. If upsertEntityLink is idempotent (unique constraint with
+      // ON CONFLICT DO NOTHING), only one row lands.
       const submit = page.locator('[data-testid="npc-submit"]');
-      await submit.click();
-      await page.waitForTimeout(50);
-      // Second click is best-effort — the button may already be disabled or
-      // the form may have closed. Either outcome is acceptable; what matters
-      // is the final edge count.
-      await submit.click({ trial: false, timeout: 1_000 }).catch(() => {
-        /* form already closed, fine */
-      });
+      await Promise.all([
+        submit.click({ timeout: 1_000 }).catch(() => {}),
+        submit.click({ timeout: 1_000 }).catch(() => {}),
+      ]);
 
       await expect(form).toBeHidden({ timeout: 10_000 });
 

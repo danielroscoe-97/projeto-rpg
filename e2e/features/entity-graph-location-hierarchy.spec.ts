@@ -103,6 +103,22 @@ test.describe("P1 — Entity Graph: Location Hierarchy", () => {
       .catch(() => false);
   }
 
+  /**
+   * Radix SelectTrigger ≠ native `<select>` — `page.selectOption()` throws.
+   * Click the trigger, then click the rendered option (portal, scope to role).
+   */
+  async function pickRadixOption(page: Page, triggerTestid: string, optionLabel: string | RegExp): Promise<void> {
+    await page.click(`[data-testid="${triggerTestid}"]`);
+    const opt = page.getByRole("option", { name: optionLabel });
+    await opt.waitFor({ state: "visible", timeout: 5_000 });
+    await opt.click();
+  }
+
+  async function pickParent(page: Page, parentId: string): Promise<void> {
+    await page.click('[data-testid="location-parent-select"]');
+    await page.click(`[data-testid="location-parent-option-${parentId}"]`);
+  }
+
   async function createLocation(
     page: Page,
     name: string,
@@ -112,9 +128,11 @@ test.describe("P1 — Entity Graph: Location Hierarchy", () => {
     await page.click('[data-testid="location-add-button"]');
     await page.waitForSelector('[data-testid="location-form"]', { timeout: 5_000 });
     await page.fill('[data-testid="location-name-input"]', name);
-    await page.selectOption('[data-testid="location-type-select"]', type);
+    // location-type-select is a Radix SelectTrigger. Match by value=type OR
+    // its translated label; `type` here is the enum key (e.g. "building").
+    await pickRadixOption(page, "location-type-select", new RegExp(type, "i"));
     if (parentId) {
-      await page.selectOption('[data-testid="location-parent-select"]', parentId);
+      await pickParent(page, parentId);
     }
     await page.click('[data-testid="location-submit"]');
     await page
@@ -146,20 +164,23 @@ test.describe("P1 — Entity Graph: Location Hierarchy", () => {
       await createLocation(page, "Taverna do Pêndulo", "building", parentId);
       await page.waitForTimeout(500);
 
-      // Child row should exist AND its left padding > parent's (indentation)
+      // Child row should exist AND its depth > parent's (data-depth is the
+      // stable invariant; paddingLeft is an impl detail that can drift).
       const childRow = page.locator('[data-testid^="location-tree-row-"]', {
         hasText: "Taverna do Pêndulo",
       });
       await expect(childRow).toBeVisible();
 
-      const parentIndent = await parentRow.evaluate(
-        (el) => parseFloat(window.getComputedStyle(el).paddingLeft) || 0,
+      const parentDepth = parseInt(
+        (await parentRow.getAttribute("data-depth")) ?? "0",
+        10,
       );
-      const childIndent = await childRow.evaluate(
-        (el) => parseFloat(window.getComputedStyle(el).paddingLeft) || 0,
+      const childDepth = parseInt(
+        (await childRow.getAttribute("data-depth")) ?? "0",
+        10,
       );
-      expect(childIndent, "Child must be indented further than parent").toBeGreaterThan(
-        parentIndent,
+      expect(childDepth, "Child must be deeper than parent").toBeGreaterThan(
+        parentDepth,
       );
     } finally {
       await ctx.close();
@@ -222,9 +243,12 @@ test.describe("P1 — Entity Graph: Location Hierarchy", () => {
       await page.click('[data-testid="location-edit-toggle"]');
       await page.waitForSelector('[data-testid="location-parent-select"]', { timeout: 5_000 });
 
-      // The dropdown must NOT list "Taverna do Pêndulo" (its descendant)
-      const parentSelect = page.locator('[data-testid="location-parent-select"]');
-      const options = await parentSelect.locator("option").allTextContents();
+      // Radix Select: click trigger to open the portal listbox, then read
+      // the rendered options by role (NOT <option>, which Radix does not use).
+      await page.click('[data-testid="location-parent-select"]');
+      const listbox = page.locator('[role="listbox"]');
+      await listbox.waitFor({ state: "visible", timeout: 5_000 });
+      const options = await page.locator('[role="option"]').allTextContents();
       expect(
         options.some((o) => o.includes("Taverna do Pêndulo")),
         `Cycle guard broken — descendant appears in parent dropdown: ${options.join(" | ")}`,
@@ -246,7 +270,7 @@ test.describe("P1 — Entity Graph: Location Hierarchy", () => {
 
       await page.click('[data-testid="location-add-button"]');
       await page.fill('[data-testid="location-name-input"]', "Porto Azul");
-      await page.selectOption('[data-testid="location-type-select"]', "city");
+      await pickRadixOption(page, "location-type-select", /city/i);
       await page.click('[data-testid="location-submit"]');
 
       // Error surface: either location-save-error testid, or a toast
@@ -296,13 +320,13 @@ test.describe("P1 — Entity Graph: Location Hierarchy", () => {
       const opened = await openLocationsTab(page);
       expect(opened).toBeTruthy();
 
-      // Switch to "by type" view if its testid exists (location-view-by-type)
-      const byTypeBtn = page.locator('[data-testid="location-view-by-type"]');
+      // LocationList emits view testids with underscore (tuple `"by_type"`).
+      const byTypeBtn = page.locator('[data-testid="location-view-by_type"]');
       const hasByType = await byTypeBtn
         .isVisible({ timeout: 3_000 })
         .catch(() => false);
       if (!hasByType) {
-        test.skip(true, "location-view-by-type testid not found in UI");
+        test.skip(true, "location-view-by_type testid not found in UI");
         return;
       }
       await byTypeBtn.click();

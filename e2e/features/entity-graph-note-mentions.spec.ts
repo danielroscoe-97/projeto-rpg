@@ -91,6 +91,7 @@ async function seedCampaign(userId: string): Promise<{
     .from("campaign_npcs")
     .insert({
       campaign_id: campaign.id,
+      user_id: userId,
       name: "Viktor",
       description: "Taverneiro de olho vivo",
     })
@@ -103,7 +104,7 @@ async function seedCampaign(userId: string): Promise<{
     .insert({
       campaign_id: campaign.id,
       name: "Taverna do Pêndulo",
-      type: "building",
+      location_type: "building",
     })
     .select("id")
     .single();
