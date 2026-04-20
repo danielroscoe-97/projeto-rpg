@@ -28,6 +28,8 @@ const ALLOWED_EVENTS = new Set([
   "combat:recharge_rolled",
   // Combat — S4.2 custom conditions (LGPD: name_length only, never the raw name)
   "combat:custom_condition_applied",
+  // Combat — S4.3 quick actions (Dodge/Dash/Help/Disengage/Hide/Ready)
+  "combat:quick_action_applied",
   // Favorites — S5.2
   "favorites:added",
   "favorites:removed",

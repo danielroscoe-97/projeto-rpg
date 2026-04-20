@@ -23,6 +23,7 @@ import { isFeatureFlagEnabled } from "@/lib/flags";
 import { useAudioStore } from "@/lib/stores/audio-store";
 import { expireSessionTokens } from "@/lib/supabase/session-token";
 import { isConcentrating, showConcentrationCheck } from "@/lib/combat/concentration";
+import { stripExpiringQuickActions } from "@/lib/combat/quick-actions";
 import { showDeathSavePrompt, showTurnConditionReminder } from "@/lib/combat/save-prompts";
 import { hasZeroHpSurvivalTrait } from "@/lib/combat/zero-hp-traits";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
@@ -109,6 +110,44 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
           );
         } catch {
           /* non-fatal */
+        }
+      }
+
+      // S4.3 — Auto-cleanup: clear `action:dodge` (RAW "until your next turn")
+      // from the combatant whose turn is starting. Only auto-expiring quick
+      // actions are removed; Dash/Help/Disengage/Hide/Ready persist until
+      // manual removal. Uses the existing `combat:condition_change` broadcast
+      // so no new event type or SW cache bump is needed.
+      const incomingActor = combatants[nextIdx];
+      if (incomingActor && incomingActor.conditions.length > 0) {
+        const cleaned = stripExpiringQuickActions(incomingActor.conditions);
+        if (cleaned.length !== incomingActor.conditions.length) {
+          // Toggle each expiring quick action off (preserves store semantics
+          // for condition_durations + undo stack).
+          const removed = incomingActor.conditions.filter(
+            (c) => !cleaned.includes(c),
+          );
+          for (const c of removed) {
+            useCombatStore.getState().toggleCondition(incomingActor.id, c);
+          }
+          // S4.3 δ' review fix: include the post-strip condition_durations
+          // map so player clients clean up the map alongside the array.
+          // Without this, `condition_durations["action:dodge"]` lingers as a
+          // stale key on player state until the next re-apply triggers a
+          // merged update. Self-healing, but cleaner to include the authoritative
+          // map from the post-toggle store read.
+          const postToggle = useCombatStore.getState().combatants.find(
+            (c) => c.id === incomingActor.id,
+          );
+          broadcastEvent(getSessionId(), {
+            type: "combat:condition_change",
+            combatant_id: incomingActor.id,
+            conditions: cleaned,
+            condition_durations: postToggle?.condition_durations ?? {},
+          });
+          persistConditions(incomingActor.id, cleaned).catch((err) =>
+            setError(err instanceof Error ? err.message : t("error_save_turn")),
+          );
         }
       }
 

@@ -1,0 +1,99 @@
+/**
+ * S4.3 — Quick actions (Dodge / Dash / Help / Disengage / Hide / Ready).
+ *
+ * Storage format: `action:<kind>` (e.g. `action:dodge`). Uses the dedicated
+ * `action:` prefix to avoid colliding with:
+ *   - standard SRD conditions ("Stunned", "Prone", …)
+ *   - beneficial conditions ("Blessed", "Haste", …)
+ *   - concentration (`concentrating`, `concentrating:<Spell>`)
+ *   - DM custom conditions (`custom:Name|Desc`)
+ *
+ * Auto-cleanup contract:
+ *   - **Dodge** auto-expires when the caster's NEXT turn begins
+ *     (D&D 5e RAW — "until your next turn"). Cleared in `handleAdvanceTurn`
+ *     on the combatant whose turn is starting.
+ *   - Dash/Help/Disengage/Hide/Ready do NOT auto-expire. Their lifetime is
+ *     logical (player/DM removes manually when the trigger fires or combat
+ *     ends).
+ *
+ * Player self-apply (anon + auth) is allowed for all 6 quick actions — this
+ * is the SAFE subset (no PII, no custom text). `custom:*` stays DM-only.
+ */
+
+export const QUICK_ACTIONS = [
+  "dodge",
+  "dash",
+  "help",
+  "disengage",
+  "hide",
+  "ready",
+] as const;
+
+export type QuickAction = (typeof QUICK_ACTIONS)[number];
+
+export const ACTION_PREFIX = "action:";
+
+/** Quick actions that auto-expire when the caster's next turn begins. */
+export const AUTO_EXPIRE_ON_NEXT_TURN = new Set<QuickAction>(["dodge"]);
+
+export function isQuickAction(condition: string): boolean {
+  if (!condition.startsWith(ACTION_PREFIX)) return false;
+  const kind = condition.slice(ACTION_PREFIX.length);
+  return (QUICK_ACTIONS as readonly string[]).includes(kind);
+}
+
+export function getQuickActionKind(condition: string): QuickAction | null {
+  if (!condition.startsWith(ACTION_PREFIX)) return null;
+  const kind = condition.slice(ACTION_PREFIX.length);
+  return (QUICK_ACTIONS as readonly string[]).includes(kind)
+    ? (kind as QuickAction)
+    : null;
+}
+
+export function formatQuickAction(kind: QuickAction): string {
+  return `${ACTION_PREFIX}${kind}`;
+}
+
+/**
+ * Return a conditions array with auto-expiring quick actions removed
+ * (currently only `action:dodge`). Non-auto-expiring actions (Dash/Help/
+ * Disengage/Hide/Ready) are preserved.
+ *
+ * Used by `handleAdvanceTurn` when a combatant's turn is starting — Dodge
+ * is RAW "until your next turn", so we clean it up exactly at that point.
+ */
+export function stripExpiringQuickActions(conditions: string[]): string[] {
+  return conditions.filter((c) => {
+    const kind = getQuickActionKind(c);
+    if (kind === null) return true;
+    return !AUTO_EXPIRE_ON_NEXT_TURN.has(kind);
+  });
+}
+
+/** Remove ALL `action:*` entries — used for full cleanup (e.g. combat end). */
+export function stripAllQuickActions(conditions: string[]): string[] {
+  return conditions.filter((c) => !isQuickAction(c));
+}
+
+/**
+ * S4.3 — Self-apply allowlist.
+ *
+ * Returns true if a player is allowed to self-apply this condition string.
+ * REJECTS `custom:*` (DM-only per H11). Beneficial conditions / concentration
+ * checks live in the caller (they depend on `BENEFICIAL_CONDITIONS` which
+ * in turn lives in a client component to avoid server imports).
+ *
+ * This helper covers the quick-action subset; full allowlist logic composes
+ * it with beneficial + concentrating checks in `PlayerInitiativeBoard`.
+ */
+export function isQuickActionSelfAppliable(condition: string): boolean {
+  return isQuickAction(condition);
+}
+
+/**
+ * S4.3 — Hard reject list for player self-apply.
+ * Currently: `custom:*` (H11 — DM-only).
+ */
+export function isPlayerForbiddenCondition(condition: string): boolean {
+  return condition.startsWith("custom:");
+}

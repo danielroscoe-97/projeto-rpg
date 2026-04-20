@@ -2,7 +2,17 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Focus, Sparkles } from "lucide-react";
+import {
+  Focus,
+  Sparkles,
+  Shield,
+  Zap,
+  Users,
+  ArrowLeft,
+  EyeOff as EyeOffIcon,
+  Timer,
+  type LucideIcon,
+} from "lucide-react";
 import { CONDITION_ICONS } from "@/components/oracle/ConditionBadge";
 import { isConcentrating, getConcentrationSpell } from "@/lib/combat/concentration";
 import {
@@ -10,8 +20,23 @@ import {
   CUSTOM_NAME_MAX_LENGTH,
   CUSTOM_DESC_MAX_LENGTH,
 } from "@/lib/combat/custom-conditions";
+import {
+  QUICK_ACTIONS,
+  type QuickAction,
+  formatQuickAction,
+} from "@/lib/combat/quick-actions";
 import { isFeatureFlagEnabled } from "@/lib/flags";
 import { trackEvent } from "@/lib/analytics/track";
+
+/** Lucide icon per quick action — kept local to the selector. */
+const QUICK_ACTION_ICON: Record<QuickAction, LucideIcon> = {
+  dodge: Shield,
+  dash: Zap,
+  help: Users,
+  disengage: ArrowLeft,
+  hide: EyeOffIcon,
+  ready: Timer,
+};
 
 const ALL_CONDITIONS = [
   "Blinded",
@@ -156,6 +181,53 @@ export function ConditionSelector({
             </button>
           </div>
         )}
+      </div>
+
+      {/* S4.3 — Quick actions strip (6 core D&D 5e actions). `action:<kind>` */}
+      <div className="mb-2" data-testid="quick-actions-section">
+        <p className="text-[10px] text-sky-300/80 font-medium uppercase tracking-wider mb-1">
+          {tcombat("quick_actions_label")}
+        </p>
+        <div className="flex flex-wrap gap-1">
+          {QUICK_ACTIONS.map((kind) => {
+            const conditionStr = formatQuickAction(kind);
+            const isActive = activeConditions.includes(conditionStr);
+            const Icon = QUICK_ACTION_ICON[kind];
+            const label = tcombat(`action_${kind}`);
+            const desc = tcombat(`action_${kind}_desc`);
+            return (
+              <button
+                key={kind}
+                type="button"
+                onClick={() => {
+                  onToggle(conditionStr);
+                  if (!isActive) {
+                    trackEvent("combat:quick_action_applied", {
+                      action: kind,
+                      applied_by: "dm",
+                    });
+                  }
+                }}
+                title={desc}
+                className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full font-medium min-h-[44px] sm:min-h-[32px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] focus:outline-none focus:ring-2 focus:ring-sky-400/50 ${
+                  isActive
+                    ? "bg-sky-600 text-white"
+                    : "bg-sky-900/30 text-sky-200 hover:bg-sky-900/50 border border-sky-500/30"
+                }`}
+                aria-pressed={isActive}
+                aria-label={
+                  isActive
+                    ? tcombat("condition_remove_aria", { name: label })
+                    : tcombat("condition_add_aria", { name: label })
+                }
+                data-testid={`quick-action-${kind}`}
+              >
+                <Icon className="w-3 h-3 shrink-0" aria-hidden="true" />
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Standard D&D conditions grid */}
