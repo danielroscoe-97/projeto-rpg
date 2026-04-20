@@ -19,6 +19,7 @@ import { SRD_ABILITIES, type SrdAbility } from "@/lib/data/srd-abilities";
 import type { RulesetVersion } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 import { CompendiumLoginNudge, type CompendiumNudgeMode } from "@/components/player/CompendiumLoginNudge";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 // S5.2 — Favorites integration (ff_favorites_v1)
 import { isFeatureFlagEnabled } from "@/lib/flags";
 import { useFavorites } from "@/lib/favorites/use-favorites";
@@ -1757,7 +1758,16 @@ export function PlayerCompendiumBrowser({
                             <div className="text-sm font-medium text-foreground truncate">
                               {monster.name}
                             </div>
-                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                            <div className="text-xs text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                              <VersionBadge
+                                version={monster.ruleset_version}
+                                isSrd={monster.is_srd}
+                              />
+                              {monster.source === "MAD" && (
+                                <span className="inline-flex shrink-0 items-center rounded border border-purple-500/30 bg-purple-500/5 px-1 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider leading-none text-purple-400">
+                                  MAD
+                                </span>
+                              )}
                               <span>CR {monster.cr}</span>
                               <span>·</span>
                               <span>{monster.type}</span>
