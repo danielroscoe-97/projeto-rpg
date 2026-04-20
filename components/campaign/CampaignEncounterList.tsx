@@ -30,7 +30,7 @@ export function CampaignEncounterList({ campaignId, presets, onEdit, onDeleted }
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   function handleStartCombat(presetId: string) {
-    router.push(`/app/session/new?campaign=${campaignId}&preset=${presetId}`);
+    router.push(`/app/combat/new?campaign=${campaignId}&preset=${presetId}`);
   }
 
   async function handleDelete(id: string) {

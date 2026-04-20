@@ -62,11 +62,11 @@ describe("QuickActions", () => {
     expect(screen.getByText("Quick Actions")).toBeInTheDocument();
   });
 
-  it("New Combat links to /app/session/new", () => {
+  it("New Combat links to /app/combat/new", () => {
     render(<QuickActions translations={translations} campaigns={campaigns} />);
 
     const link = screen.getByText("New Combat").closest("a");
-    expect(link).toHaveAttribute("href", "/app/session/new");
+    expect(link).toHaveAttribute("href", "/app/combat/new");
   });
 
   it("Create NPC opens scope dialog", () => {

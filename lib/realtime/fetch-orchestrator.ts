@@ -1,6 +1,6 @@
 /**
  * Fetch orchestrator (S3.5) — singleton that deduplicates, coalesces, throttles,
- * and circuit-breaks /api/session/[id]/state requests coming from the 4-5
+ * and circuit-breaks /api/combat/[id]/state requests coming from the 4-5
  * polling loops inside `PlayerJoinClient.tsx`.
  *
  * Problem this fixes: during beta 3 the player page hit the endpoint 219 req/min
@@ -41,7 +41,7 @@ export interface FetchRequest {
   caller: string;
 }
 
-/** The shape of `data` returned by /api/session/[id]/state. */
+/** The shape of `data` returned by /api/combat/[id]/state. */
 export interface SessionStateEnvelope {
   encounter: unknown;
   combatants: unknown;
@@ -204,7 +204,7 @@ export class FetchOrchestrator {
     this.lastFetchAt = this.now();
 
     try {
-      const url = `/api/session/${req.encounterId}/state`;
+      const url = `/api/combat/${req.encounterId}/state`;
       let res = await this.fetchImpl(url, { credentials: "include" });
 
       // 401 recovery: give the caller a chance to refresh auth silently.

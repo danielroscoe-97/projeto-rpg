@@ -332,7 +332,7 @@ export function PlayerCampaignView({
             </p>
           )}
           <Button variant="gold" className="w-full sm:w-auto" asChild>
-            <Link href={`/app/session/${activeSession.id}`}>
+            <Link href={`/app/combat/${activeSession.id}`}>
               {t.enterSession}
             </Link>
           </Button>

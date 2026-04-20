@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { searchMonsters } from "@/lib/srd/srd-search";
-import { VersionBadge } from "@/components/session/RulesetSelector";
+import { VersionBadge } from "@/components/combat-session/RulesetSelector";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { SrdMonster } from "@/lib/srd/srd-loader";

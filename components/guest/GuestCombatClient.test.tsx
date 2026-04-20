@@ -7,7 +7,7 @@ import { GuestCombatClient } from "./GuestCombatClient";
 import { useGuestCombatStore } from "@/lib/stores/guest-combat-store";
 
 // Mock child components to isolate GuestCombatClient behavior
-jest.mock("@/components/session/RulesetSelector", () => ({
+jest.mock("@/components/combat-session/RulesetSelector", () => ({
   RulesetSelector: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
     <select data-testid="mock-ruleset-selector" value={value} onChange={(e) => onChange(e.target.value)}>
       <option value="2014">2014</option>

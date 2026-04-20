@@ -171,7 +171,7 @@ export function DashboardTourProvider({
     }
     // Redirect to quick combat on tour completion (not skip)
     if (shouldRedirect) {
-      router.push("/app/session/new");
+      router.push("/app/combat/new");
     }
   }
 

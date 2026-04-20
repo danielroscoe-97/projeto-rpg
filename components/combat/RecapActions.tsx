@@ -72,7 +72,7 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
     if (!sessionId) return;
     setIsCopyingLink(true);
     try {
-      const res = await fetch(`/api/session/${sessionId}/feedback-link`, {
+      const res = await fetch(`/api/combat/${sessionId}/feedback-link`, {
         method: "GET",
         headers: { Accept: "application/json" },
       });

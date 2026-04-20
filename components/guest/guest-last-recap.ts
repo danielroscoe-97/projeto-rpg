@@ -5,7 +5,7 @@
  * so a user who closes the tab after combat can recover the recap on return.
  *
  * Only used by `components/guest/GuestCombatClient.tsx`. The persistence is
- * Guest-only — Anon/Auth already persist via Track A's `/api/session/[id]/latest-recap`.
+ * Guest-only — Anon/Auth already persist via Track A's `/api/combat/[id]/latest-recap`.
  */
 
 import type { CombatReport } from "@/lib/types/combat-report";

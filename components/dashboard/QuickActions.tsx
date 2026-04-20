@@ -147,7 +147,7 @@ export function QuickActions({ translations: t, campaigns, userRole = "both" }: 
           <>
             {/* Novo Combate */}
             <Link
-              href="/app/session/new"
+              href="/app/combat/new"
               data-testid="quick-action-new_combat"
               className={`${actionCardClass} hover:border-amber-400/30 hover:bg-white/[0.02]`}
             >

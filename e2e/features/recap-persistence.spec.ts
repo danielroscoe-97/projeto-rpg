@@ -4,7 +4,7 @@
  * Scenario (Beta 3 Finding 1):
  *   DM ends combat while Player 2's tab is closed. Player 2 reopens the
  *   tab AFTER the broadcast has already fired, so only the durable
- *   `/api/session/[id]/latest-recap` endpoint can deliver the Wrapped
+ *   `/api/combat/[id]/latest-recap` endpoint can deliver the Wrapped
  *   modal. The test verifies:
  *     - Player 1 (stayed online) sees the recap via broadcast (happy path).
  *     - Player 2 (reconnected late) sees the recap via durable hydration.
@@ -145,11 +145,11 @@ test.describe.serial("S1.1 — Post-combat recap persistence", () => {
   }) => {
     // Sanity check: an anonymous caller with no session token gets 401/403.
     const fakeSessionId = "00000000-0000-0000-0000-000000000000";
-    const res = await request.get(`/api/session/${fakeSessionId}/latest-recap`);
+    const res = await request.get(`/api/combat/${fakeSessionId}/latest-recap`);
     expect([401, 403, 400]).toContain(res.status());
 
     // Validate shape of a bad-UUID error too
-    const badIdRes = await request.get(`/api/session/not-a-uuid/latest-recap`);
+    const badIdRes = await request.get(`/api/combat/not-a-uuid/latest-recap`);
     expect([400, 401]).toContain(badIdRes.status());
     // Touch `browser` so lint doesn't complain about unused param when the
     // helper expands later (keeping the fixture positional for parity).

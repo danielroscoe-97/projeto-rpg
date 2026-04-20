@@ -3,12 +3,12 @@ import { loginAs } from "./auth";
 import type { TestAccount } from "../fixtures/test-accounts";
 
 /**
- * Navigate to /app/session/new, handle campaign picker if shown.
+ * Navigate to /app/combat/new, handle campaign picker if shown.
  * Waits for either the campaign picker or the setup form, then proceeds.
  * Also opens the manual-add form so data-testid="add-row" is visible.
  */
 export async function goToNewSession(page: Page) {
-  await page.goto("/app/session/new", { waitUntil: "domcontentloaded", timeout: 45_000 });
+  await page.goto("/app/combat/new", { waitUntil: "domcontentloaded", timeout: 45_000 });
   await page.waitForLoadState("domcontentloaded");
 
   // Wait for either the setup area or Quick Combat button

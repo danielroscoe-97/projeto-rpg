@@ -29,7 +29,7 @@ export function SavedEncounters({ encounters }: SavedEncountersProps) {
           <Image src="/art/icons/pet-lunatic.png" alt="" width={64} height={64} className="pixel-art opacity-40 float-gentle" aria-hidden="true" unoptimized />
           <p className="text-muted-foreground text-sm">{t("encounters_empty")}</p>
           <Button variant="gold" size="sm" asChild className="mt-2">
-            <Link href="/app/session/new">
+            <Link href="/app/combat/new">
               {t("encounters_start_combat")}
             </Link>
           </Button>
@@ -45,7 +45,7 @@ export function SavedEncounters({ encounters }: SavedEncountersProps) {
         {encounters.map((enc) => (
           <Link
             key={enc.session_id}
-            href={`/app/session/${enc.session_id}`}
+            href={`/app/combat/${enc.session_id}`}
             className="block bg-card border border-border rounded-md p-4 hover:border-gold/50 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
             data-testid={`encounter-link-${enc.session_id}`}
           >

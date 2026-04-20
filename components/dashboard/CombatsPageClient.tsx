@@ -30,7 +30,7 @@ export function CombatsPageClient({
           {t.encounters_title}
         </h1>
         <Link
-          href="/app/session/new"
+          href="/app/combat/new"
           className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-4 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px]"
         >
           <Swords className="w-4 h-4" aria-hidden="true" />
@@ -51,7 +51,7 @@ export function CombatsPageClient({
           />
           <p className="text-muted-foreground text-sm">{t.encounters_empty}</p>
           <Button variant="gold" size="sm" asChild className="mt-2">
-            <Link href="/app/session/new">{t.encounters_start_combat}</Link>
+            <Link href="/app/combat/new">{t.encounters_start_combat}</Link>
           </Button>
         </div>
       ) : (

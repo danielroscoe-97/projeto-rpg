@@ -8,12 +8,12 @@ import { EncounterSetup } from "./EncounterSetup";
 import { useCombatStore } from "@/lib/stores/combat-store";
 
 // Mock child components
-jest.mock("@/components/session/RulesetSelector", () => ({
+jest.mock("@/components/combat-session/RulesetSelector", () => ({
   RulesetSelector: () => <div data-testid="ruleset-selector" />,
   VersionBadge: () => null,
 }));
 
-jest.mock("@/components/session/CampaignLoader", () => ({
+jest.mock("@/components/combat-session/CampaignLoader", () => ({
   CampaignLoader: () => <div data-testid="campaign-loader" />,
 }));
 

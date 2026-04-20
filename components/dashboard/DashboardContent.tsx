@@ -118,7 +118,7 @@ export function DashboardContent({
         {hasDmCampaigns && (
           <div className="flex items-center sm:justify-end">
             <Link
-              href="/app/session/new"
+              href="/app/combat/new"
               className="inline-flex items-center justify-center gap-2 bg-gold text-surface-primary font-semibold px-6 py-1.5 rounded-lg text-sm hover:shadow-gold-glow hover:-translate-y-[1px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[36px] w-full sm:w-auto sm:min-w-[240px] shrink-0"
             >
               <Swords
@@ -257,7 +257,7 @@ export function DashboardContent({
       {/* Quick Combat — sticky on mobile */}
       <div className="mt-8">
         <Link
-          href="/app/session/new"
+          href="/app/combat/new"
           className="flex items-center gap-3 bg-card border border-border rounded-lg px-4 py-3 hover:border-white/20 transition-colors group"
         >
           <Zap className="w-5 h-5 text-amber-400 group-hover:text-gold transition-colors" />
@@ -374,7 +374,7 @@ function PlayerEmptyState({
       </p>
       <p className="text-muted-foreground/60 text-xs">{t.waiting_for_invite_desc}</p>
       <Button variant="gold" className="mt-2 min-h-[44px]" asChild>
-        <Link href="/app/session/new">{t.try_quick_combat}</Link>
+        <Link href="/app/combat/new">{t.try_quick_combat}</Link>
       </Button>
     </div>
   );

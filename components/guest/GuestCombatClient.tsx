@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { AnimatePresence } from "framer-motion";
 import { useGuestCombatStore, getGuestNumberedName, saveGuestCombatSnapshot } from "@/lib/stores/guest-combat-store";
 import { useGuestUndoStack } from "@/lib/hooks/useGuestUndoStack";
-import { RulesetSelector } from "@/components/session/RulesetSelector";
+import { RulesetSelector } from "@/components/combat-session/RulesetSelector";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
 import { CombatantRow } from "@/components/combat/CombatantRow";

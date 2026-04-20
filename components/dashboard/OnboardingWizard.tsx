@@ -528,7 +528,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               <span className="text-[11px] text-muted-foreground mt-1 leading-tight">{t("player_done_explore_desc")}</span>
             </Link>
             <Link
-              href="/app/session/new?quick=true"
+              href="/app/combat/new?quick=true"
               className="group flex flex-col items-center text-center p-4 rounded-xl border border-border bg-white/[0.02] hover:bg-white/[0.06] hover:border-gold/30 transition-all duration-200"
             >
               <Image
@@ -585,7 +585,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
                   .upsert({ user_id: userId, wizard_completed: true, dashboard_tour_completed: true }, { onConflict: "user_id" });
               } catch { /* best-effort */ }
               // Go straight to combat — skip dashboard tour for quick combat path
-              router.push("/app/session/new");
+              router.push("/app/combat/new");
             }}
             className="group relative flex flex-col items-center text-center p-6 rounded-xl border-2 border-gold/40 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/60 transition-all duration-200 cursor-pointer shadow-[0_0_20px_rgba(212,168,83,0.08)] hover:shadow-[0_0_24px_rgba(212,168,83,0.15)]"
           >
@@ -674,7 +674,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
       try {
         await createCampaign(trimmedCampaign);
         try { sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* ignore */ }
-        router.push("/app/session/new");
+        router.push("/app/combat/new");
       } catch (err) {
         const message = err instanceof Error ? err.message : t("error_generic");
         setState((s) => ({ ...s, error: message, isSubmitting: false }));
@@ -986,7 +986,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
               variant="gold"
               className="w-full"
             >
-              <Link href="/app/session/new">
+              <Link href="/app/combat/new">
                 {t("first_combat_cta")}
               </Link>
             </Button>

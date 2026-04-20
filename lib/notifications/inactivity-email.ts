@@ -20,7 +20,7 @@ export async function sendInactivityEmail(payload: InactivityEmailPayload): Prom
 function buildInactivityHtml(p: InactivityEmailPayload): string {
   const name = escapeHtml(p.displayName);
   const isD3 = p.variant === "d3";
-  const quickCombatUrl = `${BRAND.siteUrl}/app/session/new`;
+  const quickCombatUrl = `${BRAND.siteUrl}/app/combat/new`;
   const dashboardUrl = `${BRAND.siteUrl}/app/dashboard`;
 
   if (isD3) {

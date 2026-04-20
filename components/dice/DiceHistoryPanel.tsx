@@ -23,9 +23,9 @@ export function DiceHistoryPanel() {
     useDiceHistoryStore();
 
   // Only show on routes where dice rolling is relevant
-  // (not on campaign hub — only session/combat/compendium)
+  // (not on campaign hub — only combat/compendium)
   const showPanel =
-    pathname.startsWith("/app/session") ||
+    pathname.startsWith("/app/combat") ||
     pathname.startsWith("/app/compendium") ||
     pathname.startsWith("/try");
 

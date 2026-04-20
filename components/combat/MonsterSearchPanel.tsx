@@ -11,7 +11,7 @@ import { normalizeForSearch } from "@/lib/srd/normalize-query";
 import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
-import { VersionBadge, RulesetSelector } from "@/components/session/RulesetSelector";
+import { VersionBadge, RulesetSelector } from "@/components/combat-session/RulesetSelector";
 import { useExtendedCompendium } from "@/lib/hooks/use-extended-compendium";
 import { ExternalContentGate } from "@/components/import/ExternalContentGate";
 import { ImportContentModal } from "@/components/import/ImportContentModal";

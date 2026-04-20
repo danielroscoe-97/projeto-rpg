@@ -208,7 +208,7 @@ export function PlayerJoinClient({
   // P1.02: Track deferred session:ended when leaderboard/poll is active
   const pendingSessionEndRef = useRef(false);
   const combatStatsActiveRef = useRef(false);
-  // S1.1: Encounter id for a recap hydrated from /api/session/[id]/latest-recap.
+  // S1.1: Encounter id for a recap hydrated from /api/combat/[id]/latest-recap.
   // Used to key the `recap-seen-${sessionId}-${encounterId}` sessionStorage
   // flag so refreshing the page doesn't reopen a recap the player closed.
   const hydratedRecapEncounterIdRef = useRef<string | null>(null);
@@ -873,7 +873,7 @@ export function PlayerJoinClient({
   }, [saveSpellSlotsToDb]);
 
   // Full state fetch via API — used on reconnect & polling fallback.
-  // Uses /api/session/[id]/state which sanitizes monster data server-side.
+  // Uses /api/combat/[id]/state which sanitizes monster data server-side.
   //
   // S3.5 (2026-04-17): the transport layer (throttle, dedup, in-flight coalescing,
   // circuit breaker, 401 recovery hook) is now owned by `fetchOrchestrator`.
@@ -1877,7 +1877,7 @@ export function PlayerJoinClient({
   // S1.1: Post-combat recap hydration (Finding 1).
   // When the DM ends combat while the player's tab is hidden / reconnecting,
   // the `session:combat_recap` broadcast can be lost. We hit the durable
-  // `/api/session/[id]/latest-recap` endpoint once per session to recover the
+  // `/api/combat/[id]/latest-recap` endpoint once per session to recover the
   // Wrapped experience.
   //
   // Guarded by:
@@ -1896,7 +1896,7 @@ export function PlayerJoinClient({
 
     const hydrate = async () => {
       try {
-        const res = await fetch(`/api/session/${sessionId}/latest-recap`);
+        const res = await fetch(`/api/combat/${sessionId}/latest-recap`);
         if (cancelled || !res.ok) return;
         const body = await res.json().catch(() => null);
         const recapData = body?.data;
@@ -1953,7 +1953,7 @@ export function PlayerJoinClient({
       if (document.visibilityState === "hidden") return;
       try {
         // Use lightweight dm-presence endpoint (1 query) instead of full /state (5 queries)
-        const res = await fetch(`/api/session/${sessionId}/dm-presence`);
+        const res = await fetch(`/api/combat/${sessionId}/dm-presence`);
         if (!res.ok) { delay = Math.min(delay * 2, 120_000); return; }
         delay = 30_000; // Reset on success
         const data = await res.json();
@@ -2036,7 +2036,7 @@ export function PlayerJoinClient({
             await supabaseRef.current.auth.getSession();
           if (authSession?.user?.id && effectiveTokenIdRef.current) {
             const res = await fetch(
-              `/api/session/${sessionId}/state?token_id=${effectiveTokenIdRef.current}`
+              `/api/combat/${sessionId}/state?token_id=${effectiveTokenIdRef.current}`
             );
             if (res.ok) {
               const { data } = await res.json();
@@ -2215,7 +2215,7 @@ export function PlayerJoinClient({
           { type: "application/json" }
         );
         navigator.sendBeacon(
-          `/api/session/${sessionId}/player-disconnect`,
+          `/api/combat/${sessionId}/player-disconnect`,
           payload
         );
       }

@@ -95,7 +95,7 @@ export async function startCombat(page: Page) {
   await expect(startBtn).toBeVisible({ timeout: 5_000 });
   await startBtn.click();
 
-  // Starting combat triggers: Supabase save → router.push(/app/session/[id])
+  // Starting combat triggers: Supabase save → router.push(/app/combat/[id])
   // Wait for the redirect away from /session/new first
   await page.waitForURL(/\/app\/session\/(?!new)/, { timeout: 30_000, waitUntil: "domcontentloaded" }).catch(() => {});
 

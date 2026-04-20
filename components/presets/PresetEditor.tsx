@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Trash2, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MonsterSearchPanel } from "@/components/combat/MonsterSearchPanel";
-import { RulesetSelector } from "@/components/session/RulesetSelector";
+import { RulesetSelector } from "@/components/combat-session/RulesetSelector";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import type { RulesetVersion, MonsterPresetEntry } from "@/lib/types/database";
 import type { PresetRow } from "@/lib/supabase/presets";

@@ -48,7 +48,7 @@ export function SharedFileCard({ file, canRemove, onRemove }: SharedFileCardProp
 
   const handleRemove = useCallback(async () => {
     try {
-      const res = await fetch(`/api/session/${file.file_path.split("/")[0]}/files?fileId=${file.id}`, {
+      const res = await fetch(`/api/combat/${file.file_path.split("/")[0]}/files?fileId=${file.id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Delete failed");

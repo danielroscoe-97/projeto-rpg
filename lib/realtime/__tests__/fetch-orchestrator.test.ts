@@ -92,7 +92,7 @@ describe("FetchOrchestrator", () => {
       expect(state).not.toBeNull();
       expect(h.fetchMock).toHaveBeenCalledTimes(1);
       expect(h.fetchMock).toHaveBeenCalledWith(
-        "/api/session/enc-1/state",
+        "/api/combat/enc-1/state",
         expect.objectContaining({ credentials: "include" }),
       );
     });

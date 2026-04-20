@@ -64,7 +64,7 @@ export function FileShareButton({ sessionId }: FileShareButtonProps) {
         setProgress((p) => Math.min(p + 15, 90));
       }, 200);
 
-      const res = await fetch(`/api/session/${sessionId}/files`, {
+      const res = await fetch(`/api/combat/${sessionId}/files`, {
         method: "POST",
         body: formData,
       });

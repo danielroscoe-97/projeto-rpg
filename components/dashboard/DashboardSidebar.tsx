@@ -217,7 +217,7 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false, collaps
         {hasDmAccess && !collapsed && (
           <div className="px-2 pb-3 space-y-1 border-t border-white/[0.06] pt-3" data-tour-id="dash-sidebar-actions">
             <Link
-              href="/app/session/new"
+              href="/app/combat/new"
               data-testid="sidebar-new-combat"
               className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-amber-400 hover:bg-amber-400/10 transition-colors"
             >
@@ -268,7 +268,7 @@ export function DashboardSidebar({ translations: t, hasDmAccess = false, collaps
                 {hasDmAccess && (
                   <>
                     <Link
-                      href="/app/session/new"
+                      href="/app/combat/new"
                       role="menuitem"
                       onClick={() => setMoreOpen(false)}
                       data-testid="mobile-new-combat"
