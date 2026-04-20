@@ -9,6 +9,35 @@ import { toast } from "sonner";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { formatRecapShareText } from "@/lib/utils/combat-stats";
 import { DifficultyRatingStrip } from "./DifficultyRatingStrip";
+import { RecapCtaCard } from "@/components/conversion/RecapCtaCard";
+import type { SaveSignupContext } from "@/components/conversion/types";
+
+/**
+ * Story 03-D (F6) — encapsulates the render rule for the legacy
+ * "Salvar Combate" button. Exported so it can be tested in isolation;
+ * this is the acceptance-critical function.
+ *
+ * Truth table:
+ *   (undefined, undefined)           → true   legacy auth/DM path
+ *   (undefined, fn)                  → false  legacy guest path
+ *   ({mode:"anon",...}, any)         → true   anon sees card + button
+ *   ({mode:"guest", !campaignId}, *) → false  guest without campaign
+ *   ({mode:"guest", campaignId:"x"},*)→ true   guest-with-campaign edge
+ */
+export function shouldShowSaveCombat(
+  saveSignupContext: SaveSignupContext | undefined,
+  onSaveAndSignup: (() => void) | undefined,
+): boolean {
+  if (!saveSignupContext) {
+    // Legacy behavior — preserved for callers that never pass context.
+    return !onSaveAndSignup;
+  }
+  if (saveSignupContext.mode === "anon") return true;
+  if (saveSignupContext.mode === "guest") {
+    return !!saveSignupContext.campaignId;
+  }
+  return false;
+}
 
 interface RecapActionsProps {
   report: CombatReport;
@@ -29,9 +58,15 @@ interface RecapActionsProps {
   onJoinCampaign?: () => void;
   /** DM-only: session id used to fetch the retroactive feedback share link */
   sessionId?: string;
+  /**
+   * Story 03-D — conversion-moment context forwarded to `RecapCtaCard`.
+   * When present, the card renders above the action row and the
+   * "Salvar Combate" button follows `shouldShowSaveCombat`.
+   */
+  saveSignupContext?: SaveSignupContext;
 }
 
-export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign, sessionId }: RecapActionsProps) {
+export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign, sessionId, saveSignupContext }: RecapActionsProps) {
   const t = useTranslations("combat");
   const tFeedback = useTranslations("feedback");
   const router = useRouter();
@@ -143,6 +178,11 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
       transition={{ delay: 0.2 }}
       className="flex flex-col gap-2 pt-2"
     >
+      {/* Story 03-D — conversion CTA card (anon) / delegated flow (guest) */}
+      {saveSignupContext && (
+        <RecapCtaCard context={saveSignupContext} onComplete={onNewCombat} />
+      )}
+
       {/* JO-04: Primary CTA — Join Campaign (anonymous player in campaign session) */}
       {onJoinCampaign && (
         <button
@@ -207,8 +247,11 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
           <Share2 className="size-4" />
           {t("leaderboard_share")}
         </button>
-        {/* Hide "Salvar Combate" for guests — the primary CTA already covers save+signup */}
-        {!onSaveAndSignup && (
+        {/* Story 03-D (F6) — render rule extracted to `shouldShowSaveCombat`.
+            Preserves legacy auth-DM path, preserves guest hide behavior,
+            adds anon (sees card AND button). See tests/conversion/
+            recap-actions-save-combat.test.tsx for the full truth table. */}
+        {shouldShowSaveCombat(saveSignupContext, onSaveAndSignup) && (
           <button
             type="button"
             onClick={handleSaveCombat}

@@ -2620,6 +2620,20 @@ export function PlayerJoinClient({
         >
         <CombatRecap
           report={combatRecapReport}
+          // Story 03-D — saveSignupContext anon
+          saveSignupContext={
+            !authUserId && effectiveTokenId && sessionCampaignId
+              ? {
+                  mode: "anon",
+                  sessionTokenId: effectiveTokenId,
+                  campaignId: sessionCampaignId,
+                  characterId:
+                    prefilledCharacters?.find((c) => c.name === registeredName)
+                      ?.id ?? null,
+                  characterName: registeredName ?? null,
+                }
+              : undefined
+          }
           onJoinCampaign={showJoinCampaignCta ? () => {
             try {
               localStorage.setItem("pendingCampaignJoin", JSON.stringify({
