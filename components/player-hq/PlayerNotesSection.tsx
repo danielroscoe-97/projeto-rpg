@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { StickyNote, BookOpen, Users, Lock, Plus } from "lucide-react";
+import { StickyNote, BookOpen, Users, Info, Plus, Scroll, Lock } from "lucide-react";
 import { ScratchPad } from "./ScratchPad";
 import { QuickNotesList } from "./QuickNotesList";
 import { JournalEntryCard } from "./JournalEntryCard";
 import { NpcJournal } from "./NpcJournal";
+import { DmNotesInbox } from "./DmNotesInbox";
 import { usePlayerNotes } from "@/lib/hooks/usePlayerNotes";
 import { useNpcJournal } from "@/lib/hooks/useNpcJournal";
 
-type NotesTab = "quick" | "journal" | "npcs";
+// W4/149: added `dm_inbox` sub-tab — read-only list of DM-private notes
+// addressed to this character.
+type NotesTab = "quick" | "journal" | "npcs" | "dm_inbox";
 
 interface PlayerNotesSectionProps {
   characterId: string;
@@ -40,6 +43,7 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
     { key: "quick", icon: StickyNote, label: t("tab_quick") },
     { key: "journal", icon: BookOpen, label: t("tab_journal") },
     { key: "npcs", icon: Users, label: t("tab_npcs") },
+    { key: "dm_inbox", icon: Scroll, label: t("tab_dm_inbox") },
   ];
 
   const handleAddJournal = async () => {

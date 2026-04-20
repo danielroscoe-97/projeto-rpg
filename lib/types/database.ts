@@ -679,6 +679,12 @@ export interface Database {
           folder_id: string | null;
           is_shared: boolean;
           note_type: string;
+          // Wave 4 (migration 149) -- visibility model
+          // `campaign_public`      -> all campaign members (legacy is_shared=true)
+          // `private`              -> DM only (legacy is_shared=false, no target)
+          // `dm_private_to_player` -> only DM + target_character_id owner
+          visibility: "private" | "campaign_public" | "dm_private_to_player";
+          target_character_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -691,6 +697,8 @@ export interface Database {
           folder_id?: string | null;
           is_shared?: boolean;
           note_type?: string;
+          visibility?: "private" | "campaign_public" | "dm_private_to_player";
+          target_character_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -700,6 +708,8 @@ export interface Database {
           folder_id?: string | null;
           is_shared?: boolean;
           note_type?: string;
+          visibility?: "private" | "campaign_public" | "dm_private_to_player";
+          target_character_id?: string | null;
           updated_at?: string;
         };
       };
@@ -870,6 +880,10 @@ export interface Database {
           type: "quick_note" | "journal" | "lore";
           title: string | null;
           content: string;
+          // Wave 4 (migration 149) -- visibility toggle
+          // `private`        -> author only (default)
+          // `shared_with_dm` -> author + DM of the campaign
+          visibility: "private" | "shared_with_dm";
           created_at: string;
           updated_at: string;
         };
@@ -880,11 +894,13 @@ export interface Database {
           type?: "quick_note" | "journal" | "lore";
           title?: string | null;
           content: string;
+          visibility?: "private" | "shared_with_dm";
         };
         Update: {
           type?: "quick_note" | "journal" | "lore";
           title?: string | null;
           content?: string;
+          visibility?: "private" | "shared_with_dm";
         };
       };
       player_npc_notes: {
@@ -1246,6 +1262,10 @@ export type InventoryRemovalRequest = Database["public"]["Tables"]["inventory_re
 export type PlayerNotification = Database["public"]["Tables"]["player_notifications"]["Row"];
 export type JournalEntry = Database["public"]["Tables"]["player_journal_entries"]["Row"];
 export type JournalEntryInsert = Database["public"]["Tables"]["player_journal_entries"]["Insert"];
+/** Visibility levels for player journal entries (migration 149). */
+export type JournalEntryVisibility = JournalEntry["visibility"];
+/** Visibility levels for DM-authored campaign notes (migration 149). */
+export type CampaignNoteVisibility = CampaignNote["visibility"];
 export type NpcNote = Database["public"]["Tables"]["player_npc_notes"]["Row"];
 export type NpcNoteInsert = Database["public"]["Tables"]["player_npc_notes"]["Insert"];
 export type JournalEntryUpdate = Database["public"]["Tables"]["player_journal_entries"]["Update"];
