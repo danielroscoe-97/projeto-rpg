@@ -35,13 +35,23 @@ export interface JoinSessionSummary {
  * Discriminated union returned by `detectJoinState`.
  *
  * Each branch carries the minimum data `/join/[token]` needs:
- *   - `invalid`         — error screen (not_found / expired / session_ended)
- *   - `fresh`           — first-time access, no anon/auth identity yet
- *   - `returning-anon`  — session_token already bound to an anon identity,
- *                         caller is either the same anon or presenting a new
- *                         cookie (see "anon cookie mismatch" note below)
- *   - `returning-auth`  — session_token has been promoted to an auth user
- *                         (post-Story 01-B via `session_tokens.user_id`)
+ *   - `invalid`                  — error screen (not_found / expired / session_ended)
+ *   - `fresh`                    — first-time access, no anon/auth identity yet
+ *   - `returning-anon`           — session_token already bound to an anon identity
+ *                                  (no user_id on the token), caller is either
+ *                                  the same anon or presenting a new cookie
+ *                                  (see "anon cookie mismatch" F-note below)
+ *   - `returning-auth`           — session_token has been promoted to an auth
+ *                                  user (`session_tokens.user_id`) AND caller
+ *                                  cookie matches that user
+ *   - `returning-auth-mismatch`  — session_token has `user_id` set (auth-bound)
+ *                                  BUT caller isn't that auth user right now
+ *                                  (different cookie, or no auth session at
+ *                                  all). Consumer should render a "sign-in to
+ *                                  reconnect" flow rather than the anon
+ *                                  reconnect path. (M7 code review: was
+ *                                  previously collapsed into `returning-anon`
+ *                                  with no signal to distinguish.)
  */
 export type JoinState =
   | { state: "invalid"; reason: "not_found" | "expired" | "session_ended" }
@@ -56,6 +66,11 @@ export type JoinState =
       sessionToken: SessionTokenSummary;
       session: JoinSessionSummary;
       user: User;
+    }
+  | {
+      state: "returning-auth-mismatch";
+      sessionToken: SessionTokenSummary;
+      session: JoinSessionSummary;
     };
 
 /**
@@ -70,7 +85,11 @@ export type JoinState =
  *      (session_tokens has NO `expires_at` column per migration 004; the
  *      active flag is the liveness signal)
  *   3. Parent session has `is_active = false` or is missing → `invalid.session_ended`
- *   4. Token has `user_id != null`  → `returning-auth` (+ user if cookie matches)
+ *   4. Token has `user_id != null` AND caller's auth cookie matches →
+ *      `returning-auth` (with `user`)
+ *   4b. Token has `user_id != null` BUT caller's auth cookie does NOT match →
+ *       `returning-auth-mismatch` (no user on the return; consumer drives
+ *       login) — M7 fix: previously collapsed into `returning-anon`
  *   5. Token has `anon_user_id != null`  → `returning-anon`
  *   6. Otherwise                      → `fresh`
  *
@@ -167,21 +186,19 @@ export async function detectJoinState(token: string): Promise<JoinState> {
   // anon-bound — migration 142 explicitly allows both to co-exist post-
   // upgrade (same UUID), and we want to render the auth experience.
   if (tokenRow.user_id) {
-    // Best-effort auth user fetch. If the caller's cookie doesn't match
-    // (e.g. they came from a different browser), authUser will be null —
-    // we still report returning-auth because the token itself is bound to
-    // an auth user, and the UI will drive login if needed.
+    // Best-effort auth user fetch. If the caller's cookie matches the
+    // token's user_id, we emit returning-auth with the full User object.
     const authUser = await getAuthUser();
     if (authUser && authUser.id === tokenRow.user_id) {
       return { state: "returning-auth", sessionToken, session, user: authUser };
     }
-    // Token is auth-bound but caller isn't that user right now. We still
-    // return returning-auth (with a synthetic "absent user" shape would be
-    // wrong — the User type is non-nullable in this branch) — instead we
-    // fall back to returning-anon so the UI renders reconnect-or-login.
-    // This keeps the consumer contract: "returning-auth" is ONLY emitted
-    // when we can hand back a matching User.
-    return { state: "returning-anon", sessionToken, session };
+    // M7 fix: token is auth-bound but caller isn't that user right now
+    // (different cookie, anon-only cookie, or no session). Emit a distinct
+    // state so the consumer can render "sign-in to reconnect" in ONE check,
+    // rather than having to re-inspect `sessionToken.userId != null` after
+    // getting `returning-anon`. The contract invariant stays: "returning-
+    // auth" is ONLY emitted when we can hand back a matching User.
+    return { state: "returning-auth-mismatch", sessionToken, session };
   }
 
   if (tokenRow.anon_user_id) {

@@ -155,55 +155,44 @@ export function resetOnConversion(): void {
 /**
  * Decides whether the conversion CTA should be shown for this campaign.
  * See file header for precedence ordering — the order below matters.
+ *
+ * M9 code-review fix: this function now delegates storage/TTL logic to
+ * `readDismissalRecord()` instead of re-implementing the parse/prune chain.
+ * Single source of truth; avoids drift between the two code paths.
+ *
+ * Rule mapping after refactor:
+ *   - `readDismissalRecord()` returns null for both Rule 1 (storage/JSON
+ *     error) AND Rule 2 (key absent) — we collapse both to `true` here.
+ *   - TTL-expired entries are already pruned by `readDismissalRecord`, so
+ *     Rule 3b is implicitly handled: any `entry` we see below is non-expired.
+ *   - Rule 3a (no entry for this campaign) → `true`.
+ *   - Rule 4 (cap reached) → `false` (beats cooldown).
+ *   - Rule 5 (cooldown passed) → `true`.
+ *   - Rule 6 (default, within cooldown) → `false`.
  */
 export function shouldShowCta(campaignId: string | "__guest__"): boolean {
-  // Rule 1: storage inaccessible → true (graceful, prefer showing).
-  const storage = getStorage();
-  if (!storage) return true;
+  const record = readDismissalRecord();
 
-  let raw: string | null;
-  try {
-    raw = storage.getItem(KEY);
-  } catch {
-    return true;
-  }
+  // Rules 1 & 2: storage inaccessible, parse error, or key absent → show.
+  // `readDismissalRecord` collapses all three into `null`.
+  if (record === null) return true;
 
-  // Rule 2: no record at all → true.
-  if (raw === null) return true;
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    // Parse error → storage treated as inaccessible (Rule 1 semantics).
-    return true;
-  }
-
-  if (
-    typeof parsed !== "object" ||
-    parsed === null ||
-    !("dismissalsByCampaign" in parsed)
-  ) {
-    return true;
-  }
-
-  const record = parsed as DismissalRecord;
-  const entry = record.dismissalsByCampaign?.[campaignId];
+  const entry = record.dismissalsByCampaign[campaignId];
 
   // Rule 3a: no entry for this campaign → first time for this campaign.
+  // (Rule 3b — TTL expired — is already handled by readDismissalRecord's
+  // pruning step, so if entry exists it's guaranteed non-expired.)
   if (!entry) return true;
-
-  const ts = Date.parse(entry.lastDismissedAt);
-  if (Number.isNaN(ts)) return true; // malformed → be lenient
-  const ageMs = Date.now() - ts;
-  const ttlMs = TTL_DAYS * MS_PER_DAY;
-
-  // Rule 3b: TTL expired → fresh slate.
-  if (ageMs > ttlMs) return true;
 
   // Rule 4: cap reached → false, even if cooldown has passed.
   // (Cap wins cooldown — explicit user intent.)
   if (entry.count >= CAP_PER_CAMPAIGN) return false;
+
+  const ts = Date.parse(entry.lastDismissedAt);
+  // Defensive: readDismissalRecord filters out unparseable timestamps, but
+  // if something slips through be lenient and show.
+  if (Number.isNaN(ts)) return true;
+  const ageMs = Date.now() - ts;
 
   // Rule 5: cooldown passed → give another chance.
   const cooldownMs = COOLDOWN_DAYS * MS_PER_DAY;

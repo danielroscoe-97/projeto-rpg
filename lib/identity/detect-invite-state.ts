@@ -13,8 +13,15 @@ export interface CampaignInviteSummary {
   id: string;
   campaignId: string;
   campaignName: string;
-  /** DM display name, falls back to email when display_name is null. */
-  dmName: string;
+  /**
+   * DM display name, falls back to email when display_name is null.
+   *
+   * `null` when BOTH display_name AND email are absent — consumers MUST
+   * translate `null` to a locale-appropriate fallback (e.g. "DM" / "Mestre")
+   * via i18n. This lib intentionally refuses to embed a hardcoded string
+   * (M6 code review): copy belongs to the UI layer, not to a server utility.
+   */
+  dmName: string | null;
   /** Invite recipient email (empty string if the invite row has no email). */
   email: string;
   expiresAt: string;
@@ -37,16 +44,33 @@ export interface CampaignInviteSummary {
  *   fallback when the users row has no display_name yet (just-created account,
  *   email-only signup, etc). Callers render the same picker flow; only the
  *   preamble changes.
+ *
+ * ### `isAnonymous` field (M8 code review)
+ *
+ * Both `auth` branches carry `isAnonymous: boolean` so the consumer can
+ * distinguish "real logged-in user" from "anon-session user" in ONE check
+ * (instead of having to inspect `user.is_anonymous` out-of-band). An anon
+ * user who clicks an /invite link still hits the auth branches because they
+ * DO have a Supabase User object — but the UX probably wants to show
+ * "create account" CTA before letting them accept the invite.
  */
 export type InviteState =
   | { state: "invalid"; reason: "not_found" | "expired" | "accepted" }
   | { state: "guest"; invite: CampaignInviteSummary }
-  | { state: "auth"; invite: CampaignInviteSummary; user: User }
+  | {
+      state: "auth";
+      invite: CampaignInviteSummary;
+      user: User;
+      /** True when `user.is_anonymous === true` (Supabase anon session). */
+      isAnonymous: boolean;
+    }
   | {
       state: "auth-with-invite-pending";
       invite: CampaignInviteSummary;
       user: User;
       displayName: string;
+      /** True when `user.is_anonymous === true` (Supabase anon session). */
+      isAnonymous: boolean;
     };
 
 /**
@@ -122,23 +146,33 @@ export async function detectInviteState(token: string): Promise<InviteState> {
     return { state: "invalid", reason: "expired" };
   }
 
+  // M6: no hardcoded "DM" fallback — consumer translates null via i18n.
+  // Treat empty strings / whitespace-only as "absent" so the consumer's
+  // null check is the single source of truth for "show fallback copy".
+  const dmDisplayCandidate =
+    typeof campaignJoin.users?.display_name === "string" &&
+    campaignJoin.users.display_name.trim().length > 0
+      ? campaignJoin.users.display_name
+      : typeof campaignJoin.users?.email === "string" &&
+          campaignJoin.users.email.trim().length > 0
+        ? campaignJoin.users.email
+        : null;
+
   const invite: CampaignInviteSummary = {
     id: row.id,
     campaignId: row.campaign_id,
     campaignName: campaignJoin.name,
-    dmName:
-      campaignJoin.users?.display_name ?? campaignJoin.users?.email ?? "DM",
+    dmName: dmDisplayCandidate,
     email: row.email ?? "",
     expiresAt: row.expires_at,
     status: row.status,
   };
 
-  // Auth detection — cookie-aware; returns null for unauthenticated callers
-  // (including anon-session callers where `getUser()` would still return a
-  // user row; we treat anon as "auth" here because anon users HAVE a user
-  // object with is_anonymous=true — however, an anon user clicking an
-  // /invite link is an unusual flow; we still classify them as `auth` and
-  // rely on the UI to branch on `user.is_anonymous` if it needs to).
+  // Auth detection — cookie-aware; returns null for unauthenticated callers.
+  // Anon-session callers still have a User object (is_anonymous=true), so we
+  // treat them as "auth" here and expose `isAnonymous` on the returned state
+  // (M8) so the UI can distinguish "real account" from "anon account" in
+  // one check.
   const authUser = await getAuthUser();
 
   if (!authUser) {
@@ -159,14 +193,20 @@ export async function detectInviteState(token: string): Promise<InviteState> {
       ? userRow.display_name
       : null;
 
+  // M8: hoist is_anonymous into the discriminated union so consumers don't
+  // have to inspect user.is_anonymous separately (Supabase's User type marks
+  // the field as optional; we coerce to strict boolean for API stability).
+  const isAnonymous = authUser.is_anonymous === true;
+
   if (displayName) {
     return {
       state: "auth-with-invite-pending",
       invite,
       user: authUser,
       displayName,
+      isAnonymous,
     };
   }
 
-  return { state: "auth", invite, user: authUser };
+  return { state: "auth", invite, user: authUser, isAnonymous };
 }

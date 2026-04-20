@@ -224,9 +224,13 @@ describe("detectJoinState — returning-anon state", () => {
     expect(result.sessionToken.anonUserId).toBe(ANON_USER_ID);
   });
 
-  it("downgrades to returning-anon when token.user_id is set but caller is NOT that user", async () => {
-    // Auth-bound token, but cookie belongs to a different auth user (or no user).
-    // The utility refuses to emit returning-auth without a matching User object.
+});
+
+describe("detectJoinState — returning-auth-mismatch state (M7)", () => {
+  it("emits returning-auth-mismatch when token.user_id is set but caller has NO auth cookie", async () => {
+    // Auth-bound token, cookie absent. Previously collapsed into
+    // returning-anon (M7 code review). Now emits a distinct state so the
+    // consumer can render "sign-in to reconnect" in one check.
     state.sessionTokensResult = {
       data: makeTokenRow({ user_id: AUTH_USER_ID }),
       error: null,
@@ -236,7 +240,42 @@ describe("detectJoinState — returning-anon state", () => {
 
     const result = await detectJoinState(TOKEN);
 
-    expect(result.state).toBe("returning-anon");
+    expect(result.state).toBe("returning-auth-mismatch");
+    if (result.state !== "returning-auth-mismatch") {
+      throw new Error("expected returning-auth-mismatch");
+    }
+    // Token's user_id is still exposed for the consumer's own login flow.
+    expect(result.sessionToken.userId).toBe(AUTH_USER_ID);
+    expect(result.session.id).toBe(SESSION_ID);
+  });
+
+  it("emits returning-auth-mismatch when token.user_id is set but caller is a DIFFERENT auth user", async () => {
+    state.sessionTokensResult = {
+      data: makeTokenRow({ user_id: AUTH_USER_ID }),
+      error: null,
+    };
+    state.sessionsResult = { data: makeSessionRow(), error: null };
+    state.authUser = makeAuthUser(OTHER_ANON_ID); // cookie belongs to someone else
+
+    const result = await detectJoinState(TOKEN);
+
+    expect(result.state).toBe("returning-auth-mismatch");
+  });
+
+  it("does NOT include a `user` field on returning-auth-mismatch (contract invariant)", async () => {
+    // "returning-auth" is ONLY emitted when we can hand back a matching User.
+    // The mismatch state intentionally omits `user` so the consumer has to
+    // drive login explicitly.
+    state.sessionTokensResult = {
+      data: makeTokenRow({ user_id: AUTH_USER_ID }),
+      error: null,
+    };
+    state.sessionsResult = { data: makeSessionRow(), error: null };
+    state.authUser = null;
+
+    const result = await detectJoinState(TOKEN);
+
+    expect(result).not.toHaveProperty("user");
   });
 });
 

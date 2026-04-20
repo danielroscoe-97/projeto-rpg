@@ -211,6 +211,39 @@ describe("detectInviteState — guest state", () => {
     if (result.state !== "guest") throw new Error("expected guest");
     expect(result.invite.dmName).toBe("dani@example.com");
   });
+
+  it("M6: dmName is null when BOTH display_name and email are missing (consumer i18n)", async () => {
+    // No more hardcoded "DM" fallback — lib contract returns null and the
+    // consumer (InviteLanding) translates via its i18n bundle.
+    state.campaignInvitesResult = {
+      data: makeInviteRow({
+        campaigns: {
+          name: "Phandelver",
+          users: { display_name: null, email: "" },
+        },
+      }),
+      error: null,
+    };
+
+    const result = await detectInviteState(TOKEN);
+
+    if (result.state !== "guest") throw new Error("expected guest");
+    expect(result.invite.dmName).toBeNull();
+  });
+
+  it("M6: dmName is null when the FK join has no users row at all", async () => {
+    state.campaignInvitesResult = {
+      data: makeInviteRow({
+        campaigns: { name: "Phandelver", users: null },
+      }),
+      error: null,
+    };
+
+    const result = await detectInviteState(TOKEN);
+
+    if (result.state !== "guest") throw new Error("expected guest");
+    expect(result.invite.dmName).toBeNull();
+  });
 });
 
 describe("detectInviteState — auth state (no display_name)", () => {
@@ -225,6 +258,8 @@ describe("detectInviteState — auth state (no display_name)", () => {
     if (result.state !== "auth") throw new Error("expected auth");
     expect(result.user.id).toBe(USER_ID);
     expect(result.invite.campaignId).toBe(CAMPAIGN_ID);
+    // M8: isAnonymous is always populated (false for a real auth user).
+    expect(result.isAnonymous).toBe(false);
   });
 
   it("returns auth + user when public.users row is missing entirely", async () => {
@@ -246,6 +281,19 @@ describe("detectInviteState — auth state (no display_name)", () => {
 
     expect(result.state).toBe("auth");
   });
+
+  it("M8: propagates isAnonymous=true when the auth user has is_anonymous=true", async () => {
+    state.campaignInvitesResult = { data: makeInviteRow(), error: null };
+    state.authUser = makeAuthUser({ is_anonymous: true });
+    state.usersResult = { data: { display_name: null }, error: null };
+
+    const result = await detectInviteState(TOKEN);
+
+    expect(result.state).toBe("auth");
+    if (result.state !== "auth") throw new Error("expected auth");
+    // The consumer can decide "show signup CTA before accepting" in ONE check.
+    expect(result.isAnonymous).toBe(true);
+  });
 });
 
 describe("detectInviteState — auth-with-invite-pending state", () => {
@@ -263,5 +311,24 @@ describe("detectInviteState — auth-with-invite-pending state", () => {
     expect(result.displayName).toBe("Lucas");
     expect(result.user.id).toBe(USER_ID);
     expect(result.invite.campaignName).toBe("Phandelver");
+    // M8: isAnonymous is populated on this branch too.
+    expect(result.isAnonymous).toBe(false);
+  });
+
+  it("M8: auth-with-invite-pending also carries isAnonymous=true for anon users", async () => {
+    // Unusual but valid: an anon user whose public.users row already has a
+    // display_name (e.g. from a previous anon→auth session). The contract
+    // must still expose isAnonymous without extra inspection.
+    state.campaignInvitesResult = { data: makeInviteRow(), error: null };
+    state.authUser = makeAuthUser({ is_anonymous: true });
+    state.usersResult = { data: { display_name: "Lucas" }, error: null };
+
+    const result = await detectInviteState(TOKEN);
+
+    expect(result.state).toBe("auth-with-invite-pending");
+    if (result.state !== "auth-with-invite-pending") {
+      throw new Error("expected auth-with-invite-pending");
+    }
+    expect(result.isAnonymous).toBe(true);
   });
 });
