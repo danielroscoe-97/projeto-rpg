@@ -66,9 +66,31 @@ import type { Combatant } from "@/lib/types/combat";
 
 export interface UpgradeCredentials {
   email: string;
-  password: string;
+  /**
+   * Password — required for email-mode upgrades (Phase 1 validates length).
+   * For `mode: "oauth"` we never write passwords (the identity is provided
+   * by Google); callers pass a placeholder or omit the field, and Phase 1
+   * skips the length check.
+   */
+  password?: string;
   displayName?: string;
 }
+
+/**
+ * How the caller obtained authenticated credentials.
+ *
+ * - `email`: classic email + password signup. Pre-Wave-2 this was implicit.
+ *   The server admin-promotes the anon user (updateUserById) on behalf of
+ *   the client — removes the half-upgraded race where client runs updateUser,
+ *   then the server POST fails leaving stranded credentials (C2 fix).
+ *
+ * - `oauth`: user already linked a Google (or other OIDC) identity via
+ *   Supabase hosted OAuth flow. The Supabase session now has the real
+ *   user id + email; no credential update is needed. The saga runs Phase 3
+ *   (migration) only — no password or email writes (C1 fix: avoids the
+ *   placeholder `__oauth__@pocketdm.com.br` credentials polluting user data).
+ */
+export type UpgradeMode = "email" | "oauth";
 
 export interface UpgradePlayerIdentityParams {
   /** Stable `session_tokens.id` — survives anon_user_id regeneration. */
@@ -76,6 +98,11 @@ export interface UpgradePlayerIdentityParams {
   /** Caller's `auth.uid()` after client-side `updateUser` completed. */
   callerUserId: string;
   credentials: UpgradeCredentials;
+  /**
+   * Default `email` preserves the pre-Wave-2 behavior. Pass `oauth` to skip
+   * credential validation and rely on the caller's session for email.
+   */
+  mode?: UpgradeMode;
   /**
    * Optional Combatant (Zustand guest store shape). If provided, saga step 10
    * migrates it to a new `player_characters` row owned by the user. Omitted
@@ -167,6 +194,7 @@ export async function upgradePlayerIdentity(
   params: UpgradePlayerIdentityParams,
 ): Promise<UpgradeResult> {
   const { sessionTokenId, callerUserId, credentials, guestCharacter } = params;
+  const mode: UpgradeMode = params.mode ?? "email";
 
   // --- Phase 1: Pre-flight (no side effects) ---------------------------------
 
@@ -194,7 +222,10 @@ export async function upgradePlayerIdentity(
     );
   }
 
-  if (!isValidPassword(credentials?.password)) {
+  // Password check only for email-mode upgrades. In oauth mode the
+  // identity is established by the OAuth provider — we never touch the
+  // auth.users password column, so requiring one here would be incorrect.
+  if (mode === "email" && !isValidPassword(credentials?.password)) {
     return fail(
       "invalid_credentials",
       `Senha deve ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres`,

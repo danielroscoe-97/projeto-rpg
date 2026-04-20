@@ -1,22 +1,32 @@
 /**
  * Unit tests for `AuthCallbackContinueClient` — the client-side completion
- * of the Google OAuth flow. Verifies:
+ * of the Google OAuth flow. Verifies (Wave 2 C1 + M5 behaviors):
  *
  *   - When localStorage has `identity-upgrade-context-v1`, it calls the
- *     upgrade saga and then redirects to `next`.
+ *     upgrade saga in OAuth mode (no placeholder credentials!) and then
+ *     redirects to `next`.
  *   - When localStorage is empty, it just redirects.
- *   - When the saga errors, it still eventually redirects (no user stranding).
+ *   - When the saga errors, it surfaces an error banner with a Retry button
+ *     and does NOT auto-redirect (M5 — explicit user acknowledgement).
  *   - The localStorage entry is cleared after read (no replay).
+ *   - Retry re-POSTs the same payload.
+ *   - Dismiss ("continue anyway") navigates away.
  */
 
 import React from "react";
 import { render, screen, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 const replaceMock = jest.fn();
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ replace: replaceMock, push: jest.fn() }),
   useSearchParams: () => new URLSearchParams("next=/app/dashboard"),
+}));
+
+const trackEventMock = jest.fn();
+jest.mock("@/lib/analytics/track", () => ({
+  trackEvent: (...args: unknown[]) => trackEventMock(...args),
 }));
 
 const mockFetch = jest.fn();
@@ -47,7 +57,7 @@ beforeEach(() => {
 });
 
 describe("AuthCallbackContinueClient", () => {
-  it("calls /api/player-identity/upgrade with persisted sessionTokenId then redirects to next", async () => {
+  it("calls /api/player-identity/upgrade with mode=oauth and sessionTokenId then redirects to next", async () => {
     writeContext({ sessionTokenId: "tok-99" });
     mockFetch.mockResolvedValue({ ok: true, json: async () => ({ ok: true }) });
 
@@ -64,6 +74,9 @@ describe("AuthCallbackContinueClient", () => {
     );
     const body = JSON.parse(mockFetch.mock.calls[0][1].body);
     expect(body.sessionTokenId).toBe("tok-99");
+    // Wave 2 C1 fix: explicit oauth mode, NO placeholder credentials.
+    expect(body.mode).toBe("oauth");
+    expect(body.credentials).toBeUndefined();
     // Entry should be cleared (consume-on-read).
     expect(localStorage.getItem(IDENTITY_UPGRADE_CONTEXT_KEY)).toBeNull();
     // After resolve, router.replace should hit the dashboard.
@@ -90,12 +103,12 @@ describe("AuthCallbackContinueClient", () => {
     expect(screen.getByTestId("auth.callback.continue")).toBeInTheDocument();
   });
 
-  it("redirects even when upgrade endpoint errors (no user stranding)", async () => {
-    jest.useFakeTimers();
+  it("surfaces error banner with Retry + Dismiss when upgrade fails (no silent redirect)", async () => {
     writeContext({ sessionTokenId: "tok-1" });
     mockFetch.mockResolvedValue({
       ok: false,
-      json: async () => ({ ok: false, code: "internal" }),
+      status: 502,
+      json: async () => ({ ok: false, code: "update_user_failed", message: "provider error" }),
     });
 
     await act(async () => {
@@ -104,18 +117,86 @@ describe("AuthCallbackContinueClient", () => {
     await act(async () => {
       await Promise.resolve();
     });
-    // The delayed redirect uses setTimeout(1500)
-    await act(async () => {
-      jest.advanceTimersByTime(2000);
-    });
-    expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
-    jest.useRealTimers();
+
+    expect(
+      screen.getByTestId("auth.callback.continue.error"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("auth.callback.continue.retry"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("auth.callback.continue.dismiss"),
+    ).toBeInTheDocument();
+    // Critical: no auto-redirect happened.
+    expect(replaceMock).not.toHaveBeenCalled();
+    // Analytics event fired.
+    expect(trackEventMock).toHaveBeenCalledWith(
+      "conversion:failed",
+      expect.objectContaining({ stage: "oauth_upgrade", status: 502 }),
+    );
   });
 
-  it("stale localStorage (>15min) is ignored — no upgrade call", async () => {
+  it("Retry re-POSTs the same payload and navigates on success", async () => {
+    writeContext({ sessionTokenId: "tok-retry" });
+    // First call fails, second succeeds.
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 502,
+        json: async () => ({ ok: false, code: "update_user_failed" }),
+      })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) });
+
+    await act(async () => {
+      render(<AuthCallbackContinueClient />);
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByTestId("auth.callback.continue.retry"));
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    const secondBody = JSON.parse(mockFetch.mock.calls[1][1].body);
+    expect(secondBody.sessionTokenId).toBe("tok-retry");
+    expect(secondBody.mode).toBe("oauth");
+    expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
+  });
+
+  it("Dismiss navigates to next even when upgrade failed", async () => {
+    writeContext({ sessionTokenId: "tok-1" });
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: async () => ({ ok: false }),
+    });
+
+    await act(async () => {
+      render(<AuthCallbackContinueClient />);
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByTestId("auth.callback.continue.dismiss"));
+
+    expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
+    expect(trackEventMock).toHaveBeenCalledWith(
+      "conversion:failed",
+      expect.objectContaining({ reason: "user_dismissed" }),
+    );
+  });
+
+  it("stale localStorage (>60min) is ignored — no upgrade call", async () => {
     writeContext({
       sessionTokenId: "tok-stale",
-      savedAt: Date.now() - 60 * 60 * 1000, // 1h old
+      // TTL bumped to 60m in Wave 2 M4 — use 90m to guarantee staleness.
+      savedAt: Date.now() - 90 * 60 * 1000,
     });
     await act(async () => {
       render(<AuthCallbackContinueClient />);

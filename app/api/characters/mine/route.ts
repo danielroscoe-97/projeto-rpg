@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withRateLimit } from "@/lib/rate-limit";
 import { captureError } from "@/lib/errors/capture";
 
 /**
@@ -13,12 +14,17 @@ import { captureError } from "@/lib/errors/capture";
  * Auth model: authenticated users ONLY (is_anonymous rejected). Anonymous
  * users don't have standalone characters outside of campaigns because the
  * anon → auth upgrade migrates any guest/anon char at creation time.
+ *
+ * Hardening (Wave 2 code review):
+ *   - M2: rate-limited 60/min/IP to prevent pagination abuse or polling loops.
  */
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
-export async function GET(request: NextRequest) {
+const handler: Parameters<typeof withRateLimit>[0] = async function GET(
+  request: NextRequest,
+) {
   const url = new URL(request.url);
   const offsetRaw = url.searchParams.get("offset");
   const limitRaw = url.searchParams.get("limit");
@@ -111,4 +117,8 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};
+
+// Rate limit: 60/min per IP. Matches `claimable` route — symmetric pagination
+// feeds with similar expected call frequency.
+export const GET = withRateLimit(handler, { max: 60, window: "1 m" });

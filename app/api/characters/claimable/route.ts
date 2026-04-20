@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withRateLimit } from "@/lib/rate-limit";
 import { captureError } from "@/lib/errors/capture";
 import {
   listClaimableCharacters,
@@ -20,12 +21,28 @@ import {
  * campaign-scoped (any valid identity sees the same set) so the identity
  * exists primarily to enforce caller discipline + future per-identity
  * filtering without a breaking change.
+ *
+ * Hardening (Wave 2 code review):
+ *   - M1: campaignId is UUID-validated before hitting Postgres — otherwise
+ *     a non-UUID string produces a confusing 500 from a 22P02 pg error.
+ *   - M2: rate-limited 60/min/IP so a buggy client cannot saturate this
+ *     endpoint via tight polling.
  */
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
-export async function GET(request: NextRequest) {
+/**
+ * RFC 4122 UUID regex (any version 1-5). Matches the shape Postgres accepts
+ * as `uuid` and rejects obvious junk. Mirrors the regex in
+ * `app/api/e2e/seed-session-token/route.ts`.
+ */
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const handler: Parameters<typeof withRateLimit>[0] = async function GET(
+  request: NextRequest,
+) {
   const url = new URL(request.url);
   const campaignId = url.searchParams.get("campaignId");
   const offsetRaw = url.searchParams.get("offset");
@@ -34,6 +51,13 @@ export async function GET(request: NextRequest) {
   if (!campaignId) {
     return NextResponse.json(
       { error: "Missing campaignId" },
+      { status: 400 },
+    );
+  }
+
+  if (!UUID_RE.test(campaignId)) {
+    return NextResponse.json(
+      { error: "invalid_uuid" },
       { status: 400 },
     );
   }
@@ -92,4 +116,9 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};
+
+// Rate limit: 60/min per IP. Generous for the picker modal's expected
+// pagination pattern (2-5 requests per session) while still containing
+// a misbehaving client loop.
+export const GET = withRateLimit(handler, { max: 60, window: "1 m" });

@@ -139,7 +139,9 @@
       "switch_to_login": "Já tem conta? Fazer login",
       "switch_to_signup": "Não tem conta? Criar conta",
       "upgrade_failed": "Não foi possível concluir o upgrade. Tente novamente.",
-      "upgrade_success": "Conta criada e personagem salvo."
+      "upgrade_success": "Conta criada e personagem salvo.",
+      "retry": "Tentar novamente",
+      "continue_anyway": "Ignorar e continuar"
     }
   },
   "invite": {

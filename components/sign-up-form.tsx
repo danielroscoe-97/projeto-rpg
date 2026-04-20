@@ -160,20 +160,18 @@ export function SignUpForm({
     try {
       const supabase = createClient();
       if (upgradeContext) {
-        // Phase 2: upgrade the anon session to an auth user — this keeps
-        // auth.uid() stable (DC1 of Epic 01). This MUST run client-side.
-        const { data: updated, error: updateErr } = await supabase.auth.updateUser({
-          email,
-          password,
-        });
-        if (updateErr) throw updateErr;
-
-        // Phase 3: run the server saga to migrate data + campaign memberships.
+        // Upgrade flow (Wave 2 C2 fix): we no longer call `updateUser`
+        // client-side. Instead the server route runs
+        // `admin.updateUserById` AND the saga in a single request. This
+        // removes the half-upgraded window where a client crash between
+        // the two calls would leave auth.users with new credentials but
+        // public.users never populated.
         const response = await fetch("/api/player-identity/upgrade", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             sessionTokenId: upgradeContext.sessionTokenId,
+            mode: "email",
             credentials: {
               email,
               password,
@@ -189,7 +187,7 @@ export function SignUpForm({
         }
         trackEvent("auth:signup", { method: "upgrade", source: "auth_modal" });
         onSuccess?.({
-          userId: updated.user?.id ?? result?.userId ?? "",
+          userId: result?.userId ?? "",
           isNewAccount: false,
           upgraded: true,
         });

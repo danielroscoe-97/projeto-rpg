@@ -8,14 +8,17 @@
  * page can read.
  *
  * Why versioned key: if we ever change shape, we bump `-v2` instead of
- * deserialising bad data. TTL is 15 min — anything older is assumed stale
- * (user abandoned OAuth mid-flow) and gets ignored on read.
+ * deserialising bad data. TTL is 60 min — generous margin for mobile OAuth
+ * flows where a user may bounce through a 2FA app + password manager +
+ * account picker (each modal can take 2-3 min on mid-range phones), plus
+ * normal network/app-switch latency. Shorter windows (we tried 15m) were
+ * silently expiring legitimate flows. Anything older is considered stale.
  */
 
 import type { Combatant } from "@/lib/types/combat";
 
 export const IDENTITY_UPGRADE_CONTEXT_KEY = "identity-upgrade-context-v1";
-export const IDENTITY_UPGRADE_CONTEXT_TTL_MS = 15 * 60 * 1000;
+export const IDENTITY_UPGRADE_CONTEXT_TTL_MS = 60 * 60 * 1000;
 
 export interface PersistedUpgradeContext {
   sessionTokenId: string;
