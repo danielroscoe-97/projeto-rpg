@@ -269,7 +269,7 @@ Se Sally achar a injeção inline desagradável, a Story 03-C pode opcionalmente
 | 03-D | `RecapCtaCard` + `saveSignupContext` no `CombatRecap`/`RecapActions` + anon flow + regressão "Salvar Combate" | 2 | Pronta | 2-3 dias |
 | 03-E | Guest flow (signUp + migrateGuestCharacterToAuth) local handling em `RecapCtaCard` | 3 | Pronta | 2-3 dias |
 | 03-F | Turn-safety (reuso de `player:idle` com novo payload field) + `PlayersOnlinePanel` badge + validação Quinn | 4 | Pronta | 3-4 dias |
-| 03-G | Integração dos eventos `conversion:*` no `MetricsDashboard` (via nova RPC `admin_conversion_funnel`) | 7 | Pronta | 1-2 dias |
+| 03-G | Integração dos eventos `conversion:*` no `MetricsDashboard` (via nova RPC `admin_conversion_funnel`) | 7 | **DIFERIDA PÓS-LAUNCH (F32)** | 1-2 dias |
 | 03-H | Suite E2E Playwright | — | Pronta | 3-4 dias |
 
 **Total:** 16-23 dias base + 4-7 dias de buffer (code review, a11y, polish) = **20-30 dias úteis (~2-3 sprints)**.
@@ -391,6 +391,7 @@ export function trackConversionFailed(
   ```
 - [ ] Smoke test: `POST /api/track` com `event_name: "conversion:cta_shown"` retorna 200, não 400
 - [ ] Teste unitário de route: eventos novos não são rejeitados
+- [ ] **Regression guard (F29):** `POST /api/track` com `event_name: "conversion:typo_event"` (evento FORA da allowlist) retorna **HTTP 400 com code `unknown_event`**. Garante que um typo futuro em helper `track*()` não passa silenciosamente pelo pipeline
 
 **Testing contract (03-A):**
 - Unit jest: 6 cenários de `shouldShowCta` (incluindo ordenação cap > cooldown) + `resetOnConversion` + storage blocked fallback + TTL pruning
@@ -787,7 +788,18 @@ Verificação: `combat:turn_advance` é broadcast, não está em ALLOWED_EVENTS 
 
 ---
 
-### Story 03-G — Analytics dashboard integration (Área 7)
+### Story 03-G — Analytics dashboard integration (Área 7) — **DIFERIDA PÓS-LAUNCH**
+
+> **Status 2026-04-20 (party-mode re-review):** Story **DIFERIDA para sprint pós-launch (F32)**.
+>
+> **Motivo:** John (PM) apontou que não temos baseline de volume por momento (`waiting` / `recap_anon` / `recap_guest`) nem targets numéricos definidos. Construir `admin_conversion_funnel` RPC + dashboard section **antes** de ter 2 semanas de dados produz número decorativo sem "red line" de sucesso.
+>
+> **Plano pós-launch:** rodar 2 semanas com eventos `conversion:*` já em `analytics_events` (Stories 03-A..F shipadas). Queries ad-hoc em SQL para cortar funil. Quando soubermos quais cortes importam (e qual o target por momento), abrir ticket separado para RPC + dashboard.
+>
+> **Impacto nas estimativas:** remove 1-2 dias do escopo inicial. Total revisado: **15-22 dias base + buffer = 19-29 dias úteis (~2 sprints)**.
+>
+> **Conteúdo original preservado abaixo para referência quando a story for reaberta.**
+
 
 **Goal:** integrar os eventos `conversion:*` no `MetricsDashboard` **existente** (`components/admin/MetricsDashboard.tsx`). NÃO criar rota nova `/app/admin/conversion-funnel`.
 
@@ -875,6 +887,7 @@ interface Metrics {
 - `e2e/conversion/recap-guest-signup-migrate.spec.ts` — **CRIAR** (Área 3)
 - `e2e/conversion/turn-safety.spec.ts` — **CRIAR** (Área 4, Quinn obrigatório)
 - `e2e/conversion/dismissal-memory.spec.ts` — **CRIAR** (Área 6)
+- `e2e/conversion/waiting-room-signup-race.spec.ts` — **CRIAR** (Área 1 — race com combat_started, F30)
 
 **Specs mínimas:**
 
@@ -883,9 +896,12 @@ interface Metrics {
 3. **recap-guest-signup-migrate** — guest em `/try` joga combate com 2 players no snapshot (cobre F7), recap, picker aparece, seleciona Thorin, AuthModal signup, `migrateGuestCharacterToAuth` executou, `/app/dashboard/characters` mostra Thorin como default, segundo player continua no snapshot guest
 4. **turn-safety** — 2 browsers; DM inicia sessão; player anon abre AuthModal no waiting room; DM inicia combate (toast `combat_started` visível no player); DM avança turno para o player (toast `your_turn` visível); validar badge "cadastrando" no DM view; player completa signup; player vê turno atual; sem "lost turn" banner
 5. **dismissal-memory** — player rejeita 3x na mesma campanha; validar 4ª visita não exibe CTA (cap); mudar para outra campanha mock; validar CTA volta; avançar mock time 90+ dias; validar TTL reset
+6. **waiting-room-signup-race (F30)** — anon clica CTA no waiting room, AuthModal abre com formulário de signup preenchido parcial; **DM inicia combate ANTES do signup completar** (race); validar: (a) combat UI carrega por baixo do modal sem bloquear; (b) se signup completa ANTES do primeiro turno do player, `upgradePlayerIdentity` executou e player age no turno como autenticado; (c) se signup completa DEPOIS do primeiro turno do player, turno foi consumido por `player:idle` payload `reason=signing_up` e player entra no próximo turno como autenticado sem "lost turn" banner; (d) `session_token_id` preservado em todos os caminhos
+
+**Mitigação de flakiness (F31):** E2E de upgrade flow usa `waitForResponse(/\/api\/player-identity\/upgrade/) + waitForFunction(() => document.cookie.includes("sb-access-token"))` antes de qualquer asserção pós-signup. `waitForURL` sozinho não é suficiente — JWT propagation via cookies é async. Aplicar em specs 1, 2, 3, e 6.
 
 **ACs:**
-- [ ] 5 specs acima compilam e passam em CI
+- [ ] 6 specs acima compilam e passam em CI
 - [ ] Cobertura CLAUDE.md Combat Parity: specs cobrem guest (spec 3) + anon (specs 1, 2, 4). Auth não tem CTA a testar
 - [ ] Cobertura CLAUDE.md Resilient Reconnection: spec 4 implicitamente testa que session_token_id sobrevive upgrade
 - [ ] Nenhum spec depende de dados seed manual — tudo criado via test fixtures/API

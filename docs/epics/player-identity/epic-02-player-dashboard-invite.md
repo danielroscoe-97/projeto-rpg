@@ -335,13 +335,17 @@ Sub-caso de `auth-with-invite-pending` em `/invite/[token]` (Área 1A):
 - [ ] Rotas lêem tabelas corretas (`campaign_invites` vs `session_tokens`)
 - [ ] Preamble em `auth-with-invite-pending` usa `displayName`
 - [ ] **Parity check:** anon flow atual continua funcional
+- [ ] **Skeleton states:** `InviteLanding` renderiza `<InviteLandingSkeleton />` com shape idêntico ao landing resolvido (mesma altura/grid/gap) enquanto `detectInviteState`/`detectJoinState` resolvem. Zero flash-of-wrong-UI (guest CTA → troca pra auth visível pro usuário)
+- [ ] **PlayerJoinClient parity invariants (aditivas, não refactor):** mudança em `components/player/PlayerJoinClient.tsx` preserva (a) reconnect-from-storage após hard-refresh mesmo com `AuthModal` aberto; (b) upgrade mid-combate não dispara `player:disconnecting` broadcast; (c) heartbeat pause em `document.visibilityState === "hidden"` continua funcionando pós-upgrade; (d) `session_token_id` em sessionStorage+localStorage não é invalidado pelo fluxo de signup. E2E cobre cada invariante explicitamente.
 
 ### Área 2 — CharacterPickerModal
 - [ ] Componente aceita 3 modes e paginação
-- [ ] Infinite scroll em "Disponíveis" funciona (consome `listClaimableCharacters` paginado)
+- [ ] Infinite scroll em "Disponíveis" funciona (consome `listClaimableCharacters` paginado com `{limit, offset}` — assinatura validada contra `lib/supabase/character-claim.ts:101-145`)
 - [ ] Usa `Dialog` primitive (bottom-sheet em &lt;640px)
 - [ ] `InviteAcceptClient` refatorado usa o modal
 - [ ] Acessibilidade: focus trap, escape fecha, ARIA
+- [ ] **axe-core:** zero violations em modal open state, após trocar de tab, e após success state (`@axe-core/playwright` assertion no E2E)
+- [ ] **Mobile bottom-sheet spec:** viewport 375px, altura peek 75% da tela, 3 tabs viram select quando largura &lt; 640px, infinite scroll dentro do sheet não congela scroll da página
 
 ### Área 3 — AuthModal
 - [ ] Wrappa `LoginForm` + `SignUpForm`
@@ -350,6 +354,7 @@ Sub-caso de `auth-with-invite-pending` em `/invite/[token]` (Área 1A):
 - [ ] `onSuccess` recebe `{ userId, isNewAccount, upgraded }`
 - [ ] Transição login ↔ signup sem fechar
 - [ ] Callback handler `/auth/callback` detecta upgrade-context-v1 em localStorage
+- [ ] **axe-core:** zero violations em open state, tab switch (login ↔ signup), erro de credencial inválida visível, e após success
 
 ### Área 4 — Dashboard Enriquecido
 - [ ] "Continue de onde parou" aparece se `last_session_at IS NOT NULL`
