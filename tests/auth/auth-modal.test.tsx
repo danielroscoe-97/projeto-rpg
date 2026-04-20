@@ -252,6 +252,78 @@ describe("AuthModal", () => {
         screen.getByTestId("auth.modal.display-name-input"),
       ).toBeInTheDocument();
     });
+
+    // M6 (code review fix) — email + displayName persist across tab switches.
+    // Password is intentionally cleared on switch (security).
+    it("M6: persists typed email across signup → login → signup tab switches", async () => {
+      const user = userEvent.setup();
+      render(<AuthModal {...makeProps({ defaultTab: "signup" })} />);
+
+      const signupEmail = screen.getByTestId(
+        "auth.modal.email-input",
+      ) as HTMLInputElement;
+      await user.type(signupEmail, "dani@example.com");
+      expect(signupEmail.value).toBe("dani@example.com");
+
+      // Switch to login — email MUST survive.
+      await user.click(screen.getByTestId("auth.modal.switch-to-login"));
+      const loginEmail = screen.getByTestId(
+        "auth.modal.email-input",
+      ) as HTMLInputElement;
+      expect(loginEmail.value).toBe("dani@example.com");
+
+      // Switch back to signup — still there.
+      await user.click(screen.getByTestId("auth.modal.switch-to-signup"));
+      const signupEmailAgain = screen.getByTestId(
+        "auth.modal.email-input",
+      ) as HTMLInputElement;
+      expect(signupEmailAgain.value).toBe("dani@example.com");
+    });
+
+    it("M6: persists displayName across signup → login → signup", async () => {
+      const user = userEvent.setup();
+      render(<AuthModal {...makeProps({ defaultTab: "signup" })} />);
+
+      const displayName = screen.getByTestId(
+        "auth.modal.display-name-input",
+      ) as HTMLInputElement;
+      await user.type(displayName, "Dani the Bard");
+      expect(displayName.value).toBe("Dani the Bard");
+
+      // Switch to login + back — displayName restored.
+      await user.click(screen.getByTestId("auth.modal.switch-to-login"));
+      await user.click(screen.getByTestId("auth.modal.switch-to-signup"));
+
+      const displayNameAgain = screen.getByTestId(
+        "auth.modal.display-name-input",
+      ) as HTMLInputElement;
+      expect(displayNameAgain.value).toBe("Dani the Bard");
+    });
+
+    it("M6: password is CLEARED on tab switch (security — intentional)", async () => {
+      const user = userEvent.setup();
+      render(<AuthModal {...makeProps({ defaultTab: "signup" })} />);
+
+      const signupPw = screen.getByTestId(
+        "auth.modal.password-input",
+      ) as HTMLInputElement;
+      await user.type(signupPw, "super-secret");
+      expect(signupPw.value).toBe("super-secret");
+
+      // Switch to login — password field is a fresh (different) input.
+      await user.click(screen.getByTestId("auth.modal.switch-to-login"));
+      const loginPw = screen.getByTestId(
+        "auth.modal.password-input",
+      ) as HTMLInputElement;
+      expect(loginPw.value).toBe("");
+
+      // Switch back to signup — password still cleared (unmount + remount).
+      await user.click(screen.getByTestId("auth.modal.switch-to-signup"));
+      const signupPwAgain = screen.getByTestId(
+        "auth.modal.password-input",
+      ) as HTMLInputElement;
+      expect(signupPwAgain.value).toBe("");
+    });
   });
 
   describe("upgrade flow (signup with upgradeContext)", () => {

@@ -53,6 +53,8 @@ import {
 } from "@/lib/player-identity-storage";
 import {
   recordDismissal,
+  readDismissalRecord,
+  migrateDismissalEntry,
   KEY as DISMISSAL_KEY,
 } from "@/components/conversion/dismissal-store";
 
@@ -116,13 +118,26 @@ function UpgradeHarness({
     setAuthModalState({ open: true, mode });
   }, []);
 
-  const handleAuthModalSuccess = useCallback(() => {
-    // EXACT mirror of components/player/PlayerJoinClient.tsx
-    // `handleAuthModalSuccess`. NO storage manipulation. NO channel send.
-    // NO heartbeat reset. Just close modal + bump soft tick.
-    setAuthModalState({ open: false, mode: "login" });
-    setSoftRefreshTick((n) => n + 1);
-  }, []);
+  const handleAuthModalSuccess = useCallback(
+    (result?: { upgraded?: boolean; isNewAccount?: boolean }) => {
+      // EXACT mirror of components/player/PlayerJoinClient.tsx
+      // `handleAuthModalSuccess`. NO storage manipulation (except the M15
+      // dismissal-store migration). NO channel send. NO heartbeat reset.
+      setAuthModalState({ open: false, mode: "login" });
+      setSoftRefreshTick((n) => n + 1);
+
+      // M15 (code review fix) — on upgrade, migrate the __guest__ dismissal
+      // entry to the real campaignId so the CTA doesn't re-appear.
+      if ((result?.upgraded || result?.isNewAccount) && campaignId) {
+        try {
+          migrateDismissalEntry("__guest__", campaignId);
+        } catch {
+          /* swallow — matches production */
+        }
+      }
+    },
+    [campaignId],
+  );
 
   const handleSignupHintDismiss = useCallback(() => {
     setSignupHintDismissed(true);
@@ -170,7 +185,7 @@ function UpgradeHarness({
           <button
             data-testid="auth-modal-success-trigger"
             onClick={() =>
-              handleAuthModalSuccess()
+              handleAuthModalSuccess({ upgraded: true, isNewAccount: false })
             }
           >
             Simulate AuthModal onSuccess (upgraded=true)
@@ -420,5 +435,77 @@ describe("Story 02-E parity (d) — session_token_id preserved by signup flow", 
     expect(
       screen.queryByTestId("join.signup-hint-banner"),
     ).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// (e) M15 code-review fix — dismissal migration on auth upgrade.
+// When a guest dismisses the signup-hint CTA under the `__guest__` sentinel
+// and then upgrades to a real account with a known campaignId, the dismissal
+// record must be re-keyed so the CTA doesn't nag the user again.
+// ---------------------------------------------------------------------------
+
+describe("M15 — dismissal-store migration on upgrade", () => {
+  it("migrates __guest__ dismissal entry to the real campaignId on upgrade success", async () => {
+    const channelSend = jest.fn();
+    const heartbeatRef = { current: null } as React.MutableRefObject<
+      (() => void) | null
+    >;
+
+    const user = userEvent.setup();
+    // Seed a guest dismissal BEFORE mount (simulates a user who dismissed the
+    // CTA as a guest in an earlier session).
+    recordDismissal("__guest__");
+    recordDismissal("__guest__");
+    const preRecord = readDismissalRecord();
+    expect(preRecord?.dismissalsByCampaign.__guest__?.count).toBe(2);
+    expect(preRecord?.dismissalsByCampaign["camp-migrate"]).toBeUndefined();
+
+    render(
+      <UpgradeHarness
+        sessionId="sess-migrate"
+        effectiveTokenId="tok-migrate"
+        playerName="Kael"
+        campaignId="camp-migrate"
+        channelSend={channelSend}
+        heartbeatRef={heartbeatRef}
+      />,
+    );
+
+    // Open the upgrade modal and trigger onSuccess (upgraded=true).
+    await user.click(screen.getByTestId("join.waiting-room.auth-cta"));
+    await user.click(screen.getByTestId("auth-modal-success-trigger"));
+
+    // The __guest__ entry was atomically re-keyed under `camp-migrate`.
+    const postRecord = readDismissalRecord();
+    expect(postRecord?.dismissalsByCampaign.__guest__).toBeUndefined();
+    expect(postRecord?.dismissalsByCampaign["camp-migrate"]).toEqual(
+      expect.objectContaining({ count: 2 }),
+    );
+  });
+
+  it("no-op when no __guest__ entry exists (upgrade without prior dismissal)", async () => {
+    const channelSend = jest.fn();
+    const heartbeatRef = { current: null } as React.MutableRefObject<
+      (() => void) | null
+    >;
+
+    const user = userEvent.setup();
+    render(
+      <UpgradeHarness
+        sessionId="sess-clean"
+        effectiveTokenId="tok-clean"
+        playerName="Nym"
+        campaignId="camp-clean"
+        channelSend={channelSend}
+        heartbeatRef={heartbeatRef}
+      />,
+    );
+
+    await user.click(screen.getByTestId("join.waiting-room.auth-cta"));
+    await user.click(screen.getByTestId("auth-modal-success-trigger"));
+
+    // Nothing to migrate → no record written.
+    expect(readDismissalRecord()).toBeNull();
   });
 });

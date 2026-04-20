@@ -56,8 +56,10 @@ import { DmPostit } from "@/components/player/DmPostit";
 import { usePendingActionsStore, generateActionId } from "@/lib/stores/pending-actions-store";
 import { useActionAck, confirmActionsForCombatant } from "@/hooks/use-action-ack";
 import type { CombatantPendingState } from "@/hooks/use-action-ack";
-import { shouldShowCta, recordDismissal } from "@/components/conversion/dismissal-store";
+import { shouldShowCta, recordDismissal, migrateDismissalEntry } from "@/components/conversion/dismissal-store";
 import type { AuthModalSuccessPayload } from "@/components/auth/AuthModal";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { Loader2 } from "lucide-react";
 
 const SpellSearch = lazy(() =>
   import("@/components/oracle/SpellSearch").then((mod) => ({
@@ -73,6 +75,52 @@ const AuthModalLazy = lazy(() =>
     default: mod.AuthModal,
   }))
 );
+
+/**
+ * M14 (code review fix): useful fallback shown while the `AuthModalLazy`
+ * chunk is fetching. Previously we rendered `null` which left the user with
+ * no feedback if the chunk fetch stalled (or failed silently). Now we surface
+ * a minimal loading indicator inside the portal-like overlay.
+ */
+function AuthModalLoadingIndicator() {
+  return (
+    <div
+      data-testid="auth-modal.loading-indicator"
+      role="status"
+      aria-live="polite"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 pointer-events-none"
+    >
+      <div className="rounded-md bg-surface-secondary px-4 py-3 border border-white/[0.08] flex items-center gap-3 pointer-events-auto">
+        <Loader2
+          className="w-4 h-4 animate-spin text-gold"
+          aria-hidden="true"
+        />
+        <span className="text-sm text-muted-foreground">Carregando…</span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * M14 (code review fix): fired when the lazy AuthModal chunk fails to load
+ * (network blip, cache miss, CSP). Shows a toast + nothing else — the caller
+ * is expected to reset the modal state (`open=false`) so the next trigger
+ * re-attempts the import.
+ */
+function AuthModalLoadErrorToast({
+  onReset,
+}: {
+  onReset: () => void;
+}) {
+  useEffect(() => {
+    toast.error("Falha ao carregar login. Recarregue a página e tente novamente.");
+    // Reset modal state so the next CTA click can re-attempt the import.
+    onReset();
+    // Run once on mount; `onReset` is stable via useCallback in the caller.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+}
 
 interface PlayerCombatant {
   id: string;
@@ -2426,8 +2474,18 @@ export function PlayerJoinClient({
           is_new_account: result.isNewAccount,
         });
       } catch { /* analytics is best-effort */ }
+
+      // M15 (code review fix): when a guest upgrades and we now know the
+      // real campaignId, migrate any `__guest__` dismissal entry so the
+      // CTA doesn't re-appear post-upgrade. Best-effort — failures swallow.
+      try {
+        const realCampaignId = campaignId ?? sessionCampaignId;
+        if (realCampaignId) {
+          migrateDismissalEntry("__guest__", realCampaignId);
+        }
+      } catch { /* dismissal-store already swallows storage errors */ }
     }
-  }, [sessionId]);
+  }, [sessionId, campaignId, sessionCampaignId]);
 
   const handleSignupHintDismiss = useCallback(() => {
     setSignupHintDismissed(true);
@@ -2837,18 +2895,27 @@ export function PlayerJoinClient({
       )}
 
       {authModalState.open && (
-        <Suspense fallback={null}>
-          <AuthModalLazy
-            open={authModalState.open}
-            onOpenChange={handleAuthModalOpenChange}
-            defaultTab={authModalState.mode}
-            onSuccess={handleAuthModalSuccess}
-            upgradeContext={{
-              sessionTokenId: effectiveTokenId,
-              campaignId: effectiveUpgradeCampaignId ?? undefined,
-            }}
-          />
-        </Suspense>
+        <ErrorBoundary
+          name="AuthModalLazy"
+          fallback={
+            <AuthModalLoadErrorToast
+              onReset={() => setAuthModalState({ open: false, mode: "login" })}
+            />
+          }
+        >
+          <Suspense fallback={<AuthModalLoadingIndicator />}>
+            <AuthModalLazy
+              open={authModalState.open}
+              onOpenChange={handleAuthModalOpenChange}
+              defaultTab={authModalState.mode}
+              onSuccess={handleAuthModalSuccess}
+              upgradeContext={{
+                sessionTokenId: effectiveTokenId,
+                campaignId: effectiveUpgradeCampaignId ?? undefined,
+              }}
+            />
+          </Suspense>
+        </ErrorBoundary>
       )}
     </>
   );

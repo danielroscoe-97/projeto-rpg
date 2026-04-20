@@ -70,10 +70,30 @@ export function AuthModal({
   const t = useTranslations("auth.modal");
   const [activeTab, setActiveTab] = useState<"login" | "signup">(defaultTab);
 
+  // M6 (code review fix): lift shared form fields to the modal so tab
+  // switches don't unmount+remount the inputs (and clobber typed text).
+  // - `email` is shared between login and signup (same field semantics).
+  // - `displayName` is signup-only but lives here so it survives the
+  //   login → signup → login round-trip.
+  // - `password` is intentionally NOT lifted: security requires the field to
+  //   reset when the form unmounts, preventing leak-in-dom or accidental
+  //   reuse across login↔signup.
+  const [email, setEmail] = useState("");
+  const [displayName, setDisplayName] = useState("");
+
   // Reset tab when the caller opens the modal with a different defaultTab.
   useEffect(() => {
     if (open) setActiveTab(defaultTab);
   }, [open, defaultTab]);
+
+  // Reset controlled fields when the modal is closed so re-opening it starts
+  // fresh. Avoids carrying email across unrelated modal sessions.
+  useEffect(() => {
+    if (!open) {
+      setEmail("");
+      setDisplayName("");
+    }
+  }, [open]);
 
   // Snapshot the upgrade context into a serialisable form each render. We
   // persist it just before the OAuth redirect — see `handleGoogleOAuth`.
@@ -186,6 +206,8 @@ export function AuthModal({
           <>
             <LoginForm
               variant="inline"
+              email={email}
+              onEmailChange={setEmail}
               onSuccess={(payload) =>
                 onSuccess({
                   userId: payload.userId,
@@ -211,6 +233,10 @@ export function AuthModal({
           <>
             <SignUpForm
               variant="inline"
+              email={email}
+              onEmailChange={setEmail}
+              displayName={displayName}
+              onDisplayNameChange={setDisplayName}
               upgradeContext={upgradeContext}
               onSuccess={(payload) => onSuccess(payload)}
               onRequestGoogleOAuth={handleBeforeGoogleOAuth}

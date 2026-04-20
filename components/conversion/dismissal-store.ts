@@ -153,6 +153,73 @@ export function resetOnConversion(): void {
 }
 
 /**
+ * M15 (code review fix): atomically re-key a dismissal entry.
+ *
+ * When a guest dismisses the CTA under the `"__guest__"` sentinel and then
+ * converts to an authenticated user with a real `campaignId`, we must migrate
+ * the dismissal record so the banner doesn't re-appear (the guest already
+ * expressed intent to hide it).
+ *
+ * Semantics:
+ *   - If there is no entry under `fromId`, the call is a no-op.
+ *   - If there is no record at all, the call is a no-op.
+ *   - If `toId` already has an entry, the stored counts are merged:
+ *     `count = fromEntry.count + toEntry.count`
+ *     `lastDismissedAt = max(fromEntry.lastDismissedAt, toEntry.lastDismissedAt)`
+ *   - The `fromId` entry is deleted regardless.
+ *   - All storage failures are swallowed (matches the rest of the module).
+ *
+ * @returns true if a migration occurred, false otherwise (no entry / no storage).
+ */
+export function migrateDismissalEntry(
+  fromId: string,
+  toId: string,
+): boolean {
+  if (fromId === toId) return false;
+  const record = readDismissalRecord();
+  if (!record) return false;
+
+  const fromEntry = record.dismissalsByCampaign[fromId];
+  if (!fromEntry) return false;
+
+  const toEntry = record.dismissalsByCampaign[toId];
+
+  let merged: CampaignDismissalEntry;
+  if (toEntry) {
+    const fromTs = Date.parse(fromEntry.lastDismissedAt);
+    const toTs = Date.parse(toEntry.lastDismissedAt);
+    const latest =
+      !Number.isNaN(fromTs) && !Number.isNaN(toTs)
+        ? fromTs > toTs
+          ? fromEntry.lastDismissedAt
+          : toEntry.lastDismissedAt
+        : fromEntry.lastDismissedAt;
+    merged = {
+      count: fromEntry.count + toEntry.count,
+      lastDismissedAt: latest,
+    };
+  } else {
+    merged = fromEntry;
+  }
+
+  // Build the next record: drop fromId, write merged at toId.
+  const nextDismissals: Record<string, CampaignDismissalEntry> = {
+    ...record.dismissalsByCampaign,
+    [toId]: merged,
+  };
+  delete nextDismissals[fromId];
+
+  const next: DismissalRecord = {
+    dismissalsByCampaign: nextDismissals,
+    lastSeenCampaign:
+      record.lastSeenCampaign === fromId ? toId : record.lastSeenCampaign,
+  };
+
+  writeRecord(next);
+  return true;
+}
+
+/**
  * Decides whether the conversion CTA should be shown for this campaign.
  * See file header for precedence ordering — the order below matters.
  *

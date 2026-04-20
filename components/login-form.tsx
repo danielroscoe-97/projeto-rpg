@@ -35,6 +35,14 @@ export type LoginFormProps = React.ComponentPropsWithoutRef<"div"> & {
   onRequestGoogleOAuth?: () => void;
   /** Override the testid namespace — modal uses `auth.modal`. */
   testIdPrefix?: string;
+  /**
+   * M6 (code review fix): controlled email binding. When provided, the form
+   * reads + writes through the parent so tab switches (inside AuthModal)
+   * don't clobber typed text. Password is intentionally NOT controlled — it
+   * must stay local and reset on unmount (security).
+   */
+  email?: string;
+  onEmailChange?: (value: string) => void;
 };
 
 export function LoginForm({
@@ -43,12 +51,21 @@ export function LoginForm({
   onSuccess,
   onRequestGoogleOAuth,
   testIdPrefix,
+  email: controlledEmail,
+  onEmailChange,
   ...props
 }: LoginFormProps) {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
   const te = useTranslations("auth_errors");
-  const [email, setEmail] = useState("");
+  // Controlled-or-uncontrolled email: when `email` prop is provided (modal),
+  // the parent owns the value. Otherwise fall back to local state (page mode).
+  const [uncontrolledEmail, setUncontrolledEmail] = useState("");
+  const email = controlledEmail ?? uncontrolledEmail;
+  const setEmail = (value: string) => {
+    if (onEmailChange) onEmailChange(value);
+    else setUncontrolledEmail(value);
+  };
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
