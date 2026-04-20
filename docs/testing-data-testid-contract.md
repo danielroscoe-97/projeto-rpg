@@ -65,27 +65,32 @@
 
 ## 3. Contrato Obrigatório
 
-### 3.1 Claim UI — Epic 01 (existente, aplicado em 2026-04-20)
+### 3.1 Claim UI — Epic 01/02 (aplicado em 2026-04-20)
 
-Superfície: `components/campaign/InviteAcceptClient.tsx` — 3-mode state machine (`claim` → `pick` → `create`).
+Superfície (pós Story 02-B refactor): `components/campaign/InviteAcceptClient.tsx` é um **thin wrapper** (~127 linhas) que delega todo o picker state machine pro `CharacterPickerModal`. Os testids abaixo agora vivem no **modal** (§3.3), não no wrapper. Esta seção é preservada como referência histórica + âncora de nomes canônicos.
 
-| testid | Tipo | Onde | Obrigatório |
+> **Nota:** no code review pós-refactor (2026-04-20), os testids ad-hoc (`picker-tab-*`, `picker-claim-*`, `picker-submit`, `character-picker-modal`) foram migrados pros canônicos (`invite.picker.*`) definidos na §3.3 — a lista abaixo reflete o estado final aplicado no modal.
+
+| testid | Tipo | Onde | Status |
 |---|---|---|---|
-| `invite.picker.mode-claim` | `button` toggle | No menu de modo quando `unlinkedCharacters.length > 0` | Sim |
-| `invite.picker.mode-pick` | `button` toggle | No menu de modo quando `existingCharacters.length > 0` | Sim |
-| `invite.picker.mode-create` | `button` toggle | Sempre disponível | Sim |
-| `invite.picker.claim-card-{charId}` | `button` seletor | Por unlinkedCharacter. `charId` é o UUID do char | Sim |
-| `invite.picker.character-card-{charId}` | `button` seletor | Por existingCharacter. `charId` é o UUID | Sim |
-| `invite.picker.confirm-button` | `button submit` | O submit do form — varia o label (claim/pick/create) | Sim |
-| `invite.picker.claim-not-listed` | `button` | Fallback "Meu personagem não está na lista" | Sim |
-| `invite.picker.pick-create-new` | `button` | Link "+ Criar personagem novo" no modo pick | Sim |
-| `invite.picker.back-to-selection` | `button` | Voltar do modo create pro modo anterior | Sim |
-| `invite.picker.create-wizard-step-{n}` | `div` / `section` | Wrapper de cada step do form create (1=nome, 2=stats, ...). Ainda não segmentado em steps — reservado | Recomendado |
-| `invite-char-name` | `input` | **LEGACY** — manter por compat enquanto `invite.picker.name-input` rola | Manter até deprecação |
-| `invite.picker.name-input` | `input` | Nome no modo create | Sim (novo) |
-| `invite.picker.hp-input` | `input` | HP opcional | Recomendado |
-| `invite.picker.ac-input` | `input` | AC opcional | Recomendado |
-| `invite.picker.dc-input` | `input` | Spell save DC opcional | Recomendado |
+| `invite.picker.tab-available` | `button` toggle (tab) | Tab de "claim DM-created" quando `unlinkedCharacters.length > 0` | Aplicado em `CharacterPickerModal` |
+| `invite.picker.tab-my-characters` | `button` toggle (tab) | Tab "Meus personagens" quando `existingCharacters.length > 0` | Aplicado em `CharacterPickerModal` |
+| `invite.picker.tab-create` | `button` toggle (tab) | Tab "Criar novo" sempre disponível | Aplicado em `CharacterPickerModal` |
+| `invite.picker.claim-card-{charId}` | `button` seletor | Por unlinkedCharacter. `charId` é o UUID do char | Aplicado |
+| `invite.picker.character-card-{charId}` | `button` seletor | Por existingCharacter. `charId` é o UUID | Aplicado |
+| `invite.picker.confirm-button` | `button submit` | O submit do form — varia o label (claim/pick/create) | Aplicado |
+| `invite.picker.claim-not-listed` | `button` | Fallback "Meu personagem não está na lista" | Aplicado |
+| `invite.picker.pick-create-new` | `button` | Link "+ Criar personagem novo" no modo pick | Aplicado |
+| `invite.picker.back-to-selection` | `button` | Voltar do modo create pro modo anterior | Aplicado |
+| `invite.picker.create-wizard-step-1` | `div` wrapper | Step 1 do form create (nome) | Aplicado |
+| `invite.picker.create-wizard-step-2` | `div` wrapper | Step 2 do form create (grid HP/AC/DC) | Aplicado |
+| `invite.picker.close-button` | `button` | Close visualmente oculto p/ testes + A11y (§3.3) | Aplicado |
+| `invite.picker.name-input` | `input` | Nome no modo create | Aplicado |
+| `invite.picker.hp-input` | `input` | HP opcional | Aplicado |
+| `invite.picker.ac-input` | `input` | AC opcional | Aplicado |
+| `invite.picker.dc-input` | `input` | Spell save DC opcional | Aplicado |
+
+**Deprecações (2026-04-20):** os testids `picker-tab-claim`, `picker-tab-pick`, `picker-tab-create`, `picker-panel-claim`, `picker-panel-pick`, `picker-panel-create`, `picker-claim-{id}`, `picker-pick-{id}`, `picker-submit`, `character-picker-modal`, `invite-char-name` foram **removidos** em favor dos canônicos acima. Specs legados que ainda os usem precisam ser atualizados.
 
 ### 3.2 InviteLanding — Epic 02 Área 1A (a criar)
 
@@ -103,25 +108,39 @@ Superfície: `components/invite/InviteLanding.tsx` (não existe ainda — contra
 | `invite.landing.skeleton` | `div` | Durante detecção de estado | Sim |
 | `invite.landing.invalid-reason-{not-found\|expired\|accepted}` | `div` | State `invalid` | Sim |
 
-### 3.3 CharacterPickerModal — Epic 02 Área 2 (a criar)
+### 3.3 CharacterPickerModal — Epic 02 Área 2 (aplicado em 2026-04-20)
 
-Superfície: `components/character/CharacterPickerModal.tsx` (a criar na Story 02-B, refatorando `InviteAcceptClient`).
+Superfície: `components/character/CharacterPickerModal.tsx` (extraído na Story 02-B refactor-only; pós code-review 2026-04-20 os testids estão alinhados ao contrato).
 
-| testid | Tipo | Obrigatório |
-|---|---|---|
-| `invite.picker.modal` | `Dialog` root | Sim |
-| `invite.picker.tab-available` | `button` tab | Sim (auth only) |
-| `invite.picker.tab-my-characters` | `button` tab | Sim (auth only) |
-| `invite.picker.tab-create` | `button` tab | Sim |
-| `invite.picker.tab-panel-{available\|my-characters\|create}` | `section` | Sim |
-| `invite.picker.character-card-{charId}` | `button` | Sim (cada char) |
-| `invite.picker.load-more-button` | `button` | Sim (infinite scroll) |
-| `invite.picker.empty-state-{available\|my-characters}` | `div` | Sim (empty) |
-| `invite.picker.confirm-button` | `button submit` | Sim |
-| `invite.picker.close-button` | `button` | Sim |
-| `invite.picker.loading` | `div` | Sim (while paging) |
+| testid | Tipo | Obrigatório | Status |
+|---|---|---|---|
+| `invite.picker.modal` | `Dialog` root (`DialogContent`) | Sim | Aplicado |
+| `invite.picker.tab-available` | `button` tab (modo claim — "Claim DM-created") | Sim (quando `unlinkedCharacters.length > 0`) | Aplicado |
+| `invite.picker.tab-my-characters` | `button` tab (modo pick — "Meus personagens") | Sim (quando `existingCharacters.length > 0`) | Aplicado |
+| `invite.picker.tab-create` | `button` tab (modo create) | Sim | Aplicado |
+| `invite.picker.tab-panel-available` | `div[role=tabpanel]` | Sim | Aplicado |
+| `invite.picker.tab-panel-my-characters` | `div[role=tabpanel]` | Sim | Aplicado |
+| `invite.picker.tab-panel-create` | `div[role=tabpanel]` | Sim | Aplicado |
+| `invite.picker.claim-card-{charId}` | `button` seletor (unlinked) | Sim (cada char) | Aplicado |
+| `invite.picker.character-card-{charId}` | `button` seletor (existing) | Sim (cada char) | Aplicado |
+| `invite.picker.claim-not-listed` | `button` fallback | Sim (quando `canCreate`) | Aplicado |
+| `invite.picker.pick-create-new` | `button` link | Sim (quando `canCreate`) | Aplicado |
+| `invite.picker.back-to-selection` | `button` | Sim (create mode com outras opções) | Aplicado |
+| `invite.picker.create-wizard-step-1` | `div` wrapper (nome) | Sim | Aplicado |
+| `invite.picker.create-wizard-step-2` | `div` wrapper (HP/AC/DC grid) | Sim | Aplicado |
+| `invite.picker.name-input` | `input` nome | Sim | Aplicado |
+| `invite.picker.hp-input` | `input` HP | Sim | Aplicado |
+| `invite.picker.ac-input` | `input` AC | Sim | Aplicado |
+| `invite.picker.dc-input` | `input` spell save DC | Sim | Aplicado |
+| `invite.picker.confirm-button` | `button submit` | Sim | Aplicado |
+| `invite.picker.close-button` | `button` (DialogClose sr-only) | Sim | Aplicado |
+| `invite.picker.load-more-button` | `button` | Sim (infinite scroll — Story 02-B full) | Pendente |
+| `invite.picker.empty-state-{available\|my-characters}` | `div` | Sim (empty — Story 02-B full) | Pendente |
+| `invite.picker.loading` | `div` | Sim (while paging — Story 02-B full) | Pendente |
 
-> **Nota:** os 3-mode toggles (`mode-claim/pick/create`) do `InviteAcceptClient` migram pros `tab-*` do modal. Durante deprecação, manter ambos.
+> **Nota importante:** o `close-button` é um `DialogClose` **visualmente oculto** (`sr-only`) porque o X visível vem baked-in do `DialogContent` wrapper (`components/ui/dialog.tsx`) e não aceita `data-testid` diretamente. Ambos acionam o mesmo `onOpenChange(false)` do Radix — o parent decide honrar ou ignorar. No `InviteAcceptClient` (pós C2 fix) o close é **ignorado** pra evitar dead-end no `/invite/[token]`.
+
+> **Nota histórica:** os 3-mode toggles legados (`picker-tab-{claim,pick,create}`, `picker-panel-*`, `picker-claim-*`, `picker-pick-*`, `picker-submit`, `character-picker-modal`, `invite-char-name`) foram **removidos** em 2026-04-20. Se encontrar spec que ainda os usa, atualizar imediatamente.
 
 ### 3.4 AuthModal — Epic 02 Área 3 (a criar)
 
@@ -227,3 +246,4 @@ Superfície: `components/player/PlayerJoinClient.tsx`. Testids aditivos ao que j
 | Data | Sprint/Story | Mudança |
 |---|---|---|
 | 2026-04-20 | Follow-up #3 Story 01-F | Doc inicial. Testids aplicados em `InviteAcceptClient` e `PlayerJoinClient` (wrappers). Pendente: aplicar em `PlayerLobby` + criar componentes Epic 02. |
+| 2026-04-20 | Story 02-B code review (C4) | Alinhamento do `CharacterPickerModal` com §3.3: migração de testids ad-hoc (`picker-tab-*`, `picker-panel-*`, `picker-claim-*`, `picker-pick-*`, `picker-submit`, `character-picker-modal`, `invite-char-name`) pros canônicos `invite.picker.*`. §3.1 reescrita pra refletir que o wrapper `InviteAcceptClient` não contém testids (delegados ao modal). Close-button, wizard steps e HP/AC/DC inputs adicionados explicitamente. |
