@@ -2,13 +2,16 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Plus, Trash2 } from "lucide-react";
-import type { JournalEntry } from "@/lib/types/database";
+import { Eye, Lock, Plus, Trash2 } from "lucide-react";
+import type { JournalEntry, JournalEntryVisibility } from "@/lib/types/database";
 
 interface QuickNotesListProps {
   notes: JournalEntry[];
   onAdd: (content: string) => Promise<unknown>;
-  onUpdate: (id: string, updates: { content: string }) => void;
+  onUpdate: (
+    id: string,
+    updates: { content?: string; title?: string; visibility?: JournalEntryVisibility },
+  ) => void;
   onDelete: (id: string) => Promise<void>;
 }
 
@@ -165,11 +168,50 @@ export function QuickNotesList({ notes, onAdd, onUpdate, onDelete }: QuickNotesL
             </p>
           )}
 
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {timeAgo(note.created_at, t)}
-            </span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs text-muted-foreground shrink-0">
+                {timeAgo(note.created_at, t)}
+              </span>
+              {note.visibility === "shared_with_dm" && (
+                <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-300 shrink-0">
+                  <Eye className="w-3 h-3" aria-hidden="true" />
+                  {t("visibility.badge_shared")}
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-1">
+              {/* Visibility toggle — private <-> shared_with_dm */}
+              <button
+                type="button"
+                onClick={() =>
+                  onUpdate(note.id, {
+                    visibility:
+                      note.visibility === "shared_with_dm" ? "private" : "shared_with_dm",
+                  })
+                }
+                className={`min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors ${
+                  note.visibility === "shared_with_dm"
+                    ? "text-amber-400 hover:text-amber-300"
+                    : "text-muted-foreground hover:text-amber-400"
+                }`}
+                aria-label={
+                  note.visibility === "shared_with_dm"
+                    ? t("visibility.toggle_unshare")
+                    : t("visibility.toggle_share")
+                }
+                title={
+                  note.visibility === "shared_with_dm"
+                    ? t("visibility.toggle_unshare")
+                    : t("visibility.toggle_share")
+                }
+              >
+                {note.visibility === "shared_with_dm" ? (
+                  <Eye className="w-3.5 h-3.5" />
+                ) : (
+                  <Lock className="w-3.5 h-3.5" />
+                )}
+              </button>
               {deletingId === note.id ? (
                 <div className="flex items-center gap-1">
                   <span className="text-xs text-red-400">{t("confirm_delete")}</span>
