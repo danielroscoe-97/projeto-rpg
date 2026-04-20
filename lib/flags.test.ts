@@ -22,7 +22,7 @@ describe("lib/flags — isFeatureFlagEnabled", () => {
     expect(isFeatureFlagEnabled("ff_favorites_v1")).toBe(true);
   });
 
-  test("defaults ff_favorites_v2_shared_state to true", () => {
+  test("defaults ff_favorites_v2_shared_state to true (paired with v1)", () => {
     expect(isFeatureFlagEnabled("ff_favorites_v2_shared_state")).toBe(true);
   });
 
