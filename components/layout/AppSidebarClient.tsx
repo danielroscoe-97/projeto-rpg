@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "./AppSidebar";
+import { GlobalKeyboardShortcuts } from "./GlobalKeyboardShortcuts";
 
 interface AppSidebarClientProps {
   hasDmAccess?: boolean;
@@ -26,8 +27,11 @@ export function AppSidebarClient({ hasDmAccess = false, children }: AppSidebarCl
   const isCampaignOwner = !!currentCampaignId && hasDmAccess;
 
   return (
-    <AppSidebar hasDmAccess={hasDmAccess} currentCampaignId={currentCampaignId} isCampaignOwner={isCampaignOwner}>
-      {children}
-    </AppSidebar>
+    <>
+      <AppSidebar hasDmAccess={hasDmAccess} currentCampaignId={currentCampaignId} isCampaignOwner={isCampaignOwner}>
+        {children}
+      </AppSidebar>
+      <GlobalKeyboardShortcuts />
+    </>
   );
 }

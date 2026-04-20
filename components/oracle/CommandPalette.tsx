@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { trackEvent } from "@/lib/analytics/track";
 import { Command } from "cmdk";
@@ -11,22 +12,61 @@ import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal
 import { ConditionRulesModal } from "@/components/oracle/ConditionRulesModal";
 import type { SrdMonster, SrdSpell } from "@/lib/srd/srd-loader";
 import type { SrdCondition } from "@/lib/srd/srd-loader";
-import { Skull, Sparkles, HeartPulse, X, Sword, Star, ScrollText, Zap } from "lucide-react";
+import { Skull, Sparkles, HeartPulse, X, Sword, Star, ScrollText, Zap, Zap as ActionIcon, Swords, UserCircle, MapPin, Flag, FileText, Plus, UserPlus, Settings, BookOpen, Users, Compass } from "lucide-react";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { VersionBadge } from "@/components/ui/VersionBadge";
+import { useQuickSwitcherData } from "@/lib/hooks/useQuickSwitcherData";
+import { filterQuickActions, type QuickAction } from "@/lib/quick-switcher/actions";
 
 const MAX_RESULTS_PER_GROUP = 5;
+const MAX_QUICK_RESULTS = 5;
 const DEBOUNCE_MS = 150;
 
-type SearchFilter = "all" | "monster" | "spell" | "condition" | "item" | "feat" | "background" | "ability";
+type SearchFilter = "all" | "navigation" | "current_campaign" | "monster" | "spell" | "condition" | "item" | "feat" | "background" | "ability";
+
+function fuzzyMatch(text: string, q: string) {
+  return text.toLowerCase().includes(q.toLowerCase());
+}
+
+function actionIcon(name: QuickAction["icon"]) {
+  switch (name) {
+    case "Plus":
+      return <Plus className="w-4 h-4" />;
+    case "UserPlus":
+      return <UserPlus className="w-4 h-4" />;
+    case "Swords":
+      return <Swords className="w-4 h-4" />;
+    case "Settings":
+      return <Settings className="w-4 h-4" />;
+    case "BookOpen":
+      return <BookOpen className="w-4 h-4" />;
+    default:
+      return <ActionIcon className="w-4 h-4" />;
+  }
+}
 
 export function CommandPalette() {
   const t = useTranslations("command_palette");
+  const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [filter, setFilter] = useState<SearchFilter>("all");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const campaignMatch = pathname.match(/^\/app\/campaigns\/([0-9a-f-]{36})/i);
+  const currentCampaignId = campaignMatch ? campaignMatch[1] : null;
+
+  // Quick switcher data (campaigns, characters, entities, notes) — loaded
+  // lazily the first time the palette opens.
+  const { campaigns, characters, entities, notes } = useQuickSwitcherData(open, currentCampaignId);
+
+  // TODO wire hasDmAccess from server via a provider/context; default false here.
+  const quickActions = useMemo(
+    () => filterQuickActions({ hasDmAccess: true, currentCampaignId }),
+    [currentCampaignId],
+  );
 
   // Modal state for detail views
   const [selectedSpell, setSelectedSpell] = useState<SrdSpell | null>(null);
@@ -45,13 +85,16 @@ export function CommandPalette() {
   }, [query]);
 
   // Search results (filtered by category)
-  const showMonsters = filter === "all" || filter === "monster";
-  const showSpells = filter === "all" || filter === "spell";
-  const showConditions = filter === "all" || filter === "condition";
-  const showItems = filter === "all" || filter === "item";
-  const showFeats = filter === "all" || filter === "feat";
-  const showBackgrounds = filter === "all" || filter === "background";
-  const showAbilities = filter === "all" || filter === "ability";
+  const showSrd = filter === "all" || !["navigation", "current_campaign"].includes(filter);
+  const showNav = filter === "all" || filter === "navigation";
+  const showCampaignScope = filter === "all" || filter === "current_campaign";
+  const showMonsters = showSrd && (filter === "all" || filter === "monster");
+  const showSpells = showSrd && (filter === "all" || filter === "spell");
+  const showConditions = showSrd && (filter === "all" || filter === "condition");
+  const showItems = showSrd && (filter === "all" || filter === "item");
+  const showFeats = showSrd && (filter === "all" || filter === "feat");
+  const showBackgrounds = showSrd && (filter === "all" || filter === "background");
+  const showAbilities = showSrd && (filter === "all" || filter === "ability");
 
   const monsterResults = debouncedQuery && showMonsters
     ? searchMonsters(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
@@ -77,8 +120,46 @@ export function CommandPalette() {
     ? searchAbilities(debouncedQuery).slice(0, MAX_RESULTS_PER_GROUP)
     : [];
 
+  // Quick switcher groups (navigation scope).
+  // Empty query → show actions + campaigns as a starter menu.
+  // With query → filter by substring match.
+  const actionResults = useMemo(() => {
+    if (!showNav) return [];
+    if (!debouncedQuery) return quickActions;
+    return quickActions.filter((a) => fuzzyMatch(t(a.labelKey), debouncedQuery));
+  }, [showNav, debouncedQuery, quickActions, t]);
+
+  const campaignResults = useMemo(() => {
+    if (!showNav) return [];
+    const q = debouncedQuery.trim();
+    const list = q ? campaigns.filter((c) => fuzzyMatch(c.name, q)) : campaigns;
+    return list.slice(0, MAX_QUICK_RESULTS);
+  }, [showNav, debouncedQuery, campaigns]);
+
+  const characterResults = useMemo(() => {
+    if (!showNav) return [];
+    const q = debouncedQuery.trim();
+    const list = q ? characters.filter((c) => fuzzyMatch(c.name, q)) : characters;
+    return list.slice(0, MAX_QUICK_RESULTS);
+  }, [showNav, debouncedQuery, characters]);
+
+  const entityResults = useMemo(() => {
+    if (!showCampaignScope || !currentCampaignId) return [];
+    const q = debouncedQuery.trim();
+    const list = q ? entities.filter((e) => fuzzyMatch(e.name, q)) : entities;
+    return list.slice(0, MAX_QUICK_RESULTS);
+  }, [showCampaignScope, currentCampaignId, debouncedQuery, entities]);
+
+  const noteResults = useMemo(() => {
+    if (!showCampaignScope || !currentCampaignId) return [];
+    const q = debouncedQuery.trim();
+    const list = q ? notes.filter((n) => fuzzyMatch(n.title, q)) : notes;
+    return list.slice(0, MAX_QUICK_RESULTS);
+  }, [showCampaignScope, currentCampaignId, debouncedQuery, notes]);
+
   const totalResults = monsterResults.length + spellResults.length + conditionResults.length
-    + itemResults.length + featResults.length + backgroundResults.length + abilityResults.length;
+    + itemResults.length + featResults.length + backgroundResults.length + abilityResults.length
+    + actionResults.length + campaignResults.length + characterResults.length + entityResults.length + noteResults.length;
   const hasResults = totalResults > 0;
 
   // Track search queries (debounced — fires once per final query, not per keystroke)
@@ -167,6 +248,18 @@ export function CommandPalette() {
     pinCard("feat", id, (version ?? "2014") as "2014" | "2024");
     handleClose();
   }, [pinCard, handleClose]);
+
+  const handleNavigate = useCallback((href: string, kind: string) => {
+    trackEvent("quick_switcher:navigate", { kind });
+    handleClose();
+    router.push(href);
+  }, [router, handleClose]);
+
+  const handleAction = useCallback((action: QuickAction) => {
+    trackEvent("quick_switcher:action", { id: action.id });
+    handleClose();
+    if (action.href) router.push(action.href);
+  }, [router, handleClose]);
 
   function formatCR(cr: string) {
     return cr === "0.125" ? "1/8" : cr === "0.25" ? "1/4" : cr === "0.5" ? "1/2" : cr;
@@ -258,6 +351,8 @@ export function CommandPalette() {
           <div className="flex items-center gap-1.5 px-4 py-2 border-b border-white/[0.08] overflow-x-auto scrollbar-hide">
             {([
               { key: "all" as SearchFilter, label: t("filter_all"), icon: null },
+              { key: "navigation" as SearchFilter, label: t("filter_navigation"), icon: <Compass className="w-3 h-3" /> },
+              ...(currentCampaignId ? [{ key: "current_campaign" as SearchFilter, label: t("filter_current_campaign"), icon: <MapPin className="w-3 h-3" /> }] : []),
               { key: "monster" as SearchFilter, label: t("group_monsters"), icon: <Skull className="w-3 h-3" /> },
               { key: "spell" as SearchFilter, label: t("group_spells"), icon: <Sparkles className="w-3 h-3" /> },
               { key: "item" as SearchFilter, label: t("group_items"), icon: <Sword className="w-3 h-3" /> },
@@ -297,10 +392,127 @@ export function CommandPalette() {
               </Command.Empty>
             )}
 
-            {!debouncedQuery && !isLoading && (
+            {!debouncedQuery && !isLoading && !hasResults && (
               <div className="px-4 py-8 text-center text-sm text-muted-foreground">
                 {t("hint")}
               </div>
+            )}
+
+            {/* Quick Actions */}
+            {actionResults.length > 0 && (
+              <Command.Group heading={t("group_actions")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <ActionIcon className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_actions")}
+                </div>
+                {actionResults.map((a) => (
+                  <Command.Item
+                    key={`qa:${a.id}`}
+                    value={`action:${a.id}`}
+                    onSelect={() => handleAction(a)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <span className="text-amber-400 shrink-0">{actionIcon(a.icon)}</span>
+                    <span className="flex-1 font-medium">{t(a.labelKey)}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Campaigns */}
+            {campaignResults.length > 0 && (
+              <Command.Group heading={t("group_campaigns")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <Swords className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_campaigns")}
+                </div>
+                {campaignResults.map((c) => (
+                  <Command.Item
+                    key={`camp:${c.id}`}
+                    value={`campaign:${c.id}`}
+                    onSelect={() => handleNavigate(`/app/campaigns/${c.id}`, "campaign")}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <Swords className="w-4 h-4 text-amber-400/70 shrink-0" aria-hidden="true" />
+                    <span className="flex-1 font-medium truncate">{c.name}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Characters */}
+            {characterResults.length > 0 && (
+              <Command.Group heading={t("group_characters")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <Users className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_characters")}
+                </div>
+                {characterResults.map((c) => (
+                  <Command.Item
+                    key={`char:${c.id}`}
+                    value={`character:${c.id}`}
+                    onSelect={() => handleNavigate(`/app/characters/${c.id}`, "character")}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <UserCircle className="w-4 h-4 text-emerald-400/70 shrink-0" aria-hidden="true" />
+                    <span className="flex-1 font-medium truncate">{c.name}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Entities (NPCs, Locations, Factions, Quests) — scoped to current campaign */}
+            {entityResults.length > 0 && (
+              <Command.Group heading={t("group_entities")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <MapPin className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_entities")}
+                </div>
+                {entityResults.map((e) => {
+                  const Icon = e.kind === "npc" ? UserCircle
+                    : e.kind === "location" ? MapPin
+                    : e.kind === "faction" ? Flag
+                    : ScrollText;
+                  const color = e.kind === "npc" ? "text-purple-400/70"
+                    : e.kind === "location" ? "text-green-400/70"
+                    : e.kind === "faction" ? "text-rose-400/70"
+                    : "text-amber-400/70";
+                  const section = e.kind === "npc" ? "npcs"
+                    : e.kind === "location" ? "locations"
+                    : e.kind === "faction" ? "factions"
+                    : "quests";
+                  return (
+                    <Command.Item
+                      key={`ent:${e.kind}:${e.id}`}
+                      value={`entity:${e.kind}:${e.id}`}
+                      onSelect={() => currentCampaignId && handleNavigate(`/app/campaigns/${currentCampaignId}?section=${section}`, `entity_${e.kind}`)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                    >
+                      <Icon className={`w-4 h-4 shrink-0 ${color}`} aria-hidden="true" />
+                      <span className="flex-1 font-medium truncate">{e.name}</span>
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
+                        {t(`entity_kind_${e.kind}`)}
+                      </span>
+                    </Command.Item>
+                  );
+                })}
+              </Command.Group>
+            )}
+
+            {/* Recent notes (scoped to current campaign) */}
+            {noteResults.length > 0 && (
+              <Command.Group heading={t("group_notes")}>
+                <div className="px-2 py-1.5 text-xs font-semibold text-gold/60 uppercase tracking-wider">
+                  <FileText className="inline-block w-3.5 h-3.5 -mt-0.5" aria-hidden="true" /> {t("group_notes")}
+                </div>
+                {noteResults.map((n) => (
+                  <Command.Item
+                    key={`note:${n.id}`}
+                    value={`note:${n.id}`}
+                    onSelect={() => currentCampaignId && handleNavigate(`/app/campaigns/${currentCampaignId}?section=notes`, "note")}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm text-foreground hover:bg-gold/5 aria-selected:bg-gold/10 transition-colors min-h-[44px]"
+                  >
+                    <FileText className="w-4 h-4 text-blue-400/70 shrink-0" aria-hidden="true" />
+                    <span className="flex-1 font-medium truncate">{n.title || "—"}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
             )}
 
             {/* Monsters */}
