@@ -29,7 +29,10 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
 import { acceptInviteAction } from "@/app/invite/actions";
-import { linkCharacterToCampaign } from "@/lib/identity/link-character-to-campaign";
+import {
+  linkCharacterToCampaign,
+  type LinkErrorCode,
+} from "@/lib/identity/link-character-to-campaign";
 import type { InviteState } from "@/lib/identity/detect-invite-state";
 import {
   CharacterPickerModal,
@@ -46,12 +49,25 @@ export interface InviteLandingProps {
 export function InviteLanding({ state, token }: InviteLandingProps) {
   const t = useTranslations("invite.landing");
   const tCampaign = useTranslations("campaign");
+  const tError = useTranslations("invite.error");
   const router = useRouter();
 
   // Shared accept handler for auth / auth-with-invite-pending branches. We
   // accept the picker result and forward to the server action — identical
   // semantics to InviteAcceptClient (backward compat preserved).
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // M18 (Wave 2 code review): translate LinkResult sub-codes into locale
+  // copy. Falls back to a generic "invite_error" for codes we don't have a
+  // dedicated key for (e.g. `internal`), so adding new codes upstream never
+  // crashes the UI.
+  const resolveLinkErrorMessage = (code: LinkErrorCode): string => {
+    try {
+      return tError(code);
+    } catch {
+      return tCampaign("invite_error");
+    }
+  };
 
   const handlePickerSelect = useCallback(
     async (result: CharacterPickerResult) => {
@@ -86,12 +102,18 @@ export function InviteLanding({ state, token }: InviteLandingProps) {
               window.location.reload();
               return;
             }
-            // Any other failure surfaces a generic error.
-            toast.error(tCampaign("invite_error"));
+            // M18: sub-code aware copy (invite_not_found / invite_expired /
+            // invite_already_accepted / invite_mismatch / unauthenticated /
+            // internal). Each gets a dedicated translation key under
+            // `invite.error.{code}`. We capture a breadcrumb for the
+            // non-retryable codes since those typically mean the user was
+            // handed a bad link (support channel).
+            toast.error(resolveLinkErrorMessage(linkRes.code));
             captureError(new Error(linkRes.message), {
               component: "InviteLanding",
               action: "linkCharacterToCampaign",
               category: "network",
+              extra: { code: linkRes.code, retryable: linkRes.retryable },
             });
             return;
           }
@@ -343,17 +365,41 @@ function AuthBranch({
   isSubmitting: boolean;
 }) {
   const t = useTranslations("invite.landing");
-  // Picker auto-opens on mount — same UX as the legacy InviteAcceptClient.
-  // We intentionally ignore close attempts so the user can't land on an
-  // empty page (dead-end prevention — see CharacterPickerModal docs).
-  const [pickerOpen, setPickerOpen] = useState(true);
-  // Anon upgrade CTA opens a second modal. Keeps the picker untouched so
-  // the player can still accept-as-anon if they prefer (non-blocking alert).
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
-  const handlePickerOpenChange = useCallback((next: boolean) => {
-    if (next) setPickerOpen(true);
-    // Silently drop close attempts.
+  // C3 (code review fix): when user is anonymous, DO NOT auto-open the picker.
+  // Render the anon-warning banner FIRST so the upgrade CTA is reachable. The
+  // user explicitly picks "continue anonymous" to proceed into the picker, or
+  // "create account" to upgrade. Non-anon users keep the legacy auto-open UX.
+  //
+  // For non-anon users the picker auto-opens on mount (legacy UX). Close
+  // attempts are silently dropped (dead-end prevention — see CharacterPickerModal).
+  const [pickerOpen, setPickerOpen] = useState(!isAnonymous);
+  // Anon upgrade CTA opens a second modal.
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  // Track whether the user ACTIVELY chose to continue anonymously — required
+  // so `handlePickerOpenChange` can respect a `next === false` when they do
+  // (without that flag we silently drop every close to prevent dead-ends).
+  const [chosenContinueAnon, setChosenContinueAnon] = useState(false);
+
+  const handlePickerOpenChange = useCallback(
+    (next: boolean) => {
+      if (next) {
+        setPickerOpen(true);
+        return;
+      }
+      // Respect `next === false` only when the user has actively chosen to
+      // continue anonymous (which opened the picker). Otherwise drop close
+      // attempts to prevent a dead-end blank page.
+      if (chosenContinueAnon) {
+        setPickerOpen(false);
+      }
+    },
+    [chosenContinueAnon],
+  );
+
+  const handleContinueAnon = useCallback(() => {
+    setChosenContinueAnon(true);
+    setPickerOpen(true);
   }, []);
 
   const greetingName = displayName ?? t("preamble_fallback");
@@ -389,19 +435,30 @@ function AuthBranch({
           <div
             data-testid="invite.landing.anon-warning"
             role="alert"
-            className="rounded-md border border-amber-500/40 bg-amber-500/5 px-4 py-3 space-y-2"
+            className="rounded-md border border-amber-500/40 bg-amber-500/5 px-4 py-3 space-y-3"
           >
             <p className="text-sm text-amber-300/90 font-medium">
               {t("anon_warning_title")}
             </p>
-            <button
-              type="button"
-              data-testid="invite.landing.anon-warning-cta"
-              onClick={() => setUpgradeOpen(true)}
-              className="text-xs text-gold hover:underline"
-            >
-              {t("anon_warning_cta")}
-            </button>
+            <div className="flex flex-col gap-2">
+              <Button
+                type="button"
+                variant="gold"
+                data-testid="invite.landing.anon-warning-cta"
+                onClick={() => setUpgradeOpen(true)}
+                className="w-full min-h-[44px]"
+              >
+                {t("anon_warning_cta")}
+              </Button>
+              <button
+                type="button"
+                data-testid="invite.landing.cta-continue-anon"
+                onClick={handleContinueAnon}
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+              >
+                {t("cta_choose_character")}
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -162,6 +162,15 @@
       "anon_warning_title": "You're playing as an anonymous guest",
       "anon_warning_cta": "Create an account to save your progress",
       "back_to_dashboard": "Back to Dashboard"
+    },
+    "error": {
+      "unauthenticated": "You need to be signed in to accept this invite.",
+      "character_not_available": "That character is no longer available. Pick another one.",
+      "invite_not_found": "We couldn't find this invite. Check the link or ask your DM for a new one.",
+      "invite_expired": "This invite has expired. Ask your DM for a new one.",
+      "invite_already_accepted": "This invite has already been used.",
+      "invite_mismatch": "This invite doesn't match this campaign or account.",
+      "internal": "Something went wrong. Try again in a moment."
     }
   },
   "signup": {

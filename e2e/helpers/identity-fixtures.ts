@@ -240,10 +240,42 @@ export async function loginAs(
   await page.fill("#login-password", resolvedPassword);
   await page.click('button[type="submit"]');
 
-  await page.waitForURL("**/app/**", {
-    timeout: 30_000,
-    waitUntil: "domcontentloaded",
-  });
+  // M21 (Wave 2 code review): fast-fail when the form surfaces an auth error
+  // banner instead of waiting out the full 30s `waitForURL` timeout. The
+  // login form renders `<p id="login-error" role="alert">` (see
+  // components/login-form.tsx) when Supabase rejects the credentials — we
+  // race visibility of that element against the redirect and throw
+  // immediately on visible error so the spec sees a useful message in < 3s
+  // rather than a generic timeout 10x later.
+  const errorLocator = page.locator("#login-error");
+
+  const redirectPromise: Promise<"redirect"> = page
+    .waitForURL("**/app/**", {
+      timeout: 30_000,
+      waitUntil: "domcontentloaded",
+    })
+    .then(() => "redirect" as const);
+
+  const errorPromise: Promise<"error"> = errorLocator
+    .waitFor({ state: "visible", timeout: 3_000 })
+    .then(() => "error" as const);
+
+  const outcome = await Promise.race([
+    redirectPromise,
+    errorPromise.catch(() => null),
+  ]);
+
+  if (outcome === "error") {
+    const msg = (await errorLocator.textContent())?.trim() ?? "unknown auth error";
+    throw new Error(`loginAs failed: ${msg}`);
+  }
+
+  // If the race resolved via `null` from the caught errorPromise rejection
+  // (timeout before error appeared), the redirect is still pending — await
+  // it fully so downstream steps see the post-login URL.
+  if (outcome === null) {
+    await redirectPromise;
+  }
 }
 
 /** Convenience overload for pre-seeded TestAccount fixtures. */

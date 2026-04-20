@@ -140,19 +140,26 @@ test.describe("E2E — Scenario 5: returning player links standalone character v
     await confirmBtn.click();
 
     // ── 9. F31: wait for the server action response ──
-    // The server route is /api/campaign-invites/accept or a server action
-    // that calls linkCharacterToCampaign. We match on either.
-    await Promise.race([
-      page
-        .waitForResponse(
-          (r) =>
-            /\/api\/campaign-invites\/accept/.test(r.url()) &&
-            r.status() < 500,
-          { timeout: 15_000 },
-        )
-        .catch(() => null),
-      page.waitForTimeout(15_000),
-    ]);
+    // M20 (Wave 2 code review): `linkCharacterToCampaign` is a Next.js server
+    // action — NOT an API route. The POST lands at `/invite/[token]` (the
+    // current URL), not `/api/campaign-invites/accept`. Waiting for the
+    // (non-existent) API URL meant the Promise.race always hit the 15s
+    // timeout branch, adding 15s of dead time to every green run.
+    //
+    // New matcher: any POST on /invite/* whose response is non-5xx. That
+    // covers both the direct server-action invocation and any follow-up RSC
+    // render fetch. The explicit waitForTimeout fallback is dropped — if
+    // no POST comes within 20s something is genuinely wrong and the next
+    // `waitForURL` will surface it.
+    await page
+      .waitForResponse(
+        (r) =>
+          r.url().includes("/invite/") &&
+          r.request().method() === "POST" &&
+          r.status() < 500,
+        { timeout: 20_000 },
+      )
+      .catch(() => null);
 
     // ── 10. Redirect lands in the campaign ──
     await page.waitForURL(/\/app\/(campaigns|combat|dashboard)/, {

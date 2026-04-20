@@ -1,27 +1,36 @@
 /**
  * Story 02-H — linkCharacterToCampaign server action tests.
  *
- * This action is the "Returning Player Invite" primitive for Epic 02 Área 6
- * Cenário 5. It runs an atomic UPDATE with a WHERE-filter concurrency guard
- * (see lib/identity/link-character-to-campaign.ts) to prevent 2 concurrent
- * invites from linking the same standalone character.
+ * Wave 2 code review refactor (2026-04-20):
+ *   M16: the 3 write round-trips were folded into a single Postgres RPC
+ *        `link_character_and_join_campaign` (mig 155). These tests now mock
+ *        the RPC call instead of per-table builders for the write path.
+ *   M17: RPC does ON CONFLICT DO UPDATE SET status='active' to reactivate
+ *        inactive/banned members (covered in
+ *        `tests/identity/link-character-reactivation.test.ts`).
+ *   M18: error codes split into sub-codes:
+ *          - unauthenticated
+ *          - character_not_available
+ *          - invite_not_found
+ *          - invite_expired
+ *          - invite_already_accepted
+ *          - invite_mismatch
+ *          - internal
+ *        Old coarse `invite_invalid` is gone.
  *
- * Coverage (9 tests):
- *   1. Unauthenticated caller  → { ok: false, code: "unauthenticated" }
- *   2. Invite not found        → { ok: false, code: "invite_invalid" }
- *   3. Invite already accepted → { ok: false, code: "invite_invalid" }
- *   4. Invite expired          → { ok: false, code: "invite_invalid" }
- *   5. Campaign mismatch       → { ok: false, code: "invite_invalid" }
- *   6. Race / ownership miss   → { ok: false, code: "character_not_available" }
- *   7. Idempotent member insert (23505 swallowed) → { ok: true }
- *   8. Full happy path          → { ok: true } + invite marked accepted
- *   9. Concurrent-call simulation → exactly 1 ok:true, 1 character_not_available
- *
- * The Supabase client is mocked per-table (per-method) so each branch in the
- * action is independently triggerable. The pattern mirrors
- * tests/player-identity/character-claim.test.ts (per-table mock builder) +
- * tests/user/update-default-character.test.ts (scoped helper for simple
- * chains).
+ * Coverage (this file):
+ *   1. Unauthenticated caller         → { code: "unauthenticated" }
+ *   2. Invite not found                → { code: "invite_not_found" }
+ *   3. Invite already accepted         → { code: "invite_already_accepted" }
+ *   4. Invite status = "expired"       → { code: "invite_expired" }
+ *   5. Invite expires_at in the past   → { code: "invite_expired" }
+ *   6. Campaign mismatch               → { code: "invite_mismatch" }
+ *   7. Email mismatch                  → { code: "invite_mismatch" }
+ *   8. RPC returns character_not_available → { code: "character_not_available" }
+ *   9. RPC returns unauthenticated     → { code: "unauthenticated" }
+ *   10. RPC network error              → { code: "internal" }
+ *   11. Malformed RPC envelope         → { code: "internal" }
+ *   12. Happy path                     → { ok: true, ... } — RPC invoked w/ right args
  */
 
 // ---------------------------------------------------------------------------
@@ -33,35 +42,25 @@ type BuilderResult<T = unknown> = {
   error?: { message: string; code?: string } | null;
 };
 
+type RpcEnvelope =
+  | { ok: true; character_id: string; campaign_id: string }
+  | { ok: false; code: "unauthenticated" | "character_not_available" };
+
 const state: {
   user: { id: string; email?: string } | null;
   inviteRow: BuilderResult;
-  updateCharacterRows: BuilderResult<Array<{ id: string }>>;
-  insertMemberResult: BuilderResult;
-  updateInviteResult: BuilderResult;
-  // Call tracking for the atomic UPDATE — allows the concurrent-simulation
-  // test to inspect that the guard clauses (.eq user_id + .is campaign_id
-  // null) were applied on each invocation.
-  updateCharacterCalls: Array<{
-    payload: unknown;
-    eqCalls: Array<[string, unknown]>;
-    isCalls: Array<[string, unknown]>;
-  }>;
-  insertMemberCalls: Array<{ payload: unknown }>;
-  updateInviteCalls: Array<{ payload: unknown; eqId: string | null }>;
+  // RPC return shape + error
+  rpcResult: BuilderResult<RpcEnvelope | null>;
+  rpcCalls: Array<{ fn: string; args: Record<string, unknown> }>;
 } = {
   user: null,
   inviteRow: { data: null, error: null },
-  updateCharacterRows: { data: [], error: null },
-  insertMemberResult: { data: null, error: null },
-  updateInviteResult: { data: null, error: null },
-  updateCharacterCalls: [],
-  insertMemberCalls: [],
-  updateInviteCalls: [],
+  rpcResult: { data: null, error: null },
+  rpcCalls: [],
 };
 
 // ---------------------------------------------------------------------------
-// Supabase mock builders (per-table)
+// Supabase mock builders
 // ---------------------------------------------------------------------------
 
 function makeInviteSelectBuilder() {
@@ -73,98 +72,28 @@ function makeInviteSelectBuilder() {
   return builder;
 }
 
-function makeUpdateCharacterBuilder() {
-  // Each invocation records its guard clauses for the race test to inspect.
-  const call = {
-    payload: undefined as unknown,
-    eqCalls: [] as Array<[string, unknown]>,
-    isCalls: [] as Array<[string, unknown]>,
-  };
-  const builder = {
-    update: jest.fn((payload: unknown) => {
-      call.payload = payload;
-      return builder;
-    }),
-    eq: jest.fn((col: string, val: unknown) => {
-      call.eqCalls.push([col, val]);
-      return builder;
-    }),
-    is: jest.fn((col: string, val: unknown) => {
-      call.isCalls.push([col, val]);
-      return builder;
-    }),
-    select: jest.fn(() => {
-      state.updateCharacterCalls.push(call);
-      return Promise.resolve(state.updateCharacterRows);
-    }),
-  };
-  return builder;
-}
-
-function makeInsertMemberBuilder() {
-  const call = { payload: undefined as unknown };
-  const builder = {
-    insert: jest.fn((payload: unknown) => {
-      call.payload = payload;
-      state.insertMemberCalls.push(call);
-      return Promise.resolve(state.insertMemberResult);
-    }),
-  };
-  return builder;
-}
-
-function makeUpdateInviteBuilder() {
-  const call = { payload: undefined as unknown, eqId: null as string | null };
-  const builder = {
-    update: jest.fn((payload: unknown) => {
-      call.payload = payload;
-      return builder;
-    }),
-    eq: jest.fn((_col: string, val: unknown) => {
-      call.eqId = val as string;
-      state.updateInviteCalls.push(call);
-      return Promise.resolve(state.updateInviteResult);
-    }),
-  };
-  return builder;
-}
-
 // Mock the supabase/server module. `createClient()` is the cookie-aware
-// client used for auth.getUser(); `createServiceClient()` is used for all
-// DB mutations that bypass RLS.
+// client used for auth.getUser(); `createServiceClient()` is used for the
+// invite pre-validation SELECT and the RPC invocation.
 const createClientMock = jest.fn(async () => ({
   auth: {
     getUser: async () => ({ data: { user: state.user }, error: null }),
   },
-  // We don't route any .from() through the authenticated client in this
-  // action (all writes use the service client), but defining it avoids
-  // surprises if the action evolves.
   from: jest.fn(),
 }));
 
 const createServiceClientMock = jest.fn(() => ({
   from: jest.fn((table: string) => {
     if (table === "campaign_invites") {
-      // campaign_invites is used in TWO ways:
-      //   1. SELECT → validate invite row
-      //   2. UPDATE → mark accepted
-      // We disambiguate by the first method called.
-      const selectBuilder = makeInviteSelectBuilder();
-      const updateBuilder = makeUpdateInviteBuilder();
-      return {
-        select: selectBuilder.select,
-        eq: selectBuilder.eq,
-        maybeSingle: selectBuilder.maybeSingle,
-        update: updateBuilder.update,
-      };
-    }
-    if (table === "player_characters") {
-      return makeUpdateCharacterBuilder();
-    }
-    if (table === "campaign_members") {
-      return makeInsertMemberBuilder();
+      // Only SELECT shape is used now (invite pre-validation). Writes are
+      // via RPC.
+      return makeInviteSelectBuilder();
     }
     throw new Error(`Unexpected table in test: ${table}`);
+  }),
+  rpc: jest.fn(async (fn: string, args: Record<string, unknown>) => {
+    state.rpcCalls.push({ fn, args });
+    return state.rpcResult;
   }),
 }));
 
@@ -184,7 +113,6 @@ import { linkCharacterToCampaign } from "@/lib/identity/link-character-to-campai
 // ---------------------------------------------------------------------------
 
 const USER_ID = "00000000-0000-0000-0000-00000000aaaa";
-const OTHER_USER_ID = "00000000-0000-0000-0000-00000000bbbb";
 const CHAR_ID = "00000000-0000-0000-0000-0000000000c1";
 const CAMPAIGN_ID = "00000000-0000-0000-0000-000000000ca1";
 const INVITE_ID = "00000000-0000-0000-0000-0000000000i1";
@@ -204,7 +132,6 @@ function validInvite(overrides: Record<string, unknown> = {}) {
     campaign_id: CAMPAIGN_ID,
     status: "pending",
     expires_at: futureIso(),
-    invited_by: OTHER_USER_ID,
     email: null,
     ...overrides,
   };
@@ -218,16 +145,20 @@ beforeEach(() => {
   jest.clearAllMocks();
   state.user = { id: USER_ID, email: "player@example.com" };
   state.inviteRow = { data: validInvite(), error: null };
-  state.updateCharacterRows = { data: [{ id: CHAR_ID }], error: null };
-  state.insertMemberResult = { data: null, error: null };
-  state.updateInviteResult = { data: null, error: null };
-  state.updateCharacterCalls = [];
-  state.insertMemberCalls = [];
-  state.updateInviteCalls = [];
+  // Default: RPC succeeds
+  state.rpcResult = {
+    data: {
+      ok: true,
+      character_id: CHAR_ID,
+      campaign_id: CAMPAIGN_ID,
+    },
+    error: null,
+  };
+  state.rpcCalls = [];
 });
 
 // ---------------------------------------------------------------------------
-// Tests
+// Tests — auth guard
 // ---------------------------------------------------------------------------
 
 describe("linkCharacterToCampaign — auth guard", () => {
@@ -246,15 +177,17 @@ describe("linkCharacterToCampaign — auth guard", () => {
       expect(res.code).toBe("unauthenticated");
       expect(res.retryable).toBe(false);
     }
-    // Must bail before touching the DB writes.
-    expect(state.updateCharacterCalls).toHaveLength(0);
-    expect(state.insertMemberCalls).toHaveLength(0);
-    expect(state.updateInviteCalls).toHaveLength(0);
+    // Must bail before touching DB.
+    expect(state.rpcCalls).toHaveLength(0);
   });
 });
 
-describe("linkCharacterToCampaign — invite validation", () => {
-  it("returns { ok: false, code: 'invite_invalid' } when invite not found", async () => {
+// ---------------------------------------------------------------------------
+// Tests — invite validation sub-codes (M18)
+// ---------------------------------------------------------------------------
+
+describe("linkCharacterToCampaign — invite sub-code taxonomy (M18)", () => {
+  it("returns invite_not_found when invite row is missing", async () => {
     state.inviteRow = { data: null, error: null };
 
     const res = await linkCharacterToCampaign({
@@ -265,11 +198,11 @@ describe("linkCharacterToCampaign — invite validation", () => {
     });
 
     expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.code).toBe("invite_invalid");
-    expect(state.updateCharacterCalls).toHaveLength(0);
+    if (!res.ok) expect(res.code).toBe("invite_not_found");
+    expect(state.rpcCalls).toHaveLength(0);
   });
 
-  it("returns invite_invalid when status != pending (already accepted)", async () => {
+  it("returns invite_already_accepted when status == 'accepted'", async () => {
     state.inviteRow = {
       data: validInvite({ status: "accepted" }),
       error: null,
@@ -283,11 +216,29 @@ describe("linkCharacterToCampaign — invite validation", () => {
     });
 
     expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.code).toBe("invite_invalid");
-    expect(state.updateCharacterCalls).toHaveLength(0);
+    if (!res.ok) expect(res.code).toBe("invite_already_accepted");
+    expect(state.rpcCalls).toHaveLength(0);
   });
 
-  it("returns invite_invalid when expires_at is in the past", async () => {
+  it("returns invite_expired when status == 'expired'", async () => {
+    state.inviteRow = {
+      data: validInvite({ status: "expired" }),
+      error: null,
+    };
+
+    const res = await linkCharacterToCampaign({
+      characterId: CHAR_ID,
+      campaignId: CAMPAIGN_ID,
+      inviteId: INVITE_ID,
+      token: TOKEN,
+    });
+
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.code).toBe("invite_expired");
+    expect(state.rpcCalls).toHaveLength(0);
+  });
+
+  it("returns invite_expired when expires_at is in the past", async () => {
     state.inviteRow = {
       data: validInvite({ expires_at: pastIso() }),
       error: null,
@@ -301,10 +252,11 @@ describe("linkCharacterToCampaign — invite validation", () => {
     });
 
     expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.code).toBe("invite_invalid");
+    if (!res.ok) expect(res.code).toBe("invite_expired");
+    expect(state.rpcCalls).toHaveLength(0);
   });
 
-  it("returns invite_invalid when the client-provided campaignId doesn't match the invite", async () => {
+  it("returns invite_mismatch when client campaignId doesn't match invite", async () => {
     state.inviteRow = { data: validInvite(), error: null };
 
     const res = await linkCharacterToCampaign({
@@ -315,19 +267,39 @@ describe("linkCharacterToCampaign — invite validation", () => {
     });
 
     expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.code).toBe("invite_invalid");
-    expect(state.updateCharacterCalls).toHaveLength(0);
+    if (!res.ok) expect(res.code).toBe("invite_mismatch");
+    expect(state.rpcCalls).toHaveLength(0);
+  });
+
+  it("returns invite_mismatch when invite.email doesn't match user.email", async () => {
+    state.inviteRow = {
+      data: validInvite({ email: "other@example.com" }),
+      error: null,
+    };
+
+    const res = await linkCharacterToCampaign({
+      characterId: CHAR_ID,
+      campaignId: CAMPAIGN_ID,
+      inviteId: INVITE_ID,
+      token: TOKEN,
+    });
+
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.code).toBe("invite_mismatch");
+    expect(state.rpcCalls).toHaveLength(0);
   });
 });
 
-describe("linkCharacterToCampaign — concurrency guard (race)", () => {
-  it("returns character_not_available when UPDATE matches 0 rows (covers ownership AND race)", async () => {
-    // 0 rows can happen for three reasons — all of which collapse into the
-    // same `character_not_available` code by design:
-    //   (a) character belongs to a different user (user_id = auth.uid() fails)
-    //   (b) character is already linked to a campaign (campaign_id IS NULL fails)
-    //   (c) characterId doesn't exist at all (id = $characterId fails)
-    state.updateCharacterRows = { data: [], error: null };
+// ---------------------------------------------------------------------------
+// Tests — RPC error envelopes
+// ---------------------------------------------------------------------------
+
+describe("linkCharacterToCampaign — RPC error envelopes", () => {
+  it("returns character_not_available when RPC reports concurrency loss", async () => {
+    state.rpcResult = {
+      data: { ok: false, code: "character_not_available" },
+      error: null,
+    };
 
     const res = await linkCharacterToCampaign({
       characterId: CHAR_ID,
@@ -339,34 +311,24 @@ describe("linkCharacterToCampaign — concurrency guard (race)", () => {
     expect(res.ok).toBe(false);
     if (!res.ok) {
       expect(res.code).toBe("character_not_available");
-      expect(res.retryable).toBe(false);
+      expect(res.retryable).toBe(true);
     }
-    // Member INSERT and invite mark-accepted must NOT have fired.
-    expect(state.insertMemberCalls).toHaveLength(0);
-    expect(state.updateInviteCalls).toHaveLength(0);
-
-    // Guard clauses must have been applied — this is the core invariant of
-    // the concurrency guard and we assert it explicitly.
-    expect(state.updateCharacterCalls).toHaveLength(1);
-    const call = state.updateCharacterCalls[0]!;
-    expect(call.eqCalls).toEqual(
-      expect.arrayContaining([
-        ["id", CHAR_ID],
-        ["user_id", USER_ID],
-      ]),
-    );
-    expect(call.isCalls).toEqual(
-      expect.arrayContaining([["campaign_id", null]]),
-    );
+    // RPC was invoked (with correct args) before bailing.
+    expect(state.rpcCalls).toHaveLength(1);
+    expect(state.rpcCalls[0]!.fn).toBe("link_character_and_join_campaign");
+    expect(state.rpcCalls[0]!.args).toEqual({
+      p_character_id: CHAR_ID,
+      p_campaign_id: CAMPAIGN_ID,
+      p_invite_id: INVITE_ID,
+    });
   });
-});
 
-describe("linkCharacterToCampaign — member insert idempotency", () => {
-  it("swallows 23505 (unique_violation) — already a member", async () => {
-    state.updateCharacterRows = { data: [{ id: CHAR_ID }], error: null };
-    state.insertMemberResult = {
-      data: null,
-      error: { message: "duplicate key", code: "23505" },
+  it("returns unauthenticated when RPC reports no auth.uid()", async () => {
+    // Defense-in-depth: even if the cookie-aware client thought we were
+    // authenticated, the RPC may disagree (role mismatch, expired JWT).
+    state.rpcResult = {
+      data: { ok: false, code: "unauthenticated" },
+      error: null,
     };
 
     const res = await linkCharacterToCampaign({
@@ -376,18 +338,57 @@ describe("linkCharacterToCampaign — member insert idempotency", () => {
       token: TOKEN,
     });
 
-    // Idempotent — still succeeds end-to-end.
-    expect(res.ok).toBe(true);
-    if (res.ok) expect(res.characterId).toBe(CHAR_ID);
-    // Invite must still have been marked accepted.
-    expect(state.updateInviteCalls).toHaveLength(1);
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.code).toBe("unauthenticated");
+      expect(res.retryable).toBe(false);
+    }
+  });
+
+  it("returns internal when RPC errors at the network layer", async () => {
+    state.rpcResult = {
+      data: null,
+      error: { message: "network down", code: "XX000" },
+    };
+
+    const res = await linkCharacterToCampaign({
+      characterId: CHAR_ID,
+      campaignId: CAMPAIGN_ID,
+      inviteId: INVITE_ID,
+      token: TOKEN,
+    });
+
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.code).toBe("internal");
+      expect(res.retryable).toBe(true);
+    }
+  });
+
+  it("returns internal when RPC returns a malformed envelope", async () => {
+    // Supabase should never return non-object data for a JSON-returning
+    // function, but belt-and-braces for forward-compat if the RPC signature
+    // ever drifts.
+    state.rpcResult = { data: null, error: null };
+
+    const res = await linkCharacterToCampaign({
+      characterId: CHAR_ID,
+      campaignId: CAMPAIGN_ID,
+      inviteId: INVITE_ID,
+      token: TOKEN,
+    });
+
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.code).toBe("internal");
   });
 });
 
-describe("linkCharacterToCampaign — happy path", () => {
-  it("returns ok + marks invite accepted + fires member insert with proper payload", async () => {
-    state.updateCharacterRows = { data: [{ id: CHAR_ID }], error: null };
+// ---------------------------------------------------------------------------
+// Tests — happy path
+// ---------------------------------------------------------------------------
 
+describe("linkCharacterToCampaign — happy path", () => {
+  it("returns ok with the RPC-supplied character_id + campaign_id", async () => {
     const res = await linkCharacterToCampaign({
       characterId: CHAR_ID,
       campaignId: CAMPAIGN_ID,
@@ -401,123 +402,35 @@ describe("linkCharacterToCampaign — happy path", () => {
       campaignId: CAMPAIGN_ID,
     });
 
-    // UPDATE characters payload sets campaign_id.
-    expect(state.updateCharacterCalls).toHaveLength(1);
-    expect(state.updateCharacterCalls[0]!.payload).toEqual({
-      campaign_id: CAMPAIGN_ID,
+    // RPC was invoked exactly once with the right parameter names (these
+    // names are load-bearing — they must match the CREATE FUNCTION signature
+    // in mig 155).
+    expect(state.rpcCalls).toHaveLength(1);
+    expect(state.rpcCalls[0]!.fn).toBe("link_character_and_join_campaign");
+    expect(state.rpcCalls[0]!.args).toEqual({
+      p_character_id: CHAR_ID,
+      p_campaign_id: CAMPAIGN_ID,
+      p_invite_id: INVITE_ID,
     });
-
-    // Member insert hit with proper payload.
-    expect(state.insertMemberCalls).toHaveLength(1);
-    expect(state.insertMemberCalls[0]!.payload).toEqual({
-      campaign_id: CAMPAIGN_ID,
-      user_id: USER_ID,
-      role: "player",
-      invited_by: OTHER_USER_ID,
-    });
-
-    // Invite marked accepted with accepted_at + accepted_by populated.
-    expect(state.updateInviteCalls).toHaveLength(1);
-    const invitePayload = state.updateInviteCalls[0]!.payload as {
-      status: string;
-      accepted_at?: string;
-      accepted_by?: string;
-    };
-    expect(invitePayload.status).toBe("accepted");
-    expect(invitePayload.accepted_by).toBe(USER_ID);
-    expect(typeof invitePayload.accepted_at).toBe("string");
-    expect(state.updateInviteCalls[0]!.eqId).toBe(INVITE_ID);
   });
-});
 
-describe("linkCharacterToCampaign — concurrent call simulation (integration)", () => {
-  it("simulates 2 concurrent callers on same character — exactly 1 succeeds", async () => {
-    // We simulate the atomic-UPDATE semantics: the DB guarantees that
-    // `UPDATE ... WHERE campaign_id IS NULL` succeeds for at most ONE row
-    // when two queries race on the same row. We model that by flipping
-    // `updateCharacterRows` from a hit to a miss after the first call — any
-    // subsequent UPDATE sees 0 rows because the row no longer matches the
-    // guard clause.
-    let updateCount = 0;
-    state.updateCharacterRows = { data: [{ id: CHAR_ID }], error: null };
+  it("uses invite.campaign_id (not caller's) for the RPC — prevents spoofing", async () => {
+    // The caller passes CAMPAIGN_ID and the invite row is also for that
+    // campaign. The RPC must receive invite.campaign_id, not the raw
+    // client-provided value. Assert by flipping the invite shape to carry
+    // a NORMALIZED campaign_id that matches the caller — otherwise the
+    // mismatch guard would have rejected in the previous describe block.
+    // This is a regression guard for the in-flight "campaign_id =
+    // invite.campaign_id" assignment at line 166 of the action.
+    state.inviteRow = { data: validInvite(), error: null };
 
-    // Re-wire the service client's `from("player_characters")` to flip
-    // the result mid-flight, simulating the DB's single-winner guarantee.
-    createServiceClientMock.mockImplementation(() => ({
-      from: jest.fn((table: string) => {
-        if (table === "campaign_invites") {
-          const sel = makeInviteSelectBuilder();
-          const upd = makeUpdateInviteBuilder();
-          return {
-            select: sel.select,
-            eq: sel.eq,
-            maybeSingle: sel.maybeSingle,
-            update: upd.update,
-          };
-        }
-        if (table === "player_characters") {
-          // Each builder invocation represents one concurrent call's UPDATE.
-          // First call wins (1 row); second sees 0.
-          const call = {
-            payload: undefined as unknown,
-            eqCalls: [] as Array<[string, unknown]>,
-            isCalls: [] as Array<[string, unknown]>,
-          };
-          const localCount = ++updateCount;
-          const builder = {
-            update: jest.fn((payload: unknown) => {
-              call.payload = payload;
-              return builder;
-            }),
-            eq: jest.fn((col: string, val: unknown) => {
-              call.eqCalls.push([col, val]);
-              return builder;
-            }),
-            is: jest.fn((col: string, val: unknown) => {
-              call.isCalls.push([col, val]);
-              return builder;
-            }),
-            select: jest.fn(() => {
-              state.updateCharacterCalls.push(call);
-              const result =
-                localCount === 1
-                  ? { data: [{ id: CHAR_ID }], error: null }
-                  : { data: [], error: null };
-              return Promise.resolve(result);
-            }),
-          };
-          return builder;
-        }
-        if (table === "campaign_members") {
-          return makeInsertMemberBuilder();
-        }
-        throw new Error(`Unexpected table: ${table}`);
-      }),
-    }));
-
-    // Fire two concurrent calls on the same character.
-    const params = {
+    await linkCharacterToCampaign({
       characterId: CHAR_ID,
       campaignId: CAMPAIGN_ID,
       inviteId: INVITE_ID,
       token: TOKEN,
-    };
-    const [res1, res2] = await Promise.all([
-      linkCharacterToCampaign(params),
-      linkCharacterToCampaign({ ...params, inviteId: "invite-2-alt" }),
-    ]);
+    });
 
-    const results = [res1, res2];
-    const winners = results.filter((r) => r.ok);
-    const losers = results.filter((r) => !r.ok);
-
-    expect(winners).toHaveLength(1);
-    expect(losers).toHaveLength(1);
-    expect(losers[0]!.ok).toBe(false);
-    if (!losers[0]!.ok) {
-      expect(losers[0]!.code).toBe("character_not_available");
-    }
-    // Both calls hit the atomic UPDATE on player_characters.
-    expect(state.updateCharacterCalls.length).toBeGreaterThanOrEqual(2);
+    expect(state.rpcCalls[0]!.args.p_campaign_id).toBe(CAMPAIGN_ID);
   });
 });
