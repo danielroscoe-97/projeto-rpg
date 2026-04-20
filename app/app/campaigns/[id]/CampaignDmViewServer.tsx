@@ -10,6 +10,7 @@ import { CampaignFocusView } from './CampaignFocusView'
 import { CampaignHeroCompact } from '@/components/campaign/CampaignHeroCompact'
 import { CampaignNavBar } from '@/components/campaign/CampaignNavBar'
 import { CampaignSidebarIndex } from '@/components/campaign/CampaignSidebarIndex'
+import { ActiveCombatBanner } from '@/components/campaign/ActiveCombatBanner'
 import type { SectionId } from '@/lib/types/campaign-hub'
 
 interface CampaignDmViewServerProps {
@@ -159,6 +160,20 @@ export async function CampaignDmViewServer({
       }
     : null
 
+  // W5 (F19): server-side lookup of active session token for banner SSR.
+  // Cheap single-row query; only when combat is live.
+  let activeJoinToken: string | null = null
+  if (activeSessionId && activeEncounter) {
+    const { data: tokenRow } = await supabase
+      .from('session_tokens')
+      .select('token')
+      .eq('session_id', activeSessionId)
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle()
+    activeJoinToken = (tokenRow?.token as string | undefined) ?? null
+  }
+
   // SRD monsters for encounter builder (DM only, loaded from local bundle — fast, no await)
   const srdMonsters = isOwner ? getSrdMonsters().map((m) => ({
     name: m.name,
@@ -179,6 +194,12 @@ export async function CampaignDmViewServer({
           characters={characters ?? []}
           activeSessionName={dmActiveSession?.name ?? null}
           sessionCount={sessionCount ?? 0}
+        />
+        <ActiveCombatBanner
+          campaignId={campaignId}
+          initialSessionId={activeEncounter ? activeSessionId : null}
+          initialJoinToken={activeJoinToken}
+          initialEncounterName={activeEncounter?.name ?? null}
         />
         <CampaignNavBar activeSection={activeSection} isOwner={isOwner} />
         <CampaignFocusView
@@ -210,6 +231,12 @@ export async function CampaignDmViewServer({
     <div className="flex gap-6">
       {/* Main content */}
       <div className="flex-1 min-w-0 space-y-8">
+        <ActiveCombatBanner
+          campaignId={campaignId}
+          initialSessionId={activeEncounter ? activeSessionId : null}
+          initialJoinToken={activeJoinToken}
+          initialEncounterName={activeEncounter?.name ?? null}
+        />
         {!onboardingCompleted ? (
           <>
             <CampaignHero

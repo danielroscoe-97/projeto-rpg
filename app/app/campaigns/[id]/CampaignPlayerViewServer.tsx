@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getTranslations } from 'next-intl/server'
 import { PlayerCampaignView } from '@/components/campaign/PlayerCampaignView'
 import { getCampaignMembers } from '@/lib/supabase/campaign-membership'
+import { ActiveCombatBanner } from '@/components/campaign/ActiveCombatBanner'
 
 interface CampaignPlayerViewServerProps {
   campaignId: string
@@ -65,18 +66,33 @@ export async function CampaignPlayerViewServer({
   ])
 
   // Fetch active encounter if session exists (depends on activeSession)
-  let activeEncounter: { round_number: number; current_turn_name: string | null } | null = null
+  let activeEncounter: { round_number: number; current_turn_name: string | null; name: string | null } | null = null
+  let activeJoinToken: string | null = null
   if (activeSession) {
-    const { data: enc } = await supabase
-      .from('encounters')
-      .select('round_number')
-      .eq('session_id', activeSession.id)
-      .eq('is_active', true)
-      .limit(1)
-      .maybeSingle()
+    const [{ data: enc }, { data: tokenRow }] = await Promise.all([
+      supabase
+        .from('encounters')
+        .select('round_number, name')
+        .eq('session_id', activeSession.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('session_tokens')
+        .select('token')
+        .eq('session_id', activeSession.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle(),
+    ])
     if (enc) {
-      activeEncounter = { round_number: enc.round_number ?? 0, current_turn_name: null }
+      activeEncounter = {
+        round_number: enc.round_number ?? 0,
+        current_turn_name: null,
+        name: (enc.name as string | null | undefined) ?? null,
+      }
     }
+    activeJoinToken = (tokenRow?.token as string | undefined) ?? null
   }
 
   const t = await getTranslations("campaign")
@@ -111,7 +127,14 @@ export async function CampaignPlayerViewServer({
   }
 
   return (
-    <PlayerCampaignView
+    <div className="space-y-4">
+      <ActiveCombatBanner
+        campaignId={campaignId}
+        initialSessionId={activeEncounter ? (activeSession?.id ?? null) : null}
+        initialJoinToken={activeJoinToken}
+        initialEncounterName={activeEncounter?.name ?? null}
+      />
+      <PlayerCampaignView
       campaignId={campaignId}
       campaignName={campaignName}
       dmName={dmUser?.display_name ?? null}
@@ -179,5 +202,6 @@ export async function CampaignPlayerViewServer({
         createCharacterDesc: t("create_character_desc"),
       }}
     />
+    </div>
   )
 }
