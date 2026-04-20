@@ -13,11 +13,18 @@
  *   Guest           ✅  localStorage
  *   Anon (/join)    ✅  localStorage
  *   Auth (/invite)  ✅  Supabase API (with localStorage fallback if offline)
+ *
+ * S5.2 Beta 4 P0 — `ff_favorites_v2_shared_state` gates a Zustand-backed
+ * shared-state implementation that eliminates the per-instance fetch /
+ * auth probe / focus listener triplet. When ON, `useFavoritesV2` is
+ * returned; when OFF, the legacy `useFavoritesLegacy` behavior is used.
+ * Both paths expose IDENTICAL return shape — zero churn at call sites.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { trackEvent } from "@/lib/analytics/track";
+import { isFeatureFlagEnabled } from "@/lib/flags";
 import {
   addFavorite as localAdd,
   removeFavorite as localRemove,
@@ -28,6 +35,7 @@ import {
   type Favorite,
   type FavoriteKind,
 } from "@/lib/favorites/local-store";
+import { useFavoritesStore } from "@/lib/favorites/favorites-store";
 
 export type { Favorite, FavoriteKind } from "@/lib/favorites/local-store";
 
@@ -49,6 +57,22 @@ function toLocalShape(row: ApiFavorite): Favorite {
 }
 
 /**
+ * Public return shape. Both `useFavoritesLegacy` and `useFavoritesV2` MUST
+ * satisfy this contract so the feature-flag wrapper can switch at runtime
+ * without call-site changes.
+ */
+export type UseFavoritesReturn = {
+  favorites: Favorite[];
+  add: (slug: string) => Promise<boolean>;
+  remove: (slug: string) => Promise<void>;
+  isFavorite: (slug: string) => boolean;
+  loading: boolean;
+  limitReached: boolean;
+  clearLimitReached: () => void;
+  max: number;
+};
+
+/**
  * Main hook. Call it scoped to a single kind:
  *
  * ```tsx
@@ -56,7 +80,64 @@ function toLocalShape(row: ApiFavorite): Favorite {
  *   useFavorites("monster");
  * ```
  */
-export function useFavorites(kind: FavoriteKind) {
+export function useFavorites(kind: FavoriteKind): UseFavoritesReturn {
+  const useV2 = isFeatureFlagEnabled("ff_favorites_v2_shared_state");
+  // NOTE: we deliberately call both hooks unconditionally would violate Rules of
+  // Hooks if React tried to re-order them. But `isFeatureFlagEnabled` is stable
+  // within a session (resolved from env / runtime override at first read), so
+  // the branch is stable for the component lifetime. This is the same contract
+  // the rest of the codebase uses for flag-gated hook swaps.
+  /* eslint-disable react-hooks/rules-of-hooks */
+  if (useV2) return useFavoritesV2(kind);
+  return useFavoritesLegacy(kind);
+  /* eslint-enable react-hooks/rules-of-hooks */
+}
+
+// =========================================================================
+// V2 — Zustand shared-state path (ff_favorites_v2_shared_state ON)
+// =========================================================================
+
+function useFavoritesV2(kind: FavoriteKind): UseFavoritesReturn {
+  // Subscribe with fine-grained selectors so only relevant slice changes re-render.
+  const favorites = useFavoritesStore((s) => s.byKind[kind].favorites);
+  const loading = useFavoritesStore((s) => s.byKind[kind].loading);
+  const limitReached = useFavoritesStore((s) => s.byKind[kind].limitReached);
+  // For `isFavorite` to be reactive, the consumer needs to subscribe to the
+  // `slugs` set — we expose a callback that reads fresh state via the store's
+  // `getState()` which is always current (Zustand holds the one true source).
+  const slugs = useFavoritesStore((s) => s.byKind[kind].slugs);
+
+  const ensureHydrated = useFavoritesStore((s) => s.ensureHydrated);
+  const addStore = useFavoritesStore((s) => s.add);
+  const removeStore = useFavoritesStore((s) => s.remove);
+  const clearLimit = useFavoritesStore((s) => s.clearLimitReached);
+
+  useEffect(() => {
+    void ensureHydrated(kind);
+  }, [ensureHydrated, kind]);
+
+  const add = useCallback((slug: string) => addStore(kind, slug), [addStore, kind]);
+  const remove = useCallback((slug: string) => removeStore(kind, slug), [removeStore, kind]);
+  const isFavoriteCb = useCallback((slug: string) => slugs.has(slug), [slugs]);
+  const clearLimitReached = useCallback(() => clearLimit(kind), [clearLimit, kind]);
+
+  return {
+    favorites,
+    add,
+    remove,
+    isFavorite: isFavoriteCb,
+    loading,
+    limitReached,
+    clearLimitReached,
+    max: MAX_PER_KIND,
+  };
+}
+
+// =========================================================================
+// Legacy — per-hook fetch + auth + listener triplet (default OFF path)
+// =========================================================================
+
+function useFavoritesLegacy(kind: FavoriteKind): UseFavoritesReturn {
   const [auth, setAuth] = useState<AuthState>({ resolved: false, isAuth: false });
   const [favorites, setFavorites] = useState<Favorite[]>(() => localGet(kind));
   const [loading, setLoading] = useState(false);
