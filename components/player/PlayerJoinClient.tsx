@@ -56,10 +56,21 @@ import { DmPostit } from "@/components/player/DmPostit";
 import { usePendingActionsStore, generateActionId } from "@/lib/stores/pending-actions-store";
 import { useActionAck, confirmActionsForCombatant } from "@/hooks/use-action-ack";
 import type { CombatantPendingState } from "@/hooks/use-action-ack";
+import { shouldShowCta, recordDismissal } from "@/components/conversion/dismissal-store";
+import type { AuthModalSuccessPayload } from "@/components/auth/AuthModal";
 
 const SpellSearch = lazy(() =>
   import("@/components/oracle/SpellSearch").then((mod) => ({
     default: mod.SpellSearch,
+  }))
+);
+
+// Story 02-E — AuthModal dynamic import to keep the PlayerJoinClient bundle
+// unchanged for players who never open the upgrade CTA. Purely additive: no
+// existing render path touches this import.
+const AuthModalLazy = lazy(() =>
+  import("@/components/auth/AuthModal").then((mod) => ({
+    default: mod.AuthModal,
   }))
 );
 
@@ -143,6 +154,8 @@ export function PlayerJoinClient({
 }: PlayerJoinClientProps) {
   const router = useRouter();
   const t = useTranslations("player");
+  // Story 02-E — new i18n namespace for the additive upgrade entry points.
+  const tJoin = useTranslations("join");
   const tRef = useRef(t);
   tRef.current = t;
   const [combatants, setCombatants] = useState(initialCombatants);
@@ -272,6 +285,22 @@ export function PlayerJoinClient({
   // Resilient reconnection state
   const [reconnectingAs, setReconnectingAs] = useState<string | null>(null);
   const [sessionRevoked, setSessionRevoked] = useState(false);
+  // Story 02-E — AuthModal state for the additive upgrade entry points
+  // (waiting-room "I already have an account" + signup-hint banner).
+  // `softRefreshTick` is bumped on successful upgrade so consumers can
+  // trigger a re-render without recarregar the page / re-initting the
+  // realtime channel — preserving the parity invariants (no
+  // player:disconnecting, no heartbeat reset, storage preserved).
+  const [authModalState, setAuthModalState] = useState<{
+    open: boolean;
+    mode: "login" | "signup";
+  }>({ open: false, mode: "login" });
+  const [signupHintDismissed, setSignupHintDismissed] = useState<boolean>(false);
+  const [softRefreshTick, setSoftRefreshTick] = useState(0);
+  // Reference softRefreshTick so it registers as a render-time value (otherwise
+  // TypeScript flags the setter as write-only). The value itself is inert —
+  // bumping it is enough to trigger React's reconciliation.
+  void softRefreshTick;
   // DM presence — tracks whether the DM has heartbeated recently (< 45s)
   const [dmOffline, setDmOffline] = useState(false);
   const dmLastSeenRef = useRef<number>(Date.now());
@@ -2363,6 +2392,50 @@ export function PlayerJoinClient({
     }
   }, [sessionId]);
 
+  // ─────────────────────────────────────────────────────────────────────
+  // Story 02-E — Upgrade entry-point callbacks. STRICTLY additive: these
+  // helpers only open/close the AuthModal and, on success, bump a state
+  // tick to re-render. They MUST NOT:
+  //   - call recarregar page (window.location.reload / router.refresh)
+  //   - remove/rewrite persistPlayerIdentity storage
+  //   - dispatch player:disconnecting
+  //   - unsubscribe/resubscribe the realtime channel
+  //   - reset the heartbeat interval
+  // See docs/epics/player-identity/epic-02-player-dashboard-invite.md
+  // Área 1B "PlayerJoinClient parity invariants".
+  // ─────────────────────────────────────────────────────────────────────
+  const openAuthModal = useCallback((mode: "login" | "signup") => {
+    setAuthModalState({ open: true, mode });
+  }, []);
+
+  const handleAuthModalOpenChange = useCallback((open: boolean) => {
+    setAuthModalState((prev) => ({ open, mode: prev.mode }));
+  }, []);
+
+  const handleAuthModalSuccess = useCallback((result: AuthModalSuccessPayload) => {
+    // Close the modal.
+    setAuthModalState({ open: false, mode: "login" });
+    // Soft re-render — nudges React without touching realtime/storage/heartbeat.
+    setSoftRefreshTick((n) => n + 1);
+    // Track that the user converted (dismissal store resets on real conversion).
+    if (result.upgraded || result.isNewAccount) {
+      try {
+        trackEvent("player_identity.upgrade_success", {
+          session_id: sessionId,
+          upgraded: result.upgraded,
+          is_new_account: result.isNewAccount,
+        });
+      } catch { /* analytics is best-effort */ }
+    }
+  }, [sessionId]);
+
+  const handleSignupHintDismiss = useCallback(() => {
+    setSignupHintDismissed(true);
+    try {
+      recordDismissal(campaignId ?? sessionCampaignId ?? "__guest__");
+    } catch { /* storage unavailable — already swallowed by the store */ }
+  }, [campaignId, sessionCampaignId]);
+
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
   const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lateJoinMaxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -2695,6 +2768,91 @@ export function PlayerJoinClient({
     );
   }
 
+  // ─────────────────────────────────────────────────────────────────────
+  // Story 02-E — Additive upgrade entry-point sub-trees.
+  //
+  // `authUpgradeEntryPoints` is rendered as a sibling of the existing UI
+  // (inside the `display:contents` wrappers) so it does not disturb the
+  // lobby/combat-view layout. It contains:
+  //   - the "Já tenho conta" CTA (visible only to anon/guest players)
+  //   - the signup-hint banner (gated by `shouldShowCta` + local dismiss)
+  //   - the AuthModal itself (lazy-loaded; rendered only while open)
+  //
+  // The block is a stable fragment so adding/removing it on renders never
+  // unmounts the PlayerLobby / PlayerInitiativeBoard — preserving realtime
+  // channels, storage listeners, and the heartbeat interval. (Wave 0 ACs.)
+  // ─────────────────────────────────────────────────────────────────────
+  const isAnonPlayer = !authUserId;
+  const dismissalCampaignId = campaignId ?? sessionCampaignId ?? "__guest__";
+  const showSignupHint =
+    isAnonPlayer &&
+    !signupHintDismissed &&
+    // shouldShowCta is SSR-safe (returns true when storage is unavailable).
+    shouldShowCta(dismissalCampaignId);
+  const effectiveUpgradeCampaignId = campaignId ?? sessionCampaignId;
+
+  const authUpgradeEntryPoints = (
+    <>
+      {isAnonPlayer && (
+        <div className="mx-auto w-full max-w-lg px-4 pb-2 pt-3">
+          <button
+            type="button"
+            data-testid="join.waiting-room.auth-cta"
+            onClick={() => openAuthModal("login")}
+            className="w-full min-h-[44px] rounded-md border border-gold/40 bg-gold/5 px-3 py-2 text-sm text-gold hover:bg-gold/10 transition-colors"
+          >
+            {tJoin("waiting_room.auth_cta")}
+          </button>
+        </div>
+      )}
+
+      {showSignupHint && (
+        <div
+          data-testid="join.signup-hint-banner"
+          className="mx-auto w-full max-w-lg px-4 pb-2"
+        >
+          <div className="flex items-start justify-between gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-200">
+            <button
+              type="button"
+              onClick={() => openAuthModal("signup")}
+              className="flex-1 min-h-[40px] text-left hover:underline"
+              data-testid="join.signup-hint-banner.cta"
+            >
+              {tJoin("signup_hint_banner.title")}
+              <span className="ml-1 font-semibold underline underline-offset-2">
+                {tJoin("signup_hint_banner.cta")}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={handleSignupHintDismiss}
+              aria-label={tJoin("signup_hint_banner.dismiss")}
+              data-testid="join.signup-hint-banner.dismiss"
+              className="shrink-0 px-2 py-1 text-muted-foreground/80 hover:text-foreground"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {authModalState.open && (
+        <Suspense fallback={null}>
+          <AuthModalLazy
+            open={authModalState.open}
+            onOpenChange={handleAuthModalOpenChange}
+            defaultTab={authModalState.mode}
+            onSuccess={handleAuthModalSuccess}
+            upgradeContext={{
+              sessionTokenId: effectiveTokenId,
+              campaignId: effectiveUpgradeCampaignId ?? undefined,
+            }}
+          />
+        </Suspense>
+      )}
+    </>
+  );
+
   // Show lobby when combat isn't active yet (normal join)
   // `join.waiting-room` wrapper — stable testid per data-testid contract
   // (docs/testing-data-testid-contract.md §3.7). Purely additive: `display:contents`
@@ -2716,6 +2874,7 @@ export function PlayerJoinClient({
           registeredPlayerNames={registeredPlayerNames}
           onRejoin={handleRejoin}
         />
+        {authUpgradeEntryPoints}
       </div>
     );
   }
@@ -2745,6 +2904,7 @@ export function PlayerJoinClient({
           registeredPlayersWithStatus={registeredPlayersWithStatus}
           onRejoin={handleRejoin}
         />
+        {authUpgradeEntryPoints}
       </div>
     );
   }
@@ -3093,6 +3253,13 @@ export function PlayerJoinClient({
           isActive={active}
         />
       )}
+
+      {/* Story 02-E — Additive auth upgrade entry points (combat idle state).
+          STRICTLY additive: rendered as a sibling of the existing combat-view
+          content so it cannot affect the PlayerInitiativeBoard layout, the
+          realtime channel subscription, or the heartbeat interval. The modal
+          itself is only mounted while `authModalState.open === true`. */}
+      {authUpgradeEntryPoints}
     </div>
   );
 }

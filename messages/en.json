@@ -4492,5 +4492,15 @@
       "email_taken": "This email already has an account. <loginLink>Log in</loginLink>",
       "network": "No connection. Your progress is saved locally."
     }
+  },
+  "join": {
+    "waiting_room": {
+      "auth_cta": "I already have an account"
+    },
+    "signup_hint_banner": {
+      "title": "Create an account to save your journey?",
+      "cta": "Sign up",
+      "dismiss": "Dismiss"
+    }
   }
 }

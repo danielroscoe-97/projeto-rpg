@@ -4492,5 +4492,15 @@
       "email_taken": "Esse email já tem conta. <loginLink>Fazer login</loginLink>",
       "network": "Sem conexão. Seu progresso está salvo localmente."
     }
+  },
+  "join": {
+    "waiting_room": {
+      "auth_cta": "Já tenho conta"
+    },
+    "signup_hint_banner": {
+      "title": "Criar conta pra salvar sua jornada?",
+      "cta": "Criar conta",
+      "dismiss": "Fechar"
+    }
   }
 }
