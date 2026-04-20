@@ -22,6 +22,7 @@ import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
 import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
 import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
 import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
+import { useCampaignNotesIndex } from "@/lib/hooks/useCampaignNotesIndex";
 import { captureError } from "@/lib/errors/capture";
 import {
   upsertEntityLink,
@@ -57,6 +58,7 @@ export function NpcList({ campaignId }: NpcListProps) {
   const { locations: availableLocations } = useCampaignLocations(campaignId);
   const { factions: availableFactions } = useCampaignFactions(campaignId);
   const { edges, refetch: refetchEdges } = useCampaignEdges(campaignId);
+  const { notes: notesIndex } = useCampaignNotesIndex(campaignId);
 
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [filter, setFilter] = useState<FilterMode>("all");
@@ -65,21 +67,48 @@ export function NpcList({ campaignId }: NpcListProps) {
   const [viewingNpc, setViewingNpc] = useState<CampaignNpc | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignNpc | null>(null);
 
-  // Build related notes map per NPC
+  // Build related notes map per NPC — union of legacy note_npc_links with
+  // Fase 3e `mentions` edges. De-duplicated by note id so double-entries
+  // (present in both legacy and edges after mig 153) collapse cleanly.
   const relatedNotesMap = useMemo(() => {
-    const noteMap = new Map<string, NoteInfo>();
-    for (const n of noteInfos) noteMap.set(n.id, n);
+    const legacyNoteMap = new Map<string, NoteInfo>();
+    for (const n of noteInfos) legacyNoteMap.set(n.id, n);
+    const edgeNoteMap = new Map<string, NoteInfo>();
+    for (const n of notesIndex) {
+      edgeNoteMap.set(n.id, { id: n.id, title: n.title });
+    }
 
     const map = new Map<string, NoteInfo[]>();
+    // Legacy contributions
     for (const link of npcLinks) {
-      const note = noteMap.get(link.note_id);
+      const note = legacyNoteMap.get(link.note_id);
       if (!note) continue;
       const existing = map.get(link.npc_id) ?? [];
-      existing.push(note);
+      if (!existing.some((x) => x.id === note.id)) existing.push(note);
       map.set(link.npc_id, existing);
     }
+    // Edge contributions (Fase 3e `mentions`)
+    for (const npc of npcs) {
+      const mentionedNoteIds = selectCounterpartyIds(
+        edges,
+        { type: "npc", id: npc.id },
+        {
+          direction: "incoming",
+          counterpartyType: "note",
+          relationship: "mentions",
+        },
+      );
+      if (mentionedNoteIds.length === 0) continue;
+      const existing = map.get(npc.id) ?? [];
+      for (const noteId of mentionedNoteIds) {
+        const note = edgeNoteMap.get(noteId);
+        if (!note) continue;
+        if (!existing.some((x) => x.id === note.id)) existing.push(note);
+      }
+      map.set(npc.id, existing);
+    }
     return map;
-  }, [npcLinks, noteInfos]);
+  }, [npcLinks, noteInfos, notesIndex, edges, npcs]);
 
   const filteredNpcs = npcs.filter((npc) => {
     if (filter === "visible") return npc.is_visible_to_players;

@@ -16,6 +16,7 @@ import {
   MapPin,
   User,
   Users,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignLocation, LocationType } from "@/lib/types/mind-map";
@@ -23,6 +24,11 @@ import type { CampaignLocation, LocationType } from "@/lib/types/mind-map";
 interface EntityRefItem {
   id: string;
   name: string;
+}
+
+interface RelatedNote {
+  id: string;
+  title: string;
 }
 
 const TYPE_ICONS: Record<LocationType, React.ComponentType<{ className?: string }>> = {
@@ -64,6 +70,8 @@ interface LocationCardProps {
   inhabitantNpcs?: EntityRefItem[];
   /** Factions with `headquarters_of` edge pointing to this location (Fase 3d). */
   hqFactions?: EntityRefItem[];
+  /** Notes that `mentions` this location (Fase 3e). */
+  relatedNotes?: RelatedNote[];
   onEdit: (location: CampaignLocation) => void;
   onDelete: (location: CampaignLocation) => void;
   onToggleVisibility: (location: CampaignLocation) => void;
@@ -76,18 +84,21 @@ export function LocationCard({
   isEditable,
   inhabitantNpcs,
   hqFactions,
+  relatedNotes,
   onEdit,
   onDelete,
   onToggleVisibility,
   onCardClick,
 }: LocationCardProps) {
   const t = useTranslations("locations");
+  const tGraph = useTranslations("entity_graph");
   const [expanded, setExpanded] = useState(false);
 
   const Icon = TYPE_ICONS[location.location_type] ?? MapPin;
   const inhabitantCount = inhabitantNpcs?.length ?? 0;
   const hqCount = hqFactions?.length ?? 0;
-  const hasRelations = inhabitantCount > 0 || hqCount > 0;
+  const notesCount = relatedNotes?.length ?? 0;
+  const hasRelations = inhabitantCount > 0 || hqCount > 0 || notesCount > 0;
   const hasExpandableContent = !!location.description || hasRelations;
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -310,6 +321,24 @@ export function LocationCard({
                     >
                       <Users className="w-3 h-3" />
                       {f.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {notesCount > 0 && (
+              <div data-testid={`location-related-notes-${location.id}`}>
+                <p className="text-[11px] font-medium text-muted-foreground/60 mb-1.5">
+                  {tGraph("notes_about_this")}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {relatedNotes!.map((n) => (
+                    <span
+                      key={n.id}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-slate-500/10 text-slate-300 border border-slate-500/20"
+                    >
+                      <FileText className="w-3 h-3" />
+                      {n.title || n.id.slice(0, 6)}
                     </span>
                   ))}
                 </div>

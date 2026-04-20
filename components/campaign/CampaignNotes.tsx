@@ -43,6 +43,7 @@ import { NotesListSkeleton } from "@/components/ui/skeletons/NotesListSkeleton";
 import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
 import { NpcTagSelector } from "./NpcTagSelector";
+import { EntityTagSelector } from "./EntityTagSelector";
 import {
   getFolders,
   createFolder,
@@ -57,6 +58,20 @@ import {
   unlinkNoteFromNpc,
 } from "@/lib/supabase/note-npc-links";
 import { getNpcs } from "@/lib/supabase/campaign-npcs";
+import {
+  upsertEntityLink,
+  unlinkEntities,
+  listCampaignEdges,
+} from "@/lib/supabase/entity-links";
+import {
+  selectCounterpartyIds,
+  findEdgeId,
+  type EntityLink,
+  type EntityType,
+} from "@/lib/types/entity-links";
+import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
+import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
+import { useCampaignQuests } from "@/lib/hooks/use-campaign-quests";
 import type { CampaignNote, CampaignNoteFolder } from "@/lib/types/database";
 import type { NoteNpcLink } from "@/lib/types/note-npc-links";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
@@ -76,7 +91,11 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   const [folders, setFolders] = useState<CampaignNoteFolder[]>([]);
   const [npcLinks, setNpcLinks] = useState<NoteNpcLink[]>([]);
   const [campaignNpcs, setCampaignNpcs] = useState<CampaignNpc[]>([]);
+  const [campaignEdges, setCampaignEdges] = useState<EntityLink[]>([]);
   const [loading, setLoading] = useState(true);
+  const { locations: campaignLocations } = useCampaignLocations(campaignId);
+  const { factions: campaignFactions } = useCampaignFactions(campaignId);
+  const { quests: campaignQuests } = useCampaignQuests(campaignId);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [dmUserId, setDmUserId] = useState<string | null>(null);
   const [playerNames, setPlayerNames] = useState<Record<string, string>>({});
@@ -92,7 +111,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [notesRes, foldersData, linksData, npcsData, authRes] = await Promise.all([
+        const [notesRes, foldersData, linksData, npcsData, edgesData, authRes] = await Promise.all([
           supabase
             .from("campaign_notes")
             .select("*")
@@ -101,6 +120,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
           getFolders(campaignId),
           getCampaignNoteNpcLinks(campaignId),
           getNpcs(campaignId),
+          listCampaignEdges(campaignId),
           supabase.auth.getUser(),
         ]);
 
@@ -109,6 +129,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         setFolders(foldersData);
         setNpcLinks(linksData);
         setCampaignNpcs(npcsData);
+        setCampaignEdges(edgesData);
 
         const currentUserId = authRes.data.user?.id ?? null;
         setDmUserId(currentUserId);
@@ -207,11 +228,155 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     return map;
   }, [campaignNpcs]);
 
+  // Per-note mention map built from campaign_mind_map_edges. Each note gets
+  // the ids of entities it mentions, bucketed by type (Fase 3e). NPCs show
+  // up here when the edge exists; legacy note_npc_links is the fallback for
+  // pre-mig 153 data and remains in `linksByNote` above.
+  const mentionsByNote = useMemo<
+    Map<
+      string,
+      {
+        locations: string[];
+        factions: string[];
+        quests: string[];
+        npcs: string[];
+      }
+    >
+  >(() => {
+    const map = new Map<
+      string,
+      { locations: string[]; factions: string[]; quests: string[]; npcs: string[] }
+    >();
+    for (const note of notes) {
+      map.set(note.id, {
+        locations: selectCounterpartyIds(
+          campaignEdges,
+          { type: "note", id: note.id },
+          {
+            direction: "outgoing",
+            counterpartyType: "location",
+            relationship: "mentions",
+          },
+        ),
+        factions: selectCounterpartyIds(
+          campaignEdges,
+          { type: "note", id: note.id },
+          {
+            direction: "outgoing",
+            counterpartyType: "faction",
+            relationship: "mentions",
+          },
+        ),
+        quests: selectCounterpartyIds(
+          campaignEdges,
+          { type: "note", id: note.id },
+          {
+            direction: "outgoing",
+            counterpartyType: "quest",
+            relationship: "mentions",
+          },
+        ),
+        npcs: selectCounterpartyIds(
+          campaignEdges,
+          { type: "note", id: note.id },
+          {
+            direction: "outgoing",
+            counterpartyType: "npc",
+            relationship: "mentions",
+          },
+        ),
+      });
+    }
+    return map;
+  }, [campaignEdges, notes]);
+
+  /**
+   * Reconcile the set of `mentions` edges from a note to entities of a
+   * given type. Idempotent via upsertEntityLink. Updates local edge state
+   * on success so UI reflects the change without a refetch.
+   */
+  const syncNoteMentions = useCallback(
+    async (
+      noteId: string,
+      entityType: Exclude<EntityType, "note" | "session" | "encounter" | "player" | "bag_item">,
+      nextIds: string[],
+    ) => {
+      const current = selectCounterpartyIds(
+        campaignEdges,
+        { type: "note", id: noteId },
+        {
+          direction: "outgoing",
+          counterpartyType: entityType,
+          relationship: "mentions",
+        },
+      );
+      const target = new Set(nextIds);
+      const existing = new Set(current);
+
+      try {
+        const additions: EntityLink[] = [];
+        const removedIds: string[] = [];
+
+        for (const id of target) {
+          if (!existing.has(id)) {
+            const edge = await upsertEntityLink(
+              campaignId,
+              { type: "note", id: noteId },
+              { type: entityType, id },
+              "mentions",
+            );
+            additions.push(edge);
+          }
+        }
+        for (const id of existing) {
+          if (!target.has(id)) {
+            const edgeId = findEdgeId(
+              campaignEdges,
+              { type: "note", id: noteId },
+              { type: entityType, id },
+              "mentions",
+            );
+            if (edgeId) {
+              await unlinkEntities(edgeId);
+              removedIds.push(edgeId);
+            }
+          }
+        }
+
+        setCampaignEdges((prev) => {
+          const kept = prev.filter((e) => !removedIds.includes(e.id));
+          return [...kept, ...additions];
+        });
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: `syncNoteMentions.${entityType}`,
+          category: "network",
+        });
+      }
+    },
+    [campaignId, campaignEdges],
+  );
+
   const handleLinkNpc = useCallback(
     async (noteId: string, npcId: string) => {
       try {
+        // Legacy table (note_npc_links) keeps working until mig drops it.
         const link = await linkNoteToNpc(noteId, npcId);
         setNpcLinks((prev) => [...prev, link]);
+        // Dual-write: also record a `mentions` edge so every reverse lookup
+        // (NpcCard "Notas sobre isto") sees the connection without reading
+        // the legacy table. Idempotent via upsert.
+        const edge = await upsertEntityLink(
+          campaignId,
+          { type: "note", id: noteId },
+          { type: "npc", id: npcId },
+          "mentions",
+        );
+        setCampaignEdges((prev) => {
+          if (prev.some((e) => e.id === edge.id)) return prev;
+          return [...prev, edge];
+        });
       } catch (err) {
         captureError(err, {
           component: "CampaignNotes",
@@ -220,7 +385,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         });
       }
     },
-    [],
+    [campaignId],
   );
 
   const handleUnlinkNpc = useCallback(
@@ -230,6 +395,17 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         setNpcLinks((prev) =>
           prev.filter((l) => !(l.note_id === noteId && l.npc_id === npcId)),
         );
+        // Dual-write: also remove the `mentions` edge created by Fase 3e.
+        const edgeId = findEdgeId(
+          campaignEdges,
+          { type: "note", id: noteId },
+          { type: "npc", id: npcId },
+          "mentions",
+        );
+        if (edgeId) {
+          await unlinkEntities(edgeId);
+          setCampaignEdges((prev) => prev.filter((e) => e.id !== edgeId));
+        }
       } catch (err) {
         captureError(err, {
           component: "CampaignNotes",
@@ -238,7 +414,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         });
       }
     },
-    [],
+    [campaignEdges],
   );
 
   // Flush pending saves and cleanup debounce timers on unmount
@@ -741,6 +917,74 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                               linkedNpcIds={linksByNote.get(note.id) ?? []}
                               onLink={(npcId) => handleLinkNpc(note.id, npcId)}
                               onUnlink={(npcId) => handleUnlinkNpc(note.id, npcId)}
+                            />
+                          </div>
+                        )}
+
+                        {/* Location / Faction / Quest selectors — Fase 3e
+                            (only for the owner; players cannot mutate edges) */}
+                        {isOwner && campaignLocations.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {t("related_locations")}
+                            </p>
+                            <EntityTagSelector
+                              type="location"
+                              availableItems={campaignLocations.map((l) => ({
+                                id: l.id,
+                                name: l.name,
+                              }))}
+                              selectedIds={
+                                mentionsByNote.get(note.id)?.locations ?? []
+                              }
+                              onChange={(ids) =>
+                                void syncNoteMentions(note.id, "location", ids)
+                              }
+                              testIdPrefix={`note-locations-${note.id}`}
+                            />
+                          </div>
+                        )}
+
+                        {isOwner && campaignFactions.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {t("related_factions")}
+                            </p>
+                            <EntityTagSelector
+                              type="faction"
+                              availableItems={campaignFactions.map((f) => ({
+                                id: f.id,
+                                name: f.name,
+                              }))}
+                              selectedIds={
+                                mentionsByNote.get(note.id)?.factions ?? []
+                              }
+                              onChange={(ids) =>
+                                void syncNoteMentions(note.id, "faction", ids)
+                              }
+                              testIdPrefix={`note-factions-${note.id}`}
+                            />
+                          </div>
+                        )}
+
+                        {isOwner && campaignQuests.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {t("related_quests")}
+                            </p>
+                            <EntityTagSelector
+                              type="quest"
+                              availableItems={campaignQuests.map((q) => ({
+                                id: q.id,
+                                name: q.title,
+                              }))}
+                              selectedIds={
+                                mentionsByNote.get(note.id)?.quests ?? []
+                              }
+                              onChange={(ids) =>
+                                void syncNoteMentions(note.id, "quest", ids)
+                              }
+                              testIdPrefix={`note-quests-${note.id}`}
                             />
                           </div>
                         )}

@@ -21,6 +21,7 @@ import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
 import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
 import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
 import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
+import { useCampaignNotesIndex } from "@/lib/hooks/useCampaignNotesIndex";
 import { selectCounterpartyIds, findEdgeId } from "@/lib/types/entity-links";
 import {
   upsertEntityLink,
@@ -80,6 +81,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
   const { locations: availableLocations } = useCampaignLocations(campaignId);
   const { npcs: availableNpcs } = useCampaignNpcs(campaignId);
   const { edges, refetch: refetchEdges } = useCampaignEdges(campaignId);
+  const { notes: notesIndex } = useCampaignNotesIndex(campaignId);
 
   const [filter, setFilter] = useState<FilterMode>("all");
   const [formOpen, setFormOpen] = useState(false);
@@ -131,6 +133,30 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
     }
     return map;
   }, [edges, factions]);
+
+  const factionRelatedNotesMap = useMemo<Map<string, Array<{ id: string; title: string }>>>(() => {
+    const noteById = new Map(notesIndex.map((n) => [n.id, n]));
+    const map = new Map<string, Array<{ id: string; title: string }>>();
+    for (const f of factions) {
+      const ids = selectCounterpartyIds(
+        edges,
+        { type: "faction", id: f.id },
+        {
+          direction: "incoming",
+          counterpartyType: "note",
+          relationship: "mentions",
+        },
+      );
+      map.set(
+        f.id,
+        ids
+          .map((id) => noteById.get(id))
+          .filter((n): n is NonNullable<typeof n> => !!n)
+          .map((n) => ({ id: n.id, title: n.title })),
+      );
+    }
+    return map;
+  }, [edges, notesIndex, factions]);
 
   /**
    * Reconciles the headquarters_of + member_of edges for a faction against
@@ -418,6 +444,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
                 isEditable={isEditable}
                 sede={sede ? { id: sede.id, name: sede.name } : null}
                 members={members}
+                relatedNotes={factionRelatedNotesMap.get(faction.id) ?? []}
                 onEdit={openEditForm}
                 onDelete={setDeleteTarget}
                 onToggleVisibility={handleToggleVisibility}

@@ -799,7 +799,10 @@
     "note_type_npc": "NPC",
     "note_type_session_recap": "Recap",
     "note_type_secret": "Secret",
-    "note_type_plot_hook": "Plot Hook"
+    "note_type_plot_hook": "Plot Hook",
+    "related_locations": "Locations mentioned",
+    "related_factions": "Factions mentioned",
+    "related_quests": "Quests mentioned"
   },
   "links": {
     "related_npcs": "Related NPCs",

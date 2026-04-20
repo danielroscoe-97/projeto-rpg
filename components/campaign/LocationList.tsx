@@ -20,6 +20,7 @@ import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
 import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
 import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
 import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
+import { useCampaignNotesIndex } from "@/lib/hooks/useCampaignNotesIndex";
 import { selectCounterpartyIds } from "@/lib/types/entity-links";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignLocation } from "@/lib/types/mind-map";
@@ -90,6 +91,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
   const { npcs } = useCampaignNpcs(campaignId);
   const { factions } = useCampaignFactions(campaignId);
   const { edges } = useCampaignEdges(campaignId);
+  const { notes: notesIndex } = useCampaignNotesIndex(campaignId);
 
   // Per-location relations derived from edges: inhabitants (npcs with
   // outgoing lives_in → location) + hqFactions (factions with outgoing
@@ -117,6 +119,30 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
     }
     return map;
   }, [edges, npcs, locations]);
+
+  const locationRelatedNotesMap = useMemo<Map<string, Array<{ id: string; title: string }>>>(() => {
+    const noteById = new Map(notesIndex.map((n) => [n.id, n]));
+    const map = new Map<string, Array<{ id: string; title: string }>>();
+    for (const loc of locations) {
+      const ids = selectCounterpartyIds(
+        edges,
+        { type: "location", id: loc.id },
+        {
+          direction: "incoming",
+          counterpartyType: "note",
+          relationship: "mentions",
+        },
+      );
+      map.set(
+        loc.id,
+        ids
+          .map((id) => noteById.get(id))
+          .filter((n): n is NonNullable<typeof n> => !!n)
+          .map((n) => ({ id: n.id, title: n.title })),
+      );
+    }
+    return map;
+  }, [edges, notesIndex, locations]);
 
   const locationHqFactionsMap = useMemo<Map<string, Array<{ id: string; name: string }>>>(() => {
     const factionById = new Map(factions.map((f) => [f.id, f]));
@@ -397,6 +423,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                     isEditable={isEditable}
                     inhabitantNpcs={locationInhabitantsMap.get(loc.id) ?? []}
                     hqFactions={locationHqFactionsMap.get(loc.id) ?? []}
+                    relatedNotes={locationRelatedNotesMap.get(loc.id) ?? []}
                     onEdit={openEditForm}
                     onDelete={setDeleteTarget}
                     onToggleVisibility={handleToggleVisibility}
@@ -421,6 +448,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
               isEditable={isEditable}
               inhabitantNpcs={locationInhabitantsMap.get(loc.id) ?? []}
               hqFactions={locationHqFactionsMap.get(loc.id) ?? []}
+              relatedNotes={locationRelatedNotesMap.get(loc.id) ?? []}
               onEdit={openEditForm}
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}

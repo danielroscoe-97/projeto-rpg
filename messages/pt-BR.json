@@ -799,7 +799,10 @@
     "note_type_npc": "NPC",
     "note_type_session_recap": "Resumo",
     "note_type_secret": "Segredo",
-    "note_type_plot_hook": "Gancho"
+    "note_type_plot_hook": "Gancho",
+    "related_locations": "Locais mencionados",
+    "related_factions": "Facções mencionadas",
+    "related_quests": "Quests mencionadas"
   },
   "links": {
     "related_npcs": "NPCs Relacionados",

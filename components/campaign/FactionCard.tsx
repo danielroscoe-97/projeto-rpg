@@ -12,6 +12,7 @@ import {
   ChevronUp,
   MapPin,
   Users,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
@@ -19,6 +20,11 @@ import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
 interface EntityRefItem {
   id: string;
   name: string;
+}
+
+interface RelatedNote {
+  id: string;
+  title: string;
 }
 
 const ALIGNMENT_LEFT_BORDER: Record<FactionAlignment, string> = {
@@ -46,6 +52,8 @@ interface FactionCardProps {
   sede?: EntityRefItem | null;
   /** Member NPCs (member_of edge sources). Fase 3d. */
   members?: EntityRefItem[];
+  /** Notes that `mentions` this faction (Fase 3e). */
+  relatedNotes?: RelatedNote[];
   onEdit: (faction: CampaignFaction) => void;
   onDelete: (faction: CampaignFaction) => void;
   onToggleVisibility: (faction: CampaignFaction) => void;
@@ -58,16 +66,19 @@ export function FactionCard({
   isEditable,
   sede,
   members,
+  relatedNotes,
   onEdit,
   onDelete,
   onToggleVisibility,
   onCardClick,
 }: FactionCardProps) {
   const t = useTranslations("factions");
+  const tGraph = useTranslations("entity_graph");
   const [expanded, setExpanded] = useState(false);
 
   const memberCount = members?.length ?? 0;
-  const hasRelations = !!sede || memberCount > 0;
+  const notesCount = relatedNotes?.length ?? 0;
+  const hasRelations = !!sede || memberCount > 0 || notesCount > 0;
   const hasExpandableContent = !!faction.description || hasRelations;
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -277,6 +288,24 @@ export function FactionCard({
                     >
                       <Users className="w-3 h-3" />
                       {m.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {notesCount > 0 && (
+              <div data-testid={`faction-related-notes-${faction.id}`}>
+                <p className="text-[11px] font-medium text-muted-foreground/60 mb-1.5">
+                  {tGraph("notes_about_this")}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {relatedNotes!.map((n) => (
+                    <span
+                      key={n.id}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-slate-500/10 text-slate-300 border border-slate-500/20"
+                    >
+                      <FileText className="w-3 h-3" />
+                      {n.title || n.id.slice(0, 6)}
                     </span>
                   ))}
                 </div>
