@@ -20,6 +20,12 @@ import type { RulesetVersion } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
 import { CompendiumLoginNudge, type CompendiumNudgeMode } from "@/components/player/CompendiumLoginNudge";
 import { VersionBadge } from "@/components/ui/VersionBadge";
+import {
+  matchesSource,
+  MONSTER_SOURCE_FILTER_STORAGE_KEY,
+  type MonsterSourceFilter,
+} from "@/lib/srd/monster-source-filter";
+import { useContentAccess } from "@/lib/hooks/use-content-access";
 // S5.2 — Favorites integration (ff_favorites_v1)
 import { isFeatureFlagEnabled } from "@/lib/flags";
 import { useFavorites } from "@/lib/favorites/use-favorites";
@@ -175,6 +181,52 @@ export function PlayerCompendiumBrowser({
   // Monster filters
   const [monsterNameFilter, setMonsterNameFilter] = useState("");
   const [monsterDisplayCount, setMonsterDisplayCount] = useState(PAGE_SIZE);
+  // D2 — Source bucket filter (SRD 2014 / SRD 2024 / MAD / non-SRD).
+  // Hydrate synchronously from localStorage to avoid a first-paint flash
+  // where the chip looks unselected while the row already reflects the
+  // persisted choice.
+  const [monsterSourceFilter, setMonsterSourceFilter] = useState<MonsterSourceFilter>(
+    () => {
+      if (typeof window === "undefined") return "all";
+      try {
+        const raw = window.localStorage.getItem(MONSTER_SOURCE_FILTER_STORAGE_KEY);
+        if (
+          raw === "all" ||
+          raw === "srd_2014" ||
+          raw === "srd_2024" ||
+          raw === "mad" ||
+          raw === "nonsrd"
+        ) {
+          return raw;
+        }
+      } catch {
+        /* ignore — ITP/private mode */
+      }
+      return "all";
+    },
+  );
+  const { canAccess } = useContentAccess();
+
+  // D2 — persist + track filter changes (not fired on initial mount). The
+  // `results_count` is captured by the caller because only the render knows
+  // the final filtered length.
+  const applyMonsterSourceFilter = useCallback(
+    (next: MonsterSourceFilter, resultsCount: number) => {
+      setMonsterSourceFilter(next);
+      setMonsterDisplayCount(PAGE_SIZE);
+      try {
+        window.localStorage.setItem(MONSTER_SOURCE_FILTER_STORAGE_KEY, next);
+      } catch {
+        /* ignore — ITP/private mode */
+      }
+      trackEvent("compendium:filter_changed", {
+        scope: "monsters",
+        filter: next,
+        results_count: resultsCount,
+      });
+    },
+    [],
+  );
 
   // Condition filter
   const [conditionFilter, setConditionFilter] = useState("");
@@ -330,8 +382,11 @@ export function PlayerCompendiumBrowser({
         result = monsterHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
       }
     }
+    if (monsterSourceFilter !== "all") {
+      result = result.filter((m) => matchesSource(m, monsterSourceFilter));
+    }
     return [...result].sort((a, b) => a.name.localeCompare(b.name));
-  }, [monsters, monsterHaystack, monsterNameFilter]);
+  }, [monsters, monsterHaystack, monsterNameFilter, monsterSourceFilter]);
 
   // Condition filtering
   const filteredConditions = useMemo(() => {
@@ -1730,6 +1785,68 @@ export function PlayerCompendiumBrowser({
                       </button>
                     )}
                   </div>
+
+                  {/* D2 — Source bucket filter. Chips mirror the spells-tab
+                      version segmented control for visual parity. */}
+                  <div
+                    className="flex items-center gap-1 mt-2 flex-wrap"
+                    role="group"
+                    aria-label={t("compendium_source_label")}
+                    data-testid="compendium-monster-source-filter"
+                  >
+                    <span className="text-[10px] text-muted-foreground/60 mr-1">
+                      {t("compendium_source_label")}:
+                    </span>
+                    {(
+                      [
+                        { value: "all", label: t("compendium_source_all") },
+                        { value: "srd_2014", label: t("compendium_source_srd_2014") },
+                        { value: "srd_2024", label: t("compendium_source_srd_2024") },
+                        { value: "mad", label: t("compendium_source_mad") },
+                        ...(canAccess
+                          ? [
+                              {
+                                value: "nonsrd" as const,
+                                label: t("compendium_source_nonsrd"),
+                              },
+                            ]
+                          : []),
+                      ] as Array<{ value: MonsterSourceFilter; label: string }>
+                    ).map(({ value, label }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          // compute count against the canonical monsters list
+                          // without source filter (NOT filteredMonsters, which
+                          // is still stale w/ the previous filter).
+                          const baseline = monsterNameFilter
+                            ? monsterHaystack
+                                .filter((h) =>
+                                  h.norm.includes(normalizeForSearch(monsterNameFilter)),
+                                )
+                                .map((h) => h.item)
+                            : monsters;
+                          const projected =
+                            value === "all"
+                              ? baseline.length
+                              : baseline.filter((m) => matchesSource(m, value)).length;
+                          applyMonsterSourceFilter(value, projected);
+                        }}
+                        aria-pressed={monsterSourceFilter === value}
+                        data-testid={`compendium-monster-source-${value}`}
+                        className={cn(
+                          "px-1.5 py-0.5 text-[10px] rounded border transition-colors",
+                          monsterSourceFilter === value
+                            ? "bg-white/10 border-white/20 text-foreground"
+                            : "border-transparent text-muted-foreground/50 hover:text-muted-foreground",
+                        )}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+
                   <p className="text-[10px] text-muted-foreground/60 mt-1">
                     {filteredMonsters.length} {t("compendium_monsters_count")}
                   </p>

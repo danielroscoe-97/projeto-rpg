@@ -61,6 +61,8 @@ const ALLOWED_EVENTS = new Set([
   "compendium:login_nudge_shown",
   "compendium:login_nudge_cta_clicked",
   "compendium:login_nudge_dismissed",
+  // Compendium — D2 edition/source filter chips
+  "compendium:filter_changed",
   // Public search
   "public:omnisearch",
   // Settings
