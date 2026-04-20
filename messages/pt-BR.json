@@ -1387,7 +1387,14 @@
       "type_removal_denied": "Remoção negada"
     },
     "notes": {
-      "privacy_notice": "Suas notas são privadas — o mestre não pode ver",
+      "privacy_notice": "Você escolhe quais notas compartilhar com o mestre",
+      "visibility": {
+        "private": "Privada",
+        "shared_with_dm": "Visível ao mestre",
+        "toggle_share": "Compartilhar com mestre",
+        "toggle_unshare": "Tornar privada",
+        "badge_shared": "Mestre pode ver"
+      },
       "notes_tablist_label": "Notas do personagem",
       "tab_quick": "Rápidas",
       "tab_journal": "Diário",
