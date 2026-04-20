@@ -19,6 +19,8 @@ export interface MyCampaignCardData {
   name: string;
   coverImageUrl: string | null;
   dmName: string | null;
+  /** @deprecated C5 — never populated by MyCampaignsServer (email leak).
+   *  Kept in the interface for backward compat; do not render this value. */
   dmEmail: string;
   sessionCount: number;
   lastSessionAt: string | null;
@@ -120,7 +122,9 @@ export function MyCampaignsSection({
                 <div className="space-y-1.5 p-3">
                   <p className="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
                     <Users aria-hidden="true" className="h-3 w-3" />
-                    {t("dmLabel", { dm: c.dmName || c.dmEmail || "—" })}
+                    {/* C5: never display foreign user's email. Use display_name
+                        only; fall back to a generic placeholder. */}
+                    {t("dmLabel", { dm: c.dmName || "—" })}
                   </p>
                   <div className="flex items-center justify-between text-[11px] text-muted-foreground/80">
                     <span className="inline-flex items-center gap-1">

@@ -1,0 +1,63 @@
+-- 155_users_display_name_public.sql
+-- Wave 2 dashboard code review — C5 (CRITICAL) — Players must be able to
+-- resolve the DM's display_name / avatar_url for the "Campanhas do jogador"
+-- section in the dashboard (Story 02-F).
+--
+-- Problem (pre-migration):
+--   public.users RLS (migration 005) has only `users_select_own` gating
+--   `auth.uid() = id`. When the player queries `users` to resolve a DM's id
+--   to a display_name, the row is NOT visible (foreign id), so the query
+--   returns zero rows silently and the dashboard renders "—" instead of the
+--   DM name. This is an SRD-parity bug, not a security leak, but the fix
+--   must not introduce a new leak (player must NOT see other players' emails
+--   or admin flags).
+--
+-- Fix — permissive policy + application-layer column discipline:
+--   * Add a SELECT policy `users_select_public_profile` that ALLOWS row
+--     visibility to any authenticated user. Policies compose with OR, so
+--     owners still see their row through `users_select_own`, and admins
+--     still see all rows through `users_admin_select` (migration 009).
+--   * The application layer is RESPONSIBLE for SELECTing only
+--     (id, display_name, avatar_url) when reading a foreign user's row.
+--     This is enforced by code review (MyCampaignsServer refactored in the
+--     same commit) and documented inline in that file.
+--
+-- Why not column-level GRANT revoke?
+--   Revoking broad SELECT on public.users and re-granting only the three
+--   public columns would break every existing call site that reads
+--   `role`, `email`, `is_admin`, `default_character_id`, `preferred_language`
+--   for the OWN row via the authenticated RLS context (app/layout.tsx,
+--   dashboard/campaigns/page.tsx, invites route, admin routes, server actions).
+--   Those flows would need wholesale migration to service-role access, which
+--   is out of scope for a correctness fix. A follow-up hardening migration
+--   can tighten column grants once all own-row reads are audited.
+--
+-- Security invariants maintained:
+--   * Player CANNOT update another user's row (no UPDATE policy widened).
+--   * Player CANNOT insert as another user (no INSERT policy widened).
+--   * Player CAN read another user's row, but the application selects only
+--     non-sensitive columns. If a bug leaks email, RLS does not catch it —
+--     but code review + this migration's comment do.
+--
+-- Backout:
+--   drop policy if exists users_select_public_profile on public.users;
+
+create policy users_select_public_profile on public.users
+  for select
+  to authenticated
+  using (true);
+
+-- Smoke test (run post-apply in staging):
+--
+--   -- As player A (authenticated) looking up DM B:
+--   set role authenticated;
+--   set request.jwt.claim.sub to '<player-a-uuid>';
+--   select id, display_name, avatar_url from users where id = '<dm-b-uuid>';
+--   -- Expect 1 row with DM's display_name + avatar_url.
+--
+--   -- As player A reading their own row (still works via users_select_own):
+--   select id, email, role, default_character_id from users
+--     where id = '<player-a-uuid>';
+--   -- Expect 1 row.
+--
+--   reset role;

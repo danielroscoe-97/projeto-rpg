@@ -127,4 +127,37 @@ describe("sessions page cursor format", () => {
     expect(parseCursorParam("")).toBeNull();
     expect(parseCursorParam("not-base64!!!")).toBeNull();
   });
+
+  // Wave 2 M9+M10 — verify the cursor is a keyset (createdAt, sessionId) and
+  // NOT a combatant timestamp. The encoded cursor must contain the session
+  // id as the tiebreaker component so the follow-up query can do
+  // `created_at < X OR (created_at = X AND id < Y)`.
+  it("encodeCursor preserves sessionId as the tiebreaker component", async () => {
+    const { encodeCursor } = await import(
+      "@/components/dashboard/SessionHistoryFullPageServer"
+    );
+    const { parseCursorParam } = await import(
+      "@/app/app/dashboard/sessions/page"
+    );
+    const encoded = encodeCursor({
+      createdAt: "2026-04-10T18:00:00.000Z",
+      id: "sess-tiebreak-1",
+    });
+    const decoded = parseCursorParam(encoded);
+    expect(decoded).not.toBeNull();
+    expect(decoded?.id).toBe("sess-tiebreak-1");
+    expect(decoded?.createdAt).toBe("2026-04-10T18:00:00.000Z");
+  });
+
+  // Wave 2 M10 — two sessions created in the same millisecond must produce
+  // DIFFERENT cursors (tiebreaker prevents cursor collisions).
+  it("encodeCursor produces distinct cursors for same-ms sessions with different ids", async () => {
+    const { encodeCursor } = await import(
+      "@/components/dashboard/SessionHistoryFullPageServer"
+    );
+    const sameCreatedAt = "2026-04-10T18:00:00.000Z";
+    const a = encodeCursor({ createdAt: sameCreatedAt, id: "sess-a" });
+    const b = encodeCursor({ createdAt: sameCreatedAt, id: "sess-b" });
+    expect(a).not.toBe(b);
+  });
 });
