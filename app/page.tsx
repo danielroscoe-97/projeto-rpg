@@ -209,7 +209,7 @@ function HeroSection({ isLoggedIn, t }: { isLoggedIn: boolean; t: TFunc }) {
         <div className="flex flex-col items-center gap-3 pt-2 animate-fade-in-up w-full max-w-md mx-auto" style={{ animationDelay: "0.2s" }}>
           {/* Primary escape-hatch — elongated, full width, gold-accented */}
           <Link
-            href={isLoggedIn ? "/app/session/new?quick=true" : "/try"}
+            href={isLoggedIn ? "/app/combat/new?quick=true" : "/try"}
             className="group relative overflow-hidden w-full py-3 bg-gold/[0.08] text-foreground font-semibold text-lg rounded-lg border border-gold/25 shadow-[0_0_20px_rgba(212,168,83,0.08)] hover:bg-gold/[0.14] hover:border-gold/40 hover:text-gold hover:shadow-[0_0_24px_rgba(212,168,83,0.15)] transition-all duration-[200ms] min-h-[48px] inline-flex items-center justify-center gap-2 btn-shimmer"
           >
             {isLoggedIn ? t("cta_quick_combat") : t("cta_try_free")}
@@ -1388,7 +1388,7 @@ function FinalCtaSection({ isLoggedIn, t }: { isLoggedIn: boolean; t: TFunc }) {
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
           </Link>
           <Link
-            href={isLoggedIn ? "/app/session/new?quick=true" : "/try"}
+            href={isLoggedIn ? "/app/combat/new?quick=true" : "/try"}
             className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 hover:underline transition-colors inline-flex items-center gap-1 min-h-[44px]"
           >
             {isLoggedIn ? t("cta_quick_combat") : t("cta_try_no_account")}
