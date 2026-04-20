@@ -1952,13 +1952,26 @@ export function PlayerJoinClient({
     const checkDmPresence = async () => {
       if (document.visibilityState === "hidden") return;
       try {
-        // Use lightweight dm-presence endpoint (1 query) instead of full /state (5 queries)
-        const res = await fetch(`/api/session/${sessionId}/dm-presence`);
-        if (!res.ok) { delay = Math.min(delay * 2, 120_000); return; }
+        // C2/F1.c: route through orchestrator so this loop shares the circuit
+        // breaker + rate-limit budget with the /state fetcher. Background
+        // priority (15s min-interval) matches the loop's 30s cadence; if the
+        // circuit is open due to /state failures, dm-presence also stands down.
+        const data = await fetchOrchestrator.fetch({
+          encounterId: sessionId,
+          priority: "background",
+          caller: "dm_presence_poll",
+          path: "dm-presence",
+        });
+        if (data === null) {
+          // Dropped by orchestrator (throttle / dedup / circuit) or network
+          // failure. Back off and retry later.
+          delay = Math.min(delay * 2, 120_000);
+          return;
+        }
         delay = 30_000; // Reset on success
-        const data = await res.json();
-        if (data?.dm_last_seen_at) {
-          const lastSeen = new Date(data.dm_last_seen_at).getTime();
+        const dmLastSeenAt = (data as { dm_last_seen_at?: unknown }).dm_last_seen_at;
+        if (typeof dmLastSeenAt === "string" && dmLastSeenAt.length > 0) {
+          const lastSeen = new Date(dmLastSeenAt).getTime();
           dmLastSeenRef.current = lastSeen;
           // DM is considered offline if no heartbeat for 90s (3 missed beats at 30s interval)
           setDmOffline(Date.now() - lastSeen > 90_000);
