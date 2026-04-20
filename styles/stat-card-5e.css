@@ -95,15 +95,18 @@
   outline-offset: 2px;
 }
 
-/* Close button — promoted to 44x44 w/ accent ring for discoverability */
+/* Close button — promoted to 44x44 w/ accent ring for discoverability.
+   Beta-4 feedback (Lucas Galupo 2026-04-16): glyph was too thin/muted.
+   Fix: ✕ (U+2715, heavier) + 22px + border 2px + gold accent background. */
 .stat-card-5e .card-toolbar button.toolbar-close {
   width: 44px;
   height: 44px;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 900;
   color: var(--5e-text);
-  border-color: var(--5e-accent-gold);
-  background-color: rgba(201, 169, 89, 0.08);
+  border: 2px solid var(--5e-accent-gold);
+  background-color: rgba(201, 169, 89, 0.18);
+  line-height: 1;
 }
 
 .stat-card-5e .card-toolbar button.toolbar-close:hover {

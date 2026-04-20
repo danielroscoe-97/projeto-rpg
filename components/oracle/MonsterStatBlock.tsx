@@ -359,7 +359,7 @@ export function MonsterStatBlock({
               title="Close"
               className="toolbar-close"
             >
-              ×
+              ✕
             </button>
           )}
         </div>

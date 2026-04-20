@@ -1409,7 +1409,10 @@ export function GuestCombatClient() {
             type: "system",
             actorName: "",
             targetName: target.name,
-            description: `${polyBefore.form_name} was destroyed; ${target.name} reverts to original form`,
+            description: t("polymorph.form_destroyed", {
+              form_name: polyBefore.form_name,
+              name: target.name,
+            }),
           });
         }
       }

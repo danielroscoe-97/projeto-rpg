@@ -43,6 +43,7 @@ export default async function BlogOgImage({
         {/* Radial glow */}
         <div
           style={{
+            display: "flex",
             position: "absolute",
             top: -80,
             right: -100,
@@ -57,6 +58,7 @@ export default async function BlogOgImage({
         {/* Border frame */}
         <div
           style={{
+            display: "flex",
             position: "absolute",
             inset: 24,
             border: "1.5px solid rgba(212,168,83,0.15)",

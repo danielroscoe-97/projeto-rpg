@@ -17,6 +17,7 @@ import { HeartPulse, Skull, Sword } from "lucide-react";
 import { trackEvent } from "@/lib/analytics/track";
 import { useFavorites } from "@/lib/favorites/use-favorites";
 import { FavoriteStar } from "@/components/favorites/FavoriteStar";
+import { favoriteSlug as slugify } from "@/lib/favorites/slug";
 import type { SrdMonster, SrdItem, SrdCondition } from "@/lib/srd/srd-loader";
 
 type Row =
@@ -126,12 +127,3 @@ function KindIcon({ kind }: { kind: "monster" | "item" | "condition" }) {
   return <HeartPulse className="w-4 h-4 text-emerald-400/70 shrink-0" aria-hidden />;
 }
 
-/** Match the canonical slug format used on favorite writes (see use-favorites callers). */
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}

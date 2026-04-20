@@ -24,19 +24,7 @@ import { isFeatureFlagEnabled } from "@/lib/flags";
 import { useFavorites } from "@/lib/favorites/use-favorites";
 import { FavoriteStar } from "@/components/favorites/FavoriteStar";
 import { FavoritesTab } from "@/components/favorites/FavoritesTab";
-
-/**
- * Canonical slug format used by the favorites store. Mirrors the slugify in
- * FavoritesTab so `<FavoriteStar>` writes and `FavoritesTab` reads agree.
- */
-function favoriteSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import { favoriteSlug } from "@/lib/favorites/slug";
 
 const LEVELS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 const PAGE_SIZE = 50;
