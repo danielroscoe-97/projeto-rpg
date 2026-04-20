@@ -42,6 +42,11 @@ export interface Database {
           display_name: string | null;
           is_admin: boolean;
           preferred_language: string;
+          role: "player" | "dm" | "both";
+          default_character_id: string | null;
+          last_session_at: string | null;
+          avatar_url: string | null;
+          upgrade_failed_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -51,6 +56,11 @@ export interface Database {
           display_name?: string | null;
           is_admin?: boolean;
           preferred_language?: string;
+          role?: "player" | "dm" | "both";
+          default_character_id?: string | null;
+          last_session_at?: string | null;
+          avatar_url?: string | null;
+          upgrade_failed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -60,6 +70,11 @@ export interface Database {
           display_name?: string | null;
           is_admin?: boolean;
           preferred_language?: string;
+          role?: "player" | "dm" | "both";
+          default_character_id?: string | null;
+          last_session_at?: string | null;
+          avatar_url?: string | null;
+          upgrade_failed_at?: string | null;
           updated_at?: string;
         };
       };
@@ -99,8 +114,9 @@ export interface Database {
       player_characters: {
         Row: {
           id: string;
-          campaign_id: string;
+          campaign_id: string | null;
           user_id: string | null;
+          claimed_by_session_token: string | null;
           name: string;
           max_hp: number;
           current_hp: number;
@@ -136,7 +152,9 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          campaign_id: string;
+          campaign_id?: string | null;
+          user_id?: string | null;
+          claimed_by_session_token?: string | null;
           name: string;
           max_hp: number;
           current_hp: number;
@@ -171,7 +189,9 @@ export interface Database {
           updated_at?: string;
         };
         Update: {
-          campaign_id?: string;
+          campaign_id?: string | null;
+          user_id?: string | null;
+          claimed_by_session_token?: string | null;
           name?: string;
           max_hp?: number;
           current_hp?: number;
@@ -1015,6 +1035,7 @@ export interface Database {
           token: string;
           player_name: string | null;
           anon_user_id: string | null;
+          user_id: string | null;
           is_active: boolean;
           created_at: string;
           last_seen_at: string | null;
@@ -1025,6 +1046,7 @@ export interface Database {
           token: string;
           player_name?: string | null;
           anon_user_id?: string | null;
+          user_id?: string | null;
           is_active?: boolean;
           created_at?: string;
           last_seen_at?: string | null;
@@ -1034,6 +1056,7 @@ export interface Database {
           token?: string;
           player_name?: string | null;
           anon_user_id?: string | null;
+          user_id?: string | null;
           is_active?: boolean;
           last_seen_at?: string | null;
         };

@@ -164,6 +164,7 @@ function NewEncounterPageInner() {
         id: `__placeholder__${m.user_id}`,
         campaign_id: campaignId,
         user_id: m.user_id,
+        claimed_by_session_token: null,
         name: (userMap.get(m.user_id) ?? "Jogador") as string,
         max_hp: 0,
         current_hp: 0,
