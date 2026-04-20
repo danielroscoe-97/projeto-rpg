@@ -34,8 +34,11 @@ describe("NpcCard", () => {
 
   it("renders stat badges when stats are present", () => {
     render(<NpcCard npc={baseNpc} {...handlers} />);
-    expect(screen.getByTestId("npc-stat-hp")).toHaveTextContent("HP 80");
-    expect(screen.getByTestId("npc-stat-ac")).toHaveTextContent("AC 15");
+    // Badges render the numeric value alongside a Lucide icon (Heart, Shield,
+    // Star) that supplies the semantic label visually. Assert the value is
+    // present — the icon is an <svg> without text content.
+    expect(screen.getByTestId("npc-stat-hp")).toHaveTextContent("80");
+    expect(screen.getByTestId("npc-stat-ac")).toHaveTextContent("15");
     expect(screen.getByTestId("npc-stat-cr")).toHaveTextContent("CR 5");
   });
 

@@ -13,15 +13,41 @@ jest.mock("next-intl", () => ({
   },
 }));
 
-// Mock supabase client
+// Mock supabase client (covers `.from()` AND the Realtime `.channel()` API
+// CampaignMindMap subscribes to for mindmap broadcasts — prior to this, the
+// test hit "supabase.channel is not a function").
 const mockSelect = jest.fn();
 const mockFrom = jest.fn(() => ({
   select: mockSelect,
 }));
+const mockUnsubscribe = jest.fn();
+const mockChannel = jest.fn(() => {
+  const chain: {
+    on: jest.Mock;
+    subscribe: jest.Mock;
+    send: jest.Mock;
+    unsubscribe: jest.Mock;
+  } = {
+    on: jest.fn(() => chain),
+    subscribe: jest.fn(() => ({ unsubscribe: mockUnsubscribe })),
+    send: jest.fn(),
+    unsubscribe: mockUnsubscribe,
+  };
+  return chain;
+});
+const mockRemoveChannel = jest.fn();
 
 jest.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     from: mockFrom,
+    channel: mockChannel,
+    removeChannel: mockRemoveChannel,
+    auth: {
+      getUser: jest.fn().mockResolvedValue({
+        data: { user: { id: "test-user" } },
+        error: null,
+      }),
+    },
   }),
 }));
 
