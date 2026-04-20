@@ -1384,7 +1384,9 @@
       "empty": "Nenhuma notificação",
       "bell_label": "Notificações",
       "type_removal_approved": "Item removido",
-      "type_removal_denied": "Remoção negada"
+      "type_removal_denied": "Remoção negada",
+      "type_combat_invite": "Combate iniciado!",
+      "combat_invite_message": "{dm} iniciou {encounter} em {campaign}"
     },
     "notes": {
       "privacy_notice": "Você escolhe quais notas compartilhar com o mestre",
@@ -4280,5 +4282,14 @@
     "toast_onboarding": "Onboarding completo",
     "toast_tour": "Tour completo",
     "max_rank": "Rank Máximo!"
+  },
+  "combat_invite_toast": {
+    "title": "{dm} iniciou o combate",
+    "title_short": "{dm} iniciou o combate",
+    "subtitle": "{encounter} — {campaign}",
+    "cta_join": "Entrar no combate",
+    "cta_dismiss": "Depois",
+    "default_dm": "O Mestre",
+    "default_encounter_fallback": "Combate"
   }
 }

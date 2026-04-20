@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Bell, CheckCircle, XCircle, Package } from "lucide-react";
+import { Bell, CheckCircle, XCircle, Package, Swords } from "lucide-react";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import type { PlayerNotification } from "@/lib/types/database";
 
@@ -13,11 +14,13 @@ interface NotificationBellProps {
 const ICON_MAP: Record<string, typeof CheckCircle> = {
   removal_approved: CheckCircle,
   removal_denied: XCircle,
+  combat_invite: Swords,
 };
 
 const COLOR_MAP: Record<string, string> = {
   removal_approved: "text-emerald-400",
   removal_denied: "text-red-400",
+  combat_invite: "text-amber-400",
 };
 
 export function NotificationBell({ userId }: NotificationBellProps) {
@@ -103,6 +106,7 @@ export function NotificationBell({ userId }: NotificationBellProps) {
 
 function NotificationRow({ notification }: { notification: PlayerNotification }) {
   const t = useTranslations("player_hq.notifications");
+  const router = useRouter();
   const Icon = ICON_MAP[notification.type] ?? Package;
   const color = COLOR_MAP[notification.type] ?? "text-muted-foreground";
   const isUnread = !notification.read_at;
@@ -111,12 +115,44 @@ function NotificationRow({ notification }: { notification: PlayerNotification })
   const titleKey = `type_${notification.type}`;
   const resolvedTitle = t.has(titleKey) ? t(titleKey) : notification.title;
 
+  // W5 (F19): combat_invite rows are clickable — navigate to /join/{token}
+  // using meta.join_token when present.
+  const isCombatInvite = notification.type === "combat_invite";
+  const joinToken =
+    isCombatInvite &&
+    typeof notification.meta === "object" &&
+    notification.meta !== null &&
+    typeof (notification.meta as { join_token?: unknown }).join_token ===
+      "string"
+      ? (notification.meta as { join_token: string }).join_token
+      : null;
+
+  const clickable = Boolean(joinToken);
+
+  const handleActivate = () => {
+    if (joinToken) {
+      router.push(`/join/${joinToken}`);
+    }
+  };
+
   return (
     <div
       className={`flex items-start gap-3 px-4 py-3 transition-colors ${
         isUnread ? "bg-white/[0.03]" : ""
-      }`}
-      role="menuitem"
+      } ${clickable ? "cursor-pointer hover:bg-white/[0.05] focus:bg-white/[0.05]" : ""}`}
+      role={clickable ? "menuitem button" : "menuitem"}
+      tabIndex={clickable ? 0 : -1}
+      onClick={clickable ? handleActivate : undefined}
+      onKeyDown={
+        clickable
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleActivate();
+              }
+            }
+          : undefined
+      }
     >
       <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${color}`} />
       <div className="flex-1 min-w-0">

@@ -1384,7 +1384,9 @@
       "empty": "No notifications",
       "bell_label": "Notifications",
       "type_removal_approved": "Item removed",
-      "type_removal_denied": "Removal denied"
+      "type_removal_denied": "Removal denied",
+      "type_combat_invite": "Combat started!",
+      "combat_invite_message": "{dm} started {encounter} in {campaign}"
     },
     "notes": {
       "privacy_notice": "You choose which notes to share with the DM",
@@ -4280,5 +4282,14 @@
     "toast_onboarding": "Onboarding completed",
     "toast_tour": "Tour completed",
     "max_rank": "Max Rank!"
+  },
+  "combat_invite_toast": {
+    "title": "{dm} started combat",
+    "title_short": "{dm} started combat",
+    "subtitle": "{encounter} — {campaign}",
+    "cta_join": "Join combat",
+    "cta_dismiss": "Later",
+    "default_dm": "Your DM",
+    "default_encounter_fallback": "Combat"
   }
 }
