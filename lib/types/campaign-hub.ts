@@ -12,6 +12,7 @@ export type SectionId =
   | "encounters"
   | "quests"
   | "players"
+  | "player-notes"
   | "npcs"
   | "locations"
   | "factions"
@@ -25,6 +26,7 @@ export const VALID_SECTIONS: readonly SectionId[] = [
   "encounters",
   "quests",
   "players",
+  "player-notes",
   "npcs",
   "locations",
   "factions",
@@ -40,6 +42,7 @@ export const SECTION_NAV_ORDER: readonly SectionId[] = [
   "encounters",
   "quests",
   "players",
+  "player-notes",
   "npcs",
   "notes",
   "locations",

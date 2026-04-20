@@ -14,6 +14,7 @@ import {
   Package,
   Network,
   LayoutGrid,
+  Scroll,
   Settings,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -26,6 +27,7 @@ const NAV_ITEMS: { id: SectionId; icon: LucideIcon; labelKey: string; dmOnly?: b
   { id: "encounters", icon: Swords, labelKey: "hub_card_encounters" },
   { id: "quests", icon: ScrollText, labelKey: "hub_card_quests" },
   { id: "players", icon: Users, labelKey: "hub_card_players" },
+  { id: "player-notes", icon: Scroll, labelKey: "hub_card_player_notes", dmOnly: true },
   { id: "npcs", icon: UserCircle, labelKey: "hub_card_npcs" },
   { id: "locations", icon: MapPin, labelKey: "hub_card_locations" },
   { id: "factions", icon: Flag, labelKey: "hub_card_factions" },

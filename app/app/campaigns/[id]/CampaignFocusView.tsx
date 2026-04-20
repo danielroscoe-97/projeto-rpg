@@ -12,6 +12,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AlertTriangle } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
+import { PlayerNotesInspector } from "@/components/campaign/PlayerNotesInspector";
 import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
 import { NpcList } from "@/components/campaign/NpcList";
@@ -91,12 +92,22 @@ export function CampaignFocusView({
 
   // Guard DM-only sections — redirect non-owners back to overview
   useEffect(() => {
-    if (!isOwner && (section === "inventory" || section === "settings")) {
+    if (
+      !isOwner &&
+      (section === "inventory" ||
+        section === "settings" ||
+        section === "player-notes")
+    ) {
       router.replace(pathname);
     }
   }, [isOwner, section, router, pathname]);
 
-  if (!isOwner && (section === "inventory" || section === "settings")) {
+  if (
+    !isOwner &&
+    (section === "inventory" ||
+      section === "settings" ||
+      section === "player-notes")
+  ) {
     return null;
   }
 
@@ -123,6 +134,18 @@ export function CampaignFocusView({
             isOwner={isOwner}
           />
         );
+
+      case "player-notes":
+        return isOwner ? (
+          <PlayerNotesInspector
+            campaignId={campaignId}
+            dmUserId={userId}
+            players={characters.map((c) => ({
+              character_id: c.id,
+              name: c.name,
+            }))}
+          />
+        ) : null;
 
       case "encounters":
         return isOwner ? (
