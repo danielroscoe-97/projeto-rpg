@@ -13,10 +13,38 @@ import { trackEvent } from "@/lib/analytics/track";
 import { getAuthErrorKey } from "@/lib/auth/translate-error";
 import { GoogleOAuthButton } from "@/components/auth/GoogleOAuthButton";
 
+type LoginSuccessPayload = {
+  userId: string;
+};
+
+type Variant = "page" | "inline";
+
+export type LoginFormProps = React.ComponentPropsWithoutRef<"div"> & {
+  /**
+   * "page" (default) preserves the standalone page behavior — redirect on
+   * success, mount "Forgot password?" link and sign-up footer.
+   * "inline" is used inside `AuthModal` — no redirect, caller consumes
+   * success via `onSuccess`, and the sign-up footer is suppressed.
+   */
+  variant?: Variant;
+  onSuccess?: (payload: LoginSuccessPayload) => void;
+  /**
+   * Fired right before the Google OAuth redirect. Used by `AuthModal` to
+   * persist `upgradeContext` to localStorage and close the modal.
+   */
+  onRequestGoogleOAuth?: () => void;
+  /** Override the testid namespace — modal uses `auth.modal`. */
+  testIdPrefix?: string;
+};
+
 export function LoginForm({
   className,
+  variant = "page",
+  onSuccess,
+  onRequestGoogleOAuth,
+  testIdPrefix,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+}: LoginFormProps) {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
   const te = useTranslations("auth_errors");
@@ -33,6 +61,8 @@ export function LoginForm({
     return "/app/dashboard";
   }, [searchParams]);
 
+  const tid = (slot: string) => (testIdPrefix ? `${testIdPrefix}.${slot}` : undefined);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -40,12 +70,19 @@ export function LoginForm({
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       if (error) throw error;
       trackEvent("auth:login");
+
+      // Delegate redirect to caller when in inline mode.
+      if (variant === "inline" && onSuccess) {
+        onSuccess({ userId: data.user?.id ?? "" });
+        return;
+      }
+
       // Sync language preference from DB to cookie
       try {
         const res = await fetch("/api/user/language");
@@ -72,24 +109,36 @@ export function LoginForm({
     }
   };
 
+  const isInline = variant === "inline";
+  const googleRedirectTo = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    const params = new URLSearchParams();
+    if (nextUrl !== "/app/dashboard") params.set("next", nextUrl);
+    const qs = params.toString();
+    return `${window.location.origin}/auth/callback${qs ? `?${qs}` : ""}`;
+  }, [nextUrl]);
+
   return (
     <div className={cn("flex flex-col", className)} {...props}>
-      {/* Icon circle */}
-      <div className="flex justify-center mb-3">
-        <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
-          <svg className="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Title */}
-      <h2 className="font-display text-2xl text-center text-foreground tracking-wide mb-1">
-        {t("login_title")}
-      </h2>
-      <p className="text-center text-muted-foreground text-sm mb-4">
-        {t("login_description")}
-      </p>
+      {/* Page chrome — icon + title — suppressed in inline mode (the modal
+        carries its own header). */}
+      {!isInline && (
+        <>
+          <div className="flex justify-center mb-3">
+            <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
+              <svg className="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+              </svg>
+            </div>
+          </div>
+          <h2 className="font-display text-2xl text-center text-foreground tracking-wide mb-1">
+            {t("login_title")}
+          </h2>
+          <p className="text-center text-muted-foreground text-sm mb-4">
+            {t("login_description")}
+          </p>
+        </>
+      )}
 
       <form onSubmit={handleLogin} className="space-y-4">
         {/* Email */}
@@ -109,6 +158,7 @@ export function LoginForm({
             aria-describedby={error ? "login-error" : undefined}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            data-testid={tid("email-input")}
             className="bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/60 focus:ring-gold/50"
           />
         </div>
@@ -122,12 +172,14 @@ export function LoginForm({
               </svg>
               {t("password_label")}
             </label>
-            <Link
-              href="/auth/forgot-password"
-              className="text-[11px] text-muted-foreground/90 hover:text-gold transition-colors"
-            >
-              {t("forgot_password")}
-            </Link>
+            {!isInline && (
+              <Link
+                href="/auth/forgot-password"
+                className="text-[11px] text-muted-foreground/90 hover:text-gold transition-colors"
+              >
+                {t("forgot_password")}
+              </Link>
+            )}
           </div>
           <Input
             id="login-password"
@@ -138,13 +190,20 @@ export function LoginForm({
             aria-describedby={error ? "login-error" : undefined}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            data-testid={tid("password-input")}
             className="bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg focus:border-gold/60 focus:ring-gold/50"
           />
         </div>
 
         {/* Error */}
         {error && (
-          <p id="login-error" className="text-sm text-red-400" role="alert" aria-live="polite">
+          <p
+            id="login-error"
+            className="text-sm text-red-400"
+            role="alert"
+            aria-live="polite"
+            data-testid={tid("error")}
+          >
             {error}
           </p>
         )}
@@ -155,9 +214,10 @@ export function LoginForm({
           variant="gold"
           className="w-full min-h-[44px] text-sm"
           disabled={isLoading}
+          data-testid={tid("submit-button")}
         >
           {isLoading ? (
-            t("login_submitting")
+            <span data-testid={tid("loading")}>{t("login_submitting")}</span>
           ) : (
             <span className="flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -179,10 +239,12 @@ export function LoginForm({
         </div>
       </div>
 
-      {/* Google OAuth — pass next param through /auth/confirm */}
+      {/* Google OAuth — pass next param through /auth/callback */}
       <GoogleOAuthButton
         namespace="auth"
-        redirectTo={(() => {
+        data-testid={tid("oauth-google-button") ?? "google-oauth-button"}
+        beforeRedirect={onRequestGoogleOAuth}
+        redirectTo={googleRedirectTo ?? (() => {
           const origin = typeof window !== "undefined" ? window.location.origin : "";
           const params = new URLSearchParams();
           if (nextUrl !== "/app/dashboard") params.set("next", nextUrl);
@@ -191,13 +253,15 @@ export function LoginForm({
         })()}
       />
 
-      {/* Footer link */}
-      <p className="mt-4 text-center text-sm text-muted-foreground/90">
-        {t("no_account")}{" "}
-        <Link href="/auth/sign-up" className="text-gold underline underline-offset-4 hover:text-gold/80">
-          {t("signup_link")}
-        </Link>
-      </p>
+      {/* Footer link — only in page mode; modal renders its own switcher. */}
+      {!isInline && (
+        <p className="mt-4 text-center text-sm text-muted-foreground/90">
+          {t("no_account")}{" "}
+          <Link href="/auth/sign-up" className="text-gold underline underline-offset-4 hover:text-gold/80">
+            {t("signup_link")}
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

@@ -126,7 +126,21 @@
     "tab_signup": "Sign Up",
     "google_login": "Continue with Google",
     "google_login_loading": "Connecting...",
-    "or_separator": "or"
+    "or_separator": "or",
+    "modal": {
+      "dialog_title": "Welcome",
+      "dialog_description": "Sign in or create an account to keep your progress",
+      "tab_login": "Login",
+      "tab_signup": "Sign Up",
+      "display_name_label": "Display name",
+      "display_name_placeholder": "How should we call you?",
+      "upgrade_indicator": "You'll keep your character and progress",
+      "loading": "Working…",
+      "switch_to_login": "Already have an account? Log in",
+      "switch_to_signup": "Don't have an account? Sign up",
+      "upgrade_failed": "Couldn't finish upgrading. Please try again.",
+      "upgrade_success": "Account created and character saved."
+    }
   },
   "signup": {
     "role_selection_title": "How will you use Pocket DM?",

@@ -126,7 +126,21 @@
     "tab_signup": "Criar Conta",
     "google_login": "Continuar com Google",
     "google_login_loading": "Conectando...",
-    "or_separator": "ou"
+    "or_separator": "ou",
+    "modal": {
+      "dialog_title": "Bem-vindo",
+      "dialog_description": "Entre ou crie uma conta para manter seu progresso",
+      "tab_login": "Entrar",
+      "tab_signup": "Criar Conta",
+      "display_name_label": "Nome de exibição",
+      "display_name_placeholder": "Como devemos te chamar?",
+      "upgrade_indicator": "Seu personagem e progresso serão preservados",
+      "loading": "Processando…",
+      "switch_to_login": "Já tem conta? Fazer login",
+      "switch_to_signup": "Não tem conta? Criar conta",
+      "upgrade_failed": "Não foi possível concluir o upgrade. Tente novamente.",
+      "upgrade_success": "Conta criada e personagem salvo."
+    }
   },
   "signup": {
     "role_selection_title": "Como você vai usar o Pocket DM?",

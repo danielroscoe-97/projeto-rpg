@@ -13,6 +13,12 @@ interface GoogleOAuthButtonProps {
   className?: string;
   /** Test ID */
   "data-testid"?: string;
+  /**
+   * Fired synchronously right before the OAuth navigation starts. `AuthModal`
+   * uses this to persist its `upgradeContext` into localStorage and close the
+   * modal before the full-page redirect happens.
+   */
+  beforeRedirect?: () => void;
 }
 
 const GOOGLE_SVG = (
@@ -29,6 +35,7 @@ export function GoogleOAuthButton({
   namespace = "auth",
   className = "",
   "data-testid": testId = "google-oauth-button",
+  beforeRedirect,
 }: GoogleOAuthButtonProps) {
   const t = useTranslations(namespace);
   const [loading, setLoading] = useState(false);
@@ -38,9 +45,16 @@ export function GoogleOAuthButton({
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    // Fire `beforeRedirect` synchronously so any state persistence (e.g.
+    // localStorage upgrade context) happens before the provider navigation.
+    try {
+      beforeRedirect?.();
+    } catch {
+      // A throwing beforeRedirect must not block OAuth.
+    }
     try {
       const supabase = createClient();
-      const resolvedRedirect = redirectTo ?? `${window.location.origin}/auth/confirm`;
+      const resolvedRedirect = redirectTo ?? `${window.location.origin}/auth/callback`;
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
