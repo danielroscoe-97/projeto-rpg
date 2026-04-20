@@ -35,6 +35,14 @@ interface CampaignHeroProps {
   nextPlannedSession?: PlannedSession | null;
   noteCount?: number;
   npcCount?: number;
+  /**
+   * When rendered inside <CampaignBriefing>, the "Hoje" card + Pulse section
+   * already surface active session, next-session, KPI cards and health badge.
+   * Pass true to suppress those blocks here and avoid duplication.
+   */
+  briefingMode?: boolean;
+  /** Optional right-slot content for the hero title row (e.g. status badge). */
+  titleSlot?: React.ReactNode;
 }
 
 export function CampaignHero({
@@ -53,6 +61,8 @@ export function CampaignHero({
   nextPlannedSession,
   noteCount = 0,
   npcCount = 0,
+  briefingMode = false,
+  titleSlot,
 }: CampaignHeroProps) {
   const t = useTranslations("campaign");
   const router = useRouter();
@@ -104,25 +114,31 @@ export function CampaignHero({
   return (
     <div className="bg-card border border-white/[0.04] rounded-xl p-4 space-y-3">
       {/* Title + Session Status */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          {campaignName}
-        </h1>
-        {/* Session-first subtitle */}
-        {activeSessionId ? (
-          <div className="flex items-center gap-2 mt-1">
-            <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <p className="text-sm font-medium text-amber-400">
-              {t("hero_session_active", { name: activeSessionName ?? "" })}
+      <div className={briefingMode ? "flex items-start justify-between gap-3 flex-wrap" : undefined}>
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {campaignName}
+          </h1>
+          {/* Session-first subtitle — suppressed in briefing mode (BriefingToday owns this info) */}
+          {!briefingMode && activeSessionId ? (
+            <div className="flex items-center gap-2 mt-1">
+              <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <p className="text-sm font-medium text-amber-400">
+                {t("hero_session_active", { name: activeSessionName ?? "" })}
+              </p>
+            </div>
+          ) : !briefingMode && nextPlannedSession ? (
+            <p className="text-sm text-emerald-400 mt-0.5">
+              {t("hero_session_next", { name: nextPlannedSession.name })}
             </p>
-          </div>
-        ) : nextPlannedSession ? (
-          <p className="text-sm text-emerald-400 mt-0.5">
-            {t("hero_session_next", { name: nextPlannedSession.name })}
-          </p>
-        ) : (
-          <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
-        )}
+          ) : !briefingMode ? (
+            <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
+          ) : null}
+          {briefingMode && (
+            <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
+          )}
+        </div>
+        {titleSlot && <div className="flex-shrink-0">{titleSlot}</div>}
       </div>
 
       {/* Player Avatars */}
@@ -133,8 +149,8 @@ export function CampaignHero({
         newMemberIds={newMemberIds}
       />
 
-      {/* Session-First Hero Content */}
-      {activeSessionId ? (
+      {/* Session-First Hero Content — owned by <BriefingToday/> when briefingMode */}
+      {!briefingMode && activeSessionId ? (
         // Active session — show enter button prominently
         <button
           type="button"
@@ -149,7 +165,7 @@ export function CampaignHero({
             <p className="text-xs text-muted-foreground">{activeSessionName}</p>
           </div>
         </button>
-      ) : nextPlannedSession ? (
+      ) : !briefingMode && nextPlannedSession ? (
         // Planned session — show session card
         <NextSessionCard
           session={nextPlannedSession}
@@ -164,23 +180,25 @@ export function CampaignHero({
         />
       ) : null}
 
-      {/* Campaign Health — subtle, below session info */}
-      {(playerCount > 0 || sessionCount > 0) && (
+      {/* Campaign Health — subtle, below session info. Moved to <BriefingPulseStats/> in briefing mode. */}
+      {!briefingMode && (playerCount > 0 || sessionCount > 0) && (
         <CampaignHealthBadge health={health} mode="expanded" />
       )}
 
-      {/* KPI Cards — secondary position */}
-      <CampaignStatusCards
-        campaignId={campaignId}
-        playerCount={playerCount}
-        sessionCount={sessionCount}
-        questCount={questCount}
-        finishedEncounterCount={finishedEncounterCount}
-        activeSessionId={activeSessionId}
-        activeSessionName={activeSessionName}
-        onOpenCombat={() => setCombatOpen(true)}
-        onInvite={() => setInviteOpen(true)}
-      />
+      {/* KPI Cards — secondary position. Moved to <BriefingPulseStats/> in briefing mode. */}
+      {!briefingMode && (
+        <CampaignStatusCards
+          campaignId={campaignId}
+          playerCount={playerCount}
+          sessionCount={sessionCount}
+          questCount={questCount}
+          finishedEncounterCount={finishedEncounterCount}
+          activeSessionId={activeSessionId}
+          activeSessionName={activeSessionName}
+          onOpenCombat={() => setCombatOpen(true)}
+          onInvite={() => setInviteOpen(true)}
+        />
+      )}
 
       {/* Active Effects overview — shows when any character has active effects */}
       <CampaignActiveEffects
