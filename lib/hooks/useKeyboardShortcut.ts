@@ -74,7 +74,6 @@ export function useKeyboardShortcut(
 
       // Modifier checks
       const ctrlMatched = !ctrlOrMeta || e.ctrlKey || e.metaKey;
-      const shiftMatched = shift ? e.shiftKey : !e.shiftKey || shift === false;
       // shift handling: require exact match when explicitly specified
       const shiftOk = shift ? e.shiftKey : true;
       const altOk = alt ? e.altKey : true;
@@ -116,9 +115,6 @@ export function useKeyboardShortcut(
       // if ctrlOrMeta is false, require that ctrl/meta are NOT pressed (otherwise
       // every browser shortcut triggers the handler)
       if (!ctrlOrMeta && (e.ctrlKey || e.metaKey)) return;
-
-      // Unused reference to satisfy eslint no-unused-vars
-      void shiftMatched;
 
       if (preventDefault) e.preventDefault();
       handlerRef.current(e);
