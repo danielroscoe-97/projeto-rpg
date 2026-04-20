@@ -9,6 +9,7 @@
     "analyze": "ANALYZE=true next build",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:pgtap": "bash scripts/test-pgtap.sh",
     "generate-srd": "ts-node scripts/generate-srd-bundles.ts",
     "fetch-srd": "ts-node scripts/fetch-srd-data.ts",
     "fetch-bestiary": "ts-node scripts/fetch-5etools-bestiary.ts",
