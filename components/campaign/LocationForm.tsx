@@ -33,6 +33,8 @@ import { Castle, Mountain, TreePine, Building, MapPin } from "lucide-react";
 import type { CampaignLocation, LocationType } from "@/lib/types/mind-map";
 import { LOCATION_TYPES } from "@/lib/types/mind-map";
 import type { LocationFormData } from "@/lib/hooks/use-campaign-locations";
+import { LocationParentSelect } from "./LocationParentSelect";
+import { LocationBreadcrumb } from "./LocationBreadcrumb";
 
 const TYPE_ICONS: Record<LocationType, React.ComponentType<{ className?: string }>> = {
   city: Castle,
@@ -47,6 +49,12 @@ interface LocationFormProps {
   onOpenChange: (open: boolean) => void;
   campaignId?: string | null;
   location?: CampaignLocation | null;
+  /**
+   * All locations in the campaign — used to populate the "Parent location"
+   * dropdown and filter out cycle candidates (self + descendants). Pass an
+   * empty array if parent selection should be hidden.
+   */
+  availableLocations?: CampaignLocation[];
   onSave: (data: LocationFormData) => Promise<void>;
   /**
    * When true, dialog opens in read-only mode (inputs disabled, Save hidden).
@@ -65,6 +73,7 @@ export function LocationForm({
   open,
   onOpenChange,
   location,
+  availableLocations = [],
   onSave,
   readOnly = false,
   canEdit = true,
@@ -75,6 +84,9 @@ export function LocationForm({
   const [name, setName] = useState(location?.name ?? "");
   const [description, setDescription] = useState(location?.description ?? "");
   const [locationType, setLocationType] = useState<LocationType>(location?.location_type ?? "building");
+  const [parentLocationId, setParentLocationId] = useState<string | null>(
+    location?.parent_location_id ?? null,
+  );
   const [imageUrl, setImageUrl] = useState(location?.image_url ?? "");
   const [isDiscovered, setIsDiscovered] = useState(location?.is_discovered ?? true);
   const [visibleToPlayers, setVisibleToPlayers] = useState(location?.is_visible_to_players ?? true);
@@ -93,7 +105,15 @@ export function LocationForm({
   const isDirty = useMemo(() => {
     const init = location;
     if (!init) {
-      return !!(name || description || locationType !== "building" || imageUrl || !isDiscovered || !visibleToPlayers);
+      return !!(
+        name ||
+        description ||
+        locationType !== "building" ||
+        imageUrl ||
+        !isDiscovered ||
+        !visibleToPlayers ||
+        parentLocationId !== null
+      );
     }
     return (
       name !== (init.name ?? "") ||
@@ -101,9 +121,19 @@ export function LocationForm({
       locationType !== (init.location_type ?? "building") ||
       imageUrl !== (init.image_url ?? "") ||
       isDiscovered !== (init.is_discovered ?? true) ||
-      visibleToPlayers !== (init.is_visible_to_players ?? true)
+      visibleToPlayers !== (init.is_visible_to_players ?? true) ||
+      parentLocationId !== (init.parent_location_id ?? null)
     );
-  }, [location, name, description, locationType, imageUrl, isDiscovered, visibleToPlayers]);
+  }, [
+    location,
+    name,
+    description,
+    locationType,
+    imageUrl,
+    isDiscovered,
+    visibleToPlayers,
+    parentLocationId,
+  ]);
 
   const handleOpenChange = useCallback((nextOpen: boolean) => {
     if (!nextOpen && isDirty) {
@@ -127,6 +157,7 @@ export function LocationForm({
         name: trimmedName,
         description: description.trim() || undefined,
         location_type: locationType,
+        parent_location_id: parentLocationId,
         is_discovered: isDiscovered,
         image_url: imageUrl.trim() || null,
         is_visible_to_players: visibleToPlayers,
@@ -143,7 +174,17 @@ export function LocationForm({
         setSaving(false);
       }
     },
-    [name, description, locationType, isDiscovered, imageUrl, visibleToPlayers, onSave, onOpenChange]
+    [
+      name,
+      description,
+      locationType,
+      parentLocationId,
+      isDiscovered,
+      imageUrl,
+      visibleToPlayers,
+      onSave,
+      onOpenChange,
+    ],
   );
 
   const isEdit = !!location;
@@ -154,6 +195,13 @@ export function LocationForm({
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? t("form_title_edit") : t("form_title_new")}</DialogTitle>
+          {location && location.parent_location_id && availableLocations.length > 0 && (
+            <LocationBreadcrumb
+              availableLocations={availableLocations}
+              locationId={location.id}
+              className="mt-1"
+            />
+          )}
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4" data-testid="location-form">
@@ -204,6 +252,15 @@ export function LocationForm({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Parent location */}
+          <LocationParentSelect
+            availableLocations={availableLocations}
+            value={parentLocationId}
+            onChange={setParentLocationId}
+            editingLocationId={location?.id ?? null}
+            disabled={viewOnly}
+          />
 
           {/* Description */}
           <div className="space-y-1.5">
@@ -350,6 +407,7 @@ export function LocationForm({
               setName(location?.name ?? "");
               setDescription(location?.description ?? "");
               setLocationType(location?.location_type ?? "building");
+              setParentLocationId(location?.parent_location_id ?? null);
               setImageUrl(location?.image_url ?? "");
               setIsDiscovered(location?.is_discovered ?? true);
               setVisibleToPlayers(location?.is_visible_to_players ?? true);

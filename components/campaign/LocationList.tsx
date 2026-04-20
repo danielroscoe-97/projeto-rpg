@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Plus, MapPin } from "lucide-react";
+import { Plus, MapPin, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -22,6 +22,51 @@ import type { CampaignLocation } from "@/lib/types/mind-map";
 import type { LocationFormData } from "@/lib/hooks/use-campaign-locations";
 
 type FilterMode = "all" | "discovered" | "hidden";
+
+interface TreeEntry {
+  location: CampaignLocation;
+  depth: number;
+  hasChildren: boolean;
+}
+
+/**
+ * DFS-walk the campaign_locations flat list into a rendering order that
+ * reflects the parent/child hierarchy. Siblings sorted by name.
+ * Entries whose ancestor chain contains a collapsed id are skipped.
+ */
+function buildTreeEntries(
+  locations: CampaignLocation[],
+  collapsed: Set<string>,
+): TreeEntry[] {
+  const byParent = new Map<string | null, CampaignLocation[]>();
+  for (const loc of locations) {
+    const key = loc.parent_location_id ?? null;
+    const bucket = byParent.get(key) ?? [];
+    bucket.push(loc);
+    byParent.set(key, bucket);
+  }
+  for (const bucket of byParent.values()) {
+    bucket.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  const entries: TreeEntry[] = [];
+  const walk = (parentId: string | null, depth: number) => {
+    const children = byParent.get(parentId) ?? [];
+    for (const child of children) {
+      const grandChildren = byParent.get(child.id) ?? [];
+      entries.push({
+        location: child,
+        depth,
+        hasChildren: grandChildren.length > 0,
+      });
+      if (!collapsed.has(child.id)) {
+        walk(child.id, depth + 1);
+      }
+    }
+  };
+  walk(null, 0);
+  return entries;
+}
 
 interface LocationListProps {
   campaignId: string;
@@ -45,12 +90,30 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
   // Opened in read-only (view) mode when user clicks the card body.
   const [viewingLocation, setViewingLocation] = useState<CampaignLocation | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignLocation | null>(null);
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
 
   const filteredLocations = locations.filter((loc) => {
     if (filter === "discovered") return loc.is_discovered;
     if (filter === "hidden") return !loc.is_discovered;
     return true;
   });
+
+  const treeEntries = useMemo<TreeEntry[]>(
+    () => buildTreeEntries(locations, collapsedIds),
+    [locations, collapsedIds],
+  );
+
+  const toggleCollapse = useCallback((id: string) => {
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
 
   const handleCreate = useCallback(
     async (data: LocationFormData) => {
@@ -66,6 +129,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
         name: data.name,
         description: data.description ?? "",
         location_type: data.location_type,
+        parent_location_id: data.parent_location_id ?? null,
         is_discovered: data.is_discovered,
         image_url: data.image_url,
         is_visible_to_players: data.is_visible_to_players,
@@ -126,6 +190,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
         name: data.name,
         description: data.description ?? "",
         location_type: data.location_type,
+        parent_location_id: data.parent_location_id ?? null,
         is_discovered: data.is_discovered,
         image_url: data.image_url,
         is_visible_to_players: data.is_visible_to_players,
@@ -234,8 +299,57 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
         </div>
       )}
 
-      {/* Location Grid */}
-      {filteredLocations.length > 0 && (
+      {/* Location Grid — tree when filter=all, flat when filter≠all */}
+      {filter === "all" && treeEntries.length > 0 && (
+        <div
+          className="flex flex-col gap-2"
+          data-testid="location-container"
+        >
+          {treeEntries.map(({ location: loc, depth, hasChildren }) => {
+            const collapsed = collapsedIds.has(loc.id);
+            return (
+              <div
+                key={loc.id}
+                className="flex items-start gap-2"
+                style={{ paddingLeft: depth > 0 ? `${depth * 20}px` : undefined }}
+                data-testid={`location-tree-row-${loc.id}`}
+                data-depth={depth}
+              >
+                {hasChildren ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleCollapse(loc.id)}
+                    className="mt-4 shrink-0 text-muted-foreground hover:text-amber-400 transition-colors"
+                    aria-label={collapsed ? t("expand_all") : t("collapse_all")}
+                    aria-expanded={!collapsed}
+                    data-testid={`location-tree-toggle-${loc.id}`}
+                  >
+                    {collapsed ? (
+                      <ChevronRight className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
+                ) : (
+                  <div className="w-4 shrink-0" aria-hidden />
+                )}
+                <div className="flex-1 min-w-0">
+                  <LocationCard
+                    location={loc}
+                    isEditable={isEditable}
+                    onEdit={openEditForm}
+                    onDelete={setDeleteTarget}
+                    onToggleVisibility={handleToggleVisibility}
+                    onCardClick={setViewingLocation}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {filter !== "all" && filteredLocations.length > 0 && (
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
           data-testid="location-container"
@@ -271,6 +385,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
         }}
         campaignId={campaignId}
         location={editingLocation}
+        availableLocations={locations}
         onSave={editingLocation ? handleEdit : handleCreate}
       />
 
@@ -284,6 +399,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
           }}
           campaignId={campaignId}
           location={viewingLocation}
+          availableLocations={locations}
           readOnly
           canEdit={isEditable}
           onSave={handleViewSave}
@@ -302,6 +418,20 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
               {deleteTarget
                 ? t("delete_description", { name: deleteTarget.name })
                 : ""}
+              {deleteTarget && (() => {
+                const childCount = locations.filter(
+                  (l) => l.parent_location_id === deleteTarget.id,
+                ).length;
+                if (childCount === 0) return null;
+                return (
+                  <span
+                    className="block mt-2 text-amber-400"
+                    data-testid="location-delete-children-warning"
+                  >
+                    {t("delete_has_children_warning", { count: childCount })}
+                  </span>
+                );
+              })()}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -11,6 +11,7 @@ export interface LocationFormData {
   is_discovered?: boolean;
   image_url?: string | null;
   is_visible_to_players?: boolean;
+  parent_location_id?: string | null;
 }
 
 export function useCampaignLocations(campaignId: string) {
@@ -65,7 +66,7 @@ export function useCampaignLocations(campaignId: string) {
           name,
           description: formData.description ?? "",
           location_type: formData.location_type ?? "building",
-          parent_location_id: null,
+          parent_location_id: formData.parent_location_id ?? null,
           is_discovered: formData.is_discovered ?? true,
           image_url: formData.image_url ?? null,
           is_visible_to_players: formData.is_visible_to_players ?? true,
@@ -82,6 +83,7 @@ export function useCampaignLocations(campaignId: string) {
             name,
             description: formData.description ?? "",
             location_type: formData.location_type ?? "building",
+            parent_location_id: formData.parent_location_id ?? null,
             is_discovered: formData.is_discovered ?? true,
             image_url: formData.image_url ?? null,
             is_visible_to_players: formData.is_visible_to_players ?? true,
