@@ -57,6 +57,8 @@ import { usePendingActionsStore, generateActionId } from "@/lib/stores/pending-a
 import { useActionAck, confirmActionsForCombatant } from "@/hooks/use-action-ack";
 import type { CombatantPendingState } from "@/hooks/use-action-ack";
 import { shouldShowCta, recordDismissal, migrateDismissalEntry } from "@/components/conversion/dismissal-store";
+import { WaitingRoomSignupCTA } from "@/components/conversion/WaitingRoomSignupCTA";
+import { trackConversionCompleted } from "@/lib/conversion/analytics";
 import type { AuthModalSuccessPayload } from "@/components/auth/AuthModal";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { Loader2 } from "lucide-react";
@@ -204,8 +206,12 @@ export function PlayerJoinClient({
   const t = useTranslations("player");
   // Story 02-E — new i18n namespace for the additive upgrade entry points.
   const tJoin = useTranslations("join");
+  // Story 03-C — `conversion.*` namespace for waiting-room CTA post-success toast.
+  const tConversion = useTranslations("conversion");
   const tRef = useRef(t);
   tRef.current = t;
+  const tConversionRef = useRef(tConversion);
+  tConversionRef.current = tConversion;
   const [combatants, setCombatants] = useState(initialCombatants);
   const [round, setRound] = useState(roundNumber);
   const [turnIndex, setTurnIndex] = useState(currentTurnIndex);
@@ -344,6 +350,16 @@ export function PlayerJoinClient({
     mode: "login" | "signup";
   }>({ open: false, mode: "login" });
   const [signupHintDismissed, setSignupHintDismissed] = useState<boolean>(false);
+  // Story 03-C — WaitingRoomSignupCTA: tracks whether the current auth modal
+  // session was triggered by the Story 03-C waiting-room CTA. When true,
+  // `handleAuthModalSuccess` fires `conversion:completed` with moment=waiting
+  // on top of the generic `player_identity.upgrade_success`. Reset after fire.
+  const waitingRoomCtaTriggeredRef = useRef(false);
+  // Story 03-C — WaitingRoomSignupCTA: local "dismissed for this tab" flag
+  // so the CTA disappears immediately after "Agora não" without waiting for
+  // a storage re-read. Persistence (7d / 3x cap / 90d TTL) still lives in
+  // `dismissal-store`; this flag is tab-local.
+  const [waitingRoomCtaDismissed, setWaitingRoomCtaDismissed] = useState(false);
   const [softRefreshTick, setSoftRefreshTick] = useState(0);
   // Reference softRefreshTick so it registers as a render-time value (otherwise
   // TypeScript flags the setter as write-only). The value itself is inert —
@@ -2475,6 +2491,28 @@ export function PlayerJoinClient({
         });
       } catch { /* analytics is best-effort */ }
 
+      // Story 03-C — fire conversion funnel analytics if the waiting-room CTA
+      // triggered this session. Reset the ref regardless so a subsequent
+      // open-from-another-source doesn't misattribute.
+      if (waitingRoomCtaTriggeredRef.current) {
+        try {
+          const effectiveCampaignId = campaignId ?? sessionCampaignId;
+          trackConversionCompleted("waiting", {
+            campaignId: effectiveCampaignId ?? undefined,
+            characterId: prefilledCharacters?.find((c) => c.name === registeredName)?.id,
+            flow: "upgrade",
+          });
+        } catch { /* best-effort */ }
+
+        // Show post-success toast — the resilient reconnection chain
+        // (sessionStorage + cookie) preserves the session, no reload needed.
+        try {
+          toast.success(tConversionRef.current("post_success.waiting_room"));
+        } catch { /* tolerate missing key on older locales — toast is cosmetic */ }
+
+        waitingRoomCtaTriggeredRef.current = false;
+      }
+
       // M15 (code review fix): when a guest upgrades and we now know the
       // real campaignId, migrate any `__guest__` dismissal entry so the
       // CTA doesn't re-appear post-upgrade. Best-effort — failures swallow.
@@ -2484,8 +2522,12 @@ export function PlayerJoinClient({
           migrateDismissalEntry("__guest__", realCampaignId);
         }
       } catch { /* dismissal-store already swallows storage errors */ }
+    } else {
+      // Non-conversion success (e.g. pure login). Still clear the flag so
+      // the next "signup" click doesn't accidentally fire stale analytics.
+      waitingRoomCtaTriggeredRef.current = false;
     }
-  }, [sessionId, campaignId, sessionCampaignId]);
+  }, [sessionId, campaignId, sessionCampaignId, prefilledCharacters, registeredName]);
 
   const handleSignupHintDismiss = useCallback(() => {
     setSignupHintDismissed(true);
@@ -2849,6 +2891,28 @@ export function PlayerJoinClient({
     shouldShowCta(dismissalCampaignId);
   const effectiveUpgradeCampaignId = campaignId ?? sessionCampaignId;
 
+  // Story 03-C — WaitingRoomSignupCTA gating. See epic 03 §D9/F2:
+  //   • Only anon players (guests/auth never see this CTA).
+  //   • Only once the player has registered — we need a stable playerName
+  //     and (when present) the soft-claimed characterName.
+  //   • Only while combat hasn't started (`active === false`). When the
+  //     parent transitions `active` → true we stop rendering the waiting-
+  //     room wrapper entirely, so the CTA unmounts for free.
+  //   • Respects `shouldShowCta` (dismissal store) and the tab-local
+  //     `waitingRoomCtaDismissed` flag set by "Agora não".
+  //   • Needs a real `effectiveUpgradeCampaignId` — without one we can't
+  //     key the dismissal store nor the analytics payload.
+  const waitingRoomCtaCharacter = registeredName
+    ? prefilledCharacters?.find((c) => c.name === registeredName) ?? null
+    : null;
+  const showWaitingRoomCta =
+    isAnonPlayer &&
+    isRegistered &&
+    !waitingRoomCtaDismissed &&
+    !!effectiveUpgradeCampaignId &&
+    !!effectiveTokenId &&
+    shouldShowCta(effectiveUpgradeCampaignId);
+
   const authUpgradeEntryPoints = (
     <>
       {isAnonPlayer && (
@@ -2920,6 +2984,24 @@ export function PlayerJoinClient({
     </>
   );
 
+  // Story 03-C — handlers for WaitingRoomSignupCTA. The ctx argument comes
+  // straight from the child's `onOpenAuthModal` contract; we currently
+  // re-use the parent's own `openAuthModal("signup")` which wires the modal
+  // to `effectiveTokenId` + `effectiveUpgradeCampaignId` already, so the
+  // ctx is kept for future extension but not forwarded. The ref flip is
+  // what routes the success into the waiting-room funnel analytics.
+  const handleWaitingRoomCtaOpen = (
+    _ctx: { sessionTokenId: string; campaignId: string; characterId: string | null },
+  ) => {
+    waitingRoomCtaTriggeredRef.current = true;
+    openAuthModal("signup");
+  };
+  const handleWaitingRoomCtaDismiss = () => {
+    // `recordDismissal` already fired inside the child — only the tab-local
+    // visibility flag changes here.
+    setWaitingRoomCtaDismissed(true);
+  };
+
   // Show lobby when combat isn't active yet (normal join)
   // `join.waiting-room` wrapper — stable testid per data-testid contract
   // (docs/testing-data-testid-contract.md §3.7). Purely additive: `display:contents`
@@ -2941,6 +3023,23 @@ export function PlayerJoinClient({
           registeredPlayerNames={registeredPlayerNames}
           onRejoin={handleRejoin}
         />
+        {/* Story 03-C — WaitingRoomSignupCTA. Renders only while `active`
+            stays false; when the parent flips `active` to true we exit this
+            branch entirely and the CTA unmounts automatically (F2/D9 — no
+            separate realtime subscription needed). */}
+        {showWaitingRoomCta && effectiveUpgradeCampaignId && (
+          <div className="mx-auto w-full max-w-lg px-4 pb-2 pt-3">
+            <WaitingRoomSignupCTA
+              sessionTokenId={effectiveTokenId}
+              campaignId={effectiveUpgradeCampaignId}
+              playerName={registeredName ?? ""}
+              characterId={waitingRoomCtaCharacter?.id ?? null}
+              characterName={waitingRoomCtaCharacter?.name ?? null}
+              onOpenAuthModal={handleWaitingRoomCtaOpen}
+              onDismiss={handleWaitingRoomCtaDismiss}
+            />
+          </div>
+        )}
         {authUpgradeEntryPoints}
       </div>
     );
