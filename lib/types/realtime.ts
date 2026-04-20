@@ -38,7 +38,8 @@ export type RealtimeEventType =
   | "player:hp_action"
   | "player:self_condition_toggle"
   | "chat:player_message"
-  | "chat:dm_postit";
+  | "chat:dm_postit"
+  | "campaign:combat_invite";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -327,6 +328,33 @@ export interface RealtimeChatDmPostit {
   sent_at: string;
 }
 
+/**
+ * Wave 5 (F19) — Auto-invite pro Combate.
+ *
+ * Broadcast no canal `campaign:{campaignId}:invites` quando o DM inicia um
+ * combate vinculado a uma campanha. Jogadores logados em qualquer rota
+ * `/app/*` recebem o toast via `useCombatInviteListener` + fallback durável
+ * via `player_notifications`.
+ *
+ * Canal novo, não reusa `session:{sessionId}` (que continua player-only em
+ * fluxo guest/anon). Auth-only (Combat Parity Rule).
+ */
+export interface RealtimeCombatInvite {
+  type: "campaign:combat_invite";
+  campaign_id: string;
+  campaign_name: string;
+  session_id: string;
+  encounter_id: string;
+  join_token: string;
+  join_url: string;
+  dm_user_id: string;
+  dm_display_name: string | null;
+  encounter_name: string | null;
+  started_at: string;
+  /** Monotonic seq (spec §3.2) — aligns with broadcast.ts:428-429 convention. */
+  _seq?: number;
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -361,7 +389,8 @@ export type RealtimeEvent =
   | RealtimeChatPlayerMessage
   | RealtimeChatDmPostit
   | RealtimePlayerSelfConditionToggle
-  | RealtimeCombatRecap;
+  | RealtimeCombatRecap
+  | RealtimeCombatInvite;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 

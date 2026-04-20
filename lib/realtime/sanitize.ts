@@ -86,6 +86,10 @@ export function sanitizePayloadServer(
   if (event.type === "player:hp_action") return null;
   // player:self_condition_toggle is player→DM only — DM re-broadcasts the result as combat:condition_change
   if (event.type === "player:self_condition_toggle") return null;
+  // W5 (F19): campaign:combat_invite is server-origin only and travels on a
+  // separate channel (`campaign:{id}:invites`). It must never enter the
+  // session:{id} DM-player sanitization pipeline.
+  if (event.type === "campaign:combat_invite") return null;
 
   // Turn advance: adjust index for visible combatants
   if (event.type === "combat:turn_advance") {
