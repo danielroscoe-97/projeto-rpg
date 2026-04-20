@@ -89,6 +89,7 @@ async function fetchContentAccess(userId: string) {
 export function useContentAccess(): ContentAccess {
   const { allowed: flagEnabled } = useFeatureGate("extended_compendium");
   const [userId, setUserId] = useState<string | null>(null);
+  const [isAnon, setIsAnon] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [isWhitelisted, setIsWhitelisted] = useState(false);
   const [hasAgreed, setHasAgreed] = useState(false);
@@ -96,16 +97,27 @@ export function useContentAccess(): ContentAccess {
   const [gateRequested, setGateRequested] = useState(false);
   const mountedRef = useRef(true);
 
-  // Check auth state
+  // Check auth state. Anonymous users (Supabase anon sign-in used by
+  // /join/[token]) have a userId but MUST NOT count as authenticated for
+  // non-SRD content gating — see CLAUDE.md "SRD Content Compliance".
   useEffect(() => {
     mountedRef.current = true;
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }: { data: { user: { id: string } | null } }) => {
-      if (!mountedRef.current) return;
-      setUserId(user?.id ?? null);
-      setAuthChecked(true);
-      if (!user) setDbLoading(false);
-    });
+    supabase.auth
+      .getUser()
+      .then(
+        ({
+          data: { user },
+        }: {
+          data: { user: { id: string; is_anonymous?: boolean } | null };
+        }) => {
+          if (!mountedRef.current) return;
+          setUserId(user?.id ?? null);
+          setIsAnon(!!user?.is_anonymous);
+          setAuthChecked(true);
+          if (!user) setDbLoading(false);
+        },
+      );
     return () => {
       mountedRef.current = false;
     };
@@ -161,7 +173,11 @@ export function useContentAccess(): ContentAccess {
     setGateRequested((g) => !g);
   }, []);
 
-  const isAuthenticated = authChecked && !!userId;
+  // Anonymous Supabase users (is_anonymous=true from /join/[token] flow) are
+  // NOT authenticated for gating purposes — they MUST NOT see non-SRD chips
+  // or content (SRD Content Compliance, CLAUDE.md). Mirrors the `isRealAuth`
+  // pattern in components/player/PlayerJoinClient.tsx.
+  const isAuthenticated = authChecked && !!userId && !isAnon;
   const isLoading = !authChecked || (isAuthenticated && dbLoading);
   // Access granted if user is whitelisted OR has accepted the content agreement
   const canAccess = flagEnabled && isAuthenticated && (isWhitelisted || hasAgreed);
