@@ -133,17 +133,59 @@ If `validate:seo:prod` fails, **investigate BEFORE shipping more content.** A re
 
 ## 7. GSC service account setup (one-time, ~30min, human-only)
 
-Required before Epic C story 1 (`scripts/gsc-export.ts`) can run.
+Required before `npm run seo:gsc-export` (`scripts/gsc-export.ts`) can run.
 
-1. Google Cloud Console → create project (or reuse existing)
-2. Enable **Search Console API** on that project
-3. IAM & Admin → Service Accounts → Create → save JSON key
-4. Search Console → Settings → Users and permissions → Add user (service account email, Restricted permission)
-5. Save to Vercel (Production/Preview/Development) AND `.env.local`:
-   - `GSC_SERVICE_ACCOUNT_EMAIL=<service account email>`
-   - `GSC_SERVICE_ACCOUNT_KEY=<base64 of JSON key>`
-   - `GSC_SITE=sc-domain:pocketdm.com.br`
-6. Add `*.gsa.json` to `.gitignore` (never commit the raw key file)
+1. **Google Cloud Console** (`console.cloud.google.com`) → create project (or reuse existing)
+2. **APIs & Services → Library** → enable **"Google Search Console API"** on that project (exact string — don't confuse with "Search Console API for Indexing")
+3. **IAM & Admin → Service Accounts → Create service account**
+   - Name: `pocketdm-gsc-reader` (or anything memorable)
+   - Role: none required at project level (GSC access is granted below)
+   - Create and download the JSON key when prompted — save as `pocketdm-gsc.gsa.json` locally
+4. **Copy the service account email** from the created account (format: `name@project.iam.gserviceaccount.com`)
+5. **Search Console** (`search.google.com/search-console`) → pick the `pocketdm.com.br` property → **Settings → Users and permissions → Add user**
+   - Email: paste the service account email
+   - Permission: **Restricted** (read-only is all the script needs)
+6. **Encode the JSON key as base64**:
+   ```bash
+   # Linux/Mac
+   base64 -w0 pocketdm-gsc.gsa.json
+   # Windows PowerShell
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("pocketdm-gsc.gsa.json"))
+   ```
+7. **Save env vars** — `.env.local` (for local runs) AND Vercel Project → Settings → Environment Variables (Production/Preview/Development, mark as Sensitive) if you want prod-side runs:
+   ```
+   GSC_SERVICE_ACCOUNT_EMAIL=pocketdm-gsc-reader@your-project.iam.gserviceaccount.com
+   GSC_SERVICE_ACCOUNT_KEY=<base64 string from step 6>
+   GSC_SITE=sc-domain:pocketdm.com.br
+   ```
+8. Verify `.gitignore` has `*.gsa.json` so the raw key never gets committed.
+
+### First run
+
+```bash
+npm run seo:gsc-export
+```
+
+Should output:
+```
+→ gsc-export sc-domain:pocketdm.com.br → data/seo/gsc-2026-04-XX.json
+  period_7d/query... 142 rows
+  period_7d/page... 98 rows
+  ...
+✓ wrote data/seo/gsc-2026-04-XX.json (period_7d:... period_28d:... period_90d:...)
+```
+
+### Weekly ritual
+
+Every Monday AM (or whenever you want a fresh snapshot):
+```bash
+npm run seo:gsc-export
+rtk git add data/seo/gsc-*.json
+rtk git commit -m "data(seo): weekly GSC snapshot $(date +%F)"
+rtk git push
+```
+
+The snapshot files are **tracked** (not gitignored) — `data/seo/` accumulates historical data that Epic C.3 (content gap analysis) and C.4 (dashboard auto-update) consume later.
 
 ---
 
