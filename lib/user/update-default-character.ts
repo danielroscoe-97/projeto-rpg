@@ -4,14 +4,19 @@
  * updateDefaultCharacter — Story 02-G (Epic 02, Area 5).
  *
  * Server action that sets `users.default_character_id` for the authenticated
- * user. Ownership is verified in-action before the UPDATE fires, since RLS
- * on `users` allows the user to update their own row freely (including
- * setting arbitrary character IDs in `default_character_id`, which is just
- * a foreign key). The ownership pre-check ensures we never persist an ID
- * that doesn't belong to the caller.
+ * user. Delegated to the `update_default_character_if_owner` RPC (migration
+ * 156) which performs the ownership check and the UPDATE in a SINGLE
+ * statement (no TOCTOU race between check and write).
  *
  * Returns a discriminated union so the calling client can surface the
  * failure mode to the UI without plumbing generic error strings.
+ *
+ * WINSTON M11 NOTE — race-free ownership:
+ *   Earlier version did a two-query dance: SELECT player_characters (owner
+ *   check), then UPDATE users. A concurrent DELETE of the character between
+ *   the two statements would let the UPDATE persist a (briefly-dangling) id.
+ *   The RPC collapses both into one UPDATE with an EXISTS subquery so the
+ *   check and write are atomic under the same snapshot.
  */
 
 import { revalidatePath } from "next/cache";
@@ -31,21 +36,25 @@ export async function updateDefaultCharacter(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "unauthenticated" };
 
-  // Verify character ownership. We filter on `user_id = user.id` so a
-  // malicious client cannot smuggle another player's character id.
-  const { data: char, error: charErr } = await supabase
-    .from("player_characters")
-    .select("id")
-    .eq("id", characterId)
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (charErr || !char) return { ok: false, error: "not_owner" };
+  // Single-query atomic: ownership check and UPDATE happen together inside
+  // the RPC. Returns { ok, reason } where reason identifies the failure mode.
+  const { data, error } = await supabase.rpc(
+    "update_default_character_if_owner",
+    { p_character_id: characterId },
+  );
 
-  const { error: updateErr } = await supabase
-    .from("users")
-    .update({ default_character_id: characterId })
-    .eq("id", user.id);
-  if (updateErr) return { ok: false, error: "write_failed" };
+  if (error) return { ok: false, error: "write_failed" };
+
+  const result = data as { ok: boolean; reason: string | null } | null;
+  if (!result || !result.ok) {
+    if (result?.reason === "not_owner") {
+      return { ok: false, error: "not_owner" };
+    }
+    if (result?.reason === "unauthenticated") {
+      return { ok: false, error: "unauthenticated" };
+    }
+    return { ok: false, error: "write_failed" };
+  }
 
   // Revalidate both the dashboard (which reads default_character_id for the
   // badge) and the settings page itself so the new badge appears without a

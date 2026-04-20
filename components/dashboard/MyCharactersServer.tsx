@@ -68,37 +68,50 @@ export async function MyCharactersServer() {
     );
   }
 
-  // 2. Resolve `last_session_at` for every character in a single round-trip.
+  // 2. Resolve `last_session_at` for every character. We fetch the single
+  //    most-recent combatant per character via N parallel lookups (N = number
+  //    of characters, typically < 10). This replaces the previous
+  //    `.limit(500)` batch read which silently truncated once a character
+  //    accumulated >500 combatant rows across all their encounters — a very
+  //    realistic volume for a long-running campaign (hundreds of monsters
+  //    per session × dozens of sessions).
+  //
+  // WINSTON M8 NOTE: an aggregate (`MAX(s.created_at) GROUP BY pc.id`) via a
+  // dedicated SQL view would be the clean solution for very-wide dashboards.
+  // The per-character pattern below is correct and performant for the
+  // expected N and lets us avoid a schema migration here.
   const characterIds = characters.map((c) => c.id as string);
-  const { data: lastSessions } = await supabase
-    .from("combatants")
-    .select(
-      `
-      player_character_id,
-      encounters!inner (
-        session_id,
-        sessions!inner ( id, created_at )
-      )
-    `,
-    )
-    .in("player_character_id", characterIds)
-    .order("created_at", { ascending: false })
-    .limit(500);
+  const lastSessionEntries = await Promise.all(
+    characterIds.map(async (pcId) => {
+      const { data } = await supabase
+        .from("combatants")
+        .select(
+          `
+          encounters!inner (
+            sessions!inner ( created_at )
+          )
+        `,
+        )
+        .eq("player_character_id", pcId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!data) return [pcId, null] as const;
+      const enc = (data as { encounters: unknown }).encounters as
+        | { sessions: { created_at: string | null } | { created_at: string | null }[] | null }
+        | Array<{ sessions: { created_at: string | null } | { created_at: string | null }[] | null }>
+        | null;
+      const encRow = Array.isArray(enc) ? enc[0] : enc;
+      const sess = Array.isArray(encRow?.sessions) ? encRow?.sessions[0] : encRow?.sessions;
+      const createdAt = (sess?.created_at as string | null) ?? null;
+      return [pcId, createdAt] as const;
+    }),
+  );
 
   const lastSessionMap: Record<string, string> = {};
-  for (const row of lastSessions ?? []) {
-    const pcId = row.player_character_id as string | null;
-    if (!pcId) continue;
-    const enc = row.encounters as unknown as
-      | { sessions: { created_at: string | null } | { created_at: string | null }[] | null }
-      | null;
-    const sess = Array.isArray(enc?.sessions) ? enc?.sessions[0] : enc?.sessions;
-    const createdAt = (sess?.created_at as string | null) ?? null;
-    if (!createdAt) continue;
-    const prev = lastSessionMap[pcId];
-    if (!prev || new Date(createdAt) > new Date(prev)) {
-      lastSessionMap[pcId] = createdAt;
-    }
+  for (const [pcId, createdAt] of lastSessionEntries) {
+    if (createdAt) lastSessionMap[pcId] = createdAt;
   }
 
   const cards: MyCharacterCardData[] = characters.map((c) => {

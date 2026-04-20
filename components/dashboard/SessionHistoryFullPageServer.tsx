@@ -67,117 +67,138 @@ export async function SessionHistoryFullPageServer({
     );
   }
 
-  // 2. Fetch the window. We over-fetch by a safety factor (PAGE_SIZE * 5 + 1)
+  // 2. Fetch the window. We over-fetch by a safety factor (PAGE_SIZE * 5 + 10)
   //    because a single session can carry multiple combatant rows; we dedupe
   //    by session_id below. The peek element (PAGE_SIZE + 1 distinct sessions)
   //    tells us whether to render "Carregar mais".
-  let query = supabase
+  //
+  // WINSTON M7+M9+M10 NOTE — ordering + cursor:
+  //   Strategy: start the query from `sessions` (not `combatants`) so the
+  //   ORDER BY and keyset filter apply to `sessions.created_at` + `sessions.id`
+  //   directly, without the PostgREST foreignTable song-and-dance. The
+  //   membership filter is expressed as an `.in("id", eligibleSessionIds)`
+  //   against a pre-computed list fetched from `combatants`. This:
+  //     * Fixes M7 — ordering is by session timestamp (canonical), not by
+  //       combatant timestamp (which can drift if combatants are added late).
+  //     * Fixes M9 — keyset filter uses sessions.(created_at, id) with a
+  //       proper tiebreaker via `.or(...)` so pages don't skip/repeat rows
+  //       when two sessions share a created_at.
+  //     * Fixes M10 — cursor encodes sessions.id, which matches what the
+  //       outer page's `encodeCursor` emits and `parseCursorParam` decodes.
+  const { data: combatantRows } = await supabase
     .from("combatants")
+    .select("encounters!inner ( session_id )")
+    .in("player_character_id", characterIds);
+
+  type CombatantSessionLink = {
+    encounters:
+      | { session_id: string }
+      | { session_id: string }[]
+      | null;
+  };
+
+  const eligibleSessionIds = new Set<string>();
+  for (const row of (combatantRows ?? []) as CombatantSessionLink[]) {
+    const enc = Array.isArray(row.encounters) ? row.encounters[0] : row.encounters;
+    if (enc?.session_id) eligibleSessionIds.add(enc.session_id);
+  }
+
+  if (eligibleSessionIds.size === 0) {
+    return (
+      <SessionHistoryFullPage
+        entries={[]}
+        nextCursor={null}
+        locale={locale}
+      />
+    );
+  }
+
+  // Query sessions directly so ORDER BY + keyset apply to real session columns.
+  let query = supabase
+    .from("sessions")
     .select(
       `
-      encounter_id,
+      id,
+      created_at,
+      campaign_id,
+      campaigns!inner ( id, name ),
       encounters!inner (
         id,
         name,
         recap_snapshot,
-        session_id,
-        sessions!inner (
-          id,
-          created_at,
-          campaign_id,
-          campaigns!inner ( id, name )
-        )
+        created_at
       )
     `,
     )
-    .in("player_character_id", characterIds)
+    .in("id", Array.from(eligibleSessionIds))
     .order("created_at", { ascending: false })
-    .limit(PAGE_SIZE * 5 + 10);
+    .order("id", { ascending: false })
+    .limit(PAGE_SIZE + 1);
 
-  // Keyset filter for subsequent pages. We filter on the combatant's
-  // `created_at` against the cursor's session createdAt; because sessions
-  // inherit combatant creation ordering via the JOIN, this is a strict
-  // "older than the last row of the previous page" constraint.
+  // Keyset filter for subsequent pages: strict "older than cursor" with a
+  // tiebreaker on id. The PostgREST `.or()` syntax translates to:
+  //   (created_at < X) OR (created_at = X AND id < Y)
   if (cursor) {
-    query = query.lt("created_at", cursor.createdAt);
+    const createdAtIso = cursor.createdAt;
+    const cursorId = cursor.id;
+    query = query.or(
+      `created_at.lt.${createdAtIso},and(created_at.eq.${createdAtIso},id.lt.${cursorId})`,
+    );
   }
 
   const { data } = await query;
 
-  type Row = {
-    encounter_id: string;
+  type SessionRow = {
+    id: string;
+    created_at: string | null;
+    campaign_id: string;
+    campaigns:
+      | { id: string; name: string }
+      | { id: string; name: string }[]
+      | null;
     encounters:
       | {
           id: string;
           name: string | null;
           recap_snapshot: unknown;
-          session_id: string;
-          sessions:
-            | {
-                id: string;
-                created_at: string | null;
-                campaign_id: string;
-                campaigns:
-                  | { id: string; name: string }
-                  | { id: string; name: string }[]
-                  | null;
-              }
-            | Array<{
-                id: string;
-                created_at: string | null;
-                campaign_id: string;
-                campaigns:
-                  | { id: string; name: string }
-                  | { id: string; name: string }[]
-                  | null;
-              }>
-            | null;
+          created_at: string | null;
         }
       | Array<{
           id: string;
           name: string | null;
           recap_snapshot: unknown;
-          session_id: string;
-          sessions:
-            | {
-                id: string;
-                created_at: string | null;
-                campaign_id: string;
-                campaigns:
-                  | { id: string; name: string }
-                  | { id: string; name: string }[]
-                  | null;
-              }
-            | Array<{
-                id: string;
-                created_at: string | null;
-                campaign_id: string;
-                campaigns:
-                  | { id: string; name: string }
-                  | { id: string; name: string }[]
-                  | null;
-              }>
-            | null;
+          created_at: string | null;
         }>
       | null;
   };
 
-  const rawRows = (data ?? []) as unknown as Row[];
+  const rawRows = (data ?? []) as unknown as SessionRow[];
 
-  const seen = new Set<string>();
   const dedup: SessionHistoryRowData[] = [];
 
-  for (const row of rawRows) {
-    const enc = Array.isArray(row.encounters) ? row.encounters[0] : row.encounters;
-    if (!enc) continue;
-    const sess = Array.isArray(enc.sessions) ? enc.sessions[0] : enc.sessions;
-    if (!sess) continue;
-    if (seen.has(sess.id)) continue;
-    seen.add(sess.id);
-
+  for (const sess of rawRows) {
     const camp = Array.isArray(sess.campaigns)
       ? sess.campaigns[0]
       : sess.campaigns;
+
+    // Pick the most-recent encounter for display (encounters are not sorted
+    // by PostgREST unless asked; we sort client-side by their own created_at).
+    const encArr = Array.isArray(sess.encounters)
+      ? sess.encounters
+      : sess.encounters
+        ? [sess.encounters]
+        : [];
+    if (encArr.length === 0) continue;
+
+    const enc =
+      encArr
+        .slice()
+        .sort((a, b) => {
+          const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return tb - ta;
+        })[0] ?? null;
+    if (!enc) continue;
 
     dedup.push({
       sessionId: sess.id,
@@ -191,7 +212,8 @@ export async function SessionHistoryFullPageServer({
     });
 
     // Cheap exit: once we have PAGE_SIZE + 1 distinct sessions we know
-    // everything we need (the +1 tells us hasMore).
+    // everything we need (the +1 tells us hasMore). Sessions are already
+    // distinct because the source query was keyed on sessions.id.
     if (dedup.length >= PAGE_SIZE + 1) break;
   }
 

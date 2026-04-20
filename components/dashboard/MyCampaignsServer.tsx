@@ -9,6 +9,23 @@
  * RLS: `campaign_members` policies already scope to `user_id = auth.uid()`
  * for the authenticated viewer; `campaigns` exposes the fields players are
  * allowed to see (cover, name). No bypass.
+ *
+ * WINSTON C5 NOTE — users SELECT scope:
+ *   The `users` SELECT is intentionally limited to (id, display_name,
+ *   avatar_url). RLS on `users` was broadened by migration 155 to allow any
+ *   authenticated user to read another user's row, so that the DM
+ *   display_name resolves for players. The APPLICATION LAYER is responsible
+ *   for not leaking `email`, `role`, `is_admin`, or other sensitive fields
+ *   when reading a foreign user row. Add columns here ONLY if they are safe
+ *   to expose to any authenticated user.
+ *
+ * WINSTON M8 NOTE — session count accuracy:
+ *   Per-campaign session count is fetched via a `count: "exact", head: true`
+ *   HEAD query per campaign. One round-trip per campaign (typically < 10 for
+ *   a player), which is acceptable and exact — the previous `.limit(500)`
+ *   would silently truncate for a prolific campaign. The most-recent session
+ *   timestamp comes from a second per-campaign lookup (limit 1, DESC order)
+ *   piggybacked on the same Promise.all.
  */
 
 import { getLocale } from "next-intl/server";
@@ -65,43 +82,69 @@ export async function MyCampaignsServer() {
     };
   });
 
-  const campaignIds = campaigns.map((c) => c.id);
   const ownerIds = Array.from(new Set(campaigns.map((c) => c.owner_id).filter(Boolean)));
 
-  // 2. DM display names — FK points to auth.users, separate query needed.
-  // 3. Session counts + most-recent session per campaign. Fetch both in parallel.
-  const [usersRes, sessionsRes] = await Promise.all([
+  // 2. DM display names — SELECT ONLY public-safe columns (see C5 note above).
+  //    No email, no role, no is_admin. `users_select_public_profile` (RLS,
+  //    migration 155) allows the row to be visible; this SELECT enforces the
+  //    column discipline at the application layer.
+  // 3. Session count (exact) + most-recent session per campaign. Parallelized.
+  const usersPromise =
     ownerIds.length > 0
       ? supabase
           .from("users")
-          .select("id, display_name, email")
+          .select("id, display_name, avatar_url")
           .in("id", ownerIds)
-      : Promise.resolve({ data: [] as { id: string; display_name: string | null; email: string | null }[] }),
-    supabase
-      .from("sessions")
-      .select("id, campaign_id, created_at")
-      .in("campaign_id", campaignIds)
-      .order("created_at", { ascending: false })
-      .limit(500),
+      : Promise.resolve({
+          data: [] as { id: string; display_name: string | null; avatar_url: string | null }[],
+        });
+
+  // One HEAD count + one latest-session lookup per campaign. N round-trips
+  // where N = campaigns.length (typically < 10 per player), but each is tiny.
+  // This replaces the previous `.limit(500)` single-query approach which
+  // silently truncated for campaigns with many sessions.
+  const perCampaignPromise = Promise.all(
+    campaigns.map(async (c) => {
+      const [countRes, lastRes] = await Promise.all([
+        supabase
+          .from("sessions")
+          .select("id", { count: "exact", head: true })
+          .eq("campaign_id", c.id),
+        supabase
+          .from("sessions")
+          .select("created_at")
+          .eq("campaign_id", c.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+      return {
+        campaignId: c.id,
+        count: countRes.count ?? 0,
+        lastSessionAt: (lastRes.data?.created_at as string | null) ?? null,
+      };
+    }),
+  );
+
+  const [usersRes, perCampaign] = await Promise.all([
+    usersPromise,
+    perCampaignPromise,
   ]);
 
-  const dmMap: Record<string, { name: string | null; email: string }> = {};
+  const dmMap: Record<string, { name: string | null; avatarUrl: string | null }> = {};
   for (const u of usersRes.data ?? []) {
     dmMap[u.id as string] = {
       name: (u.display_name as string | null) ?? null,
-      email: (u.email as string | null) ?? "",
+      avatarUrl: (u.avatar_url as string | null) ?? null,
     };
   }
 
-  const sessionCountMap: Record<string, number> = {};
-  const lastSessionMap: Record<string, string> = {};
-  for (const s of sessionsRes.data ?? []) {
-    const cid = s.campaign_id as string;
-    sessionCountMap[cid] = (sessionCountMap[cid] ?? 0) + 1;
-    const createdAt = s.created_at as string | null;
-    if (createdAt && !lastSessionMap[cid]) {
-      lastSessionMap[cid] = createdAt; // ordered DESC, so the first hit wins
-    }
+  const statsMap: Record<string, { count: number; lastSessionAt: string | null }> = {};
+  for (const stat of perCampaign) {
+    statsMap[stat.campaignId] = {
+      count: stat.count,
+      lastSessionAt: stat.lastSessionAt,
+    };
   }
 
   const cards: MyCampaignCardData[] = campaigns
@@ -110,9 +153,11 @@ export async function MyCampaignsServer() {
       name: c.name,
       coverImageUrl: c.cover_image_url,
       dmName: dmMap[c.owner_id]?.name ?? null,
-      dmEmail: dmMap[c.owner_id]?.email ?? "",
-      sessionCount: sessionCountMap[c.id] ?? 0,
-      lastSessionAt: lastSessionMap[c.id] ?? c.updated_at ?? null,
+      // Email intentionally omitted (C5): never expose foreign user email.
+      // UI uses a generic fallback when dmName is null.
+      dmEmail: "",
+      sessionCount: statsMap[c.id]?.count ?? 0,
+      lastSessionAt: statsMap[c.id]?.lastSessionAt ?? c.updated_at ?? null,
     }))
     .sort((a, b) => {
       // Most recently active campaign first

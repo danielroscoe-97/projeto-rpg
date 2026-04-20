@@ -51,6 +51,15 @@ export async function SessionHistoryServer() {
   //    (limit 50) and dedupe session IDs client-side so we reliably get the
   //    LAST 10 distinct sessions even when the player has multiple
   //    combatants per encounter.
+  //
+  // WINSTON M7 NOTE — ordering:
+  //   We MUST order by `sessions.created_at`, NOT `combatants.created_at`.
+  //   A combatant can be created long after the session it belongs to
+  //   (e.g. mid-combat monster adds), so combatant-order would surface
+  //   RECENT-COMBATANT sessions instead of RECENT sessions. Using
+  //   foreignTable: "encounters.sessions" pushes the ORDER BY through the
+  //   nested join so the server returns rows sorted by the canonical
+  //   session timestamp.
   const { data } = await supabase
     .from("combatants")
     .select(
@@ -71,7 +80,10 @@ export async function SessionHistoryServer() {
     `,
     )
     .in("player_character_id", characterIds)
-    .order("created_at", { ascending: false })
+    .order("created_at", {
+      ascending: false,
+      foreignTable: "encounters.sessions",
+    })
     .limit(50);
 
   type Row = {
