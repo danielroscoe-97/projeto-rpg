@@ -10,6 +10,7 @@ import { LazyOracleWidgets } from "@/components/oracle/LazyOracleWidgets";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { CombatInviteListenerMount } from "@/components/notifications/CombatInviteListenerMount";
 import { AppSidebarClient } from "@/components/layout/AppSidebarClient";
 import { AppSidebarMain } from "@/components/layout/AppSidebarMain";
 import { BookOpen, Skull, Sparkles, HeartPulse, Backpack, GraduationCap, Star } from "lucide-react";
@@ -162,6 +163,7 @@ export default async function AppLayout({
           <NotificationBell userId={user.id} />
         </AppSidebarClient>
         <SrdInitializer fullData={isBetaTester} />
+        <CombatInviteListenerMount userId={user.id} />
         <ConnectionStatus />
         <ErrorBoundary name="Oracle">
           <LazyOracleWidgets />
@@ -198,6 +200,7 @@ export default async function AppLayout({
         rightSlot={<><NotificationBell userId={user.id} /><OracleSearchTrigger /><OracleAITrigger /><LogoutButton /></>}
       />
       <SrdInitializer fullData={isBetaTester} />
+      <CombatInviteListenerMount userId={user.id} />
       <ConnectionStatus />
       <ErrorBoundary name="Oracle">
         <LazyOracleWidgets />
