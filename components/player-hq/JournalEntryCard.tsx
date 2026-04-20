@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
-import type { JournalEntry } from "@/lib/types/database";
+import { ChevronDown, ChevronRight, Eye, Lock, Pencil, Trash2 } from "lucide-react";
+import type { JournalEntry, JournalEntryVisibility } from "@/lib/types/database";
 
 interface JournalEntryCardProps {
   entry: JournalEntry;
-  onUpdate: (id: string, updates: { title?: string; content?: string }) => void;
+  onUpdate: (
+    id: string,
+    updates: { title?: string; content?: string; visibility?: JournalEntryVisibility },
+  ) => void;
   onDelete: (id: string) => Promise<void>;
 }
 
@@ -67,6 +70,12 @@ export function JournalEntryCard({ entry, onUpdate, onDelete }: JournalEntryCard
             {t("lore_badge")}
           </span>
         )}
+        {entry.visibility === "shared_with_dm" && (
+          <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-300 shrink-0">
+            <Eye className="w-3 h-3" aria-hidden="true" />
+            {t("visibility.badge_shared")}
+          </span>
+        )}
       </button>
 
       {/* Expanded content */}
@@ -101,6 +110,37 @@ export function JournalEntryCard({ entry, onUpdate, onDelete }: JournalEntryCard
 
           {/* I-1: touch targets with min-h */}
           <div className="flex items-center justify-end gap-1 pt-1">
+            {/* Visibility toggle — private <-> shared_with_dm */}
+            <button
+              type="button"
+              onClick={() =>
+                onUpdate(entry.id, {
+                  visibility:
+                    entry.visibility === "shared_with_dm" ? "private" : "shared_with_dm",
+                })
+              }
+              className={`min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors ${
+                entry.visibility === "shared_with_dm"
+                  ? "text-amber-400 hover:text-amber-300"
+                  : "text-muted-foreground hover:text-amber-400"
+              }`}
+              aria-label={
+                entry.visibility === "shared_with_dm"
+                  ? t("visibility.toggle_unshare")
+                  : t("visibility.toggle_share")
+              }
+              title={
+                entry.visibility === "shared_with_dm"
+                  ? t("visibility.toggle_unshare")
+                  : t("visibility.toggle_share")
+              }
+            >
+              {entry.visibility === "shared_with_dm" ? (
+                <Eye className="w-3.5 h-3.5" />
+              ) : (
+                <Lock className="w-3.5 h-3.5" />
+              )}
+            </button>
             <button
               type="button"
               onClick={editing ? () => setEditing(false) : handleStartEdit}
