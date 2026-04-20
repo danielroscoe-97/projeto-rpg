@@ -38,6 +38,11 @@ function isStringArray(v: unknown): v is string[] {
 }
 
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  // Defense in depth: NODE_ENV is controlled by the runtime, not by a
+  // caller-settable public env var. Even if NEXT_PUBLIC_E2E_MODE=true leaks
+  // into a prod build, this guard makes the route non-existent in prod.
+  if (process.env.NODE_ENV === "production") return notFound();
+
   if (!isE2eMode()) return notFound();
 
   let body: Body;
@@ -50,6 +55,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
 
   const svc = createServiceClient();
   const deleted = { sessionTokens: 0, anonUsers: 0, playerCharacters: 0 };
+  const skipped: { id: string; reason: string }[] = [];
   const errors: string[] = [];
 
   // --- session_tokens ---
@@ -80,8 +86,23 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
   // We intentionally only delete rows the caller claims are anon. The admin
   // API has no bulk anon-only filter, so we loop and ask the admin API to
   // delete each id one at a time. If one fails we keep going.
+  //
+  // Security (C5): pre-check `is_anonymous` BEFORE calling deleteUser. The
+  // service role can wipe ANY auth.users row; even though the route is gated
+  // by `NEXT_PUBLIC_E2E_MODE` and `NODE_ENV !== production`, we refuse to
+  // delete a real user if the caller ever passes a non-anon UUID.
   if (body.anonUserIds && isStringArray(body.anonUserIds) && body.anonUserIds.length > 0) {
     for (const uid of body.anonUserIds) {
+      const { data: userRes, error: lookupErr } = await svc.auth.admin.getUserById(uid);
+      if (lookupErr) {
+        errors.push(`auth.users[${uid}] lookup: ${lookupErr.message}`);
+        continue;
+      }
+      if (!userRes?.user?.is_anonymous) {
+        // Refuse to delete non-anon users even with service role creds.
+        skipped.push({ id: uid, reason: "not_anonymous" });
+        continue;
+      }
       const { error } = await svc.auth.admin.deleteUser(uid);
       if (error) errors.push(`auth.users[${uid}]: ${error.message}`);
       else deleted.anonUsers += 1;
@@ -90,10 +111,10 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
 
   if (errors.length > 0) {
     return NextResponse.json(
-      { ok: false, deleted, errors },
+      { ok: false, deleted, skipped, errors },
       { status: 207 }, // multi-status — partial success allowed
     );
   }
 
-  return NextResponse.json({ ok: true, deleted }, { status: 200 });
+  return NextResponse.json({ ok: true, deleted, skipped }, { status: 200 });
 }

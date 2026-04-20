@@ -91,4 +91,17 @@ describe("POST /api/e2e/auth-as-anon", () => {
     expect(body.ok).toBe(false);
     expect(body.error).toContain("signInAnonymously_failed");
   });
+
+  it("returns 404 with empty body when NODE_ENV is production, even with flag on", async () => {
+    // Defense in depth: NODE_ENV guard runs BEFORE the isE2eMode flag check.
+    process.env.NEXT_PUBLIC_E2E_MODE = "true";
+    const restore = jest.replaceProperty(process.env, "NODE_ENV", "production");
+    try {
+      const res = await POST(makeReq() as any);
+      expect(res.status).toBe(404);
+      expect(await res.text()).toBe("");
+    } finally {
+      restore.restore();
+    }
+  });
 });

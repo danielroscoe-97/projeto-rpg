@@ -28,6 +28,16 @@ function notFound(): NextResponse {
   return new NextResponse(null, { status: 404 });
 }
 
+/**
+ * RFC 4122 UUID regex (any version 1-5 + 8-char nibble). We could require
+ * strict v4, but Supabase-generated campaign ids are v4 in practice and the
+ * stricter form would be too tight for legacy fixtures. This matches the
+ * shape Postgres accepts as `uuid` and rejects obvious SQL-ish junk early
+ * so we return 400 instead of a 500 from Supabase.
+ */
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 /** Generate a cryptographically random share token (mirrors session-token.ts). */
 function generateToken(): string {
   const array = new Uint8Array(24);
@@ -38,6 +48,11 @@ function generateToken(): string {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  // Defense in depth: the route is non-existent in production regardless of
+  // what public env vars say. NODE_ENV is set by the runtime, not by a
+  // caller-settable public flag.
+  if (process.env.NODE_ENV === "production") return notFound();
+
   if (!isE2eMode()) return notFound();
 
   let body: Body;
@@ -50,6 +65,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!body.campaignId || typeof body.campaignId !== "string") {
     return NextResponse.json(
       { ok: false, error: "campaignId required" },
+      { status: 400 },
+    );
+  }
+
+  // Reject non-UUID campaignId with 400 before handing to Postgres, which
+  // would respond with a 22P02 (invalid_text_representation) surfacing here
+  // as a confusing 500. This is not an SQLi mitigation (the query is
+  // parameterized); it's a UX/observability fix.
+  if (!UUID_RE.test(body.campaignId)) {
+    return NextResponse.json(
+      { ok: false, error: "invalid_uuid" },
       { status: 400 },
     );
   }

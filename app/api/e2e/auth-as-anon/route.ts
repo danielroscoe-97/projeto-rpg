@@ -23,6 +23,11 @@ function notFound(): NextResponse {
 }
 
 export async function POST(_request: NextRequest): Promise<NextResponse> {
+  // Defense in depth: even if NEXT_PUBLIC_E2E_MODE leaks to a prod build,
+  // NODE_ENV is set by the runtime/Next.js itself and can't be toggled by
+  // a caller. Refuse to exist in production. This MUST be the first check.
+  if (process.env.NODE_ENV === "production") return notFound();
+
   if (!isE2eMode()) return notFound();
 
   const supabase = await createClient();

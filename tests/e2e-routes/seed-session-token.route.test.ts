@@ -62,6 +62,10 @@ jest.mock("@/lib/supabase/server", () => {
 // Now import the route. Must come AFTER jest.mock().
 import { POST } from "@/app/api/e2e/seed-session-token/route";
 
+// Fixed RFC 4122 v4 UUID used as a fixture throughout these tests. The route
+// now rejects non-UUID campaignIds with 400 `invalid_uuid`.
+const VALID_CAMPAIGN_UUID = "11111111-2222-4333-8444-555555555555";
+
 function makeReq(body: unknown): Request {
   return new Request("http://localhost/api/e2e/seed-session-token", {
     method: "POST",
@@ -85,7 +89,7 @@ describe("POST /api/e2e/seed-session-token", () => {
 
   it("returns 404 with empty body when NEXT_PUBLIC_E2E_MODE is not 'true'", async () => {
     delete process.env.NEXT_PUBLIC_E2E_MODE;
-    const res = await POST(makeReq({ campaignId: "camp-1" }) as any);
+    const res = await POST(makeReq({ campaignId: VALID_CAMPAIGN_UUID }) as any);
     expect(res.status).toBe(404);
     const text = await res.text();
     expect(text).toBe("");
@@ -93,19 +97,19 @@ describe("POST /api/e2e/seed-session-token", () => {
 
   it("returns 404 when flag is 'false' (anti-truthy)", async () => {
     process.env.NEXT_PUBLIC_E2E_MODE = "false";
-    const res = await POST(makeReq({ campaignId: "camp-1" }) as any);
+    const res = await POST(makeReq({ campaignId: VALID_CAMPAIGN_UUID }) as any);
     expect(res.status).toBe(404);
   });
 
   it("returns 404 when flag is '1' (must be exactly 'true')", async () => {
     process.env.NEXT_PUBLIC_E2E_MODE = "1";
-    const res = await POST(makeReq({ campaignId: "camp-1" }) as any);
+    const res = await POST(makeReq({ campaignId: VALID_CAMPAIGN_UUID }) as any);
     expect(res.status).toBe(404);
   });
 
   it("returns 200 with token when flag is 'true' and campaign has active session", async () => {
     process.env.NEXT_PUBLIC_E2E_MODE = "true";
-    const res = await POST(makeReq({ campaignId: "camp-1", playerName: "Aragorn" }) as any);
+    const res = await POST(makeReq({ campaignId: VALID_CAMPAIGN_UUID, playerName: "Aragorn" }) as any);
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.ok).toBe(true);
@@ -125,10 +129,41 @@ describe("POST /api/e2e/seed-session-token", () => {
   it("returns 400 when no active session exists for the campaign", async () => {
     process.env.NEXT_PUBLIC_E2E_MODE = "true";
     svcState.sessionResult = { data: null, error: null };
-    const res = await POST(makeReq({ campaignId: "camp-1" }) as any);
+    const res = await POST(makeReq({ campaignId: VALID_CAMPAIGN_UUID }) as any);
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.ok).toBe(false);
     expect(body.error).toContain("no_active_session");
+  });
+
+  // --- Minor: reject non-UUID campaignId with 400 `invalid_uuid` ---
+  it("returns 400 invalid_uuid when campaignId is not a UUID", async () => {
+    process.env.NEXT_PUBLIC_E2E_MODE = "true";
+    const res = await POST(makeReq({ campaignId: "camp-not-a-uuid" }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.ok).toBe(false);
+    expect(body.error).toBe("invalid_uuid");
+  });
+
+  it("returns 400 invalid_uuid when campaignId is a numeric string", async () => {
+    process.env.NEXT_PUBLIC_E2E_MODE = "true";
+    const res = await POST(makeReq({ campaignId: "12345" }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe("invalid_uuid");
+  });
+
+  // --- C6: NODE_ENV=production guard (defense in depth) ---
+  it("returns 404 with empty body when NODE_ENV=production, even with flag on", async () => {
+    process.env.NEXT_PUBLIC_E2E_MODE = "true";
+    const restore = jest.replaceProperty(process.env, "NODE_ENV", "production");
+    try {
+      const res = await POST(makeReq({ campaignId: VALID_CAMPAIGN_UUID }) as any);
+      expect(res.status).toBe(404);
+      expect(await res.text()).toBe("");
+    } finally {
+      restore.restore();
+    }
   });
 });
