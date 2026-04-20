@@ -9,6 +9,7 @@ import { RecapAwardsCarousel } from "./RecapAwardsCarousel";
 import { RecapNarratives } from "./RecapNarratives";
 import { RecapSummary } from "./RecapSummary";
 import { RecapActions } from "./RecapActions";
+import type { SaveSignupContext } from "@/components/conversion/types";
 
 type RecapPhase = "awards" | "details";
 
@@ -33,9 +34,16 @@ interface CombatRecapProps {
   onJoinCampaign?: () => void;
   /** DM-only: session id used to expose "copy feedback link" in the recap actions */
   sessionId?: string;
+  /**
+   * Story 03-D — Context for the `RecapCtaCard` conversion moment.
+   * When present, the recap renders a conversion card above the action
+   * buttons (anon: upgrade flow; guest: delegated to `GuestRecapFlow`).
+   * Additive and optional — callers that don't pass it see the prior UX.
+   */
+  saveSignupContext?: SaveSignupContext;
 }
 
-export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign, sessionId }: CombatRecapProps) {
+export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign, sessionId, saveSignupContext }: CombatRecapProps) {
   const t = useTranslations("combat");
   const [phase, setPhase] = useState<RecapPhase>(() => {
     if (report.awards.length === 0) return "details";
@@ -165,6 +173,7 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
                   initialRating={initialRating}
                   onJoinCampaign={onJoinCampaign}
                   sessionId={sessionId}
+                  saveSignupContext={saveSignupContext}
                 />
               </motion.div>
             )}
