@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -47,9 +48,27 @@ interface LocationFormProps {
   campaignId?: string | null;
   location?: CampaignLocation | null;
   onSave: (data: LocationFormData) => Promise<void>;
+  /**
+   * When true, dialog opens in read-only mode (inputs disabled, Save hidden).
+   * If `canEdit` is also true, an "Edit" button lets the user flip to edit mode.
+   * Defaults to false (always editable).
+   */
+  readOnly?: boolean;
+  /**
+   * When true + `readOnly`, an "Edit" button is shown that flips into edit mode.
+   * Ignored if `readOnly` is false. Defaults to true (DM can always edit their own).
+   */
+  canEdit?: boolean;
 }
 
-export function LocationForm({ open, onOpenChange, location, onSave }: LocationFormProps) {
+export function LocationForm({
+  open,
+  onOpenChange,
+  location,
+  onSave,
+  readOnly = false,
+  canEdit = true,
+}: LocationFormProps) {
   const t = useTranslations("locations");
   const tCommon = useTranslations("common");
 
@@ -63,6 +82,13 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  // Internal view/edit toggle — starts from the `readOnly` prop, user can flip.
+  const [viewOnly, setViewOnly] = useState(readOnly);
+
+  // Sync when prop changes (e.g., reopening from a different entry point).
+  useEffect(() => {
+    setViewOnly(readOnly);
+  }, [readOnly, open]);
 
   const isDirty = useMemo(() => {
     const init = location;
@@ -144,6 +170,8 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
               placeholder={t("field_name")}
               data-testid="location-name-input"
               aria-invalid={nameError}
+              disabled={viewOnly}
+              readOnly={viewOnly}
             />
             {nameError && (
               <p className="text-xs text-red-400" data-testid="location-name-error">
@@ -158,6 +186,7 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
             <Select
               value={locationType}
               onValueChange={(v) => setLocationType(v as LocationType)}
+              disabled={viewOnly}
             >
               <SelectTrigger className="w-full" data-testid="location-type-select">
                 <SelectValue />
@@ -185,8 +214,10 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t("description_placeholder")}
               rows={3}
-              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
+              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
               data-testid="location-description-input"
+              disabled={viewOnly}
+              readOnly={viewOnly}
             />
           </div>
 
@@ -200,6 +231,8 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://..."
               data-testid="location-image-input"
+              disabled={viewOnly}
+              readOnly={viewOnly}
             />
           </div>
 
@@ -213,8 +246,9 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
               type="button"
               role="switch"
               aria-checked={isDiscovered}
-              onClick={() => setIsDiscovered((v) => !v)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+              onClick={() => !viewOnly && setIsDiscovered((v) => !v)}
+              disabled={viewOnly}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-70 ${
                 isDiscovered ? "bg-cyan-500" : "bg-muted"
               }`}
               data-testid="location-discovered-toggle"
@@ -237,8 +271,9 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
               type="button"
               role="switch"
               aria-checked={visibleToPlayers}
-              onClick={() => setVisibleToPlayers((v) => !v)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+              onClick={() => !viewOnly && setVisibleToPlayers((v) => !v)}
+              disabled={viewOnly}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-70 ${
                 visibleToPlayers ? "bg-emerald-500" : "bg-muted"
               }`}
               data-testid="location-visible-toggle"
@@ -258,19 +293,44 @@ export function LocationForm({ open, onOpenChange, location, onSave }: LocationF
             </p>
           )}
 
-          {/* Submit */}
+          {/* Submit / View actions */}
           <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => handleOpenChange(false)}
-              disabled={saving}
-            >
-              {tCommon("cancel")}
-            </Button>
-            <Button type="submit" variant="gold" disabled={saving} data-testid="location-submit">
-              {saving ? tCommon("saving") : tCommon("save")}
-            </Button>
+            {viewOnly ? (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => onOpenChange(false)}
+                >
+                  {tCommon("close")}
+                </Button>
+                {canEdit && (
+                  <Button
+                    type="button"
+                    variant="gold"
+                    onClick={() => setViewOnly(false)}
+                    data-testid="location-edit-toggle"
+                  >
+                    <Pencil className="w-4 h-4 mr-1.5" />
+                    {tCommon("edit")}
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => handleOpenChange(false)}
+                  disabled={saving}
+                >
+                  {tCommon("cancel")}
+                </Button>
+                <Button type="submit" variant="gold" disabled={saving} data-testid="location-submit">
+                  {saving ? tCommon("saving") : tCommon("save")}
+                </Button>
+              </>
+            )}
           </div>
         </form>
       </DialogContent>

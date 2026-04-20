@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -36,9 +37,20 @@ interface QuestFormProps {
   campaignId: string;
   quest?: CampaignQuest | null;
   onSave: (data: QuestFormData) => Promise<void>;
+  /** When true, dialog opens in read-only mode (inputs disabled, Save hidden). */
+  readOnly?: boolean;
+  /** When true + `readOnly`, show an "Edit" button that flips into edit mode. */
+  canEdit?: boolean;
 }
 
-export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps) {
+export function QuestForm({
+  open,
+  onOpenChange,
+  quest,
+  onSave,
+  readOnly = false,
+  canEdit = true,
+}: QuestFormProps) {
   const t = useTranslations("campaign.quests");
   const tCommon = useTranslations("common");
 
@@ -54,6 +66,11 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [viewOnly, setViewOnly] = useState(readOnly);
+
+  useEffect(() => {
+    setViewOnly(readOnly);
+  }, [readOnly, open]);
 
   const isDirty = useMemo(() => {
     const init = quest;
@@ -121,7 +138,7 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
   const isEdit = !!quest;
 
   const textareaClass =
-    "flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm";
+    "flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70";
 
   return (
     <>
@@ -147,6 +164,8 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
                 placeholder={t("quest_field_name")}
                 data-testid="quest-name-input"
                 aria-invalid={nameError}
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
               {nameError && (
                 <p className="text-xs text-red-400" data-testid="quest-name-error">
@@ -160,7 +179,11 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
               {/* Type */}
               <div className="space-y-1.5">
                 <Label>{t("quest_field_type")}</Label>
-                <Select value={questType} onValueChange={(v) => setQuestType(v as QuestType)}>
+                <Select
+                  value={questType}
+                  onValueChange={(v) => setQuestType(v as QuestType)}
+                  disabled={viewOnly}
+                >
                   <SelectTrigger className="w-full" data-testid="quest-type-select">
                     <SelectValue />
                   </SelectTrigger>
@@ -177,7 +200,11 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
               {/* Status */}
               <div className="space-y-1.5">
                 <Label>{t("quest_field_status")}</Label>
-                <Select value={status} onValueChange={(v) => setStatus(v as QuestStatus)}>
+                <Select
+                  value={status}
+                  onValueChange={(v) => setStatus(v as QuestStatus)}
+                  disabled={viewOnly}
+                >
                   <SelectTrigger className="w-full" data-testid="quest-status-select">
                     <SelectValue />
                   </SelectTrigger>
@@ -203,6 +230,8 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
                 rows={3}
                 className={textareaClass}
                 data-testid="quest-context-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
             </div>
 
@@ -217,6 +246,8 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
                 rows={2}
                 className={textareaClass}
                 data-testid="quest-objective-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
             </div>
 
@@ -231,6 +262,8 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
                 rows={2}
                 className={textareaClass}
                 data-testid="quest-reward-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
             </div>
 
@@ -244,6 +277,8 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://..."
                 data-testid="quest-image-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
             </div>
 
@@ -257,8 +292,9 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
                 type="button"
                 role="switch"
                 aria-checked={visibleToPlayers}
-                onClick={() => setVisibleToPlayers((v) => !v)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                onClick={() => !viewOnly && setVisibleToPlayers((v) => !v)}
+                disabled={viewOnly}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-70 ${
                   visibleToPlayers ? "bg-emerald-500" : "bg-muted"
                 }`}
                 data-testid="quest-visible-toggle"
@@ -278,19 +314,44 @@ export function QuestForm({ open, onOpenChange, quest, onSave }: QuestFormProps)
               </p>
             )}
 
-            {/* Submit */}
+            {/* Submit / View actions */}
             <div className="flex justify-end gap-2 pt-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => handleOpenChange(false)}
-                disabled={saving}
-              >
-                {tCommon("cancel")}
-              </Button>
-              <Button type="submit" variant="gold" disabled={saving} data-testid="quest-submit">
-                {saving ? tCommon("saving") : tCommon("save")}
-              </Button>
+              {viewOnly ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onOpenChange(false)}
+                  >
+                    {tCommon("close")}
+                  </Button>
+                  {canEdit && (
+                    <Button
+                      type="button"
+                      variant="gold"
+                      onClick={() => setViewOnly(false)}
+                      data-testid="quest-edit-toggle"
+                    >
+                      <Pencil className="w-4 h-4 mr-1.5" />
+                      {tCommon("edit")}
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleOpenChange(false)}
+                    disabled={saving}
+                  >
+                    {tCommon("cancel")}
+                  </Button>
+                  <Button type="submit" variant="gold" disabled={saving} data-testid="quest-submit">
+                    {saving ? tCommon("saving") : tCommon("save")}
+                  </Button>
+                </>
+              )}
             </div>
           </form>
         </DialogContent>

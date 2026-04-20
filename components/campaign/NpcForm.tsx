@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -29,9 +30,21 @@ interface NpcFormProps {
   campaignId?: string | null;
   npc?: CampaignNpc | null;
   onSave: (data: CampaignNpcInsert) => Promise<void>;
+  /** When true, dialog opens in read-only mode (inputs disabled, Save hidden). */
+  readOnly?: boolean;
+  /** When true + `readOnly`, show an "Edit" button that flips into edit mode. */
+  canEdit?: boolean;
 }
 
-export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcFormProps) {
+export function NpcForm({
+  open,
+  onOpenChange,
+  campaignId,
+  npc,
+  onSave,
+  readOnly = false,
+  canEdit = true,
+}: NpcFormProps) {
   const t = useTranslations("npcs");
   const tCommon = useTranslations("common");
 
@@ -48,6 +61,11 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [viewOnly, setViewOnly] = useState(readOnly);
+
+  useEffect(() => {
+    setViewOnly(readOnly);
+  }, [readOnly, open]);
 
   const isDirty = useMemo(() => {
     const init = npc;
@@ -139,6 +157,8 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
               placeholder={t("name")}
               data-testid="npc-name-input"
               aria-invalid={nameError}
+              disabled={viewOnly}
+              readOnly={viewOnly}
             />
             {nameError && (
               <p className="text-xs text-red-400" data-testid="npc-name-error">
@@ -156,8 +176,10 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t("description")}
               rows={3}
-              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
+              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
               data-testid="npc-description-input"
+              disabled={viewOnly}
+              readOnly={viewOnly}
             />
           </div>
 
@@ -177,6 +199,8 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
                   onChange={(e) => setHp(e.target.value)}
                   placeholder="0"
                   data-testid="npc-hp-input"
+                  disabled={viewOnly}
+                  readOnly={viewOnly}
                 />
               </div>
               <div>
@@ -191,6 +215,8 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
                   onChange={(e) => setAc(e.target.value)}
                   placeholder="0"
                   data-testid="npc-ac-input"
+                  disabled={viewOnly}
+                  readOnly={viewOnly}
                 />
               </div>
               <div>
@@ -204,6 +230,8 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
                   onChange={(e) => setInitiativeMod(e.target.value)}
                   placeholder="0"
                   data-testid="npc-init-input"
+                  disabled={viewOnly}
+                  readOnly={viewOnly}
                 />
               </div>
               <div>
@@ -216,6 +244,8 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
                   onChange={(e) => setCr(e.target.value)}
                   placeholder="1/4"
                   data-testid="npc-cr-input"
+                  disabled={viewOnly}
+                  readOnly={viewOnly}
                 />
               </div>
             </div>
@@ -230,8 +260,10 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
               onChange={(e) => setNotes(e.target.value)}
               placeholder={t("notes")}
               rows={2}
-              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
+              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
               data-testid="npc-notes-input"
+              disabled={viewOnly}
+              readOnly={viewOnly}
             />
           </div>
 
@@ -245,6 +277,8 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
               onChange={(e) => setAvatarUrl(e.target.value)}
               placeholder="https://..."
               data-testid="npc-avatar-input"
+              disabled={viewOnly}
+              readOnly={viewOnly}
             />
           </div>
 
@@ -258,8 +292,9 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
               type="button"
               role="switch"
               aria-checked={visibleToPlayers}
-              onClick={() => setVisibleToPlayers((v) => !v)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+              onClick={() => !viewOnly && setVisibleToPlayers((v) => !v)}
+              disabled={viewOnly}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-70 ${
                 visibleToPlayers ? "bg-emerald-500" : "bg-muted"
               }`}
               data-testid="npc-visible-toggle"
@@ -279,19 +314,44 @@ export function NpcForm({ open, onOpenChange, campaignId, npc, onSave }: NpcForm
             </p>
           )}
 
-          {/* Submit */}
+          {/* Submit / View actions */}
           <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => handleOpenChange(false)}
-              disabled={saving}
-            >
-              {tCommon("cancel")}
-            </Button>
-            <Button type="submit" variant="gold" disabled={saving} data-testid="npc-submit">
-              {saving ? tCommon("saving") : tCommon("save")}
-            </Button>
+            {viewOnly ? (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => onOpenChange(false)}
+                >
+                  {tCommon("close")}
+                </Button>
+                {canEdit && (
+                  <Button
+                    type="button"
+                    variant="gold"
+                    onClick={() => setViewOnly(false)}
+                    data-testid="npc-edit-toggle"
+                  >
+                    <Pencil className="w-4 h-4 mr-1.5" />
+                    {tCommon("edit")}
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => handleOpenChange(false)}
+                  disabled={saving}
+                >
+                  {tCommon("cancel")}
+                </Button>
+                <Button type="submit" variant="gold" disabled={saving} data-testid="npc-submit">
+                  {saving ? tCommon("saving") : tCommon("save")}
+                </Button>
+              </>
+            )}
           </div>
         </form>
       </DialogContent>

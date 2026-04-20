@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +45,10 @@ interface FactionFormProps {
   campaignId: string;
   faction?: CampaignFaction | null;
   onSave: (data: FactionFormData) => Promise<void>;
+  /** When true, dialog opens in read-only mode (inputs disabled, Save hidden). */
+  readOnly?: boolean;
+  /** When true + `readOnly`, show an "Edit" button that flips into edit mode. */
+  canEdit?: boolean;
 }
 
 export function FactionForm({
@@ -52,6 +57,8 @@ export function FactionForm({
   campaignId,
   faction,
   onSave,
+  readOnly = false,
+  canEdit = true,
 }: FactionFormProps) {
   const t = useTranslations("factions");
   const tCommon = useTranslations("common");
@@ -69,6 +76,11 @@ export function FactionForm({
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [viewOnly, setViewOnly] = useState(readOnly);
+
+  useEffect(() => {
+    setViewOnly(readOnly);
+  }, [readOnly, open]);
 
   const isDirty = useMemo(() => {
     const init = faction;
@@ -163,6 +175,8 @@ export function FactionForm({
                 placeholder={t("field_name")}
                 data-testid="faction-name-input"
                 aria-invalid={nameError}
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
               {nameError && (
                 <p
@@ -180,6 +194,7 @@ export function FactionForm({
               <Select
                 value={alignment}
                 onValueChange={(v) => setAlignment(v as FactionAlignment)}
+                disabled={viewOnly}
               >
                 <SelectTrigger
                   className="w-full"
@@ -213,8 +228,10 @@ export function FactionForm({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("description_placeholder")}
                 rows={3}
-                className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
+                className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
                 data-testid="faction-description-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
             </div>
 
@@ -228,6 +245,8 @@ export function FactionForm({
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://..."
                 data-testid="faction-image-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
               />
             </div>
 
@@ -241,8 +260,9 @@ export function FactionForm({
                 type="button"
                 role="switch"
                 aria-checked={visibleToPlayers}
-                onClick={() => setVisibleToPlayers((v) => !v)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                onClick={() => !viewOnly && setVisibleToPlayers((v) => !v)}
+                disabled={viewOnly}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-70 ${
                   visibleToPlayers ? "bg-emerald-500" : "bg-muted"
                 }`}
                 data-testid="faction-visible-toggle"
@@ -265,24 +285,49 @@ export function FactionForm({
               </p>
             )}
 
-            {/* Submit */}
+            {/* Submit / View actions */}
             <div className="flex justify-end gap-2 pt-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => handleOpenChange(false)}
-                disabled={saving}
-              >
-                {tCommon("cancel")}
-              </Button>
-              <Button
-                type="submit"
-                variant="gold"
-                disabled={saving}
-                data-testid="faction-submit"
-              >
-                {saving ? tCommon("saving") : tCommon("save")}
-              </Button>
+              {viewOnly ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onOpenChange(false)}
+                  >
+                    {tCommon("close")}
+                  </Button>
+                  {canEdit && (
+                    <Button
+                      type="button"
+                      variant="gold"
+                      onClick={() => setViewOnly(false)}
+                      data-testid="faction-edit-toggle"
+                    >
+                      <Pencil className="w-4 h-4 mr-1.5" />
+                      {tCommon("edit")}
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleOpenChange(false)}
+                    disabled={saving}
+                  >
+                    {tCommon("cancel")}
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="gold"
+                    disabled={saving}
+                    data-testid="faction-submit"
+                  >
+                    {saving ? tCommon("saving") : tCommon("save")}
+                  </Button>
+                </>
+              )}
             </div>
           </form>
         </DialogContent>
