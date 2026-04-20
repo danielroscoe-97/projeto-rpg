@@ -923,6 +923,12 @@
     "clear_focus": "Remover foco",
     "focus_hidden_by_filter": "Filtro está ocultando esta entidade"
   },
+  "session_notes": {
+    "cta_start_today": "Iniciar sessão de hoje",
+    "created_toast": "Notas da sessão de hoje prontas",
+    "resumed_toast": "Retomando notas da sessão de hoje",
+    "error_toast": "Não foi possível preparar as notas da sessão"
+  },
   "auth_errors": {
     "invalid_credentials": "Email ou senha incorretos.",
     "email_not_confirmed": "Confirme seu email antes de fazer login. Verifique sua caixa de entrada.",
@@ -4510,5 +4516,16 @@
       "cta": "Criar conta",
       "dismiss": "Fechar"
     }
+  },
+  "mentions": {
+    "popover_placeholder": "Digite para buscar entidade...",
+    "no_results": "Nenhuma entidade encontrada",
+    "loading": "Carregando...",
+    "chip_npc": "NPC",
+    "chip_location": "Local",
+    "chip_faction": "Facção",
+    "chip_quest": "Quest",
+    "chip_note": "Nota",
+    "orphan_label": "Referência removida"
   }
 }

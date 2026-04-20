@@ -923,6 +923,12 @@
     "clear_focus": "Clear focus",
     "focus_hidden_by_filter": "A filter is hiding this entity"
   },
+  "session_notes": {
+    "cta_start_today": "Start today's session",
+    "created_toast": "Today's session notes are ready",
+    "resumed_toast": "Resuming today's session notes",
+    "error_toast": "Could not prepare session notes"
+  },
   "auth_errors": {
     "invalid_credentials": "Incorrect email or password.",
     "email_not_confirmed": "Please confirm your email before logging in. Check your inbox.",
@@ -4510,5 +4516,16 @@
       "cta": "Sign up",
       "dismiss": "Dismiss"
     }
+  },
+  "mentions": {
+    "popover_placeholder": "Type to search entity...",
+    "no_results": "No entity found",
+    "loading": "Loading...",
+    "chip_npc": "NPC",
+    "chip_location": "Location",
+    "chip_faction": "Faction",
+    "chip_quest": "Quest",
+    "chip_note": "Note",
+    "orphan_label": "Reference removed"
   }
 }

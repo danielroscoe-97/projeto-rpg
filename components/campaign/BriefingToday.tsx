@@ -4,12 +4,13 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Flame, Play, CalendarDays, Sparkles } from "lucide-react";
+import { Flame, Play, CalendarDays, Sparkles, NotebookPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NextSessionCard } from "@/components/campaign/NextSessionCard";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
 import { SessionPlanner } from "@/components/campaign/SessionPlanner";
 import { startSession } from "@/lib/supabase/campaign-sessions";
+import { useSessionBootstrap } from "@/lib/hooks/use-session-bootstrap";
 import type { ActiveEncounterInfo } from "@/lib/types/campaign-briefing";
 import type { PlannedSession } from "@/lib/types/campaign-hub";
 
@@ -45,9 +46,21 @@ export function BriefingToday({
 }: BriefingTodayProps) {
   const t = useTranslations("briefing");
   const tCampaign = useTranslations("campaign");
+  const tSession = useTranslations("session_notes");
   const router = useRouter();
   const [combatOpen, setCombatOpen] = useState(false);
   const [plannerOpen, setPlannerOpen] = useState(false);
+  const { ensureSession, ensuring } = useSessionBootstrap(campaignId);
+
+  const handleStartTodaySession = async () => {
+    const noteId = await ensureSession();
+    if (!noteId) {
+      toast.error(tSession("error_toast"));
+      return;
+    }
+    toast.success(tSession("created_toast"));
+    router.push(`/app/campaigns/${campaignId}?section=notes&noteId=${noteId}`);
+  };
 
   const state = useMemo<
     "active_combat" | "active_session" | "planned_next" | "empty"
@@ -162,6 +175,16 @@ export function BriefingToday({
             </div>
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
+            <Button
+              size="sm"
+              className="min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-foreground gap-1.5"
+              onClick={handleStartTodaySession}
+              disabled={ensuring}
+              data-testid="briefing-start-today-session"
+            >
+              <NotebookPen className="w-3.5 h-3.5" aria-hidden="true" />
+              {tSession("cta_start_today")}
+            </Button>
             <Button
               size="sm"
               className="min-h-[44px] bg-amber-600 hover:bg-amber-700 text-foreground gap-1.5"
