@@ -37,7 +37,7 @@ test.describe("P0 — DM Creates Session", () => {
   test("DM can generate share link", async ({ page }) => {
     await goToNewSession(page);
 
-    // On /session/new (sessionId=null), click share-prepare-btn to create session on-demand
+    // On /combat/new (sessionId=null), click share-prepare-btn to create session on-demand
     const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
     await expect(prepareBtn).toBeVisible({ timeout: 5_000 });
     await prepareBtn.click();

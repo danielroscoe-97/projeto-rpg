@@ -28,7 +28,7 @@ export default async function CampaignsPage() {
   // Now parallelize translations + queries (all using the same authed client)
   const [t, tSheet, userDataRes, memberships, pendingInvites, campaignsRes] = await Promise.all([
     getTranslations("dashboard"),
-    getTranslations("sheet"),
+    getTranslations("player_hq.sheet"),
     supabase.from("users").select("role, email").eq("id", user.id).maybeSingle(),
     getUserMemberships(user.id),
     getPendingInvites(user.email ?? ""),

@@ -70,7 +70,7 @@ jest.mock("@/lib/realtime/broadcast", () => ({
   registerHiddenLookup: jest.fn(),
 }));
 
-jest.mock("@/components/session/ShareSessionButton", () => ({
+jest.mock("@/components/combat-session/ShareSessionButton", () => ({
   ShareSessionButton: () => <div data-testid="share-session-mock" />,
 }));
 

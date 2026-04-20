@@ -28,8 +28,8 @@ test.describe("P3 — i18n (English)", () => {
     const dmPage = await dmContext.newPage();
     await loginAs(dmPage, DM_PRIMARY);
 
-    await dmPage.goto("/app/session/new");
-    await dmPage.waitForURL("**/app/session/**", { timeout: 15_000 });
+    await dmPage.goto("/app/combat/new");
+    await dmPage.waitForURL("**/app/combat/**", { timeout: 15_000 });
 
     const shareBtn = dmPage.locator(
       '[data-testid="share-session-btn"], button:has-text("Compartilhar"), button:has-text("Share")'
@@ -116,8 +116,8 @@ test.describe("P3 — Edge: Reconnection", () => {
     const dmPage = await dmContext.newPage();
     await loginAs(dmPage, DM_PRIMARY);
 
-    await dmPage.goto("/app/session/new");
-    await dmPage.waitForURL("**/app/session/**", { timeout: 15_000 });
+    await dmPage.goto("/app/combat/new");
+    await dmPage.waitForURL("**/app/combat/**", { timeout: 15_000 });
 
     const shareBtn = dmPage.locator(
       '[data-testid="share-session-btn"], button:has-text("Compartilhar"), button:has-text("Share")'

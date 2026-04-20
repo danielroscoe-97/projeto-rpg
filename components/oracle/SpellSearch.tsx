@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { searchSpells } from "@/lib/srd/srd-search";
-import { VersionBadge } from "@/components/session/RulesetSelector";
+import { VersionBadge } from "@/components/combat-session/RulesetSelector";
 import { SpellDescriptionModal } from "@/components/oracle/SpellDescriptionModal";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import type { SrdSpell } from "@/lib/srd/srd-loader";

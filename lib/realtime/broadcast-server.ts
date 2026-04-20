@@ -138,6 +138,15 @@ export async function broadcastViaServer(
       return false;
     }
 
+    // B01 (beta test 3): /api/broadcast returns 404 when the session has been
+    // deleted/ended but a straggler broadcast is still in flight. That's an
+    // expected race — the DM client silences the fire-and-forget failure and
+    // falls back to the client-direct path (see broadcast.ts). Treat 404 as a
+    // benign "session gone" signal instead of a network error.
+    if (res.status === 404) {
+      return false;
+    }
+
     return res.ok;
   } catch {
     // Network error — fall back to client-side

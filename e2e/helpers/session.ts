@@ -3,12 +3,12 @@ import { loginAs } from "./auth";
 import type { TestAccount } from "../fixtures/test-accounts";
 
 /**
- * Navigate to /app/session/new, handle campaign picker if shown.
+ * Navigate to /app/combat/new, handle campaign picker if shown.
  * Waits for either the campaign picker or the setup form, then proceeds.
  * Also opens the manual-add form so data-testid="add-row" is visible.
  */
 export async function goToNewSession(page: Page) {
-  await page.goto("/app/session/new", { waitUntil: "domcontentloaded", timeout: 45_000 });
+  await page.goto("/app/combat/new", { waitUntil: "domcontentloaded", timeout: 45_000 });
   await page.waitForLoadState("domcontentloaded");
 
   // Wait for either the setup area or Quick Combat button
@@ -46,12 +46,12 @@ export async function goToNewSession(page: Page) {
 }
 
 /**
- * Generate share token on /session/new page.
+ * Generate share token on /combat/new page.
  * Flow: share-prepare-btn (creates session) → share-session-generate → share-session-url
  */
 export async function getShareToken(page: Page): Promise<string | null> {
   try {
-    // Step 1: On /session/new, click share-prepare-btn to create session
+    // Step 1: On /combat/new, click share-prepare-btn to create session
     const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
     await prepareBtn.scrollIntoViewIfNeeded();
     await expect(prepareBtn).toBeVisible({ timeout: 5_000 });

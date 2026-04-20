@@ -6,10 +6,10 @@ import { createClient } from "@/lib/supabase/client";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
 import { Info, Share2, Package } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ShareSessionButton } from "@/components/session/ShareSessionButton";
+import { ShareSessionButton } from "@/components/combat-session/ShareSessionButton";
 import { createSessionOnly } from "@/lib/supabase/encounter";
-import { RulesetSelector } from "@/components/session/RulesetSelector";
-import { CampaignLoader } from "@/components/session/CampaignLoader";
+import { RulesetSelector } from "@/components/combat-session/RulesetSelector";
+import { CampaignLoader } from "@/components/combat-session/CampaignLoader";
 import { PresetLoader } from "@/components/presets/PresetLoader";
 import { CombatantSetupRow } from "@/components/combat/CombatantSetupRow";
 import { SortableCombatantList } from "@/components/combat/SortableCombatantList";
@@ -764,7 +764,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
             {t("encounter_description")}
           </p>
         </div>
-        {/* Share button — only show here when not inside /app/session/[id] (which has its own) */}
+        {/* Share button — only show here when not inside /app/combat/[id] (which has its own) */}
         {!sessionId && (
           effectiveSessionId ? (
             <ShareSessionButton sessionId={effectiveSessionId} />

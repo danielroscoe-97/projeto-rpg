@@ -18,15 +18,15 @@ interface NavbarWithSyncProps {
 
 /**
  * Wraps Navbar and automatically shows a sync status dot when the DM
- * is on an active session page (/app/session/[id]).
+ * is on an active session page (/app/combat/[id]).
  * When inside a campaign, hides Compêndio and shows campaign breadcrumb.
  */
 export function NavbarWithSync(props: NavbarWithSyncProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
 
-  // Extract session ID from /app/session/[uuid] pattern
-  const sessionMatch = pathname.match(/^\/app\/session\/([0-9a-f-]{36})$/i);
+  // Extract session ID from /app/combat/[uuid] pattern
+  const sessionMatch = pathname.match(/^\/app\/combat\/([0-9a-f-]{36})$/i);
   const sessionId = sessionMatch ? sessionMatch[1] : null;
 
   const status = useDmChannelStatus(sessionId);

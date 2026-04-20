@@ -16,6 +16,25 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/srd/full/**": ["./data/srd/**/*"],
   },
+  async redirects() {
+    return [
+      {
+        // B03 (beta test 3): /opengraph-image.png returned 404. Next.js serves
+        // the dynamic OG image at /opengraph-image (no extension). External
+        // crawlers and cached metadata from older deploys sometimes append
+        // `.png` and receive 404. Redirect both root and nested (e.g.
+        // /monsters/[slug]/opengraph-image.png) to the extensionless URL.
+        source: "/:path*/opengraph-image.png",
+        destination: "/:path*/opengraph-image",
+        permanent: true,
+      },
+      {
+        source: "/opengraph-image.png",
+        destination: "/opengraph-image",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

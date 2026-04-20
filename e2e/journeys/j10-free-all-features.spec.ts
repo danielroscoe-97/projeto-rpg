@@ -253,7 +253,7 @@ test.describe("J10 — Free: Todas Features Acessiveis", () => {
   }) => {
     const pages = [
       "/app/dashboard",
-      "/app/session/new",
+      "/app/combat/new",
       "/app/presets",
       "/app/compendium?tab=monsters",
       "/app/compendium?tab=spells",

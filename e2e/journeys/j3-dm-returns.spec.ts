@@ -29,7 +29,7 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
 
     // Look for saved encounters, encounter links, or action buttons
     const contentLocator = page.locator(
-      '[data-testid="saved-encounters"], [data-testid^="encounter-link-"], a[href*="/app/session/"], a[href*="session/new"], button:has-text("Nova"), button:has-text("New"), button:has-text("Criar"), nav'
+      '[data-testid="saved-encounters"], [data-testid^="encounter-link-"], a[href*="/app/combat/"], a[href*="combat/new"], button:has-text("Nova"), button:has-text("New"), button:has-text("Criar"), nav'
     ).first();
     await expect(contentLocator).toBeVisible({ timeout: 10_000 });
   });
@@ -48,7 +48,7 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
 
     // Capture the session URL
     const sessionUrl = page1.url();
-    expect(sessionUrl).toContain("/app/session/");
+    expect(sessionUrl).toContain("/app/combat/");
 
     // Advance 1 turn so state changes
     const nextTurnBtn = page1.locator('[data-testid="next-turn-btn"]');
@@ -73,7 +73,7 @@ test.describe("J3 — DM que Retorna (Retencao)", () => {
     // 1. Active combat directly (if URL resolves to the encounter)
     // 2. Session overview with encounter list (DM needs to click to resume)
     const activeCombat = page2.locator('[data-testid="active-combat"]');
-    const encounterLink = page2.locator('a[href*="/app/session/"], button:has-text("Retomar"), button:has-text("Resume")').first();
+    const encounterLink = page2.locator('a[href*="/app/combat/"], button:has-text("Retomar"), button:has-text("Resume")').first();
 
     const hasActiveCombat = await activeCombat.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!hasActiveCombat) {

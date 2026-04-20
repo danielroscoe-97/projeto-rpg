@@ -61,12 +61,12 @@ export function CombatLaunchSheet({
     const params = new URLSearchParams({ campaign: campaignId });
     if (autoInitiative) params.set("initiative", "auto");
     if (notifyPlayers && playerEmails.length > 0) params.set("notify", "true");
-    router.push(`/app/session/new?${params.toString()}`);
+    router.push(`/app/combat/new?${params.toString()}`);
     setOpen(false);
   };
 
   const handleQuickCombat = () => {
-    router.push(`/app/session/new?campaign=${campaignId}&quick=true`);
+    router.push(`/app/combat/new?campaign=${campaignId}&quick=true`);
     setOpen(false);
   };
 
@@ -87,13 +87,13 @@ export function CombatLaunchSheet({
   };
 
   const handlePickPreset = (presetId: string) => {
-    router.push(`/app/session/new?campaign=${campaignId}&preset=${presetId}`);
+    router.push(`/app/combat/new?campaign=${campaignId}&preset=${presetId}`);
     setOpen(false);
   };
 
   const handleCopyLink = async () => {
     if (!activeSessionId) return;
-    const url = `${window.location.origin}/app/session/${activeSessionId}`;
+    const url = `${window.location.origin}/app/combat/${activeSessionId}`;
     await navigator.clipboard.writeText(url);
     trackEvent("share:link_copied");
     setCopied(true);
@@ -138,7 +138,7 @@ export function CombatLaunchSheet({
               <button
                 type="button"
                 onClick={() => {
-                  router.push(`/app/session/new?campaign=${campaignId}&session=${plannedSessionId}`);
+                  router.push(`/app/combat/new?campaign=${campaignId}&session=${plannedSessionId}`);
                   setOpen(false);
                 }}
                 className="flex items-center gap-3 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-left min-h-[56px]"
@@ -280,8 +280,8 @@ export function CombatLaunchSheet({
               <p className="text-xs text-muted-foreground mb-1">{t("session_link")}</p>
               <p className="text-sm text-foreground font-mono break-all">
                 {typeof window !== "undefined"
-                  ? `${window.location.origin}/app/session/${activeSessionId}`
-                  : `/app/session/${activeSessionId}`}
+                  ? `${window.location.origin}/app/combat/${activeSessionId}`
+                  : `/app/combat/${activeSessionId}`}
               </p>
             </div>
 

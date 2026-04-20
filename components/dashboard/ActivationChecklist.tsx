@@ -51,9 +51,9 @@ interface ChecklistItem {
 
 const ITEMS: ChecklistItem[] = [
   { key: "hasAccount", labelKey: "item_account", icon: UserCheck, href: "/app/dashboard" },
-  { key: "hasRunCombat", labelKey: "item_combat", icon: Swords, href: "/app/session/new" },
+  { key: "hasRunCombat", labelKey: "item_combat", icon: Swords, href: "/app/combat/new" },
   { key: "hasInvitedPlayer", labelKey: "item_invite", icon: UserPlus, href: "/app/dashboard/campaigns" },
-  { key: "hasUsedLegendary", labelKey: "item_legendary", icon: Crown, href: "/app/session/new" },
+  { key: "hasUsedLegendary", labelKey: "item_legendary", icon: Crown, href: "/app/combat/new" },
   { key: "hasViewedRecap", labelKey: "item_recap", icon: ScrollText, href: "/app/dashboard/combats" },
 ];
 

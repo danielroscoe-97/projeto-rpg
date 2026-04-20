@@ -162,7 +162,7 @@ export function useCombatResilience() {
       const state = useCombatStore.getState();
       if (state.session_id && navigator.sendBeacon && dmUserIdRef.current) {
         navigator.sendBeacon(
-          `/api/session/${state.session_id}/dm-heartbeat`,
+          `/api/combat/${state.session_id}/dm-heartbeat`,
           new Blob([JSON.stringify({ offline: true, dm_user_id: dmUserIdRef.current })], { type: "application/json" })
         );
       }

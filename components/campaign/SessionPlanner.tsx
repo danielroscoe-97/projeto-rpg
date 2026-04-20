@@ -93,7 +93,7 @@ export function SessionPlanner({
       onSessionCreated?.(result.sessionId);
 
       if (startNow) {
-        router.push(`/app/session/${result.sessionId}`);
+        router.push(`/app/combat/${result.sessionId}`);
       }
     } catch {
       toast.error(t("error_create"));

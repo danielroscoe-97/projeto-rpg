@@ -186,15 +186,15 @@ test.describe("J15-C — Dashboard", () => {
     expect(hasEncounters).toBe(true);
   });
 
-  test("J15.C3 — New session button navigates to /app/session/new", async ({ page }) => {
+  test("J15.C3 — New session button navigates to /app/combat/new", async ({ page }) => {
     // Wait for dashboard to fully load
     await page.waitForLoadState("networkidle").catch(() => {});
     await page.waitForTimeout(3_000);
 
-    const newBtn = page.locator('a[href*="/session/new"]').first();
+    const newBtn = page.locator('a[href*="/combat/new"]').first();
     await expect(newBtn).toBeVisible({ timeout: 30_000 });
     await newBtn.click();
-    await page.waitForURL("**/app/session/new", { timeout: 15_000 });
+    await page.waitForURL("**/app/combat/new", { timeout: 15_000 });
   });
 
   test("J15.C4 — New campaign button opens dialog", async ({ page }) => {
@@ -235,8 +235,8 @@ test.describe("J15-D — Campaign Management", () => {
     }
   });
 
-  test("J15.D2 — Campaign picker appears on /app/session/new", async ({ page }) => {
-    await page.goto("/app/session/new");
+  test("J15.D2 — Campaign picker appears on /app/combat/new", async ({ page }) => {
+    await page.goto("/app/combat/new");
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for campaigns to load (may show "Carregando campanhas..." first)
@@ -250,7 +250,7 @@ test.describe("J15-D — Campaign Management", () => {
   });
 
   test("J15.D3 — Campaign selection preloads player characters", async ({ page }) => {
-    await page.goto("/app/session/new");
+    await page.goto("/app/combat/new");
     await page.waitForLoadState("domcontentloaded");
 
     const krynn = page.locator('button:has-text("Krynn")');
@@ -980,7 +980,7 @@ test.describe("J15-L — Onboarding & Settings", () => {
 test.describe("J15-M — Error Handling", () => {
   test("J15.M1 — Invalid session URL shows graceful error", async ({ page }) => {
     await loginAs(page, DM_PRIMARY);
-    await page.goto("/app/session/nonexistent-uuid-12345");
+    await page.goto("/app/combat/nonexistent-uuid-12345");
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(3_000);
 

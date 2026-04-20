@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { CombatantSetupRow } from "./CombatantSetupRow";
 import type { Combatant } from "@/lib/types/combat";
 
-jest.mock("@/components/session/RulesetSelector", () => ({
+jest.mock("@/components/combat-session/RulesetSelector", () => ({
   VersionBadge: ({ version }: { version: string }) => (
     <span data-testid="version-badge">{version}</span>
   ),

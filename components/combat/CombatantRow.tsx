@@ -7,7 +7,7 @@ import { getMonsterById, getCrossVersionMonsterId } from "@/lib/srd/srd-search";
 import { MonsterStatBlock } from "@/components/oracle/MonsterStatBlock";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useSrdStore } from "@/lib/stores/srd-store";
-import { VersionBadge } from "@/components/session/RulesetSelector";
+import { VersionBadge } from "@/components/combat-session/RulesetSelector";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { HpAdjuster } from "./HpAdjuster";

@@ -52,9 +52,9 @@ test.describe("BLOCO A — DM Logado (Mestre)", () => {
     expect(body).not.toContain("Internal Server Error");
     expect(body).not.toContain("Application error");
 
-    // Deve ter botão de nova sessão
+    // Deve ter botão de novo combate (rota nova pós Linguagem Ubíqua)
     const newSessionBtn = page.locator(
-      'a[href*="/session/new"], button:has-text("Nova Sessão"), button:has-text("New Session"), button:has-text("Novo Combate"), button:has-text("New Combat")'
+      'a[href*="/combat/new"], button:has-text("Nova Sessão"), button:has-text("New Session"), button:has-text("Novo Combate"), button:has-text("New Combat")'
     ).first();
     await expect(newSessionBtn).toBeVisible({ timeout: 10_000 });
 

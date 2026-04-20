@@ -61,8 +61,8 @@ import { Users, ScrollText, Pause, Play } from "lucide-react";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import { isQuickAction } from "@/lib/combat/quick-actions";
 // WEATHER_DISABLED: import type { WeatherEffect } from "@/components/player/WeatherOverlay";
-import { JoinRequestBanner, type JoinRequest } from "@/components/session/JoinRequestBanner";
-import { PlayersOnlinePanel } from "@/components/session/PlayersOnlinePanel";
+import { JoinRequestBanner, type JoinRequest } from "@/components/combat-session/JoinRequestBanner";
+import { PlayersOnlinePanel } from "@/components/combat-session/PlayersOnlinePanel";
 import { DmPostitSender } from "@/components/combat/DmPostitSender";
 import { rejoinAsPlayer } from "@/lib/supabase/player-registration";
 import { generateEncounterName } from "@/lib/utils/encounter-name";
@@ -327,7 +327,7 @@ export function CombatSessionClient({
           };
           // S1.1: Persist player-safe recap to DB BEFORE the broadcast so
           // late-reconnecting players can fetch it via
-          // GET /api/session/[id]/latest-recap. Fire-and-forget with one
+          // GET /api/combat/[id]/latest-recap. Fire-and-forget with one
           // retry; never blocks the DM post-combat UX. Broadcast continues
           // below as the happy-path delivery.
           const encIdForRecap = useCombatStore.getState().encounter_id;
@@ -772,7 +772,7 @@ export function CombatSessionClient({
         round_number: 1,
         encounter_id: encounter_id,
       });
-      router.replace(`/app/session/${session_id}`);
+      router.replace(`/app/combat/${session_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("error_start_combat"));
     }

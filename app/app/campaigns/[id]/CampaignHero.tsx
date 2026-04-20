@@ -159,7 +159,7 @@ export function CampaignHero({
               toast.error(t("session_start_error"));
               return;
             }
-            router.push(`/app/session/${nextPlannedSession.id}`);
+            router.push(`/app/combat/${nextPlannedSession.id}`);
           }}
         />
       ) : null}

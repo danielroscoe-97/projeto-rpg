@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Copy, EyeOff, Shield, User, UserCircle, Sparkles, Skull } from "lucide-react";
 import type { Combatant, CombatantRole } from "@/lib/types/combat";
 import { COMBATANT_ROLE_CYCLE } from "@/lib/types/combat";
-import { VersionBadge } from "@/components/session/RulesetSelector";
+import { VersionBadge } from "@/components/combat-session/RulesetSelector";
 import { MonsterToken } from "@/components/srd/MonsterToken";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import {
