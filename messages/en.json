@@ -989,7 +989,14 @@
     "checklist_invite": "Invite a player",
     "checklist_legendary": "Use legendary actions",
     "checklist_recap": "View a combat recap",
-    "checklist_all_complete": "All done! You're ready to master."
+    "checklist_all_complete": "All done! You're ready to master.",
+    "continueFromLastSession": {
+      "title": "Continue where you left off",
+      "cta": "Open",
+      "ago": "Last session {when}",
+      "defaultCampaignName": "Unnamed campaign",
+      "defaultCharacterName": "Your character"
+    }
   },
   "player_hq": {
     "tabs": {

@@ -989,7 +989,14 @@
     "checklist_invite": "Convidar um jogador",
     "checklist_legendary": "Usar ações lendárias",
     "checklist_recap": "Ver o recap do combate",
-    "checklist_all_complete": "Tudo pronto! Você está preparado para mestrar."
+    "checklist_all_complete": "Tudo pronto! Você está preparado para mestrar.",
+    "continueFromLastSession": {
+      "title": "Continue de onde parou",
+      "cta": "Abrir",
+      "ago": "Última sessão {when}",
+      "defaultCampaignName": "Campanha sem nome",
+      "defaultCharacterName": "Seu personagem"
+    }
   },
   "player_hq": {
     "tabs": {

@@ -6,6 +6,10 @@ import { redirect } from "next/navigation";
 
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
+import {
+  ContinueFromLastSession,
+  type ContinueFromLastSessionData,
+} from "@/components/dashboard/ContinueFromLastSession";
 import { computeStreak } from "@/lib/utils/streak";
 import { grantXpAsync, getCooldownStart } from "@/lib/xp/grant-xp";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
@@ -39,7 +43,15 @@ export default async function DashboardPage() {
     encountersRes,
     encounterCountRes,
   ] = await Promise.all([
-    supabase.from("users").select("role, email").eq("id", user.id).maybeSingle(),
+    // 02-F parte 1: pull `last_session_at`, `default_character_id`, and `avatar_url`
+    // for the "Continue where you left off" card. Story 02-F-full will replace
+    // the derived campaign/character fields below with a real JOIN on
+    // `campaigns` + `player_characters`.
+    supabase
+      .from("users")
+      .select("role, email, last_session_at, default_character_id, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle(),
     getUserMemberships(user.id),
     supabase.from("user_onboarding").select("wizard_completed, dashboard_tour_completed, source").eq("user_id", user.id).maybeSingle(),
     getPendingInvites(user.email ?? ""),
@@ -51,6 +63,24 @@ export default async function DashboardPage() {
   const userData = userDataRes.data;
   const userRole = (userData?.role as UserRole) ?? "both";
   const userEmail = userData?.email ?? user.email ?? "";
+
+  // 02-F parte 1 — "Continue de onde parou" card data.
+  // TODO(02-F-full): replace this mock assembly with a real server query that
+  // JOINs `campaigns` + `player_characters` off `users.default_character_id`
+  // to resolve the campaign name, character name, and avatar. For now we only
+  // need `last_session_at` to decide whether to render the card at all — the
+  // downstream fields use null fallbacks that the i18n strings translate.
+  const continueFromLastSession: ContinueFromLastSessionData | null = userData
+    ?.last_session_at
+    ? {
+        campaignId: null, // resolved in 02-F-full
+        characterId: (userData.default_character_id as string | null) ?? null,
+        campaignName: null, // resolved in 02-F-full — falls back to i18n
+        characterName: null, // resolved in 02-F-full — falls back to i18n
+        avatarUrl: (userData.avatar_url as string | null) ?? null,
+        lastSessionAt: userData.last_session_at as string,
+      }
+    : null;
   const onboarding = onboardingRes.data as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
   const hasUsedCombat = (encounterCountRes.count ?? 0) > 0;
 
@@ -280,6 +310,9 @@ export default async function DashboardPage() {
   return (
     <div>
       <GuestDataImportModal />
+      {continueFromLastSession && (
+        <ContinueFromLastSession data={continueFromLastSession} />
+      )}
       <DashboardOverview
         campaigns={campaigns}
         savedEncounters={savedEncounters}
