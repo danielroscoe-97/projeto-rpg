@@ -128,6 +128,13 @@ const ALLOWED_EVENTS = new Set([
   "broadcast:401_retry_failed",
   // Fetch orchestrator (C2 audit) — multi-tab detection (G3 vector)
   "fetch_orchestrator:multi_tab_detected",
+  // Conversion funnel (Epic 03)
+  "conversion:cta_shown",
+  "conversion:cta_clicked",
+  "conversion:cta_dismissed",
+  "conversion:modal_opened",
+  "conversion:completed",
+  "conversion:failed",
 ]);
 
 // In-process rate limiter: 60 events/min per IP
