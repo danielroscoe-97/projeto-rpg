@@ -16,7 +16,13 @@ import { DeathSaveTracker } from "./DeathSaveTracker";
 // MonsterActionBar — not yet implemented (CP.1.3), import removed to unblock build
 import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
-import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
+import {
+  getHpBarColor,
+  getHpThresholdKey,
+  getHpStatusWithFlag,
+  HP_STATUS_STYLES,
+} from "@/lib/utils/hp-status";
+import { isFeatureFlagEnabled } from "@/lib/flags";
 import { Eye, EyeOff, Shield } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -233,9 +239,21 @@ export const CombatantRow = memo(function CombatantRow({
     setInlineHpValue("");
   };
 
-  // HP bar: tiers calculated on normal HP only (immutable rule)
-  const hpBarColor = getHpBarColor(combatant.current_hp, combatant.max_hp);
-  const hpThresholdKey = getHpThresholdKey(combatant.current_hp, combatant.max_hp);
+  // HP bar: tiers calculated on normal HP only (immutable rule).
+  // S3.1: when ff_hp_thresholds_v2 is ON, use the v2 bands (75/50/25) instead
+  // of legacy (70/40/10). Both paths use the same immutable HpStatus union —
+  // DEFEATED stays a derived client-side state. Flag OFF = existing behavior
+  // unchanged, so no visual regression for players/DMs until the flag flips.
+  const hpFlagV2 = isFeatureFlagEnabled("ff_hp_thresholds_v2");
+  const hpStatusTier = hpFlagV2
+    ? getHpStatusWithFlag(combatant.current_hp, combatant.max_hp, true)
+    : null;
+  const hpBarColor = hpStatusTier
+    ? HP_STATUS_STYLES[hpStatusTier].barClass
+    : getHpBarColor(combatant.current_hp, combatant.max_hp);
+  const hpThresholdKey = hpStatusTier
+    ? HP_STATUS_STYLES[hpStatusTier].labelKey
+    : getHpThresholdKey(combatant.current_hp, combatant.max_hp);
   const hasTempHp = combatant.temp_hp > 0;
   // Visual bar widths: temp HP extends the bar beyond normal max
   const totalPool = combatant.max_hp + combatant.temp_hp;
