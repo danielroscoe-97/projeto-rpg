@@ -231,7 +231,9 @@ export function CampaignHero({
           </button>
         )}
 
-        {primaryAction === "start_session" && !nextPlannedSession && (
+        {/* Plan/combat CTAs are owned by <BriefingToday/> in briefingMode —
+            rendering them here would double-mount CombatLaunchSheet + SessionPlanner. */}
+        {!briefingMode && primaryAction === "start_session" && !nextPlannedSession && (
           <button
             type="button"
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/15 ring-1 ring-amber-500/20 transition-colors min-h-[44px]"
@@ -243,7 +245,7 @@ export function CampaignHero({
         )}
 
         {/* Standard actions — always visible for active campaigns */}
-        {!nextPlannedSession && primaryAction === "default" && (
+        {!briefingMode && !nextPlannedSession && primaryAction === "default" && (
           <button
             type="button"
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-emerald-300 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-colors min-h-[44px]"
@@ -254,14 +256,16 @@ export function CampaignHero({
           </button>
         )}
 
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-red-500/20 bg-red-500/5 text-red-300 hover:bg-red-500/10 hover:border-red-500/40 transition-colors min-h-[44px]"
-          onClick={() => setCombatOpen(true)}
-        >
-          <Swords className="w-3.5 h-3.5 text-red-400" />
-          {t("new_combat_button")}
-        </button>
+        {!briefingMode && (
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg border border-red-500/20 bg-red-500/5 text-red-300 hover:bg-red-500/10 hover:border-red-500/40 transition-colors min-h-[44px]"
+            onClick={() => setCombatOpen(true)}
+          >
+            <Swords className="w-3.5 h-3.5 text-red-400" />
+            {t("new_combat_button")}
+          </button>
+        )}
 
         {primaryAction !== "create_encounter" && (
           <button
@@ -299,29 +303,35 @@ export function CampaignHero({
         </button>
       </div>
 
-      {/* Single shared dialog instances */}
+      {/* Single shared dialog instances.
+          In briefingMode, <BriefingToday/> owns the CombatLaunchSheet +
+          SessionPlanner instances — skip them here to avoid double-mount. */}
       <InvitePlayerDialog
         campaignId={campaignId}
         open={inviteOpen}
         onOpenChange={setInviteOpen}
       />
-      <CombatLaunchSheet
-        campaignId={campaignId}
-        campaignName={campaignName}
-        playerEmails={playerEmails}
-        activeSessionId={activeSessionId}
-        plannedSessionName={nextPlannedSession?.name ?? null}
-        plannedSessionId={nextPlannedSession?.id ?? null}
-        open={combatOpen}
-        onOpenChange={setCombatOpen}
-      />
-      <SessionPlanner
-        campaignId={campaignId}
-        userId={userId}
-        open={plannerOpen}
-        onOpenChange={setPlannerOpen}
-        onSessionCreated={() => router.refresh()}
-      />
+      {!briefingMode && (
+        <>
+          <CombatLaunchSheet
+            campaignId={campaignId}
+            campaignName={campaignName}
+            playerEmails={playerEmails}
+            activeSessionId={activeSessionId}
+            plannedSessionName={nextPlannedSession?.name ?? null}
+            plannedSessionId={nextPlannedSession?.id ?? null}
+            open={combatOpen}
+            onOpenChange={setCombatOpen}
+          />
+          <SessionPlanner
+            campaignId={campaignId}
+            userId={userId}
+            open={plannerOpen}
+            onOpenChange={setPlannerOpen}
+            onSessionCreated={() => router.refresh()}
+          />
+        </>
+      )}
     </div>
   );
 }
