@@ -130,10 +130,20 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
           for (const c of removed) {
             useCombatStore.getState().toggleCondition(incomingActor.id, c);
           }
+          // S4.3 δ' review fix: include the post-strip condition_durations
+          // map so player clients clean up the map alongside the array.
+          // Without this, `condition_durations["action:dodge"]` lingers as a
+          // stale key on player state until the next re-apply triggers a
+          // merged update. Self-healing, but cleaner to include the authoritative
+          // map from the post-toggle store read.
+          const postToggle = useCombatStore.getState().combatants.find(
+            (c) => c.id === incomingActor.id,
+          );
           broadcastEvent(getSessionId(), {
             type: "combat:condition_change",
             combatant_id: incomingActor.id,
             conditions: cleaned,
+            condition_durations: postToggle?.condition_durations ?? {},
           });
           persistConditions(incomingActor.id, cleaned).catch((err) =>
             setError(err instanceof Error ? err.message : t("error_save_turn")),
