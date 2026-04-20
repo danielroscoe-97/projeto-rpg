@@ -23,6 +23,7 @@ import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
 import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
 import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
 import { useCampaignNotesIndex } from "@/lib/hooks/useCampaignNotesIndex";
+import { useListViewPreference } from "@/lib/hooks/useListViewPreference";
 import { captureError } from "@/lib/errors/capture";
 import {
   upsertEntityLink,
@@ -62,6 +63,16 @@ export function NpcList({ campaignId }: NpcListProps) {
 
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [filter, setFilter] = useState<FilterMode>("all");
+  const [factionFilter, setFactionFilter] = useListViewPreference<string>(
+    campaignId,
+    "npcs:faction",
+    "all",
+  );
+  const [locationFilter, setLocationFilter] = useListViewPreference<string>(
+    campaignId,
+    "npcs:location",
+    "all",
+  );
   const [formOpen, setFormOpen] = useState(false);
   const [editingNpc, setEditingNpc] = useState<CampaignNpc | null>(null);
   const [viewingNpc, setViewingNpc] = useState<CampaignNpc | null>(null);
@@ -110,12 +121,6 @@ export function NpcList({ campaignId }: NpcListProps) {
     return map;
   }, [npcLinks, noteInfos, notesIndex, edges, npcs]);
 
-  const filteredNpcs = npcs.filter((npc) => {
-    if (filter === "visible") return npc.is_visible_to_players;
-    if (filter === "hidden") return !npc.is_visible_to_players;
-    return true;
-  });
-
   // Per-NPC morada + factions derived from the campaign edge list. Computed
   // once per edges change; forms read the relevant slice via npc.id.
   const npcMoradaMap = useMemo<Map<string, string | null>>(() => {
@@ -151,6 +156,35 @@ export function NpcList({ campaignId }: NpcListProps) {
     }
     return map;
   }, [edges, npcs]);
+
+  const filteredNpcs = npcs.filter((npc) => {
+    // Visibility filter (legacy)
+    if (filter === "visible" && !npc.is_visible_to_players) return false;
+    if (filter === "hidden" && npc.is_visible_to_players) return false;
+
+    // Faction filter: "all" skips; "__none__" keeps NPCs with zero factions;
+    // otherwise require the faction id to appear in the NPC's member_of set.
+    if (factionFilter !== "all") {
+      const ids = npcFactionsMap.get(npc.id) ?? [];
+      if (factionFilter === "__none__") {
+        if (ids.length > 0) return false;
+      } else if (!ids.includes(factionFilter)) {
+        return false;
+      }
+    }
+
+    // Location filter: mirrors faction filter but on the single morada.
+    if (locationFilter !== "all") {
+      const moradaId = npcMoradaMap.get(npc.id) ?? null;
+      if (locationFilter === "__none__") {
+        if (moradaId !== null) return false;
+      } else if (moradaId !== locationFilter) {
+        return false;
+      }
+    }
+
+    return true;
+  });
 
   /**
    * Reconciles the `lives_in` + `member_of` edges for a given NPC against the
@@ -397,6 +431,48 @@ export function NpcList({ campaignId }: NpcListProps) {
               <List className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Faction filter — Fase 3f */}
+          {availableFactions.length > 0 && (
+            <select
+              value={factionFilter}
+              onChange={(e) => setFactionFilter(e.target.value)}
+              className="text-xs bg-surface-tertiary border border-input rounded px-2 py-1 text-foreground"
+              aria-label={t("filter_by_faction")}
+              data-testid="npc-filter-faction"
+            >
+              <option value="all">
+                {t("filter_by_faction")} · {t("filter_all")}
+              </option>
+              <option value="__none__">{t("filter_no_faction")}</option>
+              {availableFactions.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {/* Location filter — Fase 3f */}
+          {availableLocations.length > 0 && (
+            <select
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+              className="text-xs bg-surface-tertiary border border-input rounded px-2 py-1 text-foreground"
+              aria-label={t("filter_by_location")}
+              data-testid="npc-filter-location"
+            >
+              <option value="all">
+                {t("filter_by_location")} · {t("filter_all")}
+              </option>
+              <option value="__none__">{t("filter_no_location")}</option>
+              {availableLocations.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <Button

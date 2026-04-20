@@ -21,12 +21,15 @@ import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
 import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
 import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
 import { useCampaignNotesIndex } from "@/lib/hooks/useCampaignNotesIndex";
+import { useListViewPreference } from "@/lib/hooks/useListViewPreference";
 import { selectCounterpartyIds } from "@/lib/types/entity-links";
+import { LOCATION_TYPES } from "@/lib/types/mind-map";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignLocation } from "@/lib/types/mind-map";
 import type { LocationFormData } from "@/lib/hooks/use-campaign-locations";
 
 type FilterMode = "all" | "discovered" | "hidden";
+type ViewMode = "tree" | "flat" | "by_type";
 
 interface TreeEntry {
   location: CampaignLocation;
@@ -169,6 +172,11 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
   }, [edges, factions, locations]);
 
   const [filter, setFilter] = useState<FilterMode>("all");
+  const [viewMode, setViewMode] = useListViewPreference<ViewMode>(
+    campaignId,
+    "locations",
+    "tree",
+  );
   const [formOpen, setFormOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<CampaignLocation | null>(null);
   // Opened in read-only (view) mode when user clicks the card body.
@@ -326,7 +334,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Filter buttons */}
           <div className="flex items-center rounded-lg border border-white/[0.04] overflow-hidden">
             {(["all", "discovered", "hidden"] as const).map((f) => (
@@ -342,6 +350,25 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                 data-testid={`location-filter-${f}`}
               >
                 {t(`filter_${f}`)}
+              </button>
+            ))}
+          </div>
+
+          {/* View mode switch */}
+          <div className="flex items-center rounded-lg border border-white/[0.04] overflow-hidden">
+            {(["tree", "flat", "by_type"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setViewMode(v)}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  viewMode === v
+                    ? "bg-amber-400/15 text-amber-400"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                data-testid={`location-view-${v}`}
+              >
+                {t(`${v}_view` as "tree_view" | "flat_view" | "by_type_view")}
               </button>
             ))}
           </div>
@@ -383,8 +410,8 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
         </div>
       )}
 
-      {/* Location Grid — tree when filter=all, flat when filter≠all */}
-      {filter === "all" && treeEntries.length > 0 && (
+      {/* Location Grid — tree view falls back to flat when a filter is on. */}
+      {viewMode === "tree" && filter === "all" && treeEntries.length > 0 && (
         <div
           className="flex flex-col gap-2"
           data-testid="location-container"
@@ -436,25 +463,69 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
         </div>
       )}
 
-      {filter !== "all" && filteredLocations.length > 0 && (
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
-          data-testid="location-container"
-        >
-          {filteredLocations.map((loc) => (
-            <LocationCard
-              key={loc.id}
-              location={loc}
-              isEditable={isEditable}
-              inhabitantNpcs={locationInhabitantsMap.get(loc.id) ?? []}
-              hqFactions={locationHqFactionsMap.get(loc.id) ?? []}
-              relatedNotes={locationRelatedNotesMap.get(loc.id) ?? []}
-              onEdit={openEditForm}
-              onDelete={setDeleteTarget}
-              onToggleVisibility={handleToggleVisibility}
-              onCardClick={setViewingLocation}
-            />
-          ))}
+      {(viewMode === "flat" || (viewMode === "tree" && filter !== "all")) &&
+        filteredLocations.length > 0 && (
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+            data-testid="location-container"
+          >
+            {filteredLocations.map((loc) => (
+              <LocationCard
+                key={loc.id}
+                location={loc}
+                isEditable={isEditable}
+                inhabitantNpcs={locationInhabitantsMap.get(loc.id) ?? []}
+                hqFactions={locationHqFactionsMap.get(loc.id) ?? []}
+                relatedNotes={locationRelatedNotesMap.get(loc.id) ?? []}
+                onEdit={openEditForm}
+                onDelete={setDeleteTarget}
+                onToggleVisibility={handleToggleVisibility}
+                onCardClick={setViewingLocation}
+              />
+            ))}
+          </div>
+        )}
+
+      {viewMode === "by_type" && filteredLocations.length > 0 && (
+        <div className="space-y-4" data-testid="location-container">
+          {LOCATION_TYPES.map((typeKey) => {
+            const bucket = filteredLocations.filter(
+              (l) => l.location_type === typeKey,
+            );
+            if (bucket.length === 0) return null;
+            return (
+              <section
+                key={typeKey}
+                aria-labelledby={`location-group-${typeKey}`}
+              >
+                <h3
+                  id={`location-group-${typeKey}`}
+                  className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 mb-2"
+                >
+                  {t(`type_${typeKey}`)}{" "}
+                  <span className="text-muted-foreground/50 ml-1">
+                    ({bucket.length})
+                  </span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {bucket.map((loc) => (
+                    <LocationCard
+                      key={loc.id}
+                      location={loc}
+                      isEditable={isEditable}
+                      inhabitantNpcs={locationInhabitantsMap.get(loc.id) ?? []}
+                      hqFactions={locationHqFactionsMap.get(loc.id) ?? []}
+                      relatedNotes={locationRelatedNotesMap.get(loc.id) ?? []}
+                      onEdit={openEditForm}
+                      onDelete={setDeleteTarget}
+                      onToggleVisibility={handleToggleVisibility}
+                      onCardClick={setViewingLocation}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
 
