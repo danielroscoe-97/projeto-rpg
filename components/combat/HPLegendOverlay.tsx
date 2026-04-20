@@ -4,13 +4,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { HP_STATUS_STYLES, type HpStatus } from "@/lib/utils/hp-status";
+import { HP_STATUS_STYLES, formatHpPct, type HpStatus } from "@/lib/utils/hp-status";
+import { isFeatureFlagEnabled } from "@/lib/flags";
 
 const STORAGE_KEY = "hp_legend_dismissed";
 
-const TIERS = (Object.entries(HP_STATUS_STYLES) as [HpStatus, (typeof HP_STATUS_STYLES)[HpStatus]][]).map(
-  ([key, style]) => ({ key: key.toLowerCase(), color: style.barClass, pct: style.pct })
-);
+const TIER_ORDER: HpStatus[] = ["FULL", "LIGHT", "MODERATE", "HEAVY", "CRITICAL"];
 
 interface HPLegendOverlayProps {
   /** If true, show DM-specific info (exact HP). If false, player-safe. */
@@ -20,6 +19,7 @@ interface HPLegendOverlayProps {
 export function HPLegendOverlay({ isDm = false }: HPLegendOverlayProps) {
   const t = useTranslations("combat");
   const [visible, setVisible] = useState(false);
+  const flagV2 = isFeatureFlagEnabled("ff_hp_thresholds_v2");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -55,14 +55,18 @@ export function HPLegendOverlay({ isDm = false }: HPLegendOverlayProps) {
           </button>
           <p className="text-xs font-medium text-muted-foreground mb-2">{t("hp_legend_title")}</p>
           <div className="grid grid-cols-2 gap-2">
-            {TIERS.map((tier) => (
-              <div key={tier.key} className="flex items-center gap-2">
-                <div className={`w-6 h-2 rounded-full ${tier.color}`} />
-                <span className="text-xs text-foreground">
-                  {t(`hp_legend_${tier.key}` as Parameters<typeof t>[0])} ({tier.pct})
-                </span>
-              </div>
-            ))}
+            {TIER_ORDER.map((status) => {
+              const style = HP_STATUS_STYLES[status];
+              const legendKey = `hp_legend_${status.toLowerCase()}` as Parameters<typeof t>[0];
+              return (
+                <div key={status} className="flex items-center gap-2">
+                  <div className={`w-6 h-2 rounded-full ${style.barClass}`} />
+                  <span className="text-xs text-foreground">
+                    {t(legendKey)} ({formatHpPct(status, flagV2)})
+                  </span>
+                </div>
+              );
+            })}
           </div>
           {!isDm && (
             <p className="text-[10px] text-muted-foreground/60 mt-2">{t("hp_legend_player_note")}</p>

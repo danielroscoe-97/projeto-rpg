@@ -20,6 +20,7 @@ import {
   getHpBarColor,
   getHpThresholdKey,
   getHpStatusWithFlag,
+  formatHpPct,
   HP_STATUS_STYLES,
 } from "@/lib/utils/hp-status";
 import { isFeatureFlagEnabled } from "@/lib/flags";
@@ -292,10 +293,17 @@ export const CombatantRow = memo(function CombatantRow({
     ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
     : 0;
 
-  // HP bar tooltip: DM sees exact numbers, players see only tier name
+  // HP bar tooltip: DM sees exact numbers, players see only tier name.
+  // Tooltip pct MUST derive from formatHpPct(status, flag) so the label stays
+  // in sync with the runtime classifier regardless of flag state.
   const hpTierTooltipKey = hpThresholdKey ? `hp_tooltip_${hpThresholdKey.replace("hp_", "")}` as const : null;
+  const hpStatusForTooltip = hpStatusTier ?? getHpStatusWithFlag(combatant.current_hp, combatant.max_hp, hpFlagV2);
   const hpTooltip = hpTierTooltipKey
-    ? t(`hp_tooltip_dm`, { tier: t(hpTierTooltipKey), current: combatant.current_hp, max: combatant.max_hp })
+    ? t(`hp_tooltip_dm`, {
+        tier: t(hpTierTooltipKey, { pct: formatHpPct(hpStatusForTooltip, hpFlagV2) }),
+        current: combatant.current_hp,
+        max: combatant.max_hp,
+      })
     : undefined;
 
   const isClickable = canExpand || canShowPartialStats;
