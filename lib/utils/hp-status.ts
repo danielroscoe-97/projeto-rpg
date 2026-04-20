@@ -1,15 +1,20 @@
 /**
  * HP status tiers — immutable business rule.
  *
- * Thresholds (% of max HP):
+ * Thresholds (% of max HP), legacy default:
  *   FULL     = 100%  — emerald (no damage taken)
  *   LIGHT    > 70%   — green
  *   MODERATE > 40%   — yellow / amber
  *   HEAVY    > 10%   — red
  *   CRITICAL ≤ 10%   — dark red
  *
- * These tiers, thresholds and colors apply to ALL combat surfaces
- * (DM view, player view, logged, unlogged).
+ * When `ff_hp_thresholds_v2` is ON, bands shift to 75/50/25 (see
+ * {@link getHpStatusWithFlag} and {@link HP_THRESHOLDS_V2}).
+ *
+ * These tiers and colors apply to ALL combat surfaces (DM view, player view,
+ * logged, unlogged). Any percentage strings shown in UI MUST derive from
+ * {@link formatHpPct} — never hardcode, otherwise the legend will desync from
+ * the runtime classifier when the flag flips.
  */
 export type HpStatus = "FULL" | "LIGHT" | "MODERATE" | "HEAVY" | "CRITICAL";
 
@@ -19,26 +24,54 @@ export interface HpStatusStyle {
   barClass: string;     // progress bar fill, e.g. "bg-green-500"
   icon: "heartpulse" | "heart" | "warning" | "danger" | "skull";
   labelKey: string;     // i18n suffix, e.g. "hp_light"
-  pct: string;          // threshold description, e.g. ">70%"
 }
 
 /** Single source of truth for HP tier visual styles. */
 export const HP_STATUS_STYLES: Record<HpStatus, HpStatusStyle> = {
-  FULL:     { colorClass: "text-emerald-400", bgClass: "bg-emerald-400/20", barClass: "bg-emerald-400", icon: "heartpulse", labelKey: "hp_full",     pct: "100%" },
-  LIGHT:    { colorClass: "text-green-400",   bgClass: "bg-green-400/10",   barClass: "bg-green-500",   icon: "heart",      labelKey: "hp_light",    pct: ">70%" },
-  MODERATE: { colorClass: "text-amber-400",   bgClass: "bg-amber-400/10",   barClass: "bg-amber-400",   icon: "warning",    labelKey: "hp_moderate", pct: ">40%" },
-  HEAVY:    { colorClass: "text-red-500",     bgClass: "bg-red-500/10",     barClass: "bg-red-500",     icon: "danger",     labelKey: "hp_heavy",    pct: ">10%" },
-  CRITICAL: { colorClass: "text-white",       bgClass: "bg-red-700",        barClass: "bg-red-600",     icon: "skull",      labelKey: "hp_critical", pct: "≤10%" },
+  FULL:     { colorClass: "text-emerald-400", bgClass: "bg-emerald-400/20", barClass: "bg-emerald-400", icon: "heartpulse", labelKey: "hp_full" },
+  LIGHT:    { colorClass: "text-green-400",   bgClass: "bg-green-400/10",   barClass: "bg-green-500",   icon: "heart",      labelKey: "hp_light" },
+  MODERATE: { colorClass: "text-amber-400",   bgClass: "bg-amber-400/10",   barClass: "bg-amber-400",   icon: "warning",    labelKey: "hp_moderate" },
+  HEAVY:    { colorClass: "text-red-500",     bgClass: "bg-red-500/10",     barClass: "bg-red-500",     icon: "danger",     labelKey: "hp_heavy" },
+  CRITICAL: { colorClass: "text-white",       bgClass: "bg-red-700",        barClass: "bg-red-600",     icon: "skull",      labelKey: "hp_critical" },
 };
 
-/** Calculate the HP status tier for a combatant. */
+/**
+ * Runtime-numeric thresholds. Both sets feed {@link getHpStatusWithFlag} and
+ * {@link formatHpPct} — keeping them together guarantees the visual legend
+ * stays in lock-step with the classifier.
+ */
+export const HP_THRESHOLDS_LEGACY = { light: 0.7, moderate: 0.4, heavy: 0.1 } as const;
+export const HP_THRESHOLDS_V2 = { light: 0.75, moderate: 0.5, heavy: 0.25 } as const;
+
+export function getHpThresholds(flagV2: boolean): typeof HP_THRESHOLDS_LEGACY | typeof HP_THRESHOLDS_V2 {
+  return flagV2 ? HP_THRESHOLDS_V2 : HP_THRESHOLDS_LEGACY;
+}
+
+/**
+ * Render the percentage string for a given status + flag state.
+ *
+ * This is the ONLY allowed way to display threshold percentages in UI —
+ * hardcoding `">70%"` anywhere else will desync when the flag flips.
+ */
+export function formatHpPct(status: HpStatus, flagV2: boolean): string {
+  if (status === "FULL") return "100%";
+  const t = getHpThresholds(flagV2);
+  switch (status) {
+    case "LIGHT":    return `>${Math.round(t.light * 100)}%`;
+    case "MODERATE": return `>${Math.round(t.moderate * 100)}%`;
+    case "HEAVY":    return `>${Math.round(t.heavy * 100)}%`;
+    case "CRITICAL": return `≤${Math.round(t.heavy * 100)}%`;
+  }
+}
+
+/** Calculate the HP status tier for a combatant (legacy thresholds). */
 export function getHpStatus(currentHp: number, maxHp: number): HpStatus {
   if (maxHp <= 0) return "CRITICAL";
   if (currentHp >= maxHp) return "FULL";
   const pct = currentHp / maxHp;
-  if (pct > 0.7) return "LIGHT";
-  if (pct > 0.4) return "MODERATE";
-  if (pct > 0.1) return "HEAVY";
+  if (pct > HP_THRESHOLDS_LEGACY.light) return "LIGHT";
+  if (pct > HP_THRESHOLDS_LEGACY.moderate) return "MODERATE";
+  if (pct > HP_THRESHOLDS_LEGACY.heavy) return "HEAVY";
   return "CRITICAL";
 }
 
@@ -62,15 +95,10 @@ export function getHpStatusWithFlag(
   if (maxHp <= 0) return "CRITICAL";
   if (currentHp >= maxHp) return "FULL";
   const pct = currentHp / maxHp;
-  if (flagV2) {
-    if (pct > 0.75) return "LIGHT";
-    if (pct > 0.5) return "MODERATE";
-    if (pct > 0.25) return "HEAVY";
-    return "CRITICAL";
-  }
-  if (pct > 0.7) return "LIGHT";
-  if (pct > 0.4) return "MODERATE";
-  if (pct > 0.1) return "HEAVY";
+  const t = getHpThresholds(flagV2);
+  if (pct > t.light) return "LIGHT";
+  if (pct > t.moderate) return "MODERATE";
+  if (pct > t.heavy) return "HEAVY";
   return "CRITICAL";
 }
 

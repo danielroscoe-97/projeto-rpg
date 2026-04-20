@@ -12,6 +12,10 @@ import {
   getHpStatus,
   getHpStatusWithFlag,
   deriveDisplayState,
+  formatHpPct,
+  getHpThresholds,
+  HP_THRESHOLDS_LEGACY,
+  HP_THRESHOLDS_V2,
   type HpStatus,
 } from "../hp-status";
 
@@ -90,6 +94,44 @@ describe("getHpStatusWithFlag — edge cases", () => {
     expect(tiers).toHaveLength(5);
     for (const t of tiers) {
       expect(["FULL", "LIGHT", "MODERATE", "HEAVY", "CRITICAL"]).toContain(t);
+    }
+  });
+});
+
+describe("formatHpPct — legend/tooltip strings stay in sync with thresholds", () => {
+  it("FULL is always '100%' regardless of flag", () => {
+    expect(formatHpPct("FULL", false)).toBe("100%");
+    expect(formatHpPct("FULL", true)).toBe("100%");
+  });
+
+  it("renders legacy bands (70/40/10) when flag OFF", () => {
+    expect(formatHpPct("LIGHT", false)).toBe(">70%");
+    expect(formatHpPct("MODERATE", false)).toBe(">40%");
+    expect(formatHpPct("HEAVY", false)).toBe(">10%");
+    expect(formatHpPct("CRITICAL", false)).toBe("≤10%");
+  });
+
+  it("renders v2 bands (75/50/25) when flag ON", () => {
+    expect(formatHpPct("LIGHT", true)).toBe(">75%");
+    expect(formatHpPct("MODERATE", true)).toBe(">50%");
+    expect(formatHpPct("HEAVY", true)).toBe(">25%");
+    expect(formatHpPct("CRITICAL", true)).toBe("≤25%");
+  });
+
+  it("getHpThresholds returns the matching constants for each flag state", () => {
+    expect(getHpThresholds(false)).toBe(HP_THRESHOLDS_LEGACY);
+    expect(getHpThresholds(true)).toBe(HP_THRESHOLDS_V2);
+  });
+
+  it("REGRESSION: pct string matches the band used by getHpStatusWithFlag", () => {
+    // If this pair ever diverges, the HP legend will lie to the user —
+    // which is exactly the bug the formatHpPct helper exists to prevent.
+    for (const flagV2 of [false, true]) {
+      const t = getHpThresholds(flagV2);
+      expect(formatHpPct("LIGHT", flagV2)).toBe(`>${Math.round(t.light * 100)}%`);
+      expect(formatHpPct("MODERATE", flagV2)).toBe(`>${Math.round(t.moderate * 100)}%`);
+      expect(formatHpPct("HEAVY", flagV2)).toBe(`>${Math.round(t.heavy * 100)}%`);
+      expect(formatHpPct("CRITICAL", flagV2)).toBe(`≤${Math.round(t.heavy * 100)}%`);
     }
   });
 });
