@@ -33,15 +33,43 @@ jest.mock("next-intl", () => ({
   },
 }));
 
-// Mock supabase client
+// Mock supabase client — chainable stub that resolves to an empty list for
+// any combination of select/eq/order/in/limit/upsert/insert/update/delete.
+const terminalPromise = () => Promise.resolve({ data: [], error: null });
+type Chain = Record<string, unknown> & PromiseLike<{ data: unknown[]; error: null }>;
+const createChain = (): Chain => {
+  const chain: Record<string, unknown> = {};
+  const methods = [
+    "from",
+    "select",
+    "eq",
+    "in",
+    "order",
+    "match",
+    "limit",
+    "single",
+    "insert",
+    "update",
+    "delete",
+    "upsert",
+    "or",
+    "neq",
+    "ilike",
+    "is",
+  ];
+  for (const m of methods) {
+    chain[m] = jest.fn(() => chain);
+  }
+  const p = terminalPromise();
+  chain.then = p.then.bind(p);
+  chain.catch = p.catch.bind(p);
+  return chain as Chain;
+};
+const mockFrom = jest.fn(() => createChain());
+// Kept for tests that still reference these symbols (empty-state assertions).
 const mockSelect = jest.fn().mockReturnThis();
 const mockEq = jest.fn().mockReturnThis();
 const mockOrder = jest.fn().mockResolvedValue({ data: [], error: null });
-const mockFrom = jest.fn().mockReturnValue({
-  select: mockSelect,
-  eq: mockEq,
-  order: mockOrder,
-});
 
 jest.mock("@/lib/supabase/client", () => ({
   createClient: () => ({

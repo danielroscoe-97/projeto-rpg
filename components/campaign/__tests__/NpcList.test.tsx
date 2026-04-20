@@ -60,15 +60,50 @@ jest.mock("@/lib/supabase/note-npc-links", () => ({
   getCampaignNoteNpcLinks: jest.fn().mockResolvedValue([]),
 }));
 
-jest.mock("@/lib/supabase/client", () => ({
-  createClient: jest.fn(() => ({
-    from: jest.fn(() => ({
-      select: jest.fn(() => ({
-        in: jest.fn(() => ({ data: [], error: null })),
-      })),
+jest.mock("@/lib/supabase/client", () => {
+  // Chainable stub — every method returns the same object so any sequence of
+  // `.from(...).select(...).eq(...).order(...).order(...)` etc resolves to
+  // `{ data: [], error: null }` at await time.
+  const createChain = () => {
+    const chain: Record<string, unknown> = {};
+    const terminal = Promise.resolve({ data: [], error: null });
+    const methods = [
+      "from",
+      "select",
+      "eq",
+      "in",
+      "order",
+      "match",
+      "limit",
+      "single",
+      "insert",
+      "update",
+      "delete",
+      "upsert",
+      "or",
+      "neq",
+      "ilike",
+      "is",
+    ];
+    for (const m of methods) {
+      chain[m] = jest.fn(() => chain);
+    }
+    chain.then = terminal.then.bind(terminal);
+    chain.catch = terminal.catch.bind(terminal);
+    return chain;
+  };
+  return {
+    createClient: jest.fn(() => ({
+      from: jest.fn(() => createChain()),
+      auth: {
+        getUser: jest.fn().mockResolvedValue({
+          data: { user: { id: "test-user" } },
+          error: null,
+        }),
+      },
     })),
-  })),
-}));
+  };
+});
 
 jest.mock("@/lib/errors/capture", () => ({
   captureError: jest.fn(),
