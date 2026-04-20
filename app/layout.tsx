@@ -10,9 +10,8 @@ import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 import { WebVitalsTracker } from "@/components/analytics/WebVitalsTracker";
 import { ErrorTrackingProvider } from "@/components/ErrorTrackingProvider";
 import { ExposeSupabaseForE2E } from "@/lib/e2e/expose-supabase";
+import { SITE_URL } from "@/lib/seo/site-url";
 import "./globals.css";
-
-const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL || "/";
 
 const siteTitle = "Pocket DM — Combat & Initiative Tracker D&D 5e | Rastreador de Combate";
 const siteTitleSocial = "Pocket DM — Master your table.";
@@ -20,7 +19,7 @@ const siteDescription =
   "O combat & initiative tracker definitivo para mestres de D&D 5e. Iniciativa, HP, condições e oráculo de magias em tempo real — grátis, no celular dos seus jogadores. Free D&D 5e combat & initiative tracker.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: siteTitle,
     template: "%s | Pocket DM",
