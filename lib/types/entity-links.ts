@@ -113,3 +113,68 @@ export interface EntityRef {
   type: EntityType;
   id: string;
 }
+
+/** Direction of an edge relative to a focus entity. */
+export type EdgeDirection = "outgoing" | "incoming" | "any";
+
+/**
+ * Pure selector: find every counterparty id in `edges` where the focus
+ * entity participates as the given direction, and the edge matches
+ * `counterpartyType` + optional `relationship`.
+ *
+ * Example: list locations where NPC X lives in:
+ *   selectCounterpartyIds(edges, { type: 'npc', id: 'uuid-x' },
+ *     { direction: 'outgoing', counterpartyType: 'location',
+ *       relationship: 'lives_in' })
+ */
+export function selectCounterpartyIds(
+  edges: readonly EntityLink[],
+  focus: EntityRef,
+  filter: {
+    direction: EdgeDirection;
+    counterpartyType?: EntityType;
+    relationship?: EdgeRelationship;
+  },
+): string[] {
+  const ids = new Set<string>();
+  for (const edge of edges) {
+    const isSource = edge.source_type === focus.type && edge.source_id === focus.id;
+    const isTarget = edge.target_type === focus.type && edge.target_id === focus.id;
+
+    if (filter.direction === "outgoing" && !isSource) continue;
+    if (filter.direction === "incoming" && !isTarget) continue;
+    if (filter.direction === "any" && !isSource && !isTarget) continue;
+
+    if (filter.relationship && edge.relationship !== filter.relationship) continue;
+
+    const counterpartyType = isSource ? edge.target_type : edge.source_type;
+    const counterpartyId = isSource ? edge.target_id : edge.source_id;
+
+    if (filter.counterpartyType && counterpartyType !== filter.counterpartyType) {
+      continue;
+    }
+    ids.add(counterpartyId);
+  }
+  return Array.from(ids);
+}
+
+/**
+ * Pure selector: find the single edge id linking focus → counterparty with
+ * the given relationship. Returns null if not found.
+ */
+export function findEdgeId(
+  edges: readonly EntityLink[],
+  focus: EntityRef,
+  counterparty: EntityRef,
+  relationship: EdgeRelationship,
+): string | null {
+  const match = edges.find(
+    (e) =>
+      e.source_type === focus.type &&
+      e.source_id === focus.id &&
+      e.target_type === counterparty.type &&
+      e.target_id === counterparty.id &&
+      e.relationship === relationship,
+  );
+  return match?.id ?? null;
+}

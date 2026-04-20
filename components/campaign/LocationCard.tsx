@@ -14,9 +14,16 @@ import {
   TreePine,
   Building,
   MapPin,
+  User,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignLocation, LocationType } from "@/lib/types/mind-map";
+
+interface EntityRefItem {
+  id: string;
+  name: string;
+}
 
 const TYPE_ICONS: Record<LocationType, React.ComponentType<{ className?: string }>> = {
   city: Castle,
@@ -53,6 +60,10 @@ const TYPE_ICON_COLOR: Record<LocationType, string> = {
 interface LocationCardProps {
   location: CampaignLocation;
   isEditable: boolean;
+  /** NPCs that have a `lives_in` edge pointing to this location (Fase 3c). */
+  inhabitantNpcs?: EntityRefItem[];
+  /** Factions with `headquarters_of` edge pointing to this location (Fase 3d). */
+  hqFactions?: EntityRefItem[];
   onEdit: (location: CampaignLocation) => void;
   onDelete: (location: CampaignLocation) => void;
   onToggleVisibility: (location: CampaignLocation) => void;
@@ -63,6 +74,8 @@ interface LocationCardProps {
 export function LocationCard({
   location,
   isEditable,
+  inhabitantNpcs,
+  hqFactions,
   onEdit,
   onDelete,
   onToggleVisibility,
@@ -72,7 +85,10 @@ export function LocationCard({
   const [expanded, setExpanded] = useState(false);
 
   const Icon = TYPE_ICONS[location.location_type] ?? MapPin;
-  const hasExpandableContent = !!location.description;
+  const inhabitantCount = inhabitantNpcs?.length ?? 0;
+  const hqCount = hqFactions?.length ?? 0;
+  const hasRelations = inhabitantCount > 0 || hqCount > 0;
+  const hasExpandableContent = !!location.description || hasRelations;
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget && (e.target as HTMLElement).closest("button")) return;
@@ -153,6 +169,26 @@ export function LocationCard({
               >
                 {location.is_discovered ? t("discovered") : t("hidden")}
               </span>
+              {inhabitantCount > 0 && (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                  data-testid={`location-inhabitant-count-${location.id}`}
+                  title={t("habitantes_label")}
+                >
+                  <User className="w-3 h-3" />
+                  {inhabitantCount}
+                </span>
+              )}
+              {hqCount > 0 && (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20"
+                  data-testid={`location-hq-count-${location.id}`}
+                  title={t("facoes_sediadas_label")}
+                >
+                  <Users className="w-3 h-3" />
+                  {hqCount}
+                </span>
+              )}
             </div>
           </div>
 
@@ -236,11 +272,49 @@ export function LocationCard({
         )}
 
         {/* Expanded content */}
-        {expanded && location.description && (
-          <div className="mt-3 animate-in fade-in slide-in-from-top-1 duration-200">
-            <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {location.description}
-            </p>
+        {expanded && (
+          <div className="mt-3 space-y-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
+            {location.description && (
+              <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                {location.description}
+              </p>
+            )}
+            {inhabitantCount > 0 && (
+              <div data-testid={`location-inhabitants-${location.id}`}>
+                <p className="text-[11px] font-medium text-muted-foreground/60 mb-1.5">
+                  {t("habitantes_label")}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {inhabitantNpcs!.map((npc) => (
+                    <span
+                      key={npc.id}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-amber-500/5 text-amber-300 border border-amber-500/15"
+                    >
+                      <User className="w-3 h-3" />
+                      {npc.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {hqCount > 0 && (
+              <div data-testid={`location-hqs-${location.id}`}>
+                <p className="text-[11px] font-medium text-muted-foreground/60 mb-1.5">
+                  {t("facoes_sediadas_label")}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {hqFactions!.map((f) => (
+                    <span
+                      key={f.id}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-violet-500/5 text-violet-300 border border-violet-500/15"
+                    >
+                      <Users className="w-3 h-3" />
+                      {f.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

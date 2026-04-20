@@ -120,6 +120,9 @@ export function QuickActions({ translations: t, campaigns, userRole = "both" }: 
   }, []);
 
   const handleNpcSave = useCallback(async (data: CampaignNpcInsert) => {
+    // QuickActions does not manage morada/factions — the NpcForm extras are
+    // intentionally ignored here; full sync happens when the DM opens the
+    // NPC from the campaign view.
     await createNpc(data);
   }, []);
 

@@ -836,7 +836,29 @@
     "name_required": "Name is required",
     "save_error": "Failed to save NPC. Please try again.",
     "save_success": "NPC saved!",
-    "delete_success": "NPC deleted"
+    "delete_success": "NPC deleted",
+    "morada_label": "Home location",
+    "morada_placeholder": "Where does this NPC live?",
+    "morada_none": "None",
+    "lives_in_chip": "Lives in: {name}",
+    "facoes_label": "Factions",
+    "facoes_chip": "Member of: {name}",
+    "filter_by_faction": "By faction",
+    "filter_by_location": "By location",
+    "filter_no_faction": "No faction",
+    "filter_no_location": "No home"
+  },
+  "entity_graph": {
+    "add_link": "Link",
+    "remove_link": "Remove link to {name}",
+    "search_placeholder": "Search...",
+    "no_matches": "No results",
+    "none_option": "None",
+    "undo_unlink": "Link removed. Undo",
+    "link_saved": "Link saved",
+    "save_failed": "Failed to save link",
+    "notes_about_this": "Notes about this",
+    "notes_about_this_empty": "No note mentions this yet"
   },
   "auth_errors": {
     "invalid_credentials": "Incorrect email or password.",

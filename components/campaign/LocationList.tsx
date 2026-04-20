@@ -17,6 +17,10 @@ import {
 import { LocationCard } from "./LocationCard";
 import { LocationForm } from "./LocationForm";
 import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
+import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
+import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
+import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
+import { selectCounterpartyIds } from "@/lib/types/entity-links";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignLocation } from "@/lib/types/mind-map";
 import type { LocationFormData } from "@/lib/hooks/use-campaign-locations";
@@ -83,6 +87,60 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
     updateLocation,
     deleteLocation,
   } = useCampaignLocations(campaignId);
+  const { npcs } = useCampaignNpcs(campaignId);
+  const { factions } = useCampaignFactions(campaignId);
+  const { edges } = useCampaignEdges(campaignId);
+
+  // Per-location relations derived from edges: inhabitants (npcs with
+  // outgoing lives_in → location) + hqFactions (factions with outgoing
+  // headquarters_of → location). Computed once per edges/npcs/factions change.
+  const locationInhabitantsMap = useMemo<Map<string, Array<{ id: string; name: string }>>>(() => {
+    const npcById = new Map(npcs.map((n) => [n.id, n]));
+    const map = new Map<string, Array<{ id: string; name: string }>>();
+    for (const loc of locations) {
+      const npcIds = selectCounterpartyIds(
+        edges,
+        { type: "location", id: loc.id },
+        {
+          direction: "incoming",
+          counterpartyType: "npc",
+          relationship: "lives_in",
+        },
+      );
+      map.set(
+        loc.id,
+        npcIds
+          .map((id) => npcById.get(id))
+          .filter((n): n is NonNullable<typeof n> => !!n)
+          .map((n) => ({ id: n.id, name: n.name })),
+      );
+    }
+    return map;
+  }, [edges, npcs, locations]);
+
+  const locationHqFactionsMap = useMemo<Map<string, Array<{ id: string; name: string }>>>(() => {
+    const factionById = new Map(factions.map((f) => [f.id, f]));
+    const map = new Map<string, Array<{ id: string; name: string }>>();
+    for (const loc of locations) {
+      const factionIds = selectCounterpartyIds(
+        edges,
+        { type: "location", id: loc.id },
+        {
+          direction: "incoming",
+          counterpartyType: "faction",
+          relationship: "headquarters_of",
+        },
+      );
+      map.set(
+        loc.id,
+        factionIds
+          .map((id) => factionById.get(id))
+          .filter((f): f is NonNullable<typeof f> => !!f)
+          .map((f) => ({ id: f.id, name: f.name })),
+      );
+    }
+    return map;
+  }, [edges, factions, locations]);
 
   const [filter, setFilter] = useState<FilterMode>("all");
   const [formOpen, setFormOpen] = useState(false);
@@ -337,6 +395,8 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                   <LocationCard
                     location={loc}
                     isEditable={isEditable}
+                    inhabitantNpcs={locationInhabitantsMap.get(loc.id) ?? []}
+                    hqFactions={locationHqFactionsMap.get(loc.id) ?? []}
                     onEdit={openEditForm}
                     onDelete={setDeleteTarget}
                     onToggleVisibility={handleToggleVisibility}
@@ -359,6 +419,8 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
               key={loc.id}
               location={loc}
               isEditable={isEditable}
+              inhabitantNpcs={locationInhabitantsMap.get(loc.id) ?? []}
+              hqFactions={locationHqFactionsMap.get(loc.id) ?? []}
               onEdit={openEditForm}
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}

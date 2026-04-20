@@ -15,6 +15,8 @@ import {
   Shield,
   Swords,
   Star,
+  MapPin,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
@@ -24,9 +26,19 @@ interface RelatedNote {
   title: string;
 }
 
+/** Simple {id, name} pair used by entity-graph chips. */
+interface EntityRefItem {
+  id: string;
+  name: string;
+}
+
 interface NpcCardProps {
   npc: CampaignNpc;
   relatedNotes?: RelatedNote[];
+  /** Morada (location this NPC lives in). Null/undefined hides the chip. */
+  morada?: EntityRefItem | null;
+  /** Factions the NPC belongs to. Empty/undefined hides the section. */
+  factions?: EntityRefItem[];
   onEdit: (npc: CampaignNpc) => void;
   onDelete: (npc: CampaignNpc) => void;
   onToggleVisibility: (npc: CampaignNpc) => void;
@@ -38,6 +50,8 @@ interface NpcCardProps {
 export function NpcCard({
   npc,
   relatedNotes,
+  morada,
+  factions,
   onEdit,
   onDelete,
   onToggleVisibility,
@@ -50,6 +64,7 @@ export function NpcCard({
 
   const { stats } = npc;
   const hasStats = stats.hp != null || stats.ac != null || stats.cr != null || stats.initiative_mod != null;
+  const hasFactions = Array.isArray(factions) && factions.length > 0;
   const hasExpandableContent = npc.description || stats.notes || (relatedNotes && relatedNotes.length > 0);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -112,6 +127,37 @@ export function NpcCard({
             <h3 className="text-sm font-semibold text-foreground line-clamp-2 break-words leading-tight">
               {npc.name}
             </h3>
+
+            {/* Entity-graph chips: morada + factions */}
+            {(morada || hasFactions) && (
+              <div
+                className="flex flex-wrap gap-1.5 mt-2"
+                data-testid={`npc-relations-${npc.id}`}
+              >
+                {morada && (
+                  <span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                    data-testid={`npc-morada-chip-${npc.id}`}
+                    title={t("lives_in_chip", { name: morada.name })}
+                  >
+                    <MapPin className="w-3 h-3" />
+                    {morada.name}
+                  </span>
+                )}
+                {hasFactions &&
+                  factions!.map((faction) => (
+                    <span
+                      key={faction.id}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20"
+                      data-testid={`npc-faction-chip-${npc.id}-${faction.id}`}
+                      title={t("facoes_chip", { name: faction.name })}
+                    >
+                      <Users className="w-3 h-3" />
+                      {faction.name}
+                    </span>
+                  ))}
+              </div>
+            )}
 
             {/* Stat badges */}
             {hasStats && (

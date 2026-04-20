@@ -836,7 +836,29 @@
     "name_required": "O nome é obrigatório",
     "save_error": "Erro ao salvar NPC. Tente novamente.",
     "save_success": "NPC salvo!",
-    "delete_success": "NPC excluído"
+    "delete_success": "NPC excluído",
+    "morada_label": "Morada",
+    "morada_placeholder": "Onde este NPC vive?",
+    "morada_none": "Nenhuma",
+    "lives_in_chip": "Vive em: {name}",
+    "facoes_label": "Facções",
+    "facoes_chip": "Membro de: {name}",
+    "filter_by_faction": "Por facção",
+    "filter_by_location": "Por local",
+    "filter_no_faction": "Sem facção",
+    "filter_no_location": "Sem morada"
+  },
+  "entity_graph": {
+    "add_link": "Vincular",
+    "remove_link": "Remover vínculo para {name}",
+    "search_placeholder": "Buscar...",
+    "no_matches": "Nenhum resultado",
+    "none_option": "Nenhuma",
+    "undo_unlink": "Vínculo removido. Desfazer",
+    "link_saved": "Vínculo salvo",
+    "save_failed": "Falha ao salvar vínculo",
+    "notes_about_this": "Notas sobre isto",
+    "notes_about_this_empty": "Nenhuma nota menciona isto ainda"
   },
   "auth_errors": {
     "invalid_credentials": "Email ou senha incorretos.",

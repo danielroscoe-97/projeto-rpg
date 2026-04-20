@@ -72,7 +72,11 @@ describe("NpcForm", () => {
             ac: 16,
             cr: "3",
           }),
-        })
+        }),
+        expect.objectContaining({
+          moradaLocationId: null,
+          factionIds: [],
+        }),
       );
     });
   });

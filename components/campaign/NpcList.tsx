@@ -16,9 +16,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { NpcCard } from "./NpcCard";
 import { NpcForm } from "./NpcForm";
+import type { NpcFormExtras } from "./NpcForm";
 import { NpcCardSkeleton } from "@/components/ui/skeletons/NpcCardSkeleton";
 import { useCampaignNpcs } from "@/lib/hooks/use-campaign-npcs";
+import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
+import { useCampaignEdges } from "@/lib/hooks/useCampaignEdges";
+import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
 import { captureError } from "@/lib/errors/capture";
+import {
+  upsertEntityLink,
+  unlinkEntities,
+} from "@/lib/supabase/entity-links";
+import { selectCounterpartyIds, findEdgeId } from "@/lib/types/entity-links";
 import type { CampaignNpc, CampaignNpcInsert } from "@/lib/types/campaign-npcs";
 
 interface NoteInfo {
@@ -45,6 +54,9 @@ export function NpcList({ campaignId }: NpcListProps) {
     removeNpc,
     toggleVisibility,
   } = useCampaignNpcs(campaignId);
+  const { locations: availableLocations } = useCampaignLocations(campaignId);
+  const { factions: availableFactions } = useCampaignFactions(campaignId);
+  const { edges, refetch: refetchEdges } = useCampaignEdges(campaignId);
 
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [filter, setFilter] = useState<FilterMode>("all");
@@ -75,16 +87,144 @@ export function NpcList({ campaignId }: NpcListProps) {
     return true;
   });
 
-  const handleCreate = useCallback(
-    async (data: CampaignNpcInsert) => {
-      await addNpc(data);
+  // Per-NPC morada + factions derived from the campaign edge list. Computed
+  // once per edges change; forms read the relevant slice via npc.id.
+  const npcMoradaMap = useMemo<Map<string, string | null>>(() => {
+    const map = new Map<string, string | null>();
+    for (const npc of npcs) {
+      const [locationId] = selectCounterpartyIds(
+        edges,
+        { type: "npc", id: npc.id },
+        {
+          direction: "outgoing",
+          counterpartyType: "location",
+          relationship: "lives_in",
+        },
+      );
+      map.set(npc.id, locationId ?? null);
+    }
+    return map;
+  }, [edges, npcs]);
+
+  const npcFactionsMap = useMemo<Map<string, string[]>>(() => {
+    const map = new Map<string, string[]>();
+    for (const npc of npcs) {
+      const factionIds = selectCounterpartyIds(
+        edges,
+        { type: "npc", id: npc.id },
+        {
+          direction: "outgoing",
+          counterpartyType: "faction",
+          relationship: "member_of",
+        },
+      );
+      map.set(npc.id, factionIds);
+    }
+    return map;
+  }, [edges, npcs]);
+
+  /**
+   * Reconciles the `lives_in` + `member_of` edges for a given NPC against the
+   * desired state from the form. Performs the minimum diff:
+   *   - lives_in: upsert if changed, delete existing if cleared.
+   *   - member_of: upsert any new faction, delete edges for removed ones.
+   * Idempotent — safe to call after addNpc even when no edges change.
+   */
+  const syncNpcEdges = useCallback(
+    async (npcId: string, previousFactionIds: string[], extras: NpcFormExtras) => {
+      const tasks: Promise<unknown>[] = [];
+
+      // ----- Morada (lives_in → location) -----
+      const existingMorada = selectCounterpartyIds(
+        edges,
+        { type: "npc", id: npcId },
+        {
+          direction: "outgoing",
+          counterpartyType: "location",
+          relationship: "lives_in",
+        },
+      )[0] ?? null;
+
+      if (extras.moradaLocationId !== existingMorada) {
+        if (extras.moradaLocationId) {
+          tasks.push(
+            upsertEntityLink(
+              campaignId,
+              { type: "npc", id: npcId },
+              { type: "location", id: extras.moradaLocationId },
+              "lives_in",
+            ),
+          );
+        }
+        if (existingMorada) {
+          const staleId = findEdgeId(
+            edges,
+            { type: "npc", id: npcId },
+            { type: "location", id: existingMorada },
+            "lives_in",
+          );
+          if (staleId) tasks.push(unlinkEntities(staleId));
+        }
+      }
+
+      // ----- Facções (member_of → faction) -----
+      const targetFactions = new Set(extras.factionIds);
+      const currentFactions = new Set(previousFactionIds);
+
+      for (const factionId of targetFactions) {
+        if (!currentFactions.has(factionId)) {
+          tasks.push(
+            upsertEntityLink(
+              campaignId,
+              { type: "npc", id: npcId },
+              { type: "faction", id: factionId },
+              "member_of",
+            ),
+          );
+        }
+      }
+      for (const factionId of currentFactions) {
+        if (!targetFactions.has(factionId)) {
+          const staleId = findEdgeId(
+            edges,
+            { type: "npc", id: npcId },
+            { type: "faction", id: factionId },
+            "member_of",
+          );
+          if (staleId) tasks.push(unlinkEntities(staleId));
+        }
+      }
+
+      if (tasks.length > 0) {
+        await Promise.all(tasks);
+        await refetchEdges();
+      }
     },
-    [addNpc],
+    [campaignId, edges, refetchEdges],
+  );
+
+  const handleCreate = useCallback(
+    async (data: CampaignNpcInsert, extras: NpcFormExtras) => {
+      const created = await addNpc(data);
+      if (created?.id) {
+        try {
+          await syncNpcEdges(created.id, [], extras);
+        } catch (err) {
+          captureError(err, {
+            component: "NpcList",
+            action: "syncNpcEdges.create",
+            category: "network",
+          });
+        }
+      }
+    },
+    [addNpc, syncNpcEdges],
   );
 
   const handleEdit = useCallback(
-    async (data: CampaignNpcInsert) => {
+    async (data: CampaignNpcInsert, extras: NpcFormExtras) => {
       if (!editingNpc) return;
+      const previousFactions = npcFactionsMap.get(editingNpc.id) ?? [];
       await editNpc(editingNpc.id, {
         name: data.name,
         description: data.description,
@@ -92,9 +232,18 @@ export function NpcList({ campaignId }: NpcListProps) {
         avatar_url: data.avatar_url,
         is_visible_to_players: data.is_visible_to_players,
       });
+      try {
+        await syncNpcEdges(editingNpc.id, previousFactions, extras);
+      } catch (err) {
+        captureError(err, {
+          component: "NpcList",
+          action: "syncNpcEdges.edit",
+          category: "network",
+        });
+      }
       setEditingNpc(null);
     },
-    [editingNpc, editNpc],
+    [editingNpc, editNpc, npcFactionsMap, syncNpcEdges],
   );
 
   const handleDelete = useCallback(async () => {
@@ -138,8 +287,9 @@ export function NpcList({ campaignId }: NpcListProps) {
   }, []);
 
   const handleViewSave = useCallback(
-    async (data: CampaignNpcInsert) => {
+    async (data: CampaignNpcInsert, extras: NpcFormExtras) => {
       if (!viewingNpc) return;
+      const previousFactions = npcFactionsMap.get(viewingNpc.id) ?? [];
       await editNpc(viewingNpc.id, {
         name: data.name,
         description: data.description,
@@ -147,9 +297,18 @@ export function NpcList({ campaignId }: NpcListProps) {
         avatar_url: data.avatar_url,
         is_visible_to_players: data.is_visible_to_players,
       });
+      try {
+        await syncNpcEdges(viewingNpc.id, previousFactions, extras);
+      } catch (err) {
+        captureError(err, {
+          component: "NpcList",
+          action: "syncNpcEdges.view",
+          category: "network",
+        });
+      }
       setViewingNpc(null);
     },
-    [viewingNpc, editNpc],
+    [viewingNpc, editNpc, npcFactionsMap, syncNpcEdges],
   );
 
   if (loading) {
@@ -253,17 +412,30 @@ export function NpcList({ campaignId }: NpcListProps) {
           }
           data-testid="npc-container"
         >
-          {filteredNpcs.map((npc) => (
-            <NpcCard
-              key={npc.id}
-              npc={npc}
-              relatedNotes={relatedNotesMap.get(npc.id)}
-              onEdit={openEditForm}
-              onDelete={setDeleteTarget}
-              onToggleVisibility={handleToggleVisibility}
-              onCardClick={setViewingNpc}
-            />
-          ))}
+          {filteredNpcs.map((npc) => {
+            const moradaId = npcMoradaMap.get(npc.id) ?? null;
+            const morada = moradaId
+              ? availableLocations.find((l) => l.id === moradaId)
+              : null;
+            const factionIds = npcFactionsMap.get(npc.id) ?? [];
+            const factions = factionIds
+              .map((fid) => availableFactions.find((f) => f.id === fid))
+              .filter((f): f is NonNullable<typeof f> => !!f)
+              .map((f) => ({ id: f.id, name: f.name }));
+            return (
+              <NpcCard
+                key={npc.id}
+                npc={npc}
+                relatedNotes={relatedNotesMap.get(npc.id)}
+                morada={morada ? { id: morada.id, name: morada.name } : null}
+                factions={factions}
+                onEdit={openEditForm}
+                onDelete={setDeleteTarget}
+                onToggleVisibility={handleToggleVisibility}
+                onCardClick={setViewingNpc}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -284,6 +456,10 @@ export function NpcList({ campaignId }: NpcListProps) {
         }}
         campaignId={campaignId}
         npc={editingNpc}
+        availableLocations={availableLocations}
+        availableFactions={availableFactions}
+        initialMoradaLocationId={editingNpc ? npcMoradaMap.get(editingNpc.id) ?? null : null}
+        initialFactionIds={editingNpc ? npcFactionsMap.get(editingNpc.id) ?? [] : []}
         onSave={editingNpc ? handleEdit : handleCreate}
       />
 
@@ -297,6 +473,10 @@ export function NpcList({ campaignId }: NpcListProps) {
           }}
           campaignId={campaignId}
           npc={viewingNpc}
+          availableLocations={availableLocations}
+          availableFactions={availableFactions}
+          initialMoradaLocationId={npcMoradaMap.get(viewingNpc.id) ?? null}
+          initialFactionIds={npcFactionsMap.get(viewingNpc.id) ?? []}
           readOnly
           canEdit
           onSave={handleViewSave}

@@ -23,13 +23,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CampaignNpc, CampaignNpcInsert, NpcStats } from "@/lib/types/campaign-npcs";
+import type { CampaignLocation, CampaignFaction } from "@/lib/types/mind-map";
+import { EntityTagSelector } from "./EntityTagSelector";
+
+/**
+ * Side-channel data emitted alongside the NPC payload on save. Parent is
+ * responsible for syncing campaign_mind_map_edges based on the delta
+ * between the initial values and these. See SPEC §2 Fase 3c + 3d.
+ */
+export interface NpcFormExtras {
+  /** Location id where the NPC lives; null clears any existing link. */
+  moradaLocationId: string | null;
+  /** Faction ids the NPC belongs to (member_of). */
+  factionIds: string[];
+}
 
 interface NpcFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   campaignId?: string | null;
   npc?: CampaignNpc | null;
-  onSave: (data: CampaignNpcInsert) => Promise<void>;
+  /** Flat list of campaign locations for the "Morada" selector. Omit to hide. */
+  availableLocations?: CampaignLocation[];
+  /** Flat list of campaign factions for the "Facções" selector (Fase 3d). Omit to hide. */
+  availableFactions?: CampaignFaction[];
+  /** Initial morada (edge lives_in target). Null/undefined = none. */
+  initialMoradaLocationId?: string | null;
+  /** Initial factions the NPC belongs to (Fase 3d). */
+  initialFactionIds?: string[];
+  onSave: (data: CampaignNpcInsert, extras: NpcFormExtras) => Promise<void>;
   /** When true, dialog opens in read-only mode (inputs disabled, Save hidden). */
   readOnly?: boolean;
   /** When true + `readOnly`, show an "Edit" button that flips into edit mode. */
@@ -41,6 +63,10 @@ export function NpcForm({
   onOpenChange,
   campaignId,
   npc,
+  availableLocations,
+  availableFactions,
+  initialMoradaLocationId,
+  initialFactionIds,
   onSave,
   readOnly = false,
   canEdit = true,
@@ -57,6 +83,10 @@ export function NpcForm({
   const [notes, setNotes] = useState(npc?.stats.notes ?? "");
   const [avatarUrl, setAvatarUrl] = useState(npc?.avatar_url ?? "");
   const [visibleToPlayers, setVisibleToPlayers] = useState(npc?.is_visible_to_players ?? true);
+  const [moradaLocationId, setMoradaLocationId] = useState<string | null>(
+    initialMoradaLocationId ?? null,
+  );
+  const [factionIds, setFactionIds] = useState<string[]>(initialFactionIds ?? []);
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [saveError, setSaveError] = useState(false);
@@ -67,10 +97,31 @@ export function NpcForm({
     setViewOnly(readOnly);
   }, [readOnly, open]);
 
+  const initialMoradaKey = initialMoradaLocationId ?? null;
+  const initialFactionsKey = useMemo(
+    () => (initialFactionIds ?? []).slice().sort().join("|"),
+    [initialFactionIds],
+  );
+
   const isDirty = useMemo(() => {
     const init = npc;
+    const moradaDirty = moradaLocationId !== initialMoradaKey;
+    const factionsDirty = factionIds.slice().sort().join("|") !== initialFactionsKey;
+
     if (!init) {
-      return !!(name || description || hp || ac || initiativeMod || cr || notes || avatarUrl || !visibleToPlayers);
+      return !!(
+        name ||
+        description ||
+        hp ||
+        ac ||
+        initiativeMod ||
+        cr ||
+        notes ||
+        avatarUrl ||
+        !visibleToPlayers ||
+        moradaDirty ||
+        factionsDirty
+      );
     }
     return (
       name !== (init.name ?? "") ||
@@ -81,9 +132,26 @@ export function NpcForm({
       cr !== (init.stats.cr ?? "") ||
       notes !== (init.stats.notes ?? "") ||
       avatarUrl !== (init.avatar_url ?? "") ||
-      visibleToPlayers !== (init.is_visible_to_players ?? true)
+      visibleToPlayers !== (init.is_visible_to_players ?? true) ||
+      moradaDirty ||
+      factionsDirty
     );
-  }, [npc, name, description, hp, ac, initiativeMod, cr, notes, avatarUrl, visibleToPlayers]);
+  }, [
+    npc,
+    name,
+    description,
+    hp,
+    ac,
+    initiativeMod,
+    cr,
+    notes,
+    avatarUrl,
+    visibleToPlayers,
+    moradaLocationId,
+    factionIds,
+    initialMoradaKey,
+    initialFactionsKey,
+  ]);
 
   const handleOpenChange = useCallback((nextOpen: boolean) => {
     if (!nextOpen && isDirty) {
@@ -122,7 +190,7 @@ export function NpcForm({
       setSaving(true);
       setSaveError(false);
       try {
-        await onSave(data);
+        await onSave(data, { moradaLocationId, factionIds });
         onOpenChange(false);
       } catch {
         setSaveError(true);
@@ -130,7 +198,22 @@ export function NpcForm({
         setSaving(false);
       }
     },
-    [name, description, hp, ac, initiativeMod, cr, notes, avatarUrl, visibleToPlayers, campaignId, onSave, onOpenChange]
+    [
+      name,
+      description,
+      hp,
+      ac,
+      initiativeMod,
+      cr,
+      notes,
+      avatarUrl,
+      visibleToPlayers,
+      campaignId,
+      moradaLocationId,
+      factionIds,
+      onSave,
+      onOpenChange,
+    ],
   );
 
   const isEdit = !!npc;
@@ -182,6 +265,35 @@ export function NpcForm({
               readOnly={viewOnly}
             />
           </div>
+
+          {/* Morada (Fase 3c) — only when the form has location context */}
+          {campaignId && availableLocations && availableLocations.length > 0 && (
+            <EntityTagSelector
+              type="location"
+              availableItems={availableLocations.map((l) => ({ id: l.id, name: l.name }))}
+              selectedIds={moradaLocationId ? [moradaLocationId] : []}
+              onChange={(ids) => setMoradaLocationId(ids[0] ?? null)}
+              singleSelect
+              label={t("morada_label")}
+              helpText={t("morada_placeholder")}
+              noneLabel={t("morada_none")}
+              testIdPrefix="npc-morada"
+              disabled={viewOnly}
+            />
+          )}
+
+          {/* Facções (Fase 3d) — only when faction context is supplied */}
+          {campaignId && availableFactions && availableFactions.length > 0 && (
+            <EntityTagSelector
+              type="faction"
+              availableItems={availableFactions.map((f) => ({ id: f.id, name: f.name }))}
+              selectedIds={factionIds}
+              onChange={setFactionIds}
+              label={t("facoes_label")}
+              testIdPrefix="npc-facoes"
+              disabled={viewOnly}
+            />
+          )}
 
           {/* Stats row */}
           <div className="space-y-1.5">
@@ -378,6 +490,8 @@ export function NpcForm({
               setNotes(npc?.stats.notes ?? "");
               setAvatarUrl(npc?.avatar_url ?? "");
               setVisibleToPlayers(npc?.is_visible_to_players ?? true);
+              setMoradaLocationId(initialMoradaLocationId ?? null);
+              setFactionIds(initialFactionIds ?? []);
               onOpenChange(false);
             }}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
