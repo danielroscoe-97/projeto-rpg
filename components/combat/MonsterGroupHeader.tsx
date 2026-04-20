@@ -2,9 +2,20 @@
 
 import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronRight, ChevronDown, Shield } from "lucide-react";
+import { ChevronRight, ChevronDown, Shield, Trash2, Skull } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Combatant } from "@/lib/types/combat";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 /**
  * Per-member health snapshot used by the group header to drive display
@@ -101,6 +112,18 @@ interface MonsterGroupHeaderProps {
   onSetGroupInitiative?: (value: number) => void;
   /** Whether it's the turn of any member in this group */
   isCurrentTurn?: boolean;
+  /**
+   * S3.4 — DM-only. Called by the "Limpar N derrotados" button to remove all
+   * members whose `current_hp <= 0` or `is_defeated`. Host wiring mirrors
+   * `handleRemoveCombatant` semantics (persist + broadcast + turn_index fix).
+   * Omit this prop to hide the button (e.g. player view).
+   */
+  onClearDefeated?: (ids: string[]) => void;
+  /**
+   * S3.4 — DM-only. Called by the "Deletar grupo" button to remove ALL members
+   * (alive + dead). Omit to hide the button.
+   */
+  onDeleteGroup?: (ids: string[]) => void;
   /** Children — the expanded member rows */
   children: React.ReactNode;
 }
@@ -113,6 +136,8 @@ export function MonsterGroupHeader({
   groupInitiative,
   onSetGroupInitiative,
   isCurrentTurn = false,
+  onClearDefeated,
+  onDeleteGroup,
   children,
 }: MonsterGroupHeaderProps) {
   const t = useTranslations("combat");
@@ -127,6 +152,14 @@ export function MonsterGroupHeader({
   const activeMembers = members.filter((m) => !m.is_defeated);
   const totalMembers = groupHealth.membersTotal;
   const allDefeated = groupHealth.membersAlive === 0;
+
+  // S3.4 — defeated members (current_hp <= 0 OR is_defeated). Both conditions
+  // matter: raw HP handles the "dying but not yet flagged" case; is_defeated
+  // handles the DM-flagged-but-not-zero case (e.g. surrendered).
+  const defeatedMembers = members.filter((m) => m.is_defeated || m.current_hp <= 0);
+  const defeatedCount = defeatedMembers.length;
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Condition summary for collapsed view
   const conditionCounts = new Map<string, number>();
@@ -293,6 +326,92 @@ export function MonsterGroupHeader({
           <span className="text-xs text-red-400 font-medium flex-shrink-0">
             {t("defeated")}
           </span>
+        )}
+
+        {/* S3.4 — DM-only group mutation buttons. Touch targets ≥32×32 per
+            WCAG 2.5.8 AA. Both buttons stop propagation so the click doesn't
+            toggle expand/collapse. AlertDialog triggers are siblings of the
+            visible icon buttons so keyboard focus + screen-reader labelling
+            stay clean. */}
+        {onClearDefeated && defeatedCount > 0 && (
+          <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setClearDialogOpen(true);
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+                className="flex-shrink-0 inline-flex items-center justify-center h-8 min-w-8 gap-1 px-2 rounded bg-red-900/25 hover:bg-red-900/50 text-red-300 text-[11px] font-medium transition-colors"
+                aria-label={t("group_clear_defeated_aria", { n: defeatedCount })}
+                title={t("group_clear_defeated")}
+                data-testid={`group-clear-defeated-${groupName}`}
+              >
+                <Skull className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>{defeatedCount}</span>
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {t("group_clear_confirm_title", { n: defeatedCount, name: groupName })}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("group_clear_confirm_desc", { n: defeatedCount })}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("remove_confirm_cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onClearDefeated(defeatedMembers.map((m) => m.id))}
+                  className="bg-red-900/60 text-red-300 hover:bg-red-900/80"
+                >
+                  {t("group_clear_confirm_action", { n: defeatedCount })}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+
+        {onDeleteGroup && (
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteDialogOpen(true);
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+                className="flex-shrink-0 inline-flex items-center justify-center h-8 w-8 rounded hover:bg-red-900/30 text-muted-foreground hover:text-red-300 transition-colors"
+                aria-label={t("group_delete_aria", { name: groupName, n: totalMembers })}
+                title={t("group_delete")}
+                data-testid={`group-delete-${groupName}`}
+              >
+                <Trash2 className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {t("group_delete_confirm_title", { name: groupName })}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("group_delete_confirm_desc", { n: totalMembers })}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("remove_confirm_cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDeleteGroup(members.map((m) => m.id))}
+                  className="bg-red-900/60 text-red-300 hover:bg-red-900/80"
+                >
+                  {t("group_delete_confirm_action")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
 

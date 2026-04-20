@@ -51,71 +51,89 @@ let raceMap: Map<string, SrdRace> = new Map();
 // Cross-version monster ID mapping (bidirectional: 2014-id ↔ 2024-id)
 let monsterCrossref: Record<string, string> = {};
 
-const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
+// ── Fuse options (exported for test assertions) ──────────────────────────────
+// S3.3 — Fuse v7 `ignoreDiacritics` folds combining marks before scoring so
+// queries like "velociraptor" match stored "Velociráptor" / "Rêmora" / "Dragão"
+// without callers having to pre-normalize. Threshold bumped 0.35 → 0.4 to
+// compensate for the tiny extra Levenshtein distance the fold introduces on
+// short names (keeps recall while staying well under the ~0.5 noise cliff).
+// NOTE: we intentionally do NOT use `Fuse.config.getFn` — that API is not part
+// of the Fuse v7 public surface.
+export const MONSTER_OPTIONS: IFuseOptions<SrdMonster> = {
   keys: [
     { name: "name", weight: 0.45 },
     { name: "name_pt", weight: 0.25 },
     { name: "type", weight: 0.2 },
     { name: "cr", weight: 0.1 },
   ],
-  threshold: 0.35,
+  threshold: 0.4,
   ignoreLocation: true,
+  ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,
 };
 
-const ITEM_OPTIONS: IFuseOptions<SrdItem> = {
+export const ITEM_OPTIONS: IFuseOptions<SrdItem> = {
   keys: [
     { name: "name", weight: 0.45 },
     { name: "name_pt", weight: 0.25 },
     { name: "type", weight: 0.2 },
     { name: "rarity", weight: 0.1 },
   ],
-  threshold: 0.3,
+  // S3.3 β' review fix: ITEM baseline was 0.3 (stricter than other configs'
+  // 0.35). Bumping to 0.35 (not 0.4) keeps the diacritic-fold +0.05 nudge
+  // without over-relaxing recall on short item queries. Other configs stay
+  // at 0.4 because their baselines were already 0.35.
+  threshold: 0.35,
+  ignoreLocation: true,
+  ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,
 };
 
-const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
+export const SPELL_OPTIONS: IFuseOptions<SrdSpell> = {
   keys: [
     { name: "name", weight: 0.45 },
     { name: "name_pt", weight: 0.25 },
     { name: "classes", weight: 0.15 },
     { name: "school", weight: 0.15 },
   ],
-  threshold: 0.35,
+  threshold: 0.4,
   ignoreLocation: true,
+  ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,
 };
 
-const FEAT_OPTIONS: IFuseOptions<SrdFeatEntry> = {
+export const FEAT_OPTIONS: IFuseOptions<SrdFeatEntry> = {
   keys: [
     { name: "name", weight: 0.45 },
     { name: "name_pt", weight: 0.25 },
     { name: "description", weight: 0.2 },
     { name: "source", weight: 0.1 },
   ],
-  threshold: 0.35,
+  threshold: 0.4,
   ignoreLocation: true,
+  ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,
 };
 
-const BACKGROUND_OPTIONS: IFuseOptions<SrdBackgroundEntry> = {
+export const BACKGROUND_OPTIONS: IFuseOptions<SrdBackgroundEntry> = {
   keys: [
     { name: "name", weight: 0.45 },
     { name: "name_pt", weight: 0.25 },
     { name: "skill_proficiencies", weight: 0.2 },
     { name: "source", weight: 0.1 },
   ],
-  threshold: 0.35,
+  threshold: 0.4,
   ignoreLocation: true,
+  ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,
 };
 
-const RACE_OPTIONS: IFuseOptions<SrdRace> = {
+export const RACE_OPTIONS: IFuseOptions<SrdRace> = {
   keys: [
     { name: "name", weight: 0.45 },
     { name: "namePt", weight: 0.25 },
@@ -123,21 +141,23 @@ const RACE_OPTIONS: IFuseOptions<SrdRace> = {
     { name: "source", weight: 0.1 },
     { name: "languages", weight: 0.05 },
   ],
-  threshold: 0.35,
+  threshold: 0.4,
   ignoreLocation: true,
+  ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,
 };
 
-const ABILITY_OPTIONS: IFuseOptions<SrdAbility> = {
+export const ABILITY_OPTIONS: IFuseOptions<SrdAbility> = {
   keys: [
     { name: "name", weight: 0.5 },
     { name: "name_pt", weight: 0.2 },
     { name: "source_class", weight: 0.15 },
     { name: "source_race", weight: 0.15 },
   ],
-  threshold: 0.35,
+  threshold: 0.4,
   ignoreLocation: true,
+  ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,
 };

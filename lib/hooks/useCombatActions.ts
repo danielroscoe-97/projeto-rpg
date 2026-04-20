@@ -31,6 +31,7 @@ import { parseDamageModifiers, applyDamageModifier } from "@/lib/combat/parse-re
 import { getMonsterById } from "@/lib/srd/srd-search";
 import { toast } from "sonner";
 import { assignInitiativeOrder, sortByInitiative, adjustInitiativeAfterReorder } from "@/lib/utils/initiative";
+import { computeBatchRemove } from "@/lib/combat/batch-remove";
 import type { Combatant } from "@/lib/types/combat";
 import type { RulesetVersion } from "@/lib/types/database";
 import { applyGroupRename } from "@/lib/utils/group-rename";
@@ -470,6 +471,76 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     }
   }, [setError, getSessionId]);
 
+  /**
+   * S3.4 — Remove a batch of combatants atomically from the auth-mode combat
+   * store. Mirrors `handleRemoveCombatant` (persist + broadcast per combatant
+   * + turn_index adjust + initiative reorder persist) but with a SINGLE
+   * `state_sync` broadcast at the end so player clients see one cohesive
+   * update instead of N flicker frames.
+   *
+   * Used by MonsterGroupHeader's "Clear defeated" / "Delete group" buttons.
+   * `kind` is passed through to the telemetry event.
+   */
+  const handleRemoveCombatantsBatch = useCallback((ids: string[], telemetry: { group_id: string; kind: "clear_defeated" | "delete_group" }) => {
+    if (ids.length === 0) return;
+    const snap = useCombatStore.getState();
+
+    // Pure turn-index math lives in computeBatchRemove so it's unit-testable.
+    const { nextTurnIndex } = computeBatchRemove(snap.combatants, snap.current_turn_index, ids);
+
+    // Remove each one from the store (store takes care of lair cleanup).
+    for (const id of ids) {
+      snap.removeCombatant(id);
+    }
+
+    // Adjust current_turn_index post-removal.
+    const postRemove = useCombatStore.getState();
+    if (postRemove.combatants.length > 0) {
+      if (nextTurnIndex !== postRemove.current_turn_index) {
+        postRemove.hydrateActiveState(nextTurnIndex, postRemove.round_number);
+      }
+    }
+
+    // Reassign initiative_order across the survivors.
+    const finalState = useCombatStore.getState();
+    const reordered = assignInitiativeOrder(finalState.combatants);
+    finalState.hydrateCombatants(reordered);
+
+    // Broadcast per combatant (ordered so listeners process deletions before
+    // the batched state_sync below).
+    for (const id of ids) {
+      broadcastEvent(getSessionId(), { type: "combat:combatant_remove", combatant_id: id });
+    }
+
+    // Single state_sync at the end — mirrors handleRemoveCombatant's BT2-02 rule
+    // but batched so players get ONE cohesive reorder, not N flickers.
+    const syncState = useCombatStore.getState();
+    if (syncState.encounter_id) {
+      broadcastEvent(getSessionId(), {
+        type: "session:state_sync",
+        combatants: syncState.combatants,
+        current_turn_index: syncState.current_turn_index,
+        round_number: syncState.round_number,
+        encounter_id: syncState.encounter_id,
+      });
+    }
+
+    // Telemetry — NOT per-combatant; one event describes the whole gesture.
+    trackEvent("combat:group_cleared", {
+      group_id: telemetry.group_id,
+      kind: telemetry.kind,
+      member_count: ids.length,
+    });
+
+    // Persist: fire-and-forget, errors surface via setError.
+    for (const id of ids) {
+      persistRemoveCombatant(id).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    }
+    if (reordered.length > 0) {
+      persistInitiativeOrder(reordered.map((c) => ({ id: c.id, initiative_order: c.initiative_order }))).catch((err) => setError(err instanceof Error ? err.message : "Failed to save."));
+    }
+  }, [setError, getSessionId]);
+
   const handleAddCombatant = useCallback((newCombatant: Omit<Combatant, "id">) => {
     const snap = useCombatStore.getState();
     const prevTurnIndex = snap.current_turn_index;
@@ -805,6 +876,7 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
     handleToggleCondition,
     handleSetDefeated,
     handleRemoveCombatant,
+    handleRemoveCombatantsBatch,
     handleAddCombatant,
     handleUpdateStats,
     handleSetInitiative,

@@ -12,6 +12,7 @@ import { ItemCard } from "@/components/oracle/ItemCard";
 import { useSrdStore } from "@/lib/stores/srd-store";
 import { useSrdContentFilter } from "@/lib/hooks/use-srd-content-filter";
 import { getCoreConditions, getAllFeats } from "@/lib/srd/srd-search";
+import { normalizeForSearch } from "@/lib/srd/normalize-query";
 import type { SrdSpell, SrdMonster, SrdCondition, SrdItem, SrdRace, SrdBackground } from "@/lib/srd/srd-loader";
 import type { SrdFeatEntry } from "@/lib/srd/srd-search";
 import { SRD_ABILITIES, type SrdAbility } from "@/lib/data/srd-abilities";
@@ -198,12 +199,54 @@ export function PlayerCompendiumBrowser({
     [onOpenChange, playerClass, rulesetVersion]
   );
 
+  // S3.3 — Accent-insensitive haystacks. Pre-normalize EN + PT names once per
+  // dataset so 1122 monsters don't re-NFD/strip on every keystroke. Each entry
+  // is `{ item, norm }` where `norm` is the concatenated `name` + `name_pt`
+  // already folded via `normalizeForSearch`.
+  const spellHaystack = useMemo(
+    () => spells.map((item) => ({ item, norm: normalizeForSearch(`${item.name} ${item.name_pt ?? ""}`) })),
+    [spells]
+  );
+  const monsterHaystack = useMemo(
+    () => monsters.map((item) => ({ item, norm: normalizeForSearch(`${item.name} ${item.name_pt ?? ""}`) })),
+    [monsters]
+  );
+  const conditionHaystack = useMemo(
+    () => conditions.map((item) => ({ item, norm: normalizeForSearch(item.name) })),
+    [conditions]
+  );
+  const itemHaystack = useMemo(
+    () => items.map((item) => ({ item, norm: normalizeForSearch(`${item.name} ${item.name_pt ?? ""}`) })),
+    [items]
+  );
+  const featHaystack = useMemo(
+    () => feats.map((item) => ({ item, norm: normalizeForSearch(`${item.name} ${item.name_pt ?? ""}`) })),
+    [feats]
+  );
+  const abilityHaystack = useMemo(
+    () => abilities.map((item) => ({ item, norm: normalizeForSearch(`${item.name} ${item.name_pt}`) })),
+    [abilities]
+  );
+  const raceHaystack = useMemo(
+    () => races.map((item) => ({ item, norm: normalizeForSearch(item.name) })),
+    [races]
+  );
+  const backgroundHaystack = useMemo(
+    () => backgrounds.map((item) => ({ item, norm: normalizeForSearch(item.name) })),
+    [backgrounds]
+  );
+
   // Spell filtering
   const filteredSpells = useMemo(() => {
     let result = spells;
     if (nameFilter) {
-      const lower = nameFilter.toLowerCase();
-      result = result.filter((s) => s.name.toLowerCase().includes(lower));
+      const needle = normalizeForSearch(nameFilter);
+      if (needle) {
+        const allowed = new Set(
+          spellHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item.id)
+        );
+        result = result.filter((s) => allowed.has(s.id));
+      }
     }
     if (versionFilter !== "all") {
       result = result.filter((s) => s.ruleset_version === versionFilter);
@@ -220,109 +263,120 @@ export function PlayerCompendiumBrowser({
     return result.sort(
       (a, b) => a.level - b.level || a.name.localeCompare(b.name)
     );
-  }, [spells, nameFilter, versionFilter, selectedLevel, selectedClass]);
+  }, [spells, spellHaystack, nameFilter, versionFilter, selectedLevel, selectedClass]);
 
   // Monster filtering
   const filteredMonsters = useMemo(() => {
     let result = monsters;
     if (monsterNameFilter) {
-      const lower = monsterNameFilter.toLowerCase();
-      result = result.filter((m) => m.name.toLowerCase().includes(lower));
+      const needle = normalizeForSearch(monsterNameFilter);
+      if (needle) {
+        result = monsterHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
+      }
     }
-    return result.sort((a, b) => a.name.localeCompare(b.name));
-  }, [monsters, monsterNameFilter]);
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
+  }, [monsters, monsterHaystack, monsterNameFilter]);
 
   // Condition filtering
   const filteredConditions = useMemo(() => {
     if (!conditionFilter) return conditions;
-    const lower = conditionFilter.toLowerCase();
-    return conditions.filter((c) => c.name.toLowerCase().includes(lower));
-  }, [conditions, conditionFilter]);
+    const needle = normalizeForSearch(conditionFilter);
+    if (!needle) return conditions;
+    return conditionHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
+  }, [conditions, conditionHaystack, conditionFilter]);
 
   // Item filtering
   const filteredItems = useMemo(() => {
     let result = items;
     if (itemNameFilter) {
-      const lower = itemNameFilter.toLowerCase();
-      result = result.filter((i) => i.name.toLowerCase().includes(lower));
+      const needle = normalizeForSearch(itemNameFilter);
+      if (needle) {
+        result = itemHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
+      }
     }
-    return result.sort((a, b) => a.name.localeCompare(b.name));
-  }, [items, itemNameFilter]);
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
+  }, [items, itemHaystack, itemNameFilter]);
 
   // Feat filtering
   const filteredFeats = useMemo(() => {
     let result = feats;
     if (featNameFilter) {
-      const lower = featNameFilter.toLowerCase();
-      result = result.filter((f) => f.name.toLowerCase().includes(lower));
+      const needle = normalizeForSearch(featNameFilter);
+      if (needle) {
+        result = featHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
+      }
     }
-    return result.sort((a, b) => a.name.localeCompare(b.name));
-  }, [feats, featNameFilter]);
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
+  }, [feats, featHaystack, featNameFilter]);
 
   // Ability filtering
   const filteredAbilities = useMemo(() => {
     let result = abilities;
     if (abilityNameFilter) {
-      const lower = abilityNameFilter.toLowerCase();
-      result = result.filter(
-        (a) => a.name.toLowerCase().includes(lower) || a.name_pt.toLowerCase().includes(lower)
-      );
+      const needle = normalizeForSearch(abilityNameFilter);
+      if (needle) {
+        result = abilityHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
+      }
     }
-    return result.sort((a, b) => a.name.localeCompare(b.name));
-  }, [abilities, abilityNameFilter]);
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
+  }, [abilities, abilityHaystack, abilityNameFilter]);
 
   // Race filtering
   const filteredRaces = useMemo(() => {
     let result = [...races];
     if (raceNameFilter) {
-      const lower = raceNameFilter.toLowerCase();
-      result = result.filter((r) => r.name.toLowerCase().includes(lower));
+      const needle = normalizeForSearch(raceNameFilter);
+      if (needle) {
+        result = raceHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
+      }
     }
-    return result.sort((a, b) => a.name.localeCompare(b.name));
-  }, [races, raceNameFilter]);
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
+  }, [races, raceHaystack, raceNameFilter]);
 
   // Background filtering
   const filteredBackgrounds = useMemo(() => {
     let result = [...backgrounds];
     if (backgroundNameFilter) {
-      const lower = backgroundNameFilter.toLowerCase();
-      result = result.filter((b) => b.name.toLowerCase().includes(lower));
+      const needle = normalizeForSearch(backgroundNameFilter);
+      if (needle) {
+        result = backgroundHaystack.filter((h) => h.norm.includes(needle)).map((h) => h.item);
+      }
     }
-    return result.sort((a, b) => a.name.localeCompare(b.name));
-  }, [backgrounds, backgroundNameFilter]);
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
+  }, [backgrounds, backgroundHaystack, backgroundNameFilter]);
 
-  // Global search — unified results across all types
+  // Global search — unified results across all types (accent-insensitive).
   const globalResults = useMemo((): GlobalResult[] => {
     if (!globalFilter || globalFilter.length < 2) return [];
-    const lower = globalFilter.toLowerCase();
+    const needle = normalizeForSearch(globalFilter);
+    if (!needle) return [];
     const results: GlobalResult[] = [];
-    for (const s of spells) {
-      if (s.name.toLowerCase().includes(lower)) results.push({ kind: "spell", item: s });
+    for (const h of spellHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "spell", item: h.item });
     }
-    for (const m of monsters) {
-      if (m.name.toLowerCase().includes(lower)) results.push({ kind: "monster", item: m });
+    for (const h of monsterHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "monster", item: h.item });
     }
-    for (const c of conditions) {
-      if (c.name.toLowerCase().includes(lower)) results.push({ kind: "condition", item: c });
+    for (const h of conditionHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "condition", item: h.item });
     }
-    for (const i of items) {
-      if (i.name.toLowerCase().includes(lower)) results.push({ kind: "item", item: i });
+    for (const h of itemHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "item", item: h.item });
     }
-    for (const f of feats) {
-      if (f.name.toLowerCase().includes(lower)) results.push({ kind: "feat", item: f });
+    for (const h of featHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "feat", item: h.item });
     }
-    for (const a of abilities) {
-      if (a.name.toLowerCase().includes(lower) || a.name_pt.toLowerCase().includes(lower))
-        results.push({ kind: "ability", item: a });
+    for (const h of abilityHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "ability", item: h.item });
     }
-    for (const r of races) {
-      if (r.name.toLowerCase().includes(lower)) results.push({ kind: "race", item: r });
+    for (const h of raceHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "race", item: h.item });
     }
-    for (const b of backgrounds) {
-      if (b.name.toLowerCase().includes(lower)) results.push({ kind: "background", item: b });
+    for (const h of backgroundHaystack) {
+      if (h.norm.includes(needle)) results.push({ kind: "background", item: h.item });
     }
     return results.sort((a, b) => a.item.name.localeCompare(b.item.name));
-  }, [spells, monsters, conditions, items, feats, abilities, races, backgrounds, globalFilter]);
+  }, [spellHaystack, monsterHaystack, conditionHaystack, itemHaystack, featHaystack, abilityHaystack, raceHaystack, backgroundHaystack, globalFilter]);
 
   // S3.6 telemetry — fire `compendium:search_missed` when a non-trivial query
   // returns zero results, to measure the injector-fix's impact post-deploy.

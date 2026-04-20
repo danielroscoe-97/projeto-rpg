@@ -170,6 +170,7 @@ export function CombatSessionClient({
     handleToggleCondition,
     handleSetDefeated,
     handleRemoveCombatant,
+    handleRemoveCombatantsBatch,
     handleAddCombatant: addCombatantAction,
     handleReorderCombatants,
     handleUpdateStats,
@@ -1691,6 +1692,7 @@ export function CombatSessionClient({
         onToggleCondition={handleToggleCondition}
         onSetDefeated={handleSetDefeated}
         onRemoveCombatant={handleRemoveCombatant}
+        onRemoveGroupMembers={(ids, kind, groupId) => handleRemoveCombatantsBatch(ids, { group_id: groupId, kind })}
         onUpdateStats={handleUpdateStats}
         onSetInitiative={handleSetInitiative}
         onSwitchVersion={handleSwitchVersion}
@@ -1869,6 +1871,8 @@ interface CombatListProps {
   onToggleCondition: (id: string, condition: string) => void;
   onSetDefeated: (id: string, isDefeated: boolean) => void;
   onRemoveCombatant: (id: string) => void;
+  /** S3.4 — batch remove helper for MonsterGroupHeader Clear/Delete buttons. */
+  onRemoveGroupMembers: (ids: string[], kind: "clear_defeated" | "delete_group", groupId: string) => void;
   onUpdateStats: (id: string, stats: { name?: string; display_name?: string | null; max_hp?: number; ac?: number; spell_save_dc?: number | null }) => void;
   onSetInitiative: (id: string, value: number | null) => void;
   onSwitchVersion: (id: string, version: import("@/lib/types/database").RulesetVersion) => void;
@@ -1902,6 +1906,7 @@ function CombatList({
   onToggleCondition,
   onSetDefeated,
   onRemoveCombatant,
+  onRemoveGroupMembers,
   onUpdateStats,
   onSetInitiative,
   onSwitchVersion,
@@ -2033,6 +2038,8 @@ function CombatList({
               groupInitiative={getGroupInitiative(members)}
               onSetGroupInitiative={(value) => onSetGroupInitiative(groupId, value)}
               isCurrentTurn={isCurrentTurn}
+              onClearDefeated={(ids) => onRemoveGroupMembers(ids, "clear_defeated", groupId)}
+              onDeleteGroup={(ids) => onRemoveGroupMembers(ids, "delete_group", groupId)}
             >
               {members.map((c, i) => {
                 const index = combatants.findIndex((x) => x.id === c.id);

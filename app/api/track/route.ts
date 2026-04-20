@@ -26,6 +26,8 @@ const ALLOWED_EVENTS = new Set([
   "combat:combatant_removed",
   "combat:recharge_used",
   "combat:recharge_rolled",
+  // Combat — S3.4 group batch mutation (telemetry only; no raw member names)
+  "combat:group_cleared",
   // Combat — S4.2 custom conditions (LGPD: name_length only, never the raw name)
   "combat:custom_condition_applied",
   // Combat — S4.3 quick actions (Dodge/Dash/Help/Disengage/Hide/Ready)

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { trackEvent } from "@/lib/analytics/track";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
 import { useTourStore } from "@/lib/stores/tour-store";
 import Fuse from "fuse.js";
 import { mergeImportedMonsters, getCrossVersionMonsterId, getMonsterById } from "@/lib/srd/srd-search";
+import { normalizeForSearch } from "@/lib/srd/normalize-query";
 import { loadMonsters, loadMadMonsters } from "@/lib/srd/srd-loader";
 import type { SrdMonster } from "@/lib/srd/srd-loader";
 import { MonsterToken, CREATURE_ICONS } from "@/components/srd/MonsterToken";
@@ -183,6 +184,18 @@ export function MonsterSearchPanel({
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [madMonsters, setMadMonsters] = useState<SrdMonster[]>([]);
+  // S3.3 β' review fix: memoize normalized name lookups for MAD monsters +
+  // campaign players so we don't re-NFD on every keystroke. Re-computes only
+  // when the source list identity changes. Shape is `{ item, norm }[]`
+  // mirroring the PlayerCompendiumBrowser pattern from commit 1e5f7383.
+  const madMonstersHaystack = useMemo(
+    () => madMonsters.map((item) => ({ item, norm: normalizeForSearch(item.name) })),
+    [madMonsters],
+  );
+  const campaignPlayersHaystack = useMemo(
+    () => (campaignPlayers ?? []).map((item) => ({ item, norm: normalizeForSearch(item.name) })),
+    [campaignPlayers],
+  );
   const [isHidden, setIsHidden] = useState(false);
   const [rowQuantities, setRowQuantities] = useState<Record<string, number>>({});
   const [manualOpen, setManualOpen] = useState(defaultManualOpen);
@@ -249,14 +262,16 @@ export function MonsterSearchPanel({
         if (!cancelled) {
           // Build a LOCAL Fuse instance so the SRD store's global index
           // rebuild (Phase 1 → 2024 only) doesn't overwrite our data.
+          // S3.3 — mirror srd-search MONSTER_OPTIONS: ignoreDiacritics + 0.4
           fuseRef.current = new Fuse(monsters, {
             keys: [
               { name: "name", weight: 0.5 },
               { name: "type", weight: 0.3 },
               { name: "cr", weight: 0.2 },
             ],
-            threshold: 0.35,
+            threshold: 0.4,
             ignoreLocation: true,
+            ignoreDiacritics: true,
             includeScore: true,
             minMatchCharLength: 2,
           });
@@ -295,8 +310,8 @@ export function MonsterSearchPanel({
   const maybeEmitSearchMissed = useCallback(() => {
     const q = query.trim();
     if (q.length < 2 || isLoading) return;
-    const playerMatch =
-      campaignPlayers?.some((p) => p.name.toLowerCase().includes(q.toLowerCase())) ?? false;
+    const playerNeedle = normalizeForSearch(q);
+    const playerMatch = campaignPlayersHaystack.some((h) => h.norm.includes(playerNeedle));
     if (results.length !== 0 || playerMatch) return;
     if (lastEmittedQueryRef.current === q) return;
     lastEmittedQueryRef.current = q;
@@ -306,7 +321,7 @@ export function MonsterSearchPanel({
       result_count_zero: true,
       surface: "monster_search_panel",
     });
-  }, [query, results, isLoading, locale, campaignPlayers]);
+  }, [query, results, isLoading, locale, campaignPlayersHaystack]);
 
   // Trigger A — 2s idle after last query change.
   useEffect(() => {
@@ -332,17 +347,22 @@ export function MonsterSearchPanel({
     }
 
     const timer = setTimeout(() => {
-      const q = query.trim().toLowerCase();
+      const rawQuery = query.trim();
+      const q = normalizeForSearch(rawQuery);
 
       let base: SrdMonster[];
 
       if (sourceFilter === "mad") {
-        // MAD-only: simple name search (no Fuse)
-        base = q ? madMonsters.filter((m) => m.name.toLowerCase().includes(q)) : madMonsters;
+        // MAD-only: simple accent-insensitive name search (no Fuse).
+        // S3.3 β' review fix: use memoized haystack so ~357 MAD names
+        // don't re-NFD on every keystroke.
+        base = q
+          ? madMonstersHaystack.filter((h) => h.norm.includes(q)).map((h) => h.item)
+          : madMonsters;
       } else {
         // 5e.tools sources: use local Fuse when there's a query
-        base = q && fuseRef.current
-          ? fuseRef.current.search(query).map((r) => r.item)
+        base = rawQuery && fuseRef.current
+          ? fuseRef.current.search(rawQuery).map((r) => r.item)
           : allMonsters;
 
         if (sourceFilter === "srd") {
@@ -350,10 +370,10 @@ export function MonsterSearchPanel({
         } else if (sourceFilter === "complete") {
           // all 5e.tools — no extra filter
         } else {
-          // "all" = SRD + MAD
+          // "all" = SRD + MAD — use memoized MAD haystack (see comment above)
           base = base.filter((m) => m.is_srd !== false);
           const madMatches = q
-            ? madMonsters.filter((m) => m.name.toLowerCase().includes(q))
+            ? madMonstersHaystack.filter((h) => h.norm.includes(q)).map((h) => h.item)
             : madMonsters;
           base = [...base, ...madMatches];
         }
@@ -374,11 +394,11 @@ export function MonsterSearchPanel({
         });
       }
 
-      setResults(base.slice(0, q ? 8 : 20));
+      setResults(base.slice(0, rawQuery ? 8 : 20));
       setActiveIndex(-1);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [query, rulesetVersion, allMonsters, madMonsters, sourceFilter, isLoading, crMin, crMax, selectedTypes, shouldShowResults]);
+  }, [query, rulesetVersion, allMonsters, madMonsters, madMonstersHaystack, sourceFilter, isLoading, crMin, crMax, selectedTypes, shouldShowResults]);
 
   const handleSelect = useCallback(
     (monster: SrdMonster) => {
@@ -457,9 +477,14 @@ export function MonsterSearchPanel({
     }
   }, [t]);
 
-  // Filter campaign players by query
+  // Filter campaign players by query (accent-insensitive)
   const matchedPlayers = query.trim() && campaignPlayers
-    ? campaignPlayers.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()))
+    ? (() => {
+        const needle = normalizeForSearch(query);
+        return needle
+          ? campaignPlayers.filter((p) => normalizeForSearch(p.name).includes(needle))
+          : [];
+      })()
     : [];
 
   const handleManualSubmit = () => {
