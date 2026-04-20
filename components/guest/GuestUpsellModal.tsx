@@ -26,6 +26,14 @@ interface GuestUpsellModalProps {
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
+/**
+ * @deprecated Replaced by {@link RecapCtaCard} + {@link GuestRecapFlow} in
+ * Epic 03 Wave 3a (2026-04-20). Kept for fallback compatibility in case the
+ * new AuthModal-based flow fails to open (e.g. hydration error). Planned
+ * removal in v4 after 90 days of `conversion:*` analytics data has stabilized
+ * (target: 2026-07-20). Do not add new call sites — consume `GuestRecapFlow`
+ * directly instead.
+ */
 export function GuestUpsellModal({ isOpen, onClose, trigger, redirectTo }: GuestUpsellModalProps) {
   const t = useTranslations("guest");
   const tc = useTranslations("common");
