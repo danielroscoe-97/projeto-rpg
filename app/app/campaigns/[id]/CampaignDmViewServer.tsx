@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
-import { CampaignStatsBar } from '@/components/campaign/CampaignStatsBar'
 import { aggregateCampaignStats } from '@/lib/utils/campaign-stats'
 import { getCampaignMembers } from '@/lib/supabase/campaign-membership'
+import { getCampaignRecentActivity } from '@/lib/supabase/campaign-briefing'
 import { getSrdMonsters, toSlug } from '@/lib/srd/srd-data-server'
+import { CampaignBriefing } from '@/components/campaign/CampaignBriefing'
 import { CampaignHero } from './CampaignHero'
-import { CampaignGrid } from './CampaignGrid'
 import { CampaignOnboardingChecklist } from '@/components/campaign/CampaignOnboardingChecklist'
 import { CampaignFocusView } from './CampaignFocusView'
 import { CampaignHeroCompact } from '@/components/campaign/CampaignHeroCompact'
@@ -51,6 +51,7 @@ export async function CampaignDmViewServer({
     { count: questCount },
     { data: nextPlannedSessionData },
     { data: campaignSettingsData },
+    recentActivity,
   ] = await Promise.all([
     supabase
       .from('player_characters')
@@ -111,6 +112,7 @@ export async function CampaignDmViewServer({
       .select('onboarding_completed')
       .eq('campaign_id', campaignId)
       .maybeSingle(),
+    getCampaignRecentActivity(supabase, campaignId, 5),
   ])
 
   const onboardingCompleted = campaignSettingsData?.onboarding_completed ?? false
@@ -120,10 +122,11 @@ export async function CampaignDmViewServer({
     .filter(m => m.role === 'player' && m.email)
     .map(m => m.email)
 
-  // Finished encounters + campaign reports in parallel — both depend on results above
-  // but are independent from each other, so batch into one wave.
+  // Finished encounters + campaign reports + active-encounter lookup in parallel —
+  // all depend on results above but are independent from each other.
   const sessionIds = (dmSessions ?? []).map(s => s.id)
-  const [finishedEncounterRes, campaignReportsRes] = await Promise.all([
+  const activeSessionId = dmActiveSession?.id ?? null
+  const [finishedEncounterRes, campaignReportsRes, activeEncounterRes] = await Promise.all([
     sessionIds.length > 0
       ? supabase
           .from('encounters')
@@ -135,10 +138,26 @@ export async function CampaignDmViewServer({
       .from('combat_reports')
       .select('report_data')
       .eq('campaign_id', campaignId),
+    activeSessionId
+      ? supabase
+          .from('encounters')
+          .select('id, round_number, name')
+          .eq('session_id', activeSessionId)
+          .eq('is_active', true)
+          .limit(1)
+          .maybeSingle()
+      : Promise.resolve({ data: null } as const),
   ])
 
   const finishedEncounterCount = finishedEncounterRes.count ?? 0
   const campaignStats = aggregateCampaignStats(campaignReportsRes.data ?? [])
+  const activeEncounter = activeEncounterRes.data
+    ? {
+        id: activeEncounterRes.data.id,
+        round_number: activeEncounterRes.data.round_number ?? null,
+        name: activeEncounterRes.data.name ?? null,
+      }
+    : null
 
   // SRD monsters for encounter builder (DM only, loaded from local bundle — fast, no await)
   const srdMonsters = isOwner ? getSrdMonsters().map((m) => ({
@@ -176,55 +195,72 @@ export async function CampaignDmViewServer({
     )
   }
 
+  const nextPlannedSession = nextPlannedSessionData
+    ? {
+        id: nextPlannedSessionData.id,
+        name: nextPlannedSessionData.name,
+        description: nextPlannedSessionData.description ?? null,
+        scheduled_for: nextPlannedSessionData.scheduled_for ?? null,
+        session_number: nextPlannedSessionData.session_number ?? null,
+        status: (nextPlannedSessionData.status as "planned") ?? "planned",
+      }
+    : null
+
   return (
     <div className="flex gap-6">
       {/* Main content */}
       <div className="flex-1 min-w-0 space-y-8">
-        <CampaignHero
-          campaignId={campaignId}
-          campaignName={campaignName}
-          userId={userId}
-          characters={characters ?? []}
-          playerEmails={playerEmails}
-          playerCount={playerCount ?? 0}
-          sessionCount={sessionCount ?? 0}
-          questCount={questCount ?? 0}
-          finishedEncounterCount={finishedEncounterCount}
-          activeSessionId={dmActiveSession?.id ?? null}
-          activeSessionName={dmActiveSession?.name ?? null}
-          lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
-          nextPlannedSession={nextPlannedSessionData ? {
-            id: nextPlannedSessionData.id,
-            name: nextPlannedSessionData.name,
-            description: nextPlannedSessionData.description ?? null,
-            scheduled_for: nextPlannedSessionData.scheduled_for ?? null,
-            session_number: nextPlannedSessionData.session_number ?? null,
-            status: (nextPlannedSessionData.status as "planned") ?? "planned",
-          } : null}
-          noteCount={noteCount ?? 0}
-          npcCount={npcCount ?? 0}
-        />
-        <CampaignStatsBar stats={campaignStats} />
         {!onboardingCompleted ? (
-          <CampaignOnboardingChecklist
+          <>
+            <CampaignHero
+              campaignId={campaignId}
+              campaignName={campaignName}
+              userId={userId}
+              characters={characters ?? []}
+              playerEmails={playerEmails}
+              playerCount={playerCount ?? 0}
+              sessionCount={sessionCount ?? 0}
+              questCount={questCount ?? 0}
+              finishedEncounterCount={finishedEncounterCount}
+              activeSessionId={activeSessionId}
+              activeSessionName={dmActiveSession?.name ?? null}
+              lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
+              nextPlannedSession={nextPlannedSession}
+              noteCount={noteCount ?? 0}
+              npcCount={npcCount ?? 0}
+            />
+            <CampaignOnboardingChecklist
+              campaignId={campaignId}
+              campaignName={campaignName}
+              playerEmails={playerEmails}
+              activeSessionId={activeSessionId}
+              playerCount={playerCount ?? 0}
+              encounterCount={finishedEncounterCount}
+              sessionCount={sessionCount ?? 0}
+            />
+          </>
+        ) : (
+          <CampaignBriefing
             campaignId={campaignId}
             campaignName={campaignName}
+            userId={userId}
+            characters={characters ?? []}
             playerEmails={playerEmails}
-            activeSessionId={dmActiveSession?.id ?? null}
             playerCount={playerCount ?? 0}
-            encounterCount={finishedEncounterCount}
             sessionCount={sessionCount ?? 0}
-          />
-        ) : (
-          <CampaignGrid
-            isOwner={isOwner}
-            playerCount={playerCount ?? 0}
+            questCount={questCount ?? 0}
+            finishedEncounterCount={finishedEncounterCount}
             npcCount={npcCount ?? 0}
             locationCount={locationCount ?? 0}
             factionCount={factionCount ?? 0}
             noteCount={noteCount ?? 0}
-            questCount={questCount ?? 0}
-            finishedEncounterCount={finishedEncounterCount}
+            activeSessionId={activeSessionId}
+            activeSessionName={dmActiveSession?.name ?? null}
+            activeEncounter={activeEncounter}
+            nextPlannedSession={nextPlannedSession}
+            lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
+            recentActivity={recentActivity}
+            campaignStats={campaignStats}
           />
         )}
       </div>
