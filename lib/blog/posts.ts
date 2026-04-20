@@ -1,3 +1,26 @@
+import type { ComponentType } from "react";
+import BlogPost1 from "@/components/blog/posts/post-01-como-usar-combat-tracker-dnd-5e";
+import BlogPost2 from "@/components/blog/posts/post-02-ferramentas-essenciais-mestre-dnd-5e";
+import BlogPost3 from "@/components/blog/posts/post-03-combat-tracker-vs-vtt-diferenca";
+import BlogPost4 from "@/components/blog/posts/post-04-guia-condicoes-dnd-5e";
+import BlogPost5 from "@/components/blog/posts/post-05-como-agilizar-combate-dnd-5e";
+import BlogPost6 from "@/components/blog/posts/post-06-como-usar-pocket-dm-tutorial";
+import BlogPost7 from "@/components/blog/posts/post-07-como-montar-encontro-balanceado-dnd-5e";
+import BlogPost8 from "@/components/blog/posts/post-08-guia-challenge-rating-dnd-5e";
+import BlogPost9 from "@/components/blog/posts/post-09-melhores-monstros-dnd-5e";
+import BlogPost10 from "@/components/blog/posts/post-10-como-mestrar-dnd-primeira-vez";
+import BlogPost11 from "@/components/blog/posts/post-11-musica-ambiente-para-rpg";
+import BlogPost12 from "@/components/blog/posts/post-12-teatro-da-mente-vs-grid-dnd-5e";
+import BlogPost13 from "@/components/blog/posts/post-13-build-half-elf-order-cleric-divine-soul-sorcerer";
+import BlogPost14 from "@/components/blog/posts/post-14-build-half-elf-order-cleric-divine-soul-sorcerer-en";
+import BlogPost15 from "@/components/blog/posts/post-15-diario-de-aventura";
+import BlogPost16 from "@/components/blog/posts/post-16-guia-mestre-eficaz-combate-dnd-5e";
+import BlogPost17 from "@/components/blog/posts/post-17-como-gerenciar-hp-dnd-5e";
+import BlogPost18 from "@/components/blog/posts/post-18-7-erros-mestre-combate-dnd";
+import BlogPost19 from "@/components/blog/posts/post-19-iniciativa-dnd-5e-regras-variantes";
+import BlogPost20 from "@/components/blog/posts/post-20-best-initiative-tracker-dnd-5e";
+import BlogPost21 from "@/components/blog/posts/post-21-best-initiative-tracker-dnd-5e-en";
+
 export type BlogCategory = "tutorial" | "guia" | "lista" | "comparativo" | "build" | "devlog";
 
 export const BLOG_CATEGORIES: Record<BlogCategory, string> = {
@@ -20,6 +43,7 @@ export interface BlogPost {
   category: BlogCategory;
   pinned?: boolean;
   image?: string;
+  component: ComponentType;
 }
 
 export const BLOG_POSTS: BlogPost[] = [
@@ -44,6 +68,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "devlog",
     pinned: true,
     image: "/art/blog/heroes-v2/diario-de-aventura.png",
+    component: BlogPost15,
   },
   {
     slug: "como-usar-combat-tracker-dnd-5e",
@@ -62,6 +87,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Como Usar um Combat Tracker na Mesa de D&D 5e | Pocket DM",
     category: "tutorial",
     image: "/art/blog/heroes-v2/combat-tracker.png",
+    component: BlogPost1,
   },
   {
     slug: "ferramentas-essenciais-mestre-dnd-5e",
@@ -80,6 +106,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "5 Ferramentas Essenciais para Mestres de D&D 5e | Pocket DM",
     category: "lista",
     image: "/art/blog/heroes-v2/5-ferramentas.png",
+    component: BlogPost2,
   },
   {
     slug: "combat-tracker-vs-vtt-diferenca",
@@ -98,6 +125,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Combat Tracker vs VTT — Qual a Diferença? | Pocket DM",
     category: "comparativo",
     image: "/art/blog/heroes-v2/tracker-vs-vtt.png",
+    component: BlogPost3,
   },
   {
     slug: "guia-condicoes-dnd-5e",
@@ -117,6 +145,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Guia Completo de Condições D&D 5e | Pocket DM",
     category: "guia",
     image: "/art/blog/heroes-v2/condicoes.png",
+    component: BlogPost4,
   },
   {
     slug: "como-agilizar-combate-dnd-5e",
@@ -135,6 +164,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Como Agilizar o Combate no D&D 5e | Pocket DM",
     category: "tutorial",
     image: "/art/blog/heroes-v2/agilizar-combate.png",
+    component: BlogPost5,
   },
   {
     slug: "como-usar-pocket-dm-tutorial",
@@ -155,6 +185,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Como Usar o Pocket DM — Tutorial Completo | Pocket DM",
     category: "tutorial",
     image: "/art/blog/heroes-v2/tutorial-pocket-dm.png",
+    component: BlogPost6,
   },
   {
     slug: "como-montar-encontro-balanceado-dnd-5e",
@@ -177,6 +208,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Como Montar um Encontro Balanceado no D&D 5e | Pocket DM",
     category: "tutorial",
     image: "/art/blog/heroes-v2/encounter-building.png",
+    component: BlogPost7,
   },
   {
     slug: "como-mestrar-dnd-primeira-vez",
@@ -198,6 +230,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Como Mestrar D&D pela Primeira Vez — Guia Completo | Pocket DM",
     category: "tutorial",
     image: "/art/blog/heroes-v2/first-time-dm.png",
+    component: BlogPost10,
   },
   {
     slug: "musica-ambiente-para-rpg",
@@ -220,6 +253,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Música Ambiente para RPG — Trilha Sonora para Cada Cena | Pocket DM",
     category: "guia",
     image: "/art/blog/heroes-v2/ambient-music.png",
+    component: BlogPost11,
   },
   {
     slug: "melhores-monstros-dnd-5e",
@@ -242,6 +276,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "10 Monstros que Todo Mestre de D&D Deveria Usar | Pocket DM",
     category: "lista",
     image: "/art/blog/heroes-v2/melhores-monstros.png",
+    component: BlogPost9,
   },
   {
     slug: "guia-challenge-rating-dnd-5e",
@@ -264,6 +299,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Guia de Challenge Rating — Como Calcular a Dificuldade | Pocket DM",
     category: "guia",
     image: "/art/blog/heroes-v2/challenge-rating.png",
+    component: BlogPost8,
   },
   {
     slug: "teatro-da-mente-vs-grid-dnd-5e",
@@ -285,6 +321,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Teatro da Mente vs Grid — Qual Estilo de Combate? | Pocket DM",
     category: "comparativo",
     image: "/art/blog/heroes-v2/theater-vs-grid.png",
+    component: BlogPost12,
   },
   {
     slug: "build-half-elf-order-cleric-divine-soul-sorcerer",
@@ -310,6 +347,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Build de Suporte Nível 10 — Clérigo da Ordem / Feiticeiro de Alma Divina | Pocket DM",
     category: "build",
     image: "/art/blog/heroes-v2/cleric-sorcerer-build.png",
+    component: BlogPost13,
   },
   {
     slug: "build-half-elf-order-cleric-divine-soul-sorcerer-en",
@@ -335,6 +373,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Half-Elf Order Cleric / Divine Soul Sorcerer — Level 10 Build | Pocket DM",
     category: "build",
     image: "/art/blog/heroes-v2/cleric-sorcerer-build-en.png",
+    component: BlogPost14,
   },
   {
     slug: "guia-mestre-eficaz-combate-dnd-5e",
@@ -355,6 +394,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Guia do Mestre Eficaz no Combate — E-book Gratuito | Pocket DM",
     category: "guia",
     image: "/art/blog/heroes-v2/ebook-guia-mestre-eficaz.png",
+    component: BlogPost16,
   },
   {
     slug: "como-gerenciar-hp-dnd-5e",
@@ -372,6 +412,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Como Gerenciar HP no D&D 5e sem Planilha | Pocket DM",
     category: "tutorial",
     image: "/art/blog/heroes-v2/gerenciar-hp.png",
+    component: BlogPost17,
   },
   {
     slug: "7-erros-mestre-combate-dnd",
@@ -389,6 +430,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "7 Erros que Mestres Cometem no Combate de D&D | Pocket DM",
     category: "lista",
     image: "/art/blog/heroes-v2/7-erros-combate.png",
+    component: BlogPost18,
   },
   {
     slug: "iniciativa-dnd-5e-regras-variantes",
@@ -409,6 +451,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Iniciativa D&D 5e: Regras, Variantes e Como Automatizar | Pocket DM",
     category: "guia",
     image: "/art/blog/heroes-v2/iniciativa.png",
+    component: BlogPost19,
   },
   {
     slug: "best-initiative-tracker-dnd-5e",
@@ -432,6 +475,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "Best Free D&D 5e Initiative Tracker — Ditch Paper for Good | Pocket DM",
     category: "comparativo",
     image: "/art/blog/heroes-v2/initiative-tracker.png",
+    component: BlogPost20,
   },
   {
     slug: "best-initiative-tracker-dnd-5e-en",
@@ -455,6 +499,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ogTitle: "The Best Free D&D 5e Initiative Tracker — Ditch Paper for Good | Pocket DM",
     category: "comparativo",
     image: "/art/blog/heroes-v2/initiative-tracker.png",
+    component: BlogPost21,
   },
 ];
 

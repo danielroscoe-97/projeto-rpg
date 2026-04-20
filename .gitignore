@@ -23,6 +23,9 @@
 /.next/
 /out/
 
+# temp workspace for build baselines, parity manifests, scratch files
+/.tmp/
+
 # production
 /build
 

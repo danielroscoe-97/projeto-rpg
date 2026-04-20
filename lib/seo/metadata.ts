@@ -21,12 +21,18 @@ export function buildMetadata({
   path,
   alternatePath,
   locale,
+  ogTitle,
+  ogDescription,
 }: {
   title: string;
   description: string;
   path: string;
   alternatePath?: string;
   locale: Locale;
+  /** Override OG/Twitter title (defaults to `${title} | Pocket DM`). */
+  ogTitle?: string;
+  /** Override OG/Twitter description (defaults to `description`). */
+  ogDescription?: string;
 }): Metadata {
   const canonical = path;
   const ogLocale = locale === "pt-BR" ? "pt_BR" : "en_US";
@@ -34,6 +40,9 @@ export function buildMetadata({
 
   const languages: Record<string, string> = { [locale]: path };
   if (alternatePath) languages[altLocale] = alternatePath;
+
+  const finalOgTitle = ogTitle ?? `${title} | Pocket DM`;
+  const finalOgDesc = ogDescription ?? description;
 
   return {
     title,
@@ -43,16 +52,16 @@ export function buildMetadata({
       languages,
     },
     openGraph: {
-      title: `${title} | Pocket DM`,
-      description,
+      title: finalOgTitle,
+      description: finalOgDesc,
       type: "article",
       url: path,
       locale: ogLocale,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | Pocket DM`,
-      description,
+      title: finalOgTitle,
+      description: finalOgDesc,
     },
   };
 }

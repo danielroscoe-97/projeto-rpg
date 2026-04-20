@@ -16,6 +16,7 @@ import { BLOG_POSTS } from "@/lib/blog/posts";
 import classesData from "@/data/srd/classes-srd.json";
 import subclassesData from "@/data/srd/subclasses-srd.json";
 import { SITE_URL } from "@/lib/seo/site-url";
+import { loadAllHubs } from "@/lib/seo/hub-loader";
 
 // Force static generation so `lastModified` is captured at build time,
 // not at first request (which would happen with dynamic rendering).
@@ -61,9 +62,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/try`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/methodology`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/methodology/spell-tiers`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/guias/bestiario-dnd-5e`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/guias/lista-magias-dnd-5e`, lastModified: BUILD_TIME, changeFrequency: "monthly", priority: 0.8 },
   ];
+
+  // ── Hub pages — JSON-driven via content/hubs/*.json ──────────────
+  // lastModified pulled from each JSON file's mtime so unchanged hubs
+  // don't emit false freshness signals on every deploy.
+  const hubPages: MetadataRoute.Sitemap = loadAllHubs().map((hub) => ({
+    url: `${BASE_URL}${hub.locale === "pt-BR" ? "/guias" : "/guides"}/${hub.slug}`,
+    lastModified: hub._mtime,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
 
   // ── Compendium indexes (EN) ──────────────────────────────────────
   const compendiumEN: MetadataRoute.Sitemap = [
@@ -199,6 +208,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...staticPages,
+    ...hubPages,
     ...compendiumEN,
     ...compendiumPT,
     ...legalPages,
