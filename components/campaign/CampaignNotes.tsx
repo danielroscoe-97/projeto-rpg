@@ -43,6 +43,7 @@ import { NotesListSkeleton } from "@/components/ui/skeletons/NotesListSkeleton";
 import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
 import { NpcTagSelector } from "./NpcTagSelector";
+import { EntityMentionEditor } from "@/components/ui/EntityMentionEditor";
 import { EntityTagSelector } from "./EntityTagSelector";
 import {
   getFolders,
@@ -943,18 +944,14 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                       );
                     })()}
 
-                    <textarea
+                    <EntityMentionEditor
                       value={note.content}
-                      onChange={(e) => {
-                        handleFieldChange(note.id, "content", e.target.value);
-                        const el = e.target;
-                        el.style.height = "auto";
-                        el.style.height = `${Math.min(el.scrollHeight, 240)}px`;
-                      }}
+                      onChange={(next) =>
+                        handleFieldChange(note.id, "content", next)
+                      }
                       placeholder={t("content_placeholder")}
+                      campaignId={campaignId}
                       rows={3}
-                      className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm"
-                      style={{ minHeight: "4.5rem", maxHeight: "15rem" }}
                       data-testid={`note-content-${note.id}`}
                     />
 
