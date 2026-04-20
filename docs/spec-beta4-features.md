@@ -1096,6 +1096,7 @@ export function useFavorites(kind: "monster" | "item" | "condition") {
   - Click toggle. Touch target 32×32.
   - Aria: `aria-pressed={isFavorite}`, `aria-label="Favoritar {name}"`
 - **Combat quick access** — no CombatantSetupRow/AddCombatantForm, adicionar toggle "Ver só favoritos" no topo do picker
+  - **⚠️ DEFERRED pós-beta-4** (commit `205c93ee` integration): `MonsterSearchPanel.tsx` (~1035 linhas) compõe Fuse + source filter (all/srd/complete/mad) + CR range + type filter + `results.slice(0, q ? 8 : 20)`. Inserir intersecção com favoritos sem quebrar keyboard-nav + MAD branch + slice indexing exige refactor dedicado. Shipa na próxima iteração com testes focados nas interações slice/type/CR.
 
 ### Parity
 

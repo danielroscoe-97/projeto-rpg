@@ -115,6 +115,17 @@ export function PlayerCompendiumBrowser({
     favoritesDefaultAppliedRef.current = true;
   }, [open, favoritesFlagOn, totalFavoritesCount]);
 
+  // S5.2 review fix: reciprocal effect — if the flag flips OFF mid-session
+  // (runtime window.__RPG_FLAGS__ override in staging/tests) while the user
+  // is on the favorites tab, the tab entry disappears and the panel guard
+  // `favoritesFlagOn && ...` hides the list, leaving a blank surface. Reset
+  // to "all" so there's always a visible tab selected.
+  useEffect(() => {
+    if (!favoritesFlagOn && activeTab === "favorites") {
+      setActiveTab("all");
+    }
+  }, [favoritesFlagOn, activeTab]);
+
   // Spells data
   const allSpells = useSrdStore((s) => s.spells);
   const isStoreLoading = useSrdStore((s) => s.is_loading);
