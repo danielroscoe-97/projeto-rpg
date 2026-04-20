@@ -34,6 +34,11 @@ export function FavoriteStar({ kind, slug, name, className, compact = false, onT
 
   // Hard gate — flag OFF means star must not be visible.
   if (!isFeatureFlagEnabled("ff_favorites_v1")) return null;
+  // Review fix #3: guard degenerate slug (e.g. monster with empty name) so we
+  // never poison the store with `kind:monster:""` entries. The row-level star
+  // layers aren't the source of truth for slug; the card is — so we defend
+  // here rather than require every caller to pre-check.
+  if (!slug) return null;
 
   const favorited = isFavorite(slug);
   const label = favorited ? t("unfavorite_aria", { name }) : t("favorite_aria", { name });
