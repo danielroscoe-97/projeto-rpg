@@ -93,6 +93,7 @@ async function seedFactionScenario(userId: string, state: SetupState): Promise<v
     .insert(
       Array.from({ length: 5 }, (_, i) => ({
         campaign_id: campaign.id,
+        user_id: userId,
         name: `NPC${i + 1}`,
         stats: { hp: 20 + i, ac: 12 },
         is_visible_to_players: true,

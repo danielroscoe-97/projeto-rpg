@@ -12,9 +12,14 @@
  * keyed by a stable Sonner id.
  *
  * Invariants:
- *   - Undo is atomic: either all queued items are restored, or none are.
- *   - Page unload best-effort flushes pending commits via pagehide.
+ *   - Undo is best-effort independent: per-item onUndo callbacks run in a loop
+ *     and a throwing callback does not block others. Not a transactional undo.
+ *   - Page unload attempts to flush pending commits via pagehide AND
+ *     visibilitychange (mobile Safari fallback). Browsers may cancel
+ *     in-flight fetches on unload, so persistence is not guaranteed — the
+ *     5s TTL is tuned so most commits land before unload in practice.
  *   - Re-scheduling the same edgeId is idempotent (last restore-fn wins).
+ *   - Undo clicked after flush has started is ignored (no silent re-commit).
  *
  * Not-in-scope (deferred):
  *   - Ctrl+Z keyboard binding — stretch goal, not required for AC-3c-04.
@@ -30,7 +35,7 @@ export interface PendingUnlink {
   /** Primary key of the edge row in campaign_mind_map_edges. */
   edgeId: string;
   /** Caller-provided callback to restore the chip/row in local UI state. */
-  onUndo: () => void;
+  onUndo: () => void | Promise<void>;
 }
 
 const BATCH_TTL_MS = 5_000;
@@ -97,25 +102,51 @@ async function flush(): Promise<void> {
     batch.map((p) => unlinkEntities(p.edgeId)),
   );
 
-  const failed = results.filter((r) => r.status === "rejected").length;
-  if (failed > 0 && currentStrings) {
+  // Self-healing: for any commit failure, invoke the caller's onUndo so the
+  // chip is restored in local UI state. Otherwise the chip would stay hidden
+  // until the next reload (DB still has the edge, so reload resurrects it).
+  const failedIndices: number[] = [];
+  results.forEach((r, i) => {
+    if (r.status === "rejected") {
+      failedIndices.push(i);
+      try {
+        void batch[i]!.onUndo();
+      } catch (err) {
+        console.error(
+          "[use-entity-unlink-undo] restore-on-failure callback threw:",
+          err,
+        );
+      }
+    }
+  });
+  if (failedIndices.length > 0 && currentStrings) {
     toast.error(
-      failed === 1
+      failedIndices.length === 1
         ? currentStrings.errorSingle
-        : currentStrings.errorBatch(failed),
+        : currentStrings.errorBatch(failedIndices.length),
     );
   }
   flushInFlight = false;
 }
 
 async function undoAll(): Promise<void> {
+  // Guard against late undo clicks that fire after the TTL flush already
+  // started committing. Without this guard the user click appears to succeed
+  // (chip never restored, but no error shown) while the server delete
+  // proceeds — silent data loss.
+  if (flushInFlight) {
+    console.warn(
+      "[use-entity-unlink-undo] undo clicked after flush started; ignoring",
+    );
+    return;
+  }
   clearTimer();
   const batch = Array.from(pending.values());
   pending.clear();
   toast.dismiss(BATCH_TOAST_ID);
   for (const item of batch) {
     try {
-      item.onUndo();
+      await item.onUndo();
     } catch (err) {
       console.error("[use-entity-unlink-undo] restore callback failed:", err);
     }
@@ -130,19 +161,32 @@ export function useEntityUnlinkUndo(strings: Strings) {
   currentStrings = strings;
 
   useEffect(() => {
-    const onPageHide = () => {
+    // Best-effort commit on unload. Browsers may cancel in-flight fetches
+    // without keepalive, so persistence here is not guaranteed. Mobile
+    // Safari back/forward-cache is particularly unreliable on pagehide;
+    // visibilitychange → "hidden" fires more consistently, so we listen
+    // to both and de-duplicate via an empty-pending short-circuit.
+    const flushOnHide = () => {
       if (pending.size === 0) return;
       const batch = Array.from(pending.values());
       pending.clear();
       clearTimer();
+      toast.dismiss(BATCH_TOAST_ID);
       batch.forEach((p) => {
         unlinkEntities(p.edgeId).catch(() => {
           // Best-effort — the page is leaving. Cannot surface error.
         });
       });
     };
-    window.addEventListener("pagehide", onPageHide);
-    return () => window.removeEventListener("pagehide", onPageHide);
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flushOnHide();
+    };
+    window.addEventListener("pagehide", flushOnHide);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", flushOnHide);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
 
   const schedule = useCallback(
