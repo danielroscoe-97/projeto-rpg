@@ -264,8 +264,10 @@ export async function CampaignDmViewServer({
           />
         )}
       </div>
-      {/* Wiki-style sidebar index */}
-      <CampaignSidebarIndex isOwner={isOwner} />
+      {/* Wiki-style sidebar index — hidden when new AppSidebar is enabled (it hosts this nav inline) */}
+      {process.env.NEXT_PUBLIC_FEATURE_NEW_SIDEBAR !== "true" && (
+        <CampaignSidebarIndex isOwner={isOwner} />
+      )}
     </div>
   )
 }

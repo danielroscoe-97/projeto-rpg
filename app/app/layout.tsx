@@ -10,7 +10,11 @@ import { LazyOracleWidgets } from "@/components/oracle/LazyOracleWidgets";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { AppSidebarClient } from "@/components/layout/AppSidebarClient";
+import { AppSidebarMain } from "@/components/layout/AppSidebarMain";
 import { BookOpen, Skull, Sparkles, HeartPulse, Backpack, GraduationCap, Star } from "lucide-react";
+
+const NEW_SIDEBAR_ENABLED = process.env.NEXT_PUBLIC_FEATURE_NEW_SIDEBAR === "true";
 
 export default async function AppLayout({
   children,
@@ -44,6 +48,34 @@ export default async function AppLayout({
   ]);
   const isBetaTester =
     !!whitelistRes.data || (!adminRes.error && !!adminRes.data?.is_admin);
+
+  // New sidebar: derive DM access once for the sidebar's DM-only items.
+  let hasDmAccess = false;
+  if (NEW_SIDEBAR_ENABLED) {
+    const [
+      { count: dmMembershipCount },
+      { count: ownedCampaignCount },
+      { data: userRoleData },
+    ] = await Promise.all([
+      supabase
+        .from("campaign_members")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("role", "dm")
+        .eq("status", "active"),
+      supabase
+        .from("campaigns")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id),
+      supabase.from("users").select("role").eq("id", user.id).maybeSingle(),
+    ]);
+    const userDbRole = userRoleData?.role ?? "both";
+    hasDmAccess =
+      (dmMembershipCount ?? 0) > 0 ||
+      (ownedCampaignCount ?? 0) > 0 ||
+      userDbRole === "dm" ||
+      userDbRole === "both";
+  }
 
   // Header = action bar only. Navigation lives in the sidebar.
   // Only Compendium stays here (not duplicated in sidebar).
@@ -114,6 +146,40 @@ export default async function AppLayout({
       ],
     },
   ];
+
+  if (NEW_SIDEBAR_ENABLED) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        {/* Skip navigation — hidden until focused (WCAG 2.4.1) */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-gold focus:text-surface-primary focus:rounded-lg focus:text-sm focus:font-semibold"
+        >
+          {t("skip_content")}
+        </a>
+
+        <AppSidebarClient hasDmAccess={hasDmAccess}>
+          <NotificationBell userId={user.id} />
+        </AppSidebarClient>
+        <SrdInitializer fullData={isBetaTester} />
+        <ConnectionStatus />
+        <ErrorBoundary name="Oracle">
+          <LazyOracleWidgets />
+        </ErrorBoundary>
+        <AppSidebarMain>
+          <ErrorBoundary name="MainContent">{children}</ErrorBoundary>
+        </AppSidebarMain>
+        <footer className="lg:hidden border-t border-white/[0.08] px-6 py-3 flex items-center gap-4 text-xs text-muted-foreground shrink-0">
+          <a href="/legal/attribution" className="hover:text-foreground transition-colors">
+            {t("attribution")}
+          </a>
+          <a href="/legal/privacy" className="hover:text-foreground transition-colors">
+            {t("privacy")}
+          </a>
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

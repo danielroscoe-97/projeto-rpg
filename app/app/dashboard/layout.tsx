@@ -1,6 +1,11 @@
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { DashboardTourProvider } from "@/components/tour/DashboardTourProvider";
+import { DashboardTourHelpButton } from "@/components/tour/DashboardTourHelpButton";
+import { DashboardLoadingScreen } from "@/components/dashboard/DashboardLoadingScreen";
+
+const NEW_SIDEBAR_ENABLED = process.env.NEXT_PUBLIC_FEATURE_NEW_SIDEBAR === "true";
 
 export default async function DashboardRouteLayout({
   children,
@@ -81,6 +86,25 @@ export default async function DashboardRouteLayout({
     isPlayerFirstCampaign = (
       !hasDmAccess &&
       !(onboarding?.dashboard_tour_completed ?? false)
+    );
+  }
+
+  // When the new AppSidebar is active, the dashboard layout is a pass-through:
+  // the sidebar is rendered by app/app/layout.tsx. We keep the tour providers.
+  if (NEW_SIDEBAR_ENABLED) {
+    return (
+      <div data-tour-id="dash-overview">
+        {children}
+        <DashboardTourProvider
+          shouldAutoStart={showDashboardTour || isPlayerFirstCampaign}
+          delayMs={1200}
+          source={tourSource}
+          hasDmAccess={hasDmAccess}
+          isPlayerFirstCampaign={isPlayerFirstCampaign}
+        />
+        <DashboardTourHelpButton />
+        <DashboardLoadingScreen />
+      </div>
     );
   }
 
