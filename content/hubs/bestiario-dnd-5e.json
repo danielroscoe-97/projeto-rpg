@@ -1,0 +1,225 @@
+{
+  "slug": "bestiario-dnd-5e",
+  "locale": "pt-BR",
+  "metaTitle": "Bestiário D&D 5e Completo — 1.122 Monstros com Stat Blocks",
+  "metaDescription": "Guia do bestiário D&D 5e: monstros por CR, por tipo e os icônicos (Tarrasca, Contemplador, Lich, Kraken). 1.122 criaturas do SRD 5.1 + Monster-a-Day com stat blocks completos, grátis.",
+  "ogTitle": "Bestiário D&D 5e — 1.122 Monstros com Stat Blocks | Pocket DM",
+  "ogDescription": "Monstros por CR, por tipo, icônicos. Tarrasca, Contemplador, Lich, Dragões Ancestrais — grátis, SRD 5.1 + Monster-a-Day.",
+  "kicker": "Guia · Bestiário",
+  "h1": "Bestiário D&D 5e Completo — 1.122 Monstros com Stat Blocks",
+  "lead": {
+    "text": "O bestiário de Dungeons & Dragons 5ª Edição é o coração de qualquer campanha. Se você é mestre procurando o monstro certo para o próximo combate, ou jogador curioso sobre a ecologia de um dragão ancião, este guia organiza as 1.122 criaturas disponíveis no Pocket DM por CR, por tipo, e destaca os ícones que todo mestre deveria conhecer. Tudo em português, com stat blocks interativos, rolador de dados e tokens — de graça, sem cadastro."
+  },
+  "introBlocks": [
+    {
+      "label": "O que é o bestiário do SRD 5.1",
+      "paragraphs": [
+        {
+          "text": "O SRD 5.1 (Systems Reference Document) é a versão aberta das regras de D&D 5e, liberada pela Wizards of the Coast sob a licença Creative Commons CC-BY-4.0. Isso significa que qualquer pessoa pode usar, traduzir e distribuir os monstros, magias e regras do SRD — inclusive nós. É por isso que o {{compendium}} do Pocket DM é 100% gratuito e vive online pra sempre.",
+          "links": {
+            "compendium": { "href": "/monstros", "label": "Compêndio de Monstros" }
+          }
+        },
+        {
+          "text": "Além das 419 criaturas do SRD 5.1 (2014) e das 346 criaturas do SRD 5.1 (2024), incluímos as 357 criaturas do Monster-a-Day (parceria com o subreddit r/monsteraday) — também em CC. Total: 1.122 criaturas, todas com descrição completa, ataques, ações lendárias quando aplicável, e traduções revisadas em PT-BR."
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "label": "Monstros por Challenge Rating (CR)",
+      "desc": "Uma das dúvidas mais comuns de mestres novos: qual CR usar pra meu grupo? Aqui vai o atalho — e se quiser afinar o balanceamento depois do combate, vale dar uma olhada na calculadora de encontros baseada em dados de combates reais.",
+      "linkPath": "/monstros",
+      "style": "chip",
+      "items": [
+        { "slug": "goblin", "name": "Goblin" },
+        { "slug": "kobold", "name": "Kobold" },
+        { "slug": "esqueleto", "name": "Esqueleto" },
+        { "slug": "zumbi", "name": "Zumbi" },
+        { "slug": "bandido", "name": "Bandido" },
+        { "slug": "lobo", "name": "Lobo" },
+        { "slug": "hobgoblin", "name": "Hobgoblin" },
+        { "slug": "orc", "name": "Orc" },
+        { "slug": "gnoll", "name": "Gnoll" },
+        { "slug": "aranha-gigante", "name": "Aranha Gigante" },
+        { "slug": "armadura-animada", "name": "Armadura Animada" },
+        { "slug": "urso-coruja", "name": "Urso-Coruja" },
+        { "slug": "cranio-flamejante", "name": "Crânio Flamejante" },
+        { "slug": "troll", "name": "Troll" },
+        { "slug": "gigante-da-colina", "name": "Gigante da Colina" },
+        { "slug": "displacer-besta", "name": "Besta Deslocadora" },
+        { "slug": "dragao-vermelho-jovem", "name": "Dragão Vermelho Jovem" },
+        { "slug": "cubo-gelatinoso", "name": "Cubo Gelatinoso" },
+        { "slug": "manto-sombrio", "name": "Manto Sombrio" },
+        { "slug": "lobisomem", "name": "Lobisomem" },
+        { "slug": "contemplador", "name": "Contemplador (Beholder)" },
+        { "slug": "mente-flayer", "name": "Mind Flayer" },
+        { "slug": "cavaleiro", "name": "Cavaleiro" },
+        { "slug": "harpia", "name": "Harpia" },
+        { "slug": "dragao-vermelho-adulto", "name": "Dragão Vermelho Adulto" },
+        { "slug": "tarrasca", "name": "Tarrasca" },
+        { "slug": "lich", "name": "Lich" },
+        { "slug": "kraken", "name": "Kraken" },
+        { "slug": "arquimago", "name": "Arquimago" },
+        { "slug": "dragao-vermelho-anciao", "name": "Dragão Vermelho Ancião" },
+        { "slug": "dragao-ouro-anciao", "name": "Dragão de Ouro Ancião" }
+      ]
+    },
+    {
+      "anchor": "dragoes",
+      "label": "Dragões",
+      "desc": "De filhotes a anciãos, cromáticos (malignos) ou metálicos (benignos). Os dragões são icônicos do D&D desde a 1ª edição.",
+      "linkPath": "/monstros",
+      "items": [
+        { "slug": "dragao-vermelho-anciao", "name": "Dragão Vermelho Ancião" },
+        { "slug": "dragao-ouro-anciao", "name": "Dragão de Ouro Ancião" },
+        { "slug": "dragao-azul-adulto", "name": "Dragão Azul Adulto" },
+        { "slug": "dragao-verde-adulto", "name": "Dragão Verde Adulto" },
+        { "slug": "dragao-vermelho-jovem", "name": "Dragão Vermelho Jovem" },
+        { "slug": "filhote-dragao-vermelho", "name": "Filhote de Dragão Vermelho" }
+      ]
+    },
+    {
+      "anchor": "mortos-vivos",
+      "label": "Mortos-vivos",
+      "desc": "Esqueletos para encontros iniciais, liches para finais de campanha. Vulneráveis a radiante, imunes a veneno e mental.",
+      "linkPath": "/monstros",
+      "items": [
+        { "slug": "esqueleto", "name": "Esqueleto" },
+        { "slug": "zumbi", "name": "Zumbi" },
+        { "slug": "vampiro", "name": "Vampiro" },
+        { "slug": "lich", "name": "Lich" },
+        { "slug": "fantasma", "name": "Fantasma" },
+        { "slug": "banshee", "name": "Banshee" },
+        { "slug": "aparicao", "name": "Aparição" },
+        { "slug": "espectro-negro", "name": "Espectro Negro" }
+      ]
+    },
+    {
+      "anchor": "humanoides",
+      "label": "Humanóides",
+      "desc": "Inimigos versáteis: goblins, orcs, hobgoblins. Servem para qualquer nível e qualquer tipo de campanha política ou militar.",
+      "linkPath": "/monstros",
+      "items": [
+        { "slug": "goblin", "name": "Goblin" },
+        { "slug": "hobgoblin", "name": "Hobgoblin" },
+        { "slug": "orc", "name": "Orc" },
+        { "slug": "gnoll", "name": "Gnoll" },
+        { "slug": "kobold", "name": "Kobold" },
+        { "slug": "bandido", "name": "Bandido" },
+        { "slug": "cavaleiro", "name": "Cavaleiro" },
+        { "slug": "arquimago", "name": "Arquimago" }
+      ]
+    },
+    {
+      "anchor": "aberracoes",
+      "label": "Aberrações",
+      "desc": "Contempladores, mind flayers — criaturas de outros planos que desafiam a lógica dos elementos. Ótimas para horror cósmico.",
+      "linkPath": "/monstros",
+      "items": [
+        { "slug": "contemplador", "name": "Contemplador" },
+        { "slug": "mente-flayer", "name": "Mind Flayer" },
+        { "slug": "kraken", "name": "Kraken" },
+        { "slug": "cubo-gelatinoso", "name": "Cubo Gelatinoso" }
+      ]
+    },
+    {
+      "anchor": "bestas",
+      "label": "Bestas & Monstruosidades",
+      "desc": "Aranhas gigantes, ursos-coruja, bestas deslocadoras. Encontros aleatórios em florestas e cavernas.",
+      "linkPath": "/monstros",
+      "items": [
+        { "slug": "lobo", "name": "Lobo" },
+        { "slug": "aranha-gigante", "name": "Aranha Gigante" },
+        { "slug": "urso-coruja", "name": "Urso-Coruja" },
+        { "slug": "displacer-besta", "name": "Besta Deslocadora" },
+        { "slug": "harpia", "name": "Harpia" },
+        { "slug": "bestia-da-ferrugem", "name": "Besta da Ferrugem" }
+      ]
+    }
+  ],
+  "iconic": {
+    "label": "Os 6 monstros mais icônicos do D&D",
+    "desc": "Se um dia você quiser fazer o jogador lembrar da campanha pra sempre, coloca uma dessas criaturas na mesa. Não precisa matar ninguém — só a aparição já basta.",
+    "items": [
+      {
+        "slug": "tarrasca",
+        "name": "Tarrasca",
+        "blurb": "O monstro mais icônico do D&D. Criatura apocalíptica de CR 30, capaz de devastar cidades inteiras. Uma só na existência — o ideal para sua campanha de fim de mundo."
+      },
+      {
+        "slug": "contemplador",
+        "name": "Contemplador (Beholder)",
+        "blurb": "Aberração com 10 olhos, cada um lançando uma magia diferente. Obcecado pela própria perfeição, considera todas as outras criaturas abominações."
+      },
+      {
+        "slug": "lich",
+        "name": "Lich",
+        "blurb": "Um mago que derrotou a morte ligando sua alma a um filactério. Imortal, paciente, e sempre tramando algo em dimensões de magia que seus jogadores não imaginam."
+      },
+      {
+        "slug": "mente-flayer",
+        "name": "Mind Flayer (Ilítide)",
+        "blurb": "Aberração psiônica do Subterrâneo. Drena cérebros e tem um Império Illitidiano abaixo da superfície. Inimigo clássico de campanhas cerebrais (trocadilho intencional)."
+      },
+      {
+        "slug": "kraken",
+        "name": "Kraken",
+        "blurb": "Uma das cinco criaturas ancestrais dos oceanos. Lendária, CR 23, ataques de tentáculo e raio. Perfeita para campanhas marítimas."
+      },
+      {
+        "slug": "dragao-vermelho-anciao",
+        "name": "Dragão Vermelho Ancião",
+        "blurb": "O rei dos dragões cromáticos. Ganancioso, arrogante, e dono de um bafo de fogo capaz de torrar uma party em uma única ação."
+      }
+    ]
+  },
+  "closing": [
+    {
+      "label": "Como usar o bestiário no Pocket DM",
+      "paragraphs": [
+        {
+          "text": "O Pocket DM foi desenhado pra tirar o maior atrito do combate: rolar ataques e salvamentos. Quando você coloca um monstro no combat tracker, todas as ações viram botões clicáveis. Um clique = rolagem automática com modificador certo. Dano, salvamento, crítico — tudo lá."
+        },
+        {
+          "text": "Se você nunca usou um tracker antes, o tutorial é rápido: {{tracker}}. E se está montando o próximo encontro, dá uma olhada no guia de {{cr}}.",
+          "links": {
+            "tracker": { "href": "/blog/como-usar-combat-tracker-dnd-5e", "label": "Como usar um combat tracker em D&D 5e" },
+            "cr": { "href": "/blog/guia-challenge-rating-dnd-5e", "label": "Challenge Rating (CR)" }
+          }
+        }
+      ]
+    }
+  ],
+  "internalLinkCluster": {
+    "label": "Mais guias",
+    "links": [
+      { "href": "/magias", "label": "Lista de magias" },
+      { "href": "/itens", "label": "Itens mágicos" },
+      { "href": "/condicoes", "label": "Condições" },
+      { "href": "/antecedentes", "label": "Antecedentes" },
+      { "href": "/racas", "label": "Raças" },
+      { "href": "/classes-pt", "label": "Classes" }
+    ]
+  },
+  "ctaHeadline": "Pronto pra rodar o primeiro combate?",
+  "ctaSub": "Combat Tracker grátis · D&D 5e · sem cadastro",
+  "ctaPrimaryHref": "/try",
+  "ctaPrimaryLabel": "Iniciar Combate",
+  "ctaSecondaryHref": "/monstros",
+  "ctaSecondaryLabel": "Abrir Compêndio",
+  "breadcrumbs": [
+    { "name": "Início", "path": "/" },
+    { "name": "Guias", "path": "/guias/bestiario-dnd-5e" },
+    { "name": "Bestiário D&D 5e", "path": "/guias/bestiario-dnd-5e" }
+  ],
+  "tracked_queries": [
+    "bestiário d&d 5e",
+    "monstros d&d 5e",
+    "lista de monstros dnd",
+    "srd bestiário português",
+    "tarrasca d&d",
+    "contemplador d&d"
+  ]
+}

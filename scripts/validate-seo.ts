@@ -230,3 +230,5 @@ main().catch((err) => {
   console.error(`${YELLOW}Unexpected error:${RESET}`, err);
   process.exit(2);
 });
+
+export {};
