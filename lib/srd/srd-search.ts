@@ -80,7 +80,12 @@ export const ITEM_OPTIONS: IFuseOptions<SrdItem> = {
     { name: "type", weight: 0.2 },
     { name: "rarity", weight: 0.1 },
   ],
-  threshold: 0.4,
+  // S3.3 β' review fix: ITEM baseline was 0.3 (stricter than other configs'
+  // 0.35). Bumping to 0.35 (not 0.4) keeps the diacritic-fold +0.05 nudge
+  // without over-relaxing recall on short item queries. Other configs stay
+  // at 0.4 because their baselines were already 0.35.
+  threshold: 0.35,
+  ignoreLocation: true,
   ignoreDiacritics: true,
   includeScore: true,
   minMatchCharLength: 2,

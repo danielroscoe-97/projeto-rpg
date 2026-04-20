@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { trackEvent } from "@/lib/analytics/track";
 import { usePinnedCardsStore } from "@/lib/stores/pinned-cards-store";
@@ -184,6 +184,18 @@ export function MonsterSearchPanel({
   const [crMax, setCrMax] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [madMonsters, setMadMonsters] = useState<SrdMonster[]>([]);
+  // S3.3 β' review fix: memoize normalized name lookups for MAD monsters +
+  // campaign players so we don't re-NFD on every keystroke. Re-computes only
+  // when the source list identity changes. Shape is `{ item, norm }[]`
+  // mirroring the PlayerCompendiumBrowser pattern from commit 1e5f7383.
+  const madMonstersHaystack = useMemo(
+    () => madMonsters.map((item) => ({ item, norm: normalizeForSearch(item.name) })),
+    [madMonsters],
+  );
+  const campaignPlayersHaystack = useMemo(
+    () => (campaignPlayers ?? []).map((item) => ({ item, norm: normalizeForSearch(item.name) })),
+    [campaignPlayers],
+  );
   const [isHidden, setIsHidden] = useState(false);
   const [rowQuantities, setRowQuantities] = useState<Record<string, number>>({});
   const [manualOpen, setManualOpen] = useState(defaultManualOpen);
@@ -299,8 +311,7 @@ export function MonsterSearchPanel({
     const q = query.trim();
     if (q.length < 2 || isLoading) return;
     const playerNeedle = normalizeForSearch(q);
-    const playerMatch =
-      campaignPlayers?.some((p) => normalizeForSearch(p.name).includes(playerNeedle)) ?? false;
+    const playerMatch = campaignPlayersHaystack.some((h) => h.norm.includes(playerNeedle));
     if (results.length !== 0 || playerMatch) return;
     if (lastEmittedQueryRef.current === q) return;
     lastEmittedQueryRef.current = q;
@@ -310,7 +321,7 @@ export function MonsterSearchPanel({
       result_count_zero: true,
       surface: "monster_search_panel",
     });
-  }, [query, results, isLoading, locale, campaignPlayers]);
+  }, [query, results, isLoading, locale, campaignPlayersHaystack]);
 
   // Trigger A — 2s idle after last query change.
   useEffect(() => {
@@ -342,9 +353,11 @@ export function MonsterSearchPanel({
       let base: SrdMonster[];
 
       if (sourceFilter === "mad") {
-        // MAD-only: simple accent-insensitive name search (no Fuse)
+        // MAD-only: simple accent-insensitive name search (no Fuse).
+        // S3.3 β' review fix: use memoized haystack so ~357 MAD names
+        // don't re-NFD on every keystroke.
         base = q
-          ? madMonsters.filter((m) => normalizeForSearch(m.name).includes(q))
+          ? madMonstersHaystack.filter((h) => h.norm.includes(q)).map((h) => h.item)
           : madMonsters;
       } else {
         // 5e.tools sources: use local Fuse when there's a query
@@ -357,10 +370,10 @@ export function MonsterSearchPanel({
         } else if (sourceFilter === "complete") {
           // all 5e.tools — no extra filter
         } else {
-          // "all" = SRD + MAD
+          // "all" = SRD + MAD — use memoized MAD haystack (see comment above)
           base = base.filter((m) => m.is_srd !== false);
           const madMatches = q
-            ? madMonsters.filter((m) => normalizeForSearch(m.name).includes(q))
+            ? madMonstersHaystack.filter((h) => h.norm.includes(q)).map((h) => h.item)
             : madMonsters;
           base = [...base, ...madMatches];
         }
@@ -385,7 +398,7 @@ export function MonsterSearchPanel({
       setActiveIndex(-1);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [query, rulesetVersion, allMonsters, madMonsters, sourceFilter, isLoading, crMin, crMax, selectedTypes, shouldShowResults]);
+  }, [query, rulesetVersion, allMonsters, madMonsters, madMonstersHaystack, sourceFilter, isLoading, crMin, crMax, selectedTypes, shouldShowResults]);
 
   const handleSelect = useCallback(
     (monster: SrdMonster) => {
