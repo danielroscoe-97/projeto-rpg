@@ -29,6 +29,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
 import { acceptInviteAction } from "@/app/invite/actions";
+import { linkCharacterToCampaign } from "@/lib/identity/link-character-to-campaign";
 import type { InviteState } from "@/lib/identity/detect-invite-state";
 import {
   CharacterPickerModal,
@@ -60,6 +61,45 @@ export function InviteLanding({ state, token }: InviteLandingProps) {
       const invite = state.invite;
       setIsSubmitting(true);
       try {
+        // Story 02-H: Cenário 5 — Returning Player Invite. When the user is
+        // on the `auth-with-invite-pending` branch and picks one of their own
+        // standalone characters ("picked"), we use the dedicated
+        // `linkCharacterToCampaign` action which runs an atomic UPDATE with a
+        // concurrency guard (2 invites in-flight → only 1 succeeds). The
+        // other modes ("claimed", "created") still use acceptInviteAction.
+        if (
+          state.state === "auth-with-invite-pending" &&
+          result.mode === "picked"
+        ) {
+          const linkRes = await linkCharacterToCampaign({
+            characterId: result.characterId,
+            campaignId: invite.campaignId,
+            inviteId: invite.id,
+            token,
+          });
+          if (!linkRes.ok) {
+            if (linkRes.code === "character_not_available") {
+              // The character was already linked to another campaign by a
+              // concurrent invite. Re-query the picker so the user can pick
+              // another one (full reload is the simplest re-query).
+              toast.error(tCampaign("invite_claim_already_taken"));
+              window.location.reload();
+              return;
+            }
+            // Any other failure surfaces a generic error.
+            toast.error(tCampaign("invite_error"));
+            captureError(new Error(linkRes.message), {
+              component: "InviteLanding",
+              action: "linkCharacterToCampaign",
+              category: "network",
+            });
+            return;
+          }
+          toast.success(tCampaign("invite_accepted"));
+          router.push("/app/dashboard");
+          return;
+        }
+
         if (result.mode === "claimed") {
           await acceptInviteAction({
             inviteId: invite.id,
