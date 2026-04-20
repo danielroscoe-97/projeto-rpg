@@ -28,6 +28,7 @@ import { captureError } from "@/lib/errors/capture";
 import {
   upsertEntityLink,
   unlinkEntities,
+  listEntityLinks,
 } from "@/lib/supabase/entity-links";
 import { selectCounterpartyIds, findEdgeId } from "@/lib/types/entity-links";
 import type { CampaignNpc, CampaignNpcInsert } from "@/lib/types/campaign-npcs";
@@ -194,12 +195,35 @@ export function NpcList({ campaignId }: NpcListProps) {
    * Idempotent — safe to call after addNpc even when no edges change.
    */
   const syncNpcEdges = useCallback(
-    async (npcId: string, previousFactionIds: string[], extras: NpcFormExtras) => {
+    async (npcId: string, _previousFactionIds: string[], extras: NpcFormExtras) => {
+      // Reconcile against a FRESH read of this NPC's edges, not the cached
+      // `edges` snapshot from the list hook. The cached snapshot can be stale
+      // if the user saves rapidly or if another tab mutated the graph —
+      // diffing against stale data produces orphan or duplicate rows.
+      // `_previousFactionIds` is kept in the signature for API stability but
+      // is no longer used for diffing.
+      void _previousFactionIds;
+
+      let currentEdges: Awaited<ReturnType<typeof listEntityLinks>> = [];
+      try {
+        currentEdges = await listEntityLinks(campaignId, {
+          type: "npc",
+          id: npcId,
+        });
+      } catch (err) {
+        captureError(err, {
+          component: "NpcList",
+          action: "syncNpcEdges.fetchFresh",
+          category: "network",
+        });
+        return;
+      }
+
       const tasks: Promise<unknown>[] = [];
 
       // ----- Morada (lives_in → location) -----
       const existingMorada = selectCounterpartyIds(
-        edges,
+        currentEdges,
         { type: "npc", id: npcId },
         {
           direction: "outgoing",
@@ -221,7 +245,7 @@ export function NpcList({ campaignId }: NpcListProps) {
         }
         if (existingMorada) {
           const staleId = findEdgeId(
-            edges,
+            currentEdges,
             { type: "npc", id: npcId },
             { type: "location", id: existingMorada },
             "lives_in",
@@ -231,8 +255,17 @@ export function NpcList({ campaignId }: NpcListProps) {
       }
 
       // ----- Facções (member_of → faction) -----
+      const currentFactionIds = selectCounterpartyIds(
+        currentEdges,
+        { type: "npc", id: npcId },
+        {
+          direction: "outgoing",
+          counterpartyType: "faction",
+          relationship: "member_of",
+        },
+      );
       const targetFactions = new Set(extras.factionIds);
-      const currentFactions = new Set(previousFactionIds);
+      const currentFactions = new Set(currentFactionIds);
 
       for (const factionId of targetFactions) {
         if (!currentFactions.has(factionId)) {
@@ -249,7 +282,7 @@ export function NpcList({ campaignId }: NpcListProps) {
       for (const factionId of currentFactions) {
         if (!targetFactions.has(factionId)) {
           const staleId = findEdgeId(
-            edges,
+            currentEdges,
             { type: "npc", id: npcId },
             { type: "faction", id: factionId },
             "member_of",
@@ -259,11 +292,23 @@ export function NpcList({ campaignId }: NpcListProps) {
       }
 
       if (tasks.length > 0) {
-        await Promise.all(tasks);
+        // Use allSettled so a single failure doesn't swallow the other
+        // successes — always refetch the campaign snapshot so the list
+        // reflects whatever landed, and surface per-task failures.
+        const results = await Promise.allSettled(tasks);
+        for (const r of results) {
+          if (r.status === "rejected") {
+            captureError(r.reason, {
+              component: "NpcList",
+              action: "syncNpcEdges.taskFailed",
+              category: "network",
+            });
+          }
+        }
         await refetchEdges();
       }
     },
-    [campaignId, edges, refetchEdges],
+    [campaignId, refetchEdges],
   );
 
   const handleCreate = useCallback(

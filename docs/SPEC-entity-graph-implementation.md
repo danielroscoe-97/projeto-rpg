@@ -136,7 +136,16 @@ COMMENT ON TABLE note_npc_links IS
   'LEGACY: superseded by campaign_mind_map_edges (source_type=note, target_type=npc, relationship=mentions) after mig 153. To be dropped in a later migration after 1 sprint of co-existence.';
 ```
 
-> **Não dropar** `note_npc_links` nesta sprint. Drop vira mig 154 em sprint posterior.
+> **Não dropar** `note_npc_links` nesta sprint. Drop vira mig futura em sprint posterior.
+
+### mig 154 — `154_entity_graph_scope_guard_tighten.sql` (security hardening)
+
+Adicionada após review adversarial (2026-04-20) — fecha dois defeitos latentes em `entity_belongs_to_campaign` (mig 147):
+
+1. Unknown entity types (`session`/`encounter`/`player`/`bag_item`) agora retornam **FALSE** (fail-closed) em vez de **TRUE** — tightens attack surface antes de edges de sessão (Fase 3g).
+2. NPCs globais (`campaign_id IS NULL`) agora exigem `user_id = auth.uid()` — impede que DM-A embute NPC de DM-B no próprio grafo.
+
+`CREATE OR REPLACE FUNCTION` — idempotente, sem realocação do trigger.
 
 ---
 
@@ -215,7 +224,7 @@ COMMENT ON TABLE note_npc_links IS
 - **AC-3c-01** Ao editar NPC Viktor, seção "Morada" permite selecionar 1 local; salva cria edge `npc→location lives_in`
 - **AC-3c-02** Card do Viktor (fechado) mostra chip "Vive em: Taverna do Pêndulo" em ≤300ms
 - **AC-3c-03** Detalhe de "Taverna do Pêndulo" mostra seção "Habitantes" com Viktor + link clicável
-- **AC-3c-04** Remover link via X no chip é reversível dentro de 5s (toast undo)
+- **AC-3c-04** ~~Remover link via X no chip é reversível dentro de 5s (toast undo)~~ — **DEFERIDO para Onda 6** (UX depth pass). `upsertEntityLink` + `unlinkEntities` são idempotentes, então re-linkar tem custo baixo; toast undo entrará junto com mention editor inline (§7.8 do PRD).
 - **AC-3c-05** RLS: jogador membro não vê edge para NPC invisível (`is_visible_to_players=false`)
 - **AC-3c-06** Double-click no botão "Salvar" não cria 2 edges (usa `upsertEntityLink`)
 

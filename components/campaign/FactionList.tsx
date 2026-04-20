@@ -26,6 +26,7 @@ import { selectCounterpartyIds, findEdgeId } from "@/lib/types/entity-links";
 import {
   upsertEntityLink,
   unlinkEntities,
+  listEntityLinks,
 } from "@/lib/supabase/entity-links";
 import { captureError } from "@/lib/errors/capture";
 import type { CampaignFaction } from "@/lib/types/mind-map";
@@ -165,14 +166,33 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
   const syncFactionEdges = useCallback(
     async (
       factionId: string,
-      previousMembers: string[],
+      _previousMembers: string[],
       extras: FactionFormExtras,
     ) => {
+      // Reconcile against a FRESH read of this faction's edges, not the
+      // cached `edges` snapshot. See NpcList.syncNpcEdges for rationale.
+      void _previousMembers;
+
+      let currentEdges: Awaited<ReturnType<typeof listEntityLinks>> = [];
+      try {
+        currentEdges = await listEntityLinks(campaignId, {
+          type: "faction",
+          id: factionId,
+        });
+      } catch (err) {
+        captureError(err, {
+          component: "FactionList",
+          action: "syncFactionEdges.fetchFresh",
+          category: "network",
+        });
+        return;
+      }
+
       const tasks: Promise<unknown>[] = [];
 
       // ----- Sede (headquarters_of → location) -----
       const existingSede = selectCounterpartyIds(
-        edges,
+        currentEdges,
         { type: "faction", id: factionId },
         {
           direction: "outgoing",
@@ -194,7 +214,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
         }
         if (existingSede) {
           const staleId = findEdgeId(
-            edges,
+            currentEdges,
             { type: "faction", id: factionId },
             { type: "location", id: existingSede },
             "headquarters_of",
@@ -206,8 +226,17 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
       // ----- Membros (member_of incoming) -----
       // Edges are npc→faction with relationship=member_of. From faction's
       // perspective these are incoming. Upsert uses the npc as source.
+      const currentMemberIds = selectCounterpartyIds(
+        currentEdges,
+        { type: "faction", id: factionId },
+        {
+          direction: "incoming",
+          counterpartyType: "npc",
+          relationship: "member_of",
+        },
+      );
       const targetMembers = new Set(extras.memberNpcIds);
-      const currentMembers = new Set(previousMembers);
+      const currentMembers = new Set(currentMemberIds);
 
       for (const npcId of targetMembers) {
         if (!currentMembers.has(npcId)) {
@@ -224,7 +253,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
       for (const npcId of currentMembers) {
         if (!targetMembers.has(npcId)) {
           const staleId = findEdgeId(
-            edges,
+            currentEdges,
             { type: "npc", id: npcId },
             { type: "faction", id: factionId },
             "member_of",
@@ -234,11 +263,20 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
       }
 
       if (tasks.length > 0) {
-        await Promise.all(tasks);
+        const results = await Promise.allSettled(tasks);
+        for (const r of results) {
+          if (r.status === "rejected") {
+            captureError(r.reason, {
+              component: "FactionList",
+              action: "syncFactionEdges.taskFailed",
+              category: "network",
+            });
+          }
+        }
         await refetchEdges();
       }
     },
-    [campaignId, edges, refetchEdges],
+    [campaignId, refetchEdges],
   );
 
   const handleCreate = useCallback(

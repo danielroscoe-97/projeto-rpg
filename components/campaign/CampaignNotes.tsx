@@ -62,6 +62,7 @@ import {
   upsertEntityLink,
   unlinkEntities,
   listCampaignEdges,
+  listEntityLinks,
 } from "@/lib/supabase/entity-links";
 import {
   selectCounterpartyIds,
@@ -292,8 +293,10 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
 
   /**
    * Reconcile the set of `mentions` edges from a note to entities of a
-   * given type. Idempotent via upsertEntityLink. Updates local edge state
-   * on success so UI reflects the change without a refetch.
+   * given type. Idempotent via upsertEntityLink. Reads fresh edges for the
+   * note from Supabase before diffing so rapid sequential edits never diff
+   * against stale cached snapshots (the same class of bug as NpcList's
+   * syncNpcEdges; see commit BL-2 fix).
    */
   const syncNoteMentions = useCallback(
     async (
@@ -301,8 +304,23 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
       entityType: Exclude<EntityType, "note" | "session" | "encounter" | "player" | "bag_item">,
       nextIds: string[],
     ) => {
+      let freshEdges: EntityLink[] = [];
+      try {
+        freshEdges = await listEntityLinks(campaignId, {
+          type: "note",
+          id: noteId,
+        });
+      } catch (err) {
+        captureError(err, {
+          component: "CampaignNotes",
+          action: `syncNoteMentions.${entityType}.fetchFresh`,
+          category: "network",
+        });
+        return;
+      }
+
       const current = selectCounterpartyIds(
-        campaignEdges,
+        freshEdges,
         { type: "note", id: noteId },
         {
           direction: "outgoing",
@@ -313,76 +331,118 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
       const target = new Set(nextIds);
       const existing = new Set(current);
 
-      try {
-        const additions: EntityLink[] = [];
-        const removedIds: string[] = [];
+      const additions: EntityLink[] = [];
+      const removedIds: string[] = [];
+      const tasks: Array<Promise<"added" | "removed" | void>> = [];
 
-        for (const id of target) {
-          if (!existing.has(id)) {
-            const edge = await upsertEntityLink(
+      for (const id of target) {
+        if (!existing.has(id)) {
+          tasks.push(
+            upsertEntityLink(
               campaignId,
               { type: "note", id: noteId },
               { type: entityType, id },
               "mentions",
-            );
-            additions.push(edge);
-          }
+            ).then((edge) => {
+              additions.push(edge);
+              return "added" as const;
+            }),
+          );
         }
-        for (const id of existing) {
-          if (!target.has(id)) {
-            const edgeId = findEdgeId(
-              campaignEdges,
-              { type: "note", id: noteId },
-              { type: entityType, id },
-              "mentions",
-            );
-            if (edgeId) {
-              await unlinkEntities(edgeId);
-              removedIds.push(edgeId);
-            }
-          }
-        }
-
-        setCampaignEdges((prev) => {
-          const kept = prev.filter((e) => !removedIds.includes(e.id));
-          return [...kept, ...additions];
-        });
-      } catch (err) {
-        captureError(err, {
-          component: "CampaignNotes",
-          action: `syncNoteMentions.${entityType}`,
-          category: "network",
-        });
       }
+      for (const id of existing) {
+        if (!target.has(id)) {
+          const edgeId = findEdgeId(
+            freshEdges,
+            { type: "note", id: noteId },
+            { type: entityType, id },
+            "mentions",
+          );
+          if (edgeId) {
+            tasks.push(
+              unlinkEntities(edgeId).then(() => {
+                removedIds.push(edgeId);
+                return "removed" as const;
+              }),
+            );
+          }
+        }
+      }
+
+      const results = await Promise.allSettled(tasks);
+      for (const r of results) {
+        if (r.status === "rejected") {
+          captureError(r.reason, {
+            component: "CampaignNotes",
+            action: `syncNoteMentions.${entityType}.task`,
+            category: "network",
+          });
+        }
+      }
+
+      // Reflect ONLY the mutations that actually landed. Failed tasks
+      // never contributed to `additions` / `removedIds` so the UI stays
+      // consistent with the DB even when some writes failed.
+      setCampaignEdges((prev) => {
+        const kept = prev.filter(
+          (e) => !removedIds.includes(e.id) && !additions.some((a) => a.id === e.id),
+        );
+        return [...kept, ...additions];
+      });
     },
-    [campaignId, campaignEdges],
+    [campaignId],
   );
 
   const handleLinkNpc = useCallback(
     async (noteId: string, npcId: string) => {
+      // Dual-write strategy: write the edge (new source of truth) FIRST. If
+      // that succeeds, write the legacy row. If legacy fails, rollback the
+      // edge so the two stores never diverge. Optimistic UI state is
+      // committed only after both writes land.
+      let edge: Awaited<ReturnType<typeof upsertEntityLink>> | null = null;
       try {
-        // Legacy table (note_npc_links) keeps working until mig drops it.
-        const link = await linkNoteToNpc(noteId, npcId);
-        setNpcLinks((prev) => [...prev, link]);
-        // Dual-write: also record a `mentions` edge so every reverse lookup
-        // (NpcCard "Notas sobre isto") sees the connection without reading
-        // the legacy table. Idempotent via upsert.
-        const edge = await upsertEntityLink(
+        edge = await upsertEntityLink(
           campaignId,
           { type: "note", id: noteId },
           { type: "npc", id: npcId },
           "mentions",
         );
-        setCampaignEdges((prev) => {
-          if (prev.some((e) => e.id === edge.id)) return prev;
-          return [...prev, edge];
-        });
       } catch (err) {
         captureError(err, {
           component: "CampaignNotes",
-          action: "linkNpc",
+          action: "linkNpc.edgeWrite",
           category: "network",
         });
+        return;
+      }
+
+      try {
+        const link = await linkNoteToNpc(noteId, npcId);
+        setNpcLinks((prev) => [...prev, link]);
+        setCampaignEdges((prev) => {
+          if (edge && prev.some((e) => e.id === edge.id)) return prev;
+          return edge ? [...prev, edge] : prev;
+        });
+      } catch (err) {
+        // Legacy write failed — roll back the edge we just wrote so the two
+        // stores stay aligned. Best-effort: if rollback throws, capture and
+        // surface both errors so ops can investigate.
+        captureError(err, {
+          component: "CampaignNotes",
+          action: "linkNpc.legacyWrite",
+          category: "network",
+        });
+        if (edge) {
+          try {
+            await unlinkEntities(edge.id);
+          } catch (rollbackErr) {
+            captureError(rollbackErr, {
+              component: "CampaignNotes",
+              action: "linkNpc.rollback",
+              category: "network",
+            });
+          }
+        }
       }
     },
     [campaignId],
@@ -390,26 +450,41 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
 
   const handleUnlinkNpc = useCallback(
     async (noteId: string, npcId: string) => {
+      // Symmetric rollback: delete the edge first (new source of truth). If
+      // that succeeds, delete the legacy row. If legacy delete fails, the
+      // edge is gone but the legacy row still exists — on next mount the
+      // reverse-lookup panels will dedup by note id so the UI shows a single
+      // link. Safer to let legacy "stick around" than to resurrect the edge,
+      // because the legacy table is already on its deprecation runway.
+      const edgeId = findEdgeId(
+        campaignEdges,
+        { type: "note", id: noteId },
+        { type: "npc", id: npcId },
+        "mentions",
+      );
+      if (edgeId) {
+        try {
+          await unlinkEntities(edgeId);
+          setCampaignEdges((prev) => prev.filter((e) => e.id !== edgeId));
+        } catch (err) {
+          captureError(err, {
+            component: "CampaignNotes",
+            action: "unlinkNpc.edgeDelete",
+            category: "network",
+          });
+          return;
+        }
+      }
+
       try {
         await unlinkNoteFromNpc(noteId, npcId);
         setNpcLinks((prev) =>
           prev.filter((l) => !(l.note_id === noteId && l.npc_id === npcId)),
         );
-        // Dual-write: also remove the `mentions` edge created by Fase 3e.
-        const edgeId = findEdgeId(
-          campaignEdges,
-          { type: "note", id: noteId },
-          { type: "npc", id: npcId },
-          "mentions",
-        );
-        if (edgeId) {
-          await unlinkEntities(edgeId);
-          setCampaignEdges((prev) => prev.filter((e) => e.id !== edgeId));
-        }
       } catch (err) {
         captureError(err, {
           component: "CampaignNotes",
-          action: "unlinkNpc",
+          action: "unlinkNpc.legacyDelete",
           category: "network",
         });
       }
