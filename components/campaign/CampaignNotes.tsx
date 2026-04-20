@@ -233,6 +233,11 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   // the ids of entities it mentions, bucketed by type (Fase 3e). NPCs show
   // up here when the edge exists; legacy note_npc_links is the fallback for
   // pre-mig 153 data and remains in `linksByNote` above.
+  //
+  // Perf note: this index depends ONLY on `campaignEdges`. Previously it
+  // also listed `notes` as a dependency, which caused a full rebuild on
+  // every keystroke of a note title (setNotes fires on each character). One
+  // pass over edges — O(edges) — instead of O(notes × edges × 4).
   const mentionsByNote = useMemo<
     Map<
       string,
@@ -248,48 +253,38 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
       string,
       { locations: string[]; factions: string[]; quests: string[]; npcs: string[] }
     >();
-    for (const note of notes) {
-      map.set(note.id, {
-        locations: selectCounterpartyIds(
-          campaignEdges,
-          { type: "note", id: note.id },
-          {
-            direction: "outgoing",
-            counterpartyType: "location",
-            relationship: "mentions",
-          },
-        ),
-        factions: selectCounterpartyIds(
-          campaignEdges,
-          { type: "note", id: note.id },
-          {
-            direction: "outgoing",
-            counterpartyType: "faction",
-            relationship: "mentions",
-          },
-        ),
-        quests: selectCounterpartyIds(
-          campaignEdges,
-          { type: "note", id: note.id },
-          {
-            direction: "outgoing",
-            counterpartyType: "quest",
-            relationship: "mentions",
-          },
-        ),
-        npcs: selectCounterpartyIds(
-          campaignEdges,
-          { type: "note", id: note.id },
-          {
-            direction: "outgoing",
-            counterpartyType: "npc",
-            relationship: "mentions",
-          },
-        ),
-      });
+    const ensure = (noteId: string) => {
+      let bucket = map.get(noteId);
+      if (!bucket) {
+        bucket = { locations: [], factions: [], quests: [], npcs: [] };
+        map.set(noteId, bucket);
+      }
+      return bucket;
+    };
+    for (const edge of campaignEdges) {
+      if (edge.relationship !== "mentions") continue;
+      if (edge.source_type !== "note") continue;
+      const bucket = ensure(edge.source_id);
+      switch (edge.target_type) {
+        case "location":
+          bucket.locations.push(edge.target_id);
+          break;
+        case "faction":
+          bucket.factions.push(edge.target_id);
+          break;
+        case "quest":
+          bucket.quests.push(edge.target_id);
+          break;
+        case "npc":
+          bucket.npcs.push(edge.target_id);
+          break;
+        default:
+          // ignore edge types that the UI doesn't render yet.
+          break;
+      }
     }
     return map;
-  }, [campaignEdges, notes]);
+  }, [campaignEdges]);
 
   /**
    * Reconcile the set of `mentions` edges from a note to entities of a

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, MapPin, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,11 @@ interface TreeEntry {
  * DFS-walk the campaign_locations flat list into a rendering order that
  * reflects the parent/child hierarchy. Siblings sorted by name.
  * Entries whose ancestor chain contains a collapsed id are skipped.
+ *
+ * Visited-set guard: the DB trigger (mig 146) prevents cycles, but a
+ * corrupted import or a direct SQL write that bypasses the RPC could land
+ * one. Without defence the walker recurses until the JS stack overflows and
+ * the whole Locations tab crashes. Visited-set re-entry check bails safely.
  */
 function buildTreeEntries(
   locations: CampaignLocation[],
@@ -58,9 +63,12 @@ function buildTreeEntries(
   }
 
   const entries: TreeEntry[] = [];
+  const visited = new Set<string>();
   const walk = (parentId: string | null, depth: number) => {
     const children = byParent.get(parentId) ?? [];
     for (const child of children) {
+      if (visited.has(child.id)) continue;
+      visited.add(child.id);
       const grandChildren = byParent.get(child.id) ?? [];
       entries.push({
         location: child,
@@ -206,6 +214,24 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
       return next;
     });
   }, []);
+
+  // Prune `collapsedIds` to only ids that still exist in `locations`. Without
+  // this, deleting a location that was collapsed leaves a stale id in state —
+  // and if the DM creates a sibling with a collapsed ancestor elsewhere,
+  // that parent appears expanded in the UI while children silently stay
+  // hidden because a later-rendered row has the same ancestor path.
+  useEffect(() => {
+    const valid = new Set(locations.map((l) => l.id));
+    setCollapsedIds((prev) => {
+      let changed = false;
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (valid.has(id)) next.add(id);
+        else changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [locations]);
 
   const handleCreate = useCallback(
     async (data: LocationFormData) => {
