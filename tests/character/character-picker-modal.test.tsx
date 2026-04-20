@@ -8,6 +8,107 @@ import {
   type PickerUnlinkedCharacter,
 } from "@/components/character/CharacterPickerModal";
 
+// Mock the CharacterWizard so tests exercising the "create" tab don't need
+// to mount the full 3-step wizard (which pulls in ClassIconGrid, framer-motion,
+// etc.). The mock exposes a minimal surface: a name input + a submit button
+// that calls `onComplete` with the typed name. This is enough to verify the
+// picker bridges the wizard result into `onSelect({ mode: "created", ... })`.
+jest.mock("@/components/character/wizard/CharacterWizard", () => ({
+  CharacterWizard: ({
+    onComplete,
+    onCancel,
+  }: {
+    onComplete: (data: {
+      name: string;
+      characterClass: string | null;
+      race: string | null;
+      level: number;
+      maxHp: number | null;
+      ac: number | null;
+      spellSaveDc: number | null;
+    }) => Promise<void>;
+    onCancel: () => void;
+  }) => {
+    const [name, setName] = React.useState("");
+    const [hp, setHp] = React.useState("");
+    const [ac, setAc] = React.useState("");
+    return (
+      <div data-testid="wizard-mock">
+        <label>
+          Name
+          <input
+            data-testid="invite.picker.name-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+        <label>
+          HP
+          <input
+            data-testid="invite.picker.hp-input"
+            type="number"
+            value={hp}
+            onChange={(e) => setHp(e.target.value)}
+          />
+        </label>
+        <label>
+          AC
+          <input
+            data-testid="invite.picker.ac-input"
+            type="number"
+            value={ac}
+            onChange={(e) => setAc(e.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="wizard-mock-submit"
+          onClick={() =>
+            onComplete({
+              name,
+              characterClass: null,
+              race: null,
+              level: 1,
+              maxHp: hp ? parseInt(hp) : null,
+              ac: ac ? parseInt(ac) : null,
+              spellSaveDc: null,
+            })
+          }
+        >
+          submit
+        </button>
+        <button
+          type="button"
+          data-testid="wizard-mock-cancel"
+          onClick={onCancel}
+        >
+          cancel
+        </button>
+      </div>
+    );
+  },
+}));
+
+// Mock the paginated fetch wrappers so tests in static mode don't hit network.
+jest.mock("@/lib/character/list-claimable-client", () => ({
+  listClaimableClient: jest.fn().mockResolvedValue({
+    characters: [],
+    total: 0,
+    hasMore: false,
+    offset: 0,
+    limit: 20,
+  }),
+}));
+jest.mock("@/lib/character/list-mine", () => ({
+  listMineCharacters: jest.fn().mockResolvedValue({
+    characters: [],
+    total: 0,
+    hasMore: false,
+    offset: 0,
+    limit: 20,
+  }),
+}));
+
 // Mock radix dialog so DialogContent renders inline + we can assert on
 // descendants without worrying about portal/focus-trap lifecycle issues in
 // jsdom. Radix still owns focus-trapping in production; here we just assert
@@ -247,7 +348,7 @@ describe("CharacterPickerModal", () => {
       });
     });
 
-    it("calls onSelect with created + characterData on create mode", async () => {
+    it("calls onSelect with created + characterData on create mode (via wizard)", async () => {
       const user = userEvent.setup();
       render(<CharacterPickerModal {...baseProps} />);
       await user.click(screen.getByTestId("invite.picker.tab-create"));
@@ -257,7 +358,8 @@ describe("CharacterPickerModal", () => {
       );
       await user.type(screen.getByTestId("invite.picker.hp-input"), "55");
       await user.type(screen.getByTestId("invite.picker.ac-input"), "15");
-      await user.click(screen.getByTestId("invite.picker.confirm-button"));
+      // Wizard mock's submit button replaces the previous inline-form submit.
+      await user.click(screen.getByTestId("wizard-mock-submit"));
       expect(baseProps.onSelect).toHaveBeenCalledWith({
         mode: "created",
         characterData: {
@@ -266,6 +368,9 @@ describe("CharacterPickerModal", () => {
           currentHp: 55,
           ac: 15,
           spellSaveDc: null,
+          race: null,
+          class: null,
+          level: 1,
         },
       });
     });
@@ -280,8 +385,7 @@ describe("CharacterPickerModal", () => {
       expect(baseProps.onSelect).not.toHaveBeenCalled();
     });
 
-    it("does not call onSelect when create mode has empty name", async () => {
-      const user = userEvent.setup();
+    it("renders the wizard surface when create mode is active and no selection modes available", () => {
       render(
         <CharacterPickerModal
           {...baseProps}
@@ -289,10 +393,13 @@ describe("CharacterPickerModal", () => {
           existingCharacters={[]}
         />,
       );
+      // No selection-mode confirm-button is rendered in create mode — the
+      // wizard handles its own submit. Instead, we assert the wizard mock
+      // is mounted and the create panel is visible.
       expect(
-        screen.getByTestId("invite.picker.confirm-button"),
-      ).toBeDisabled();
-      await user.click(screen.getByTestId("invite.picker.confirm-button"));
+        screen.getByTestId("invite.picker.tab-panel-create"),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("wizard-mock")).toBeInTheDocument();
       expect(baseProps.onSelect).not.toHaveBeenCalled();
     });
   });
