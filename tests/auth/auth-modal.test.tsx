@@ -327,12 +327,8 @@ describe("AuthModal", () => {
   });
 
   describe("upgrade flow (signup with upgradeContext)", () => {
-    it("calls /api/player-identity/upgrade instead of supabase.auth.signUp", async () => {
+    it("calls /api/player-identity/upgrade with mode=email (no client-side updateUser) — C2 fix", async () => {
       const user = userEvent.setup();
-      mockSupabase.auth.updateUser.mockResolvedValue({
-        data: { user: { id: "user-abc" } },
-        error: null,
-      });
       mockFetch.mockResolvedValue({
         ok: true,
         json: async () => ({ ok: true, userId: "user-abc" }),
@@ -373,12 +369,11 @@ describe("AuthModal", () => {
 
       await user.click(screen.getByTestId("auth.modal.submit-button"));
 
-      // Client-side updateUser called
-      expect(mockSupabase.auth.updateUser).toHaveBeenCalledWith({
-        email: "dani@example.com",
-        password: "password123",
-      });
-      // Server saga called
+      // C2 fix: client no longer calls updateUser — the server does the
+      // admin.updateUserById in the upgrade endpoint. This eliminates the
+      // half-upgraded state race.
+      expect(mockSupabase.auth.updateUser).not.toHaveBeenCalled();
+      // Server saga called with credentials + mode=email.
       expect(mockFetch).toHaveBeenCalledWith(
         "/api/player-identity/upgrade",
         expect.objectContaining({
@@ -387,9 +382,14 @@ describe("AuthModal", () => {
           body: expect.stringContaining("tok-42"),
         }),
       );
+      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+      expect(body.mode).toBe("email");
+      expect(body.credentials.email).toBe("dani@example.com");
+      expect(body.credentials.password).toBe("password123");
+      expect(body.credentials.displayName).toBe("Dani");
       // Critical: plain signUp NOT invoked in upgrade path
       expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
-      // onSuccess receives upgraded=true
+      // onSuccess receives upgraded=true with the userId from the server
       expect(onSuccess).toHaveBeenCalledWith({
         userId: "user-abc",
         isNewAccount: false,
@@ -399,10 +399,6 @@ describe("AuthModal", () => {
 
     it("surfaces error when upgrade endpoint returns ok=false", async () => {
       const user = userEvent.setup();
-      mockSupabase.auth.updateUser.mockResolvedValue({
-        data: { user: { id: "user-abc" } },
-        error: null,
-      });
       mockFetch.mockResolvedValue({
         ok: false,
         json: async () => ({
@@ -433,6 +429,9 @@ describe("AuthModal", () => {
       await user.click(screen.getByTestId("auth.modal.submit-button"));
 
       expect(screen.getByTestId("auth.modal.error")).toBeInTheDocument();
+      // Critical (C2): client must not have mutated auth state — server
+      // is the single point of truth.
+      expect(mockSupabase.auth.updateUser).not.toHaveBeenCalled();
     });
   });
 

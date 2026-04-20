@@ -139,7 +139,9 @@
       "switch_to_login": "Already have an account? Log in",
       "switch_to_signup": "Don't have an account? Sign up",
       "upgrade_failed": "Couldn't finish upgrading. Please try again.",
-      "upgrade_success": "Account created and character saved."
+      "upgrade_success": "Account created and character saved.",
+      "retry": "Retry",
+      "continue_anyway": "Ignore and continue"
     }
   },
   "invite": {
