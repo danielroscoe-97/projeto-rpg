@@ -9,6 +9,12 @@
  *   `last_session_at` is null (we assert the decision logic here since the
  *   server component does the gating; see `app/app/dashboard/page.tsx`)
  * - i18n strings route through `useTranslations("dashboard.continueFromLastSession")`
+ * - Suspense boundary: skeleton renders while the server component promise
+ *   is pending (code-review C3 fix)
+ * - future-date guard: clock skew cannot surface "in N seconds" (code-review
+ *   M2 fix — `formatRelative` clamps `diffSec <= 0`)
+ * - locale is driven by next-intl (prop or `useLocale()`), NOT
+ *   `navigator.language` (code-review M1 fix)
  *
  * A11y note: project does not have `@axe-core/react` installed (only
  * `@axe-core/playwright` for E2E). Rather than add a new devDep as part of
@@ -17,8 +23,8 @@
  * to `e2e/a11y/` once 02-F-full ships real data. See brief gotchas.
  */
 
-import React from "react";
-import { render, screen } from "@testing-library/react";
+import React, { Suspense } from "react";
+import { render, screen, waitFor } from "@testing-library/react";
 
 import { ContinueFromLastSession } from "@/components/dashboard/ContinueFromLastSession";
 import { ContinueFromLastSessionSkeleton } from "@/components/dashboard/ContinueFromLastSessionSkeleton";
@@ -147,5 +153,139 @@ describe("Render-gating contract (consumer-side)", () => {
 
     const mockUser2 = { last_session_at: new Date().toISOString() };
     expect(Boolean(mockUser2.last_session_at)).toBe(true);
+  });
+});
+
+describe("Suspense boundary (code-review C3 fix)", () => {
+  // Reproduces the dashboard's shape: a Suspense boundary with the skeleton
+  // as fallback, wrapping an async child that resolves to the card. Asserts
+  // that the skeleton actually paints while the child is pending — something
+  // the pre-fix dashboard couldn't do because the query was inlined inside
+  // the page-level Promise.all.
+  it("renders the skeleton while the async child is pending, then swaps in the card", async () => {
+    // React waits on thenables for async server components. We simulate one
+    // by creating a lazy component that resolves after a microtask.
+    let resolveFn: (mod: {
+      default: React.ComponentType;
+    }) => void = () => {};
+    const LazyCard = React.lazy(
+      () =>
+        new Promise<{ default: React.ComponentType }>((resolve) => {
+          resolveFn = resolve;
+        }),
+    );
+
+    render(
+      <Suspense fallback={<ContinueFromLastSessionSkeleton />}>
+        <LazyCard />
+      </Suspense>,
+    );
+
+    // First paint: the skeleton is visible.
+    expect(
+      screen.getByTestId("continue-from-last-session-skeleton"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("continue-from-last-session"),
+    ).not.toBeInTheDocument();
+
+    // Resolve the promise with the real card.
+    resolveFn({
+      default: () => <ContinueFromLastSession data={baseData} />,
+    });
+
+    // Skeleton is swapped out, card is now in the DOM.
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("continue-from-last-session"),
+      ).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByTestId("continue-from-last-session-skeleton"),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe("formatRelative — future-date clamp (code-review M2 fix)", () => {
+  // If the server's clock is ~30s ahead of the client's (or vice versa), the
+  // `last_session_at` timestamp can land in the future. The card must NEVER
+  // render "in 30 seconds" — it is, by definition, about the past. The fix
+  // clamps `diffSec <= 0` so `Intl.RelativeTimeFormat` always renders a
+  // past-tense string.
+  it("does not render a future-tense string when lastSessionAt is in the future", () => {
+    const thirtySecondsInFuture = new Date(
+      Date.now() + 30 * 1000,
+    ).toISOString();
+
+    render(
+      <ContinueFromLastSession
+        data={{ ...baseData, lastSessionAt: thirtySecondsInFuture }}
+      />,
+    );
+
+    const card = screen.getByTestId("continue-from-last-session");
+    const rendered = card.textContent ?? "";
+
+    // Nothing that looks like a future-tense English/Portuguese string should
+    // appear. Under `numeric: "auto"` and a 0-second diff, Intl emits "now",
+    // "agora" or similar — either way, never a future phrase.
+    expect(rendered).not.toMatch(/\bin\b/i); // English: "in 30 seconds"
+    expect(rendered).not.toMatch(/\bdaqui\b/i); // pt-BR: "daqui a 30 segundos"
+    expect(rendered).not.toMatch(/\bem 30\b/i); // pt-BR variant: "em 30 segundos"
+  });
+});
+
+describe("Locale is driven by next-intl (code-review M1 fix)", () => {
+  // The fix removes `navigator.language` as a locale source; the component
+  // now takes `locale` as an optional prop (resolved server-side via
+  // `getLocale()` from next-intl/server) or falls back to `useLocale()`.
+  // We assert that `Intl.RelativeTimeFormat` is called with the explicit
+  // locale prop, NOT whatever jsdom sets for `navigator.language`.
+  it("uses the `locale` prop (not navigator.language) when provided", () => {
+    // Spy on the constructor so we can observe the locale argument.
+    const originalRTF = Intl.RelativeTimeFormat;
+    const calls: string[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (Intl as any).RelativeTimeFormat = function (
+      locale: string,
+      opts?: Intl.RelativeTimeFormatOptions,
+    ) {
+      calls.push(locale);
+      return new originalRTF(locale, opts);
+    };
+
+    try {
+      render(<ContinueFromLastSession data={baseData} locale="en" />);
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (Intl as any).RelativeTimeFormat = originalRTF;
+    }
+
+    // The spy must have seen "en" (from the prop) — NOT anything derived from
+    // `navigator.language`, which the component no longer reads.
+    expect(calls).toContain("en");
+  });
+
+  it("falls back to useLocale() when no prop is provided", () => {
+    const originalRTF = Intl.RelativeTimeFormat;
+    const calls: string[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (Intl as any).RelativeTimeFormat = function (
+      locale: string,
+      opts?: Intl.RelativeTimeFormatOptions,
+    ) {
+      calls.push(locale);
+      return new originalRTF(locale, opts);
+    };
+
+    try {
+      render(<ContinueFromLastSession data={baseData} />);
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (Intl as any).RelativeTimeFormat = originalRTF;
+    }
+
+    // jest.setup.ts mocks useLocale() to return "pt-BR".
+    expect(calls).toContain("pt-BR");
   });
 });

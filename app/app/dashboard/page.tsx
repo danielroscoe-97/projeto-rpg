@@ -1,15 +1,15 @@
 export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
+
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
-import {
-  ContinueFromLastSession,
-  type ContinueFromLastSessionData,
-} from "@/components/dashboard/ContinueFromLastSession";
+import { ContinueFromLastSessionServer } from "@/components/dashboard/ContinueFromLastSessionServer";
+import { ContinueFromLastSessionSkeleton } from "@/components/dashboard/ContinueFromLastSessionSkeleton";
 import { computeStreak } from "@/lib/utils/streak";
 import { grantXpAsync, getCooldownStart } from "@/lib/xp/grant-xp";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
@@ -43,13 +43,14 @@ export default async function DashboardPage() {
     encountersRes,
     encounterCountRes,
   ] = await Promise.all([
-    // 02-F parte 1: pull `last_session_at`, `default_character_id`, and `avatar_url`
-    // for the "Continue where you left off" card. Story 02-F-full will replace
-    // the derived campaign/character fields below with a real JOIN on
-    // `campaigns` + `player_characters`.
+    // Role/email drive checklist & redirects here. The
+    // `last_session_at` / `default_character_id` / `avatar_url` fields used
+    // by the "Continue where you left off" card now live in their own async
+    // server component (ContinueFromLastSessionServer) so the card can stream
+    // in behind a Suspense boundary — see below.
     supabase
       .from("users")
-      .select("role, email, last_session_at, default_character_id, avatar_url")
+      .select("role, email")
       .eq("id", user.id)
       .maybeSingle(),
     getUserMemberships(user.id),
@@ -64,23 +65,10 @@ export default async function DashboardPage() {
   const userRole = (userData?.role as UserRole) ?? "both";
   const userEmail = userData?.email ?? user.email ?? "";
 
-  // 02-F parte 1 — "Continue de onde parou" card data.
-  // TODO(02-F-full): replace this mock assembly with a real server query that
-  // JOINs `campaigns` + `player_characters` off `users.default_character_id`
-  // to resolve the campaign name, character name, and avatar. For now we only
-  // need `last_session_at` to decide whether to render the card at all — the
-  // downstream fields use null fallbacks that the i18n strings translate.
-  const continueFromLastSession: ContinueFromLastSessionData | null = userData
-    ?.last_session_at
-    ? {
-        campaignId: null, // resolved in 02-F-full
-        characterId: (userData.default_character_id as string | null) ?? null,
-        campaignName: null, // resolved in 02-F-full — falls back to i18n
-        characterName: null, // resolved in 02-F-full — falls back to i18n
-        avatarUrl: (userData.avatar_url as string | null) ?? null,
-        lastSessionAt: userData.last_session_at as string,
-      }
-    : null;
+  // 02-F parte 1 — "Continue de onde parou" card is rendered below inside a
+  // Suspense boundary via <ContinueFromLastSessionServer />, which owns its
+  // own query so the skeleton can paint while that query resolves. See
+  // `components/dashboard/ContinueFromLastSessionServer.tsx`.
   const onboarding = onboardingRes.data as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
   const hasUsedCombat = (encounterCountRes.count ?? 0) > 0;
 
@@ -310,9 +298,14 @@ export default async function DashboardPage() {
   return (
     <div>
       <GuestDataImportModal />
-      {continueFromLastSession && (
-        <ContinueFromLastSession data={continueFromLastSession} />
-      )}
+      {/* C3 fix: wrap the "Continue where you left off" card in Suspense so
+          the skeleton streams on first paint. Previously the query ran inside
+          the page-level Promise.all, which meant the skeleton was never
+          rendered (the server blocked returning JSX until the query resolved).
+          The server component below owns its own query. */}
+      <Suspense fallback={<ContinueFromLastSessionSkeleton />}>
+        <ContinueFromLastSessionServer />
+      </Suspense>
       <DashboardOverview
         campaigns={campaigns}
         savedEncounters={savedEncounters}

@@ -18,7 +18,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export interface ContinueFromLastSessionData {
   /** Campaign the player last interacted with. If null, links to character HQ. */
@@ -37,6 +37,13 @@ export interface ContinueFromLastSessionData {
 
 interface ContinueFromLastSessionProps {
   data: ContinueFromLastSessionData;
+  /**
+   * Locale used to format the relative-time string. When omitted, the
+   * component falls back to `useLocale()` from next-intl. Passing it down
+   * from a server component (see `ContinueFromLastSessionServer`) avoids any
+   * risk of a hydration mismatch from reading `navigator.language`.
+   */
+  locale?: string;
 }
 
 function getInitial(name: string | null): string {
@@ -56,7 +63,13 @@ function getInitial(name: string | null): string {
 function formatRelative(iso: string, locale: string): string {
   const then = new Date(iso).getTime();
   if (Number.isNaN(then)) return "";
-  const diffSec = Math.round((then - Date.now()) / 1000);
+  // Code-review M2 fix: clamp to <= 0 so clock skew between server and client
+  // never surfaces as "in 30 seconds" on a card that is, by definition, about
+  // the past. If the timestamp is in the near future we treat it as "just now".
+  const diffSec = Math.min(
+    0,
+    Math.round((then - Date.now()) / 1000),
+  );
 
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const abs = Math.abs(diffSec);
@@ -72,20 +85,20 @@ function formatRelative(iso: string, locale: string): string {
 
 export function ContinueFromLastSession({
   data,
+  locale: localeProp,
 }: ContinueFromLastSessionProps) {
   const t = useTranslations("dashboard.continueFromLastSession");
+  // Code-review M1 fix: drive the relative-time locale from next-intl (server
+  // and client agree) instead of `navigator.language`. That eliminates the
+  // hydration mismatch when the user's negotiated locale is `en` but the
+  // browser advertises something else (e.g. `en-US`, `pt-BR`).
+  const intlLocale = useLocale();
+  const locale = localeProp ?? intlLocale;
+  const agoText = formatRelative(data.lastSessionAt, locale);
 
   const campaignName = data.campaignName ?? t("defaultCampaignName");
   const characterName = data.characterName ?? t("defaultCharacterName");
   const initial = getInitial(data.characterName);
-
-  // Use the user's locale for the relative-time string. We default to pt-BR
-  // because 83% of traffic is BR (see docs/seo-architecture.md — decision 2).
-  const locale =
-    typeof navigator !== "undefined" && navigator.language
-      ? navigator.language
-      : "pt-BR";
-  const agoText = formatRelative(data.lastSessionAt, locale);
 
   // Destination: campaign sheet if we know the campaign, else character HQ.
   const href = data.campaignId
@@ -97,7 +110,11 @@ export function ContinueFromLastSession({
   return (
     <motion.section
       aria-labelledby="continue-from-last-session-title"
-      initial={{ opacity: 0, y: 4 }}
+      // Code-review minor fix: start at y:0 (opacity-only fade) to avoid any
+      // micro-CLS when the card enters. The 4px y-translate was cosmetic and
+      // measurably shifted the page on first paint for users with reduced
+      // motion disabled.
+      initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
       className="mb-6"
