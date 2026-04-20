@@ -35,6 +35,7 @@ import { LOCATION_TYPES } from "@/lib/types/mind-map";
 import type { LocationFormData } from "@/lib/hooks/use-campaign-locations";
 import { LocationParentSelect } from "./LocationParentSelect";
 import { LocationBreadcrumb } from "./LocationBreadcrumb";
+import { EntityMentionEditor } from "@/components/ui/EntityMentionEditor";
 
 const TYPE_ICONS: Record<LocationType, React.ComponentType<{ className?: string }>> = {
   city: Castle,
@@ -72,6 +73,7 @@ interface LocationFormProps {
 export function LocationForm({
   open,
   onOpenChange,
+  campaignId,
   location,
   availableLocations = [],
   onSave,
@@ -265,17 +267,29 @@ export function LocationForm({
           {/* Description */}
           <div className="space-y-1.5">
             <Label htmlFor="location-description">{t("field_description")}</Label>
-            <textarea
-              id="location-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={t("description_placeholder")}
-              rows={3}
-              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
-              data-testid="location-description-input"
-              disabled={viewOnly}
-              readOnly={viewOnly}
-            />
+            {campaignId ? (
+              <EntityMentionEditor
+                value={description}
+                onChange={setDescription}
+                placeholder={t("description_placeholder")}
+                campaignId={campaignId}
+                disabled={viewOnly}
+                rows={3}
+                data-testid="location-description-input"
+              />
+            ) : (
+              <textarea
+                id="location-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t("description_placeholder")}
+                rows={3}
+                className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
+                data-testid="location-description-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
+              />
+            )}
           </div>
 
           {/* Image URL */}

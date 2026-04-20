@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import type { CampaignNpc, CampaignNpcInsert, NpcStats } from "@/lib/types/campaign-npcs";
 import type { CampaignLocation, CampaignFaction } from "@/lib/types/mind-map";
 import { EntityTagSelector } from "./EntityTagSelector";
+import { EntityMentionEditor } from "@/components/ui/EntityMentionEditor";
 
 /**
  * Side-channel data emitted alongside the NPC payload on save. Parent is
@@ -253,17 +254,29 @@ export function NpcForm({
           {/* Description */}
           <div className="space-y-1.5">
             <Label htmlFor="npc-description">{t("description")}</Label>
-            <textarea
-              id="npc-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={t("description")}
-              rows={3}
-              className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
-              data-testid="npc-description-input"
-              disabled={viewOnly}
-              readOnly={viewOnly}
-            />
+            {campaignId ? (
+              <EntityMentionEditor
+                value={description}
+                onChange={setDescription}
+                placeholder={t("description")}
+                campaignId={campaignId}
+                disabled={viewOnly}
+                rows={3}
+                data-testid="npc-description-input"
+              />
+            ) : (
+              <textarea
+                id="npc-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t("description")}
+                rows={3}
+                className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
+                data-testid="npc-description-input"
+                disabled={viewOnly}
+                readOnly={viewOnly}
+              />
+            )}
           </div>
 
           {/* Morada (Fase 3c) — only when the form has location context */}

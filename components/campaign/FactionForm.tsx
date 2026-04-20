@@ -34,6 +34,7 @@ import type { CampaignNpc } from "@/lib/types/campaign-npcs";
 import { FACTION_ALIGNMENTS } from "@/lib/types/mind-map";
 import type { FactionFormData } from "@/lib/hooks/use-campaign-factions";
 import { EntityTagSelector } from "./EntityTagSelector";
+import { EntityMentionEditor } from "@/components/ui/EntityMentionEditor";
 
 /**
  * Side-channel data emitted alongside the faction payload on save. Parent
@@ -85,11 +86,9 @@ export function FactionForm({
   readOnly = false,
   canEdit = true,
 }: FactionFormProps) {
-  // campaignId is accepted for symmetry with NpcForm/LocationForm and future
-  // edge resolution that may need it inside the component; currently unused
-  // because edges are reconciled by the parent.
-  void campaignId;
-
+  // campaignId feeds the @-mention popover so it can preload the campaign's
+  // NPCs / locations / factions / quests for fuzzy search. Parent still
+  // reconciles the explicit member/HQ edges emitted via extras.
   const t = useTranslations("factions");
   const tCommon = useTranslations("common");
 
@@ -328,16 +327,14 @@ export function FactionForm({
               <Label htmlFor="faction-description">
                 {t("field_description")}
               </Label>
-              <textarea
-                id="faction-description"
+              <EntityMentionEditor
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={setDescription}
                 placeholder={t("description_placeholder")}
-                rows={3}
-                className="flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70"
-                data-testid="faction-description-input"
+                campaignId={campaignId}
                 disabled={viewOnly}
-                readOnly={viewOnly}
+                rows={3}
+                data-testid="faction-description-input"
               />
             </div>
 
