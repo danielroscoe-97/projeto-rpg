@@ -142,6 +142,28 @@
       "upgrade_success": "Conta criada e personagem salvo."
     }
   },
+  "invite": {
+    "landing": {
+      "title_guest": "Você foi convidado para uma campanha",
+      "title_auth": "Escolha seu personagem",
+      "title_returning": "Bem-vindo de volta, {displayName}!",
+      "preamble_fallback": "aventureiro",
+      "dm_fallback": "Mestre",
+      "guest_invited_by_separator": "te convidou para",
+      "cta_signup": "Criar conta para aceitar",
+      "cta_login": "Já tem conta?",
+      "cta_login_link": "Fazer login",
+      "cta_choose_character": "Escolher personagem",
+      "error_title": "Ops, algo deu errado",
+      "error_not_found": "Este convite não foi encontrado. Verifique o link ou peça um novo ao seu Mestre.",
+      "error_expired": "Este convite expirou. Peça ao seu Mestre para enviar um novo.",
+      "error_accepted": "Este convite já foi utilizado.",
+      "skeleton_label": "Carregando convite…",
+      "anon_warning_title": "Você está jogando como convidado anônimo",
+      "anon_warning_cta": "Criar conta para salvar seu progresso",
+      "back_to_dashboard": "Voltar ao Dashboard"
+    }
+  },
   "signup": {
     "role_selection_title": "Como você vai usar o Pocket DM?",
     "role_selection_subtitle": "Você pode alterar isso depois nas configurações",

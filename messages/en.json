@@ -142,6 +142,28 @@
       "upgrade_success": "Account created and character saved."
     }
   },
+  "invite": {
+    "landing": {
+      "title_guest": "You've been invited to a campaign",
+      "title_auth": "Pick your character",
+      "title_returning": "Welcome back, {displayName}!",
+      "preamble_fallback": "adventurer",
+      "dm_fallback": "DM",
+      "guest_invited_by_separator": "invited you to",
+      "cta_signup": "Create account to accept",
+      "cta_login": "Already have an account?",
+      "cta_login_link": "Sign in",
+      "cta_choose_character": "Choose character",
+      "error_title": "Something went wrong",
+      "error_not_found": "We couldn't find this invite. Check the link or ask your DM for a new one.",
+      "error_expired": "This invite has expired. Ask your DM for a new one.",
+      "error_accepted": "This invite has already been used.",
+      "skeleton_label": "Loading invite…",
+      "anon_warning_title": "You're playing as an anonymous guest",
+      "anon_warning_cta": "Create an account to save your progress",
+      "back_to_dashboard": "Back to Dashboard"
+    }
+  },
   "signup": {
     "role_selection_title": "How will you use Pocket DM?",
     "role_selection_subtitle": "You can change this later in settings",

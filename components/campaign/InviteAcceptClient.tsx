@@ -33,6 +33,14 @@ interface InviteAcceptClientProps {
  *
  * Submit logic (acceptInviteAction + toast/redirect) stays here so the
  * server interaction is identical to pre-refactor.
+ *
+ * @deprecated Story 02-D — use `InviteLanding` directly from
+ *   `components/invite/InviteLanding.tsx`. That component owns the full
+ *   state-driven UX (guest / auth / auth-with-invite-pending / invalid)
+ *   and is what `/invite/[token]` renders now. This wrapper remains
+ *   exported for backward compatibility with any external callers that
+ *   pre-fetch characters and want to render just the picker, but it will
+ *   be removed once all call sites migrate to `InviteLanding`.
  */
 export function InviteAcceptClient({
   inviteId,
