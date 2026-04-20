@@ -18,8 +18,12 @@ describe("lib/flags — isFeatureFlagEnabled", () => {
     expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(true);
   });
 
-  test("defaults ff_favorites_v1 to false (pending shared-state refactor)", () => {
-    expect(isFeatureFlagEnabled("ff_favorites_v1")).toBe(false);
+  test("defaults ff_favorites_v1 to true (paired with v2 shared-state refactor)", () => {
+    expect(isFeatureFlagEnabled("ff_favorites_v1")).toBe(true);
+  });
+
+  test("defaults ff_favorites_v2_shared_state to true", () => {
+    expect(isFeatureFlagEnabled("ff_favorites_v2_shared_state")).toBe(true);
   });
 
   test("runtime override takes precedence over default", () => {

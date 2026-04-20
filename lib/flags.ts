@@ -26,6 +26,8 @@ export type FeatureFlagKey =
   | "ff_custom_conditions_v1"
   /** S5.2 — favoritar monstros/itens/condições (reserved). */
   | "ff_favorites_v1"
+  /** S5.2 Beta 4 P0 — shared Zustand store for favorites (rate-limit storm fix). */
+  | "ff_favorites_v2_shared_state"
   /** S5.1 — Polymorph / Wild Shape with two HP bars (reserved; default OFF). */
   | "ff_polymorph_v1";
 
@@ -43,7 +45,8 @@ const DEFAULTS: Record<FeatureFlagKey, boolean> = {
   ff_combatant_add_reorder: true,
   ff_hp_thresholds_v2: true,
   ff_custom_conditions_v1: true,
-  ff_favorites_v1: false,
+  ff_favorites_v1: true,
+  ff_favorites_v2_shared_state: true,
   ff_polymorph_v1: true,
 };
 
