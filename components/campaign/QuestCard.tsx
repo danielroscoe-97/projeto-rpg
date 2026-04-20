@@ -81,9 +81,13 @@ export function QuestCard({
   const TypeIcon = TYPE_ICON[quest.quest_type] ?? Compass;
   const hasExpandableContent = quest.context || quest.objective || quest.reward;
 
-  const handleCardClick = () => onCardClick?.(quest);
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget && (e.target as HTMLElement).closest("button")) return;
+    onCardClick?.(quest);
+  };
   const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!onCardClick) return;
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onCardClick(quest);

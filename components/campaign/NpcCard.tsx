@@ -52,9 +52,13 @@ export function NpcCard({
   const hasStats = stats.hp != null || stats.ac != null || stats.cr != null || stats.initiative_mod != null;
   const hasExpandableContent = npc.description || stats.notes || (relatedNotes && relatedNotes.length > 0);
 
-  const handleCardClick = () => onCardClick?.(npc);
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget && (e.target as HTMLElement).closest("button")) return;
+    onCardClick?.(npc);
+  };
   const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!onCardClick) return;
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onCardClick(npc);

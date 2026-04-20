@@ -74,9 +74,13 @@ export function LocationCard({
   const Icon = TYPE_ICONS[location.location_type] ?? MapPin;
   const hasExpandableContent = !!location.description;
 
-  const handleCardClick = () => onCardClick?.(location);
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget && (e.target as HTMLElement).closest("button")) return;
+    onCardClick?.(location);
+  };
   const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!onCardClick) return;
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onCardClick(location);

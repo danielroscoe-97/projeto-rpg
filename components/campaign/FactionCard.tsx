@@ -55,9 +55,18 @@ export function FactionCard({
 
   const hasExpandableContent = !!faction.description;
 
-  const handleCardClick = () => onCardClick?.(faction);
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only trigger when the click target is the wrapper itself; clicks on
+    // nested buttons (which call stopPropagation) never reach here, but this
+    // guards against bubble-through from non-button children.
+    if (e.target !== e.currentTarget && (e.target as HTMLElement).closest("button")) return;
+    onCardClick?.(faction);
+  };
   const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!onCardClick) return;
+    // Ignore keydown bubbling up from nested interactive elements — otherwise
+    // pressing Enter on the expand button would also open the view dialog.
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onCardClick(faction);
