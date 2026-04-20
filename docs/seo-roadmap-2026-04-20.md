@@ -1,6 +1,8 @@
 # SEO Roadmap — Party Mode Outcome (2026-04-20)
 
-**Contexto:** Sessão de party mode com os 9 agentes BMAD produziu este roadmap. Site novo (~16 dias), fase experimental, sem meta fixa, objetivo é **preparar terreno fértil para crescimento orgânico**. Posicionamento: autoridade SRD brasileira **+** ferramenta+SEO como canal de aquisição (ambos).
+**Versão:** 2026-04-20 — pós-revisão adversarial (escopo reduzido + ordem reordenada)
+
+**Contexto:** Sessão de party mode com os 9 agentes BMAD produziu este roadmap. Uma segunda rodada adversarial (party-mode 2026-04-20) revisou os specs e cortou gold-plating + corrigiu bugs. Site novo (~16 dias), fase experimental, sem meta fixa, objetivo é **preparar terreno fértil para crescimento orgânico**. Posicionamento: autoridade SRD brasileira **+** ferramenta+SEO como canal de aquisição (ambos).
 
 **Status do projeto à data:**
 - Sprints 1, 2, 3, 3.6, 3.7, 3.8 deployados (canonical apex, JSON-LD, site-url normalizer, metadata builders, XSS-safe scripts).
@@ -17,107 +19,118 @@ Dado que:
 - Fase experimental → evitar gold-plating, preferir lean
 - Ambiente multi-agente → disciplina de commit/push é crítica
 - Site novo → Google ainda "descobrindo" — adicionar superfície + instrumentação é alto ROI
+- **Dados guiam criação de conteúdo** — não criar hub PT sem validar query em GSC
 
-**Linha de ação:**
-1. Destravar fundação técnica para criar conteúdo barato (Épico A)
-2. Criar 5 hubs novos + otimizar conversão (Épico B)
-3. Instrumentar visibilidade (Épico C)
-4. Aguardar 30–60 dias de dados reais antes de otimizar CTR
-
----
-
-## 🏗️ 3 Épicos
-
-| Épico | Foco | Tempo total | Lead sugerido |
-|---|---|---:|---|
-| [Épico A — Fundação Técnica](./PROMPT-seo-epic-A-foundation.md) | Blog split, hub generator, validate:seo, branch discipline doc | ~10h | Winston (Arch) + Amelia (Dev) |
-| [Épico B — Conteúdo + Conversão](./PROMPT-seo-epic-B-content.md) | 5 hubs novos (3 PT + 2 EN), sticky mobile CTA, CTA contextual | ~18h | Sally (UX) + Mary (Analyst) |
-| [Épico C — Instrumentação](./PROMPT-seo-epic-C-instrumentation.md) | GSC export, click-flow tracking, content gap, dashboard auto | ~10h | Mary (Analyst) |
-
-**Ordem:** A é pré-requisito hard (desbloqueia B). B e C podem rodar em paralelo.
-
-**Total:** ~38h de trabalho. 2 agentes em paralelo = 2–3 semanas.
+**Linha de ação revisada:**
+1. **Épico A** — destravar fundação técnica (blog split + hub JSON + bi-locale)
+2. **Épico C.1** — GSC export ANTES do Épico B (dados guiam priorização)
+3. **Épico B** — hubs EN obrigatórios + hubs PT condicionais (validados por GSC) + CTAs
+4. **Épico C.2** — funnel tracking pra medir conversão real
+5. Aguardar 30–60 dias de dados antes de otimizar CTR ou criar mais hubs
 
 ---
 
-## 🤝 Consensus dos agentes (rodada 1 do party)
+## 🏗️ 3 Épicos (escopo revisado)
 
-### 📋 John (PM)
-- "Fase experimental → KPI é cadência"
-- Priorizou: A → B+C paralelo
-- Cortou: gold-plating em CI (concordou com Barry em reduzir A3 pra script manual)
+| Épico | Foco | Tempo | Lead sugerido | Mudança |
+|---|---|---:|---|---|
+| [Épico A — Fundação Técnica](./PROMPT-seo-epic-A-foundation.md) | Blog split (2 commits), hub generator bi-locale, validate:seo, branch discipline doc | ~10h | Winston (Arch) + Amelia (Dev) | A1 Python→TS, A2 trava decisão EN |
+| [Épico C — Instrumentação](./PROMPT-seo-epic-C-instrumentation.md) | GSC export + click-flow tracking. C3/C4 adiados. | ~6h | Mary (Analyst) | **Reduzido de 10h → 6h** (cortado gold-plating). C1 roda ANTES do Épico B idealmente. |
+| [Épico B — Conteúdo + Conversão](./PROMPT-seo-epic-B-content.md) | 3 hubs obrigatórios (2 EN + CTAs) + 3 hubs PT condicionais guiados por GSC | ~9h–18h | Sally (UX) + Mary (Analyst) | **B1/B2/B3 agora condicionais** (GSC valida query antes). Só 3 obrigatórios. |
 
-### 🏗️ Winston (Architect)
-- Blog monolith é bomba-relógio técnica
-- Hub generator via JSON = escalabilidade
-- Cada sprint deve resolver 1 bloqueio técnico + 1 entrega de conteúdo
+**Ordem revisada:**
+```
+A (fundação) → C.1 (GSC export) → B (hubs EN + CTAs + hubs PT condicionais) → C.2 (funnel)
+```
 
-### 📊 Mary (Analyst)
-- Dados de 16 dias não dão pra conclusão ("não comparar com baseline de 28d")
-- 83% Brasil + mobile CTR 7,87% → PT-BR + mobile first absoluto
-- Instrumentação é infraestrutura, não afterthought
-- Sugestão aceita: `tracked_queries` em cada hub JSON
-
-### 🎨 Sally (UX)
-- Hubs atuais não convertem agressivamente o suficiente
-- CTA contextual (Tarrasca na página → "Combate com Tarrasca" em /try) ganha 2-3x
-- Sticky mobile CTA não-opcional
-
-### 📚 Paige (Tech Writer)
-- Cada spec de Épico deve ter: Context, Regras imutáveis, Stories com file paths + AC + anti-patterns, Ordem, Validação
-- Formato seguido em `PROMPT-seo-epic-*.md`
-
-### 💻 Amelia (Dev)
-- Alerta sobre merge conflicts em multi-agente
-- Branch strategy clara = pré-req (virou story A4)
-- Hub generator via `generateStaticParams` + `fs.readdirSync` (não rota individual scaffolded)
-
-### 🧪 Quinn (QA)
-- Rich Results Test automatizado pedido mas reduzido a script manual (Barry-pragmatism)
-- Acceptance criteria rigorosos em cada story
-
-### 🚀 Barry (Quick Flow)
-- Constante "isso é gold plating" pra trazer escopo ao chão
-- Mediu tempo agressivo (9h/início, 3h/semana steady)
-
-### 🏃 Bob (SM)
-- Breakdown em 3 épicos × stories de 2–4h executáveis por 1 agente
-- Dependência mapeada: A4 → A1+A3 → A2 → B (paralelo com C)
+**Total mínimo:** ~25h (A 10h + C 6h + B obrigatórios 9h) — vs 38h da versão inicial.
+**Total máximo se todos hubs PT passarem validação:** ~34h.
 
 ---
 
-## 📋 Pontos de debate — resoluções
+## 🤝 Consensus dos agentes (rodada 2 do party — 2026-04-20)
 
-| Debate | Resolução | Por quê |
+### 💻 Amelia (Dev) — bugs concretos pegos
+- A1 script era Python num projeto TypeScript → corrigido
+- A3 referenciava `/about` que não existe → corrigido (5 URLs verificadas 200)
+- C2 migration path estava errado (`migrations/XXX` vs projeto usa `supabase/migrations/00N`) → corrigido
+
+### 🧪 Quinn (QA) — AC decorativos detectados
+- A1 "bundle +5%" sem baseline capturado → adicionado A1.0 baseline obrigatório
+- A1 "curl + grep" nos 21 posts à mão → automatizado via `scripts/verify-blog-parity.ts`
+
+### 🚀 Barry (Quick Flow) — gold plating cortado
+- C3 content gap analysis → **adiado** (sem 60d+ de dados é chute)
+- C4 dashboard auto-update → **adiado** (ROI ruim: parsing markdown p/ 5min/sem)
+- C1 setup GCP explicitado como pré-requisito humano
+
+### 📊 Mary (Analyst) — dados antes de chute
+- B1/B2/B3 (hubs PT novos) agora **condicionais** à validação GSC
+- C.1 realocado para ANTES do Épico B na ordem de execução
+
+### 🏗️ Winston (Architect) — integração travada
+- A2 agora **obrigatoriamente** cria rotas bi-locale (`/guias/` + `/guides/`) pra evitar improvisação no Épico B
+- A1 dividido em 2 commits (split + delete) pra revert trivial
+
+### 📋 John (PM) — mantém KPI
+- "Cadência de experimentação" segue como KPI
+- Total reduzido de 38h → 25-34h libera foco
+
+### 🎨 Sally (UX) — conversão permanece P0
+- B6 (sticky mobile CTA) + B7 (contextual CTA) continuam obrigatórios/recomendados
+- Sem corte
+
+### 🏃 Bob (SM) — ordem mapeada
+- Dependências: A4 → A1.0 → A1.1 → A1.2 → A3 → A2 | C.1 | B4/B5/B6/B7 | C.2
+- Paralelização: C.1 pode rodar em paralelo com A ou após; B espera A mergeado
+
+### 📚 Paige (Tech Writer) — formato preservado
+- Specs mantêm estrutura Context / Regras / Stories / AC / Anti-patterns
+- Campo "Status de validação" adicionado em hubs PT condicionais
+
+---
+
+## 📋 Decisões travadas (não reverter)
+
+| Decisão | Valor | Por quê |
 |---|---|---|
-| Blog split vs MDX migration | **Split** (manter React components em 21 arquivos) | MDX = risco de regressão URL em 21 posts com tráfego (Sprint 4 T4.2 reasoning) |
-| Quantos hubs criar? | **3 PT + 2 EN (5 total) no Épico B** | Barry propôs 4/semana, Bob 3+2, Mary "dados guiam". 5 no Épico B dá pra observar por 30d antes de decidir mais. |
-| CTA contextual vs uniforme | **Ambos — contextual em detail pages, uniforme em hubs** | Detail page quem chegou busca entidade específica; hub quem chegou busca visão geral |
-| CI Rich Results gate | **Não — script manual** | Gold plating pra fase experimental (Barry). Revisitar se regressão recorrente |
-| Branch strategy | **Worktree quando master tem commits não-pushed de outros agentes; branch normal caso contrário** | Captured em story A4 + memory `feedback_multi_agent_commits.md` |
+| Blog split vs MDX migration | **Split** (21 React components) | MDX = risco de regressão URL |
+| Script language | **TypeScript** (todos scripts) | Projeto é TS; Python vira dívida |
+| A1 commit strategy | **2 commits** (split + delete) | Revert trivial se necessário |
+| A2 locale routing | **Rota dinâmica bi-locale** (`/guias/[slug]` + `/guides/[slug]` sharing JSON) | Evita duplicação no Épico B |
+| Hubs PT condicionais | **Validar GSC antes** (≥30 impressões/28d) | Não criar hub pra query sem volume |
+| Épico C escopo | **Só C1 + C2** | C3/C4 são gold-plating pra 16d de dados |
+| C1 ordem | **Antes do Épico B** (se GCP pronto) | Dados guiam priorização de hubs |
+| Migration convention | **`supabase/migrations/00N_nome.sql`** | Padrão real do projeto |
+| CTA contextual vs uniforme | **Ambos** (contextual em detail, uniforme em hub) | Intent diferente |
+| CI Rich Results gate | **Não — script manual** | Gold plating pra fase experimental |
 
 ---
 
 ## 🔜 Depois dos 3 épicos
 
 **NÃO especificado neste roadmap (intencionalmente):**
-- Rewrite de title/description pra CTR rescue → **aguardar 30+ dias de dados**, GSC mostra títulos que funcionam
-- Hub pages 6–10 → criar baseado em output do content gap analysis (C3)
-- Per-route OG images → depois de tráfego estabilizar (CTR social ≠ SEO CTR)
+- Rewrite de title/description pra CTR rescue → **aguardar 30+ dias de dados**
+- Hub pages 6–10 → criar baseado em C3 (quando rodar, pós-60d)
+- Per-route OG images → depois de tráfego estabilizar
 - Looker Studio dashboard → só se >30 queries exigirem
+- **C3 content gap analysis** → rodar quando tiver 60d+ de GSC data
+- **C4 dashboard auto-update** → revisitar se ritual manual virar gargalo real
 
 **Gatilhos para revisitar:**
 1. Pós-Épico A completo → re-avaliar se split do blog revelou necessidades extras
-2. Pós-Épico B 30d → rodar C3 (content gap) e decidir próximos hubs
-3. Pós-Épico C 7d → primeira vista de funnel real (que query converte pra signup)
+2. Pós-Épico C.1 rodado → usar data/seo/gsc-*.json pra validar queries do Épico B
+3. Pós-Épico B 30d → comparar tracked_queries dos hubs com performance real
+4. Pós-Épico C.2 7d → primeira vista de funnel real (que query converte pra signup)
+5. Pós-60d de GSC data → considerar reativar C3 content gap
 
 ---
 
-## 📂 Docs gerados nesta sessão
+## 📂 Docs gerados/atualizados nesta sessão
 
-- [docs/PROMPT-seo-epic-A-foundation.md](./PROMPT-seo-epic-A-foundation.md) — Épico A spec executável
-- [docs/PROMPT-seo-epic-B-content.md](./PROMPT-seo-epic-B-content.md) — Épico B spec executável
-- [docs/PROMPT-seo-epic-C-instrumentation.md](./PROMPT-seo-epic-C-instrumentation.md) — Épico C spec executável
+- [docs/PROMPT-seo-epic-A-foundation.md](./PROMPT-seo-epic-A-foundation.md) — Épico A (rev 2026-04-20)
+- [docs/PROMPT-seo-epic-B-content.md](./PROMPT-seo-epic-B-content.md) — Épico B (rev 2026-04-20)
+- [docs/PROMPT-seo-epic-C-instrumentation.md](./PROMPT-seo-epic-C-instrumentation.md) — Épico C (rev 2026-04-20, escopo reduzido)
 - [docs/seo-roadmap-2026-04-20.md](./seo-roadmap-2026-04-20.md) — este arquivo (master index)
 
 **Docs referenciados (existentes):**
@@ -130,16 +143,21 @@ Dado que:
 
 ## Como delegar
 
-### Opção 1 — 1 agente executa sequencial
-Cole o conteúdo de `PROMPT-seo-epic-A-foundation.md` e diga "executa". Quando terminar, repita com B e C.
+### Opção 1 — Sequencial (1 agente, recomendado)
+Ordem ideal respeita dependências e aproveita C.1 pra guiar B:
+1. Cole [PROMPT-seo-epic-A-foundation.md](./PROMPT-seo-epic-A-foundation.md) → "executa"
+2. **[Humano]** Executa setup GCP/GSC (~30min) — documentado em C1 pré-req
+3. Cole [PROMPT-seo-epic-C-instrumentation.md](./PROMPT-seo-epic-C-instrumentation.md) e diga **"executa só a story C1 por enquanto"**
+4. Cole [PROMPT-seo-epic-B-content.md](./PROMPT-seo-epic-B-content.md) → "executa os P0 (B4, B5, B6) e depois avalia B1/B2/B3 contra o GSC data"
+5. Cole PROMPT-C de novo: "agora executa C2"
 
-### Opção 2 — 2 agentes em paralelo (após A)
-Depois do Épico A mergeado em master:
-- Agente 1: `PROMPT-seo-epic-B-content.md`
-- Agente 2: `PROMPT-seo-epic-C-instrumentation.md`
+### Opção 2 — 2 agentes (após Épico A)
+Depois do Épico A em master:
+- Agente 1: Épico C (C1 → C2 sequencial)
+- Agente 2: Épico B (começa pelos P0; pausa pra aguardar C1 antes de B1/B2/B3)
 
-### Opção 3 — 3 agentes agora
-Arriscado (merge conflicts). Só se Épico A for dividido em A4→A1 (agente 1) e A3→A2 (agente 2), e B/C esperarem A mergeado.
+### Opção 3 — Se setup GCP atrasar
+- Épico A → Épico B (só P0 + P1) → Épico C2 (sem C1) → Épico C1 quando GCP pronto
 
 ---
 
@@ -147,6 +165,6 @@ Arriscado (merge conflicts). Só se Épico A for dividido em A4→A1 (agente 1) 
 
 Daniel Roscoe (`daniel@awsales.io`)
 
-Revisado por: os 9 agentes BMAD em party mode, 2026-04-20.
+Revisado por: os 9 agentes BMAD em party mode, 2026-04-20 (rodada 1) + revisão adversarial 2026-04-20 (rodada 2).
 
 🧙‍♂️
