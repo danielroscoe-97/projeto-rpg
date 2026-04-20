@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,16 @@ interface FactionListProps {
 
 export function FactionList({ campaignId, isEditable = true }: FactionListProps) {
   const t = useTranslations("factions");
+  const router = useRouter();
+
+  const openInMap = useCallback(
+    (faction: CampaignFaction) => {
+      router.push(
+        `/app/campaigns/${campaignId}?section=mindmap&focus=faction-${faction.id}`,
+      );
+    },
+    [campaignId, router],
+  );
   const { factions, loading, addFaction, updateFaction, deleteFaction } =
     useCampaignFactions(campaignId);
   const { locations: availableLocations } = useCampaignLocations(campaignId);
@@ -487,6 +498,7 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
                 onDelete={setDeleteTarget}
                 onToggleVisibility={handleToggleVisibility}
                 onCardClick={setViewingFaction}
+                onOpenInMap={openInMap}
               />
             );
           })}

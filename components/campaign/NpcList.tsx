@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, LayoutGrid, List, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,16 @@ interface NpcListProps {
 
 export function NpcList({ campaignId }: NpcListProps) {
   const t = useTranslations("npcs");
+  const router = useRouter();
+
+  const openInMap = useCallback(
+    (npc: CampaignNpc) => {
+      router.push(
+        `/app/campaigns/${campaignId}?section=mindmap&focus=npc-${npc.id}`,
+      );
+    },
+    [campaignId, router],
+  );
   const {
     npcs,
     npcLinks,
@@ -583,6 +594,7 @@ export function NpcList({ campaignId }: NpcListProps) {
                 onDelete={setDeleteTarget}
                 onToggleVisibility={handleToggleVisibility}
                 onCardClick={setViewingNpc}
+                onOpenInMap={openInMap}
               />
             );
           })}

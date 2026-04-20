@@ -332,9 +332,16 @@ function applyRadialLayout(
 interface CampaignMindMapProps {
   campaignId: string;
   campaignName: string;
+  /**
+   * When set, the map dims every node + edge not in the 1°-neighbourhood of
+   * `focusNodeId`. Format: `${type}-${entityId}` matching the map's internal
+   * ids (e.g. `npc-<uuid>`, `location-<uuid>`, `faction-<uuid>`). Null / undef
+   * = normal rendering. See docs/SPEC-entity-graph-implementation.md Onda 6a.
+   */
+  focusNodeId?: string | null;
 }
 
-export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapProps) {
+export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: CampaignMindMapProps) {
   const t = useTranslations("mindmap");
   const tNotes = useTranslations("notes");
   const tLocations = useTranslations("locations");
@@ -690,9 +697,33 @@ export function CampaignMindMap({ campaignId, campaignName }: CampaignMindMapPro
       laidOut = applyDagreLayout(filteredNodes, filteredEdges, saved);
     }
 
-    setNodes(laidOut);
-    setEdges(filteredEdges);
-  }, [allNodes, allEdges, filters, collapsedGroups, layoutMode, setNodes, setEdges, t]);
+    // Focus mode (Onda 6a): when `focusNodeId` is set, compute the
+    // 1°-neighbourhood and dim everything outside it. Applied as inline
+    // `style.opacity` so it composes cleanly with the existing style set
+    // on each node / edge. No layout change — the graph stays where it is.
+    let finalNodes = laidOut;
+    let finalEdges = filteredEdges;
+    if (focusNodeId && visibleNodeIds.has(focusNodeId)) {
+      const neighbours = new Set<string>([focusNodeId]);
+      for (const edge of filteredEdges) {
+        if (edge.source === focusNodeId) neighbours.add(edge.target);
+        if (edge.target === focusNodeId) neighbours.add(edge.source);
+      }
+      finalNodes = laidOut.map((n) =>
+        neighbours.has(n.id)
+          ? { ...n, style: { ...n.style, opacity: 1 } }
+          : { ...n, style: { ...n.style, opacity: 0.25 } },
+      );
+      finalEdges = filteredEdges.map((e) =>
+        e.source === focusNodeId || e.target === focusNodeId
+          ? { ...e, style: { ...e.style, opacity: 0.95 } }
+          : { ...e, style: { ...e.style, opacity: 0.12 } },
+      );
+    }
+
+    setNodes(finalNodes);
+    setEdges(finalEdges);
+  }, [allNodes, allEdges, filters, collapsedGroups, layoutMode, focusNodeId, setNodes, setEdges, t]);
 
   /* ---- Data loading ---- */
   const [loadError, setLoadError] = useState<string | null>(null);

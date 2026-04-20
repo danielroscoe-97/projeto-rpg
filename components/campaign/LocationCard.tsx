@@ -17,6 +17,7 @@ import {
   User,
   Users,
   FileText,
+  Network,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignLocation, LocationType } from "@/lib/types/mind-map";
@@ -77,6 +78,8 @@ interface LocationCardProps {
   onToggleVisibility: (location: CampaignLocation) => void;
   /** Called when the card body (outside action buttons) is clicked. */
   onCardClick?: (location: CampaignLocation) => void;
+  /** Onda 6a: when present, renders a "Ver no Mapa de Conexões" icon button. */
+  onOpenInMap?: (location: CampaignLocation) => void;
 }
 
 export function LocationCard({
@@ -89,6 +92,7 @@ export function LocationCard({
   onDelete,
   onToggleVisibility,
   onCardClick,
+  onOpenInMap,
 }: LocationCardProps) {
   const t = useTranslations("locations");
   const tGraph = useTranslations("entity_graph");
@@ -210,6 +214,21 @@ export function LocationCard({
               onClick={stop}
               onKeyDown={stop}
             >
+              {onOpenInMap && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-amber-400"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenInMap(location);
+                  }}
+                  title={tGraph("view_in_map")}
+                  data-testid={`location-open-in-map-${location.id}`}
+                >
+                  <Network className="w-3.5 h-3.5" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"

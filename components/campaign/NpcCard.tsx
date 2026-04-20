@@ -17,6 +17,7 @@ import {
   Star,
   MapPin,
   Users,
+  Network,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
@@ -45,6 +46,8 @@ interface NpcCardProps {
   onNoteClick?: (noteId: string) => void;
   /** Called when the card body (outside action buttons) is clicked. */
   onCardClick?: (npc: CampaignNpc) => void;
+  /** Onda 6a: when present, renders a "Ver no Mapa de Conexões" icon button. */
+  onOpenInMap?: (npc: CampaignNpc) => void;
 }
 
 export function NpcCard({
@@ -57,9 +60,11 @@ export function NpcCard({
   onToggleVisibility,
   onNoteClick,
   onCardClick,
+  onOpenInMap,
 }: NpcCardProps) {
   const t = useTranslations("npcs");
   const tLinks = useTranslations("links");
+  const tGraph = useTranslations("entity_graph");
   const [expanded, setExpanded] = useState(false);
 
   const { stats } = npc;
@@ -196,6 +201,21 @@ export function NpcCard({
             onClick={stop}
             onKeyDown={stop}
           >
+            {onOpenInMap && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-amber-400"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenInMap(npc);
+                }}
+                title={tGraph("view_in_map")}
+                data-testid={`npc-open-in-map-${npc.id}`}
+              >
+                <Network className="w-3.5 h-3.5" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"

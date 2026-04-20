@@ -880,7 +880,19 @@
     "link_saved": "Vínculo salvo",
     "save_failed": "Falha ao salvar vínculo",
     "notes_about_this": "Notas sobre isto",
-    "notes_about_this_empty": "Nenhuma nota menciona isto ainda"
+    "notes_about_this_empty": "Nenhuma nota menciona isto ainda",
+    "view_in_map": "Abrir no Mapa de Conexões",
+    "quick_switcher_shortcut": "Atalho: Ctrl+K / Cmd+K",
+    "quick_switcher_title": "Pular para…",
+    "quick_switcher_placeholder": "Busque NPC, local, facção, nota, quest…",
+    "quick_switcher_empty": "Nenhum resultado",
+    "quick_switcher_recent": "Recentes",
+    "quick_switcher_group_npc": "NPCs",
+    "quick_switcher_group_location": "Locais",
+    "quick_switcher_group_faction": "Facções",
+    "quick_switcher_group_note": "Notas",
+    "quick_switcher_group_quest": "Quests",
+    "quick_switcher_esc_hint": "Esc para fechar"
   },
   "auth_errors": {
     "invalid_credentials": "Email ou senha incorretos.",

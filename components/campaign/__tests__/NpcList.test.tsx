@@ -109,6 +109,12 @@ jest.mock("@/lib/errors/capture", () => ({
   captureError: jest.fn(),
 }));
 
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
+  usePathname: () => "/test",
+  useSearchParams: () => ({ get: jest.fn().mockReturnValue(null) }),
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { getNpcs } = require("@/lib/supabase/campaign-npcs");
 

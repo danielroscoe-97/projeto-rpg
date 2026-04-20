@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, MapPin, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -91,6 +92,16 @@ interface LocationListProps {
 
 export function LocationList({ campaignId, isEditable = true }: LocationListProps) {
   const t = useTranslations("locations");
+  const router = useRouter();
+
+  const openInMap = useCallback(
+    (loc: CampaignLocation) => {
+      router.push(
+        `/app/campaigns/${campaignId}?section=mindmap&focus=location-${loc.id}`,
+      );
+    },
+    [campaignId, router],
+  );
   const {
     locations,
     loading,
@@ -481,6 +492,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                     onDelete={setDeleteTarget}
                     onToggleVisibility={handleToggleVisibility}
                     onCardClick={setViewingLocation}
+                    onOpenInMap={openInMap}
                   />
                 </div>
               </div>
@@ -507,6 +519,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                 onDelete={setDeleteTarget}
                 onToggleVisibility={handleToggleVisibility}
                 onCardClick={setViewingLocation}
+                onOpenInMap={openInMap}
               />
             ))}
           </div>
@@ -546,6 +559,7 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                       onDelete={setDeleteTarget}
                       onToggleVisibility={handleToggleVisibility}
                       onCardClick={setViewingLocation}
+                      onOpenInMap={openInMap}
                     />
                   ))}
                 </div>

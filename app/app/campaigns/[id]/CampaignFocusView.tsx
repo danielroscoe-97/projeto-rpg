@@ -8,7 +8,7 @@ import {
   type ErrorInfo,
   type ReactNode,
 } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AlertTriangle } from "lucide-react";
 import { PlayerCharacterManager } from "@/components/dashboard/PlayerCharacterManager";
@@ -17,6 +17,7 @@ import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
 import { NpcList } from "@/components/campaign/NpcList";
 import { CampaignMindMap } from "@/components/campaign/CampaignMindMap";
+import { QuickSwitcher } from "@/components/campaign/QuickSwitcher";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { LocationList } from "@/components/campaign/LocationList";
 import { FactionList } from "@/components/campaign/FactionList";
@@ -84,7 +85,12 @@ export function CampaignFocusView({
 }: CampaignFocusViewProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const tBuilder = useTranslations("encounter_builder");
+
+  // Mind Map deep-link: `?focus=npc-<uuid>` etc. Cards built in Onda 6a
+  // navigate here to drop the DM right into the graph at the right node.
+  const mindmapFocusId = searchParams?.get("focus") ?? null;
 
   const [encounterTab, setEncounterTab] = useState<"builder" | "history">(
     "builder",
@@ -206,6 +212,7 @@ export function CampaignFocusView({
           <CampaignMindMap
             campaignId={campaignId}
             campaignName={campaignName}
+            focusNodeId={mindmapFocusId}
           />
         );
 
@@ -239,6 +246,11 @@ export function CampaignFocusView({
           {renderSection()}
         </SectionErrorBoundary>
       </Suspense>
+      {/* Onda 6b: global Ctrl+K quick switcher. DM-only (guest/anon never
+          reach this route; player members get a lightweight view of the
+          same data but without mutation — routing to the mindmap is still
+          useful for them). */}
+      {isOwner && <QuickSwitcher campaignId={campaignId} />}
     </div>
   );
 }

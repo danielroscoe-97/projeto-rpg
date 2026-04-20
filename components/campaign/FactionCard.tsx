@@ -13,6 +13,7 @@ import {
   MapPin,
   Users,
   FileText,
+  Network,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CampaignFaction, FactionAlignment } from "@/lib/types/mind-map";
@@ -59,6 +60,8 @@ interface FactionCardProps {
   onToggleVisibility: (faction: CampaignFaction) => void;
   /** Called when the card body (outside action buttons) is clicked. */
   onCardClick?: (faction: CampaignFaction) => void;
+  /** Onda 6a: when present, renders a "Ver no Mapa de Conexões" icon button. */
+  onOpenInMap?: (faction: CampaignFaction) => void;
 }
 
 export function FactionCard({
@@ -71,6 +74,7 @@ export function FactionCard({
   onDelete,
   onToggleVisibility,
   onCardClick,
+  onOpenInMap,
 }: FactionCardProps) {
   const t = useTranslations("factions");
   const tGraph = useTranslations("entity_graph");
@@ -190,6 +194,21 @@ export function FactionCard({
               onClick={stop}
               onKeyDown={stop}
             >
+              {onOpenInMap && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-amber-400"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenInMap(faction);
+                  }}
+                  title={tGraph("view_in_map")}
+                  data-testid={`faction-open-in-map-${faction.id}`}
+                >
+                  <Network className="w-3.5 h-3.5" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
