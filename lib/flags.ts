@@ -35,15 +35,15 @@ export type FeatureFlagKey =
  * Hard-coded defaults. Flipped to `true` on 2026-04-19 for beta 4 soak —
  * Daniel authorized general activation after rebased master shipped.
  *
- * `ff_favorites_v1` intentionally remains `false` until the FavoriteStar
- * shared-state refactor (docs/spec-favoritestar-shared-state.md) lands,
- * because the legacy hook triggers a 150-request storm on compendium open.
+ * `ff_hp_thresholds_v2` flipped back to `false` on 2026-04-20 — reverts to
+ * legacy thresholds (70/40/10). Keep the flag alive because the HPLegendOverlay
+ * is now desync-safe and can ride either default.
  *
  * Per-deploy overrides still work via NEXT_PUBLIC_FF_<KEY> env vars.
  */
 const DEFAULTS: Record<FeatureFlagKey, boolean> = {
   ff_combatant_add_reorder: true,
-  ff_hp_thresholds_v2: true,
+  ff_hp_thresholds_v2: false,
   ff_custom_conditions_v1: true,
   ff_favorites_v1: true,
   ff_favorites_v2_shared_state: true,
