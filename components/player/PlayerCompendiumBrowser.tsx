@@ -1161,7 +1161,11 @@ export function PlayerCompendiumBrowser({
                             <div className="text-sm font-medium text-foreground truncate">
                               {spell.name}
                             </div>
-                            <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
+                            <div className="text-xs text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                              <VersionBadge
+                                version={spell.ruleset_version}
+                                isSrd={spell.is_srd}
+                              />
                               <span>
                                 {spell.level === 0
                                   ? t("spell_cantrip")
