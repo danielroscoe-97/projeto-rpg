@@ -574,7 +574,19 @@
     "date_today": "Today",
     "date_yesterday": "Yesterday",
     "date_days_ago": "{count}d ago",
-    "date_weeks_ago": "{count}w ago"
+    "date_weeks_ago": "{count}w ago",
+    "action_start": "Start",
+    "action_enter": "Enter",
+    "action_edit": "Edit",
+    "action_cancel": "Cancel",
+    "action_finish": "Finish",
+    "action_edit_recap": "Edit Recap",
+    "action_error": "Action failed",
+    "action_cancelled": "Session cancelled",
+    "cancel_confirm_title": "Cancel this session?",
+    "cancel_confirm_desc": "This session will be marked as cancelled. You can plan a new one later.",
+    "cancel_confirm_keep": "Keep",
+    "cancel_confirm_yes": "Yes, cancel"
   },
   "campaignMembership": {
     "player_joined": "{name} joined the campaign!",

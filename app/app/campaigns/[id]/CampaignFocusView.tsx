@@ -106,7 +106,11 @@ export function CampaignFocusView({
     switch (section) {
       case "sessions":
         return (
-          <SessionHistory campaignId={campaignId} isOwner={isOwner} />
+          <SessionHistory
+            campaignId={campaignId}
+            isOwner={isOwner}
+            userId={userId}
+          />
         );
 
       case "players":

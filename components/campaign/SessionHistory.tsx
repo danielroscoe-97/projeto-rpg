@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import {
   ChevronDown,
@@ -10,15 +12,46 @@ import {
   Swords,
   Calendar,
   Clock,
+  Plus,
+  Play,
+  Pencil,
+  X,
+  Radio,
+  CheckCircle2,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import {
+  startSession,
+  cancelSession,
+} from "@/lib/supabase/campaign-sessions";
+import {
+  SessionPlanner,
+  type SessionPlannerInitialData,
+} from "./SessionPlanner";
+import { SessionRecapDialog } from "./SessionRecapDialog";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 interface SessionHistoryProps {
   campaignId: string;
   isOwner: boolean;
+  /**
+   * Current authenticated user id. Required to plan/create sessions from the header CTA.
+   * Optional for backwards compat, but the planner CTA is only rendered when present.
+   */
+  userId?: string;
 }
 
 interface EncounterSummary {
@@ -140,16 +173,40 @@ function SessionCard({
   session,
   isOwner,
   t,
+  onStart,
+  onEdit,
+  onCancel,
+  onEnter,
+  onEditRecap,
 }: {
   session: SessionEntry;
   isOwner: boolean;
   t: (key: string, values?: Record<string, string | number>) => string;
+  onStart?: (id: string) => void;
+  onEdit?: (session: SessionEntry) => void;
+  onCancel?: (id: string) => void;
+  onEnter?: (id: string) => void;
+  onEditRecap?: (session: SessionEntry) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const status = session.status as SessionStatus;
   const isCancelled = status === "cancelled";
   const isActive = status === "active";
+  const isPlanned = status === "planned";
+  const isCompleted = status === "completed";
   const stats = getEncounterStats(session.encounters);
+
+  // Whether the action row should render at all.
+  const hasActions =
+    isOwner &&
+    ((isPlanned && (onStart || onEdit || onCancel)) ||
+      (isActive && (onEnter || onCancel)) ||
+      (isCompleted && onEditRecap));
+
+  // Stop propagation so clicking an action doesn't toggle the card expand state.
+  const stop = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
 
   return (
     <div className="flex gap-4">
@@ -242,6 +299,93 @@ function SessionCard({
           </div>
         </button>
 
+        {/* Action row (DM-only, status-dependent) */}
+        {hasActions && (
+          <div
+            className="flex flex-wrap items-center gap-2 px-4 pb-3 -mt-1"
+            data-testid={`session-actions-${session.id}`}
+            onClick={stop}
+            onKeyDown={stop}
+          >
+            {isPlanned && onStart && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => onStart(session.id)}
+                className="min-h-[36px] bg-amber-600 hover:bg-amber-700 text-foreground gap-1.5"
+                data-testid={`session-start-${session.id}`}
+              >
+                <Play className="w-3.5 h-3.5" />
+                {t("action_start")}
+              </Button>
+            )}
+            {isActive && onEnter && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => onEnter(session.id)}
+                className="min-h-[36px] bg-amber-600 hover:bg-amber-700 text-foreground gap-1.5"
+                data-testid={`session-enter-${session.id}`}
+              >
+                <Radio className="w-3.5 h-3.5 animate-pulse" />
+                {t("action_enter")}
+              </Button>
+            )}
+            {isPlanned && onEdit && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onEdit(session)}
+                className="min-h-[36px] border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.06] gap-1.5"
+                data-testid={`session-edit-${session.id}`}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                {t("action_edit")}
+              </Button>
+            )}
+            {isActive && onCancel && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onCancel(session.id)}
+                className="min-h-[36px] border-border text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 gap-1.5"
+                data-testid={`session-finish-${session.id}`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                {t("action_finish")}
+              </Button>
+            )}
+            {isPlanned && onCancel && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onCancel(session.id)}
+                className="min-h-[36px] text-muted-foreground hover:text-red-400 hover:bg-red-500/10 gap-1.5"
+                data-testid={`session-cancel-${session.id}`}
+              >
+                <X className="w-3.5 h-3.5" />
+                {t("action_cancel")}
+              </Button>
+            )}
+            {isCompleted && onEditRecap && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onEditRecap(session)}
+                className="min-h-[36px] border-border text-muted-foreground hover:text-foreground hover:bg-white/[0.06] gap-1.5"
+                data-testid={`session-edit-recap-${session.id}`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                {t("action_edit_recap")}
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Expanded detail */}
         {expanded && (
           <div className="border-t border-white/[0.04] px-4 pb-4 pt-3 space-y-4">
@@ -316,11 +460,18 @@ function SessionCard({
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export function SessionHistory({ campaignId, isOwner }: SessionHistoryProps) {
+export function SessionHistory({ campaignId, isOwner, userId }: SessionHistoryProps) {
   const t = useTranslations("sessionHistory");
+  const router = useRouter();
   const [sessions, setSessions] = useState<SessionEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Planner / edit / confirm dialog state (DM-only).
+  const [plannerOpen, setPlannerOpen] = useState(false);
+  const [editingSession, setEditingSession] = useState<SessionEntry | null>(null);
+  const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
+  const [recapSession, setRecapSession] = useState<SessionEntry | null>(null);
 
   const fetchSessions = useCallback(async () => {
     const supabase = createClient();
@@ -382,6 +533,19 @@ export function SessionHistory({ campaignId, isOwner }: SessionHistoryProps) {
     }));
   }, [campaignId]);
 
+  const loadSessions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchSessions();
+      setSessions(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load sessions");
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchSessions]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -407,6 +571,62 @@ export function SessionHistory({ campaignId, isOwner }: SessionHistoryProps) {
       cancelled = true;
     };
   }, [fetchSessions]);
+
+  // ── Action handlers ────────────────────────────────────────────────────────
+
+  const handleStart = useCallback(
+    async (sessionId: string) => {
+      const ok = await startSession(sessionId);
+      if (!ok) {
+        toast.error(t("action_error"));
+        return;
+      }
+      router.push(`/app/combat/${sessionId}`);
+    },
+    [router, t],
+  );
+
+  const handleEnter = useCallback(
+    (sessionId: string) => {
+      router.push(`/app/combat/${sessionId}`);
+    },
+    [router],
+  );
+
+  const handleEditClick = useCallback((session: SessionEntry) => {
+    setEditingSession(session);
+  }, []);
+
+  const handleCancelClick = useCallback((sessionId: string) => {
+    setCancelTargetId(sessionId);
+  }, []);
+
+  const handleConfirmCancel = useCallback(async () => {
+    if (!cancelTargetId) return;
+    const ok = await cancelSession(cancelTargetId);
+    setCancelTargetId(null);
+    if (!ok) {
+      toast.error(t("action_error"));
+      return;
+    }
+    toast.success(t("action_cancelled"));
+    await loadSessions();
+  }, [cancelTargetId, loadSessions, t]);
+
+  const handleEditRecapClick = useCallback((session: SessionEntry) => {
+    setRecapSession(session);
+  }, []);
+
+  const plannerCanCreate = isOwner && !!userId;
+  const plannerInitialData: SessionPlannerInitialData | null = editingSession
+    ? {
+        sessionId: editingSession.id,
+        name: editingSession.name,
+        description: editingSession.description,
+        scheduled_for: editingSession.scheduled_for,
+        prep_notes: editingSession.prep_notes,
+      }
+    : null;
 
   // ── Loading state ──────────────────────────────────────────────────────────
 
@@ -438,39 +658,169 @@ export function SessionHistory({ campaignId, isOwner }: SessionHistoryProps) {
 
   if (sessions.length === 0) {
     return (
-      <div className="space-y-3" data-testid="session-history-empty">
-        <h2 className="text-lg font-semibold text-foreground">{t("title")}</h2>
-        <div className="rounded-xl border border-white/[0.04] bg-card p-8 text-center">
-          <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
-            <ScrollText className="w-6 h-6 text-amber-400/60" aria-hidden="true" />
+      <>
+        <div className="space-y-3" data-testid="session-history-empty">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-lg font-semibold text-foreground">{t("title")}</h2>
+            {plannerCanCreate && (
+              <Button
+                variant="goldOutline"
+                size="sm"
+                onClick={() => setPlannerOpen(true)}
+                className="gap-1.5"
+                data-testid="session-add-button"
+              >
+                <Plus className="w-4 h-4" />
+                {t("plan_session")}
+              </Button>
+            )}
           </div>
-          <p className="text-muted-foreground text-sm">
-            {t("empty")}
-          </p>
-          <p className="text-muted-foreground/60 text-xs mt-1">
-            {t("empty_desc")}
-          </p>
+          <div className="rounded-xl border border-white/[0.04] bg-card p-8 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-amber-400/10 flex items-center justify-center mb-3">
+              <ScrollText className="w-6 h-6 text-amber-400/60" aria-hidden="true" />
+            </div>
+            <p className="text-muted-foreground text-sm">
+              {t("empty")}
+            </p>
+            <p className="text-muted-foreground/60 text-xs mt-1">
+              {t("empty_desc")}
+            </p>
+            {plannerCanCreate && (
+              <Button
+                variant="goldOutline"
+                size="sm"
+                onClick={() => setPlannerOpen(true)}
+                className="mt-4 gap-1.5"
+                data-testid="session-add-button-empty"
+              >
+                <Plus className="w-4 h-4" />
+                {t("plan_session")}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+
+        {plannerCanCreate && (
+          <SessionPlanner
+            campaignId={campaignId}
+            userId={userId as string}
+            open={plannerOpen}
+            onOpenChange={setPlannerOpen}
+            onSessionCreated={() => loadSessions()}
+          />
+        )}
+      </>
     );
   }
 
   // ── Timeline ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-2" data-testid="session-history">
-      <h2 className="text-lg font-semibold text-foreground">{t("title")}</h2>
+    <>
+      <div className="space-y-2" data-testid="session-history">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h2 className="text-lg font-semibold text-foreground">{t("title")}</h2>
+          {plannerCanCreate && (
+            <Button
+              variant="goldOutline"
+              size="sm"
+              onClick={() => setPlannerOpen(true)}
+              className="gap-1.5"
+              data-testid="session-add-button"
+            >
+              <Plus className="w-4 h-4" />
+              {t("plan_session")}
+            </Button>
+          )}
+        </div>
 
-      <div>
-        {sessions.map((session) => (
-          <SessionCard
-            key={session.id}
-            session={session}
-            isOwner={isOwner}
-            t={t}
-          />
-        ))}
+        <div>
+          {sessions.map((session) => (
+            <SessionCard
+              key={session.id}
+              session={session}
+              isOwner={isOwner}
+              t={t}
+              onStart={isOwner ? handleStart : undefined}
+              onEdit={isOwner ? handleEditClick : undefined}
+              onCancel={isOwner ? handleCancelClick : undefined}
+              onEnter={handleEnter}
+              onEditRecap={isOwner ? handleEditRecapClick : undefined}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* Create planner dialog (DM only) */}
+      {plannerCanCreate && (
+        <SessionPlanner
+          campaignId={campaignId}
+          userId={userId as string}
+          open={plannerOpen}
+          onOpenChange={setPlannerOpen}
+          onSessionCreated={() => loadSessions()}
+        />
+      )}
+
+      {/* Edit planner dialog (DM only) */}
+      {plannerCanCreate && editingSession && (
+        <SessionPlanner
+          key={editingSession.id}
+          campaignId={campaignId}
+          userId={userId as string}
+          open={!!editingSession}
+          onOpenChange={(next) => {
+            if (!next) setEditingSession(null);
+          }}
+          initialData={plannerInitialData}
+          onSessionUpdated={() => {
+            setEditingSession(null);
+            loadSessions();
+          }}
+        />
+      )}
+
+      {/* Recap dialog (completed sessions) */}
+      {recapSession && (
+        <SessionRecapDialog
+          sessionId={recapSession.id}
+          sessionName={recapSession.name}
+          open={!!recapSession}
+          onOpenChange={(next) => {
+            if (!next) setRecapSession(null);
+          }}
+          onSaved={() => {
+            setRecapSession(null);
+            loadSessions();
+          }}
+        />
+      )}
+
+      {/* Cancel confirm */}
+      <AlertDialog
+        open={!!cancelTargetId}
+        onOpenChange={(next) => {
+          if (!next) setCancelTargetId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("cancel_confirm_title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("cancel_confirm_desc")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel_confirm_keep")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmCancel}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("cancel_confirm_yes")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

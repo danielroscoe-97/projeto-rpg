@@ -574,7 +574,19 @@
     "date_today": "Hoje",
     "date_yesterday": "Ontem",
     "date_days_ago": "há {count}d",
-    "date_weeks_ago": "há {count}sem"
+    "date_weeks_ago": "há {count}sem",
+    "action_start": "Iniciar",
+    "action_enter": "Entrar",
+    "action_edit": "Editar",
+    "action_cancel": "Cancelar",
+    "action_finish": "Finalizar",
+    "action_edit_recap": "Editar Resumo",
+    "action_error": "Erro ao executar ação",
+    "action_cancelled": "Sessão cancelada",
+    "cancel_confirm_title": "Cancelar esta sessão?",
+    "cancel_confirm_desc": "Esta sessão será marcada como cancelada. Você pode planejar uma nova depois.",
+    "cancel_confirm_keep": "Manter",
+    "cancel_confirm_yes": "Sim, cancelar"
   },
   "campaignMembership": {
     "player_joined": "{name} entrou na campanha!",
