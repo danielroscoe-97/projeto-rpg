@@ -34,11 +34,28 @@ import { trackEvent } from "@/lib/analytics/track";
 
 export type FetchPriority = "emergency" | "high" | "throttled" | "background";
 
+/**
+ * Which `/api/session/[id]/*` endpoint to hit. Default "state" preserves the
+ * original S3.5 shipping behavior. Added in C2 (Fetch Orchestrator Audit) so
+ * the dm-presence / latest-recap loops can share a single circuit breaker,
+ * throttle window, and coverage telemetry pool with the main /state fetcher.
+ */
+export type FetchPath = "state" | "dm-presence" | "latest-recap";
+
 export interface FetchRequest {
   encounterId: string;
   priority: FetchPriority;
   /** Stable caller name — used for dedup and telemetry. */
   caller: string;
+  /**
+   * Optional query params appended to the URL (e.g. `?token_id=…` for the
+   * visibility-change anti-split-brain check). Participates in the dedup /
+   * coalescing key so two callers with different params aren't merged into
+   * a single awaiter group (they'd get the wrong response otherwise).
+   */
+  queryParams?: Record<string, string>;
+  /** Endpoint path segment under `/api/session/[id]/`. Defaults to "state". */
+  path?: FetchPath;
 }
 
 /** The shape of `data` returned by /api/session/[id]/state. */
@@ -132,6 +149,12 @@ export class FetchOrchestrator {
 
   /** Request a fresh session state. Returns null if the request was dropped. */
   async fetch(req: FetchRequest): Promise<SessionStateEnvelope | null> {
+    // Compose the cache key used by throttle/coalescing. Two requests with the
+    // same encounterId but different queryParams (e.g. one with `?token_id=X`,
+    // one without) MUST NOT share an awaiter group — the response body differs.
+    // Path also segments the pool so `/state` and `/dm-presence` don't coalesce.
+    const cacheKey = this.buildCacheKey(req);
+
     // --- Circuit breaker -------------------------------------------------
     if (this.circuitOpen) {
       const elapsed = this.now() - this.circuitOpenedAt;
@@ -152,31 +175,30 @@ export class FetchOrchestrator {
     if (req.priority !== "emergency" && this.lastFetchAt > 0) {
       const since = this.now() - this.lastFetchAt;
       // Only bypass the throttle when the in-flight request is for the SAME
-      // encounterId — that's the only case where we can coalesce below. If an
-      // in-flight exists for a different encounterId, coalescing won't apply
-      // and falling through would start a parallel fetch, violating the
-      // throttle window. In that case, drop as throttled.
+      // cache key — that's the only case where we can coalesce below. If an
+      // in-flight exists for a different key, coalescing won't apply and
+      // falling through would start a parallel fetch, violating the throttle
+      // window. In that case, drop as throttled.
       const canCoalesce =
-        this.inFlight !== null && this.inFlightKey === req.encounterId;
+        this.inFlight !== null && this.inFlightKey === cacheKey;
       if (since < minInterval && !canCoalesce) {
         this.emitDropped(req, "throttle");
         return null;
       }
     }
 
-    // --- Dedup: same caller + encounterId already pending? ---------------
-    const dedupKey = `${req.caller}::${req.encounterId}`;
+    // --- Dedup: same caller + cache key already pending? -----------------
+    const dedupKey = `${req.caller}::${cacheKey}`;
     if (this.queuedKeys.has(dedupKey)) {
       this.emitDropped(req, "dedup");
       return null;
     }
 
     // --- In-flight coalescing --------------------------------------------
-    // If a fetch is already on the wire for the same encounterId, attach to it.
-    // Different encounterId is exceedingly rare (single session per client) but
-    // we still coalesce — the awaiter will get whatever state comes back. The
-    // caller can filter by encounterId on the response if needed.
-    if (this.inFlight && this.inFlightKey === req.encounterId) {
+    // If a fetch is already on the wire for the same cache key (encounterId
+    // + path + queryParams), attach to it. Different keys cannot coalesce
+    // because their response bodies differ.
+    if (this.inFlight && this.inFlightKey === cacheKey) {
       this.queuedKeys.add(dedupKey);
       return new Promise<SessionStateEnvelope | null>((resolve) => {
         this.awaiters.push({
@@ -196,15 +218,43 @@ export class FetchOrchestrator {
       this.queuedKeys.delete(dedupKey);
     });
     this.inFlight = promise;
-    this.inFlightKey = req.encounterId;
+    this.inFlightKey = cacheKey;
     return promise;
+  }
+
+  /**
+   * Cache key used for throttle / dedup / coalescing. Includes encounterId,
+   * path, and the sorted queryParams so semantically-identical requests share
+   * an awaiter group while semantically-different ones don't.
+   */
+  private buildCacheKey(req: FetchRequest): string {
+    const path = req.path ?? "state";
+    const params = req.queryParams;
+    if (!params || Object.keys(params).length === 0) {
+      return `${req.encounterId}::${path}`;
+    }
+    // Sort keys so `{a:1,b:2}` and `{b:2,a:1}` produce the same key.
+    const sortedEntries = Object.keys(params)
+      .sort()
+      .map((k) => `${k}=${params[k]}`)
+      .join("&");
+    return `${req.encounterId}::${path}::${sortedEntries}`;
+  }
+
+  private buildUrl(req: FetchRequest): string {
+    const path = req.path ?? "state";
+    const base = `/api/session/${req.encounterId}/${path}`;
+    const params = req.queryParams;
+    if (!params || Object.keys(params).length === 0) return base;
+    const qs = new URLSearchParams(params).toString();
+    return qs.length > 0 ? `${base}?${qs}` : base;
   }
 
   private async executeFetch(req: FetchRequest): Promise<SessionStateEnvelope | null> {
     this.lastFetchAt = this.now();
 
     try {
-      const url = `/api/session/${req.encounterId}/state`;
+      const url = this.buildUrl(req);
       let res = await this.fetchImpl(url, { credentials: "include" });
 
       // 401 recovery: give the caller a chance to refresh auth silently.
@@ -219,8 +269,17 @@ export class FetchOrchestrator {
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
-      const body = (await res.json()) as { data?: SessionStateEnvelope };
-      const state = body?.data ?? null;
+      // /state wraps its payload in `{data: ...}`; /dm-presence and
+      // /latest-recap return the payload directly. Normalize both shapes.
+      const body = (await res.json()) as
+        | { data?: SessionStateEnvelope | null }
+        | SessionStateEnvelope
+        | null;
+      const wrapped =
+        body && typeof body === "object" && "data" in body
+          ? (body as { data?: SessionStateEnvelope | null }).data ?? null
+          : (body as SessionStateEnvelope | null);
+      const state = wrapped ?? null;
 
       // Success — reset error counter and close any open circuit.
       if (this.circuitOpen) {
