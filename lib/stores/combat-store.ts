@@ -10,6 +10,12 @@ import { saveCombatBackup } from "@/lib/stores/combat-persist";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { cleanupOrphanedLairEntry, hasAnyLairMonster, hasLairActionEntry, createLairActionCombatant } from "@/lib/utils/lair-action";
 import { getMonsterById } from "@/lib/srd/srd-search";
+import {
+  applyPolymorphDamage,
+  applyPolymorphHealing,
+  createPolymorphState,
+  clearPolymorph,
+} from "@/lib/combat/polymorph";
 
 type CombatStore = EncounterState & CombatActions;
 
@@ -233,6 +239,12 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         undoStack: undoEntry ? pushUndo(state.undoStack, undoEntry) : state.undoStack,
         combatants: state.combatants.map((c) => {
           if (c.id !== id) return c;
+          // S5.1 — when polymorphed, damage subtracts from form HP first. The
+          // pure helper handles both spell (discard overflow) and wildshape
+          // (carry overflow) semantics.
+          if (c.polymorph?.enabled) {
+            return applyPolymorphDamage(c, amount).next;
+          }
           let remaining = amount;
           let newTempHp = c.temp_hp;
           if (newTempHp > 0) {
@@ -256,6 +268,11 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         undoStack: undoEntry ? pushUndo(state.undoStack, undoEntry) : state.undoStack,
         combatants: state.combatants.map((c) => {
           if (c.id !== id) return c;
+          // S5.1 — while polymorphed, healing ONLY raises form HP. Original
+          // HP is frozen until revert.
+          if (c.polymorph?.enabled) {
+            return applyPolymorphHealing(c, amount);
+          }
           const newHp = Math.min(c.max_hp, c.current_hp + amount);
           // Reset death saves when healed from 0 HP (D&D 5e rule)
           const resetSaves = c.current_hp === 0 && newHp > 0;
@@ -263,6 +280,58 @@ export const useCombatStore = create<CombatStore>()(subscribeWithSelector((set, 
         }),
       };
     }),
+
+  // S5.1 — Polymorph / Wild Shape actions.
+  applyPolymorph: (id, params) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        // S5.1 S4 fix — refuse silent overwrite of an active transformation.
+        // The trigger UI should gate already-polymorphed combatants onto
+        // "End polymorph" first; if we got here with `polymorph.enabled`,
+        // treat it as a no-op so the caller can surface a toast / error
+        // instead of silently replacing a wildshape with a polymorph form.
+        if (c.polymorph?.enabled) return c;
+        return {
+          ...c,
+          polymorph: createPolymorphState({
+            ...params,
+            started_at_turn: state.round_number,
+          }),
+        };
+      }),
+    })),
+
+  endPolymorph: (id, reason, overflow) =>
+    set((state) => ({
+      combatants: state.combatants.map((c) => {
+        if (c.id !== id) return c;
+        if (!c.polymorph?.enabled) return c;
+        // On wildshape damage-end we've ALREADY applied overflow in applyDamage
+        // above. For manual end we simply clear. The `overflow` param is
+        // accepted for future proofing (e.g. DM undo rehydration) but not
+        // currently applied here — the store's damage path already handled it.
+        if (reason === "damage" && c.polymorph.variant === "wildshape" && overflow && overflow > 0) {
+          // Best-effort re-apply if caller invoked endPolymorph directly without
+          // going through applyDamage (keeps function symmetric for external
+          // callers / tests).
+          let carry = overflow;
+          let newTempHp = c.temp_hp;
+          if (newTempHp > 0) {
+            const absorbed = Math.min(newTempHp, carry);
+            newTempHp -= absorbed;
+            carry -= absorbed;
+          }
+          const cleared = clearPolymorph(c);
+          return {
+            ...cleared,
+            temp_hp: newTempHp,
+            current_hp: Math.max(0, cleared.current_hp - carry),
+          };
+        }
+        return clearPolymorph(c);
+      }),
+    })),
 
   setTempHp: (id, value) =>
     set((state) => {

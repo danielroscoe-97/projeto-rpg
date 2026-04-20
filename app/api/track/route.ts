@@ -32,6 +32,9 @@ const ALLOWED_EVENTS = new Set([
   "combat:custom_condition_applied",
   // Combat — S4.3 quick actions (Dodge/Dash/Help/Disengage/Hide/Ready)
   "combat:quick_action_applied",
+  // Combat — S5.1 Polymorph / Wild Shape (LGPD: form_name_length only, no raw names)
+  "combat:polymorph_applied",
+  "combat:polymorph_ended",
   // Favorites — S5.2
   "favorites:added",
   "favorites:removed",

@@ -45,6 +45,7 @@ import { computeCombatStats, getMaxRound, buildCombatReport } from "@/lib/utils/
 import type { CombatantStats } from "@/lib/utils/combat-stats";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
+import { PolymorphModal, shouldShowPolymorphTrigger } from "@/components/combat/PolymorphModal";
 import { CombatRecap } from "@/components/combat/CombatRecap";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { PollResult, calculateAverage } from "@/components/combat/PollResult";
@@ -131,6 +132,8 @@ export function CombatSessionClient({
   const [previousDurationMs, setPreviousDurationMs] = useState<number | null>(null);
   // WEATHER_DISABLED: const [weatherEffect, setWeatherEffect] = useState<WeatherEffect>("none");
   const [playerDrawerOpen, setPlayerDrawerOpen] = useState(false);
+  // S5.1 — Polymorph modal state. Stores the target combatant id; null = closed.
+  const [polymorphTargetId, setPolymorphTargetId] = useState<string | null>(null);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
   // Broadcast-driven player status — fed to PlayersOnlinePanel for < 2s latency (spec 4.3.6)
   const [playerBroadcastStatuses, setPlayerBroadcastStatuses] = useState<Record<string, "online" | "idle" | "offline">>({});
@@ -180,6 +183,8 @@ export function CombatSessionClient({
     handleUpdatePlayerNotes,
     handleToggleHidden,
     handleEndEncounter: doEndEncounter,
+    handlePolymorph,
+    handleEndPolymorph,
     getSessionId,
   } = useCombatActions({ sessionId, onNavigate: (path) => router.push(path) });
 
@@ -1715,6 +1720,9 @@ export function CombatSessionClient({
           useCombatStore.getState().setRechargeState(id, actionKey, depleted, threshold)
         }
         currentRound={round_number}
+        // S5.1 — Polymorph: open modal / manual revert. Trigger is flag-gated.
+        onOpenPolymorph={shouldShowPolymorphTrigger() ? (id) => setPolymorphTargetId(id) : undefined}
+        onEndPolymorph={shouldShowPolymorphTrigger() ? handleEndPolymorph : undefined}
         onAddDeathSaveSuccess={(id) => {
           useCombatStore.getState().addDeathSaveSuccess(id);
           const sid = getSessionId();
@@ -1854,6 +1862,20 @@ export function CombatSessionClient({
       />
 
       <CombatActionLog open={effectiveShowActionLog} onClose={() => setShowActionLog(false)} />
+
+      {/* S5.1 — Polymorph modal (DM-triggered). Flag-gated internally. */}
+      {polymorphTargetId && (
+        <PolymorphModal
+          open={polymorphTargetId !== null}
+          onOpenChange={(open) => { if (!open) setPolymorphTargetId(null); }}
+          combatantName={combatants.find((c) => c.id === polymorphTargetId)?.name ?? ""}
+          onApply={(payload) => {
+            if (!polymorphTargetId) return;
+            handlePolymorph(polymorphTargetId, payload);
+            setPolymorphTargetId(null);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -1889,6 +1911,10 @@ interface CombatListProps {
   onSetRechargeState?: (id: string, actionKey: string, depleted: boolean, threshold: number) => void;
   /** S5.3 — Current round for combat-log entries. */
   currentRound?: number;
+  /** S5.1 — open Polymorph modal for a combatant (flag-gated; undefined hides the trigger). */
+  onOpenPolymorph?: (id: string) => void;
+  /** S5.1 — end Polymorph manually. */
+  onEndPolymorph?: (id: string) => void;
   expandedGroups: Record<string, boolean>;
   onToggleGroupExpanded: (groupId: string) => void;
   onSetGroupInitiative: (groupId: string, value: number) => void;
@@ -1921,6 +1947,8 @@ function CombatList({
   onAddDeathSaveFailure,
   onSetRechargeState,
   currentRound,
+  onOpenPolymorph,
+  onEndPolymorph,
   expandedGroups,
   onToggleGroupExpanded,
   onSetGroupInitiative,
@@ -2020,6 +2048,8 @@ function CombatList({
                 onAddDeathSaveFailure={onAddDeathSaveFailure}
                 onSetRechargeState={onSetRechargeState}
                 currentRound={currentRound}
+                onOpenPolymorph={onOpenPolymorph}
+                onEndPolymorph={onEndPolymorph}
               />
             </div>
           );
@@ -2075,6 +2105,8 @@ function CombatList({
                       onAddDeathSaveFailure={onAddDeathSaveFailure}
                       onSetRechargeState={onSetRechargeState}
                       currentRound={currentRound}
+                      onOpenPolymorph={onOpenPolymorph}
+                      onEndPolymorph={onEndPolymorph}
                     />
                   </div>
                 );
