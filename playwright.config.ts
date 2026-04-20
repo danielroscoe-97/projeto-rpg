@@ -25,6 +25,14 @@ export default defineConfig({
       port: 3000,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
+      // Activate dev-only test hooks for the Next.js server:
+      //   - window.__pocketdm_supabase (client-side, see lib/e2e/expose-supabase.ts)
+      //   - /api/e2e/* dev routes (seed-session-token, auth-as-anon, cleanup)
+      // Hard gate: must be exactly the string "true"; any other value = off.
+      env: {
+        ...process.env,
+        NEXT_PUBLIC_E2E_MODE: "true",
+      } as Record<string, string>,
     },
   }),
   projects: [

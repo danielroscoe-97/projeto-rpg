@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 import { WebVitalsTracker } from "@/components/analytics/WebVitalsTracker";
 import { ErrorTrackingProvider } from "@/components/ErrorTrackingProvider";
+import { ExposeSupabaseForE2E } from "@/lib/e2e/expose-supabase";
 import "./globals.css";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL || "/";
@@ -146,6 +147,7 @@ export default async function RootLayout({
           </ThemeProvider>
         </NextIntlClientProvider>
         <ErrorTrackingProvider />
+        <ExposeSupabaseForE2E />
         <Suspense fallback={null}>
           <PageViewTracker />
         </Suspense>
