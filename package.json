@@ -38,6 +38,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@floating-ui/react": "^0.27.19",
     "@novu/node": "^2.6.6",
     "@novu/react": "^3.14.1",
     "@radix-ui/react-alert-dialog": "^1.1.15",
