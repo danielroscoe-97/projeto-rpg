@@ -188,6 +188,11 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
           onDelete={npcHook.deleteNpc}
         />
       )}
+
+      {/* W4/149: DM private notes addressed to this character (read-only) */}
+      {!loading && activeTab === "dm_inbox" && (
+        <DmNotesInbox characterId={characterId} />
+      )}
     </div>
   );
 }
