@@ -5,29 +5,6 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/marketing/Footer";
 import { BLOG_POSTS, BLOG_CATEGORIES, getPostBySlug } from "@/lib/blog/posts";
 import { BlogNavbar } from "@/components/blog/BlogNavbar";
-import {
-  BlogPost1,
-  BlogPost2,
-  BlogPost3,
-  BlogPost4,
-  BlogPost5,
-  BlogPost6,
-  BlogPost7,
-  BlogPost8,
-  BlogPost9,
-  BlogPost10,
-  BlogPost11,
-  BlogPost12,
-  BlogPost13,
-  BlogPost14,
-  BlogPost15,
-  BlogPost16,
-  BlogPost17,
-  BlogPost18,
-  BlogPost19,
-  BlogPost20,
-  BlogPost21,
-} from "@/components/blog/BlogPostContent";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
 import { BlogTOC, BlogTOCMobile } from "@/components/blog/BlogTOC";
 import { BlogLanguageSwitcher } from "@/components/blog/BlogLanguageSwitcher";
@@ -68,30 +45,6 @@ export async function generateMetadata({
   };
 }
 
-const CONTENT_MAP: Record<string, React.ComponentType> = {
-  "como-usar-combat-tracker-dnd-5e": BlogPost1,
-  "ferramentas-essenciais-mestre-dnd-5e": BlogPost2,
-  "combat-tracker-vs-vtt-diferenca": BlogPost3,
-  "guia-condicoes-dnd-5e": BlogPost4,
-  "como-agilizar-combate-dnd-5e": BlogPost5,
-  "como-usar-pocket-dm-tutorial": BlogPost6,
-  "como-montar-encontro-balanceado-dnd-5e": BlogPost7,
-  "guia-challenge-rating-dnd-5e": BlogPost8,
-  "melhores-monstros-dnd-5e": BlogPost9,
-  "como-mestrar-dnd-primeira-vez": BlogPost10,
-  "musica-ambiente-para-rpg": BlogPost11,
-  "teatro-da-mente-vs-grid-dnd-5e": BlogPost12,
-  "build-half-elf-order-cleric-divine-soul-sorcerer": BlogPost13,
-  "build-half-elf-order-cleric-divine-soul-sorcerer-en": BlogPost14,
-  "diario-de-aventura": BlogPost15,
-  "guia-mestre-eficaz-combate-dnd-5e": BlogPost16,
-  "como-gerenciar-hp-dnd-5e": BlogPost17,
-  "7-erros-mestre-combate-dnd": BlogPost18,
-  "iniciativa-dnd-5e-regras-variantes": BlogPost19,
-  "best-initiative-tracker-dnd-5e": BlogPost20,
-  "best-initiative-tracker-dnd-5e-en": BlogPost21,
-};
-
 export const revalidate = 86400;
 
 export default async function BlogPostPage({
@@ -103,7 +56,7 @@ export default async function BlogPostPage({
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  const Content = CONTENT_MAP[slug];
+  const Content = post.component;
   if (!Content) notFound();
 
   // Sort posts by date for consistent ordering

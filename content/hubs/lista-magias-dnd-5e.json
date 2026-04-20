@@ -1,0 +1,188 @@
+{
+  "slug": "lista-magias-dnd-5e",
+  "locale": "pt-BR",
+  "metaTitle": "Lista de Magias D&D 5e — Grimório Completo por Classe e Nível",
+  "metaDescription": "Guia do grimório D&D 5e: magias por nível (truques a nível 9), por classe (Mago, Clérigo, Druida, Bardo, Paladino, Feiticeiro, Bruxo, Patrulheiro) e as icônicas — Fireball, Wish, Counterspell, Misty Step.",
+  "ogTitle": "Lista de Magias D&D 5e — Grimório Completo | Pocket DM",
+  "ogDescription": "Magias por classe e nível. Fireball, Wish, Cure Wounds, Misty Step, Counterspell — grátis, em PT-BR.",
+  "kicker": "Guia · Grimório",
+  "h1": "Lista de Magias D&D 5e — Grimório Completo por Classe e Nível",
+  "lead": {
+    "text": "Mais de 600 magias do D&D 5ª Edição, organizadas por nível (de truques a Wish), por classe conjuradora (Mago, Clérigo, Druida, Bardo, Paladino, Feiticeiro, Bruxo, Patrulheiro) e pelas magias icônicas que todo jogador deveria conhecer. Tudo em português, com descrições completas, componentes, duração, concentração — do SRD 5.1, grátis."
+  },
+  "introBlocks": [
+    {
+      "label": "Como funciona magia no D&D 5e",
+      "paragraphs": [
+        {
+          "text": "O sistema de magia do D&D 5e é baseado em espaços de magia (spell slots): você tem X espaços por nível e pode gastar um espaço maior pra lançar uma magia menor com efeito ampliado. Truques (nível 0) não consomem espaço — são ilimitados."
+        },
+        {
+          "text": "Cada magia tem componentes (verbal, somático, material), alcance, duração e pode exigir concentração (máximo uma magia de concentração por vez — levou dano? Teste de Constituição pra não perder a magia)."
+        },
+        {
+          "text": "As magias são divididas em 8 escolas de magia: Abjuração (defesa), Conjuração (criação/teleporte), Adivinhação (informação), Encantamento (mente), Evocação (dano elemental), Ilusão (engano), Necromancia (morte/não-vida), Transmutação (mudança de matéria)."
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "label": "Truques (Cantrips)",
+      "subLabel": "Nível 0",
+      "desc": "Magias ilimitadas, sem consumir espaço. O pão-com-manteiga de qualquer conjurador — dano a cada rodada sem fim.",
+      "linkPath": "/magias",
+      "items": [
+        { "slug": "flecha-de-fogo", "name": "Fire Bolt" },
+        { "slug": "explosao-sobrenatural", "name": "Eldritch Blast" },
+        { "slug": "chama-sagrada", "name": "Sacred Flame" },
+        { "slug": "toque-glacial", "name": "Chill Touch" },
+        { "slug": "orientacao", "name": "Guidance" },
+        { "slug": "mao-magica", "name": "Mage Hand" }
+      ]
+    },
+    {
+      "label": "Magias de Nível 1",
+      "desc": "Primeiras magias reais. Cada espaço conta — use com sabedoria.",
+      "linkPath": "/magias",
+      "items": [
+        { "slug": "missil-magico", "name": "Magic Missile" },
+        { "slug": "escudo", "name": "Shield" },
+        { "slug": "curar-ferimentos", "name": "Cure Wounds" },
+        { "slug": "palavra-de-cura", "name": "Healing Word" },
+        { "slug": "maos-em-chamas", "name": "Burning Hands" },
+        { "slug": "onda-trovejante", "name": "Thunderwave" },
+        { "slug": "sono", "name": "Sleep" },
+        { "slug": "abençoar", "name": "Bless" },
+        { "slug": "detectar-magia", "name": "Detect Magic" },
+        { "slug": "nuvem-de-nevoa", "name": "Fog Cloud" }
+      ]
+    },
+    {
+      "label": "Magias de Nível 2 e 3",
+      "desc": "Misty Step, Invisibility começam a definir estilo. Fireball, Counterspell, Haste — o tier clássico.",
+      "linkPath": "/magias",
+      "items": [
+        { "slug": "passo-nebuloso", "name": "Misty Step" },
+        { "slug": "invisibilidade", "name": "Invisibility" },
+        { "slug": "paralisar-pessoa", "name": "Hold Person" },
+        { "slug": "borrao", "name": "Blur" },
+        { "slug": "teia", "name": "Web" },
+        { "slug": "oracao-de-cura", "name": "Prayer of Healing" },
+        { "slug": "bola-de-fogo", "name": "Fireball" },
+        { "slug": "contra-magia", "name": "Counterspell" },
+        { "slug": "aceleracao", "name": "Haste" },
+        { "slug": "raio", "name": "Lightning Bolt" },
+        { "slug": "dissipar-magia", "name": "Dispel Magic" },
+        { "slug": "voar", "name": "Fly" },
+        { "slug": "padrao-hipnotico", "name": "Hypnotic Pattern" },
+        { "slug": "reviver", "name": "Revivify" }
+      ]
+    },
+    {
+      "label": "Magias de Alto Nível (4-9)",
+      "desc": "O reino dos magos lendários. Polymorph, Teleportation, Meteor Swarm, Wish — magias que mudam o mundo.",
+      "linkPath": "/magias",
+      "items": [
+        { "slug": "polimorfar", "name": "Polymorph" },
+        { "slug": "banimento", "name": "Banishment" },
+        { "slug": "mata-nuvem", "name": "Cloudkill" },
+        { "slug": "dominar-pessoa", "name": "Dominate Person" },
+        { "slug": "teletransportar", "name": "Teleport" },
+        { "slug": "chuva-de-meteoros", "name": "Meteor Swarm" },
+        { "slug": "palavra-de-poder-matar", "name": "Power Word Kill" },
+        { "slug": "desejo", "name": "Wish" }
+      ]
+    }
+  ],
+  "iconic": {
+    "label": "As 6 magias mais icônicas do D&D 5e",
+    "desc": "Se você só precisa decorar seis magias do grimório inteiro, são essas. Cada uma tem história, contexto de uso e faz parte da cultura do D&D.",
+    "items": [
+      {
+        "slug": "desejo",
+        "name": "Wish (Desejo)",
+        "level": "Nível 9",
+        "blurb": "A magia mais poderosa do jogo. Replica qualquer magia de até 8º nível sem componentes — ou altera a realidade dentro de limites específicos. Risco: efeitos não-padronizados podem te impedir de lançar Wish de novo."
+      },
+      {
+        "slug": "bola-de-fogo",
+        "name": "Fireball",
+        "level": "Nível 3",
+        "blurb": "O clássico dos clássicos. 8d6 de fogo em um cubo de 6m — e as regras foram escritas pra essa magia específica (daí ela ser tão bem balanceada no tier dela). Se você é mago, cleriga-feiticeira ou bruxo, você quer Fireball."
+      },
+      {
+        "slug": "curar-ferimentos",
+        "name": "Cure Wounds",
+        "level": "Nível 1",
+        "blurb": "A magia de cura mais básica do 5e. 1d8 + mod de conjuração, contato. Não é a mais eficiente (Healing Word é melhor em emergência), mas é a que todo mundo sabe lançar."
+      },
+      {
+        "slug": "passo-nebuloso",
+        "name": "Misty Step",
+        "level": "Nível 2",
+        "blurb": "Ação bônus, teletransporta 9 metros. Uma das magias mais buscadas do 5e. Tira você de cair de precipício, escapa de grapple, se reposiciona pro próximo turno. Mago de 5 anos ainda usa Misty Step."
+      },
+      {
+        "slug": "contra-magia",
+        "name": "Counterspell",
+        "level": "Nível 3",
+        "blurb": "A magia que define a diplomacia mágica entre grupos de conjuradores. Reação pra cancelar outra magia sendo lançada. Regra de ouro: sempre mantém um espaço de 3+ reservado."
+      },
+      {
+        "slug": "escudo",
+        "name": "Shield",
+        "level": "Nível 1",
+        "blurb": "Reação, +5 CA até o início do seu próximo turno. A magia mais usada em qualquer build de Mago. Você vê o ataque vindo, você lança Shield, o ataque erra."
+      }
+    ]
+  },
+  "closing": [
+    {
+      "label": "Usando magias no Pocket DM",
+      "paragraphs": [
+        {
+          "text": "O Pocket DM tem um oráculo de magias integrado ao combat tracker. Durante o combate, você pode pesquisar qualquer magia (em português ou inglês), ver componentes, duração, alcance e texto completo sem sair do jogo. Isso elimina o maior atrito da conjuração: parar de jogar pra abrir o PHB."
+        },
+        {
+          "text": "Se você é mestre, confira também nossa {{tiers}} — rankeamos as magias por força real (baseado em dados de combate), não pela opinião do autor do PHB.",
+          "links": {
+            "tiers": { "href": "/methodology/spell-tiers", "label": "metodologia de spell tiers" }
+          }
+        }
+      ]
+    }
+  ],
+  "internalLinkCluster": {
+    "label": "Mais guias",
+    "links": [
+      { "href": "/guias/bestiario-dnd-5e", "label": "Bestiário D&D 5e" },
+      { "href": "/monstros", "label": "Compêndio de Monstros" },
+      { "href": "/condicoes", "label": "Condições" },
+      { "href": "/itens", "label": "Itens Mágicos" },
+      { "href": "/talentos", "label": "Talentos" },
+      { "href": "/classes-pt", "label": "Classes" },
+      { "href": "/racas", "label": "Raças" },
+      { "href": "/atributos", "label": "Atributos" }
+    ]
+  },
+  "ctaHeadline": "Abrir o grimório no Pocket DM",
+  "ctaSub": "Combat tracker grátis com oráculo de magias integrado · D&D 5e",
+  "ctaPrimaryHref": "/try",
+  "ctaPrimaryLabel": "Iniciar Combate",
+  "ctaSecondaryHref": "/magias",
+  "ctaSecondaryLabel": "Ver Compêndio",
+  "breadcrumbs": [
+    { "name": "Início", "path": "/" },
+    { "name": "Guias", "path": "/guias/lista-magias-dnd-5e" },
+    { "name": "Lista de Magias D&D 5e", "path": "/guias/lista-magias-dnd-5e" }
+  ],
+  "tracked_queries": [
+    "lista de magias d&d 5e",
+    "grimório d&d 5e",
+    "magias dnd 5e",
+    "spell list 5e srd",
+    "fireball dnd",
+    "wish dnd"
+  ]
+}
