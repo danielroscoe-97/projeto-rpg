@@ -121,6 +121,11 @@ const ALLOWED_EVENTS = new Set([
   "fetch_orchestrator:dropped",
   "fetch_orchestrator:circuit_open",
   "fetch_orchestrator:circuit_close",
+  // Beta 4 C1 — silent 401 refresh in broadcast
+  "auth:silent_refresh_success",
+  "auth:silent_refresh_failed",
+  "broadcast:401_retry_success",
+  "broadcast:401_retry_failed",
 ]);
 
 // In-process rate limiter: 60 events/min per IP

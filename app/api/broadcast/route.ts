@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401, headers: { "X-Auth-Reason": "token_expired" } },
+      );
     }
 
     // Check session ownership

@@ -50,6 +50,8 @@ import { CombatRecap } from "@/components/combat/CombatRecap";
 import { DifficultyPoll } from "@/components/combat/DifficultyPoll";
 import { PollResult, calculateAverage } from "@/components/combat/PollResult";
 import { createClient } from "@/lib/supabase/client";
+import type { AuthChangeEvent } from "@supabase/supabase-js";
+import { trackEvent } from "@/lib/analytics/track";
 import { CombatTimer } from "@/components/combat/CombatTimer";
 // StickyTurnHeader removed — turn info now inline in round header (desktop) and compact row (mobile)
 import { TurnTimer } from "@/components/combat/TurnTimer";
@@ -486,6 +488,32 @@ export function CombatSessionClient({
   useEffect(() => {
     useFavoritesStore.getState().hydrate(true);
   }, []);
+
+  // Beta 4 C1 — observe DM auth state for silent refresh + hard sign-out fallback.
+  // Why: `broadcastViaServer` already recovers 401 via refreshSession; this listener
+  // gives us telemetry parity with the player side and covers SIGNED_OUT (refresh
+  // token expired after 72h → must re-login, no amount of retry fixes it).
+  useEffect(() => {
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((evt: AuthChangeEvent) => {
+      if (evt === "TOKEN_REFRESHED") {
+        trackEvent("auth:silent_refresh_success", {
+          actor: "dm",
+          trigger: "auth_state_change",
+        });
+      } else if (evt === "SIGNED_OUT") {
+        trackEvent("auth:silent_refresh_failed", {
+          actor: "dm",
+          reason: "refresh_token_expired",
+        });
+        toast.error("Sessão expirada — faça login novamente.");
+        router.push("/login");
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router]);
 
   // Hide navbar + reduce main padding when combat is active — saves ~72px vertical space
   useEffect(() => {
