@@ -60,6 +60,7 @@ export function usePlayerNotes(characterId: string, campaignId: string) {
         content: input.content,
         player_character_id: characterId,
         campaign_id: campaignId,
+        visibility: "private", // DB default (migration 149)
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -84,8 +85,18 @@ export function usePlayerNotes(characterId: string, campaignId: string) {
   );
 
   // Update entry with per-entry debounce (I-3: error handling in debounced save)
+  // W4/149: `visibility` is included so the Player HQ toggle can flip a note
+  // between `private` and `shared_with_dm`. Visibility-only changes flush
+  // immediately (no debounce) so the DM inspector sees them instantly.
   const updateEntry = useCallback(
-    (entryId: string, updates: { content?: string; title?: string }) => {
+    (
+      entryId: string,
+      updates: {
+        content?: string;
+        title?: string;
+        visibility?: JournalEntry["visibility"];
+      },
+    ) => {
       setEntries((prev) =>
         prev.map((e) =>
           e.id === entryId ? { ...e, ...updates, updated_at: new Date().toISOString() } : e
@@ -101,7 +112,12 @@ export function usePlayerNotes(characterId: string, campaignId: string) {
         clearTimeout(debounceTimers.current[entryId]);
       }
 
-      debounceTimers.current[entryId] = setTimeout(async () => {
+      const isVisibilityOnlyChange =
+        updates.visibility !== undefined &&
+        updates.content === undefined &&
+        updates.title === undefined;
+
+      const flush = async () => {
         const pending = pendingRef.current[entryId];
         if (!pending) return;
         delete pendingRef.current[entryId];
@@ -110,7 +126,13 @@ export function usePlayerNotes(characterId: string, campaignId: string) {
           .update(pending)
           .eq("id", entryId);
         if (error) toast.error("Failed to save changes");
-      }, 1000);
+      };
+
+      if (isVisibilityOnlyChange) {
+        flush();
+      } else {
+        debounceTimers.current[entryId] = setTimeout(flush, 1000);
+      }
     },
     [supabase]
   );
