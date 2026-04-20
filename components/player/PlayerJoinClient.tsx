@@ -2029,21 +2029,27 @@ export function PlayerJoinClient({
         });
       }
 
-      // Validate token ownership (anti-split-brain for bfcache)
+      // Validate token ownership (anti-split-brain for bfcache).
+      // C2/F1.b: route through orchestrator so multi-tab bursts can't storm the
+      // endpoint. Emergency-adjacent but "high" priority is sufficient — the
+      // check is a one-shot per visibility event, not a recovery path.
       if (isRegisteredRef.current && supabaseRef.current) {
         try {
           const { data: { session: authSession } } =
             await supabaseRef.current.auth.getSession();
           if (authSession?.user?.id && effectiveTokenIdRef.current) {
-            const res = await fetch(
-              `/api/session/${sessionId}/state?token_id=${effectiveTokenIdRef.current}`
-            );
-            if (res.ok) {
-              const { data } = await res.json();
-              if (data?.token_owner && data.token_owner !== authSession.user.id) {
-                setSessionRevoked(true);
-                return;
-              }
+            const data = await fetchOrchestrator.fetch({
+              encounterId: sessionId,
+              priority: "high",
+              caller: "visibility_change:token_ownership_check",
+              queryParams: { token_id: effectiveTokenIdRef.current },
+            });
+            // data === null ⇒ dropped (throttle / dedup / circuit) or network
+            // failure. Skip the split-brain check in that case; the follow-up
+            // `fetchFullState` emergency call below will cover us.
+            if (data && data.token_owner && data.token_owner !== authSession.user.id) {
+              setSessionRevoked(true);
+              return;
             }
           }
         } catch { /* best-effort — continue normal reconnection */ }
