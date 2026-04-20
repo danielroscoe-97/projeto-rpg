@@ -94,6 +94,14 @@ html[data-combat-active="true"] main#main-content {
     --text-primary: #E8E6E0;
     --text-secondary: #9896A0;
     --text-tertiary: #5C5A65;
+
+    /* Briefing iluminação tokens — see docs/UX-benchmarks-modern-ludic.md §6.1
+       Consumed by components/campaign/Briefing*.tsx (active session halo,
+       available session glow, inactive dim border). Kept as raw values so they
+       can be plugged into `boxShadow` / `border` / `outline` without wrapping. */
+    --halo-active: 0 0 24px rgba(200, 160, 80, 0.35);
+    --halo-available: 0 0 8px rgba(200, 160, 80, 0.1);
+    --dim-inactive: rgba(100, 80, 40, 0.3);
   }
 
   * {

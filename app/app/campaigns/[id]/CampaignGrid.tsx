@@ -25,6 +25,17 @@ interface CampaignGridProps {
   finishedEncounterCount: number;
 }
 
+/**
+ * @deprecated Use `components/campaign/CampaignBriefing` instead.
+ *
+ * Legacy hub grid — replaced by the briefing-style overview introduced in
+ * SPEC-campaign-dashboard-briefing (Onda 2a). The briefing surfaces "Hoje",
+ * recent activity, mini mind map and a pulse panel instead of 3 groups of
+ * decorative counter cards. The component is kept in the tree (not deleted)
+ * as a short-term fallback — can be rewired via a `?view=grid` flag if a
+ * regression forces a rollback (see SPEC §7 R7). No new callers; the DM
+ * view (`CampaignDmViewServer`) renders `CampaignBriefing` exclusively.
+ */
 export function CampaignGrid({
   isOwner,
   playerCount,
