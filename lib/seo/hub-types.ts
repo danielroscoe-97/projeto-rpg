@@ -54,6 +54,11 @@ export interface HubContent {
   metaDescription: string;
   ogTitle?: string;
   ogDescription?: string;
+  /** Path to OG image (defaults to "/opengraph-image"). */
+  ogImagePath?: string;
+  /** Slug of the counterpart hub in the other locale for hreflang wiring.
+   *  e.g. PT hub "bestiario-dnd-5e" could have alternateSlug "dnd-5e-bestiary". */
+  alternateSlug?: string;
 
   // ─── Visible hero ────────────────────────────────────────────
   /** Small uppercase kicker above H1 (e.g. "Guia · Bestiário"). */

@@ -65,9 +65,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // ── Hub pages — JSON-driven via content/hubs/*.json ──────────────
+  // lastModified pulled from each JSON file's mtime so unchanged hubs
+  // don't emit false freshness signals on every deploy.
   const hubPages: MetadataRoute.Sitemap = loadAllHubs().map((hub) => ({
     url: `${BASE_URL}${hub.locale === "pt-BR" ? "/guias" : "/guides"}/${hub.slug}`,
-    lastModified: BUILD_TIME,
+    lastModified: hub._mtime,
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));

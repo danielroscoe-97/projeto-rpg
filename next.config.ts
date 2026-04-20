@@ -11,10 +11,15 @@ const withBundleAnalyzer = bundleAnalyzer({
 const isDev = process.env.NODE_ENV !== "production";
 
 const nextConfig: NextConfig = {
-  // Ensure data/srd/ JSON bundles are included in serverless function bundles.
-  // readFileSync with dynamic paths isn't always traced by Vercel NFT.
+  // Ensure data/srd/ and content/hubs/ JSON bundles are included in
+  // serverless function bundles. readFileSync with dynamic paths isn't
+  // always traced by Vercel NFT, which can cause ENOENT in prod routes
+  // that lazily read JSON files (hub pages, sitemap).
   outputFileTracingIncludes: {
     "/api/srd/full/**": ["./data/srd/**/*"],
+    "/guias/[slug]": ["./content/hubs/**/*"],
+    "/guides/[slug]": ["./content/hubs/**/*"],
+    "/sitemap.xml": ["./content/hubs/**/*"],
   },
   async redirects() {
     return [

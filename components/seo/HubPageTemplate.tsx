@@ -16,8 +16,9 @@ function resolveItemHref(item: HubItem, linkPath: string): string {
 
 /**
  * Render a rich paragraph with `{{placeholder}}` substituted for <Link> tags.
- * Placeholders that don't have a matching link are rendered as plain text
- * (sans the surrounding braces) — a safe fallback.
+ * A placeholder without a matching `links` entry renders as italic plain
+ * text (so it's visible in the UI but flagged visually as unlinked) and
+ * logs a warning in dev. Prevents silent SEO regression from JSON typos.
  */
 function RichText({ para }: { para: HubRichParagraph }) {
   const { text, links = {} } = para;
@@ -27,8 +28,20 @@ function RichText({ para }: { para: HubRichParagraph }) {
       {parts.map((part, i) => {
         const m = part.match(/^\{\{([^}]+)\}\}$/);
         if (!m) return <Fragment key={i}>{part}</Fragment>;
-        const link = links[m[1]];
-        if (!link) return <Fragment key={i}>{m[1]}</Fragment>;
+        const key = m[1];
+        const link = links[key];
+        if (!link) {
+          if (process.env.NODE_ENV !== "production") {
+            console.warn(
+              `[HubPageTemplate] RichText placeholder {{${key}}} has no matching link in links map`,
+            );
+          }
+          return (
+            <em key={i} className="not-italic text-gold/50">
+              {key}
+            </em>
+          );
+        }
         return (
           <Link
             key={i}
@@ -96,7 +109,7 @@ export function HubPageTemplate({ content }: { content: HubContent }) {
       name: content.metaTitle,
       description: content.metaDescription,
       path: selfPath,
-      imagePath: "/opengraph-image",
+      imagePath: content.ogImagePath ?? "/opengraph-image",
       locale: content.locale,
     }),
     inLanguage: content.inLanguage ?? (content.locale === "pt-BR" ? "pt-BR" : "en"),

@@ -5,6 +5,7 @@ import { HubPageTemplate } from "@/components/seo/HubPageTemplate";
 import { hubSlugsForLocale, loadHub } from "@/lib/seo/hub-loader";
 
 export const revalidate = 86400;
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return hubSlugsForLocale("en").map((slug) => ({ slug }));
@@ -22,6 +23,7 @@ export async function generateMetadata({
     title: hub.metaTitle,
     description: hub.metaDescription,
     path: `/guides/${hub.slug}`,
+    alternatePath: hub.alternateSlug ? `/guias/${hub.alternateSlug}` : undefined,
     locale: "en",
     ogTitle: hub.ogTitle,
     ogDescription: hub.ogDescription,

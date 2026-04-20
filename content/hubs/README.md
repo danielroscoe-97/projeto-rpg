@@ -55,9 +55,31 @@ Both routes share `content/hubs/*.json` via `lib/seo/hub-loader.ts` which filter
 - EN: `{topic-in-english}.json` (e.g. `dnd-5e-bestiary.json`)
 - Underscore-prefixed files (`_draft.json`) are ignored by the loader — use as scratchpad.
 
+## Bi-locale hreflang pairing
+
+When you author a hub in both locales, link them via `alternateSlug` in each JSON — the loader feeds this to `buildMetadata` so Google gets `hreflang` alternates:
+
+```jsonc
+// content/hubs/bestiario-dnd-5e.json (pt-BR)
+{ "slug": "bestiario-dnd-5e", "locale": "pt-BR", "alternateSlug": "dnd-5e-bestiary", ... }
+
+// content/hubs/dnd-5e-bestiary.json (en)
+{ "slug": "dnd-5e-bestiary", "locale": "en", "alternateSlug": "bestiario-dnd-5e", ... }
+```
+
+Omit `alternateSlug` on single-locale hubs — the field is optional.
+
+## Per-hub OG image
+
+Each hub can override the default global OG image via `ogImagePath` (relative to apex). Omit to use `/opengraph-image` (global Next.js dynamic OG).
+
 ## Sitemap
 
-`app/sitemap.ts` calls `loadAllHubs()` and emits one entry per hub, using `/guias/` or `/guides/` prefix based on locale. No manual work.
+`app/sitemap.ts` calls `loadAllHubs()` and emits one entry per hub, using `/guias/` or `/guides/` prefix based on locale. `lastModified` pulls from each JSON file's mtime — edit a hub, the next build/deploy signals freshness. No manual work.
+
+## Validation
+
+`lib/seo/hub-loader.ts` runs a hand-rolled validator on every JSON. Missing required fields (`metaTitle`, `h1`, `lead.text`, `sections` non-empty, `breadcrumbs` ≥2, etc.) → warning logged + hub skipped. Check `next build` output for `[hub-loader]` lines when adding a hub.
 
 ## tracked_queries
 
