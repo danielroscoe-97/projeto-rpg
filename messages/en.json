@@ -1045,6 +1045,30 @@
       "ago": "Last session {when}",
       "defaultCampaignName": "Unnamed campaign",
       "defaultCharacterName": "Your character"
+    },
+    "myCharacters": {
+      "title": "My characters",
+      "cta": "Create character",
+      "emptyState": "You don't have any characters yet",
+      "loadingLabel": "Loading characters",
+      "defaultBadge": "Default",
+      "standaloneBadge": "No campaign"
+    },
+    "myCampaigns": {
+      "title": "My campaigns",
+      "cta": "View campaign",
+      "emptyState": "You're not part of any campaign yet",
+      "loadingLabel": "Loading campaigns",
+      "dmLabel": "DM: {dm}",
+      "sessionCount": "{count} sessions",
+      "noSessions": "No sessions yet"
+    },
+    "sessionHistory": {
+      "title": "Session history",
+      "cta": "View recap",
+      "emptyState": "You haven't played any sessions yet",
+      "loadingLabel": "Loading history",
+      "recapBadge": "Recap"
     }
   },
   "player_hq": {

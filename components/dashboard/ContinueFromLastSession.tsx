@@ -66,10 +66,7 @@ function formatRelative(iso: string, locale: string): string {
   // Code-review M2 fix: clamp to <= 0 so clock skew between server and client
   // never surfaces as "in 30 seconds" on a card that is, by definition, about
   // the past. If the timestamp is in the near future we treat it as "just now".
-  const diffSec = Math.min(
-    0,
-    Math.round((then - Date.now()) / 1000),
-  );
+  const diffSec = Math.min(0, Math.round((then - Date.now()) / 1000));
 
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const abs = Math.abs(diffSec);
@@ -94,11 +91,12 @@ export function ContinueFromLastSession({
   // browser advertises something else (e.g. `en-US`, `pt-BR`).
   const intlLocale = useLocale();
   const locale = localeProp ?? intlLocale;
-  const agoText = formatRelative(data.lastSessionAt, locale);
 
   const campaignName = data.campaignName ?? t("defaultCampaignName");
   const characterName = data.characterName ?? t("defaultCharacterName");
   const initial = getInitial(data.characterName);
+
+  const agoText = formatRelative(data.lastSessionAt, locale);
 
   // Destination: campaign sheet if we know the campaign, else character HQ.
   const href = data.campaignId
@@ -110,10 +108,9 @@ export function ContinueFromLastSession({
   return (
     <motion.section
       aria-labelledby="continue-from-last-session-title"
-      // Code-review minor fix: start at y:0 (opacity-only fade) to avoid any
-      // micro-CLS when the card enters. The 4px y-translate was cosmetic and
-      // measurably shifted the page on first paint for users with reduced
-      // motion disabled.
+      // Start at y:0 (opacity-only fade) to avoid any micro-CLS when the card
+      // enters. The prior 4px y-translate was cosmetic and measurably shifted
+      // the page on first paint for users with reduced motion disabled.
       initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" }}

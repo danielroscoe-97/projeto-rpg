@@ -8,8 +8,17 @@ import { redirect } from "next/navigation";
 
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModal";
+// Story 02-F full — Epic 02 Area 4. Each of the four player-view sections
+// owns its own Supabase query inside an async server component and streams
+// behind a Suspense boundary so the skeleton paints on first flush.
 import { ContinueFromLastSessionServer } from "@/components/dashboard/ContinueFromLastSessionServer";
 import { ContinueFromLastSessionSkeleton } from "@/components/dashboard/ContinueFromLastSessionSkeleton";
+import { MyCharactersServer } from "@/components/dashboard/MyCharactersServer";
+import { MyCharactersGridSkeleton } from "@/components/dashboard/MyCharactersGridSkeleton";
+import { MyCampaignsServer } from "@/components/dashboard/MyCampaignsServer";
+import { MyCampaignsSectionSkeleton } from "@/components/dashboard/MyCampaignsSectionSkeleton";
+import { SessionHistoryServer } from "@/components/dashboard/SessionHistoryServer";
+import { SessionHistoryListSkeleton } from "@/components/dashboard/SessionHistoryListSkeleton";
 import { computeStreak } from "@/lib/utils/streak";
 import { grantXpAsync, getCooldownStart } from "@/lib/xp/grant-xp";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
@@ -43,8 +52,8 @@ export default async function DashboardPage() {
     encountersRes,
     encounterCountRes,
   ] = await Promise.all([
-    // Role/email drive checklist & redirects here. The
-    // `last_session_at` / `default_character_id` / `avatar_url` fields used
+    // Role/email drive the checklist + redirects on this page. The
+    // `last_session_at`, `default_character_id`, and `avatar_url` fields used
     // by the "Continue where you left off" card now live in their own async
     // server component (ContinueFromLastSessionServer) so the card can stream
     // in behind a Suspense boundary — see below.
@@ -65,10 +74,11 @@ export default async function DashboardPage() {
   const userRole = (userData?.role as UserRole) ?? "both";
   const userEmail = userData?.email ?? user.email ?? "";
 
-  // 02-F parte 1 — "Continue de onde parou" card is rendered below inside a
+  // 02-F full — "Continue de onde parou" card is rendered below inside a
   // Suspense boundary via <ContinueFromLastSessionServer />, which owns its
-  // own query so the skeleton can paint while that query resolves. See
-  // `components/dashboard/ContinueFromLastSessionServer.tsx`.
+  // own JOIN query (users × player_characters × campaigns). The card gates
+  // itself on `users.last_session_at` and returns null when the player has
+  // never played. See `components/dashboard/ContinueFromLastSessionServer.tsx`.
   const onboarding = onboardingRes.data as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
   const hasUsedCombat = (encounterCountRes.count ?? 0) > 0;
 
@@ -295,14 +305,16 @@ export default async function DashboardPage() {
     }
   }
 
+  // 02-F full: the four player-view sections render for any user whose role
+  // includes "player" (i.e. `player` or `both`). DM-only accounts don't see
+  // them. We still render them inside Suspense so that each section's
+  // skeleton paints immediately while its server query resolves.
+  const showPlayerSections = isPlayerRoleForQueries;
+
   return (
     <div>
       <GuestDataImportModal />
-      {/* C3 fix: wrap the "Continue where you left off" card in Suspense so
-          the skeleton streams on first paint. Previously the query ran inside
-          the page-level Promise.all, which meant the skeleton was never
-          rendered (the server blocked returning JSX until the query resolved).
-          The server component below owns its own query. */}
+      {/* Section 1 — "Continue de onde parou" */}
       <Suspense fallback={<ContinueFromLastSessionSkeleton />}>
         <ContinueFromLastSessionServer />
       </Suspense>
@@ -319,6 +331,29 @@ export default async function DashboardPage() {
         checklistStatus={checklistStatus}
         playerChecklistStatus={playerChecklistStatus}
       />
+      {showPlayerSections && (
+        <div
+          className="mx-auto mt-8 max-w-6xl space-y-0 px-4 sm:px-6"
+          data-testid="dashboard-player-sections"
+        >
+          {/* Section 2 — "Meus personagens" */}
+          <Suspense fallback={<MyCharactersGridSkeleton />}>
+            <MyCharactersServer />
+          </Suspense>
+
+          <div className="grid grid-cols-1 gap-0 lg:grid-cols-2 lg:gap-6">
+            {/* Section 3 — "Minhas campanhas" */}
+            <Suspense fallback={<MyCampaignsSectionSkeleton />}>
+              <MyCampaignsServer />
+            </Suspense>
+
+            {/* Section 4 — "Histórico de sessões" */}
+            <Suspense fallback={<SessionHistoryListSkeleton />}>
+              <SessionHistoryServer />
+            </Suspense>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

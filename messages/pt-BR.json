@@ -1045,6 +1045,30 @@
       "ago": "Última sessão {when}",
       "defaultCampaignName": "Campanha sem nome",
       "defaultCharacterName": "Seu personagem"
+    },
+    "myCharacters": {
+      "title": "Meus personagens",
+      "cta": "Criar personagem",
+      "emptyState": "Você ainda não tem personagens",
+      "loadingLabel": "Carregando personagens",
+      "defaultBadge": "Padrão",
+      "standaloneBadge": "Sem campanha"
+    },
+    "myCampaigns": {
+      "title": "Minhas campanhas",
+      "cta": "Ver campanha",
+      "emptyState": "Você ainda não participa de nenhuma campanha",
+      "loadingLabel": "Carregando campanhas",
+      "dmLabel": "Mestre: {dm}",
+      "sessionCount": "{count} sessões",
+      "noSessions": "Nenhuma sessão ainda"
+    },
+    "sessionHistory": {
+      "title": "Histórico de sessões",
+      "cta": "Ver recap",
+      "emptyState": "Ainda não jogou nenhuma sessão",
+      "loadingLabel": "Carregando histórico",
+      "recapBadge": "Recap"
     }
   },
   "player_hq": {
