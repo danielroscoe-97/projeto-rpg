@@ -30,15 +30,21 @@ export type FeatureFlagKey =
   | "ff_polymorph_v1";
 
 /**
- * Hard-coded defaults. Keep these `false` until the soak period has elapsed.
- * Production rollout flips the env var, NOT this default.
+ * Hard-coded defaults. Flipped to `true` on 2026-04-19 for beta 4 soak —
+ * Daniel authorized general activation after rebased master shipped.
+ *
+ * `ff_favorites_v1` intentionally remains `false` until the FavoriteStar
+ * shared-state refactor (docs/spec-favoritestar-shared-state.md) lands,
+ * because the legacy hook triggers a 150-request storm on compendium open.
+ *
+ * Per-deploy overrides still work via NEXT_PUBLIC_FF_<KEY> env vars.
  */
 const DEFAULTS: Record<FeatureFlagKey, boolean> = {
-  ff_combatant_add_reorder: false,
-  ff_hp_thresholds_v2: false,
-  ff_custom_conditions_v1: false,
+  ff_combatant_add_reorder: true,
+  ff_hp_thresholds_v2: true,
+  ff_custom_conditions_v1: true,
   ff_favorites_v1: false,
-  ff_polymorph_v1: false,
+  ff_polymorph_v1: true,
 };
 
 const TRUTHY = new Set(["1", "true", "on", "yes"]);

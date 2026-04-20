@@ -14,8 +14,12 @@ describe("lib/flags — isFeatureFlagEnabled", () => {
     delete (process.env as Record<string, string | undefined>)["NEXT_PUBLIC_FF_COMBATANT_ADD_REORDER"];
   });
 
-  test("defaults ff_combatant_add_reorder to false", () => {
-    expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(false);
+  test("defaults ff_combatant_add_reorder to true (beta 4 rollout)", () => {
+    expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(true);
+  });
+
+  test("defaults ff_favorites_v1 to false (pending shared-state refactor)", () => {
+    expect(isFeatureFlagEnabled("ff_favorites_v1")).toBe(false);
   });
 
   test("runtime override takes precedence over default", () => {
@@ -33,7 +37,7 @@ describe("lib/flags — isFeatureFlagEnabled", () => {
     expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(true);
   });
 
-  test("env var with 'false' string is parsed as falsy", () => {
+  test("env var with 'false' string overrides truthy default", () => {
     (process.env as Record<string, string | undefined>)["NEXT_PUBLIC_FF_COMBATANT_ADD_REORDER"] = "false";
     expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(false);
   });
@@ -45,9 +49,10 @@ describe("lib/flags — isFeatureFlagEnabled", () => {
   });
 
   test("setFeatureFlagOverrideForTests(undefined) clears the override", () => {
-    setFeatureFlagOverrideForTests("ff_combatant_add_reorder", true);
-    expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(true);
-    setFeatureFlagOverrideForTests("ff_combatant_add_reorder", undefined);
+    setFeatureFlagOverrideForTests("ff_combatant_add_reorder", false);
     expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(false);
+    setFeatureFlagOverrideForTests("ff_combatant_add_reorder", undefined);
+    // back to default, which flipped to true in beta 4
+    expect(isFeatureFlagEnabled("ff_combatant_add_reorder")).toBe(true);
   });
 });
