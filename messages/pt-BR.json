@@ -4298,5 +4298,51 @@
     "cta_dismiss": "Depois",
     "default_dm": "O Mestre",
     "default_encounter_fallback": "Combate"
+  },
+  "conversion": {
+    "waiting_room": {
+      "headline_with_char": "Quer salvar <em>{characterName}</em> pra voltar mais rápido?",
+      "headline_no_char": "Salve seu progresso pra voltar mais rápido",
+      "body": "Em 30 segundos você cria uma conta e volta na próxima Campanha com tudo pronto.",
+      "cta_primary": "Criar minha conta",
+      "cta_secondary": "Agora não",
+      "keep_playing": "Só quero jogar"
+    },
+    "recap_anon": {
+      "headline": "Parabéns! <em>{characterName}</em> sobreviveu ao Combate.",
+      "body": "Crie uma conta e mantenha {characterName} e o Histórico dessa aventura.",
+      "cta_primary": "Salvar e criar conta",
+      "cta_secondary": "Continuar sem salvar"
+    },
+    "recap_guest": {
+      "headline": "<em>{characterName}</em> merece ser salvo!",
+      "body": "O Combate foi bom demais pra perder. Crie uma conta e leve {characterName} pra próxima.",
+      "cta_primary": "Salvar {characterName}",
+      "cta_secondary": "Fechar",
+      "picker_headline": "Qual personagem salvar?",
+      "picker_hint": "Dá pra salvar um agora — os outros continuam no modo convidado.",
+      "no_character": "Sem personagem pra salvar"
+    },
+    "turn_safety_toast": {
+      "combat_started": "Combate começou. Pode terminar o cadastro sem pressa — o Mestre sabe que você está aqui.",
+      "your_turn": "É seu turno. Se quiser jogar agora, feche o cadastro."
+    },
+    "dm_badge": {
+      "authenticating": "cadastrando"
+    },
+    "modal": {
+      "saving": "Salvando seu progresso…",
+      "success": "Tudo certo, {displayName}!"
+    },
+    "post_success": {
+      "waiting_room": "Conta criada. Seu personagem está salvo — pode continuar jogando.",
+      "recap_anon": "Conta criada. {characterName} foi preservado na sua conta.",
+      "recap_guest": "Conta criada. {characterName} foi salvo na sua conta."
+    },
+    "errors": {
+      "generic": "Algo deu errado. Tenta de novo em alguns segundos.",
+      "email_taken": "Esse email já tem conta. <loginLink>Fazer login</loginLink>",
+      "network": "Sem conexão. Seu progresso está salvo localmente."
+    }
   }
 }

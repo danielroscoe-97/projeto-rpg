@@ -4298,5 +4298,51 @@
     "cta_dismiss": "Later",
     "default_dm": "Your DM",
     "default_encounter_fallback": "Combat"
+  },
+  "conversion": {
+    "waiting_room": {
+      "headline_with_char": "Want to save <em>{characterName}</em> for next time?",
+      "headline_no_char": "Save your progress so you can jump back in",
+      "body": "Thirty seconds to create an account and your next session starts ready to go.",
+      "cta_primary": "Create my account",
+      "cta_secondary": "Not now",
+      "keep_playing": "Just let me play"
+    },
+    "recap_anon": {
+      "headline": "Nice work — <em>{characterName}</em> made it out.",
+      "body": "Create an account to keep {characterName} and the history of this adventure.",
+      "cta_primary": "Save and create account",
+      "cta_secondary": "Continue without saving"
+    },
+    "recap_guest": {
+      "headline": "<em>{characterName}</em> earned a spot in your account.",
+      "body": "That combat was too good to lose. Create an account and bring {characterName} with you.",
+      "cta_primary": "Save {characterName}",
+      "cta_secondary": "Close",
+      "picker_headline": "Which character do you want to save?",
+      "picker_hint": "You can save one now — the rest stay in guest mode.",
+      "no_character": "No character to save"
+    },
+    "turn_safety_toast": {
+      "combat_started": "Combat started. Finish signing up whenever — the DM knows you're here.",
+      "your_turn": "It's your turn. Close the signup if you want to act now."
+    },
+    "dm_badge": {
+      "authenticating": "signing up"
+    },
+    "modal": {
+      "saving": "Saving your progress…",
+      "success": "You're all set, {displayName}!"
+    },
+    "post_success": {
+      "waiting_room": "Account created. Your character is saved — back to the game.",
+      "recap_anon": "Account created. {characterName} is safe in your account.",
+      "recap_guest": "Account created. {characterName} is saved to your account."
+    },
+    "errors": {
+      "generic": "Something went wrong. Try again in a few seconds.",
+      "email_taken": "This email already has an account. <loginLink>Log in</loginLink>",
+      "network": "No connection. Your progress is saved locally."
+    }
   }
 }
