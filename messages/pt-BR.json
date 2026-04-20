@@ -1081,6 +1081,26 @@
       "emptyState": "Ainda não jogou nenhuma sessão",
       "loadingLabel": "Carregando histórico",
       "recapBadge": "Recap"
+    },
+    "sessionsPage": {
+      "title": "Histórico completo de sessões",
+      "breadcrumb": "Dashboard",
+      "loadMore": "Carregar mais",
+      "emptyState": "Você ainda não tem sessões registradas"
+    },
+    "defaultCharacterSettings": {
+      "title": "Personagem padrão",
+      "breadcrumb": "Dashboard",
+      "subtitle": "Escolha o personagem que aparece em primeiro lugar ao entrar no dashboard.",
+      "emptyState": "Você ainda não tem personagens",
+      "makeDefault": "Tornar padrão",
+      "makingDefault": "Salvando...",
+      "currentBadge": "Padrão",
+      "errors": {
+        "unauthenticated": "Sessão expirou. Faça login novamente.",
+        "not_owner": "Este personagem não é seu.",
+        "write_failed": "Não foi possível salvar. Tente novamente."
+      }
     }
   },
   "player_hq": {
