@@ -126,6 +126,8 @@ const ALLOWED_EVENTS = new Set([
   "auth:silent_refresh_failed",
   "broadcast:401_retry_success",
   "broadcast:401_retry_failed",
+  // Fetch orchestrator (C2 audit) — multi-tab detection (G3 vector)
+  "fetch_orchestrator:multi_tab_detected",
 ]);
 
 // In-process rate limiter: 60 events/min per IP

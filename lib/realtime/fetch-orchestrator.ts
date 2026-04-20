@@ -82,6 +82,19 @@ export interface OrchestratorConfig {
    * failure (opens circuit after 3 consecutive errors like any other).
    */
   onUnauthorized?: () => Promise<boolean>;
+  /**
+   * Disable the BroadcastChannel-based multi-tab detector. Defaults to `false`
+   * in browser contexts, `true` in tests/SSR. When disabled, the orchestrator
+   * never emits `fetch_orchestrator:multi_tab_detected`. No behavior change
+   * beyond the telemetry event — this detector is pure observation, not
+   * coordination (cross-tab coordination is Fase 4 / beta 5 follow-up).
+   */
+  disableMultiTabDetector?: boolean;
+  /**
+   * Channel constructor — defaults to the global BroadcastChannel. Override
+   * for tests (jsdom lacks BroadcastChannel in some setups).
+   */
+  broadcastChannelImpl?: typeof BroadcastChannel;
 }
 
 type DropReason = "throttle" | "dedup" | "circuit";
@@ -102,6 +115,17 @@ const INTERVALS: Record<FetchPriority, number> = {
 
 const MAX_CONSECUTIVE_ERRORS = 3;
 const CIRCUIT_COOLDOWN_MS = 30_000;
+
+/**
+ * BroadcastChannel name shared by every orchestrator instance in the same
+ * origin. Used purely for telemetry (multi-tab detection) — this is NOT a
+ * coordination channel. Coordinating a single orchestrator across tabs is
+ * Fase 4 in docs/spec-fetch-orchestrator-audit.md.
+ */
+const MULTI_TAB_CHANNEL_NAME = "fetch-orchestrator";
+
+/** Cool-down between repeated `multi_tab_detected` emissions from one tab. */
+const MULTI_TAB_TELEMETRY_COOLDOWN_MS = 60_000;
 
 /**
  * Internal class — instantiated as a singleton via `fetchOrchestrator` below.
@@ -125,6 +149,13 @@ export class FetchOrchestrator {
   private readonly now: () => number;
   private onUnauthorized: (() => Promise<boolean>) | null;
 
+  /** Unique per-instance id used to distinguish tabs on the broadcast channel. */
+  private readonly instanceId: string;
+  /** BroadcastChannel used to detect other orchestrator instances (i.e. other tabs). */
+  private multiTabChannel: BroadcastChannel | null = null;
+  /** When we last emitted `multi_tab_detected` — rate-limits noisy telemetry. */
+  private lastMultiTabEmitAt = 0;
+
   constructor(config: OrchestratorConfig = {}) {
     this.fetchImpl =
       config.fetchImpl ??
@@ -136,6 +167,60 @@ export class FetchOrchestrator {
     this.trackEventImpl = config.trackEventImpl ?? trackEvent;
     this.now = config.now ?? (() => Date.now());
     this.onUnauthorized = config.onUnauthorized ?? null;
+
+    // Instance id — short random suffix is plenty for tab-count disambiguation.
+    // Math.random collision odds across a few tabs/session is negligible.
+    this.instanceId =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID().slice(0, 8)
+        : Math.random().toString(36).slice(2, 10);
+
+    // Multi-tab detector — opt-out for tests / SSR. Defaults to ON in the browser.
+    const shouldEnableDetector =
+      !config.disableMultiTabDetector &&
+      (config.broadcastChannelImpl !== undefined ||
+        typeof BroadcastChannel !== "undefined");
+    if (shouldEnableDetector) {
+      try {
+        const BC = config.broadcastChannelImpl ?? BroadcastChannel;
+        this.multiTabChannel = new BC(MULTI_TAB_CHANNEL_NAME);
+        this.multiTabChannel.onmessage = (ev: MessageEvent) => {
+          this.handleMultiTabMessage(ev.data);
+        };
+        // Announce ourselves so any already-open tab counts us.
+        this.multiTabChannel.postMessage({
+          type: "hello",
+          instanceId: this.instanceId,
+        });
+      } catch {
+        // BroadcastChannel construction can throw in exotic environments
+        // (iframes with null origin, COOP boundaries). Silently degrade —
+        // we lose the telemetry signal but the orchestrator still works.
+        this.multiTabChannel = null;
+      }
+    }
+  }
+
+  /**
+   * Handle a message from another orchestrator instance (i.e. another tab).
+   * Emits `fetch_orchestrator:multi_tab_detected` — rate-limited to once per
+   * minute per tab — to surface the G3 vector documented in the spec (N tabs
+   * = N orchestrators = multiplied rate-limit spend).
+   */
+  private handleMultiTabMessage(msg: unknown): void {
+    if (!msg || typeof msg !== "object") return;
+    const typed = msg as { type?: string; instanceId?: string };
+    if (typed.type !== "hello") return;
+    if (!typed.instanceId || typed.instanceId === this.instanceId) return;
+
+    const nowMs = this.now();
+    if (nowMs - this.lastMultiTabEmitAt < MULTI_TAB_TELEMETRY_COOLDOWN_MS) return;
+    this.lastMultiTabEmitAt = nowMs;
+
+    this.trackEventImpl("fetch_orchestrator:multi_tab_detected", {
+      instance_id: this.instanceId,
+      peer_instance_id: typed.instanceId,
+    });
   }
 
   /**

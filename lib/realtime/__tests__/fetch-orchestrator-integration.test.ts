@@ -58,6 +58,7 @@ function makeHarness(options: { onUnauthorized?: () => Promise<boolean> } = {}):
     },
     now: () => nowValue,
     onUnauthorized: options.onUnauthorized,
+    disableMultiTabDetector: true,
   });
 
   return {
