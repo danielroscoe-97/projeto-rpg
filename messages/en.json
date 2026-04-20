@@ -1387,7 +1387,14 @@
       "type_removal_denied": "Removal denied"
     },
     "notes": {
-      "privacy_notice": "Your notes are private — the DM cannot see them",
+      "privacy_notice": "You choose which notes to share with the DM",
+      "visibility": {
+        "private": "Private",
+        "shared_with_dm": "Visible to DM",
+        "toggle_share": "Share with DM",
+        "toggle_unshare": "Make private",
+        "badge_shared": "DM can see"
+      },
       "notes_tablist_label": "Character notes",
       "tab_quick": "Quick",
       "tab_journal": "Journal",
