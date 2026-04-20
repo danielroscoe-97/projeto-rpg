@@ -2211,7 +2211,21 @@ export function GuestCombatClient() {
           <CombatRecap
             report={guestCombatReport}
             onClose={handleGuestDismissAll}
+            // F15 legacy fallback: preserved so the pre-Wave-3a path still
+            // works if RecapCtaCard/GuestRecapFlow fail to mount (e.g. modal
+            // hydration error). Scheduled for removal once `conversion:*`
+            // analytics stabilize (~90d post-launch).
             onSaveAndSignup={handleSaveAndSignup}
+            // 03-E: new guest conversion surface. RecapCtaCard reads this and
+            // delegates to <GuestRecapFlow> which owns the signup → migrate
+            // pipeline. Adding this prop is purely additive — the legacy
+            // onSaveAndSignup path above is still wired.
+            saveSignupContext={{
+              mode: "guest",
+              guestCombatants: combatants.filter((c) => c.is_player === true),
+              characterName:
+                combatants.find((c) => c.is_player === true)?.name ?? null,
+            }}
           />
         )}
       </AnimatePresence>

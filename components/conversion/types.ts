@@ -7,8 +7,10 @@
  *
  * Lives in its own file (not in `RecapCtaCard.tsx`) to avoid an
  * import cycle between `RecapActions.tsx` → `RecapCtaCard.tsx` →
- * `RecapActions.tsx`. Agent C (03-E, `GuestRecapFlow.tsx`) also
- * imports from here.
+ * `RecapActions.tsx`. `GuestRecapFlow` (Story 03-E) also imports
+ * from here.
+ *
+ * See `docs/epics/player-identity/epic-03-conversion-moments.md` §03-D/§03-E.
  */
 
 import type { Combatant } from "@/lib/types/combat";
@@ -31,8 +33,8 @@ export type SaveSignupContext =
       characterName?: string | null;
       /**
        * Combatants with `is_player === true` extracted from the guest
-       * snapshot by the caller (D5). Agent C's `GuestRecapFlow` handles
-       * the picker UX when `guestCombatants.length >= 2` (F7).
+       * snapshot by the caller (D5). `GuestRecapFlow` handles the
+       * picker UX when `guestCombatants.length >= 2` (F7).
        */
       guestCombatants: Combatant[];
       /** Rare — guest that already has a campaignId attached. */
