@@ -262,9 +262,16 @@ test.describe("P1 — Entity Graph: Factions", () => {
           ? row
           : page.locator('[data-testid="location-container"]').filter({ hasText: "Porto Azul" });
 
-      // The expand toggle is the card's internal `button.w-full` (chevron row).
-      const expandBtn = cardScope.locator("button.w-full").first();
-      await expandBtn.click();
+      // Prefer the stable expand testid; fallback to class-based selector for
+      // backward-compat with pre-testid builds.
+      const expandTestid = page.locator(
+        `[data-testid="location-expand-${state.locationId}"]`,
+      );
+      if (await expandTestid.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await expandTestid.click();
+      } else {
+        await cardScope.locator("button.w-full").first().click();
+      }
 
       const hqsSection = page.locator(`[data-testid="location-hqs-${state.locationId}"]`);
       await expect(hqsSection).toBeVisible({ timeout: 5_000 });
@@ -288,9 +295,15 @@ test.describe("P1 — Entity Graph: Factions", () => {
       const card = page.locator(`[data-testid="faction-card-${state.factionId}"]`);
       await expect(card).toBeVisible({ timeout: 10_000 });
 
-      // The expand toggle is the card's internal `button.w-full` (chevron row).
-      const expandBtn = card.locator("button.w-full").first();
-      await expandBtn.click();
+      // Prefer the stable expand testid; fallback to class-based selector.
+      const expandTestid = page.locator(
+        `[data-testid="faction-expand-${state.factionId}"]`,
+      );
+      if (await expandTestid.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await expandTestid.click();
+      } else {
+        await card.locator("button.w-full").first().click();
+      }
 
       const membersList = page.locator(`[data-testid="faction-members-${state.factionId}"]`);
       await expect(membersList).toBeVisible({ timeout: 5_000 });

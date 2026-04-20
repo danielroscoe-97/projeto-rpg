@@ -271,6 +271,8 @@ export function FactionCard({
               e.stopPropagation();
               setExpanded((v) => !v);
             }}
+            data-testid={`faction-expand-${faction.id}`}
+            aria-expanded={expanded}
             className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors w-full"
           >
             <div className="flex-1 h-px bg-border/50" />

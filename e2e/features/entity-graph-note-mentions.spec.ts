@@ -237,22 +237,9 @@ test.describe("P1 — Entity Graph: Note Mentions", () => {
     const card = page.locator(`[data-testid="npc-card-${npcId}"]`);
     const visible = await card.isVisible({ timeout: 10_000 }).catch(() => false);
     if (!visible) return false;
-    // The expand toggle has no testid — it's the only button inside the
-    // card that spans full width at the bottom. Click the last button in
-    // the card that is not an icon-only action (edit/delete/toggle).
-    // Simplest robust approach: click the card background when there is
-    // no onCardClick handler (pure-list view); if that does nothing,
-    // click the ChevronDown icon.
-    const chevron = card.locator("svg.lucide-chevron-down, svg.lucide-chevron-up").first();
-    if (await chevron.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await chevron.click();
-      return true;
-    }
-    // Fallback: click any <button> inside the card whose accessible name
-    // is the description/notes toggle wrapper.
-    const toggle = card.locator('button:has(svg.lucide-chevron-down)').first();
-    if (await toggle.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await toggle.click();
+    const expandBtn = page.locator(`[data-testid="npc-expand-${npcId}"]`);
+    if (await expandBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await expandBtn.click();
       return true;
     }
     return false;
@@ -262,14 +249,14 @@ test.describe("P1 — Entity Graph: Note Mentions", () => {
     const card = page.locator(`[data-testid="${cardTestid}"]`);
     const visible = await card.isVisible({ timeout: 10_000 }).catch(() => false);
     if (!visible) return false;
-    const chevron = card.locator("svg.lucide-chevron-down, svg.lucide-chevron-up").first();
-    if (await chevron.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await chevron.click();
-      return true;
-    }
-    const toggle = card.locator('button:has(svg.lucide-chevron-down)').first();
-    if (await toggle.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await toggle.click();
+    // Derive the stable expand-button testid from the card testid:
+    //   "npc-card-<id>" → "npc-expand-<id>"
+    //   "location-card-<id>" → "location-expand-<id>"
+    //   "faction-card-<id>" → "faction-expand-<id>"
+    const expandTestid = cardTestid.replace("-card-", "-expand-");
+    const expandBtn = page.locator(`[data-testid="${expandTestid}"]`);
+    if (await expandBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await expandBtn.click();
       return true;
     }
     return false;
