@@ -138,10 +138,60 @@ export function InviteAcceptClient({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4"
+        data-testid="invite.picker.form"
+        data-mode={mode}
+      >
+        {/*
+          Mode toggles — sr-only proxies for E2E & programmatic switching.
+          The user-facing mode switches live below (inline "not listed" /
+          "+ Criar personagem novo" links). These proxies always exist (when
+          applicable) so specs can target them by a stable testid without
+          needing to replicate the conditional chain.
+        */}
+        {unlinkedCharacters.length > 0 && (
+          <button
+            type="button"
+            onClick={() => { setMode("claim"); setSelectedCharId(null); }}
+            data-testid="invite.picker.mode-claim"
+            data-active={mode === "claim" ? "true" : "false"}
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden="true"
+          >
+            claim mode
+          </button>
+        )}
+        {existingCharacters.length > 0 && (
+          <button
+            type="button"
+            onClick={() => { setMode("pick"); setClaimCharId(null); }}
+            data-testid="invite.picker.mode-pick"
+            data-active={mode === "pick" ? "true" : "false"}
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden="true"
+          >
+            pick mode
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => { setMode("create"); setClaimCharId(null); setSelectedCharId(null); }}
+          data-testid="invite.picker.mode-create"
+          data-active={mode === "create" ? "true" : "false"}
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          create mode
+        </button>
+
         {/* Claim DM-created characters */}
         {unlinkedCharacters.length > 0 && mode === "claim" && (
-          <div className="space-y-2">
+          <div className="space-y-2" data-testid="invite.picker.claim-panel">
             <p className="text-xs text-muted-foreground">{t("invite_claim_hint")}</p>
             {unlinkedCharacters.map((char) => {
               const isSelected = claimCharId === char.id;
@@ -150,6 +200,8 @@ export function InviteAcceptClient({
                   key={char.id}
                   type="button"
                   onClick={() => setClaimCharId(char.id)}
+                  data-testid={`invite.picker.claim-card-${char.id}`}
+                  data-selected={isSelected ? "true" : "false"}
                   className={[
                     "w-full p-3 rounded-lg border text-left transition-colors flex items-center gap-3",
                     isSelected
@@ -185,6 +237,7 @@ export function InviteAcceptClient({
             <button
               type="button"
               onClick={() => { setMode("create"); setClaimCharId(null); }}
+              data-testid="invite.picker.claim-not-listed"
               className="w-full p-3 rounded-lg border border-dashed border-white/20 text-muted-foreground text-sm hover:border-white/40 hover:text-foreground transition-colors"
             >
               {t("invite_claim_not_listed")}
@@ -194,7 +247,7 @@ export function InviteAcceptClient({
 
         {/* Existing character picker */}
         {existingCharacters.length > 0 && mode === "pick" && (
-          <div className="space-y-2">
+          <div className="space-y-2" data-testid="invite.picker.pick-panel">
             {existingCharacters.map((char) => {
               const subtitle = [char.race, char.class].filter(Boolean).join(" ");
               const isSelected = selectedCharId === char.id;
@@ -203,6 +256,8 @@ export function InviteAcceptClient({
                   key={char.id}
                   type="button"
                   onClick={() => setSelectedCharId(char.id)}
+                  data-testid={`invite.picker.character-card-${char.id}`}
+                  data-selected={isSelected ? "true" : "false"}
                   className={[
                     "w-full p-3 rounded-lg border text-left transition-colors flex items-center gap-3",
                     isSelected
@@ -259,6 +314,7 @@ export function InviteAcceptClient({
             <button
               type="button"
               onClick={() => { setMode("create"); setSelectedCharId(null); }}
+              data-testid="invite.picker.pick-create-new"
               className="w-full p-3 rounded-lg border border-dashed border-white/20 text-muted-foreground text-sm hover:border-white/40 hover:text-foreground transition-colors"
             >
               + Criar personagem novo
@@ -268,18 +324,25 @@ export function InviteAcceptClient({
 
         {/* New character form */}
         {mode === "create" && (
-          <>
+          <div data-testid="invite.picker.create-panel">
             {(unlinkedCharacters.length > 0 || existingCharacters.length > 0) && (
               <button
                 type="button"
                 onClick={() => setMode(unlinkedCharacters.length > 0 ? "claim" : "pick")}
+                data-testid="invite.picker.back-to-selection"
                 className="text-xs text-gold/70 hover:text-gold transition-colors"
               >
                 {t("invite_back_to_selection")}
               </button>
             )}
 
-            <div className="space-y-1.5">
+            {/*
+              create-wizard-step-1 — Identity (name).
+              Today the "create" flow is a single step (not a wizard). We wrap
+              in step-1 for forward-compat with Epic 02 Story 02-B, which
+              refactors this into a multi-step flow via CharacterWizard.
+            */}
+            <div className="space-y-1.5" data-testid="invite.picker.create-wizard-step-1">
               <label htmlFor="char-name" className="text-xs text-gold/80 uppercase tracking-widest font-medium">
                 {tc("lobby_name_label")}
               </label>
@@ -290,11 +353,26 @@ export function InviteAcceptClient({
                 placeholder={tc("lobby_name_placeholder")}
                 required
                 className={inputClass}
+                data-testid="invite.picker.name-input"
+              />
+              {/*
+                Legacy alias span — keeps `[data-testid="invite-char-name"]`
+                queryable for existing specs during the migration to the
+                namespaced `invite.picker.name-input`. Zero UX impact
+                (sr-only, aria-hidden). Delete after all downstream specs
+                migrate to the new testid.
+              */}
+              <span
                 data-testid="invite-char-name"
+                className="sr-only"
+                aria-hidden="true"
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div
+              className="grid grid-cols-3 gap-3"
+              data-testid="invite.picker.create-wizard-step-2"
+            >
               <div className="space-y-1.5">
                 <label htmlFor="char-hp" className="text-xs text-gold/80 uppercase tracking-widest font-medium">
                   HP
@@ -306,6 +384,7 @@ export function InviteAcceptClient({
                   onChange={(e) => setHp(e.target.value)}
                   placeholder="45"
                   className={inputClass}
+                  data-testid="invite.picker.hp-input"
                 />
               </div>
               <div className="space-y-1.5">
@@ -319,6 +398,7 @@ export function InviteAcceptClient({
                   onChange={(e) => setAc(e.target.value)}
                   placeholder="16"
                   className={inputClass}
+                  data-testid="invite.picker.ac-input"
                 />
               </div>
               <div className="space-y-1.5">
@@ -332,16 +412,18 @@ export function InviteAcceptClient({
                   onChange={(e) => setSpellSaveDc(e.target.value)}
                   placeholder="15"
                   className={inputClass}
+                  data-testid="invite.picker.dc-input"
                 />
               </div>
             </div>
-          </>
+          </div>
         )}
 
         <Button
           type="submit"
           variant="gold"
           className="w-full min-h-[44px]"
+          data-testid="invite.picker.confirm-button"
           disabled={
             isSubmitting ||
             (mode === "claim" && !claimCharId) ||

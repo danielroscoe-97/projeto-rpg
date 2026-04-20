@@ -2440,6 +2440,11 @@ export function PlayerJoinClient({
       // authenticated users whose campaign lookup silently failed.
       const showJoinCampaignCta = !authUserId && !!sessionCampaignId;
       return (
+        <div
+          data-testid="join.signup-cta"
+          data-cta-visible={showJoinCampaignCta ? "true" : "false"}
+          style={{ display: "contents" }}
+        >
         <CombatRecap
           report={combatRecapReport}
           onJoinCampaign={showJoinCampaignCta ? () => {
@@ -2482,6 +2487,7 @@ export function PlayerJoinClient({
             }
           }}
         />
+        </div>
       );
     }
     return (
@@ -2690,46 +2696,76 @@ export function PlayerJoinClient({
   }
 
   // Show lobby when combat isn't active yet (normal join)
+  // `join.waiting-room` wrapper — stable testid per data-testid contract
+  // (docs/testing-data-testid-contract.md §3.7). Purely additive: `display:contents`
+  // keeps the PlayerLobby's own layout unchanged (no extra box in flow).
   if (!active || !currentEncounterId) {
     return (
-      <PlayerLobby
-        sessionName={sessionName}
-        joinedPlayers={joinedPlayers}
-        onRegister={handleRegister}
-        isRegistered={isRegistered}
-        registeredName={registeredName}
-        prefilledCharacters={prefilledCharacters}
-        registeredPlayerNames={registeredPlayerNames}
-        onRejoin={handleRejoin}
-      />
+      <div
+        data-testid="join.waiting-room"
+        data-lobby-variant="normal"
+        style={{ display: "contents" }}
+      >
+        <PlayerLobby
+          sessionName={sessionName}
+          joinedPlayers={joinedPlayers}
+          onRegister={handleRegister}
+          isRegistered={isRegistered}
+          registeredName={registeredName}
+          prefilledCharacters={prefilledCharacters}
+          registeredPlayerNames={registeredPlayerNames}
+          onRejoin={handleRejoin}
+        />
+      </div>
     );
   }
 
   // Show late-join lobby when combat is active but player hasn't registered yet
   if (!isRegistered) {
     return (
-      <PlayerLobby
-        sessionName={sessionName}
-        joinedPlayers={joinedPlayers}
-        onRegister={handleRegister}
-        isRegistered={isRegistered}
-        registeredName={registeredName}
-        isCombatActive={true}
-        onLateJoinRequest={handleLateJoinRequest}
-        lateJoinStatus={lateJoinStatus}
-        lateJoinDeadline={lateJoinDeadline}
-        lateJoinRetryCount={lateJoinRetryCountRef.current}
-        onLateJoinRetry={resetLateJoinState}
-        prefilledCharacters={prefilledCharacters}
-        registeredPlayerNames={registeredPlayerNames}
-        registeredPlayersWithStatus={registeredPlayersWithStatus}
-        onRejoin={handleRejoin}
-      />
+      <div
+        data-testid="join.waiting-room"
+        data-lobby-variant="late-join"
+        style={{ display: "contents" }}
+      >
+        <PlayerLobby
+          sessionName={sessionName}
+          joinedPlayers={joinedPlayers}
+          onRegister={handleRegister}
+          isRegistered={isRegistered}
+          registeredName={registeredName}
+          isCombatActive={true}
+          onLateJoinRequest={handleLateJoinRequest}
+          lateJoinStatus={lateJoinStatus}
+          lateJoinDeadline={lateJoinDeadline}
+          lateJoinRetryCount={lateJoinRetryCountRef.current}
+          onLateJoinRetry={resetLateJoinState}
+          prefilledCharacters={prefilledCharacters}
+          registeredPlayerNames={registeredPlayerNames}
+          registeredPlayersWithStatus={registeredPlayersWithStatus}
+          onRejoin={handleRejoin}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-4" data-testid="player-view">
+    <div
+      className="min-h-screen bg-background p-4"
+      data-testid="player-view"
+      data-region="join.combat-view"
+    >
+      {/*
+        Sibling sr-only marker carrying the `join.combat-view` testid per the
+        data-testid contract (docs/testing-data-testid-contract.md §3.7).
+        The parent `<div>` retains the legacy `player-view` testid for back-compat.
+        Keep both until all specs migrate to the `join.*` namespace.
+      */}
+      <span
+        data-testid="join.combat-view"
+        className="sr-only"
+        aria-hidden="true"
+      />
       {/* B1: Session revoked banner — replaces silent toast */}
       {sessionRevokedBanner && (
         <div
