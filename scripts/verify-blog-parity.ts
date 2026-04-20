@@ -40,6 +40,7 @@ interface Manifest {
   generatedAt: string;
   source: string;
   posts: ManifestEntry[];
+  sharedHash?: string;
 }
 
 function sha256(s: string): string {
@@ -138,15 +139,25 @@ const current: ManifestEntry[] = files.map((f) => {
 });
 current.sort((a, b) => a.n - b.n);
 
+// Also hash _shared.tsx — catches changes to imports/helpers that could alter
+// rendered HTML even when post bodies are byte-equivalent.
+const sharedPath = join(POSTS_DIR, "_shared.tsx");
+const currentSharedHash = existsSync(sharedPath)
+  ? sha256(readFileSync(sharedPath, "utf8"))
+  : null;
+
 if (SNAPSHOT) {
   if (!existsSync(TMP_DIR)) mkdirSync(TMP_DIR, { recursive: true });
   const manifest: Manifest = {
     generatedAt: new Date().toISOString(),
     source: POSTS_DIR,
     posts: current,
+    sharedHash: currentSharedHash ?? undefined,
   };
   writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
-  console.log(`✓ Snapshot written to ${MANIFEST} (${current.length} posts)`);
+  console.log(
+    `✓ Snapshot written to ${MANIFEST} (${current.length} posts${currentSharedHash ? " + _shared.tsx" : ""})`,
+  );
   process.exit(0);
 }
 
@@ -184,6 +195,15 @@ for (const [n, entry] of baseline) {
     console.error(`✗ BlogPost${n} (${entry.slug}) missing from current sources`);
     mismatches++;
   }
+}
+
+if (manifest.sharedHash && currentSharedHash && manifest.sharedHash !== currentSharedHash) {
+  console.error(
+    `✗ _shared.tsx hash mismatch\n` +
+      `    baseline: ${manifest.sharedHash}\n` +
+      `    current:  ${currentSharedHash}`,
+  );
+  mismatches++;
 }
 
 if (mismatches === 0) {

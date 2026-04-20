@@ -19,7 +19,8 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
-  rmSync,
+  readdirSync,
+  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
@@ -203,12 +204,17 @@ if (bodies.length !== EXPECTED_COUNT) {
   );
 }
 
-// Write output
-if (existsSync(OUT_DIR)) {
-  // Clean output dir (only files we control)
-  rmSync(OUT_DIR, { recursive: true, force: true });
-}
+// Write output — selective cleanup: only delete files this script owns
+// (_shared.tsx and post-NN-*.tsx). Hand-added files in the folder are
+// preserved (indexes, drafts, docs).
 mkdirSync(OUT_DIR, { recursive: true });
+if (existsSync(OUT_DIR)) {
+  for (const f of readdirSync(OUT_DIR)) {
+    if (f === "_shared.tsx" || /^post-\d{2}-.*\.tsx$/.test(f)) {
+      unlinkSync(join(OUT_DIR, f));
+    }
+  }
+}
 
 // Write _shared.tsx
 writeFileSync(join(OUT_DIR, "_shared.tsx"), sharedContent);
@@ -273,7 +279,12 @@ export default function BlogPost${n}() {${body}}
   outputHashes.push({ n, hash: writtenHash, slug });
 }
 
-// Save parity manifest for verify-blog-parity.ts to consume
+// Save parity manifest for verify-blog-parity.ts to consume.
+// Include _shared.tsx hash so edits to shared helpers (which affect rendered
+// HTML across all posts) are caught by the parity check.
+const sharedHash = sha256(
+  readFileSync(join(OUT_DIR, "_shared.tsx"), "utf8"),
+);
 const tmpDir = join(ROOT, ".tmp");
 if (!existsSync(tmpDir)) mkdirSync(tmpDir, { recursive: true });
 writeFileSync(
@@ -283,6 +294,7 @@ writeFileSync(
       source: MONOLITH,
       generatedAt: new Date().toISOString(),
       posts: outputHashes.sort((a, b) => a.n - b.n),
+      sharedHash,
     },
     null,
     2,

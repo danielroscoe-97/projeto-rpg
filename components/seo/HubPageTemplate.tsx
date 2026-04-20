@@ -60,9 +60,9 @@ function Section({ section }: { section: HubContent["sections"][number] }) {
       )}
       {isCard ? (
         <div className="grid gap-4 sm:grid-cols-2">
-          {section.items.map((item) => (
+          {section.items.map((item, i) => (
             <Link
-              key={item.slug}
+              key={`${item.slug}-${i}`}
               href={resolveItemHref(item, section.linkPath)}
               className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 hover:border-gold/30 transition-colors"
             >
@@ -72,9 +72,9 @@ function Section({ section }: { section: HubContent["sections"][number] }) {
         </div>
       ) : (
         <div className="flex flex-wrap gap-2">
-          {section.items.map((item) => (
+          {section.items.map((item, i) => (
             <Link
-              key={item.slug}
+              key={`${item.slug}-${i}`}
               href={resolveItemHref(item, section.linkPath)}
               className="text-sm rounded-md px-2.5 py-1 bg-gold/[0.06] border border-gold/15 text-gold hover:bg-gold/15 hover:border-gold/30 transition-colors"
             >
@@ -125,14 +125,14 @@ export function HubPageTemplate({ content }: { content: HubContent }) {
           </p>
         </header>
 
-        {content.introBlocks?.map((block) => (
-          <section key={block.label} className="mb-12">
+        {content.introBlocks?.map((block, i) => (
+          <section key={`intro-${i}`} className="mb-12">
             <h2 className="font-[family-name:var(--font-cinzel)] text-2xl text-gold mb-4">
               {block.label}
             </h2>
-            {block.paragraphs.map((para, i) => (
+            {block.paragraphs.map((para, j) => (
               <p
-                key={i}
+                key={j}
                 className="text-gray-300 leading-relaxed mb-3 last:mb-0"
               >
                 <RichText para={para} />
@@ -141,8 +141,8 @@ export function HubPageTemplate({ content }: { content: HubContent }) {
           </section>
         ))}
 
-        {content.sections.map((section) => (
-          <Section key={section.label} section={section} />
+        {content.sections.map((section, i) => (
+          <Section key={`section-${i}`} section={section} />
         ))}
 
         {content.iconic && (
@@ -156,9 +156,9 @@ export function HubPageTemplate({ content }: { content: HubContent }) {
               </p>
             )}
             <div className="grid gap-4 sm:grid-cols-2">
-              {content.iconic.items.map((item) => (
+              {content.iconic.items.map((item, i) => (
                 <Link
-                  key={item.slug}
+                  key={`iconic-${item.slug}-${i}`}
                   href={resolveItemHref(item, content.sections[0]?.linkPath ?? "/")}
                   className="group rounded-xl border border-gold/15 bg-gradient-to-br from-gold/[0.04] to-transparent p-5 hover:border-gold/40 hover:-translate-y-0.5 transition-all"
                 >
@@ -178,14 +178,14 @@ export function HubPageTemplate({ content }: { content: HubContent }) {
           </section>
         )}
 
-        {content.closing?.map((block) => (
-          <section key={block.label} className="mb-12">
+        {content.closing?.map((block, i) => (
+          <section key={`closing-${i}`} className="mb-12">
             <h2 className="font-[family-name:var(--font-cinzel)] text-2xl text-gold mb-3">
               {block.label}
             </h2>
-            {block.paragraphs.map((para, i) => (
+            {block.paragraphs.map((para, j) => (
               <p
-                key={i}
+                key={j}
                 className="text-gray-300 leading-relaxed mb-3 last:mb-0"
               >
                 <RichText para={para} />
@@ -200,9 +200,9 @@ export function HubPageTemplate({ content }: { content: HubContent }) {
               {content.internalLinkCluster.label}
             </h2>
             <div className="flex flex-wrap gap-2">
-              {content.internalLinkCluster.links.map((link) => (
+              {content.internalLinkCluster.links.map((link, i) => (
                 <Link
-                  key={link.href}
+                  key={`cluster-${link.href}-${i}`}
                   href={link.href}
                   className="text-sm rounded-md px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-gray-200 hover:bg-white/[0.08] hover:border-white/[0.16] transition-colors"
                 >

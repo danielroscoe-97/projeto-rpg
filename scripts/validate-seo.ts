@@ -79,12 +79,17 @@ function walkJsonLd(node: unknown, path: string): void {
   }
 }
 
+const FETCH_TIMEOUT_MS = 10_000;
+
 async function checkUrl(base: string, subpath: string): Promise<void> {
   const url = `${base}${subpath}`;
   let html: string;
   let status: number;
   try {
-    const res = await fetch(url, { redirect: "follow" });
+    const res = await fetch(url, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
     status = res.status;
     html = await res.text();
   } catch (err) {

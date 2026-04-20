@@ -57,6 +57,7 @@ export default async function BlogPostPage({
   if (!post) notFound();
 
   const Content = post.component;
+  if (!Content) notFound();
 
   // Sort posts by date for consistent ordering
   const sortedPosts = [...BLOG_POSTS].sort((a, b) => a.date.localeCompare(b.date));

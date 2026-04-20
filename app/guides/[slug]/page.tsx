@@ -23,6 +23,8 @@ export async function generateMetadata({
     description: hub.metaDescription,
     path: `/guides/${hub.slug}`,
     locale: "en",
+    ogTitle: hub.ogTitle,
+    ogDescription: hub.ogDescription,
   });
 }
 

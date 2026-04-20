@@ -24,7 +24,7 @@
 /out/
 
 # temp workspace for build baselines, parity manifests, scratch files
-.tmp/
+/.tmp/
 
 # production
 /build
