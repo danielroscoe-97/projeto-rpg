@@ -904,17 +904,8 @@
     "notes_about_this": "Notes about this",
     "notes_about_this_empty": "No note mentions this yet",
     "view_in_map": "Open in Connection Map",
-    "quick_switcher_shortcut": "Shortcut: Ctrl+K / Cmd+K",
-    "quick_switcher_title": "Jump to…",
-    "quick_switcher_placeholder": "Search NPC, location, faction, note, quest…",
-    "quick_switcher_empty": "No results",
-    "quick_switcher_recent": "Recent",
-    "quick_switcher_group_npc": "NPCs",
-    "quick_switcher_group_location": "Locations",
-    "quick_switcher_group_faction": "Factions",
-    "quick_switcher_group_note": "Notes",
-    "quick_switcher_group_quest": "Quests",
-    "quick_switcher_esc_hint": "Esc to close"
+    "clear_focus": "Clear focus",
+    "focus_hidden_by_filter": "A filter is hiding this entity"
   },
   "auth_errors": {
     "invalid_credentials": "Incorrect email or password.",
@@ -4039,7 +4030,8 @@
     "connecting_banner": "Click a node to connect, or press Esc to cancel",
     "collapse_group": "collapse",
     "fullscreen": "Expand",
-    "exit_fullscreen": "Minimize"
+    "exit_fullscreen": "Minimize",
+    "focused_on": "Focused on"
   },
   "locations": {
     "loading": "Loading locations...",

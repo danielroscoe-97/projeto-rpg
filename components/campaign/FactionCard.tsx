@@ -187,8 +187,8 @@ export function FactionCard({
             </div>
           </div>
 
-          {/* Actions — only if editable */}
-          {isEditable && (
+          {/* Actions — open-in-map visible to any viewer; write ops gated. */}
+          {(isEditable || onOpenInMap) && (
             <div
               className="flex items-center gap-0.5 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200"
               onClick={stop}
@@ -204,11 +204,13 @@ export function FactionCard({
                     onOpenInMap(faction);
                   }}
                   title={tGraph("view_in_map")}
+                  aria-label={tGraph("view_in_map")}
                   data-testid={`faction-open-in-map-${faction.id}`}
                 >
                   <Network className="w-3.5 h-3.5" />
                 </Button>
               )}
+              {isEditable && (<>
               <Button
                 variant="ghost"
                 size="icon"
@@ -256,6 +258,7 @@ export function FactionCard({
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </Button>
+              </>)}
             </div>
           )}
         </div>

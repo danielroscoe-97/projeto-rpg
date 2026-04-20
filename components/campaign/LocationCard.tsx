@@ -207,8 +207,9 @@ export function LocationCard({
             </div>
           </div>
 
-          {/* Actions */}
-          {isEditable && (
+          {/* Actions — read actions (open-in-map) always visible to any
+              viewer; write actions (visibility/edit/delete) gated to owners. */}
+          {(isEditable || onOpenInMap) && (
             <div
               className="flex items-center gap-0.5 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200"
               onClick={stop}
@@ -224,11 +225,13 @@ export function LocationCard({
                     onOpenInMap(location);
                   }}
                   title={tGraph("view_in_map")}
+                  aria-label={tGraph("view_in_map")}
                   data-testid={`location-open-in-map-${location.id}`}
                 >
                   <Network className="w-3.5 h-3.5" />
                 </Button>
               )}
+              {isEditable && (<>
               <Button
                 variant="ghost"
                 size="icon"
@@ -272,6 +275,7 @@ export function LocationCard({
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </Button>
+              </>)}
             </div>
           )}
         </div>

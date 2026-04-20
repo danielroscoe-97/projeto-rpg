@@ -3,6 +3,7 @@
 import {
   useState,
   useEffect,
+  useCallback,
   Suspense,
   Component,
   type ErrorInfo,
@@ -17,7 +18,6 @@ import { CampaignNotes } from "@/components/campaign/CampaignNotes";
 import { EncounterHistory } from "@/components/campaign/EncounterHistory";
 import { NpcList } from "@/components/campaign/NpcList";
 import { CampaignMindMap } from "@/components/campaign/CampaignMindMap";
-import { QuickSwitcher } from "@/components/campaign/QuickSwitcher";
 import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { LocationList } from "@/components/campaign/LocationList";
 import { FactionList } from "@/components/campaign/FactionList";
@@ -91,6 +91,14 @@ export function CampaignFocusView({
   // Mind Map deep-link: `?focus=npc-<uuid>` etc. Cards built in Onda 6a
   // navigate here to drop the DM right into the graph at the right node.
   const mindmapFocusId = searchParams?.get("focus") ?? null;
+
+  // Clear the focus param while keeping any other query intact (e.g. section).
+  const clearMindmapFocus = useCallback(() => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    params.delete("focus");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  }, [searchParams, router, pathname]);
 
   const [encounterTab, setEncounterTab] = useState<"builder" | "history">(
     "builder",
@@ -213,6 +221,7 @@ export function CampaignFocusView({
             campaignId={campaignId}
             campaignName={campaignName}
             focusNodeId={mindmapFocusId}
+            onClearFocus={mindmapFocusId ? clearMindmapFocus : undefined}
           />
         );
 
@@ -246,11 +255,12 @@ export function CampaignFocusView({
           {renderSection()}
         </SectionErrorBoundary>
       </Suspense>
-      {/* Onda 6b: global Ctrl+K quick switcher. DM-only (guest/anon never
-          reach this route; player members get a lightweight view of the
-          same data but without mutation — routing to the mindmap is still
-          useful for them). */}
-      {isOwner && <QuickSwitcher campaignId={campaignId} />}
+      {/* Ctrl+K quick switcher is handled globally by the Oracle
+          CommandPalette (see components/oracle/CommandPalette.tsx mounted
+          via app/app/layout.tsx). Onda 6b's bespoke QuickSwitcher was
+          removed after adversarial review flagged the shortcut collision
+          with Oracle — both previously attached window keydown listeners
+          for Ctrl+K and stacked two overlays. */}
     </div>
   );
 }

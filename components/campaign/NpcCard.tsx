@@ -211,6 +211,7 @@ export function NpcCard({
                   onOpenInMap(npc);
                 }}
                 title={tGraph("view_in_map")}
+                aria-label={tGraph("view_in_map")}
                 data-testid={`npc-open-in-map-${npc.id}`}
               >
                 <Network className="w-3.5 h-3.5" />

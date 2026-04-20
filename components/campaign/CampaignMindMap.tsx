@@ -17,10 +17,11 @@ import {
   type NodeChange,
   type Connection,
 } from "@xyflow/react";
+import type { ReactFlowInstance } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
 
-import { Maximize2, Minimize2 } from "lucide-react";
+import { Maximize2, Minimize2, X as XIcon, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { nodeIdToKey } from "@/lib/utils/mind-map-layout";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
@@ -334,18 +335,27 @@ interface CampaignMindMapProps {
   campaignName: string;
   /**
    * When set, the map dims every node + edge not in the 1°-neighbourhood of
-   * `focusNodeId`. Format: `${type}-${entityId}` matching the map's internal
-   * ids (e.g. `npc-<uuid>`, `location-<uuid>`, `faction-<uuid>`). Null / undef
-   * = normal rendering. See docs/SPEC-entity-graph-implementation.md Onda 6a.
+   * `focusNodeId`, auto-centers the viewport on it, and surfaces a
+   * dismissible "Focado em …" chip. Format: `${type}-${entityId}` matching
+   * the map's internal ids (e.g. `npc-<uuid>`, `location-<uuid>`,
+   * `faction-<uuid>`). Null / undef = normal rendering.
+   * See docs/SPEC-entity-graph-implementation.md Onda 6a.
    */
   focusNodeId?: string | null;
+  /**
+   * Fired when the user clicks the "clear focus" affordance on the chip or
+   * dismiss banner. Parent should strip `?focus=` from the URL. Optional —
+   * when omitted, no clear button is rendered.
+   */
+  onClearFocus?: () => void;
 }
 
-export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: CampaignMindMapProps) {
+export function CampaignMindMap({ campaignId, campaignName, focusNodeId, onClearFocus }: CampaignMindMapProps) {
   const t = useTranslations("mindmap");
   const tNotes = useTranslations("notes");
   const tLocations = useTranslations("locations");
   const tFactions = useTranslations("factions");
+  const tGraph = useTranslations("entity_graph");
 
   /* ---- Core state ---- */
   const [allNodes, setAllNodes] = useState<MindMapNode[]>([]);
@@ -365,6 +375,9 @@ export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: Campa
   });
   const savedPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Captured from ReactFlow `onInit`. Used by the focus-mode effect to pan
+  // the viewport to the focused node without tearing down ReactFlow state.
+  const reactFlowInstanceRef = useRef<ReactFlowInstance<MindMapNode, Edge> | null>(null);
 
   /* ---- Layout mode ---- */
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("hierarchical");
@@ -606,8 +619,12 @@ export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: Campa
     return () => window.removeEventListener("keydown", handler);
   }, [contextMenu, connectingFromNode]);
 
-  /* ---- Apply filters + collapsed groups + layout ---- */
-  useEffect(() => {
+  /* ---- Apply filters + collapsed groups + layout (memoized — M5 fix) ----
+   *
+   * The expensive bits (dagre/force layouts) only re-run when inputs change.
+   * Focus mode is a cheap post-processing step in the effect below so
+   * flipping `focusNodeId` doesn't trigger an O(n²) force relayout. */
+  const layoutResult = useMemo(() => {
     const visibleNodeIds = new Set<string>();
 
     const typeCounts = new Map<NodeFilter, number>();
@@ -697,14 +714,34 @@ export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: Campa
       laidOut = applyDagreLayout(filteredNodes, filteredEdges, saved);
     }
 
-    // Focus mode (Onda 6a): when `focusNodeId` is set, compute the
-    // 1°-neighbourhood and dim everything outside it. Applied as inline
-    // `style.opacity` so it composes cleanly with the existing style set
-    // on each node / edge. No layout change — the graph stays where it is.
+    return { laidOut, filteredEdges, visibleNodeIds };
+  }, [allNodes, allEdges, filters, collapsedGroups, layoutMode, t]);
+
+  /* ---- Focus chip metadata ---- */
+  const focusedNodeMeta = useMemo<{
+    label: string;
+    visible: boolean;
+  } | null>(() => {
+    if (!focusNodeId) return null;
+    const node = allNodes.find((n) => n.id === focusNodeId);
+    if (!node) return null;
+    const data = node.data as { label?: string } | undefined;
+    return {
+      label: data?.label ?? focusNodeId,
+      visible: layoutResult.visibleNodeIds.has(focusNodeId),
+    };
+  }, [focusNodeId, allNodes, layoutResult.visibleNodeIds]);
+
+  /* ---- Focus overlay (cheap — runs on focus change only) ---- */
+  useEffect(() => {
+    const { laidOut, filteredEdges, visibleNodeIds } = layoutResult;
+
     let finalNodes = laidOut;
     let finalEdges = filteredEdges;
-    if (focusNodeId && visibleNodeIds.has(focusNodeId)) {
-      const neighbours = new Set<string>([focusNodeId]);
+    const focusVisible = !!(focusNodeId && visibleNodeIds.has(focusNodeId));
+
+    if (focusVisible) {
+      const neighbours = new Set<string>([focusNodeId!]);
       for (const edge of filteredEdges) {
         if (edge.source === focusNodeId) neighbours.add(edge.target);
         if (edge.target === focusNodeId) neighbours.add(edge.source);
@@ -723,7 +760,24 @@ export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: Campa
 
     setNodes(finalNodes);
     setEdges(finalEdges);
-  }, [allNodes, allEdges, filters, collapsedGroups, layoutMode, focusNodeId, setNodes, setEdges, t]);
+
+    // M6: center the viewport on the focused node so deep-links from cards
+    // drop the DM straight onto the cluster. ReactFlow's setCenter is a
+    // no-op if the instance is still initialising — the guard covers SSR
+    // and the first render pass.
+    if (focusVisible && reactFlowInstanceRef.current) {
+      const focused = finalNodes.find((n) => n.id === focusNodeId);
+      if (focused) {
+        const cx = focused.position.x + NODE_WIDTH / 2;
+        const cy = focused.position.y + NODE_HEIGHT / 2;
+        // `duration` matches the fade-in on the chip so both motions sync.
+        reactFlowInstanceRef.current.setCenter(cx, cy, {
+          zoom: 1.15,
+          duration: 450,
+        });
+      }
+    }
+  }, [layoutResult, focusNodeId, setNodes, setEdges]);
 
   /* ---- Data loading ---- */
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -1591,6 +1645,58 @@ export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: Campa
         </div>
       )}
 
+      {/* Onda 6a focus chip (M4/UX). When the focused entity is hidden by
+          a type filter / collapsed group, render a banner instead so the DM
+          understands why the graph looks untouched. `onClearFocus` may be
+          omitted by the parent — chip still renders but without the X. */}
+      {focusedNodeMeta && focusedNodeMeta.visible && (
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-200 text-xs w-fit"
+          data-testid="mindmap-focus-chip"
+        >
+          <span className="uppercase tracking-wider text-[10px] text-amber-400/70">
+            {t("focused_on")}
+          </span>
+          <span className="font-medium text-amber-200 max-w-[12rem] truncate">
+            {focusedNodeMeta.label}
+          </span>
+          {onClearFocus && (
+            <button
+              type="button"
+              onClick={onClearFocus}
+              className="text-amber-400/70 hover:text-amber-200 transition-colors"
+              aria-label={tGraph("clear_focus")}
+              title={tGraph("clear_focus")}
+              data-testid="mindmap-focus-clear"
+            >
+              <XIcon className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {focusedNodeMeta && !focusedNodeMeta.visible && (
+        <div
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-200 text-xs"
+          data-testid="mindmap-focus-hidden-banner"
+        >
+          <AlertTriangle className="w-3.5 h-3.5 text-red-300/80 shrink-0" />
+          <span className="flex-1">
+            {tGraph("focus_hidden_by_filter")}: <strong>{focusedNodeMeta.label}</strong>
+          </span>
+          {onClearFocus && (
+            <button
+              type="button"
+              onClick={onClearFocus}
+              className="text-red-300/70 hover:text-red-200 underline underline-offset-2"
+              data-testid="mindmap-focus-hidden-clear"
+            >
+              {tGraph("clear_focus")}
+            </button>
+          )}
+        </div>
+      )}
+
       <div className={fullscreen
         ? "fixed inset-0 z-50 bg-surface-overlay overflow-hidden"
         : "h-[500px] w-full rounded-lg overflow-hidden border border-border bg-surface-overlay"
@@ -1607,6 +1713,9 @@ export function CampaignMindMap({ campaignId, campaignName, focusNodeId }: Campa
           onNodeContextMenu={handleNodeContextMenu}
           onEdgeContextMenu={handleEdgeContextMenu}
           onPaneClick={handlePaneClick}
+          onInit={(instance) => {
+            reactFlowInstanceRef.current = instance;
+          }}
           nodeTypes={nodeTypes}
           defaultViewport={defaultViewport}
           fitView
