@@ -259,8 +259,10 @@ Expected:
 
 ## 🔗 Related docs
 
+- [docs/seo-workflow.md](./seo-workflow.md) — Branch/commit/deploy discipline for multi-agent SEO work
 - [docs/seo-baseline-2026-04-17.md](./seo-baseline-2026-04-17.md) — GSC metrics snapshot for 30/60/90d comparison
 - [docs/seo-sprint-1-handoff.md](./seo-sprint-1-handoff.md) — Search Console / Vercel checklist from Sprint 1
 - [docs/seo-delivery-report-2026-04-17.md](./seo-delivery-report-2026-04-17.md) — What got shipped in 3 SEO sprints
+- [docs/seo-roadmap-2026-04-20.md](./seo-roadmap-2026-04-20.md) — 3-epic roadmap for next 30 days (Epic A/B/C)
 - [docs/plano-seo-externo-2026-04-11.md](./plano-seo-externo-2026-04-11.md) — External SEO strategy
 - [docs/epic-seo-supremo.md](./epic-seo-supremo.md) — Previous SEO epic

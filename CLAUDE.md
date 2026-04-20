@@ -281,6 +281,7 @@ O SRD 5.1 (Systems Reference Document) é licenciado sob **CC-BY-4.0** pela Wiza
 # SEO Canonical Decisions — REGRAS IMUTÁVEIS
 
 **Spec completo:** `docs/seo-architecture.md`
+**Workflow de branch/commit/deploy em multi-agente:** `docs/seo-workflow.md`
 
 ## Decisões travadas (não reverter sem review)
 
