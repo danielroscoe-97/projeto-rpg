@@ -27,6 +27,8 @@ interface QuestCardProps {
   onEdit: (quest: CampaignQuest) => void;
   onDelete: (quest: CampaignQuest) => void;
   onToggleVisibility: (quest: CampaignQuest) => void;
+  /** Called when the card body (outside action buttons) is clicked. */
+  onCardClick?: (quest: CampaignQuest) => void;
 }
 
 /* ── Status left-border colors ─────────────────────────────────────────────── */
@@ -65,19 +67,43 @@ const TYPE_BADGE: Record<QuestType, string> = {
   fetch: "bg-purple-900/30 text-purple-400 border border-purple-500/20",
 };
 
-export function QuestCard({ quest, isEditable, onEdit, onDelete, onToggleVisibility }: QuestCardProps) {
+export function QuestCard({
+  quest,
+  isEditable,
+  onEdit,
+  onDelete,
+  onToggleVisibility,
+  onCardClick,
+}: QuestCardProps) {
   const t = useTranslations("campaign.quests");
   const [expanded, setExpanded] = useState(false);
 
   const TypeIcon = TYPE_ICON[quest.quest_type] ?? Compass;
   const hasExpandableContent = quest.context || quest.objective || quest.reward;
 
+  const handleCardClick = () => onCardClick?.(quest);
+  const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onCardClick) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onCardClick(quest);
+    }
+  };
+  const stop = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
       className={`group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${STATUS_BORDER[quest.status]} ${
         !quest.is_visible_to_players ? "opacity-60" : ""
-      }`}
+      } ${onCardClick ? "cursor-pointer focus-within:ring-2 focus-within:ring-amber-400/40" : ""}`}
       data-testid={`quest-card-${quest.id}`}
+      role={onCardClick ? "button" : undefined}
+      tabIndex={onCardClick ? 0 : undefined}
+      onClick={onCardClick ? handleCardClick : undefined}
+      onKeyDown={onCardClick ? handleCardKeyDown : undefined}
+      aria-label={onCardClick ? quest.title : undefined}
     >
       {/* Subtle top accent line on hover */}
       <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -129,12 +155,19 @@ export function QuestCard({ quest, isEditable, onEdit, onDelete, onToggleVisibil
 
           {/* Actions (DM only) */}
           {isEditable && (
-            <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+            <div
+              className="flex items-center gap-0.5 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200"
+              onClick={stop}
+              onKeyDown={stop}
+            >
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-                onClick={() => onToggleVisibility(quest)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleVisibility(quest);
+                }}
                 title={quest.is_visible_to_players ? t("visibility_show") : t("visibility_hide")}
                 data-testid={`quest-visibility-${quest.id}`}
               >
@@ -148,7 +181,10 @@ export function QuestCard({ quest, isEditable, onEdit, onDelete, onToggleVisibil
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-                onClick={() => onEdit(quest)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(quest);
+                }}
                 title={t("quest_form_title_edit")}
                 data-testid={`quest-edit-${quest.id}`}
               >
@@ -158,7 +194,10 @@ export function QuestCard({ quest, isEditable, onEdit, onDelete, onToggleVisibil
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-red-400"
-                onClick={() => onDelete(quest)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(quest);
+                }}
                 title={t("delete_button")}
                 data-testid={`quest-delete-${quest.id}`}
               >
@@ -172,7 +211,10 @@ export function QuestCard({ quest, isEditable, onEdit, onDelete, onToggleVisibil
         {hasExpandableContent && (
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded((v) => !v);
+            }}
             className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors w-full"
           >
             <div className="flex-1 h-px bg-border/50" />

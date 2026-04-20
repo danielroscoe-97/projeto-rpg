@@ -31,9 +31,19 @@ interface NpcCardProps {
   onDelete: (npc: CampaignNpc) => void;
   onToggleVisibility: (npc: CampaignNpc) => void;
   onNoteClick?: (noteId: string) => void;
+  /** Called when the card body (outside action buttons) is clicked. */
+  onCardClick?: (npc: CampaignNpc) => void;
 }
 
-export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibility, onNoteClick }: NpcCardProps) {
+export function NpcCard({
+  npc,
+  relatedNotes,
+  onEdit,
+  onDelete,
+  onToggleVisibility,
+  onNoteClick,
+  onCardClick,
+}: NpcCardProps) {
   const t = useTranslations("npcs");
   const tLinks = useTranslations("links");
   const [expanded, setExpanded] = useState(false);
@@ -42,10 +52,29 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
   const hasStats = stats.hp != null || stats.ac != null || stats.cr != null || stats.initiative_mod != null;
   const hasExpandableContent = npc.description || stats.notes || (relatedNotes && relatedNotes.length > 0);
 
+  const handleCardClick = () => onCardClick?.(npc);
+  const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onCardClick) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onCardClick(npc);
+    }
+  };
+  const stop = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
-      className="group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)]"
+      className={`group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${
+        onCardClick ? "cursor-pointer focus-within:ring-2 focus-within:ring-amber-400/40" : ""
+      }`}
       data-testid={`npc-card-${npc.id}`}
+      role={onCardClick ? "button" : undefined}
+      tabIndex={onCardClick ? 0 : undefined}
+      onClick={onCardClick ? handleCardClick : undefined}
+      onKeyDown={onCardClick ? handleCardKeyDown : undefined}
+      aria-label={onCardClick ? npc.name : undefined}
     >
       {/* Subtle top accent line */}
       <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -112,12 +141,19 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+          <div
+            className="flex items-center gap-0.5 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200"
+            onClick={stop}
+            onKeyDown={stop}
+          >
             <Button
               variant="ghost"
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-              onClick={() => onToggleVisibility(npc)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleVisibility(npc);
+              }}
               title={npc.is_visible_to_players ? t("visible_to_players") : t("hidden_from_players")}
               data-testid={`npc-visibility-${npc.id}`}
             >
@@ -131,7 +167,10 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
               variant="ghost"
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-              onClick={() => onEdit(npc)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(npc);
+              }}
               title={t("edit_npc")}
               data-testid={`npc-edit-${npc.id}`}
             >
@@ -141,7 +180,10 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
               variant="ghost"
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-red-400"
-              onClick={() => onDelete(npc)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(npc);
+              }}
               title={t("delete_npc")}
               data-testid={`npc-delete-${npc.id}`}
             >
@@ -154,7 +196,10 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
         {hasExpandableContent && (
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded((v) => !v);
+            }}
             className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors w-full"
           >
             <div className="flex-1 h-px bg-border/50" />
@@ -205,7 +250,10 @@ export function NpcCard({ npc, relatedNotes, onEdit, onDelete, onToggleVisibilit
                     <button
                       key={note.id}
                       type="button"
-                      onClick={() => onNoteClick?.(note.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onNoteClick?.(note.id);
+                      }}
                       className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-amber-400 transition-colors w-full text-left py-0.5"
                       data-testid={`npc-note-link-${note.id}`}
                     >

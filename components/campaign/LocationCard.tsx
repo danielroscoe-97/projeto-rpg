@@ -56,19 +56,47 @@ interface LocationCardProps {
   onEdit: (location: CampaignLocation) => void;
   onDelete: (location: CampaignLocation) => void;
   onToggleVisibility: (location: CampaignLocation) => void;
+  /** Called when the card body (outside action buttons) is clicked. */
+  onCardClick?: (location: CampaignLocation) => void;
 }
 
-export function LocationCard({ location, isEditable, onEdit, onDelete, onToggleVisibility }: LocationCardProps) {
+export function LocationCard({
+  location,
+  isEditable,
+  onEdit,
+  onDelete,
+  onToggleVisibility,
+  onCardClick,
+}: LocationCardProps) {
   const t = useTranslations("locations");
   const [expanded, setExpanded] = useState(false);
 
   const Icon = TYPE_ICONS[location.location_type] ?? MapPin;
   const hasExpandableContent = !!location.description;
 
+  const handleCardClick = () => onCardClick?.(location);
+  const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onCardClick) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onCardClick(location);
+    }
+  };
+  const stop = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
-      className="group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)]"
+      className={`group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${
+        onCardClick ? "cursor-pointer focus-within:ring-2 focus-within:ring-amber-400/40" : ""
+      }`}
       data-testid={`location-card-${location.id}`}
+      role={onCardClick ? "button" : undefined}
+      tabIndex={onCardClick ? 0 : undefined}
+      onClick={onCardClick ? handleCardClick : undefined}
+      onKeyDown={onCardClick ? handleCardKeyDown : undefined}
+      aria-label={onCardClick ? location.name : undefined}
     >
       {/* Subtle top accent line */}
       <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -126,12 +154,19 @@ export function LocationCard({ location, isEditable, onEdit, onDelete, onToggleV
 
           {/* Actions */}
           {isEditable && (
-            <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+            <div
+              className="flex items-center gap-0.5 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200"
+              onClick={stop}
+              onKeyDown={stop}
+            >
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-                onClick={() => onToggleVisibility(location)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleVisibility(location);
+                }}
                 title={location.is_visible_to_players ? t("field_visibility") : t("field_visibility")}
                 data-testid={`location-visibility-${location.id}`}
               >
@@ -145,7 +180,10 @@ export function LocationCard({ location, isEditable, onEdit, onDelete, onToggleV
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-                onClick={() => onEdit(location)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(location);
+                }}
                 title={t("form_title_edit")}
                 data-testid={`location-edit-${location.id}`}
               >
@@ -155,7 +193,10 @@ export function LocationCard({ location, isEditable, onEdit, onDelete, onToggleV
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-red-400"
-                onClick={() => onDelete(location)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(location);
+                }}
                 title={t("delete_title")}
                 data-testid={`location-delete-${location.id}`}
               >
@@ -169,7 +210,10 @@ export function LocationCard({ location, isEditable, onEdit, onDelete, onToggleV
         {hasExpandableContent && (
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded((v) => !v);
+            }}
             className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors w-full"
           >
             <div className="flex-1 h-px bg-border/50" />

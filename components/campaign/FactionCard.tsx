@@ -38,6 +38,8 @@ interface FactionCardProps {
   onEdit: (faction: CampaignFaction) => void;
   onDelete: (faction: CampaignFaction) => void;
   onToggleVisibility: (faction: CampaignFaction) => void;
+  /** Called when the card body (outside action buttons) is clicked. */
+  onCardClick?: (faction: CampaignFaction) => void;
 }
 
 export function FactionCard({
@@ -46,16 +48,36 @@ export function FactionCard({
   onEdit,
   onDelete,
   onToggleVisibility,
+  onCardClick,
 }: FactionCardProps) {
   const t = useTranslations("factions");
   const [expanded, setExpanded] = useState(false);
 
   const hasExpandableContent = !!faction.description;
 
+  const handleCardClick = () => onCardClick?.(faction);
+  const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onCardClick) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onCardClick(faction);
+    }
+  };
+  const stop = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
-      className={`group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${ALIGNMENT_LEFT_BORDER[faction.alignment]}`}
+      className={`group relative bg-card border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-300 hover:border-amber-400/30 hover:shadow-[0_0_20px_-8px_rgba(251,191,36,0.15)] ${ALIGNMENT_LEFT_BORDER[faction.alignment]} ${
+        onCardClick ? "cursor-pointer focus-within:ring-2 focus-within:ring-amber-400/40" : ""
+      }`}
       data-testid={`faction-card-${faction.id}`}
+      role={onCardClick ? "button" : undefined}
+      tabIndex={onCardClick ? 0 : undefined}
+      onClick={onCardClick ? handleCardClick : undefined}
+      onKeyDown={onCardClick ? handleCardKeyDown : undefined}
+      aria-label={onCardClick ? faction.name : undefined}
     >
       {/* Subtle top accent line */}
       <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -106,12 +128,19 @@ export function FactionCard({
 
           {/* Actions — only if editable */}
           {isEditable && (
-            <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+            <div
+              className="flex items-center gap-0.5 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200"
+              onClick={stop}
+              onKeyDown={stop}
+            >
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-                onClick={() => onToggleVisibility(faction)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleVisibility(faction);
+                }}
                 title={
                   faction.is_visible_to_players
                     ? t("visible_to_players")
@@ -129,7 +158,10 @@ export function FactionCard({
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-amber-400"
-                onClick={() => onEdit(faction)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(faction);
+                }}
                 title={t("form_title_edit")}
                 data-testid={`faction-edit-${faction.id}`}
               >
@@ -139,7 +171,10 @@ export function FactionCard({
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-red-400"
-                onClick={() => onDelete(faction)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(faction);
+                }}
                 title={t("delete_title")}
                 data-testid={`faction-delete-${faction.id}`}
               >
@@ -153,7 +188,10 @@ export function FactionCard({
         {hasExpandableContent && (
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded((v) => !v);
+            }}
             className="flex items-center gap-1.5 mt-3 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors w-full"
           >
             <div className="flex-1 h-px bg-border/50" />
