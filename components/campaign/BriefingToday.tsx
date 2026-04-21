@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import { NextSessionCard } from "@/components/campaign/NextSessionCard";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
 import { SessionPlanner } from "@/components/campaign/SessionPlanner";
+import {
+  StaleSessionConfirm,
+  staleIdleMinutes,
+} from "@/components/campaign/StaleSessionConfirm";
 import { startSession } from "@/lib/supabase/campaign-sessions";
 import { useSessionBootstrap } from "@/lib/hooks/use-session-bootstrap";
 import type { ActiveEncounterInfo } from "@/lib/types/campaign-briefing";
@@ -23,6 +27,7 @@ interface BriefingTodayProps {
   activeSessionName: string | null;
   activeEncounter: ActiveEncounterInfo | null;
   nextPlannedSession: PlannedSession | null;
+  lastSessionDate: string | null;
 }
 
 /**
@@ -43,6 +48,7 @@ export function BriefingToday({
   activeSessionName,
   activeEncounter,
   nextPlannedSession,
+  lastSessionDate,
 }: BriefingTodayProps) {
   const t = useTranslations("briefing");
   const tCampaign = useTranslations("campaign");
@@ -50,7 +56,32 @@ export function BriefingToday({
   const router = useRouter();
   const [combatOpen, setCombatOpen] = useState(false);
   const [plannerOpen, setPlannerOpen] = useState(false);
+  // Story 12.9 AC5 — stale-combat guard. Mirrors the guard in CampaignHero
+  // so DMs past onboarding (the common case) also get confirmation before
+  // re-entering a >4h-idle session.
+  const [staleConfirmOpen, setStaleConfirmOpen] = useState(false);
+  const idleMinutes = staleIdleMinutes(lastSessionDate);
   const { ensureSession, ensuring } = useSessionBootstrap(campaignId);
+
+  const openCombatSheet = () => {
+    if (activeSessionId && idleMinutes != null) {
+      setStaleConfirmOpen(true);
+    } else {
+      setCombatOpen(true);
+    }
+  };
+
+  // Review 2026-04-21 P3 — if `lastSessionDate` refreshes while the stale-confirm
+  // modal is open (e.g. router.refresh, WebSocket update) and the session is no
+  // longer >4h idle, auto-dismiss and proceed to the launch sheet. Otherwise the
+  // modal would render "0 minutes idle" (nonsensical) because the `idleMinutes ?? 0`
+  // fallback on the prop masks the now-fresh state.
+  useEffect(() => {
+    if (staleConfirmOpen && idleMinutes == null) {
+      setStaleConfirmOpen(false);
+      setCombatOpen(true);
+    }
+  }, [staleConfirmOpen, idleMinutes]);
 
   const handleStartTodaySession = async () => {
     // Use the server-authoritative `created` flag. The previous
@@ -92,7 +123,7 @@ export function BriefingToday({
       {state === "active_combat" && (
         <button
           type="button"
-          onClick={() => setCombatOpen(true)}
+          onClick={openCombatSheet}
           className="w-full text-left flex items-center gap-4 rounded-xl border border-amber-500/60 bg-amber-500/10 p-4 sm:p-5 transition-colors hover:bg-amber-500/15 focus-visible:bg-amber-500/15 min-h-[44px]"
           style={{ boxShadow: "var(--halo-active, 0 0 24px rgba(200, 160, 80, 0.35))" }}
           aria-label={t("today_combat_active_aria", {
@@ -127,7 +158,7 @@ export function BriefingToday({
         <div className="space-y-2">
           <button
             type="button"
-            onClick={() => setCombatOpen(true)}
+            onClick={openCombatSheet}
             className="w-full text-left flex items-center gap-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 transition-colors hover:bg-amber-500/10 focus-visible:bg-amber-500/10 min-h-[44px]"
             style={{ boxShadow: "var(--halo-available, 0 0 8px rgba(200, 160, 80, 0.1))" }}
           >
@@ -249,6 +280,18 @@ export function BriefingToday({
         plannedSessionId={nextPlannedSession?.id ?? null}
         open={combatOpen}
         onOpenChange={setCombatOpen}
+      />
+      {/* Story 12.9 AC5 — stale-combat guard. Only mounts when the DM has
+          actually tried to enter a >4h-idle session. */}
+      <StaleSessionConfirm
+        open={staleConfirmOpen}
+        encounterName={activeSessionName}
+        idleMinutes={idleMinutes ?? 0}
+        onCancel={() => setStaleConfirmOpen(false)}
+        onConfirm={() => {
+          setStaleConfirmOpen(false);
+          setCombatOpen(true);
+        }}
       />
       <SessionPlanner
         campaignId={campaignId}

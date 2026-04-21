@@ -21,7 +21,16 @@ const EMPTY_COMBATANTS: Combatant[] = [];
 const DEFAULT_DRAFT_RULESET: RulesetVersion = "2014";
 
 /** sessionStorage key for draft-session reuse across page refreshes within
- *  the same tab. Keyed by "campaign:{id}" or "quick" to avoid cross-context bleed. */
+ *  the same tab. Keyed by "campaign:{id}" or "quick" to avoid cross-context bleed.
+ *
+ *  SCOPE NOTE (Epic 12 Wave 1 — QA 2026-04-21 W1-T1):
+ *  This persists only the `sessions` row ID. Combatants added during setup
+ *  live in Zustand state and are NOT written to the DB until "Start Combat"
+ *  creates the `encounters` row. Consequence: F5 during setup preserves the
+ *  draft session ID but re-hydrates with an empty combatant list.
+ *  Real combatant persistence during setup would require eagerly creating
+ *  the encounter row + POSTing each add to the DB + hydration on mount —
+ *  tracked as follow-up work, not included in Wave 1 scope. */
 const DRAFT_STORAGE_PREFIX = "pocketdm.draft-session:";
 
 interface CampaignOption {
@@ -77,6 +86,37 @@ function NewEncounterPageInner() {
     const load = async () => {
       const supabase = createClient();
       const campaignParam = searchParams.get("campaign");
+
+      // Epic 12 Wave 2 deep-link — `?campaign=<uuid>` (without preset) must skip
+      // the picker and hydrate setup with that campaign's players directly.
+      // Regression reported in QA 2026-04-21 (W2-T2): clicking "Combate" on a
+      // dashboard card carried the param but still opened the picker.
+      //
+      // Review 2026-04-21 hardening:
+      //   - Validate campaign exists + user has access BEFORE hydrating setup.
+      //     RLS filters out unauthorized campaigns; `maybeSingle()` returns null
+      //     for garbage UUIDs too. Without this guard, bogus `?campaign=xxx`
+      //     would drop the DM into a setup bound to a non-existent campaign
+      //     and silently fail at draft session creation.
+      //   - On error, fall through to picker (do NOT return), so the user is
+      //     never stranded on an infinite loading spinner.
+      if (campaignParam && !presetParam) {
+        try {
+          const { data: campaignCheck } = await supabase
+            .from("campaigns")
+            .select("id")
+            .eq("id", campaignParam)
+            .maybeSingle();
+          if (campaignCheck) {
+            await handlePickCampaign(campaignParam);
+            return;
+          }
+          // Campaign not found / not accessible → fall through to picker.
+        } catch {
+          setFetchError(t("pick_error"));
+          // Fall through to picker on unexpected error.
+        }
+      }
 
       // If preset param is provided, fetch preset + campaign players directly (skip picker)
       if (presetParam && campaignParam) {

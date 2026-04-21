@@ -127,6 +127,7 @@ export function CampaignBriefing(props: CampaignBriefingProps) {
         activeSessionName={props.activeSessionName}
         activeEncounter={props.activeEncounter}
         nextPlannedSession={props.nextPlannedSession}
+        lastSessionDate={props.lastSessionDate}
       />
 
       <BriefingActivityTimeline items={props.recentActivity} />
