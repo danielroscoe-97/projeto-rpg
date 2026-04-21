@@ -81,6 +81,7 @@ import {
 import { useCampaignLocations } from "@/lib/hooks/use-campaign-locations";
 import { useCampaignFactions } from "@/lib/hooks/use-campaign-factions";
 import { useCampaignQuests } from "@/lib/hooks/use-campaign-quests";
+import { useEntityUnlinkUndo } from "@/lib/hooks/use-entity-unlink-undo";
 import type { CampaignNote, CampaignNoteFolder } from "@/lib/types/database";
 import type { NoteNpcLink } from "@/lib/types/note-npc-links";
 import type { CampaignNpc } from "@/lib/types/campaign-npcs";
@@ -96,6 +97,24 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   const supabase = createClient();
   const t = useTranslations("notes");
   const tLinks = useTranslations("links");
+  const tEntity = useTranslations("entity_graph");
+
+  // Stable strings object for the undo hook. useMemo so the hook doesn't
+  // re-bind schedule/flushNow on every render (strings are a dep of the
+  // useCallback inside the hook).
+  const unlinkUndoStrings = useMemo(
+    () => ({
+      single: tEntity("undo_unlink"),
+      batch: (count: number) => tEntity("undo_unlink_batch", { count }),
+      actionSingle: tEntity("undo_action_single"),
+      actionBatch: tEntity("undo_action_batch"),
+      errorSingle: tEntity("undo_commit_failed_single"),
+      errorBatch: (count: number) =>
+        tEntity("undo_commit_failed_batch", { count }),
+    }),
+    [tEntity],
+  );
+  const { schedule: scheduleUnlinkUndo } = useEntityUnlinkUndo(unlinkUndoStrings);
   const [notes, setNotes] = useState<CampaignNote[]>([]);
   const [folders, setFolders] = useState<CampaignNoteFolder[]>([]);
   const [npcLinks, setNpcLinks] = useState<NoteNpcLink[]>([]);
@@ -496,46 +515,94 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
 
   const handleUnlinkNpc = useCallback(
     async (noteId: string, npcId: string) => {
-      // Symmetric rollback: delete the edge first (new source of truth). If
-      // that succeeds, delete the legacy row. If legacy delete fails, the
-      // edge is gone but the legacy row still exists — on next mount the
-      // reverse-lookup panels will dedup by note id so the UI shows a single
-      // link. Safer to let legacy "stick around" than to resurrect the edge,
-      // because the legacy table is already on its deprecation runway.
-      const edgeId = findEdgeId(
-        campaignEdges,
-        { type: "note", id: noteId },
-        { type: "npc", id: npcId },
-        "mentions",
+      // AC-3c-04: optimistic-deferred unlink with undo toast.
+      //
+      // Chip disappears immediately, both writes (edge + legacy note_npc_links)
+      // are deferred 5s and consolidated into a single toast with Desfazer.
+      // If the user clicks undo, we restore the exact rows we captured —
+      // zero round-trip. If the TTL expires, the hook commits edge delete;
+      // onCommit then deletes the legacy row. Failure surfaces via hook toast.
+      const edge = campaignEdges.find(
+        (e) =>
+          e.relationship === "mentions" &&
+          e.source_type === "note" &&
+          e.source_id === noteId &&
+          e.target_type === "npc" &&
+          e.target_id === npcId,
       );
-      if (edgeId) {
-        try {
-          await unlinkEntities(edgeId);
-          setCampaignEdges((prev) => prev.filter((e) => e.id !== edgeId));
-        } catch (err) {
-          captureError(err, {
-            component: "CampaignNotes",
-            action: "unlinkNpc.edgeDelete",
-            category: "network",
-          });
-          return;
-        }
-      }
+      const legacyLink = npcLinks.find(
+        (l) => l.note_id === noteId && l.npc_id === npcId,
+      );
 
-      try {
-        await unlinkNoteFromNpc(noteId, npcId);
+      // Nothing to remove — both stores already agree there's no link.
+      if (!edge && !legacyLink) return;
+
+      // Optimistic UI removal (both stores) — mirrored by onUndo.
+      if (edge) {
+        setCampaignEdges((prev) => prev.filter((e) => e.id !== edge.id));
+      }
+      if (legacyLink) {
         setNpcLinks((prev) =>
           prev.filter((l) => !(l.note_id === noteId && l.npc_id === npcId)),
         );
-      } catch (err) {
-        captureError(err, {
-          component: "CampaignNotes",
-          action: "unlinkNpc.legacyDelete",
-          category: "network",
-        });
       }
+
+      // Edge is the primary source of truth; if missing, delete legacy row
+      // directly (no undo window — there's nothing for the hook to commit).
+      // This covers pre-migration notes that still only live in note_npc_links.
+      if (!edge) {
+        if (legacyLink) {
+          try {
+            await unlinkNoteFromNpc(noteId, npcId);
+          } catch (err) {
+            // Restore legacy link; no edge to restore.
+            setNpcLinks((prev) => [...prev, legacyLink]);
+            captureError(err, {
+              component: "CampaignNotes",
+              action: "unlinkNpc.legacyOnlyDelete",
+              category: "network",
+            });
+          }
+        }
+        return;
+      }
+
+      scheduleUnlinkUndo({
+        edgeId: edge.id,
+        onUndo: () => {
+          setCampaignEdges((prev) =>
+            prev.some((e) => e.id === edge.id) ? prev : [...prev, edge],
+          );
+          if (legacyLink) {
+            setNpcLinks((prev) =>
+              prev.some(
+                (l) => l.note_id === noteId && l.npc_id === npcId,
+              )
+                ? prev
+                : [...prev, legacyLink],
+            );
+          }
+        },
+        onCommit: legacyLink
+          ? async () => {
+              try {
+                await unlinkNoteFromNpc(noteId, npcId);
+              } catch (err) {
+                // Edge is already gone — legacy row sticking around is the
+                // safer failure mode (reverse-lookup dedups by note id at
+                // next mount). Surface for ops without rolling back UI.
+                captureError(err, {
+                  component: "CampaignNotes",
+                  action: "unlinkNpc.legacyCommit",
+                  category: "network",
+                });
+                throw err;
+              }
+            }
+          : undefined,
+      });
     },
-    [campaignEdges],
+    [campaignEdges, npcLinks, scheduleUnlinkUndo],
   );
 
   // Flush pending saves and cleanup debounce timers on unmount

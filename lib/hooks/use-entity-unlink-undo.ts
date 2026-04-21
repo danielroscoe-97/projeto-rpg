@@ -36,6 +36,19 @@ export interface PendingUnlink {
   edgeId: string;
   /** Caller-provided callback to restore the chip/row in local UI state. */
   onUndo: () => void | Promise<void>;
+  /**
+   * Optional extra write to perform at TTL, AFTER unlinkEntities(edgeId)
+   * resolves. Used by callers that still dual-write to legacy tables
+   * (e.g. note_npc_links) so both deletions land atomically from the
+   * user's perspective: nothing is committed until the undo window closes,
+   * and undo restores the pre-schedule UI without any round-trip.
+   *
+   * If the extra write throws, the failure is captured and reported via
+   * the errorSingle/errorBatch toast, mirroring edge-delete failure UX.
+   * The caller's onUndo is NOT invoked — the edge is already gone from
+   * the DB, so rolling back the UI would create a desync with reality.
+   */
+  onCommit?: () => void | Promise<void>;
 }
 
 const BATCH_TTL_MS = 5_000;
@@ -106,6 +119,7 @@ async function flush(): Promise<void> {
   // chip is restored in local UI state. Otherwise the chip would stay hidden
   // until the next reload (DB still has the edge, so reload resurrects it).
   const failedIndices: number[] = [];
+  const edgeSucceededIndices: number[] = [];
   results.forEach((r, i) => {
     if (r.status === "rejected") {
       failedIndices.push(i);
@@ -117,13 +131,36 @@ async function flush(): Promise<void> {
           err,
         );
       }
+    } else {
+      edgeSucceededIndices.push(i);
     }
   });
-  if (failedIndices.length > 0 && currentStrings) {
+
+  // Run dual-write onCommit callbacks only for edges that actually deleted.
+  // Running sequentially (not allSettled) keeps ordering predictable for the
+  // caller; failures are logged and surfaced but don't retry. See the JSDoc
+  // on PendingUnlink.onCommit for the "no rollback" invariant.
+  const commitFailures: number[] = [];
+  for (const i of edgeSucceededIndices) {
+    const item = batch[i]!;
+    if (!item.onCommit) continue;
+    try {
+      await item.onCommit();
+    } catch (err) {
+      commitFailures.push(i);
+      console.error(
+        "[use-entity-unlink-undo] onCommit callback threw:",
+        err,
+      );
+    }
+  }
+
+  const totalFailed = failedIndices.length + commitFailures.length;
+  if (totalFailed > 0 && currentStrings) {
     toast.error(
-      failedIndices.length === 1
+      totalFailed === 1
         ? currentStrings.errorSingle
-        : currentStrings.errorBatch(failedIndices.length),
+        : currentStrings.errorBatch(totalFailed),
     );
   }
   flushInFlight = false;
@@ -173,9 +210,11 @@ export function useEntityUnlinkUndo(strings: Strings) {
       clearTimer();
       toast.dismiss(BATCH_TOAST_ID);
       batch.forEach((p) => {
-        unlinkEntities(p.edgeId).catch(() => {
-          // Best-effort — the page is leaving. Cannot surface error.
-        });
+        unlinkEntities(p.edgeId)
+          .then(() => p.onCommit?.())
+          .catch(() => {
+            // Best-effort — the page is leaving. Cannot surface error.
+          });
       });
     };
     const onVisibility = () => {
