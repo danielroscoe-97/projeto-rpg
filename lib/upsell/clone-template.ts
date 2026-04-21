@@ -14,6 +14,8 @@
  * SQLSTATE → error code mapping (raised by the RPC, see 170):
  *   42501  → "forbidden"         — auth.uid() mismatch (F1)
  *   P0002  → "not_found"         — template missing or is_public=false
+ *   23505  → "retry"             — campaigns.join_code collision (very rare,
+ *                                   single retry almost always clears it)
  *   anything else → "unknown"
  *
  * The RPC also returns a non-throwing "missing_monsters" envelope when
@@ -55,6 +57,10 @@ export type CloneTemplateResult =
   | {
       ok: false;
       code: "not_found";
+    }
+  | {
+      ok: false;
+      code: "retry";
     }
   | {
       ok: false;
@@ -112,6 +118,14 @@ export async function cloneTemplateForUser(
     }
     if (error.code === "P0002") {
       return { ok: false, code: "not_found" };
+    }
+    if (error.code === "23505") {
+      // unique_violation — campaigns.join_code collision is the realistic
+      // trigger (migration 039). Join codes are 8 hex chars generated
+      // randomly by create_campaign_with_settings; collision is ~1 in 4B
+      // per call but not zero at scale. A single retry almost always
+      // clears it.
+      return { ok: false, code: "retry" };
     }
     return {
       ok: false,

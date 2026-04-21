@@ -167,6 +167,21 @@ describe("cloneTemplateForUser", () => {
     });
   });
 
+  it("maps SQLSTATE 23505 (join_code unique violation) to retry (H7)", async () => {
+    state.rpcResult = {
+      data: null,
+      error: {
+        message:
+          'duplicate key value violates unique constraint "campaigns_join_code_key"',
+        code: "23505",
+      },
+    };
+
+    const res = await cloneTemplateForUser(TEMPLATE_ID, USER_ID);
+
+    expect(res).toEqual({ ok: false, code: "retry" });
+  });
+
   it("short-circuits to forbidden when there is no authenticated user", async () => {
     state.user = null;
 

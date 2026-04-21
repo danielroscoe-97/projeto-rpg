@@ -21,6 +21,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { captureError } from "@/lib/errors/capture";
 import type { PastCompanion } from "@/lib/types/database";
 
 export type { PastCompanion } from "@/lib/types/database";
@@ -29,6 +30,10 @@ export type { PastCompanion } from "@/lib/types/database";
  * Returns users who share at least one session with `auth.uid()`.
  * Empty array on any error — the calling UI treats an empty list as
  * "no companions to invite" and hides the tab (F28).
+ *
+ * M7 — errors now flow through `captureError` so RLS regressions or RPC
+ * schema drift page the operator. Silent [] would otherwise conflate
+ * "no companions yet" with "function is broken".
  */
 export async function getPastCompanions(
   limit?: number,
@@ -41,6 +46,14 @@ export async function getPastCompanions(
     p_offset: offset,
   });
 
-  if (error || !data) return [];
+  if (error) {
+    captureError(error, {
+      component: "PastCompanionsLib",
+      action: "getPastCompanions",
+      category: "database",
+    });
+    return [];
+  }
+  if (!data) return [];
   return data as PastCompanion[];
 }

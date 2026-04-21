@@ -26,5 +26,11 @@ export async function GET() {
   }
 
   const decision = await shouldShowDmCta(user.id);
-  return NextResponse.json(decision, { status: 200 });
+  // M4 — no-store. A transient DB outage returns `reason: 'error'` with
+  // HTTP 200; without this header a CDN / browser cache would pin "don't
+  // show" for the TTL, hiding the CTA indefinitely for that user.
+  return NextResponse.json(decision, {
+    status: 200,
+    headers: { "Cache-Control": "no-store" },
+  });
 }

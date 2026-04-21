@@ -215,19 +215,32 @@ describe("shouldShowDmCta — error + defensive fallbacks", () => {
     expect(createClientMock).not.toHaveBeenCalled();
   });
 
-  it("role=both with NO user_onboarding row (null data) still flows to sessions gate", async () => {
-    // Not strictly an error path — maybeSingle returning null means "no row
-    // yet", which is functionally equivalent to first_campaign_created_at
-    // being NULL. Exercise path (d) via the null-row case.
+  it("M12 — role=both with NO user_onboarding row returns error (fail-closed)", async () => {
+    // Migration 046 creates user_onboarding on signup; a missing row for
+    // a role=both user means something's wrong (pre-046 legacy, race,
+    // manual delete). Hiding the CTA is safer than guessing.
     state.userRow = { data: { role: "both" }, error: null };
     state.onboardingRow = { data: null, error: null };
     state.sessionsPlayed = 2;
 
     const res = await shouldShowDmCta(USER_ID);
-    expect(res).toEqual({
-      show: true,
-      reason: "shown",
-      sessionsPlayed: 2,
-    });
+    expect(res).toEqual({ show: false, reason: "error", sessionsPlayed: 0 });
+  });
+
+  it("M3 — unknown role value returns error (fail-closed allow-list)", async () => {
+    // Any role outside {player, dm, both} — legacy 'admin', typo, NULL,
+    // future enum value — treated as unknown → hide.
+    state.userRow = { data: { role: "admin" }, error: null };
+    state.sessionsPlayed = 10;
+
+    const res = await shouldShowDmCta(USER_ID);
+    expect(res).toEqual({ show: false, reason: "error", sessionsPlayed: 0 });
+  });
+
+  it("M3 — null role returns error", async () => {
+    state.userRow = { data: { role: null }, error: null };
+
+    const res = await shouldShowDmCta(USER_ID);
+    expect(res).toEqual({ show: false, reason: "error", sessionsPlayed: 0 });
   });
 });

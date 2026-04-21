@@ -68,6 +68,13 @@ export async function shouldShowDmCta(userId: string): Promise<DmCtaDecision> {
 
   const role = userRow.role;
 
+  // M3 — role allow-list. Any value outside the documented enum
+  // (NULL, 'admin', future labels) is treated as "unknown state → hide".
+  // Fail-closed is strictly safer than defaulting to the player branch.
+  if (role !== "player" && role !== "dm" && role !== "both") {
+    return { show: false, reason: "error", sessionsPlayed: 0 };
+  }
+
   // (f) Pure DM → already a DM, never show upsell.
   if (role === "dm") {
     // Zero'd sessionsPlayed because we didn't read it (cheaper path).
@@ -92,7 +99,18 @@ export async function shouldShowDmCta(userId: string): Promise<DmCtaDecision> {
     if (onboardingError) {
       return { show: false, reason: "error", sessionsPlayed: 0 };
     }
-    if (onboarding?.first_campaign_created_at !== null && onboarding?.first_campaign_created_at !== undefined) {
+    // M12 — missing onboarding row for role=both is an anomalous state
+    // (migration 046's on_auth_user_created trigger should create it on
+    // signup; role=both is the default). Treat as unknown → hide rather
+    // than fall through to the sessions gate with "never created campaign"
+    // assumption. The only ways to reach this state are (a) pre-046
+    // legacy account whose row got deleted, (b) race during signup. Both
+    // are real but rare, and hiding the CTA is safer than showing one to
+    // a user we can't reason about.
+    if (!onboarding) {
+      return { show: false, reason: "error", sessionsPlayed: 0 };
+    }
+    if (onboarding.first_campaign_created_at) {
       // (e) already crossed into DM — suppress regardless of sessions.
       return { show: false, reason: "already_dm", sessionsPlayed: 0 };
     }

@@ -91,6 +91,7 @@ function makePlayerCharsBuilder() {
       });
       return b;
     }),
+    limit: jest.fn(() => b), // H5 — route calls .limit() before awaiting
     // Terminal — await returns state.playerChars
     then: (resolve: (v: BuilderResult<PlayerCharRow[]>) => unknown) =>
       resolve(state.playerChars),
@@ -119,6 +120,7 @@ function makeCombatantsBuilder() {
       b._isDefeatedFilter = col === "is_defeated" && val === true;
       return b;
     }),
+    limit: jest.fn(() => b), // H5 — route calls .limit() before awaiting
     _byColumn: "",
     _isDefeatedFilter: false,
     then: (resolve: (v: BuilderResult<CombatantRow[]>) => unknown) => {
@@ -148,6 +150,7 @@ function makeEncountersBuilder() {
       });
       return b;
     }),
+    limit: jest.fn(() => b), // H5 — route calls .limit() before awaiting
     then: (resolve: (v: BuilderResult<EncounterRow[]>) => unknown) =>
       resolve(state.encounters),
   };
@@ -426,5 +429,81 @@ describe("getSessionsPlayed — F19 live COUNT fallback", () => {
 
     const result = await getSessionsPlayed(USER_ID);
     expect(result).toBe(3);
+  });
+
+  it("H4 — monotonicity: never returns a count LOWER than the matview", async () => {
+    // Matview says 5; live pipeline walks 3 distinct sessions (e.g. user's
+    // earlier PCs were soft-deleted / archived but the matview still has
+    // their contribution from before the drop).
+    state.matview = {
+      data: {
+        sessions_played: 5,
+        last_counted_session_at: isoMinutesAgo(10),
+      },
+      error: null,
+    };
+    state.userRow = {
+      data: { last_session_at: isoMinutesAgo(1) },
+      error: null,
+    };
+    state.playerChars = {
+      data: [{ id: "pc-1" }],
+      error: null,
+    };
+    state.combatantsByPc = {
+      data: [{ encounter_id: "enc-a" }, { encounter_id: "enc-b" }, { encounter_id: "enc-c" }],
+      error: null,
+    };
+    state.defeatedCombatants = {
+      data: [
+        { encounter_id: "enc-a" },
+        { encounter_id: "enc-b" },
+        { encounter_id: "enc-c" },
+      ],
+      error: null,
+    };
+    state.encounters = {
+      data: [
+        { session_id: "sess-1" },
+        { session_id: "sess-2" },
+        { session_id: "sess-3" },
+      ],
+      error: null,
+    };
+
+    const result = await getSessionsPlayed(USER_ID);
+    // Live would say 3, matview says 5. Math.max = 5.
+    expect(result).toBe(5);
+  });
+
+  it("H5 — aborts to matview when a pipeline stage hits FALLBACK_ROW_LIMIT", async () => {
+    // The implementation caps each SELECT at 10_000. We simulate a user
+    // with exactly that many combatants (absurd but the defensive edge).
+    state.matview = {
+      data: {
+        sessions_played: 7,
+        last_counted_session_at: isoMinutesAgo(10),
+      },
+      error: null,
+    };
+    state.userRow = {
+      data: { last_session_at: isoMinutesAgo(1) },
+      error: null,
+    };
+    state.playerChars = {
+      data: [{ id: "pc-1" }],
+      error: null,
+    };
+    // 10_000 combatants → hits the cap, abort live path.
+    state.combatantsByPc = {
+      data: Array.from({ length: 10_000 }, (_, i) => ({
+        encounter_id: `enc-${i}`,
+      })),
+      error: null,
+    };
+
+    const result = await getSessionsPlayed(USER_ID);
+    // Abort → matview snapshot.
+    expect(result).toBe(7);
   });
 });

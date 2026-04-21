@@ -50,6 +50,25 @@ import { createClient } from "@/lib/supabase/server";
 /** How old the matview can get before we consider the hot-path fallback. */
 const MATVIEW_STALE_MS = 5 * 60 * 1000;
 
+/**
+ * Defensive cap on the number of rows each intermediate SELECT in the F19
+ * fallback pipeline will fetch. Shielding against two failure modes:
+ *
+ *   1. PostgREST URL length limits (~8 KB default). A high-play user with
+ *      thousands of player_characters × hundreds of combatants/PC can
+ *      produce an `.in("encounter_id", […])` clause that either 414s or
+ *      silently truncates server-side. Bounding each SELECT at
+ *      FALLBACK_ROW_LIMIT gives us a deterministic failure edge.
+ *   2. Memory: we materialize each intermediate list into a Set, so the
+ *      worst case is 4 × cap rows in memory per request.
+ *
+ * If ANY stage hits the cap, we give up on the live path and return the
+ * matview snapshot (see H5). The matview value is authoritative for
+ * monotonicity (H4) anyway — better to land on the cron-lagged number
+ * than on a silently-truncated live COUNT.
+ */
+const FALLBACK_ROW_LIMIT = 10_000;
+
 export async function getSessionsPlayed(userId: string): Promise<number> {
   if (!userId || typeof userId !== "string") return 0;
 
@@ -114,24 +133,48 @@ export async function getSessionsPlayed(userId: string): Promise<number> {
   //   (c) combatants that are is_defeated=true across THOSE encounter_ids
   //       (the EXISTS proxy in migration 165 — "combat actually happened")
   //   (d) distinct session_ids across those encounters
-  // If any sub-query errors, fall back to the matview snapshot — NEVER
-  // return "unknown high" or throw upstream.
+  //
+  // Each stage is capped at FALLBACK_ROW_LIMIT (H5 — defensive against
+  // URL-length blowups). If ANY stage hits the cap, we abort the live
+  // path and return the matview snapshot (the matview in Postgres doesn't
+  // have the URL-length limitation).
+  //
+  // Monotonicity (H4): the final return is wrapped in Math.max(matviewCount,
+  // liveCount). The live pipeline can legitimately undercount the matview
+  // when historical combatants have been soft-deleted or when a pc's
+  // user_id was rewritten backwards by an admin op. Returning less than
+  // the matview would flip the CTA back off after a user just crossed
+  // the 2-session threshold — a worse UX than "count is briefly stale
+  // but monotone".
+  const matviewCount = matview.sessions_played ?? 0;
   try {
     const { data: pcRows, error: pcError } = await supabase
       .from("player_characters")
       .select("id")
-      .eq("user_id", userId);
-    if (pcError || !pcRows || pcRows.length === 0) {
-      return matview.sessions_played ?? 0;
+      .eq("user_id", userId)
+      .limit(FALLBACK_ROW_LIMIT);
+    if (
+      pcError ||
+      !pcRows ||
+      pcRows.length === 0 ||
+      pcRows.length >= FALLBACK_ROW_LIMIT
+    ) {
+      return matviewCount;
     }
     const pcIds = pcRows.map((r) => r.id);
 
     const { data: myCombatants, error: myCombatantsError } = await supabase
       .from("combatants")
       .select("encounter_id")
-      .in("player_character_id", pcIds);
-    if (myCombatantsError || !myCombatants || myCombatants.length === 0) {
-      return matview.sessions_played ?? 0;
+      .in("player_character_id", pcIds)
+      .limit(FALLBACK_ROW_LIMIT);
+    if (
+      myCombatantsError ||
+      !myCombatants ||
+      myCombatants.length === 0 ||
+      myCombatants.length >= FALLBACK_ROW_LIMIT
+    ) {
+      return matviewCount;
     }
     // Deduplicate encounter ids from this user's combatants. NOT YET filtered
     // by the "combat happened" proxy — that's the next step.
@@ -142,8 +185,11 @@ export async function getSessionsPlayed(userId: string): Promise<number> {
           .filter((v): v is string => typeof v === "string"),
       ),
     );
-    if (candidateEncounterIds.length === 0) {
-      return matview.sessions_played ?? 0;
+    if (
+      candidateEncounterIds.length === 0 ||
+      candidateEncounterIds.length >= FALLBACK_ROW_LIMIT
+    ) {
+      return matviewCount;
     }
 
     // "EXISTS (SELECT 1 FROM combatants WHERE encounter_id = e.id AND
@@ -153,9 +199,15 @@ export async function getSessionsPlayed(userId: string): Promise<number> {
       .from("combatants")
       .select("encounter_id")
       .in("encounter_id", candidateEncounterIds)
-      .eq("is_defeated", true);
-    if (defeatedError || !defeated || defeated.length === 0) {
-      return matview.sessions_played ?? 0;
+      .eq("is_defeated", true)
+      .limit(FALLBACK_ROW_LIMIT);
+    if (
+      defeatedError ||
+      !defeated ||
+      defeated.length === 0 ||
+      defeated.length >= FALLBACK_ROW_LIMIT
+    ) {
+      return matviewCount;
     }
     const playedEncounterIds = Array.from(
       new Set(
@@ -164,25 +216,34 @@ export async function getSessionsPlayed(userId: string): Promise<number> {
           .filter((v): v is string => typeof v === "string"),
       ),
     );
-    if (playedEncounterIds.length === 0) {
-      return matview.sessions_played ?? 0;
+    if (
+      playedEncounterIds.length === 0 ||
+      playedEncounterIds.length >= FALLBACK_ROW_LIMIT
+    ) {
+      return matviewCount;
     }
 
     // Finally, count DISTINCT session_ids reached through those encounters.
     const { data: encRows, error: encError } = await supabase
       .from("encounters")
       .select("session_id")
-      .in("id", playedEncounterIds);
-    if (encError || !encRows) {
-      return matview.sessions_played ?? 0;
+      .in("id", playedEncounterIds)
+      .limit(FALLBACK_ROW_LIMIT);
+    if (
+      encError ||
+      !encRows ||
+      encRows.length >= FALLBACK_ROW_LIMIT
+    ) {
+      return matviewCount;
     }
     const sessionIds = new Set(
       encRows
         .map((e) => e.session_id)
         .filter((v): v is string => typeof v === "string"),
     );
-    return sessionIds.size;
+    // H4 — monotone: never return LESS than the matview says.
+    return Math.max(matviewCount, sessionIds.size);
   } catch {
-    return matview.sessions_played ?? 0;
+    return matviewCount;
   }
 }
