@@ -24,6 +24,23 @@ export interface PersistedUpgradeContext {
   sessionTokenId: string;
   campaignId?: string;
   guestCharacter?: Combatant;
+  /**
+   * Origin CTA that opened the upgrade flow (Epic 03, Story 03-C/03-D).
+   *
+   * Used by the auth callback (Cluster β, W#4) to fire
+   * `conversion:completed` with the correct `moment` after the OAuth round
+   * trip resolves. Not every persisted context has a `moment` — legacy
+   * contexts written before Wave 3a will be absent, hence the field stays
+   * optional and the callback guards accordingly.
+   *
+   * Cluster γ writes this field when creating the upgradeContext inside
+   * `RecapCtaCard` / `PlayerJoinClient` / `GuestCombatClient`. The enum is
+   * deliberately narrow: only anon paths (`waiting`, `recap_anon`) should
+   * ever reach this storage — `recap_guest` is handled locally by
+   * `RecapCtaCard` (D3b) without an upgradeContext, so it has no
+   * legitimate reason to appear here.
+   */
+  moment?: "waiting" | "recap_anon";
   /** Epoch ms — used to reject stale entries. */
   savedAt: number;
 }

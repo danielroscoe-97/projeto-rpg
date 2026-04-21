@@ -79,8 +79,12 @@ describe("AuthCallbackContinueClient", () => {
     expect(body.credentials).toBeUndefined();
     // Entry should be cleared (consume-on-read).
     expect(localStorage.getItem(IDENTITY_UPGRADE_CONTEXT_KEY)).toBeNull();
-    // After resolve, router.replace should hit the dashboard.
+    // After resolve, router.replace should hit the dashboard. Flush a few
+    // microtasks: Wave 3a interleaves an async guest-migrate drain between
+    // the upgrade response and the redirect.
     await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
       await Promise.resolve();
     });
     expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
@@ -89,6 +93,11 @@ describe("AuthCallbackContinueClient", () => {
   it("skips upgrade call when no context and redirects directly", async () => {
     await act(async () => {
       render(<AuthCallbackContinueClient />);
+    });
+    // Wave 3a: no-context branch is async (runs guest-migrate drain first),
+    // so flush pending microtasks before asserting the redirect.
+    await act(async () => {
+      await Promise.resolve();
     });
     expect(mockFetch).not.toHaveBeenCalled();
     expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
@@ -129,10 +138,13 @@ describe("AuthCallbackContinueClient", () => {
     ).toBeInTheDocument();
     // Critical: no auto-redirect happened.
     expect(replaceMock).not.toHaveBeenCalled();
-    // Analytics event fired.
+    // Analytics event fired — Wave 3a (W#5) shape via trackConversionFailed.
     expect(trackEventMock).toHaveBeenCalledWith(
       "conversion:failed",
-      expect.objectContaining({ stage: "oauth_upgrade", status: 502 }),
+      expect.objectContaining({
+        moment: "recap_anon",
+        error: expect.stringContaining("provider error"),
+      }),
     );
   });
 
@@ -157,6 +169,8 @@ describe("AuthCallbackContinueClient", () => {
     const user = userEvent.setup();
     await user.click(screen.getByTestId("auth.callback.continue.retry"));
     await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
       await Promise.resolve();
     });
 
@@ -186,9 +200,13 @@ describe("AuthCallbackContinueClient", () => {
     await user.click(screen.getByTestId("auth.callback.continue.dismiss"));
 
     expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
+    // Wave 3a (W#5): dismiss also routes through trackConversionFailed.
     expect(trackEventMock).toHaveBeenCalledWith(
       "conversion:failed",
-      expect.objectContaining({ reason: "user_dismissed" }),
+      expect.objectContaining({
+        moment: "recap_anon",
+        error: "user_dismissed",
+      }),
     );
   });
 
@@ -200,6 +218,11 @@ describe("AuthCallbackContinueClient", () => {
     });
     await act(async () => {
       render(<AuthCallbackContinueClient />);
+    });
+    // Wave 3a: no-context branch is now async (runs guest-migrate drain
+    // first). Flush microtasks so the redirect lands before we assert.
+    await act(async () => {
+      await Promise.resolve();
     });
     expect(mockFetch).not.toHaveBeenCalled();
     expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");

@@ -5,7 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { consumePersistedUpgradeContext } from "@/lib/auth/upgrade-context-storage";
 import type { PersistedUpgradeContext } from "@/lib/auth/upgrade-context-storage";
-import { trackEvent } from "@/lib/analytics/track";
+import {
+  readGuestMigratePending,
+  clearGuestMigratePending,
+} from "@/lib/guest/guest-migrate-pending";
+import {
+  trackConversionCompleted,
+  trackConversionFailed,
+} from "@/lib/conversion/analytics";
 
 type CallbackState = "working" | "error" | "done";
 
@@ -22,6 +29,26 @@ type CallbackState = "working" | "error" | "done";
  * anyway" escape hatch. Silent redirects were masking real saga failures
  * and leaving users without any actionable feedback. Analytics get a
  * `conversion:failed` event so we can track the real-world rate.
+ *
+ * Wave 3a (Cluster β) fixes:
+ *   - W#2: if `guest-migrate-pending` is set (GuestRecapFlow wrote it before
+ *     the OAuth redirect), migrate the guest character AFTER the anon upgrade
+ *     branch resolves. OAuth unmounts the whole tab, so GuestRecapFlow's
+ *     in-memory state is gone; this key is the only way for the callback to
+ *     finish the conversion.
+ *   - W#4: fire `conversion:completed` via `trackConversionCompleted` when
+ *     the anon `/upgrade` call succeeds and the persisted context carries a
+ *     `moment` (Cluster γ populates this when writing the context).
+ *   - W#5: replace ad-hoc `trackEvent("conversion:failed", ...)` calls with
+ *     `trackConversionFailed(moment, { error, campaignId })` so every
+ *     conversion:failed payload has the same shape.
+ *
+ * Precedence when BOTH persisted (rare — a player could theoretically be in
+ * an anon flow AND have saved a guest character in the same tab):
+ *   1. `upgradeContext` (anon → auth via `/upgrade`) runs first so the saga
+ *      sees the user as anon.
+ *   2. `guestMigratePending` (guest → auth via `/migrate-guest-character`)
+ *      runs second, now that the user is authenticated.
  */
 export function AuthCallbackContinueClient() {
   const router = useRouter();
@@ -39,6 +66,59 @@ export function AuthCallbackContinueClient() {
     const raw = params.get("next") ?? "/app/dashboard";
     return raw.startsWith("/") && !raw.startsWith("//") ? raw : "/app/dashboard";
   })();
+
+  /**
+   * Migrate a pending guest character (written by GuestRecapFlow before
+   * OAuth) into `player_characters`. Best-effort: on failure we still clear
+   * the pending key so the next page load doesn't loop, and we still
+   * redirect — the user can retry from the HQ if they care. Analytics fire
+   * either way so we can track the real-world completion rate.
+   */
+  const runGuestMigrate = useCallback(async (): Promise<void> => {
+    const pending = readGuestMigratePending();
+    if (!pending) return;
+
+    try {
+      const response = await fetch(
+        "/api/player-identity/migrate-guest-character",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            guestCharacter: pending.guestCharacter,
+            campaignId: pending.campaignId,
+            setAsDefault: true,
+          }),
+        },
+      );
+      const body = (await response.json().catch(() => ({}))) as {
+        character?: { id?: string };
+        code?: string;
+      };
+      if (response.ok && body?.character?.id) {
+        trackConversionCompleted("recap_guest", {
+          campaignId: pending.campaignId,
+          characterId: body.character.id,
+          flow: "signup_and_migrate",
+        });
+      } else {
+        trackConversionFailed("recap_guest", {
+          campaignId: pending.campaignId,
+          error: body?.code ?? `HTTP ${response.status}`,
+        });
+      }
+    } catch (err) {
+      trackConversionFailed("recap_guest", {
+        campaignId: pending.campaignId,
+        error: err instanceof Error ? err.name : "unknown",
+      });
+    } finally {
+      // Always clear — a zombie key from a partial failure would otherwise
+      // retry on every subsequent auth callback, potentially duplicating
+      // characters if the previous attempt actually succeeded server-side.
+      clearGuestMigratePending();
+    }
+  }, []);
 
   const runUpgrade = useCallback(
     async (persisted: PersistedUpgradeContext): Promise<void> => {
@@ -63,30 +143,51 @@ export function AuthCallbackContinueClient() {
           } catch {
             // non-JSON body — fall back to the generic translation
           }
-          trackEvent("conversion:failed", {
-            stage: "oauth_upgrade",
-            status: response.status,
-            reason: msg ?? "http_error",
+          // W#5: unified shape via typed helper. `moment` defaults to
+          // `recap_anon` when the persisted context predates Cluster γ's
+          // moment-tagging (legacy contexts don't carry the field).
+          trackConversionFailed(persisted.moment ?? "recap_anon", {
+            campaignId: persisted.campaignId,
+            error: msg ?? `HTTP ${response.status}`,
           });
           setErrorMessage(msg ?? t("upgrade_failed"));
           setState("error");
           return;
         }
 
+        // W#4: fire `conversion:completed` when the anon upgrade lands. We
+        // only have a `moment` if Cluster γ wrote the context — older
+        // contexts (Wave 2 pre-moment) simply don't emit a completed event
+        // here; the dashboard post-upgrade hook picks them up.
+        // `/api/player-identity/upgrade` does not return a characterId, so
+        // we pass only `campaignId + flow` — the analytics payload tolerates
+        // `characterId` being optional.
+        if (persisted.moment) {
+          trackConversionCompleted(persisted.moment, {
+            campaignId: persisted.campaignId,
+            flow: "upgrade",
+          });
+        }
+
+        // W#2: after the anon branch resolves successfully, drain any
+        // pending guest-migrate record. Sequential (not parallel) so the
+        // user is already authenticated when the guest migrate hits —
+        // `/migrate-guest-character` 409s if `is_anonymous`.
+        await runGuestMigrate();
+
         setState("done");
         router.replace(next);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        trackEvent("conversion:failed", {
-          stage: "oauth_upgrade",
-          status: 0,
-          reason: "network",
+        trackConversionFailed(persisted.moment ?? "recap_anon", {
+          campaignId: persisted.campaignId,
+          error: err instanceof Error ? err.name : "network",
         });
         setErrorMessage(msg || t("upgrade_failed"));
         setState("error");
       }
     },
-    [next, router, t],
+    [next, router, runGuestMigrate, t],
   );
 
   useEffect(() => {
@@ -95,12 +196,19 @@ export function AuthCallbackContinueClient() {
 
     const persisted = consumePersistedUpgradeContext();
     if (!persisted) {
-      router.replace(next);
+      // No anon upgrade to run. We may still have a guest migrate pending
+      // (common path: `/try` → email signup → confirmation email → callback
+      // with no upgradeContext). Drain it before the redirect so the user
+      // lands on the dashboard with their character already persisted.
+      void (async () => {
+        await runGuestMigrate();
+        router.replace(next);
+      })();
       return;
     }
     contextRef.current = persisted;
     void runUpgrade(persisted);
-  }, [router, next, runUpgrade]);
+  }, [router, next, runUpgrade, runGuestMigrate]);
 
   const handleRetry = useCallback(() => {
     if (!contextRef.current) {
@@ -111,10 +219,15 @@ export function AuthCallbackContinueClient() {
   }, [next, router, runUpgrade]);
 
   const handleDismiss = useCallback(() => {
-    trackEvent("conversion:failed", {
-      stage: "oauth_upgrade",
-      status: -1,
-      reason: "user_dismissed",
+    // W#5: keep using the typed helper for shape consistency. `moment`
+    // derives from the context that was in flight when the error surfaced;
+    // fallback `recap_anon` when the context is missing (shouldn't happen,
+    // since Dismiss is only visible in the error state triggered by a
+    // persisted upgrade, but the guard keeps the helper contract honest).
+    const ctx = contextRef.current;
+    trackConversionFailed(ctx?.moment ?? "recap_anon", {
+      campaignId: ctx?.campaignId,
+      error: "user_dismissed",
     });
     router.replace(next);
   }, [next, router]);
