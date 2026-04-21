@@ -31,7 +31,7 @@
 -- not X's most-recent. This scenario catches that regression.
 
 begin;
-select plan(3);
+select plan(5);
 
 select helpers.test_clear_auth();
 set local role postgres;
@@ -154,6 +154,56 @@ select isnt(
   (select last_campaign_name from get_past_companions()
      where companion_user_id = (select comp_y_uid from t_ids)),
   'F3: X and Y resolve to DIFFERENT last_campaign_name values (per-companion correlation)'
+);
+
+-- ---------------------------------------------------------------------------
+-- TEST 4 (M5 tiebreaker): force X's two sessions to have IDENTICAL
+-- session_updated_at and assert get_past_companions still returns a
+-- DETERMINISTIC last_campaign_name across runs (migration 172 added
+-- campaign_id ASC as the tiebreaker to DISTINCT ON).
+-- ---------------------------------------------------------------------------
+-- Upgrade superuser to update session timestamps directly, then bounce
+-- back into user_a to re-query.
+set local role postgres;
+select helpers.test_clear_auth();
+
+update sessions
+   set updated_at = '2026-04-20 12:00:00+00'
+ where id in (
+   (select session_1_id from t_ids),
+   (select session_2_id from t_ids)
+ );
+
+select helpers.test_setup_user('f3-user-a@example.com');
+
+-- Campaign One UUID is lexicographically smaller than Campaign Three's
+-- if and only if camp_1_id < camp_3_id as UUIDs. That's random per
+-- run, so we assert against whichever is smaller instead of a fixed
+-- name — the test's job is to verify DETERMINISM, not to pin a
+-- particular campaign.
+select is(
+  (select last_campaign_name from get_past_companions()
+     where companion_user_id = (select comp_x_uid from t_ids)),
+  (select c.name from campaigns c
+     where c.id = (
+       select least(
+         (select camp_1_id from t_ids),
+         (select camp_3_id from t_ids)
+       )
+     )),
+  'M5: DISTINCT ON tiebreaker on identical session_updated_at resolves to lexicographically-smaller campaign_id'
+);
+
+-- ---------------------------------------------------------------------------
+-- TEST 5 (M5 stability): a second call to get_past_companions() with the
+-- same tied state must return the same last_campaign_name for X.
+-- ---------------------------------------------------------------------------
+select is(
+  (select last_campaign_name from get_past_companions()
+     where companion_user_id = (select comp_x_uid from t_ids)),
+  (select last_campaign_name from get_past_companions()
+     where companion_user_id = (select comp_x_uid from t_ids)),
+  'M5: repeated calls with tied timestamps return the same campaign_name (stable tiebreak)'
 );
 
 select * from finish();

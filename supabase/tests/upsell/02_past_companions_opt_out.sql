@@ -9,12 +9,16 @@
 --     - get_past_companions() as user A → B must NOT appear.
 --     - Set it back to true → B must appear.
 --
--- Bonus M9 (missing public.users profile row):
+-- M9 behaviour (revised by migration 173 — H3 follow-up):
 --   A companion whose player_characters.user_id matches an auth.users id
---   but has NO corresponding public.users row must still appear in
---   get_past_companions() result with display_name = '(?)'.
+--   but has NO corresponding public.users row must NOT appear in the
+--   result. This used to be the M9 "visibility fallback" with display_name
+--   = '(?)', but that was vulnerable to an opt-out bypass where a
+--   privacy-deleted profile would resurface the companion. 173/H3 hardens
+--   the function to require a profile row.
 --
--- Migration under test: 169_past_companions.sql.
+-- Migrations under test: 169 + 172 + 173 (all CREATE OR REPLACE the
+-- same function body; 173 is the current definition).
 
 begin;
 select plan(4);
@@ -123,14 +127,15 @@ select is(
 );
 
 -- ---------------------------------------------------------------------------
--- TEST 2 (Bonus M9): user_c appears with display_name = '(?)' because it
--- has NO public.users profile row.
+-- TEST 2 (H3 privacy hardening — 173): user_c does NOT appear at all,
+-- because they have no public.users profile row. Closes the opt-out
+-- bypass where a profile-deleted user would resurface post-deletion.
 -- ---------------------------------------------------------------------------
 select is(
-  (select companion_display_name from get_past_companions()
+  (select count(*)::int from get_past_companions()
      where companion_user_id = (select user_c_uid from t_ids)),
-  '(?)',
-  'M9: companion without public.users profile appears with display_name = (?)'
+  0,
+  'H3: companion without public.users profile is excluded (no M9 fallback — protects against opt-out bypass)'
 );
 
 -- ---------------------------------------------------------------------------
