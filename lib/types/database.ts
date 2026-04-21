@@ -5,22 +5,9 @@ export type RulesetVersion = "2014" | "2024";
 
 export type OnboardingSource = "fresh" | "guest_combat" | "guest_browse" | "returning_no_campaign";
 
-export interface UserOnboarding {
-  user_id: string;
-  source: OnboardingSource;
-  wizard_completed: boolean;
-  wizard_step: string | null;
-  dashboard_tour_completed: boolean;
-  guest_data_migrated: boolean;
-  /** Epic 04 Story 04-F — DM-side walkthrough complete. Migration 161. */
-  dm_tour_completed: boolean;
-  /** Epic 04 Story 04-F — resumable DM tour step. NULL = never started or finished. Migration 161. */
-  dm_tour_step: string | null;
-  /** Epic 04 Area 1 — stamped once on the first owned campaign insert. Migration 161. */
-  first_campaign_created_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
+// UserOnboarding legacy standalone interface — canonical definition is now in
+// Database["public"]["Tables"]["user_onboarding"]["Row"]. Kept as a type alias
+// below (see type aliases section) so existing imports keep working.
 
 export interface MonsterPresetEntry {
   monster_id: string;
@@ -53,7 +40,7 @@ export interface Database {
           last_session_at: string | null;
           avatar_url: string | null;
           upgrade_failed_at: string | null;
-          /** Epic 04 D8 — when false, excluded from other users' get_past_companions results. Migration 161. */
+          /** Epic 04 D8 — when false, excluded from other users' get_past_companions results. Migration 166. */
           share_past_companions: boolean;
           created_at: string;
           updated_at: string;
@@ -1274,6 +1261,61 @@ export interface Database {
           sort_order?: number;
         };
       };
+      user_onboarding: {
+        Row: {
+          user_id: string;
+          source: OnboardingSource;
+          wizard_completed: boolean;
+          wizard_step: string | null;
+          dashboard_tour_completed: boolean;
+          guest_data_migrated: boolean;
+          /** Epic 04 Story 04-F — DM-side walkthrough complete. Migration 166. */
+          dm_tour_completed: boolean;
+          /** Epic 04 Story 04-F — resumable DM tour step. NULL = never started or finished. Migration 166. */
+          dm_tour_step: string | null;
+          /** Epic 04 Area 1 — stamped once on the first owned campaign insert. Migration 166. */
+          first_campaign_created_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          source?: OnboardingSource;
+          wizard_completed?: boolean;
+          wizard_step?: string | null;
+          dashboard_tour_completed?: boolean;
+          guest_data_migrated?: boolean;
+          dm_tour_completed?: boolean;
+          dm_tour_step?: string | null;
+          first_campaign_created_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          source?: OnboardingSource;
+          wizard_completed?: boolean;
+          wizard_step?: string | null;
+          dashboard_tour_completed?: boolean;
+          guest_data_migrated?: boolean;
+          dm_tour_completed?: boolean;
+          dm_tour_step?: string | null;
+          first_campaign_created_at?: string | null;
+          updated_at?: string;
+        };
+      };
+      srd_monster_slugs: {
+        Row: {
+          slug: string;
+          added_at: string;
+        };
+        Insert: {
+          slug: string;
+          added_at?: string;
+        };
+        Update: {
+          added_at?: string;
+        };
+      };
       campaign_template_encounters: {
         Row: {
           id: string;
@@ -1281,7 +1323,7 @@ export interface Database {
           name: string;
           description: string | null;
           sort_order: number;
-          /** JSONB array of { slug, quantity, hp?, ac? }. Validated by trg_validate_template_monsters_srd (migration 162). */
+          /** JSONB array of { slug, quantity, hp?, ac? }. Validated by trg_validate_template_monsters_srd (migration 167). */
           monsters_payload: CampaignTemplateMonsterEntry[] | null;
           narrative_prompt: string | null;
           created_at: string;
@@ -1305,20 +1347,51 @@ export interface Database {
         };
       };
     };
+    Views: {
+      /** Epic 04 Story 04-A / migration 165 — per-user wrapper over v_player_sessions_played. */
+      my_sessions_played: {
+        Row: {
+          sessions_played: number;
+          last_counted_session_at: string | null;
+        };
+      };
+    };
+    Functions: {
+      /** Epic 04 Story 04-A / migration 169 — see epic-04 Área 5. */
+      get_past_companions: {
+        Args: {
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          companion_user_id: string;
+          companion_display_name: string | null;
+          companion_avatar_url: string | null;
+          sessions_together: number;
+          last_campaign_name: string | null;
+        }[];
+      };
+    };
     Enums: {
       ruleset_version: RulesetVersion;
     };
   };
 }
 
-/** Shape of each entry inside campaign_template_encounters.monsters_payload (Epic 04 / migration 162). */
+/** Shape of each entry inside campaign_template_encounters.monsters_payload (Epic 04 / migration 167). */
 export interface CampaignTemplateMonsterEntry {
-  /** Matches monsters.id in the DB (which is the slug, e.g. "goblin"). */
+  /**
+   * SRD 5.1 slug (e.g. "goblin", "adult-red-dragon"). Validated on write against the
+   * `srd_monster_slugs` whitelist table (migration 167). Clients resolve the slug to
+   * monster stats via the static SRD bundles under `public/srd/` — NOT via the
+   * `monsters` DB table (which is UUID-keyed and not populated at runtime).
+   */
   slug: string;
+  /** Number of copies to spawn on clone; validated [1, 100] on write. */
   quantity: number;
-  /** Optional HP override; falls back to monsters.hp when absent. */
+  /** Optional HP override for the spawned combatants; non-negative integer on write. */
   hp?: number;
-  /** Optional AC override; falls back to monsters.ac when absent. */
+  /** Optional AC override for the spawned combatants; non-negative integer on write. */
   ac?: number;
 }
 
@@ -1373,21 +1446,16 @@ export type CampaignTemplate = Database["public"]["Tables"]["campaign_templates"
 export type CampaignTemplateInsert = Database["public"]["Tables"]["campaign_templates"]["Insert"];
 export type CampaignTemplateEncounter = Database["public"]["Tables"]["campaign_template_encounters"]["Row"];
 export type CampaignTemplateEncounterInsert = Database["public"]["Tables"]["campaign_template_encounters"]["Insert"];
+export type UserOnboarding = Database["public"]["Tables"]["user_onboarding"]["Row"];
+export type UserOnboardingInsert = Database["public"]["Tables"]["user_onboarding"]["Insert"];
+export type UserOnboardingUpdate = Database["public"]["Tables"]["user_onboarding"]["Update"];
+export type SrdMonsterSlug = Database["public"]["Tables"]["srd_monster_slugs"]["Row"];
 
-/** Row shape returned by the get_past_companions() RPC (migration 164). */
-export interface PastCompanion {
-  companion_user_id: string;
-  companion_display_name: string | null;
-  companion_avatar_url: string | null;
-  sessions_together: number;
-  last_campaign_name: string | null;
-}
+/** Row shape returned by the get_past_companions() RPC (migration 169). Matches the Functions type above. */
+export type PastCompanion = Database["public"]["Functions"]["get_past_companions"]["Returns"][number];
 
-/** Row shape returned by the my_sessions_played wrapper view (migration 160). */
-export interface MySessionsPlayed {
-  sessions_played: number;
-  last_counted_session_at: string | null;
-}
+/** Row shape returned by the my_sessions_played wrapper view (migration 165). */
+export type MySessionsPlayed = Database["public"]["Views"]["my_sessions_played"]["Row"];
 export type CampaignSettings = Database["public"]["Tables"]["campaign_settings"]["Row"];
 export type CharacterAbility = Database["public"]["Tables"]["character_abilities"]["Row"];
 export type CharacterAbilityInsert = Database["public"]["Tables"]["character_abilities"]["Insert"];
