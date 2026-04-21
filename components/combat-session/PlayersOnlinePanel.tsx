@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Users } from "lucide-react";
 
-type PlayerStatus = "online" | "idle" | "offline";
+type PlayerStatus = "online" | "idle" | "offline" | "authenticating";
 
 interface PresencePlayer {
   id: string;
@@ -32,6 +32,10 @@ const IDLE_THRESHOLD_MS = 300_000; // 5min
 
 export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastStatuses, compact }: PlayersOnlinePanelProps) {
   const t = useTranslations("combat");
+  // Story 03-F — distinct "cadastrando" badge for players whose AuthModal is
+  // open. Separate namespace so the key lives with the rest of the conversion
+  // copy (turn_safety_toast, post_success, …).
+  const tConversion = useTranslations("conversion");
   const [players, setPlayers] = useState<PresencePlayer[]>([]);
   const offlineTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
@@ -116,6 +120,8 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastSt
         const override = broadcastStatuses[p.name];
         if (override && override !== p.status) {
           changed = true;
+          // Story 03-F — "authenticating" counts as online for the online
+          // count + header label (the player IS in the room, just busy).
           return { ...p, status: override, is_online: override !== "offline" };
         }
         return p;
@@ -201,20 +207,31 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastSt
               key={player.id}
               className={`inline-flex items-center gap-1 text-xs whitespace-nowrap ${player.status === "offline" ? "opacity-50" : ""}`}
               data-testid={`player-presence-${player.id}`}
+              data-status={player.status}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
                   player.status === "online" ? "bg-green-500"
+                  : player.status === "authenticating" ? "bg-amber-400 animate-pulse"
                   : player.status === "idle" ? "bg-yellow-500"
                   : "bg-zinc-500"
                 }`}
                 aria-label={
                   player.status === "online" ? t("player_online")
+                  : player.status === "authenticating" ? tConversion("dm_badge.authenticating")
                   : player.status === "idle" ? t("player_idle")
                   : t("player_offline")
                 }
               />
               <span className="text-muted-foreground">{player.name}</span>
+              {player.status === "authenticating" && (
+                <span
+                  className="text-[10px] text-amber-500 italic"
+                  data-testid={`player-authenticating-${player.id}`}
+                >
+                  {tConversion("dm_badge.authenticating")}
+                </span>
+              )}
             </span>
           ))}
         </div>
@@ -232,15 +249,22 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastSt
       </div>
       <ul className="space-y-1 max-h-56 overflow-y-auto">
         {players.map((player) => (
-          <li key={player.id} className="flex items-center gap-2 text-sm" data-testid={`player-presence-${player.id}`}>
+          <li
+            key={player.id}
+            className="flex items-center gap-2 text-sm"
+            data-testid={`player-presence-${player.id}`}
+            data-status={player.status}
+          >
             <span
               className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-300 ${
                 player.status === "online" ? "bg-green-500"
+                : player.status === "authenticating" ? "bg-amber-400 animate-pulse"
                 : player.status === "idle" ? "bg-yellow-500"
                 : "bg-zinc-500"
               }`}
               aria-label={
                 player.status === "online" ? t("player_online")
+                : player.status === "authenticating" ? tConversion("dm_badge.authenticating")
                 : player.status === "idle" ? t("player_idle")
                 : t("player_offline")
               }
@@ -248,6 +272,14 @@ export function PlayersOnlinePanel({ sessionId, onPlayerCountChange, broadcastSt
             <span className={`text-foreground truncate ${player.status === "offline" ? "opacity-50" : ""}`}>
               {player.name}
             </span>
+            {player.status === "authenticating" && (
+              <span
+                className="text-xs text-amber-500 italic ml-auto"
+                data-testid={`player-authenticating-${player.id}`}
+              >
+                {tConversion("dm_badge.authenticating")}
+              </span>
+            )}
           </li>
         ))}
       </ul>

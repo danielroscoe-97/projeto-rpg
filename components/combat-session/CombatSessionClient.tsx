@@ -139,7 +139,7 @@ export function CombatSessionClient({
   const [polymorphTargetId, setPolymorphTargetId] = useState<string | null>(null);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
   // Broadcast-driven player status — fed to PlayersOnlinePanel for < 2s latency (spec 4.3.6)
-  const [playerBroadcastStatuses, setPlayerBroadcastStatuses] = useState<Record<string, "online" | "idle" | "offline">>({});
+  const [playerBroadcastStatuses, setPlayerBroadcastStatuses] = useState<Record<string, "online" | "idle" | "offline" | "authenticating">>({});
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [showActionLog, setShowActionLog] = useState(false);
   const [pendingEncounterName, setPendingEncounterName] = useState("");
@@ -1189,7 +1189,10 @@ export function CombatSessionClient({
     const ch = getDmChannel(sid);
     let active = true;
 
-    const markStatus = (name: string, status: "online" | "idle" | "offline") => {
+    const markStatus = (
+      name: string,
+      status: "online" | "idle" | "offline" | "authenticating",
+    ) => {
       if (!active || !name) return;
       setPlayerBroadcastStatuses((prev) =>
         prev[name] === status ? prev : { ...prev, [name]: status }
@@ -1200,7 +1203,14 @@ export function CombatSessionClient({
       markStatus(payload?.player_name as string, "offline");
     });
     ch.on("broadcast", { event: "player:idle" }, ({ payload }) => {
-      markStatus(payload?.player_name as string, "idle");
+      // Story 03-F — Disambiguate idle reason. When the player's AuthModal is
+      // open, PlayerJoinClient emits `player:idle` with `reason: "authenticating"`
+      // so the DM can render a distinct "cadastrando" badge. Legacy emitters
+      // (and third-party listeners) send no `reason`, so we fall back to plain
+      // "idle" — zero regression on existing flows.
+      const reason = (payload as { reason?: string })?.reason;
+      const status = reason === "authenticating" ? "authenticating" : "idle";
+      markStatus(payload?.player_name as string, status);
     });
     ch.on("broadcast", { event: "player:active" }, ({ payload }) => {
       markStatus(payload?.player_name as string, "online");

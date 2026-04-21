@@ -351,6 +351,12 @@ export function PlayerJoinClient({
     open: boolean;
     mode: "login" | "signup";
   }>({ open: false, mode: "login" });
+  // Story 03-F — Turn-safety ref mirrors `authModalState.open` so realtime
+  // listeners (which never re-subscribe) can check the current modal state
+  // without relying on stale closures. See `handleAuthModalOpenChange` +
+  // `handleAuthModalSuccess` below for writes; reads are in the
+  // `session:state_sync` / `combat:turn_advance` listeners.
+  const authModalOpenRef = useRef(false);
   const [signupHintDismissed, setSignupHintDismissed] = useState<boolean>(false);
   // Story 03-C — WaitingRoomSignupCTA: tracks whether the current auth modal
   // session was triggered by the Story 03-C waiting-room CTA. When true,
@@ -1230,6 +1236,16 @@ export function PlayerJoinClient({
               source: campaignId ? "/invite" : "/join",
               combatant_count: payload.combatants?.length ?? 0,
             });
+            // Story 03-F (F16) — Turn-safety toast. If the AuthModal is open
+            // while combat starts, the player is mid-signup: surface a
+            // non-blocking toast so they know the game moved on. Does NOT
+            // close the modal (D10: liveness != action). Best-effort — if
+            // the translation is missing we swallow.
+            if (authModalOpenRef.current) {
+              try {
+                toast(tConversionRef.current("turn_safety_toast.combat_started"));
+              } catch { /* toast is cosmetic */ }
+            }
           }
           setActive(true);
           if (payload.encounter_id) setCurrentEncounterId(payload.encounter_id);
@@ -1273,6 +1289,25 @@ export function PlayerJoinClient({
                 i === payload.current_turn_index ? { ...c, reaction_used: false } : c
               )
             );
+            // Story 03-F (F16) — Turn-safety toast. If the turn advance
+            // points at THIS player (match by session_token_id, name fallback)
+            // AND the AuthModal is open, surface a non-blocking "your_turn"
+            // toast. Does NOT close the modal (D10: liveness != action).
+            if (authModalOpenRef.current) {
+              try {
+                const current = combatantsRef.current[payload.current_turn_index];
+                const myTokenId = effectiveTokenIdRef.current;
+                const myName = registeredNameRef.current;
+                const isMe =
+                  !!current &&
+                  current.is_player &&
+                  ((myTokenId && current.session_token_id === myTokenId) ||
+                    (myName && current.name === myName));
+                if (isMe) {
+                  toast(tConversionRef.current("turn_safety_toast.your_turn"));
+                }
+              } catch { /* toast is cosmetic */ }
+            }
           }
           if (payload.round_number !== undefined) setRound(payload.round_number);
           setNextCombatantId(payload.next_combatant_id ?? null);
@@ -2594,10 +2629,52 @@ export function PlayerJoinClient({
   // ─────────────────────────────────────────────────────────────────────
   const openAuthModal = useCallback((mode: "login" | "signup") => {
     setAuthModalState({ open: true, mode });
-  }, []);
+    // Story 03-F — Turn-safety: track modal open via ref + broadcast
+    // `player:idle` with `reason: "authenticating"`. Mirrors the
+    // `handleAuthModalOpenChange(true)` path because some call-sites open the
+    // modal directly (e.g. waiting-room CTA → `openAuthModal("login")`,
+    // signup-hint banner → `openAuthModal("signup")`) and never transition
+    // through `onOpenChange`.
+    authModalOpenRef.current = true;
+    const ch = channelRef.current;
+    if (ch && registeredName) {
+      ch.send({
+        type: "broadcast",
+        event: "player:idle",
+        payload: { player_name: registeredName, reason: "authenticating" },
+      });
+    }
+  }, [registeredName]);
 
   const handleAuthModalOpenChange = useCallback((open: boolean) => {
     setAuthModalState((prev) => ({ open, mode: prev.mode }));
+    // Story 03-F — Turn-safety: mirror state into ref so realtime listeners
+    // (which are pinned to the initial subscription) see the current modal
+    // state without stale closures.
+    authModalOpenRef.current = open;
+    // Story 03-F — Reuse the EXISTING `player:idle` / `player:active`
+    // broadcasts (F3 decision: no new event). The `reason: "authenticating"`
+    // payload lets the DM distinguish signup-idle from generic idle; legacy
+    // DM listeners without reason-awareness still treat it as plain idle
+    // (no regression). Guest-mode has no channel — parity is trivially
+    // satisfied because `channelRef.current` is null in guest (we're inside
+    // PlayerJoinClient which runs on /join + /invite only).
+    const ch = channelRef.current;
+    if (ch && registeredName) {
+      if (open) {
+        ch.send({
+          type: "broadcast",
+          event: "player:idle",
+          payload: { player_name: registeredName, reason: "authenticating" },
+        });
+      } else {
+        ch.send({
+          type: "broadcast",
+          event: "player:active",
+          payload: { player_name: registeredName },
+        });
+      }
+    }
     // Cluster γ (Q#8/Q#16) — clear BOTH moment-trigger refs on every close
     // so each open/close cycle is isolated. This guarantees analytics
     // attribution correctness: a subsequent open from the signup-hint
@@ -2609,11 +2686,25 @@ export function PlayerJoinClient({
       recapCtaTriggeredRef.current = false;
       setPendingUpgradeCtx(null);
     }
-  }, []);
+  }, [registeredName]);
 
   const handleAuthModalSuccess = useCallback((result: AuthModalSuccessPayload) => {
     // Close the modal.
     setAuthModalState({ open: false, mode: "login" });
+    // Story 03-F — Turn-safety: broadcast `player:active` so the DM's
+    // "cadastrando" badge flips back to online. Done on BOTH success AND
+    // cancel (`handleAuthModalOpenChange(false)` covers cancel). Ref cleared
+    // so toast-binding listeners stop firing. No heartbeat reset, no storage
+    // mutation — pure broadcast (preserves Story 02-E parity invariants).
+    authModalOpenRef.current = false;
+    const ch = channelRef.current;
+    if (ch && registeredName) {
+      ch.send({
+        type: "broadcast",
+        event: "player:active",
+        payload: { player_name: registeredName },
+      });
+    }
     // Soft re-render — nudges React without touching realtime/storage/heartbeat.
     setSoftRefreshTick((n) => n + 1);
     // Track that the user converted (dismissal store resets on real conversion).
