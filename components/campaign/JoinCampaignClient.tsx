@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { User, CheckCircle2 } from "lucide-react";
@@ -8,21 +9,6 @@ import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { acceptJoinCodeAction } from "@/app/join-campaign/[code]/actions";
-
-// Next.js server actions throw an object with digest "NEXT_REDIRECT" when
-// they call `redirect()`. The redirect is handled by the Next.js runtime at
-// the RSC protocol level — our job here is to let it propagate, not swallow
-// it as an "invite_error" toast. Shape check avoids importing the internal
-// `isRedirectError` helper (which is not in the public API surface).
-function isNextRedirect(err: unknown): boolean {
-  return (
-    typeof err === "object" &&
-    err !== null &&
-    "digest" in err &&
-    typeof (err as { digest: unknown }).digest === "string" &&
-    (err as { digest: string }).digest.startsWith("NEXT_REDIRECT")
-  );
-}
 
 interface ExistingCharacter {
   id: string;
@@ -45,6 +31,7 @@ interface JoinCampaignClientProps {
 export function JoinCampaignClient({ code, campaignName, dmName, existingCharacters }: JoinCampaignClientProps) {
   const t = useTranslations("campaign");
   const tc = useTranslations("player");
+  const router = useRouter();
 
   const [mode, setMode] = useState<"pick" | "create">(
     existingCharacters.length > 0 ? "pick" : "create"
@@ -65,31 +52,20 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
     try {
       const parseOptInt = (v: string) => { const n = parseInt(v); return Number.isNaN(n) ? null : n; };
 
-      if (mode === "pick") {
-        await acceptJoinCodeAction({ code, existingCharacterId: selectedCharId! });
-      } else {
-        await acceptJoinCodeAction({
-          code,
-          name: name.trim(),
-          maxHp: parseOptInt(hp),
-          currentHp: parseOptInt(hp),
-          ac: parseOptInt(ac),
-          spellSaveDc: parseOptInt(spellSaveDc),
-        });
-      }
+      const result = mode === "pick"
+        ? await acceptJoinCodeAction({ code, existingCharacterId: selectedCharId! })
+        : await acceptJoinCodeAction({
+            code,
+            name: name.trim(),
+            maxHp: parseOptInt(hp),
+            currentHp: parseOptInt(hp),
+            ac: parseOptInt(ac),
+            spellSaveDc: parseOptInt(spellSaveDc),
+          });
 
-      // Unreachable on success: the action redirects server-side.
-      // Left as defense-in-depth for a future refactor that removes the
-      // server-side redirect and returns a plain success value.
       toast.success(t("invite_accepted"));
+      router.push(result.redirectTo);
     } catch (err) {
-      // Let Next.js handle its own redirect throw — swallowing it here
-      // would leave the user stuck on /join-campaign with a misleading
-      // "invite_error" toast after the DB writes already succeeded.
-      if (isNextRedirect(err)) {
-        throw err;
-      }
-
       const message = err instanceof Error ? err.message : "";
       if (message === "Campanha cheia") {
         toast.error(t("campaign_full"));
@@ -100,7 +76,7 @@ export function JoinCampaignClient({ code, campaignName, dmName, existingCharact
     } finally {
       setIsSubmitting(false);
     }
-  }, [mode, selectedCharId, name, hp, ac, spellSaveDc, code, t]);
+  }, [mode, selectedCharId, name, hp, ac, spellSaveDc, code, t, router]);
 
   const inputClass =
     "bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg";

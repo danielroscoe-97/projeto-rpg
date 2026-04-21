@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sendInviteAcceptedEmail } from "@/lib/notifications/invite-accepted-email";
 import { trackServerEvent } from "@/lib/analytics/track-server";
@@ -21,7 +20,31 @@ interface JoinCampaignData {
 
 const JOIN_CODE_RE = /^[A-Z2-9]{8}$/;
 
-export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void> {
+/**
+ * Result contract intentionally returns a plain object instead of calling
+ * `redirect()` from inside the action. A `redirect()` throw inside a server
+ * action forces Next.js 15 / React 19.3-canary to re-render the CURRENT
+ * path (`/join-campaign/[code]`) as part of the action response before the
+ * redirect is committed. That re-render runs page.tsx again with the user
+ * now being a member — hitting `if (existing) redirect('/app/dashboard')`
+ * on line 78, which throws a second NEXT_REDIRECT inside the re-render
+ * stream and the framework fails to convert it into a clean redirect
+ * response (Sentry logs it as "An error occurred in the Server Components
+ * render"). The action response degrades to a 500 even though every DB
+ * write has already succeeded.
+ *
+ * Returning a plain object instead lets the client navigate via
+ * `router.push("/app/dashboard")` after the action promise resolves, so
+ * Next.js never re-renders the invite path at all. page.tsx's own
+ * `if (existing) redirect(...)` guard is preserved for users who hit the
+ * invite URL directly after becoming a member through some other path —
+ * that flow is a fresh GET render and was never affected by this bug.
+ */
+export interface AcceptJoinCodeResult {
+  redirectTo: string;
+}
+
+export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<AcceptJoinCodeResult> {
   // P11: validate join_code format before any DB call
   if (!JOIN_CODE_RE.test(data.code)) throw new Error("Código inválido");
 
@@ -68,7 +91,7 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
   // P4: already a member → skip char link/create and go straight to dashboard
   // (idempotent path — prevents duplicate character creation on retry)
   if (memberError?.code === "23505") {
-    redirect("/app/dashboard");
+    return { redirectTo: "/app/dashboard" };
   }
   if (memberError) throw new Error("Erro ao ingressar na campanha");
 
@@ -145,19 +168,5 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
     // Notification failure must not block the join
   }
 
-  // Server-side redirect AFTER all DB writes + notifications complete.
-  //
-  // Prior to 2026-04-21 this action returned void and both (a) the page.tsx
-  // RSC post-action re-render and (b) the client-side router.push("/app/dashboard")
-  // raced to navigate. The page.tsx re-render path hits `if (existing) redirect(...)`
-  // which would throw NEXT_REDIRECT during a React 19.3 canary / Next.js 15 RSC
-  // re-render cycle that the framework failed to convert cleanly — producing a
-  // 500 response ("An error occurred in the Server Components render") even
-  // though the DB writes had already succeeded. The user ended up as a member
-  // but without a linked character, and the UI showed an invite-failed toast.
-  //
-  // Redirecting from inside the action sidesteps the re-render: the action
-  // response is a redirect directive, so Next.js never re-evaluates page.tsx.
-  // Client-side router.push becomes unnecessary and was removed.
-  redirect("/app/dashboard");
+  return { redirectTo: "/app/dashboard" };
 }
