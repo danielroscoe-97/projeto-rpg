@@ -124,8 +124,20 @@ export async function dmSetupCombatSession(
 
   // Encounter name is auto-generated — no input needed
 
+  // Production rule (commit ac2d41b9f, 2026-04-03): Start Combat requires
+  // minimum 2 combatants. If the spec passed only 1, pad with a filler so
+  // the shared helper works across all conversion/Wave-3 specs without each
+  // having to know about the rule.
+  const effectiveCombatants =
+    combatants.length >= 2
+      ? combatants
+      : [
+          ...combatants,
+          { name: "Filler NPC", hp: "5", ac: "10", init: "1" },
+        ];
+
   // Add combatants — re-open manual form if closed (getShareToken may close it)
-  for (const c of combatants) {
+  for (const c of effectiveCombatants) {
     const addRowName = page.locator('[data-testid="add-row-name"]');
     if (!(await addRowName.isVisible({ timeout: 1_000 }).catch(() => false))) {
       const manualToggle = page.locator('button').filter({ hasText: /Manual/i }).first();

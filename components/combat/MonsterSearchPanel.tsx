@@ -499,7 +499,11 @@ export function MonsterSearchPanel({
     setManualAc("");
     setManualInit("");
     setManualRole("monster");
-    setManualOpen(false);
+    // Close the form in combat-mode (single add expected); keep open in setup-mode
+    // so DMs can add multiple combatants without re-clicking the Manual toggle.
+    if (!keepOpenAfterAdd) {
+      setManualOpen(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
