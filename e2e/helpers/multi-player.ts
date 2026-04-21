@@ -175,28 +175,46 @@ export async function dmAcceptPlayer(
   // Wait for the join request to arrive (realtime broadcast or polling)
   await dmPage.waitForTimeout(5_000);
 
-  // Strategy 1: Inline "Aceitar {name}" button in initiative list
   for (let attempt = 0; attempt < 6; attempt++) {
+    // Strategy 1: aria-label on JoinRequestBanner button — "{Aceitar|Accept} {playerName}"
+    // (JoinRequestBanner.tsx:106 uses `aria-label={\`${t("late_join_accept")} ${player_name}\`}`)
+    const ariaBtn = dmPage
+      .locator(`button[aria-label*="${playerName}"]`)
+      .filter({ has: dmPage.locator("svg") })
+      .first();
+    if (await ariaBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      // Confirm it's the accept (not reject) — accept uses Check icon (has gold/amber class)
+      const isReject = await ariaBtn.evaluate((el) =>
+        el.getAttribute("aria-label")?.toLowerCase().includes("rejeitar") ||
+        el.getAttribute("aria-label")?.toLowerCase().includes("reject"),
+      );
+      if (!isReject) {
+        await ariaBtn.click();
+        return;
+      }
+    }
+
+    // Strategy 2: Inline "Aceitar {name}" button in initiative list (legacy inline UI)
     const inlineBtn = dmPage
       .locator("button")
       .filter({ hasText: new RegExp(`Aceitar.*${playerName}|Accept.*${playerName}`, "i") })
       .first();
-    if (await inlineBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    if (await inlineBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await inlineBtn.click();
       return;
     }
 
-    // Strategy 2: Any "Aceitar/Accept" button (less specific)
-    const anyAcceptBtn = dmPage
-      .locator("button")
-      .filter({ hasText: /^Aceitar$|^Accept$/i })
+    // Strategy 3: Any "Aceitar/Accept" button, targeting inside join-request-banner specifically
+    const bannerAccept = dmPage
+      .locator('[data-testid="join-request-banner"] button')
+      .filter({ hasText: /Aceitar|Accept/i })
       .first();
-    if (await anyAcceptBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await anyAcceptBtn.click();
+    if (await bannerAccept.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await bannerAccept.click();
       return;
     }
 
-    // Strategy 3: Sonner toast (legacy pattern)
+    // Strategy 4: Sonner toast (legacy pattern)
     const toastBtn = dmPage
       .locator("[data-sonner-toaster] button")
       .filter({ hasText: /Aceitar|Accept/i })

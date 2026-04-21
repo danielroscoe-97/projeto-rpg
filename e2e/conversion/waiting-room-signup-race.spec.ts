@@ -45,6 +45,7 @@
 
 import { test, expect, type Page } from "@playwright/test";
 import { dmSetupCombatSession } from "../helpers/session";
+import { dmAcceptPlayer } from "../helpers/multi-player";
 import { DM_PRIMARY } from "../fixtures/test-accounts";
 import {
   readSessionTokenId,
@@ -249,8 +250,9 @@ test.describe("E2E — F30 race: combat_started during signup", () => {
 
       const playerName = "LateSignupRunner";
       await anonRegisterInLobby(playerPage, shareToken!, playerName);
-      // Player-view should eventually mount on the player side after the
-      // DM side already started combat in dmSetupCombatSession.
+      // Production requires DM to accept the late-join request (no auto-accept).
+      await dmAcceptPlayer(dmPage, playerName);
+      // Player-view mounts once isRegistered flips (combat:late_join_response accepted=true).
       await expect(
         playerPage.locator('[data-testid="player-view"]'),
       ).toBeVisible({ timeout: 20_000 });

@@ -78,6 +78,7 @@ test.describe("E2E — turn safety while anon signs up", () => {
           initiative: "20",
           hp: "30",
           ac: "16",
+          dmPage,
         });
 
         const preTokenId = await readSessionTokenId(playerPage);

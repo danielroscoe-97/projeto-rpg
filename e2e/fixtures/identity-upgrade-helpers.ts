@@ -25,6 +25,7 @@
  */
 
 import { type Page, type BrowserContext, expect } from "@playwright/test";
+import { dmAcceptPlayer } from "../helpers/multi-player";
 
 /**
  * Generate a unique test email for an upgrade attempt. Using the `+tag`
@@ -44,12 +45,20 @@ export function uniqueUpgradeEmail(tag: string): string {
  *
  * This helper is used when the E2E needs an anon player "in combat" BEFORE
  * triggering the upgrade saga.
+ *
+ * ### DM accept flow
+ *
+ * Production does NOT auto-accept late-join requests — the DM must click
+ * "Aceitar" in the JoinRequestBanner. Pass `dmPage` to have this helper
+ * drive the accept on behalf of the test. Without `dmPage`, the helper
+ * will fall through to waiting for `player-view` directly, which only
+ * succeeds if the calling spec performs the accept separately.
  */
 export async function anonJoinCombat(
   page: Page,
   shareToken: string,
   playerName: string = "AnonUpgradeTester",
-  opts: { initiative?: string; hp?: string; ac?: string } = {},
+  opts: { initiative?: string; hp?: string; ac?: string; dmPage?: Page } = {},
 ): Promise<void> {
   await page.goto(`/join/${shareToken}`);
   await page.waitForLoadState("domcontentloaded");
@@ -80,9 +89,13 @@ export async function anonJoinCombat(
   await expect(submitBtn).toBeVisible({ timeout: 3_000 });
   await submitBtn.click();
 
-  // Wait for player-view after DM auto-accepts (auto-accept is a feature
-  // of recent player-identity work — if the target env disabled it, the
-  // test-level helper must accept from the DM's page separately).
+  // Drive the DM accept if the caller handed us the DM page.
+  if (opts.dmPage) {
+    await dmAcceptPlayer(opts.dmPage, playerName);
+  }
+
+  // player-view only renders once `isRegistered === true`, which the client
+  // flips on combat:late_join_response accepted=true (see PlayerJoinClient).
   await expect(page.locator('[data-testid="player-view"]')).toBeVisible({
     timeout: 30_000,
   });
