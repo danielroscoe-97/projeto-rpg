@@ -9,6 +9,7 @@ import { startSession } from "@/lib/supabase/campaign-sessions";
 import { CampaignPlayerAvatars } from "@/components/campaign/CampaignPlayerAvatars";
 import { CampaignStatusCards } from "@/components/campaign/CampaignStatusCards";
 import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
+import { StaleSessionConfirm, staleIdleMinutes } from "@/components/campaign/StaleSessionConfirm";
 import { InvitePlayerDialog } from "@/components/campaign/InvitePlayerDialog";
 import { SessionPlanner } from "@/components/campaign/SessionPlanner";
 import { NextSessionCard } from "@/components/campaign/NextSessionCard";
@@ -69,6 +70,19 @@ export function CampaignHero({
   const [combatOpen, setCombatOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [plannerOpen, setPlannerOpen] = useState(false);
+  // Story 12.9 AC5 — gate the "enter active session" action behind a
+  // confirmation when it's been idle > 4h. Prevents an accidental hydrate of
+  // a stale combat after a browser crash or tab-reopen the next day.
+  const [staleConfirmOpen, setStaleConfirmOpen] = useState(false);
+  const idleMinutes = staleIdleMinutes(lastSessionDate);
+
+  const openCombatSheet = () => {
+    if (activeSessionId && idleMinutes != null) {
+      setStaleConfirmOpen(true);
+    } else {
+      setCombatOpen(true);
+    }
+  };
 
   // Realtime: listen for new member joins
   const { newMemberIds } = useCampaignMembershipListener({
@@ -154,7 +168,7 @@ export function CampaignHero({
         // Active session — show enter button prominently
         <button
           type="button"
-          onClick={() => setCombatOpen(true)}
+          onClick={openCombatSheet}
           className="w-full flex items-center gap-3 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors text-left"
         >
           <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-400/15">
@@ -195,7 +209,7 @@ export function CampaignHero({
           finishedEncounterCount={finishedEncounterCount}
           activeSessionId={activeSessionId}
           activeSessionName={activeSessionName}
-          onOpenCombat={() => setCombatOpen(true)}
+          onOpenCombat={openCombatSheet}
           onInvite={() => setInviteOpen(true)}
         />
       )}
@@ -332,6 +346,18 @@ export function CampaignHero({
           />
         </>
       )}
+      {/* Epic 12 Story 12.9 AC5 — stale-combat guard. Only mounts when the
+          DM has actually tried to enter a >4h-idle session. */}
+      <StaleSessionConfirm
+        open={staleConfirmOpen}
+        encounterName={activeSessionName}
+        idleMinutes={idleMinutes ?? 0}
+        onCancel={() => setStaleConfirmOpen(false)}
+        onConfirm={() => {
+          setStaleConfirmOpen(false);
+          setCombatOpen(true);
+        }}
+      />
     </div>
   );
 }

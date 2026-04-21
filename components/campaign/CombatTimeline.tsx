@@ -35,6 +35,7 @@ interface TimelineEntry {
   duration_seconds: number | null;
   round_number: number;
   combat_result: CombatResult | null;
+  dm_difficulty_rating: number | null;
   party_size: number;
   creature_count: number;
   /** Story 12.10 — full snapshot forwarded to the revisit modal on click. */
@@ -239,7 +240,18 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
       });
     }
 
-    const name = r.name ?? t("unnamed_encounter");
+    // Wave 3 review #14 — `r.name ?? t(...)` does not cover empty-string
+    // fallback from the DB; use `.trim() ||` so both null AND "" route to
+    // the translated placeholder.
+    const name = r.name?.trim() || t("unnamed_encounter");
+
+    // Normalize creature quantity once, server-side, so every downstream
+    // counter and the modal badge agree on what "× N" means (Wave 3 review #10).
+    const normalizedCreatures: CreatureSnapshot[] = creatures.map((c) => ({
+      ...c,
+      quantity: typeof c.quantity === "number" && c.quantity > 0 ? c.quantity : 1,
+    }));
+
     return {
       id: r.id,
       name,
@@ -247,11 +259,9 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
       duration_seconds: r.duration_seconds,
       round_number: r.round_number,
       combat_result: r.combat_result,
+      dm_difficulty_rating: r.dm_difficulty_rating,
       party_size: realParty.length,
-      creature_count: creatures.reduce(
-        (sum, c) => sum + (c && typeof c.quantity === "number" ? c.quantity : 1),
-        0,
-      ),
+      creature_count: normalizedCreatures.reduce((sum, c) => sum + (c.quantity ?? 1), 0),
       revisit: {
         id: r.id,
         name,
@@ -260,7 +270,7 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
         round_number: r.round_number,
         combat_result: r.combat_result,
         party_snapshot: realParty,
-        creatures_snapshot: creatures,
+        creatures_snapshot: normalizedCreatures,
         dm_difficulty_rating: r.dm_difficulty_rating,
         dm_notes: r.dm_notes,
       },
@@ -291,18 +301,28 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
   // timeline. Enough for the DM to glance at win-rate + average pace; the
   // full "Avaliar" tab with per-player damage and CR-vs-rating deltas is a
   // follow-up (Wave 3 v2).
+  //
+  // Wave 3 review fixes:
+  // - All aggregates derive from `entries` (not half from `rows`, half from
+  //   `entries`) so a future mapping filter can't produce stale numbers.
+  // - Win-rate denominator excludes "fled" and "dm_ended" — those outcomes
+  //   are storytelling exits, not losses, so counting them as a ~83% loss
+  //   against a single victory was actively misleading the DM.
   const wins = entries.filter((e) => e.combat_result === "victory").length;
   const tpks = entries.filter((e) => e.combat_result === "tpk").length;
-  const ratedEntries = rows.filter((r) => r.dm_difficulty_rating != null && r.dm_difficulty_rating > 0);
+  const decisive = wins + tpks;
+  const winRatePct = decisive > 0 ? Math.round((wins / decisive) * 100) : null;
+
+  const ratedEntries = entries.filter((e) => e.dm_difficulty_rating != null && e.dm_difficulty_rating > 0);
   const avgRating = ratedEntries.length > 0
-    ? ratedEntries.reduce((sum, r) => sum + (r.dm_difficulty_rating ?? 0), 0) / ratedEntries.length
+    ? ratedEntries.reduce((sum, e) => sum + (e.dm_difficulty_rating ?? 0), 0) / ratedEntries.length
     : null;
+
   const timedEntries = entries.filter((e) => e.duration_seconds && e.duration_seconds > 0);
   const avgDurationSec = timedEntries.length > 0
     ? timedEntries.reduce((sum, e) => sum + (e.duration_seconds ?? 0), 0) / timedEntries.length
     : null;
   const avgDurationStr = avgDurationSec ? formatDuration(Math.round(avgDurationSec)) : null;
-  const winRatePct = entries.length > 0 ? Math.round((wins / entries.length) * 100) : 0;
 
   return (
     <section
@@ -320,10 +340,12 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
         <div className="rounded-md bg-background/40 p-3 border border-border/40">
           <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("stats_win_rate")}</dt>
           <dd className="mt-1 text-lg font-semibold text-emerald-300 tabular-nums">
-            {winRatePct}%
+            {winRatePct != null ? `${winRatePct}%` : "—"}
           </dd>
           <p className="text-[10px] text-muted-foreground mt-0.5">
-            {t("stats_wins_summary", { wins, tpks })}
+            {winRatePct != null
+              ? t("stats_wins_summary", { wins, tpks })
+              : t("stats_wins_summary_inconclusive")}
           </p>
         </div>
         <div className="rounded-md bg-background/40 p-3 border border-border/40">
