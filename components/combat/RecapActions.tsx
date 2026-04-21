@@ -196,8 +196,13 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
         </button>
       )}
 
-      {/* Primary CTA — Save & signup (guest only) */}
-      {onSaveAndSignup && (
+      {/* Primary CTA — Save & signup (guest legacy path only).
+          W#3 (Cluster α) — when the new `saveSignupContext.mode === "guest"`
+          path is active, `RecapCtaCard` already renders the GuestRecapFlow
+          signup CTA above. Rendering this legacy button at the same time
+          creates duplicate CTAs. Suppress the legacy button in that case;
+          guest-without-context (pre-03-E) still renders as before. */}
+      {onSaveAndSignup && saveSignupContext?.mode !== "guest" && (
         <button
           type="button"
           onClick={onSaveAndSignup}

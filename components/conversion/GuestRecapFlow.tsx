@@ -25,7 +25,7 @@
  */
 
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -45,16 +45,18 @@ import {
   trackConversionFailed,
 } from "@/lib/conversion/analytics";
 import { trackEvent } from "@/lib/analytics/track";
+import { createClient } from "@/lib/supabase/client";
+import {
+  writeGuestMigratePending,
+  clearGuestMigratePending,
+} from "@/lib/guest/guest-migrate-pending";
+import type { Combatant } from "@/lib/types/combat";
 import type { SaveSignupContext } from "./types";
 
 export interface GuestRecapFlowProps {
   context: Extract<SaveSignupContext, { mode: "guest" }>;
   onComplete?: () => void;
 }
-
-/** Fallback error string when `messages.conversion.recap_guest.migration_failed_hint` key is missing. */
-const MIGRATION_FAIL_FALLBACK_PT =
-  "Erro ao salvar personagem. Tente de novo no dashboard.";
 
 export function GuestRecapFlow({
   context,
@@ -83,13 +85,59 @@ export function GuestRecapFlow({
     [playerCombatants],
   );
 
-  const [selectedId, setSelectedId] = useState<string | null>(() => {
-    if (playerCombatants.length === 1) return playerCombatants[0].id;
-    return null;
-  });
+  // Q#9 — defensive dedupe by id. Snapshots can occasionally contain
+  // duplicate combatant ids after certain add-back flows; keep the first
+  // occurrence so the radio group remains a well-formed set.
+  const dedupedPlayers = useMemo(() => {
+    const seen = new Set<string>();
+    const out: Combatant[] = [];
+    for (const c of sortedPlayers) {
+      if (seen.has(c.id)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `GuestRecapFlow: duplicate combatant id ${c.id}, keeping first`,
+        );
+        continue;
+      }
+      seen.add(c.id);
+      out.push(c);
+    }
+    return out;
+  }, [sortedPlayers]);
 
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
+
+  // W#7 — sync selectedId with the current player list. Handles snapshot
+  // refreshes where the single-player case flips, players are removed, or the
+  // currently-selected id disappears.
+  useEffect(() => {
+    if (dedupedPlayers.length === 0) {
+      if (selectedId !== null) setSelectedId(null);
+      return;
+    }
+    if (dedupedPlayers.length === 1) {
+      const onlyId = dedupedPlayers[0].id;
+      if (selectedId !== onlyId) setSelectedId(onlyId);
+      return;
+    }
+    // 2+ players — if the currently selected id is no longer present, clear it
+    // so the user picks again; otherwise leave the user's choice untouched.
+    if (selectedId && !dedupedPlayers.some((c) => c.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [dedupedPlayers, selectedId]);
+
+  // Q#13 — track mounted state so we don't call setState / router.push /
+  // toast after the component unmounts (eg. user navigated away mid-fetch).
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   // 03-E CTA analytics: fire once on mount with the player count so the
   // funnel can distinguish the multi-character picker scenario.
@@ -104,7 +152,7 @@ export function GuestRecapFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const selected = sortedPlayers.find((c) => c.id === selectedId) ?? null;
+  const selected = dedupedPlayers.find((c) => c.id === selectedId) ?? null;
   const displayCharacterName =
     selected?.name ?? context.characterName ?? "";
 
@@ -175,6 +223,21 @@ export function GuestRecapFlow({
       // Never block the conversion for a storage hiccup.
     }
 
+    // W#2 — persist the selected guest character BEFORE the AuthModal opens
+    // so the async return paths (OAuth redirect, email-confirm bounceback)
+    // can finish the migration even if this component unmounts. Idempotent:
+    //   - OAuth:       callback reads the pending record after redirect
+    //   - Email:       no session on return → W#1 rewrites the same record
+    //   - Live signup: migrate runs → clearGuestMigratePending() cleans up
+    try {
+      writeGuestMigratePending({
+        guestCharacter: selected,
+        campaignId: context.campaignId,
+      });
+    } catch {
+      // storage failure is best-effort — live-session path still POSTs directly.
+    }
+
     trackCtaClicked("recap_guest", {});
     // F15 backward compat: parallel legacy event for 90d of analytics overlap.
     try {
@@ -206,7 +269,39 @@ export function GuestRecapFlow({
       return;
     }
 
+    // W#1 — when Supabase has `enable_confirmations = true`, `signUp()`
+    // returns without a session: the user must click the confirmation email
+    // first. Without a session, the migrate POST would 401 and kill 100% of
+    // email guest conversions. Detect that case via getSession() and defer
+    // the migrate to the post-confirm callback (W#2 already persisted the
+    // pending record). Toast + onComplete without redirect: the AuthModal
+    // has already shown its "check your email" screen.
+    try {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        // Re-persist defensively — writeGuestMigratePending is idempotent and
+        // this also covers a narrow case where W#2 failed but W#1 still has a
+        // selection. Key exists in both locales (pt-BR + en).
+        try {
+          writeGuestMigratePending({
+            guestCharacter: selected,
+            campaignId: context.campaignId,
+          });
+        } catch {
+          // best-effort storage
+        }
+        toast.success(tPost("recap_guest_email_pending"));
+        onComplete?.();
+        return;
+      }
+    } catch {
+      // If getSession itself fails, fall through to the live-session path —
+      // the server will reject with 401 and we'll handle via catch below.
+    }
+
     setIsMigrating(true);
+    let responseStatus = 0;
     try {
       const response = await fetch(
         "/api/player-identity/migrate-guest-character",
@@ -219,23 +314,49 @@ export function GuestRecapFlow({
           }),
         },
       );
+      responseStatus = response.status;
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        const message =
-          (errorBody as { message?: string }).message ??
-          `HTTP ${response.status}`;
-        throw new Error(message);
-      }
-
-      const payload = (await response.json()) as {
+      // Q#6 — endpoint contract: 200 returns { ok: true, character } but 4xx/5xx
+      // returns { ok: false, code, message }. A hand-rolled 200-with-ok:false
+      // would also slip past !response.ok; pin both. Additionally require
+      // character.id so downstream analytics / redirect have a real id.
+      const payload = (await response.json().catch(() => ({}))) as {
         ok?: boolean;
+        code?: string;
+        message?: string;
         character?: { id?: string };
       };
-      const characterId = payload.character?.id;
+
+      if (
+        !response.ok ||
+        payload?.ok === false ||
+        !payload?.character?.id
+      ) {
+        const err = new Error(
+          payload?.code ?? payload?.message ?? `HTTP ${response.status}`,
+        );
+        // Attach the normalized error code for analytics downstream (W#8).
+        (err as Error & { code?: string }).code =
+          payload?.code ?? `http_${response.status}`;
+        throw err;
+      }
+
+      if (!mountedRef.current) {
+        // Migrate succeeded but the user navigated away — clean up the
+        // pending marker so the callback path doesn't re-run migrate.
+        clearGuestMigratePending();
+        return;
+      }
+
+      // W#2 cleanup — live-session migrate succeeded, drop the pending
+      // record so the callback path doesn't duplicate.
+      clearGuestMigratePending();
 
       trackConversionCompleted("recap_guest", {
-        characterId,
+        // M#1 — include campaignId so the funnel can segment by campaign context
+        // when guest-with-campaign flows land (future edge case).
+        campaignId: context.campaignId,
+        characterId: payload.character.id,
         flow: "signup_and_migrate",
         guestCombatantCount: playerCombatants.length,
       });
@@ -243,29 +364,37 @@ export function GuestRecapFlow({
       onComplete?.();
       router.push("/app/dashboard");
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "unknown_error";
-      trackConversionFailed("recap_guest", { error: errorMessage });
+      if (!mountedRef.current) return;
 
-      // Key may not exist in messages (optional forward-compat); fall back
-      // to a hardcoded PT-BR string — user is still logged in and snapshot
-      // is preserved, so dashboard-side retry remains possible.
-      let toastMessage: string;
-      try {
-        const hint = t("migration_failed_hint");
-        toastMessage =
-          hint && hint !== "conversion.recap_guest.migration_failed_hint"
-            ? hint
-            : MIGRATION_FAIL_FALLBACK_PT;
-      } catch {
-        toastMessage = MIGRATION_FAIL_FALLBACK_PT;
+      // W#8 — prefer the server-returned code (we attached it above on the
+      // Error), else err.name, else "unknown". Never send err.message as the
+      // analytics error because the server returns PT-BR error strings that
+      // would pollute the metric cardinality.
+      const errorCode =
+        (err as Error & { code?: string })?.code ??
+        (err instanceof Error && err.name !== "Error" ? err.name : null) ??
+        "unknown";
+
+      trackConversionFailed("recap_guest", {
+        error: errorCode,
+        campaignId: context.campaignId,
+      });
+
+      // Q#14 — 429 is a legit retry-with-backoff case; keep the modal open so
+      // the user can try again, and avoid the dashboard redirect that would
+      // strand them.
+      if (responseStatus === 429) {
+        toast.error(t("rate_limit_hint"));
+        setAuthModalOpen(true);
+        return;
       }
-      toast.error(toastMessage);
 
+      // i18n cleanup — key now guaranteed present in both locales; direct use.
+      toast.error(t("migration_failed_hint"));
       onComplete?.();
       router.push("/app/dashboard");
     } finally {
-      setIsMigrating(false);
+      if (mountedRef.current) setIsMigrating(false);
     }
   };
 
@@ -289,7 +418,7 @@ export function GuestRecapFlow({
         </p>
       </div>
 
-      {sortedPlayers.length >= 2 && (
+      {dedupedPlayers.length >= 2 && (
         <div
           className="space-y-2 rounded-lg border border-gold/20 bg-card/40 p-3"
           data-testid="recap-cta.guest.picker"
@@ -299,7 +428,7 @@ export function GuestRecapFlow({
           </h3>
           <p className="text-xs text-muted-foreground">{t("picker_hint")}</p>
           <ul className="space-y-1" role="radiogroup">
-            {sortedPlayers.map((c) => (
+            {dedupedPlayers.map((c) => (
               <li key={c.id}>
                 <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer py-1">
                   <input

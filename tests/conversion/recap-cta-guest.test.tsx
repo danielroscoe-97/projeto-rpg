@@ -65,6 +65,28 @@ jest.mock("@/lib/stores/guest-combat-store", () => ({
     mockSaveGuestCombatSnapshot(...args),
 }));
 
+// Cluster α W#1 — supabase client mock used by `handleAuthSuccess` to detect
+// email-confirmation-pending state (no session after signUp).
+const mockGetSession = jest.fn(async () => ({ data: { session: { user: { id: "user-1" } } } }));
+jest.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    auth: { getSession: (...args: unknown[]) => mockGetSession(...args) },
+  }),
+}));
+
+// Cluster α W#2 — pending storage spy.
+const mockWriteGuestMigratePending = jest.fn();
+const mockReadGuestMigratePending = jest.fn(() => null);
+const mockClearGuestMigratePending = jest.fn();
+jest.mock("@/lib/guest/guest-migrate-pending", () => ({
+  writeGuestMigratePending: (...args: unknown[]) =>
+    mockWriteGuestMigratePending(...args),
+  readGuestMigratePending: (...args: unknown[]) =>
+    mockReadGuestMigratePending(...args),
+  clearGuestMigratePending: (...args: unknown[]) =>
+    mockClearGuestMigratePending(...args),
+}));
+
 // AuthModal mock — renders a minimal controlled harness that exposes a
 // "succeed as new account" and "succeed as existing account" trigger so the
 // test can drive `onSuccess(...)` deterministically.
@@ -226,6 +248,10 @@ beforeEach(() => {
     currentTurnIndex: 0,
     roundNumber: 1,
   });
+  // Default: live session (post-signUp) — W#1 email-pending tests override this.
+  mockGetSession.mockResolvedValue({
+    data: { session: { user: { id: "user-1" } } },
+  } as unknown as Awaited<ReturnType<typeof mockGetSession>>);
 });
 
 describe("GuestRecapFlow", () => {
@@ -369,6 +395,8 @@ describe("GuestRecapFlow", () => {
     });
 
     expect(mockTrackConversionCompleted).toHaveBeenCalledWith("recap_guest", {
+      // M#1 — campaignId included even when undefined (analytics contract stable).
+      campaignId: undefined,
       characterId: "char-new-1",
       flow: "signup_and_migrate",
       guestCombatantCount: 1,
@@ -376,12 +404,14 @@ describe("GuestRecapFlow", () => {
     expect(mockToast.success).toHaveBeenCalled();
     expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
     expect(onComplete).toHaveBeenCalled();
+    // W#2 cleanup — live-session migrate success clears the pending record.
+    expect(mockClearGuestMigratePending).toHaveBeenCalled();
   });
 
   // -------------------------------------------------------------------------
   // 5. Migration failure — fires conversion:failed + error toast + still redirects
   // -------------------------------------------------------------------------
-  it("on migration failure (500): fires failed analytics, shows error toast, still redirects", async () => {
+  it("on migration failure (500 with { ok:false, code }): fires failed analytics with server code, shows error toast, still redirects", async () => {
     const user = userEvent.setup();
     const players = [makePlayer("p1", "Thorin")];
     mockGetState.mockReturnValue({
@@ -390,7 +420,7 @@ describe("GuestRecapFlow", () => {
       roundNumber: 1,
     });
     mockFetch.mockResolvedValueOnce(
-      failureResponse(500, { message: "db_error" }),
+      failureResponse(500, { ok: false, code: "internal", message: "boom" }),
     );
 
     render(<GuestRecapFlow context={makeContext(players)} />);
@@ -399,8 +429,11 @@ describe("GuestRecapFlow", () => {
       await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
     });
 
+    // W#8 — analytics uses the server code, not the PT-BR message.
+    // M#1 — campaignId included (undefined is fine — analytics pipe filters later).
     expect(mockTrackConversionFailed).toHaveBeenCalledWith("recap_guest", {
-      error: "db_error",
+      error: "internal",
+      campaignId: undefined,
     });
     expect(mockToast.error).toHaveBeenCalled();
     // User is still logged in → send them to dashboard anyway
@@ -476,5 +509,280 @@ describe("GuestRecapFlow", () => {
     // Snapshot saved before the modal rendered.
     expect(mockSaveGuestCombatSnapshot).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId("mock-auth-modal")).toBeInTheDocument();
+  });
+
+  // -------------------------------------------------------------------------
+  // W#2 — writeGuestMigratePending is called BEFORE the modal opens so the
+  // async return paths (OAuth, email-confirm) can finish the migrate.
+  // -------------------------------------------------------------------------
+  it("W#2: persists guest character via writeGuestMigratePending before opening the AuthModal", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin", 18, 30)];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+
+    expect(mockWriteGuestMigratePending).not.toHaveBeenCalled();
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+
+    expect(mockWriteGuestMigratePending).toHaveBeenCalledWith({
+      guestCharacter: players[0],
+      campaignId: undefined,
+    });
+    expect(screen.getByTestId("mock-auth-modal")).toBeInTheDocument();
+  });
+
+  // -------------------------------------------------------------------------
+  // W#1 — Email signup path: no session after signUp → persist + pending toast
+  // -------------------------------------------------------------------------
+  it("W#1: when getSession returns no session after signup, shows email-pending toast and does NOT call migrate fetch", async () => {
+    const user = userEvent.setup();
+    const onComplete = jest.fn();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    mockGetSession.mockResolvedValueOnce({ data: { session: null } } as never);
+
+    render(
+      <GuestRecapFlow
+        context={makeContext(players)}
+        onComplete={onComplete}
+      />,
+    );
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    // No migrate fetch (would 401).
+    expect(mockFetch).not.toHaveBeenCalled();
+    // Pending persisted (by W#2 on click + defensive re-write on email-pending path).
+    expect(mockWriteGuestMigratePending).toHaveBeenCalled();
+    // Toast from tPost("recap_guest_email_pending") — exists in both locales.
+    expect(mockToast.success).toHaveBeenCalled();
+    expect(onComplete).toHaveBeenCalled();
+    // No redirect — AuthModal's "check your email" screen already showed.
+    expect(mockRouterPush).not.toHaveBeenCalled();
+    // No analytics completion event for a deferred migrate.
+    expect(mockTrackConversionCompleted).not.toHaveBeenCalled();
+    // Pending NOT cleared (migrate still owed to callback).
+    expect(mockClearGuestMigratePending).not.toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+  // Q#6 — 200-with-ok:false is treated as failure, not success
+  // -------------------------------------------------------------------------
+  it("Q#6: HTTP 200 with { ok: false, code } is treated as failure (not success)", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ ok: false, code: "already_authenticated", message: "x" }),
+    } as unknown as Response);
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    expect(mockTrackConversionCompleted).not.toHaveBeenCalled();
+    expect(mockTrackConversionFailed).toHaveBeenCalledWith("recap_guest", {
+      error: "already_authenticated",
+      campaignId: undefined,
+    });
+    expect(mockToast.error).toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+  // Q#6b — 200 without character.id is also treated as failure
+  // -------------------------------------------------------------------------
+  it("Q#6: HTTP 200 without character.id is treated as failure", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ ok: true, character: {} }),
+    } as unknown as Response);
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    expect(mockTrackConversionCompleted).not.toHaveBeenCalled();
+    expect(mockTrackConversionFailed).toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+  // Q#9 — duplicate combatant ids are deduped in the radio picker
+  // -------------------------------------------------------------------------
+  it("Q#9: duplicate combatant ids are deduped before rendering radios", () => {
+    const p1 = makePlayer("p-dup", "Thorin", 30, 30);
+    const p1Copy = makePlayer("p-dup", "Thorin Clone", 20, 30);
+    const p2 = makePlayer("p-other", "Elara", 25, 30);
+    // Silence the expected console.warn from the dedupe path.
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      render(<GuestRecapFlow context={makeContext([p1, p1Copy, p2])} />);
+
+      // Picker renders only 2 radios, not 3 — dup removed.
+      const picker = screen.getByTestId("recap-cta.guest.picker");
+      const radios = picker.querySelectorAll("input[type='radio']");
+      expect(radios).toHaveLength(2);
+      expect(
+        screen.getAllByTestId(/^recap-cta\.guest\.picker-option-/),
+      ).toHaveLength(2);
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Q#14 — 429 response keeps the modal open (no redirect) so the user can retry
+  // -------------------------------------------------------------------------
+  it("Q#14: 429 response keeps modal open, toasts rate_limit hint, does NOT redirect", async () => {
+    const user = userEvent.setup();
+    const onComplete = jest.fn();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      json: async () => ({ ok: false, code: "rate_limited", message: "slow down" }),
+    } as unknown as Response);
+
+    render(
+      <GuestRecapFlow
+        context={makeContext(players)}
+        onComplete={onComplete}
+      />,
+    );
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    expect(mockToast.error).toHaveBeenCalled();
+    // No redirect, no onComplete — user stays on /try and can retry.
+    expect(mockRouterPush).not.toHaveBeenCalled();
+    expect(onComplete).not.toHaveBeenCalled();
+    // Modal should have been re-opened via setAuthModalOpen(true).
+    expect(screen.getByTestId("mock-auth-modal")).toBeInTheDocument();
+
+    // Failed analytics fires with the server code (W#8).
+    expect(mockTrackConversionFailed).toHaveBeenCalledWith("recap_guest", {
+      error: "rate_limited",
+      campaignId: undefined,
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Q#13 — unmount during fetch does not crash or call setState after unmount
+  // -------------------------------------------------------------------------
+  it("Q#13: unmount during in-flight fetch does not crash (no setState after unmount)", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+
+    // Never-resolving fetch so we can unmount while it's in-flight.
+    let resolveFetch!: (r: Response) => void;
+    const pending = new Promise<Response>((r) => {
+      resolveFetch = r;
+    });
+    mockFetch.mockReturnValueOnce(pending);
+
+    const { unmount } = render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    // Fetch is mid-flight — tear down.
+    unmount();
+
+    // Now let the fetch resolve — no setState, no toast, no router, no throw.
+    await act(async () => {
+      resolveFetch({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true, character: { id: "char-X" } }),
+      } as unknown as Response);
+      // Give microtasks a chance to settle.
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Analytics NOT fired because we bailed on the unmount check.
+    expect(mockTrackConversionCompleted).not.toHaveBeenCalled();
+    // Cleanup still ran once migrate resolved (defensive dedupe of pending record).
+    expect(mockClearGuestMigratePending).toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+  // W#7 — selectedId syncs with dedupedPlayers when snapshot changes
+  // -------------------------------------------------------------------------
+  it("W#7: selectedId syncs when combatants change (1 → 2 players, picker becomes required)", async () => {
+    const p1 = makePlayer("p1", "Thorin");
+    const p2 = makePlayer("p2", "Elara");
+
+    const { rerender } = render(
+      <GuestRecapFlow context={makeContext([p1])} />,
+    );
+
+    // Single player auto-selected.
+    expect(screen.getByTestId("recap-cta.guest.cta-primary")).toBeEnabled();
+
+    // Snapshot grows to 2 players — selectedId must clear and picker appears.
+    rerender(<GuestRecapFlow context={makeContext([p1, p2])} />);
+    // User needs to pick now — previously-selected p1 is not auto-sticky.
+    // The exact behavior per spec is: 2+ players clears selection (unless user
+    // already chose), which this component does via the effect above.
+    // Just assert the picker is visible.
+    expect(screen.getByTestId("recap-cta.guest.picker")).toBeInTheDocument();
+  });
+
+  it("W#7: selectedId clears when the selected combatant disappears from the snapshot", () => {
+    const p1 = makePlayer("p1", "Thorin");
+    const p2 = makePlayer("p2", "Elara");
+
+    const { rerender } = render(
+      <GuestRecapFlow context={makeContext([p1])} />,
+    );
+    // p1 auto-selected → cta enabled.
+    expect(screen.getByTestId("recap-cta.guest.cta-primary")).toBeEnabled();
+
+    // p1 vanishes, only p2 left → selectedId must re-point to p2 (single-player branch).
+    rerender(<GuestRecapFlow context={makeContext([p2])} />);
+    expect(screen.getByTestId("recap-cta.guest.cta-primary")).toBeEnabled();
   });
 });

@@ -4501,7 +4501,8 @@
     "post_success": {
       "waiting_room": "Conta criada. Seu personagem está salvo — pode continuar jogando.",
       "recap_anon": "Conta criada. {characterName} foi preservado na sua conta.",
-      "recap_guest": "Conta criada. {characterName} foi salvo na sua conta."
+      "recap_guest": "Conta criada. {characterName} foi salvo na sua conta.",
+      "recap_guest_email_pending": "Personagem salvo. Confirme seu email para finalizar o cadastro."
     },
     "errors": {
       "generic": "Algo deu errado. Tenta de novo em alguns segundos.",
