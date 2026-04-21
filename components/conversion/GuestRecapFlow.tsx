@@ -44,6 +44,7 @@ import {
   trackConversionCompleted,
   trackConversionFailed,
 } from "@/lib/conversion/analytics";
+import { normalizeConversionErrorCode } from "@/lib/conversion/error-codes";
 import { trackEvent } from "@/lib/analytics/track";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -88,26 +89,74 @@ export function GuestRecapFlow({
   // Q#9 — defensive dedupe by id. Snapshots can occasionally contain
   // duplicate combatant ids after certain add-back flows; keep the first
   // occurrence so the radio group remains a well-formed set.
+  //
+  // Cluster ε (Winston #4) — the memo stays pure (no side-effects in its
+  // reducer); the diagnostic log + failure breadcrumb moves to the effect
+  // below. This fixes a React anti-pattern where the memo's side-effect
+  // would fire on every render with duplicates AND on every unrelated
+  // re-render that didn't change the deduped array (when dev/StrictMode
+  // double-runs reducers). The effect runs exactly once per `sortedPlayers`
+  // change and only when a dedupe actually happened.
   const dedupedPlayers = useMemo(() => {
     const seen = new Set<string>();
     const out: Combatant[] = [];
     for (const c of sortedPlayers) {
-      if (seen.has(c.id)) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `GuestRecapFlow: duplicate combatant id ${c.id}, keeping first`,
-        );
-        continue;
-      }
+      if (seen.has(c.id)) continue;
       seen.add(c.id);
       out.push(c);
     }
     return out;
   }, [sortedPlayers]);
 
+  // Cluster ε (Winston #4) — log/breadcrumb side-effect, kept out of the
+  // memo so it fires exactly once per snapshot change where dedupe had an
+  // actual effect. Shipping console.warn to prod is intentional (low volume,
+  // bounded) — it surfaces suspicious snapshots without PII.
+  useEffect(() => {
+    const duped = sortedPlayers.length - dedupedPlayers.length;
+    if (duped <= 0) return;
+    // eslint-disable-next-line no-console
+    console.warn(
+      `GuestRecapFlow: deduped ${duped} combatant(s) with duplicate ids`,
+    );
+    try {
+      trackConversionFailed("recap_guest", {
+        error: "dup_id_dedupe",
+        campaignId: context.campaignId,
+      });
+    } catch {
+      // analytics best-effort — the UX is already correct.
+    }
+  }, [sortedPlayers, dedupedPlayers, context.campaignId]);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
+  // Cluster ε (Quinn #10) — 429 retry cooldown. When the server rate-limits
+  // the migrate call, we reopen the AuthModal but also lock the primary CTA
+  // (on the card itself, not inside the modal) for 15s so a frustrated user
+  // can't spam-click their way past the limiter. Null → unlocked;
+  // timestamp (ms) → locked until that wall-clock time.
+  const [retryLockedUntil, setRetryLockedUntil] = useState<number | null>(
+    null,
+  );
+  const isRetryLocked =
+    retryLockedUntil !== null && Date.now() < retryLockedUntil;
+
+  // Cluster ε (Quinn #10) — auto-clear the retry lock when the cooldown
+  // window elapses. We avoid setInterval polling by scheduling a single
+  // timer exactly at the expiry moment. Re-runs when `retryLockedUntil`
+  // changes (eg. a second 429 during cooldown extends the lock).
+  useEffect(() => {
+    if (retryLockedUntil === null) return;
+    const remaining = retryLockedUntil - Date.now();
+    if (remaining <= 0) {
+      setRetryLockedUntil(null);
+      return;
+    }
+    const timer = setTimeout(() => setRetryLockedUntil(null), remaining);
+    return () => clearTimeout(timer);
+  }, [retryLockedUntil]);
 
   // Cluster Δ C2 — client-side dedupe of the conversion event + migrate POST.
   // A 429 retry can cause the user to click succeed-signup twice in quick
@@ -239,10 +288,15 @@ export function GuestRecapFlow({
     //   - OAuth:       callback reads the pending record after redirect
     //   - Email:       no session on return → W#1 rewrites the same record
     //   - Live signup: migrate runs → clearGuestMigratePending() cleans up
+    //
+    // Cluster ε (Mary #3) — carry `guestCombatantCount` (dedupe-post count)
+    // so the callback's conversion:completed payload matches the in-page
+    // success path's shape.
     try {
       writeGuestMigratePending({
         guestCharacter: selected,
         campaignId: context.campaignId,
+        guestCombatantCount: dedupedPlayers.length,
       });
     } catch {
       // storage failure is best-effort — live-session path still POSTs directly.
@@ -310,10 +364,13 @@ export function GuestRecapFlow({
         // Re-persist defensively — writeGuestMigratePending is idempotent and
         // this also covers a narrow case where W#2 failed but W#1 still has a
         // selection. Key exists in both locales (pt-BR + en).
+        // Cluster ε (Mary #3) — propagate guestCombatantCount so the callback
+        // can forward it to analytics.
         try {
           writeGuestMigratePending({
             guestCharacter: selected,
             campaignId: context.campaignId,
+            guestCombatantCount: dedupedPlayers.length,
           });
         } catch {
           // best-effort storage
@@ -354,17 +411,36 @@ export function GuestRecapFlow({
         character?: { id?: string };
       };
 
+      // Cluster ε (Quinn #9) — UUID shape check. The server contract is that
+      // `character.id` is a v4 UUID; accepting anything else would poison the
+      // analytics `characterId` dimension and (worse) send a malformed id to
+      // downstream navigation. If we ever see a non-UUID we treat the response
+      // as a failure, normalize to the `invalid_character_id` sentinel, and
+      // fall into the existing error-toast path.
+      const UUID_RE =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const characterIdValid =
+        typeof payload?.character?.id === "string" &&
+        UUID_RE.test(payload.character.id);
+
       if (
         !response.ok ||
         payload?.ok === false ||
-        !payload?.character?.id
+        !payload?.character?.id ||
+        !characterIdValid
       ) {
         const err = new Error(
           payload?.code ?? payload?.message ?? `HTTP ${response.status}`,
         );
         // Attach the normalized error code for analytics downstream (W#8).
+        // If we have a payload.code keep it; if the character.id failed the
+        // shape check, surface an `invalid_character_id` sentinel so the
+        // funnel distinguishes this from a generic HTTP failure.
         (err as Error & { code?: string }).code =
-          payload?.code ?? `http_${response.status}`;
+          payload?.code ??
+          (!characterIdValid && response.ok && payload?.ok !== false
+            ? "invalid_character_id"
+            : `http_${response.status}`);
         throw err;
       }
 
@@ -381,7 +457,10 @@ export function GuestRecapFlow({
         campaignId: context.campaignId,
         characterId: payload.character.id,
         flow: "signup_and_migrate",
-        guestCombatantCount: playerCombatants.length,
+        // Cluster ε (Mary #3) — use the deduped count so in-page + callback
+        // conversion events agree, and so a snapshot with duplicate ids does
+        // not over-report.
+        guestCombatantCount: dedupedPlayers.length,
       });
       // W#2 cleanup — live-session migrate succeeded, drop the pending
       // record so the callback path doesn't duplicate. Also done before the
@@ -404,10 +483,14 @@ export function GuestRecapFlow({
       // Error), else err.name, else "unknown". Never send err.message as the
       // analytics error because the server returns PT-BR error strings that
       // would pollute the metric cardinality.
-      const errorCode =
+      const rawCode =
         (err as Error & { code?: string })?.code ??
         (err instanceof Error && err.name !== "Error" ? err.name : null) ??
         "unknown";
+      // Cluster ε (Winston #7) — collapse anything off-allowlist to `unknown`
+      // so a server-evolved code (eg. `internal_db_error_${uuid}`) cannot
+      // explode the analytics `error` cardinality.
+      const errorCode = normalizeConversionErrorCode(rawCode);
 
       trackConversionFailed("recap_guest", {
         error: errorCode,
@@ -417,7 +500,13 @@ export function GuestRecapFlow({
       // Q#14 — 429 is a legit retry-with-backoff case; keep the modal open so
       // the user can try again, and avoid the dashboard redirect that would
       // strand them.
+      //
+      // Cluster ε (Quinn #10) — lock the primary CTA for 15s post-429 so a
+      // frustrated user can't immediately resubmit and trip the limiter
+      // again. The lock visually disables the button AND blocks the onClick
+      // handler (see the `disabled` prop below).
       if (responseStatus === 429) {
+        setRetryLockedUntil(Date.now() + 15_000);
         toast.error(t("rate_limit_hint"));
         setAuthModalOpen(true);
         return;
@@ -489,8 +578,12 @@ export function GuestRecapFlow({
         <button
           type="button"
           onClick={handlePrimaryClick}
-          disabled={!selected || isMigrating}
-          aria-disabled={!selected || isMigrating}
+          // Cluster ε (Quinn #10) — `isRetryLocked` blocks the button while
+          // the post-429 cooldown is in effect, in addition to the no-selection
+          // and in-flight-migrate guards.
+          disabled={!selected || isMigrating || isRetryLocked}
+          aria-disabled={!selected || isMigrating || isRetryLocked}
+          data-retry-locked={isRetryLocked ? "true" : undefined}
           className="px-4 py-2 rounded-lg bg-gold text-black text-sm font-bold hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-60 transition-colors min-h-[40px]"
           data-testid="recap-cta.guest.cta-primary"
         >

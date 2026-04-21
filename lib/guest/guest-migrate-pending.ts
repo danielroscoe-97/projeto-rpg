@@ -51,6 +51,17 @@ export type GuestMigratePending = {
    * will be accepted as-is, but new writes always populate it (Cluster Δ C4).
    */
   ownerFingerprint?: string;
+  /**
+   * Number of player-combatants snapshot at the moment the user clicked
+   * the CTA. Forwarded to `conversion:completed` analytics by the OAuth
+   * callback so guest→auth funnels report the same `guestCombatantCount`
+   * as the in-page (live-session) success path.
+   *
+   * Optional for backward compatibility — older pending records (Wave 3a
+   * Cluster α-Δ) never wrote this field; consumers tolerate `undefined`.
+   * Cluster ε (Mary #3).
+   */
+  guestCombatantCount?: number;
 };
 
 /**
@@ -140,6 +151,10 @@ export function writeGuestMigratePending(
     campaignId: data.campaignId,
     selectedAt: new Date().toISOString(),
     ownerFingerprint,
+    // Cluster ε (Mary #3) — carry the combatant count through to the
+    // callback so async guest migrates keep the same analytics shape as
+    // the in-page live-session path.
+    guestCombatantCount: data.guestCombatantCount,
   };
 
   try {

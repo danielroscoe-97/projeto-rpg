@@ -14,6 +14,7 @@ import {
   trackConversionCompleted,
   trackConversionFailed,
 } from "@/lib/conversion/analytics";
+import { normalizeConversionErrorCode } from "@/lib/conversion/error-codes";
 
 type CallbackState = "working" | "error" | "done";
 
@@ -122,17 +123,28 @@ export function AuthCallbackContinueClient() {
           campaignId: pending.campaignId,
           characterId: body.character.id,
           flow: "signup_and_migrate",
+          // Cluster ε (Mary #3) — forward the combatant count that
+          // GuestRecapFlow persisted at click time so async OAuth / email
+          // guest conversions share the same analytics shape as in-page ones.
+          guestCombatantCount: pending.guestCombatantCount,
         });
       } else {
         trackConversionFailed("recap_guest", {
           campaignId: pending.campaignId,
-          error: body?.code ?? `HTTP ${response.status}`,
+          // Cluster ε (Winston #7) — normalize server code through the
+          // allowlist to keep the analytics `error` cardinality bounded.
+          error: normalizeConversionErrorCode(
+            body?.code ?? `http_${response.status}`,
+          ),
         });
       }
     } catch (err) {
       trackConversionFailed("recap_guest", {
         campaignId: pending.campaignId,
-        error: err instanceof Error ? err.name : "unknown",
+        // Cluster ε (Winston #7) — err.name may be any string; allowlist it.
+        error: normalizeConversionErrorCode(
+          err instanceof Error ? err.name : "network",
+        ),
       });
     } finally {
       // Always clear — a zombie key from a partial failure would otherwise
@@ -168,9 +180,14 @@ export function AuthCallbackContinueClient() {
           // W#5: unified shape via typed helper. `moment` defaults to
           // `recap_anon` when the persisted context predates Cluster γ's
           // moment-tagging (legacy contexts don't carry the field).
+          // Cluster ε (Winston #7) — `msg` is a server-localized string that
+          // would blow out the analytics `error` cardinality; only allow it
+          // through the normalizer. HTTP status maps to `http_${status}`.
           trackConversionFailed(persisted.moment ?? "recap_anon", {
             campaignId: persisted.campaignId,
-            error: msg ?? `HTTP ${response.status}`,
+            error: normalizeConversionErrorCode(
+              msg ?? `http_${response.status}`,
+            ),
           });
           setErrorMessage(msg ?? t("upgrade_failed"));
           setState("error");
@@ -205,9 +222,14 @@ export function AuthCallbackContinueClient() {
         router.replace(next);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
+        // Cluster ε (Winston #7) — Error.name may be any string (custom
+        // subclasses, bundler wrappers); keep the analytics dimension bounded
+        // by the allowlist.
         trackConversionFailed(persisted.moment ?? "recap_anon", {
           campaignId: persisted.campaignId,
-          error: err instanceof Error ? err.name : "network",
+          error: normalizeConversionErrorCode(
+            err instanceof Error ? err.name : "network",
+          ),
         });
         setErrorMessage(msg || t("upgrade_failed"));
         setState("error");
@@ -253,7 +275,9 @@ export function AuthCallbackContinueClient() {
     const ctx = contextRef.current;
     trackConversionFailed(ctx?.moment ?? "recap_anon", {
       campaignId: ctx?.campaignId,
-      error: "user_dismissed",
+      // Cluster ε (Winston #7) — `user_dismissed` is on the allowlist; the
+      // normalize call is defensive and keeps the call-site consistent.
+      error: normalizeConversionErrorCode("user_dismissed"),
     });
     router.replace(next);
   }, [next, router]);

@@ -473,6 +473,25 @@ export function PlayerJoinClient({
     return () => clearInterval(id);
   }, [authUserId, isRegistered, active]);
 
+  // Cluster ε (Quinn #11) — background tabs throttle setInterval aggressively
+  // (some browsers drop it to 1Hz per minute, iOS Safari pauses entirely),
+  // so a TTL boundary that crosses while the tab is hidden may never be
+  // observed. Bumping `dismissalVersion` on the `visibilitychange → visible`
+  // transition forces a fresh evaluation of `shouldShowCta` immediately when
+  // the user returns. Independent from the existing heartbeat/presence
+  // visibilitychange handler (lines ~2121-2379) — they listen on the same
+  // event but do not share state.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        setDismissalVersion((v) => v + 1);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
+
   // Cluster γ (Q#17) — session-level dedup for `conversion:cta_shown` on
   // the waiting-room moment. Keyed by `effectiveTokenId` (i.e., a reconnect
   // that re-obtains the same token doesn't double-fire). The child's own
@@ -482,6 +501,17 @@ export function PlayerJoinClient({
   // WaitingRoomSignupCTA; keeping them inline (rather than reading the
   // computed `showWaitingRoomCta` which is defined after early returns)
   // keeps this hook callable before the early-return block.
+  //
+  // Cluster ε (Quinn #6) — storage-backed dedup guarantees we fire exactly
+  // once per tab (sessionStorage scope) per token, even across StrictMode
+  // double-mount / remount-on-fast-refresh. The ref-based fallback covers
+  // private mode / storage-disabled browsers.
+  //
+  // Cluster ε (Quinn #5) — when the user dismisses the CTA and the 7-day
+  // cooldown later elapses (setInterval bumps dismissalVersion), the card
+  // becomes eligible to re-show. We detect `waitingRoomCtaDismissed`
+  // transitioning true→false and clear BOTH the ref and the sessionStorage
+  // dedup key so the next render can fire `trackCtaShown` again.
   useEffect(() => {
     if (authUserId) return;
     if (!isRegistered) return;
@@ -490,7 +520,23 @@ export function PlayerJoinClient({
     const upgradeCampaignId = campaignId ?? sessionCampaignId;
     if (!upgradeCampaignId || !effectiveTokenId) return;
     if (!shouldShowCta(upgradeCampaignId)) return;
+
+    const shownKey = `pocketdm_waiting_room_shown_${effectiveTokenId}`;
+    // Cluster ε (Quinn #6) — sessionStorage dedup before the ref check so
+    // it survives StrictMode double-mount. sessionStorage auto-clears on tab
+    // close, which matches "once per session" semantics. Wrapped in try/catch
+    // because iOS private mode throws on first write.
+    let storageSaysShown = false;
+    try {
+      if (typeof window !== "undefined") {
+        storageSaysShown = window.sessionStorage.getItem(shownKey) !== null;
+      }
+    } catch {
+      // storage disabled — fall through to ref-based dedup
+    }
+    if (storageSaysShown) return;
     if (waitingRoomShownForTokenRef.current === effectiveTokenId) return;
+
     // Inline character-id lookup to avoid forward reference to the
     // `effectiveCharacterId` useMemo (declared later in the component to
     // keep it near the saveSignupContext memo). This is still
@@ -502,6 +548,13 @@ export function PlayerJoinClient({
       prefilledCharacters.some((c) => c.name === registeredName)
     );
     waitingRoomShownForTokenRef.current = effectiveTokenId;
+    try {
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(shownKey, "1");
+      }
+    } catch {
+      // storage disabled — ref already covers the same-tab dedup
+    }
     try {
       trackCtaShown("waiting", {
         campaignId: upgradeCampaignId,
@@ -520,6 +573,33 @@ export function PlayerJoinClient({
     prefilledCharacters,
     dismissalVersion,
   ]);
+
+  // Cluster ε (Quinn #5) — when the user previously dismissed the CTA and
+  // it just became eligible again (TTL expired / dismissalVersion bumped
+  // the selectors), clear BOTH dedup surfaces so `trackCtaShown` can refire.
+  // Uses a ref to track the previous dismissed state so we react only on
+  // the true→false transition, not on every unrelated re-render.
+  const prevWaitingRoomCtaDismissedRef = useRef(waitingRoomCtaDismissed);
+  useEffect(() => {
+    if (
+      prevWaitingRoomCtaDismissedRef.current === true &&
+      waitingRoomCtaDismissed === false
+    ) {
+      waitingRoomShownForTokenRef.current = null;
+      if (effectiveTokenId) {
+        try {
+          if (typeof window !== "undefined") {
+            window.sessionStorage.removeItem(
+              `pocketdm_waiting_room_shown_${effectiveTokenId}`,
+            );
+          }
+        } catch {
+          // best-effort — ref-based dedup is already cleared
+        }
+      }
+    }
+    prevWaitingRoomCtaDismissedRef.current = waitingRoomCtaDismissed;
+  }, [waitingRoomCtaDismissed, effectiveTokenId]);
 
   // Generate signed URLs for a list of audio files (shared by initial fetch + refresh)
   const generateSignedUrls = useCallback(async (files: PlayerAudioFile[]): Promise<Record<string, string>> => {

@@ -46,11 +46,18 @@ export type { SaveSignupContext } from "./types";
  * route the subsequent AuthModal success into the `recap_anon` funnel
  * instead of the waiting-room funnel. See Cluster β's
  * `PersistedUpgradeContext.moment` extension.
+ *
+ * Cluster ε (Mary #2) — `moment` is widened to the full upgrade-context
+ * moment union (`"waiting" | "recap_anon"`) so the same payload shape can
+ * carry any anon-CTA trigger into PlayerJoinClient's `pendingUpgradeCtx`
+ * state. Today only `recap_anon` is written by this component; future
+ * callers (waiting-room, resumed-session, etc.) can reuse the type without
+ * narrowing.
  */
 export interface RecapCtaRequestAuthModalPayload {
   sessionTokenId: string;
   campaignId: string;
-  moment: "recap_anon";
+  moment: "waiting" | "recap_anon";
 }
 
 export interface RecapCtaCardProps {

@@ -217,8 +217,13 @@ function makeContext(
   };
 }
 
-// Shared fetch success response
-function successResponse(characterId = "char-new-1") {
+// Shared fetch success response. Cluster ε (Quinn #9) — defaults to a
+// valid v4 UUID; legacy opaque ids ("char-new-1") now fail the UUID check.
+const VALID_UUID_DEFAULT = "11111111-2222-4333-8444-555555555555";
+const VALID_UUID_DEDUP = "22222222-3333-4333-8444-555555555555";
+const VALID_UUID_X = "33333333-4444-4333-8444-555555555555";
+
+function successResponse(characterId = VALID_UUID_DEFAULT) {
   return {
     ok: true,
     status: 200,
@@ -357,7 +362,7 @@ describe("GuestRecapFlow", () => {
       currentTurnIndex: 0,
       roundNumber: 1,
     });
-    mockFetch.mockResolvedValueOnce(successResponse("char-new-1"));
+    mockFetch.mockResolvedValueOnce(successResponse(VALID_UUID_DEFAULT));
 
     render(
       <GuestRecapFlow
@@ -397,7 +402,7 @@ describe("GuestRecapFlow", () => {
     expect(mockTrackConversionCompleted).toHaveBeenCalledWith("recap_guest", {
       // M#1 — campaignId included even when undefined (analytics contract stable).
       campaignId: undefined,
-      characterId: "char-new-1",
+      characterId: VALID_UUID_DEFAULT,
       flow: "signup_and_migrate",
       guestCombatantCount: 1,
     });
@@ -532,6 +537,8 @@ describe("GuestRecapFlow", () => {
     expect(mockWriteGuestMigratePending).toHaveBeenCalledWith({
       guestCharacter: players[0],
       campaignId: undefined,
+      // Cluster ε (Mary #3) — count forwarded alongside the character.
+      guestCombatantCount: 1,
     });
     expect(screen.getByTestId("mock-auth-modal")).toBeInTheDocument();
   });
@@ -739,7 +746,7 @@ describe("GuestRecapFlow", () => {
       resolveFetch({
         ok: true,
         status: 200,
-        json: async () => ({ ok: true, character: { id: "char-X" } }),
+        json: async () => ({ ok: true, character: { id: VALID_UUID_X } }),
       } as unknown as Response);
       // Give microtasks a chance to settle.
       await Promise.resolve();
@@ -749,7 +756,7 @@ describe("GuestRecapFlow", () => {
     // Cluster Δ C3: analytics fired even though the component unmounted.
     expect(mockTrackConversionCompleted).toHaveBeenCalledWith("recap_guest", {
       campaignId: undefined,
-      characterId: "char-X",
+      characterId: VALID_UUID_X,
       flow: "signup_and_migrate",
       guestCombatantCount: 1,
     });
@@ -771,7 +778,7 @@ describe("GuestRecapFlow", () => {
       currentTurnIndex: 0,
       roundNumber: 1,
     });
-    mockFetch.mockResolvedValueOnce(successResponse("char-dedup-1"));
+    mockFetch.mockResolvedValueOnce(successResponse(VALID_UUID_DEDUP));
 
     render(<GuestRecapFlow context={makeContext(players)} />);
     await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
@@ -887,5 +894,176 @@ describe("GuestRecapFlow", () => {
     // p1 vanishes, only p2 left → selectedId must re-point to p2 (single-player branch).
     rerender(<GuestRecapFlow context={makeContext([p2])} />);
     expect(screen.getByTestId("recap-cta.guest.cta-primary")).toBeEnabled();
+  });
+
+  // -------------------------------------------------------------------------
+  // Cluster ε (Winston #4) — duplicate-id warn logged via useEffect (not in
+  // the memo), with a `trackConversionFailed("recap_guest", {
+  // error: "dup_id_dedupe" })` breadcrumb.
+  // -------------------------------------------------------------------------
+  it("Cluster ε (Winston #4): duplicate combatant ids fire a console.warn and a dup_id_dedupe breadcrumb from useEffect (not the memo)", () => {
+    const p1 = makePlayer("p-dup", "Thorin", 30, 30);
+    const p1Copy = makePlayer("p-dup", "Thorin Clone", 20, 30);
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      render(<GuestRecapFlow context={makeContext([p1, p1Copy])} />);
+      // One warn for one deduped snapshot.
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      // Analytics breadcrumb fired with the allowlisted sentinel.
+      expect(mockTrackConversionFailed).toHaveBeenCalledWith(
+        "recap_guest",
+        expect.objectContaining({
+          error: "dup_id_dedupe",
+          campaignId: undefined,
+        }),
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("Cluster ε (Winston #4): no duplicate ids → no warn, no dup_id_dedupe breadcrumb", () => {
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      render(
+        <GuestRecapFlow
+          context={makeContext([makePlayer("p1", "Thorin"), makePlayer("p2", "Elara")])}
+        />,
+      );
+      expect(warnSpy).not.toHaveBeenCalled();
+      // Only allowlisted breadcrumb is dup_id_dedupe; ensure it did NOT fire.
+      const dupCalls = mockTrackConversionFailed.mock.calls.filter(
+        ([, ctx]) => (ctx as { error?: string })?.error === "dup_id_dedupe",
+      );
+      expect(dupCalls).toHaveLength(0);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Cluster ε (Quinn #9) — UUID shape validation on character.id.
+  // -------------------------------------------------------------------------
+  it("Cluster ε (Quinn #9): 200 with a non-UUID character.id is treated as failure (invalid_character_id)", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ ok: true, character: { id: "not-a-uuid" } }),
+    } as unknown as Response);
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    // No completed event — the shape check rejected it.
+    expect(mockTrackConversionCompleted).not.toHaveBeenCalled();
+    // Failed analytics carries the dedicated sentinel.
+    expect(mockTrackConversionFailed).toHaveBeenCalledWith(
+      "recap_guest",
+      expect.objectContaining({
+        error: "invalid_character_id",
+        campaignId: undefined,
+      }),
+    );
+    expect(mockToast.error).toHaveBeenCalled();
+  });
+
+  it("Cluster ε (Quinn #9): 200 with a valid v4 UUID character.id still succeeds", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    const uuid = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
+    mockFetch.mockResolvedValueOnce(successResponse(uuid));
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    expect(mockTrackConversionCompleted).toHaveBeenCalledWith(
+      "recap_guest",
+      expect.objectContaining({ characterId: uuid }),
+    );
+    expect(mockTrackConversionFailed).not.toHaveBeenCalledWith(
+      "recap_guest",
+      expect.objectContaining({ error: "invalid_character_id" }),
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // Cluster ε (Quinn #10) — 429 response locks the primary CTA for 15s so the
+  // user can't spam-click past the rate limiter.
+  // -------------------------------------------------------------------------
+  it("Cluster ε (Quinn #10): 429 locks the primary CTA for 15s after the retry hint toast", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      json: async () => ({ ok: false, code: "rate_limited" }),
+    } as unknown as Response);
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    // 429 toast fired + modal reopened.
+    expect(mockToast.error).toHaveBeenCalled();
+    // Primary CTA is now locked (disabled + data attribute for observability).
+    const cta = screen.getByTestId("recap-cta.guest.cta-primary");
+    expect(cta).toBeDisabled();
+    expect(cta).toHaveAttribute("data-retry-locked", "true");
+  });
+
+  // -------------------------------------------------------------------------
+  // Cluster ε (Mary #3) — writeGuestMigratePending receives guestCombatantCount
+  // -------------------------------------------------------------------------
+  it("Cluster ε (Mary #3): writeGuestMigratePending receives guestCombatantCount (deduped player count)", async () => {
+    const user = userEvent.setup();
+    const players = [
+      makePlayer("p1", "Thorin"),
+      makePlayer("p2", "Elara"),
+    ];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    // Pick the second player so the `selected` branch triggers.
+    await user.click(
+      screen.getByTestId("recap-cta.guest.picker-option-p2"),
+    );
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+
+    // Callback receives the (deduped) count so the OAuth callback can forward
+    // it to conversion:completed analytics.
+    expect(mockWriteGuestMigratePending).toHaveBeenCalledWith(
+      expect.objectContaining({
+        guestCombatantCount: 2,
+      }),
+    );
   });
 });

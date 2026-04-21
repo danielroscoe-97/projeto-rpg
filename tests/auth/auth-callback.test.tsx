@@ -139,11 +139,14 @@ describe("AuthCallbackContinueClient", () => {
     // Critical: no auto-redirect happened.
     expect(replaceMock).not.toHaveBeenCalled();
     // Analytics event fired — Wave 3a (W#5) shape via trackConversionFailed.
+    // Cluster ε (Winston #7) — server-localized strings like "provider error"
+    // collapse to the `"unknown"` sentinel via the allowlist normalizer so
+    // analytics cardinality stays bounded.
     expect(trackEventMock).toHaveBeenCalledWith(
       "conversion:failed",
       expect.objectContaining({
         moment: "recap_anon",
-        error: expect.stringContaining("provider error"),
+        error: "unknown",
       }),
     );
   });

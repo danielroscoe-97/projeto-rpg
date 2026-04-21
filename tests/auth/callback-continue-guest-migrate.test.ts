@@ -102,6 +102,8 @@ function writeGuestPending(overrides: Partial<GuestMigratePending> = {}): void {
     guestCharacter: overrides.guestCharacter ?? makeCombatant(),
     campaignId: overrides.campaignId,
     selectedAt: overrides.selectedAt ?? new Date().toISOString(),
+    // Cluster ε (Mary #3) — optional backward-compat field; pass-through.
+    guestCombatantCount: overrides.guestCombatantCount,
   };
   localStorage.setItem(GUEST_MIGRATE_PENDING_KEY, JSON.stringify(payload));
 }
@@ -221,6 +223,78 @@ describe("AuthCallbackContinueClient — Wave 3a Cluster β", () => {
       );
       expect(localStorage.getItem(GUEST_MIGRATE_PENDING_KEY)).toBeNull();
     });
+
+    // Cluster ε (Mary #3) — when GuestRecapFlow persists the combatant count
+    // alongside the pending record, the callback forwards it into the
+    // conversion:completed payload so guest→auth funnels share the same shape
+    // as in-page success.
+    it("Cluster ε (Mary #3): forwards guestCombatantCount from pending record into conversion:completed", async () => {
+      writeGuestPending({
+        guestCharacter: makeCombatant({ id: "c-mary-1" }),
+        campaignId: "camp-mary",
+        guestCombatantCount: 3,
+      });
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true, character: { id: "pc-mary-1" } }),
+      });
+
+      await act(async () => {
+        render(React.createElement(AuthCallbackContinueClient));
+      });
+      await flushAsync();
+
+      expect(trackEventMock).toHaveBeenCalledWith(
+        "conversion:completed",
+        expect.objectContaining({
+          moment: "recap_guest",
+          campaignId: "camp-mary",
+          characterId: "pc-mary-1",
+          flow: "signup_and_migrate",
+          guestCombatantCount: 3,
+        }),
+      );
+    });
+
+    // Backward compat — legacy pending records that predate Mary #3 have no
+    // guestCombatantCount; the callback sends `undefined` but the event still
+    // fires correctly.
+    it("Cluster ε (Mary #3): legacy pending without guestCombatantCount → conversion:completed fires with undefined", async () => {
+      writeGuestPending({
+        guestCharacter: makeCombatant({ id: "c-legacy-count" }),
+        campaignId: "camp-legacy-count",
+        // No guestCombatantCount — legacy shape.
+      });
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true, character: { id: "pc-legacy-count" } }),
+      });
+
+      await act(async () => {
+        render(React.createElement(AuthCallbackContinueClient));
+      });
+      await flushAsync();
+
+      const completedCall = trackEventMock.mock.calls.find(
+        ([name]) => name === "conversion:completed",
+      );
+      expect(completedCall).toBeDefined();
+      expect(completedCall![1]).toMatchObject({
+        moment: "recap_guest",
+        characterId: "pc-legacy-count",
+      });
+      // Field present (possibly undefined) — the analytics wrapper always emits
+      // the key so schemas stay stable.
+      expect(completedCall![1]).toHaveProperty("guestCombatantCount");
+      expect(
+        (completedCall![1] as { guestCombatantCount?: number })
+          .guestCombatantCount,
+      ).toBeUndefined();
+    });
   });
 
   describe("W#4 — anon OAuth completed", () => {
@@ -307,12 +381,15 @@ describe("AuthCallbackContinueClient — Wave 3a Cluster β", () => {
       });
       await flushAsync();
 
+      // Cluster ε (Winston #7) — arbitrary server strings collapse to
+      // `"unknown"` via the allowlist normalizer to keep the analytics
+      // `error` dimension bounded. `"provider error"` is not on the list.
       expect(trackEventMock).toHaveBeenCalledWith(
         "conversion:failed",
         expect.objectContaining({
           moment: "recap_anon",
           campaignId: "camp-fail-1",
-          error: "provider error",
+          error: "unknown",
         }),
       );
       // Legacy fields from Wave 2 must NOT leak into the new shape.
@@ -337,11 +414,14 @@ describe("AuthCallbackContinueClient — Wave 3a Cluster β", () => {
       });
       await flushAsync();
 
+      // Cluster ε (Winston #7) — HTTP status buckets are allowlisted in the
+      // `http_${status}` form. The legacy `HTTP 500` string is normalized to
+      // `http_500`.
       expect(trackEventMock).toHaveBeenCalledWith(
         "conversion:failed",
         expect.objectContaining({
           moment: "recap_anon",
-          error: "HTTP 500",
+          error: "http_500",
         }),
       );
     });
