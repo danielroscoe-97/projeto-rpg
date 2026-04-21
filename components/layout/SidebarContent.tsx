@@ -149,8 +149,33 @@ export function SidebarContent({
 
       {/* Scrollable nav area */}
       <div className="flex-1 overflow-y-auto py-3">
+        {/* Story 12.5 — Campaign Workspace Mode.
+         *  Inside a campaign (`currentCampaignId` set), the campaign's own
+         *  navigation gets promoted above the global PRIMARY_NAV so the DM
+         *  feels they're "inside" the campaign, not browsing menus. Outside
+         *  of a campaign, the order is preserved (global nav first). */}
+        {!collapsed && currentCampaignId && (
+          <SidebarSection
+            title={t("section_current_campaign")}
+            defaultOpen={true}
+            collapsed={collapsed}
+            className="mb-4"
+          >
+            <SidebarCampaignNav isOwner={isCampaignOwner} collapsed={collapsed} onNavigate={onNavigate} />
+          </SidebarSection>
+        )}
+
         {/* Primary nav */}
-        <nav className="px-2 space-y-1" aria-label={t("section_primary")}>
+        <nav
+          className="px-2 space-y-1"
+          aria-label={t("section_primary")}
+          data-testid="sidebar-primary-nav"
+        >
+          {!collapsed && currentCampaignId && (
+            <p className="px-3 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+              {t("section_primary")}
+            </p>
+          )}
           {navItems.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -208,13 +233,6 @@ export function SidebarContent({
                 </li>
               ))}
             </ul>
-          </SidebarSection>
-        )}
-
-        {/* Current campaign (contextual) */}
-        {!collapsed && currentCampaignId && (
-          <SidebarSection title={t("section_current_campaign")} defaultOpen={true} collapsed={collapsed} className="mt-4">
-            <SidebarCampaignNav isOwner={isCampaignOwner} collapsed={collapsed} onNavigate={onNavigate} />
           </SidebarSection>
         )}
 

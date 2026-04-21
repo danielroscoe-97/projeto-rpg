@@ -11,7 +11,8 @@ import { CampaignHeroCompact } from '@/components/campaign/CampaignHeroCompact'
 import { CampaignNavBar } from '@/components/campaign/CampaignNavBar'
 import { CampaignSidebarIndex } from '@/components/campaign/CampaignSidebarIndex'
 import { ActiveCombatBanner } from '@/components/campaign/ActiveCombatBanner'
-import { CombatTimeline } from '@/components/campaign/CombatTimeline'
+import { CombatTimeline, CombatTimelineSkeleton } from '@/components/campaign/CombatTimeline'
+import { Suspense } from 'react'
 import type { SectionId } from '@/lib/types/campaign-hub'
 
 interface CampaignDmViewServerProps {
@@ -268,35 +269,39 @@ export async function CampaignDmViewServer({
             />
           </>
         ) : (
-          <>
-            <CampaignBriefing
-              campaignId={campaignId}
-              campaignName={campaignName}
-              userId={userId}
-              characters={characters ?? []}
-              playerEmails={playerEmails}
-              playerCount={playerCount ?? 0}
-              sessionCount={sessionCount ?? 0}
-              questCount={questCount ?? 0}
-              finishedEncounterCount={finishedEncounterCount}
-              npcCount={npcCount ?? 0}
-              locationCount={locationCount ?? 0}
-              factionCount={factionCount ?? 0}
-              noteCount={noteCount ?? 0}
-              activeSessionId={activeSessionId}
-              activeSessionName={dmActiveSession?.name ?? null}
-              activeEncounter={activeEncounter}
-              nextPlannedSession={nextPlannedSession}
-              lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
-              recentActivity={recentActivity}
-              campaignStats={campaignStats}
-            />
-            {/* Epic 12 Story 12.6a — finished-combat history as a narrative timeline.
-                Own Suspense boundary so a slow encounters query doesn't delay the
-                CampaignBriefing that already rendered above. */}
-            <CombatTimeline campaignId={campaignId} />
-          </>
+          <CampaignBriefing
+            campaignId={campaignId}
+            campaignName={campaignName}
+            userId={userId}
+            characters={characters ?? []}
+            playerEmails={playerEmails}
+            playerCount={playerCount ?? 0}
+            sessionCount={sessionCount ?? 0}
+            questCount={questCount ?? 0}
+            finishedEncounterCount={finishedEncounterCount}
+            npcCount={npcCount ?? 0}
+            locationCount={locationCount ?? 0}
+            factionCount={factionCount ?? 0}
+            noteCount={noteCount ?? 0}
+            activeSessionId={activeSessionId}
+            activeSessionName={dmActiveSession?.name ?? null}
+            activeEncounter={activeEncounter}
+            nextPlannedSession={nextPlannedSession}
+            lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
+            recentActivity={recentActivity}
+            campaignStats={campaignStats}
+          />
         )}
+        {/* Epic 12 Story 12.6a — finished-combat history as a narrative timeline.
+            Lives outside the onboarding-vs-briefing branch so it surfaces on EVERY
+            campaign page (v1.0 bug: all real campaigns were in the onboarding
+            branch and the timeline never rendered). The component has its own
+            empty-state, so always rendering it is fine — it self-suppresses the
+            visual weight when there's no history yet. Own Suspense boundary
+            prevents the encounters query from blocking the rest of the page. */}
+        <Suspense fallback={<CombatTimelineSkeleton />}>
+          <CombatTimeline campaignId={campaignId} />
+        </Suspense>
       </div>
       {/* Wiki-style sidebar index — hidden when new AppSidebar is enabled (it hosts this nav inline) */}
       {process.env.NEXT_PUBLIC_FEATURE_NEW_SIDEBAR !== "true" && (
