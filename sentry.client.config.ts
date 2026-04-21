@@ -24,12 +24,22 @@ if (!Sentry.getClient()) {
       // Drop noisy errors that are expected during normal multi-tab / reconnect operation
       try {
         const msg = event.exception?.values?.[0]?.value ?? "";
+        const type = event.exception?.values?.[0]?.type ?? "";
         if (
           /lock.*stolen|lock.*released|Lock broken/i.test(msg) ||
-          /AbortError/i.test(event.exception?.values?.[0]?.type ?? "") ||
+          /AbortError/i.test(type) ||
           /CHANNEL_ERROR/i.test(msg)
         ) {
           return null; // Drop event entirely
+        }
+        // Google Translate / browser extensions mutate the DOM under React,
+        // causing NotFoundError on insertBefore/removeChild. Not a real bug.
+        if (
+          type === "NotFoundError" &&
+          /insertBefore|removeChild|appendChild/i.test(msg) &&
+          /not a child of this node|to be (?:inserted|removed)/i.test(msg)
+        ) {
+          return null;
         }
       } catch { /* never let filtering crash the pipeline */ }
 

@@ -150,7 +150,7 @@ export default async function AppLayout({
 
   if (NEW_SIDEBAR_ENABLED) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col" translate="no">
         {/* Skip navigation — hidden until focused (WCAG 2.4.1) */}
         <a
           href="#main-content"
@@ -184,7 +184,7 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" translate="no">
       {/* Skip navigation — hidden until focused (WCAG 2.4.1) */}
       <a
         href="#main-content"

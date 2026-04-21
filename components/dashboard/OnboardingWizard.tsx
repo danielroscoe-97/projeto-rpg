@@ -344,7 +344,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
 
   if (state.step === "role") {
     return (
-      <div className="w-full max-w-md">
+      <div className="onboarding-wizard-root w-full max-w-md">
         <div className="text-center mb-8">
           <img
             src="/art/brand/logo-icon.svg"
@@ -401,28 +401,35 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
   // ── Welcome Step ──────────────────────────────────────────────────
   if (state.step === "welcome") {
     return (
-      <WelcomeScreen
-        source={effectiveSource}
-        guestPreview={guestPreview}
-        onContinue={() => {
-          if (effectiveSource === "guest_combat") {
-            setState((s) => ({ ...s, step: "express" }));
-          } else {
-            setState((s) => ({ ...s, step: "choose" }));
-          }
-        }}
-      />
+      <div className="onboarding-wizard-root contents">
+        <WelcomeScreen
+          source={effectiveSource}
+          guestPreview={guestPreview}
+          onContinue={() => {
+            if (effectiveSource === "guest_combat") {
+              setState((s) => ({ ...s, step: "express" }));
+            } else {
+              setState((s) => ({ ...s, step: "choose" }));
+            }
+          }}
+        />
+      </div>
     );
   }
 
   // ── Player Entry Step ────────────────────────────────────────────
   if (state.step === "player_entry") {
-    return <PlayerEntryStep userId={userId} router={router} t={t} setState={setState} />;
+    return (
+      <div className="onboarding-wizard-root contents">
+        <PlayerEntryStep userId={userId} router={router} t={t} setState={setState} />
+      </div>
+    );
   }
 
   // ── Player Waiting Step ─────────────────────────────────────────
   if (state.step === "player_waiting") {
     return (
+      <div className="onboarding-wizard-root contents">
       <motion.div
         className="w-full max-w-md text-center"
         initial={{ opacity: 0, y: 20 }}
@@ -549,13 +556,14 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
           </Button>
         </motion.div>
       </motion.div>
+      </div>
     );
   }
 
   // ── Choose Path (step 0) ─────────────────────────────────────────
   if (state.step === "choose") {
     return (
-      <div className="w-full max-w-2xl">
+      <div className="onboarding-wizard-root w-full max-w-2xl">
         <div className="text-center mb-8">
           <img
             src="/art/brand/logo-icon.svg"
@@ -682,6 +690,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     }
 
     return (
+      <div className="onboarding-wizard-root contents">
       <Card className="max-w-lg w-full" data-testid="onboarding-express">
         <CardHeader>
           <Image
@@ -735,6 +744,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
           </button>
         </CardFooter>
       </Card>
+      </div>
     );
   }
 
@@ -750,6 +760,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
     : t("campaign_name_placeholder");
 
   return (
+    <div className="onboarding-wizard-root contents">
     <Card className="max-w-lg w-full" data-testid="onboarding-wizard">
       <CardHeader>
         {state.step !== "done" ? (
@@ -1014,6 +1025,7 @@ export function OnboardingWizard({ userId, source = "fresh", savedStep, userRole
         )}
       </CardFooter>
     </Card>
+    </div>
   );
 }
 
