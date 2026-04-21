@@ -48,6 +48,18 @@ export async function createSessionOnly(
   if (sessionError || !session) {
     throw new Error(sessionError?.message ?? "Failed to create session");
   }
+  // Canonical onboarding event (`session:created`) + granular combat-specific
+  // event (`combat:session_created`). The retention Fase 1 queries in
+  // `docs/SPEC-retention-metrics.md` count any `session:created` as a signal
+  // of DM engagement, so the dominant session-creation path (this one — the
+  // combat flow, which sees the vast majority of real traffic) must emit it.
+  // `combat:session_created` is kept for flow-specific analytics.
+  trackEvent("session:created", {
+    session_id: session.id,
+    has_campaign: !!campaignId,
+    ruleset: ruleset_version,
+    via: "combat",
+  });
   trackEvent("combat:session_created", {
     session_id: session.id,
     has_campaign: !!campaignId,

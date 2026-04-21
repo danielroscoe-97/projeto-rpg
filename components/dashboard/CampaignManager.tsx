@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Loader2, MoreVertical, Swords, FileText, Pencil, Trash2, Archive, RotateCcw, Eye, EyeOff } from "lucide-react";
+import { Loader2, MoreVertical, Swords, FileText, Pencil, Trash2, Archive, RotateCcw, Eye, EyeOff, Crown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -243,6 +243,14 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                       unoptimized
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    {/* Epic 12 Story 12.7 — role chip so DM/Player cards read at a glance. */}
+                    <span
+                      className="absolute top-2 left-2 inline-flex items-center gap-1 text-[10px] font-semibold text-gold bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-gold/40"
+                      data-testid="campaign-role-chip-dm"
+                    >
+                      <Crown className="size-3" aria-hidden="true" />
+                      {t("campaigns_role_dm")}
+                    </span>
                   </div>
 
                   {/* Info */}
@@ -279,8 +287,13 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          router.push(`/app/campaigns/${campaign.id}`);
+                          // Epic 12 Story 12.8 — jump straight into combat setup
+                          // with the campaign already selected. The eager session
+                          // created by /combat/new (Story 12.2) will be scoped
+                          // to this campaign without prompting a picker.
+                          router.push(`/app/combat/new?campaign=${campaign.id}`);
                         }}
+                        data-testid="campaign-card-start-combat"
                       >
                         <Swords className="h-3 w-3" />
                         {t("campaigns_start_combat")}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, Shield } from "lucide-react";
+import { Heart, Shield, UserCircle2 } from "lucide-react";
 import { getHpBarColor, getHpStatus, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { ClassBadge } from "@/components/character/ClassBadge";
 import { ClassIcon } from "@/components/character/ClassIcon";
@@ -15,6 +15,8 @@ interface PlayerCampaignCardProps {
     playersSingular: string;
     playersPlural: string;
     dmLabel: string;
+    /** Epic 12 Story 12.7 — role chip label ("Jogador" / "Player") */
+    roleLabel?: string;
     levelAbbrev?: string;
     sessionLive?: string;
     sessionJoin?: string;
@@ -71,6 +73,15 @@ export function PlayerCampaignCard({
 
       {/* Content overlay */}
       <div className="relative h-full flex flex-col justify-end p-4">
+        {/* Epic 12 Story 12.7 — role chip so DM/Player cards read at a glance. */}
+        <span
+          className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-300 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-emerald-400/40"
+          data-testid="campaign-role-chip-player"
+        >
+          <UserCircle2 className="size-3" aria-hidden="true" />
+          {t.roleLabel ?? "Player"}
+        </span>
+
         {/* Active session badge (top right) */}
         {hasActiveSession && (
           <span className="absolute top-3 right-3 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/20 backdrop-blur-sm px-2 py-0.5 rounded-full border border-emerald-500/30">

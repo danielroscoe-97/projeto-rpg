@@ -136,6 +136,7 @@ export default async function CampaignsPage() {
     campaigns_players_singular: t("campaigns_players_singular"),
     campaigns_players_plural: t("campaigns_players_plural"),
     dm_label: t("dm_label"),
+    campaigns_role_player: t("campaigns_role_player"),
     hp_full: tSheet("hp_full"),
     hp_light: tSheet("hp_light"),
     hp_moderate: tSheet("hp_moderate"),

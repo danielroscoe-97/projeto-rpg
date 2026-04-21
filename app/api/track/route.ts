@@ -101,7 +101,8 @@ const ALLOWED_EVENTS = new Set([
   "guest:recap_banner_shown",
   "guest:recap_banner_clicked",
   // Campaign lifecycle (server-side)
-  "campaign:created_with_wizard",
+  "campaign:created", // Canonical onboarding signal (retention Fase 1)
+  "campaign:created_with_wizard", // Historical — kept for backfill compatibility
   "campaign:invite_accepted",
   "campaign:invite_declined",
   "campaign:member_left",

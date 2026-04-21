@@ -64,8 +64,19 @@ export async function createCampaignWithSettings(
       join_code: string;
     };
 
-    trackServerEvent("campaign:created_with_wizard", {
-      properties: { campaign_id: campaignId, has_description: !!description },
+    // Canonical onboarding event — consumed by the retention Fase 1 queries
+    // (`docs/SPEC-retention-metrics.md`) to measure DM activation funnel.
+    // The `via_wizard` property preserves the prior `campaign:created_with_wizard`
+    // signal for product analytics that need to distinguish wizard vs non-wizard
+    // creation paths (there aren't any today, but keeping the dimension makes
+    // the event forward-compatible).
+    trackServerEvent("campaign:created", {
+      userId,
+      properties: {
+        campaign_id: campaignId,
+        has_description: !!description,
+        via_wizard: true,
+      },
     });
 
     return { campaignId, joinCode };

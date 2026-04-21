@@ -11,6 +11,7 @@ import { CampaignHeroCompact } from '@/components/campaign/CampaignHeroCompact'
 import { CampaignNavBar } from '@/components/campaign/CampaignNavBar'
 import { CampaignSidebarIndex } from '@/components/campaign/CampaignSidebarIndex'
 import { ActiveCombatBanner } from '@/components/campaign/ActiveCombatBanner'
+import { CombatTimeline } from '@/components/campaign/CombatTimeline'
 import type { SectionId } from '@/lib/types/campaign-hub'
 
 interface CampaignDmViewServerProps {
@@ -267,28 +268,34 @@ export async function CampaignDmViewServer({
             />
           </>
         ) : (
-          <CampaignBriefing
-            campaignId={campaignId}
-            campaignName={campaignName}
-            userId={userId}
-            characters={characters ?? []}
-            playerEmails={playerEmails}
-            playerCount={playerCount ?? 0}
-            sessionCount={sessionCount ?? 0}
-            questCount={questCount ?? 0}
-            finishedEncounterCount={finishedEncounterCount}
-            npcCount={npcCount ?? 0}
-            locationCount={locationCount ?? 0}
-            factionCount={factionCount ?? 0}
-            noteCount={noteCount ?? 0}
-            activeSessionId={activeSessionId}
-            activeSessionName={dmActiveSession?.name ?? null}
-            activeEncounter={activeEncounter}
-            nextPlannedSession={nextPlannedSession}
-            lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
-            recentActivity={recentActivity}
-            campaignStats={campaignStats}
-          />
+          <>
+            <CampaignBriefing
+              campaignId={campaignId}
+              campaignName={campaignName}
+              userId={userId}
+              characters={characters ?? []}
+              playerEmails={playerEmails}
+              playerCount={playerCount ?? 0}
+              sessionCount={sessionCount ?? 0}
+              questCount={questCount ?? 0}
+              finishedEncounterCount={finishedEncounterCount}
+              npcCount={npcCount ?? 0}
+              locationCount={locationCount ?? 0}
+              factionCount={factionCount ?? 0}
+              noteCount={noteCount ?? 0}
+              activeSessionId={activeSessionId}
+              activeSessionName={dmActiveSession?.name ?? null}
+              activeEncounter={activeEncounter}
+              nextPlannedSession={nextPlannedSession}
+              lastSessionDate={dmSessions?.[0]?.updated_at ?? null}
+              recentActivity={recentActivity}
+              campaignStats={campaignStats}
+            />
+            {/* Epic 12 Story 12.6a — finished-combat history as a narrative timeline.
+                Own Suspense boundary so a slow encounters query doesn't delay the
+                CampaignBriefing that already rendered above. */}
+            <CombatTimeline campaignId={campaignId} />
+          </>
         )}
       </div>
       {/* Wiki-style sidebar index — hidden when new AppSidebar is enabled (it hosts this nav inline) */}

@@ -42,6 +42,8 @@ interface CampaignsPageClientProps {
     campaigns_players_singular: string;
     campaigns_players_plural: string;
     dm_label: string;
+    /** Epic 12 Story 12.7 — role chip on player-side cards. */
+    campaigns_role_player: string;
     hp_full: string;
     hp_light: string;
     hp_moderate: string;
@@ -110,6 +112,7 @@ export function CampaignsPageClient({
                   playersSingular: t.campaigns_players_singular,
                   playersPlural: t.campaigns_players_plural,
                   dmLabel: t.dm_label,
+                  roleLabel: t.campaigns_role_player,
                   hp_full: t.hp_full,
                   hp_light: t.hp_light,
                   hp_moderate: t.hp_moderate,
