@@ -37,6 +37,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 MIGRATIONS_DIR="${REPO_ROOT}/supabase/migrations"
 TESTS_DIR="${REPO_ROOT}/supabase/tests/rls"
+# Extra test dirs (one-per-concern). Each directory gets copied into the
+# container and fed to pg_prove alongside the RLS suite. Add new entries
+# here when a new concern area gets its own folder (e.g. upsell RPCs,
+# matviews, triggers). pgTap file prefixes still determine run order
+# WITHIN each directory.
+EXTRA_TESTS_DIRS=(
+  "${REPO_ROOT}/supabase/tests/upsell"
+)
 HELPERS_FILE="${REPO_ROOT}/supabase/tests/helpers/setup.sql"
 
 # ---------------------------------------------------------------------------
@@ -214,13 +222,27 @@ echo ""
 # the container's filesystem (pg_prove doesn't accept SQL via stdin).
 docker cp "${TESTS_DIR}" "${CONTAINER_NAME}:/tmp/rls-tests/"
 
+# Copy each extra tests directory under its basename (e.g. /tmp/upsell-tests/).
+# We track the list of container paths to hand to pg_prove in one invocation.
+PGPROVE_PATHS=("/tmp/rls-tests/*.sql")
+for extra_dir in "${EXTRA_TESTS_DIRS[@]}"; do
+  if [ -d "${extra_dir}" ]; then
+    base="$(basename "${extra_dir}")"
+    dest="/tmp/${base}-tests"
+    docker cp "${extra_dir}" "${CONTAINER_NAME}:${dest}/"
+    PGPROVE_PATHS+=("${dest}/*.sql")
+  else
+    echo "WARNING: extra tests dir ${extra_dir} not found, skipping"
+  fi
+done
+
 # Execute. The exit code propagates.
 docker exec "${CONTAINER_NAME}" bash -c "
   pg_prove \
     --username ${PG_USER} \
     --dbname ${PG_DB} \
     --ext .sql \
-    /tmp/rls-tests/*.sql
+    ${PGPROVE_PATHS[*]}
 "
 
 # (trap handles cleanup)
