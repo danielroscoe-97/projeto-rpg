@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useCallback, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, LayoutGrid, List, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,8 @@ interface NpcListProps {
 export function NpcList({ campaignId }: NpcListProps) {
   const t = useTranslations("npcs");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const focusedNpcId = searchParams?.get("npcId") ?? null;
 
   const openInMap = useCallback(
     (npc: CampaignNpc) => {
@@ -430,6 +432,29 @@ export function NpcList({ campaignId }: NpcListProps) {
     [viewingNpc, editNpc, npcFactionsMap, syncNpcEdges],
   );
 
+  // Mirror of the CampaignNotes focus pattern. The handled-ref is keyed on the
+  // URLSearchParams object identity (Next.js gives a fresh instance per
+  // navigation), so repeat chip-click navigations to the same npcId still
+  // re-trigger the scroll. The card itself reacts to `focusToken` and opens.
+  const focusedNpcHandledRef = useRef<URLSearchParams | null>(null);
+  useEffect(() => {
+    if (!focusedNpcId || !searchParams) return;
+    if (focusedNpcHandledRef.current === searchParams) return;
+    if (!npcs.some((n) => n.id === focusedNpcId)) return;
+    focusedNpcHandledRef.current = searchParams;
+    // Double-RAF so the scroll target reflects the expanded card height
+    // (setExpanded(true) commits in the first RAF; browser paints the taller
+    // layout in the second).
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(
+          `[data-testid="npc-card-${CSS.escape(focusedNpcId)}"]`,
+        );
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  }, [focusedNpcId, npcs, searchParams]);
+
   if (loading) {
     return <NpcCardSkeleton count={3} />;
   }
@@ -595,6 +620,7 @@ export function NpcList({ campaignId }: NpcListProps) {
                 onToggleVisibility={handleToggleVisibility}
                 onCardClick={setViewingNpc}
                 onOpenInMap={openInMap}
+                focusToken={npc.id === focusedNpcId ? searchParams : undefined}
               />
             );
           })}

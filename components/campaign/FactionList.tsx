@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -79,6 +79,8 @@ interface FactionListProps {
 export function FactionList({ campaignId, isEditable = true }: FactionListProps) {
   const t = useTranslations("factions");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const focusedFactionId = searchParams?.get("factionId") ?? null;
 
   const openInMap = useCallback(
     (faction: CampaignFaction) => {
@@ -400,6 +402,24 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
     [viewingFaction, updateFaction, factionMembersMap, syncFactionEdges],
   );
 
+  // Chip-navigate receiver. See NpcList for the handled-ref-on-searchParams
+  // pattern that makes repeat chip clicks still refocus the same card.
+  const focusedFactionHandledRef = useRef<URLSearchParams | null>(null);
+  useEffect(() => {
+    if (!focusedFactionId || !searchParams) return;
+    if (focusedFactionHandledRef.current === searchParams) return;
+    if (!factions.some((f) => f.id === focusedFactionId)) return;
+    focusedFactionHandledRef.current = searchParams;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(
+          `[data-testid="faction-card-${CSS.escape(focusedFactionId)}"]`,
+        );
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  }, [focusedFactionId, factions, searchParams]);
+
   if (loading) {
     return <FactionCardSkeleton count={3} />;
   }
@@ -499,6 +519,9 @@ export function FactionList({ campaignId, isEditable = true }: FactionListProps)
                 onToggleVisibility={handleToggleVisibility}
                 onCardClick={setViewingFaction}
                 onOpenInMap={openInMap}
+                focusToken={
+                  faction.id === focusedFactionId ? searchParams : undefined
+                }
               />
             );
           })}

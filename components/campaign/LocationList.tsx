@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, MapPin, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -93,6 +93,8 @@ interface LocationListProps {
 export function LocationList({ campaignId, isEditable = true }: LocationListProps) {
   const t = useTranslations("locations");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const focusedLocationId = searchParams?.get("locationId") ?? null;
 
   const openInMap = useCallback(
     (loc: CampaignLocation) => {
@@ -225,6 +227,49 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
       return next;
     });
   }, []);
+
+  // Chip-navigate receiver. Uncollapse the full ancestor chain so the focused
+  // card is in the DOM (tree view would otherwise hide it behind a collapsed
+  // parent), then double-RAF scrollIntoView. Handled-ref keyed on the
+  // searchParams identity so repeat chip clicks to the same id refocus.
+  const focusedLocationHandledRef = useRef<URLSearchParams | null>(null);
+  useEffect(() => {
+    if (!focusedLocationId || !searchParams) return;
+    if (focusedLocationHandledRef.current === searchParams) return;
+    if (!locations.some((l) => l.id === focusedLocationId)) return;
+    focusedLocationHandledRef.current = searchParams;
+
+    // Walk up the parent chain and uncollapse any collapsed ancestor.
+    setCollapsedIds((prev) => {
+      const byId = new Map(locations.map((l) => [l.id, l]));
+      let changed = false;
+      let next = prev;
+      let cursorId: string | null =
+        byId.get(focusedLocationId)?.parent_location_id ?? null;
+      const guard = new Set<string>();
+      while (cursorId && !guard.has(cursorId)) {
+        guard.add(cursorId);
+        if (next.has(cursorId)) {
+          if (!changed) {
+            next = new Set(next);
+            changed = true;
+          }
+          next.delete(cursorId);
+        }
+        cursorId = byId.get(cursorId)?.parent_location_id ?? null;
+      }
+      return changed ? next : prev;
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(
+          `[data-testid="location-card-${CSS.escape(focusedLocationId)}"]`,
+        );
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  }, [focusedLocationId, locations, searchParams]);
 
   // Prune `collapsedIds` to only ids that still exist in `locations`. Without
   // this, deleting a location that was collapsed leaves a stale id in state —
@@ -493,6 +538,9 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                     onToggleVisibility={handleToggleVisibility}
                     onCardClick={setViewingLocation}
                     onOpenInMap={openInMap}
+                    focusToken={
+                      loc.id === focusedLocationId ? searchParams : undefined
+                    }
                   />
                 </div>
               </div>
@@ -520,6 +568,9 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                 onToggleVisibility={handleToggleVisibility}
                 onCardClick={setViewingLocation}
                 onOpenInMap={openInMap}
+                focusToken={
+                  loc.id === focusedLocationId ? searchParams : undefined
+                }
               />
             ))}
           </div>
@@ -560,6 +611,9 @@ export function LocationList({ campaignId, isEditable = true }: LocationListProp
                       onToggleVisibility={handleToggleVisibility}
                       onCardClick={setViewingLocation}
                       onOpenInMap={openInMap}
+                      focusToken={
+                        loc.id === focusedLocationId ? searchParams : undefined
+                      }
                     />
                   ))}
                 </div>

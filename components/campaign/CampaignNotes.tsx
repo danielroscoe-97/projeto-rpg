@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { MentionLookupEntry } from "@/components/ui/EntityMentionEditor";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { captureError } from "@/lib/errors/capture";
@@ -115,6 +116,31 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     [tEntity],
   );
   const { schedule: scheduleUnlinkUndo } = useEntityUnlinkUndo(unlinkUndoStrings);
+  const router = useRouter();
+
+  // Chip-click → navigate to the entity's list tab with ?<type>Id=<uuid>. The
+  // receiving list uses the searchParams identity (not the id string) as the
+  // effect key so repeat clicks on the same chip still refocus the card.
+  const handleChipNavigate = useCallback(
+    (entity: MentionLookupEntry) => {
+      const base = `/app/campaigns/${campaignId}`;
+      switch (entity.type) {
+        case "npc":
+          router.push(`${base}?section=npcs&npcId=${entity.id}`);
+          return;
+        case "location":
+          router.push(`${base}?section=locations&locationId=${entity.id}`);
+          return;
+        case "faction":
+          router.push(`${base}?section=factions&factionId=${entity.id}`);
+          return;
+        case "quest":
+          router.push(`${base}?section=quests&questId=${entity.id}`);
+          return;
+      }
+    },
+    [campaignId, router],
+  );
   const [notes, setNotes] = useState<CampaignNote[]>([]);
   const [folders, setFolders] = useState<CampaignNoteFolder[]>([]);
   const [npcLinks, setNpcLinks] = useState<NoteNpcLink[]>([]);
@@ -1403,6 +1429,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                         <MentionChipRenderer
                           text={note.content}
                           lookup={mentionLookup}
+                          onChipClick={handleChipNavigate}
                         />
                       </div>
                     )}

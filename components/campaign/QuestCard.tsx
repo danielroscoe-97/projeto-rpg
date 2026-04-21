@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Eye,
@@ -29,6 +29,8 @@ interface QuestCardProps {
   onToggleVisibility: (quest: CampaignQuest) => void;
   /** Called when the card body (outside action buttons) is clicked. */
   onCardClick?: (quest: CampaignQuest) => void;
+  /** See NpcCard.focusToken. */
+  focusToken?: unknown;
 }
 
 /* ── Status left-border colors ─────────────────────────────────────────────── */
@@ -74,9 +76,14 @@ export function QuestCard({
   onDelete,
   onToggleVisibility,
   onCardClick,
+  focusToken,
 }: QuestCardProps) {
   const t = useTranslations("campaign.quests");
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (focusToken) setExpanded(true);
+  }, [focusToken]);
 
   const TypeIcon = TYPE_ICON[quest.quest_type] ?? Compass;
   const hasExpandableContent = quest.context || quest.objective || quest.reward;

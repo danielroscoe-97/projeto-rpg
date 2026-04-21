@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Eye,
@@ -62,6 +62,8 @@ interface FactionCardProps {
   onCardClick?: (faction: CampaignFaction) => void;
   /** Onda 6a: when present, renders a "Ver no Mapa de Conexões" icon button. */
   onOpenInMap?: (faction: CampaignFaction) => void;
+  /** See NpcCard.focusToken. */
+  focusToken?: unknown;
 }
 
 export function FactionCard({
@@ -75,10 +77,15 @@ export function FactionCard({
   onToggleVisibility,
   onCardClick,
   onOpenInMap,
+  focusToken,
 }: FactionCardProps) {
   const t = useTranslations("factions");
   const tGraph = useTranslations("entity_graph");
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (focusToken) setExpanded(true);
+  }, [focusToken]);
 
   const memberCount = members?.length ?? 0;
   const notesCount = relatedNotes?.length ?? 0;

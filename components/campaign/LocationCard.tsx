@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Eye,
@@ -80,6 +80,8 @@ interface LocationCardProps {
   onCardClick?: (location: CampaignLocation) => void;
   /** Onda 6a: when present, renders a "Ver no Mapa de Conexões" icon button. */
   onOpenInMap?: (location: CampaignLocation) => void;
+  /** See NpcCard.focusToken. */
+  focusToken?: unknown;
 }
 
 export function LocationCard({
@@ -93,10 +95,15 @@ export function LocationCard({
   onToggleVisibility,
   onCardClick,
   onOpenInMap,
+  focusToken,
 }: LocationCardProps) {
   const t = useTranslations("locations");
   const tGraph = useTranslations("entity_graph");
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (focusToken) setExpanded(true);
+  }, [focusToken]);
 
   const Icon = TYPE_ICONS[location.location_type] ?? MapPin;
   const inhabitantCount = inhabitantNpcs?.length ?? 0;

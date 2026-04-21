@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Plus, ScrollText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,8 @@ function QuestCardSkeleton({ count = 3 }: { count?: number }) {
 
 export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
   const t = useTranslations("campaign.quests");
+  const searchParams = useSearchParams();
+  const focusedQuestId = searchParams?.get("questId") ?? null;
   const { quests, loading, createQuest, updateQuest, deleteQuest } =
     useCampaignQuests(campaignId);
 
@@ -73,6 +76,30 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
     if (filter === "all") return quests;
     return quests.filter((q) => q.status === filter);
   }, [quests, filter]);
+
+  // Chip-navigate receiver. If the focused quest is filtered out by the
+  // current status filter, fall back to "all" so the card is actually on
+  // screen before we scroll. See NpcList for the handled-ref-on-searchParams
+  // pattern that lets repeat chip clicks still refocus.
+  const focusedQuestHandledRef = useRef<URLSearchParams | null>(null);
+  useEffect(() => {
+    if (!focusedQuestId || !searchParams) return;
+    if (focusedQuestHandledRef.current === searchParams) return;
+    const target = quests.find((q) => q.id === focusedQuestId);
+    if (!target) return;
+    focusedQuestHandledRef.current = searchParams;
+    if (filter !== "all" && target.status !== filter) {
+      setFilter("all");
+    }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(
+          `[data-testid="quest-card-${CSS.escape(focusedQuestId)}"]`,
+        );
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  }, [focusedQuestId, quests, searchParams, filter]);
 
   /* ── Handlers ────────────────────────────────────────────────────────────── */
 
@@ -256,6 +283,9 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
               onDelete={setDeleteTarget}
               onToggleVisibility={handleToggleVisibility}
               onCardClick={setViewingQuest}
+              focusToken={
+                quest.id === focusedQuestId ? searchParams : undefined
+              }
             />
           ))}
         </div>

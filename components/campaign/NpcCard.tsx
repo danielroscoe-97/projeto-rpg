@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Eye,
@@ -48,6 +48,13 @@ interface NpcCardProps {
   onCardClick?: (npc: CampaignNpc) => void;
   /** Onda 6a: when present, renders a "Ver no Mapa de Conexões" icon button. */
   onOpenInMap?: (npc: CampaignNpc) => void;
+  /**
+   * Opaque token from the list — when it transitions to a truthy value the
+   * card force-opens. Consumers typically pass the current `URLSearchParams`
+   * identity on the focused card only, so repeat chip-click navigations
+   * from the same URL still re-trigger expansion.
+   */
+  focusToken?: unknown;
 }
 
 export function NpcCard({
@@ -61,11 +68,16 @@ export function NpcCard({
   onNoteClick,
   onCardClick,
   onOpenInMap,
+  focusToken,
 }: NpcCardProps) {
   const t = useTranslations("npcs");
   const tLinks = useTranslations("links");
   const tGraph = useTranslations("entity_graph");
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (focusToken) setExpanded(true);
+  }, [focusToken]);
 
   const { stats } = npc;
   const hasStats = stats.hp != null || stats.ac != null || stats.cr != null || stats.initiative_mod != null;
