@@ -443,7 +443,10 @@
     "error_link_disabled": "This link has been disabled by the Game Master.",
     "error_campaign_full": "This campaign is full. Ask the Game Master to increase the player limit.",
     "error_link_expired": "This link has expired. Ask the Game Master for a new one.",
-    "back_home": "Back to home"
+    "back_home": "Back to home",
+    "already_member_title": "You're already in this campaign",
+    "already_member_body": "Redirecting to your dashboard…",
+    "already_member_cta": "Go to dashboard"
   },
   "campaign_combat": {
     "title": "Start Combat",

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { JoinCampaignClient } from "@/components/campaign/JoinCampaignClient";
+import { AlreadyMemberRedirect } from "@/components/campaign/AlreadyMemberRedirect";
 
 interface JoinCampaignPageProps {
   params: Promise<{ code: string }>;
@@ -75,8 +76,19 @@ export default async function JoinCampaignPage({ params }: JoinCampaignPageProps
     .eq("user_id", user.id)
     .maybeSingle();
 
+  // Already a member. We AVOID calling `redirect()` here because this server
+  // component is re-rendered as part of every server action response for
+  // this route — and a `redirect()` throw inside that post-action re-render
+  // stream is the exact bug that put us at 500 instead of a clean navigation
+  // (Sentry: "An error occurred in the Server Components render", React
+  // 19.3-canary / Next.js 15). Instead we render a tiny client component
+  // that does `router.replace("/app/dashboard")` on mount, with a visible
+  // fallback link for anyone whose JS is blocked. For direct GET hits by
+  // already-members the UX is identical (near-instant redirect); for the
+  // post-action re-render path this returns plain HTML and Next.js stops
+  // trying to do a redirect inside a render stream.
   if (existing) {
-    redirect("/app/dashboard");
+    return <AlreadyMemberRedirect />;
   }
 
   // Fetch user's standalone characters (available to bring into this campaign)

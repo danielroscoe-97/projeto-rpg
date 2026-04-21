@@ -443,7 +443,10 @@
     "error_link_disabled": "Este link foi desativado pelo Mestre.",
     "error_campaign_full": "Esta campanha está cheia. Peça ao Mestre para aumentar o limite de jogadores.",
     "error_link_expired": "Este link expirou. Peça um novo ao Mestre.",
-    "back_home": "Voltar ao início"
+    "back_home": "Voltar ao início",
+    "already_member_title": "Você já faz parte dessa campanha",
+    "already_member_body": "Redirecionando para o seu dashboard…",
+    "already_member_cta": "Ir para o dashboard"
   },
   "campaign_combat": {
     "title": "Iniciar Combate",
