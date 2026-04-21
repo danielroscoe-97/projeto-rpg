@@ -4,6 +4,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sendInviteAcceptedEmail } from "@/lib/notifications/invite-accepted-email";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 import { JOIN_CODE_RE } from "@/lib/validation/join-code";
+import { withActionInstrumentation } from "@/lib/errors/with-action-instrumentation";
 
 const APP_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
 
@@ -36,7 +37,9 @@ export interface AcceptJoinCodeResult {
   redirectTo: string;
 }
 
-export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<AcceptJoinCodeResult> {
+export const acceptJoinCodeAction = withActionInstrumentation(
+  "acceptJoinCodeAction",
+  async (data: JoinCampaignData): Promise<AcceptJoinCodeResult> => {
   // P11: validate join_code format before any DB call
   if (!JOIN_CODE_RE.test(data.code)) throw new Error("Código inválido");
 
@@ -161,4 +164,5 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<Acce
   }
 
   return { redirectTo: "/app/dashboard" };
-}
+  },
+);
