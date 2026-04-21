@@ -741,12 +741,15 @@ export function CombatSessionClient({
           [...presetSlugs].some(([slug, qty]) => combatSlugs.get(slug) !== qty);
       }
 
+      // Story 12.2 — prefer the eagerly-created draft session from the page prop,
+      // then the "Share Link" on-demand session, then create-on-start as the fallback.
+      const reusableSessionId = sessionId ?? onDemandSessionId;
       const { session_id, encounter_id } = await createEncounterWithCombatants(
         sorted,
         rulesetVersion,
         campaignId,
         encounterName,
-        onDemandSessionId,
+        reusableSessionId,
         undefined, // dmPlan
         presetId ?? null,
         wasModified,

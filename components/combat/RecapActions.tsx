@@ -3,9 +3,9 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { Share2, RotateCcw, BookmarkPlus, Save, Check, Loader2, UserPlus, BarChart3 } from "lucide-react";
+import { Share2, RotateCcw, BookmarkPlus, Save, Check, Loader2, UserPlus, BarChart3, Link2 } from "lucide-react";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { formatRecapShareText } from "@/lib/utils/combat-stats";
 import { DifficultyRatingStrip } from "./DifficultyRatingStrip";
@@ -75,19 +75,89 @@ interface RecapActionsProps {
 export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign, sessionId, saveSignupContext, onRequestAuthModal }: RecapActionsProps) {
   const t = useTranslations("combat");
   const tFeedback = useTranslations("feedback");
-  const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [isCopyingLink, setIsCopyingLink] = useState(false);
-  // Already saved if auto-save ran with a campaign linked
-  const [isSaved, setIsSaved] = useState(!!(existingShareUrl && campaignId));
+  // Story 12.3 — auto-save succeeds regardless of campaign (combat_reports.campaign_id is nullable),
+  // so isSaved only needs the share URL to be considered saved.
+  const [isSaved, setIsSaved] = useState(!!existingShareUrl);
   const [hasRated, setHasRated] = useState(initialRating != null);
+
+  // Story 12.3 AC3 — non-blocking "link to campaign" for quick combats. Only
+  // relevant for auth DM (no saveSignupContext); the session must already be
+  // persisted (12.2 eager-create) so we have something to link.
+  const showLinkCampaignCta = !campaignId && !!sessionId && !saveSignupContext;
+  const [userCampaigns, setUserCampaigns] = useState<{ id: string; name: string }[]>([]);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string>("");
+  const [isLinking, setIsLinking] = useState(false);
+  const [linkedCampaignName, setLinkedCampaignName] = useState<string | null>(null);
+
   // Abort in-flight save on unmount
   const abortRef = useRef<AbortController | null>(null);
-  useEffect(() => () => { abortRef.current?.abort(); }, []);
+  // Separate abort ref for handleLinkCampaign so unmount mid-link doesn't
+  // trigger post-unmount setState / stray toasts.
+  const linkAbortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => {
+    abortRef.current?.abort();
+    linkAbortRef.current?.abort();
+  }, []);
   // Sync isSaved when auto-save completes (existingShareUrl arrives after mount)
   useEffect(() => {
     if (existingShareUrl && !isSaved) setIsSaved(true);
   }, [existingShareUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Story 12.3 AC3 — lazily fetch the DM's campaigns only when the CTA is
+  // actually visible, so we don't waste a query on the 80% auth-with-campaign path.
+  useEffect(() => {
+    if (!showLinkCampaignCta || userCampaigns.length > 0 || linkedCampaignName) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("campaigns")
+          .select("id, name")
+          .order("created_at", { ascending: false });
+        if (!cancelled && data) setUserCampaigns(data as { id: string; name: string }[]);
+      } catch {
+        // Non-fatal — the CTA just won't populate
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [showLinkCampaignCta, userCampaigns.length, linkedCampaignName]);
+
+  const handleLinkCampaign = useCallback(async () => {
+    if (!sessionId || !selectedCampaignId) return;
+    const chosen = userCampaigns.find((c) => c.id === selectedCampaignId);
+    // Fall through if the selected ID somehow isn't in the fetched list — rare,
+    // but treating it as an error beats silently succeeding with an empty name.
+    if (!chosen) {
+      toast.error(t("recap_link_campaign_error"));
+      return;
+    }
+    setIsLinking(true);
+    const controller = new AbortController();
+    linkAbortRef.current = controller;
+    try {
+      const res = await fetch(`/api/combat/${sessionId}/link-campaign`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaignId: selectedCampaignId }),
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body = (await res.json().catch(() => null)) as { campaignId?: string } | null;
+      if (body?.campaignId !== selectedCampaignId) {
+        throw new Error("unexpected_response");
+      }
+      setLinkedCampaignName(chosen.name);
+      toast.success(t("recap_link_campaign_success", { name: chosen.name }));
+    } catch {
+      if (!controller.signal.aborted) toast.error(t("recap_link_campaign_error"));
+    } finally {
+      linkAbortRef.current = null;
+      setIsLinking(false);
+    }
+  }, [sessionId, selectedCampaignId, userCampaigns, t]);
 
   const handleShareText = useCallback(async () => {
     const text = formatRecapShareText(report);
@@ -142,13 +212,8 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
   }, [sessionId, tFeedback]);
 
   const handleSaveCombat = useCallback(async () => {
-    if (!campaignId) {
-      toast.info(t("recap_save_no_campaign"));
-      onNewCombat();
-      router.push("/app/dashboard/campaigns");
-      return;
-    }
-
+    // Story 12.3 — no more "Select a campaign" banner. The API accepts a null
+    // campaignId (quick combat); the combat is saved either way.
     if (isSaved) {
       toast.success(t("recap_save_success"));
       return;
@@ -162,7 +227,10 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
       const res = await fetch("/api/combat-reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ report, campaignId, encounterId }),
+        // Explicit `null` (rather than `undefined`) so JSON.stringify keeps the
+        // key in the payload — preserves the "campaign is intentionally absent"
+        // signal that the auto-save flow and the API validator both rely on.
+        body: JSON.stringify({ report, campaignId: campaignId ?? null, encounterId }),
         signal: controller.signal,
       });
       if (!res.ok) throw new Error("Failed to save");
@@ -175,7 +243,7 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
       abortRef.current = null;
       setIsSaving(false);
     }
-  }, [campaignId, isSaved, report, encounterId, t, onNewCombat, router]);
+  }, [campaignId, isSaved, report, encounterId, t]);
 
   return (
     <motion.div
@@ -235,6 +303,58 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
             onSelect={(vote) => { setHasRated(true); onRate(vote); }}
           />
         </div>
+      )}
+
+      {/* Story 12.3 AC3 — non-blocking "link to campaign" for quick combats (DM only). */}
+      {showLinkCampaignCta && (
+        linkedCampaignName ? (
+          <div
+            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-green-500/30 text-green-400 text-sm font-medium"
+            data-testid="recap-link-campaign-linked"
+          >
+            <Check className="size-4" />
+            {t("recap_link_campaign_success", { name: linkedCampaignName })}
+          </div>
+        ) : userCampaigns.length > 0 ? (
+          <div
+            className="w-full flex flex-col gap-2 p-3 rounded-lg border border-gold/20 bg-gold/5"
+            data-testid="recap-link-campaign-card"
+          >
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <Link2 className="size-4 text-gold" />
+              <span className="font-medium">{t("recap_link_campaign_title")}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("recap_link_campaign_description")}
+            </p>
+            <div className="flex gap-2">
+              <select
+                value={selectedCampaignId}
+                onChange={(e) => setSelectedCampaignId(e.target.value)}
+                disabled={isLinking}
+                className="flex-1 min-h-[40px] px-2 py-1.5 rounded-md bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 disabled:opacity-50"
+                data-testid="recap-link-campaign-select"
+                aria-label={t("recap_link_campaign_title")}
+                aria-required="true"
+                aria-invalid={!selectedCampaignId}
+              >
+                <option value="">{t("recap_link_campaign_placeholder")}</option>
+                {userCampaigns.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleLinkCampaign}
+                disabled={!selectedCampaignId || isLinking}
+                className="px-3 py-1.5 min-h-[40px] rounded-md bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                data-testid="recap-link-campaign-submit"
+              >
+                {isLinking ? <Loader2 className="size-4 animate-spin" /> : t("recap_link_campaign_submit")}
+              </button>
+            </div>
+          </div>
+        ) : null
       )}
 
       {/* DM-only: copy retroactive feedback link for the player group */}

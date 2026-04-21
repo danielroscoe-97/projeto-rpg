@@ -12,6 +12,12 @@ export interface UserOnboarding {
   wizard_step: string | null;
   dashboard_tour_completed: boolean;
   guest_data_migrated: boolean;
+  /** Epic 04 Story 04-F — DM-side walkthrough complete. Migration 161. */
+  dm_tour_completed: boolean;
+  /** Epic 04 Story 04-F — resumable DM tour step. NULL = never started or finished. Migration 161. */
+  dm_tour_step: string | null;
+  /** Epic 04 Area 1 — stamped once on the first owned campaign insert. Migration 161. */
+  first_campaign_created_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -47,6 +53,8 @@ export interface Database {
           last_session_at: string | null;
           avatar_url: string | null;
           upgrade_failed_at: string | null;
+          /** Epic 04 D8 — when false, excluded from other users' get_past_companions results. Migration 161. */
+          share_past_companions: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -61,6 +69,7 @@ export interface Database {
           last_session_at?: string | null;
           avatar_url?: string | null;
           upgrade_failed_at?: string | null;
+          share_past_companions?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -75,6 +84,7 @@ export interface Database {
           last_session_at?: string | null;
           avatar_url?: string | null;
           upgrade_failed_at?: string | null;
+          share_past_companions?: boolean;
           updated_at?: string;
         };
       };
@@ -233,6 +243,7 @@ export interface Database {
           name: string;
           ruleset_version: RulesetVersion;
           is_active: boolean;
+          is_draft: boolean;
           dm_plan: string;
           description: string | null;
           scheduled_for: string | null;
@@ -250,6 +261,7 @@ export interface Database {
           name: string;
           ruleset_version?: RulesetVersion;
           is_active?: boolean;
+          is_draft?: boolean;
           dm_plan?: string;
           description?: string | null;
           scheduled_for?: string | null;
@@ -266,6 +278,7 @@ export interface Database {
           name?: string;
           ruleset_version?: RulesetVersion;
           is_active?: boolean;
+          is_draft?: boolean;
           dm_plan?: string;
           description?: string | null;
           scheduled_for?: string | null;
@@ -1223,11 +1236,90 @@ export interface Database {
           dismissed_at?: string | null;
         };
       };
+      campaign_templates: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          game_system: string;
+          target_party_level: number;
+          estimated_sessions: number | null;
+          preview_image_url: string | null;
+          created_by: string | null;
+          is_public: boolean;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          game_system?: string;
+          target_party_level?: number;
+          estimated_sessions?: number | null;
+          preview_image_url?: string | null;
+          created_by?: string | null;
+          is_public?: boolean;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          game_system?: string;
+          target_party_level?: number;
+          estimated_sessions?: number | null;
+          preview_image_url?: string | null;
+          is_public?: boolean;
+          sort_order?: number;
+        };
+      };
+      campaign_template_encounters: {
+        Row: {
+          id: string;
+          template_id: string;
+          name: string;
+          description: string | null;
+          sort_order: number;
+          /** JSONB array of { slug, quantity, hp?, ac? }. Validated by trg_validate_template_monsters_srd (migration 162). */
+          monsters_payload: CampaignTemplateMonsterEntry[] | null;
+          narrative_prompt: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          template_id: string;
+          name: string;
+          description?: string | null;
+          sort_order?: number;
+          monsters_payload?: CampaignTemplateMonsterEntry[] | null;
+          narrative_prompt?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          sort_order?: number;
+          monsters_payload?: CampaignTemplateMonsterEntry[] | null;
+          narrative_prompt?: string | null;
+        };
+      };
     };
     Enums: {
       ruleset_version: RulesetVersion;
     };
   };
+}
+
+/** Shape of each entry inside campaign_template_encounters.monsters_payload (Epic 04 / migration 162). */
+export interface CampaignTemplateMonsterEntry {
+  /** Matches monsters.id in the DB (which is the slug, e.g. "goblin"). */
+  slug: string;
+  quantity: number;
+  /** Optional HP override; falls back to monsters.hp when absent. */
+  hp?: number;
+  /** Optional AC override; falls back to monsters.ac when absent. */
+  ac?: number;
 }
 
 // ── Proficiencies JSONB shape ──────────────────────────────────────
@@ -1277,6 +1369,25 @@ export type CharacterSpellInsert = Database["public"]["Tables"]["character_spell
 export type SpellStatus = CharacterSpell["status"];
 export type CharacterInventoryItem = Database["public"]["Tables"]["character_inventory_items"]["Row"];
 export type CharacterInventoryItemInsert = Database["public"]["Tables"]["character_inventory_items"]["Insert"];
+export type CampaignTemplate = Database["public"]["Tables"]["campaign_templates"]["Row"];
+export type CampaignTemplateInsert = Database["public"]["Tables"]["campaign_templates"]["Insert"];
+export type CampaignTemplateEncounter = Database["public"]["Tables"]["campaign_template_encounters"]["Row"];
+export type CampaignTemplateEncounterInsert = Database["public"]["Tables"]["campaign_template_encounters"]["Insert"];
+
+/** Row shape returned by the get_past_companions() RPC (migration 164). */
+export interface PastCompanion {
+  companion_user_id: string;
+  companion_display_name: string | null;
+  companion_avatar_url: string | null;
+  sessions_together: number;
+  last_campaign_name: string | null;
+}
+
+/** Row shape returned by the my_sessions_played wrapper view (migration 160). */
+export interface MySessionsPlayed {
+  sessions_played: number;
+  last_counted_session_at: string | null;
+}
 export type CampaignSettings = Database["public"]["Tables"]["campaign_settings"]["Row"];
 export type CharacterAbility = Database["public"]["Tables"]["character_abilities"]["Row"];
 export type CharacterAbilityInsert = Database["public"]["Tables"]["character_abilities"]["Insert"];

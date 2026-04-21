@@ -1,17 +1,27 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { CombatSessionClient } from "@/components/combat-session/CombatSessionClient";
-import type { PlayerCharacter } from "@/lib/types/database";
+import type { PlayerCharacter, RulesetVersion } from "@/lib/types/database";
 import { fetchEncounterPreset } from "@/lib/supabase/encounter-presets";
+import { createSessionOnly } from "@/lib/supabase/encounter";
 import type { EncounterPreset } from "@/lib/types/encounter-preset";
 import type { Combatant } from "@/lib/types/combat";
 
 /** Stable empty array — avoids referential changes that retrigger CombatSessionClient hydration effect */
 const EMPTY_COMBATANTS: Combatant[] = [];
+
+/** Story 12.2 — default ruleset for draft sessions. The DM can switch rulesets
+ *  mid-setup via CombatSessionClient; this is only the seed value. Centralised
+ *  so the 2024 cutover flips a single constant. */
+const DEFAULT_DRAFT_RULESET: RulesetVersion = "2014";
+
+/** sessionStorage key for draft-session reuse across page refreshes within
+ *  the same tab. Keyed by "campaign:{id}" or "quick" to avoid cross-context bleed. */
+const DRAFT_STORAGE_PREFIX = "pocketdm.draft-session:";
 
 interface CampaignOption {
   id: string;
@@ -43,6 +53,14 @@ function NewEncounterPageInner() {
     preloadedPlayers: PlayerCharacter[];
     preloadedPreset?: EncounterPreset | null;
   } | null>(null);
+
+  // Story 12.2 — Draft session persisted as soon as campaign/quick-mode is resolved,
+  // so refreshing or closing the tab before Start Combat no longer loses the work.
+  // Falls back to null (legacy lazy-create at Start) if the DB call fails.
+  const [draftSessionId, setDraftSessionId] = useState<string | null>(null);
+  // Guards against React StrictMode dev double-invocation and any future dep
+  // churn from creating two orphan `sessions` rows per DM visit.
+  const draftCreateStartedRef = useRef(false);
 
   const isQuick = searchParams.get("quick") === "true";
   const presetParam = searchParams.get("preset");
@@ -211,11 +229,65 @@ function NewEncounterPageInner() {
     setChosen({ campaignId: null, preloadedPlayers: [] });
   };
 
+  // Story 12.2 — Best-effort eager session persistence. Runs once `chosen` is set.
+  // AC5 — Also recovers the previously-created draft from sessionStorage on
+  //       refresh, so closing+reopening the tab (or hitting F5 during setup)
+  //       reuses the same row instead of orphaning one per visit.
+  // If DB call fails (network, unauthenticated, etc.), CombatSessionClient
+  // still works with sessionId=null and falls back to creating the session
+  // at Start Combat.
+  useEffect(() => {
+    if (!chosen || draftSessionId || draftCreateStartedRef.current) return;
+    draftCreateStartedRef.current = true;
+
+    const storageKey = DRAFT_STORAGE_PREFIX + (chosen.campaignId ?? "quick");
+
+    // AC5 — reuse any existing draft session stored during this tab's lifetime.
+    // sessionStorage is scoped to the tab, so a different tab gets a fresh row
+    // (intentional — we don't want cross-tab draft collisions).
+    try {
+      const stored = typeof window !== "undefined"
+        ? window.sessionStorage.getItem(storageKey)
+        : null;
+      if (stored) {
+        setDraftSessionId(stored);
+        return;
+      }
+    } catch {
+      // sessionStorage may throw in private-mode / quota edge — fall through to create.
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const newId = await createSessionOnly(DEFAULT_DRAFT_RULESET, chosen.campaignId);
+        if (!cancelled) {
+          setDraftSessionId(newId);
+          try {
+            if (typeof window !== "undefined") {
+              window.sessionStorage.setItem(storageKey, newId);
+            }
+          } catch {
+            // Storage write failure is non-fatal — worst case the next refresh
+            // creates a new draft, which the 72h sweeper reaps.
+          }
+        }
+      } catch {
+        // Swallow — legacy lazy-create path remains intact.
+        // Unset the ref so a retry (e.g. user changes `chosen` by re-picking) can try again.
+        draftCreateStartedRef.current = false;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [chosen, draftSessionId]);
+
   // Once chosen, render the combat client
   if (chosen) {
     return (
       <CombatSessionClient
-        sessionId={null}
+        sessionId={draftSessionId}
         encounterId={null}
         initialCombatants={EMPTY_COMBATANTS}
         isActive={false}

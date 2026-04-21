@@ -14,7 +14,12 @@ export interface CreateEncounterResult {
 
 /**
  * Creates only a session in the database (no encounter yet).
- * Used when DM wants to share the session link before starting combat.
+ * Used when DM wants to share the session link before starting combat,
+ * and by Epic 12 Story 12.2 to persist a draft on setup-page entry.
+ *
+ * Story 12.2 AC3 — sessions created by this helper are marked `is_draft=true`.
+ * `createEncounterWithCombatants` flips this flag to `false` when the session
+ * graduates into a real combat. Drafts that never graduate are swept after 72h.
  */
 export async function createSessionOnly(
   ruleset_version: RulesetVersion,
@@ -36,6 +41,7 @@ export async function createSessionOnly(
       name: "Quick Encounter",
       ruleset_version,
       dm_plan: dmPlan ?? "free",
+      is_draft: true,
     })
     .select("id")
     .single();
@@ -86,10 +92,19 @@ export async function createEncounterWithCombatants(
   let sessionId: string;
 
   if (existingSessionId) {
-    // Reuse an existing session (e.g., created on-demand for sharing)
+    // Reuse an existing session (e.g., created on-demand for sharing, or an
+    // eager draft from Story 12.2). If it was a draft, it's now graduating
+    // into a real combat — flip the flag so it stops showing in draft lists
+    // and the sweeper leaves it alone.
     sessionId = existingSessionId;
+    await supabase
+      .from("sessions")
+      .update({ is_draft: false })
+      .eq("id", sessionId)
+      .eq("is_draft", true);
   } else {
-    // 2. Create session (campaign_id is nullable after migration 006)
+    // 2. Create session (campaign_id is nullable after migration 007). A
+    // session created together with its encounter is never a draft.
     const { data: session, error: sessionError } = await supabase
       .from("sessions")
       .insert({
@@ -98,6 +113,7 @@ export async function createEncounterWithCombatants(
         name: "Quick Encounter",
         ruleset_version,
         dm_plan: dmPlan ?? "free",
+        is_draft: false,
       })
       .select("id")
       .single();
