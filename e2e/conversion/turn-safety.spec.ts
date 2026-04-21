@@ -10,27 +10,27 @@
  *    badge 'cadastrando' no DM view; player completa signup; player vê
  *    turno atual; sem 'lost turn' banner"
  *
- * ### Dependency on Story 03-F
+ * ### Story 03-F artefacts exercised by this spec (unfixme'd 2026-04-21)
  *
- * This spec depends on Story 03-F artefacts that are NOT merged yet
- * (commit a46fc074 master tip at dispatch time):
- *   - `player:idle` broadcast with `payload.reason === "signing_up"`
- *     emitted from PlayerJoinClient when AuthModal opens.
+ * Story 03-F landed in master at commit `c9e1e194`. This spec now
+ * targets the REAL implementation:
+ *   - `player:idle` broadcast with `payload.reason === "authenticating"`
+ *     emitted from PlayerJoinClient when AuthModal opens. (Note: spec
+ *     line 899 used the provisional name `"signing_up"` — implementation
+ *     shipped with `"authenticating"`; the DM UI displays "cadastrando"
+ *     to the end-user regardless.)
  *   - `player:active` broadcast when AuthModal closes.
- *   - `PlayersOnlinePanel` renders a "cadastrando" badge when the
- *     player's status is `"authenticating"`.
+ *   - `PlayersOnlinePanel` renders a per-player badge keyed
+ *     `data-testid="player-authenticating-${player.id}"` plus a
+ *     `data-status="authenticating"` attribute on the presence row.
  *   - Toast copy keys `conversion.turn_safety_toast.combat_started` and
  *     `.your_turn` wired into the player's broadcast listeners.
  *
- * When 03-F merges, REMOVE the `test.fixme` + the `describe.fixme` wrap
- * below and run the full body.
+ * ### What this spec proves
  *
- * ### What this spec will prove (once 03-F lands)
- *
- * 1. Opening AuthModal while in the waiting room emits a `player:idle`
- *    broadcast carrying `reason: "signing_up"`.
+ * 1. Opening AuthModal while in the waiting room emits `player:idle`.
  * 2. The DM's `PlayersOnlinePanel` shows the "cadastrando" badge for
- *    that player.
+ *    that player (`player-authenticating-*` testid).
  * 3. DM starts combat → player's AuthModal stays open, but a
  *    `combat_started` toast appears (non-blocking).
  * 4. DM advances turns until it reaches the signing-up player → a
@@ -40,7 +40,7 @@
  *    marker with NO "lost turn" banner.
  * 6. The player's session_token_id never changed.
  *
- * @tags @conversion @turn-safety @story-03H @blocked-03F
+ * @tags @conversion @turn-safety @story-03H
  */
 
 import { test, expect } from "@playwright/test";
@@ -52,26 +52,16 @@ import {
   uniqueUpgradeEmail,
 } from "../fixtures/identity-upgrade-helpers";
 
-// NOTE: Wrapping the entire describe in `.fixme` makes the whole block
-// report as expected-failure without running. Another agent/session will
-// remove `.fixme` once Story 03-F lands in master and the broadcast +
-// badge contracts are stable.
-test.describe.fixme(
-  "E2E — turn safety while anon signs up (BLOCKED: needs Story 03-F)",
-  () => {
+// Story 03-F merged at commit c9e1e194 — the `.fixme` wrap was removed
+// on 2026-04-21 (Wave 3 QA un-fixme pass). The broadcasts player:idle /
+// player:active with `reason: "authenticating"` now flow, and the
+// PlayersOnlinePanel renders `player-authenticating-${id}` badges.
+test.describe("E2E — turn safety while anon signs up", () => {
     test.setTimeout(240_000);
 
     test("DM sees badge + player sees toasts; no lost turn after signup", async ({
       browser,
     }) => {
-      // TODO(03-F): enable when Story 03-F merges. Once 03-F lands, the
-      // broadcasts player:idle / player:active with reason:"signing_up"
-      // will flow and the PlayersOnlinePanel will render the
-      // "cadastrando" badge — at that point the assertions below are
-      // meaningful.
-      //
-      // Until then this spec is marked `.fixme` and is not executed.
-
       const dmContext = await browser.newContext();
       const dmPage = await dmContext.newPage();
       const playerContext = await browser.newContext();
@@ -102,14 +92,24 @@ test.describe.fixme(
         ).toBeVisible({ timeout: 10_000 });
 
         // ── DM sees "cadastrando" badge (Story 03-F artefact) ──
-        // Expected testid TBD by Story 03-F; using a likely shape.
+        // Per commit c9e1e194: PlayersOnlinePanel emits BOTH
+        //   [data-testid="player-presence-${id}"] with data-status,
+        //   [data-testid="player-authenticating-${id}"] (only while auth)
+        // on both compact + full views, so we can match via prefix
+        // attribute selector without knowing the player UUID.
         await expect(
           dmPage.locator(
             `[data-testid="players-online-panel"] :text("${playerName}")`,
           ),
         ).toBeVisible({ timeout: 10_000 });
         await expect(
-          dmPage.locator('[data-testid="player-badge-authenticating"]').first(),
+          dmPage.locator('[data-testid^="player-authenticating-"]').first(),
+        ).toBeVisible({ timeout: 10_000 });
+        // data-status attribute is ALSO authoritative for the badge state.
+        await expect(
+          dmPage
+            .locator('[data-testid^="player-presence-"][data-status="authenticating"]')
+            .first(),
         ).toBeVisible({ timeout: 10_000 });
 
         // ── DM starts combat ──
@@ -183,9 +183,16 @@ test.describe.fixme(
         await expect(
           playerPage.locator('[data-testid="auth.modal.root"]'),
         ).toBeHidden({ timeout: 10_000 });
+        // Badge disappears: no element with player-authenticating-* testid,
+        // and no presence row still carries data-status="authenticating".
         await expect(
-          dmPage.locator('[data-testid="player-badge-authenticating"]'),
-        ).toBeHidden({ timeout: 10_000 });
+          dmPage.locator('[data-testid^="player-authenticating-"]'),
+        ).toHaveCount(0, { timeout: 10_000 });
+        await expect(
+          dmPage.locator(
+            '[data-testid^="player-presence-"][data-status="authenticating"]',
+          ),
+        ).toHaveCount(0, { timeout: 10_000 });
 
         // ── Player sees current turn, no "lost turn" banner ──
         await expect(

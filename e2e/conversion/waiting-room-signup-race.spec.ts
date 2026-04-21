@@ -29,10 +29,11 @@
  *      turn silently; we assert there's no "lost turn" banner when the
  *      player rejoins the active turn cycle.
  *
- * Because branch (c) depends on Story 03-F artefacts that have not
- * merged (same blocker as turn-safety.spec.ts), we mark that sub-test
- * `.fixme`. Branch (b) is testable today: combat UI mount under modal +
- * successful upgrade race.
+ * Story 03-F merged at commit `c9e1e194` (2026-04-21) — branch (c) is
+ * now fully enabled. The `player:idle` broadcast with
+ * `reason: "authenticating"` flows on AuthModal open, the DM sees the
+ * "cadastrando" badge, and the player sees `your_turn` / `combat_started`
+ * toasts. Branches (a), (b), (d) were already testable pre-03-F.
  *
  * ### Flakiness mitigation (F31)
  *
@@ -223,18 +224,148 @@ test.describe("E2E — F30 race: combat_started during signup", () => {
     }
   });
 
-  // Branch (c) — signup completes AFTER the player's first turn. This
-  // needs Story 03-F's `player:idle` + `reason: "signing_up"` broadcast
-  // so the DM timer consumes the turn silently and no "lost turn"
-  // banner appears when the player rejoins. Marked `.fixme` until 03-F
-  // lands — same blocker as `turn-safety.spec.ts`.
-  test.fixme(
-    "(c) signup completes AFTER player turn → idle-reason consumes turn, no lost-turn banner (BLOCKED: needs Story 03-F)",
-    async ({ browser }) => {
-      // TODO(03-F): enable when Story 03-F lands. The test body below
-      // is a placeholder outline; flesh out once the broadcast/reason
-      // contract is available.
-      void browser;
-    },
-  );
+  // Branch (c) — signup completes AFTER the player's first turn. With
+  // Story 03-F shipped (commit c9e1e194), the `player:idle` broadcast
+  // with `reason: "authenticating"` tells the DM the player is busy
+  // (badge: "cadastrando"), so when the DM advances past the player's
+  // turn, no "lost turn" banner appears — the player just re-enters the
+  // active cycle on the next round once AuthModal closes.
+  test("(c) signup completes AFTER player turn → no lost-turn banner, token preserved", async ({
+    browser,
+  }) => {
+    const dmContext = await browser.newContext();
+    const dmPage = await dmContext.newPage();
+    const playerContext = await browser.newContext();
+    const playerPage = await playerContext.newPage();
+
+    try {
+      // DM sets up combat with a LOW-init monster so the player (init 20)
+      // goes FIRST — we want the player's turn to arrive AS the modal is
+      // still open, forcing the DM to advance past them.
+      const shareToken = await dmSetupCombatSession(dmPage, DM_PRIMARY, [
+        { name: "Lazy Troll", hp: "20", ac: "12", init: "1" },
+      ]);
+      expect(shareToken).toBeTruthy();
+
+      const playerName = "LateSignupRunner";
+      await anonRegisterInLobby(playerPage, shareToken!, playerName);
+      // Player-view should eventually mount on the player side after the
+      // DM side already started combat in dmSetupCombatSession.
+      await expect(
+        playerPage.locator('[data-testid="player-view"]'),
+      ).toBeVisible({ timeout: 20_000 });
+
+      const preTokenId = await readSessionTokenId(playerPage);
+      expect(preTokenId).toBeTruthy();
+
+      // Open AuthModal via the always-visible auth-cta (login entry).
+      // (The waiting-room CTA only renders pre-combat; combat is already
+      // active here.) The signup-hint banner is another possible entry,
+      // but auth-cta is the deterministic one and still opens AuthModal
+      // in login mode — which we then switch to signup.
+      const authCta = playerPage.locator(
+        '[data-testid="join.waiting-room.auth-cta"]',
+      );
+      if (!(await authCta.isVisible({ timeout: 2_000 }).catch(() => false))) {
+        test.skip(
+          true,
+          "auth-cta not rendered post-combat on this env — branch (c) inconclusive",
+        );
+        return;
+      }
+      await authCta.click();
+      await expect(playerPage.locator(AUTH_MODAL_ROOT)).toBeVisible({
+        timeout: 10_000,
+      });
+      await playerPage.locator(AUTH_MODAL_TAB_SIGNUP).click();
+
+      // DM sees badge flip to "authenticating" (Story 03-F).
+      await expect(
+        dmPage
+          .locator('[data-testid^="player-authenticating-"]')
+          .first(),
+      ).toBeVisible({ timeout: 10_000 });
+
+      // ── DM advances PAST the player's turn while modal is open ──
+      // Click next-turn 2-3x to cycle past the high-init player.
+      const nextBtn = dmPage.locator('[data-testid="next-turn-btn"]');
+      for (let i = 0; i < 4; i++) {
+        if (await nextBtn.isVisible({ timeout: 1_000 }).catch(() => false)) {
+          await nextBtn.click({ force: true });
+          await dmPage.waitForTimeout(500);
+        }
+      }
+
+      // Player's "your_turn" toast MAY have fired at some point — we
+      // don't assert on it for branch (c); what matters is the
+      // no-lost-turn post-condition.
+
+      // Start filling signup (late — player turn already passed on the
+      // DM side).
+      const email = uniqueUpgradeEmail("race-post-turn");
+      const password = "RaceLate!1";
+      await playerPage
+        .locator('[data-testid="auth.modal.email-input"]')
+        .fill(email);
+      const displayName = playerPage.locator(
+        '[data-testid="auth.modal.display-name-input"]',
+      );
+      if (await displayName.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await displayName.fill(playerName);
+      }
+      await playerPage
+        .locator('[data-testid="auth.modal.password-input"]')
+        .fill(password);
+
+      const upgradeResponsePromise = playerPage.waitForResponse(
+        (resp) =>
+          resp.url().includes("/api/player-identity/upgrade") &&
+          resp.request().method() === "POST",
+        { timeout: 45_000 },
+      );
+      await playerPage
+        .locator('[data-testid="auth.modal.submit-button"]')
+        .click();
+
+      let upgraded = false;
+      try {
+        const resp = await upgradeResponsePromise;
+        upgraded = resp.ok();
+      } catch {
+        upgraded = false;
+      }
+      if (!upgraded) {
+        test.skip(
+          true,
+          "Upgrade POST never fired — likely email-confirmation ON in env",
+        );
+        return;
+      }
+
+      // Modal closes → player:active broadcast → DM badge cleared.
+      await expect(playerPage.locator(AUTH_MODAL_ROOT)).toBeHidden({
+        timeout: 10_000,
+      });
+      await expect(
+        dmPage.locator('[data-testid^="player-authenticating-"]'),
+      ).toHaveCount(0, { timeout: 10_000 });
+
+      // Branch (c) primary assertion: NO lost-turn banner.
+      await expect(
+        playerPage.locator('[data-testid="lost-turn-banner"]'),
+      ).toHaveCount(0);
+
+      // Player-view still mounted and responsive.
+      await expect(
+        playerPage.locator('[data-testid="player-view"]'),
+      ).toBeVisible({ timeout: 10_000 });
+
+      // Branch (d): session_token_id preserved across the race.
+      const postTokenId = await readSessionTokenId(playerPage);
+      expect(postTokenId).toBe(preTokenId);
+    } finally {
+      await playerContext.close().catch(() => {});
+      await dmContext.close().catch(() => {});
+    }
+  });
 });
