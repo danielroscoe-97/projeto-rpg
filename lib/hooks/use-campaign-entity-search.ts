@@ -57,6 +57,31 @@ interface QuestRow {
 /** Max results returned by `search` — PRD §7.8 specifies 8. */
 const SEARCH_LIMIT = 8;
 
+/**
+ * Strip diacritics so PT-BR users typing "vitor" match "Víctor". Also
+ * pre-folds a small set of atomic code points (ß, ı, Ł, Ø, Æ, Đ) that NFD
+ * doesn't decompose — otherwise "Straße" would never match "strasse".
+ * Kept at module scope so it has a stable identity across renders (React
+ * hooks dep-arrays); no closure over component state.
+ */
+const ATOMIC_FOLD: Readonly<Record<string, string>> = {
+  ß: "ss",
+  ı: "i",
+  Ł: "L",
+  ł: "l",
+  Ø: "O",
+  ø: "o",
+  Æ: "AE",
+  æ: "ae",
+  Đ: "D",
+  đ: "d",
+};
+function foldText(s: string): string {
+  let pre = "";
+  for (const ch of s) pre += ATOMIC_FOLD[ch] ?? ch;
+  return pre.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}
+
 export function useCampaignEntitySearch(
   campaignId: string,
 ): UseCampaignEntitySearchResult {
@@ -223,11 +248,6 @@ export function useCampaignEntitySearch(
       cancelled = true;
     };
   }, [campaignId]);
-
-  // Accent-fold: strip diacritics so PT-BR users typing "vitor" match
-  // "Víctor" / "Vitória" etc. Also handles ç → c for "caracao" → "coração".
-  const foldText = (s: string): string =>
-    s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
   const normalized = useMemo(
     () =>

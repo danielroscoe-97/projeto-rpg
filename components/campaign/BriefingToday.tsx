@@ -50,22 +50,25 @@ export function BriefingToday({
   const router = useRouter();
   const [combatOpen, setCombatOpen] = useState(false);
   const [plannerOpen, setPlannerOpen] = useState(false);
-  const { ensureSession, ensuring, sessionNoteId } = useSessionBootstrap(campaignId);
+  const { ensureSession, ensuring } = useSessionBootstrap(campaignId);
 
   const handleStartTodaySession = async () => {
-    // Capture cache state BEFORE the call so we can pick the right toast
-    // copy. If we already had a sessionNoteId (cache hit from earlier
-    // today), this is a resume; otherwise it's a fresh create.
-    const wasCached = sessionNoteId !== null;
-    const noteId = await ensureSession();
-    if (!noteId) {
+    // Use the server-authoritative `created` flag. The previous
+    // implementation read `sessionNoteId !== null` as a proxy, which
+    // misreported "created" when the client had no local cache but the
+    // server already had today's note (cross-device / incognito / cache
+    // evicted). Review finding F10.
+    const result = await ensureSession();
+    if (!result) {
       toast.error(tSession("error_toast"));
       return;
     }
     toast.success(
-      wasCached ? tSession("resumed_toast") : tSession("created_toast"),
+      result.created ? tSession("created_toast") : tSession("resumed_toast"),
     );
-    router.push(`/app/campaigns/${campaignId}?section=notes&noteId=${noteId}`);
+    router.push(
+      `/app/campaigns/${campaignId}?section=notes&noteId=${result.noteId}`,
+    );
   };
 
   const state = useMemo<

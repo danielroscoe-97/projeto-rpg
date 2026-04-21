@@ -279,6 +279,14 @@ export const EntityMentionEditor = forwardRef<
       // prop. If an external source (autosave, collab sync) updated the
       // textarea between trigger detection and this click, the closure's
       // `value` is stale while `el.value` reflects the committed state.
+      //
+      // ASSUMPTION: the parent component does NOT race-reset `value` (e.g.
+      // a debounced save that overwrites the prop with a stale snapshot).
+      // CampaignNotes' debouncedSave is fire-and-forget and only updates
+      // local state from its own in-memory notes map, so this holds. If a
+      // future consumer violates that contract, the insert will still
+      // produce the right text (from el.value) but onChange handlers may
+      // race with each other.
       const current = el.value;
       const token = formatMentionToken(type, id);
       const before = current.slice(0, trigger.atIndex);

@@ -4,16 +4,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getSessionDate } from "@/lib/time/session-date";
 
+/** Shape returned by ensureSession. `created` is authoritative (server). */
+export interface EnsureSessionResult {
+  noteId: string;
+  created: boolean;
+}
+
 export interface UseSessionBootstrapResult {
   /** ID of the session note for today, or null if not yet ensured. */
   sessionNoteId: string | null;
   /** True while the RPC round-trip is in flight. */
   ensuring: boolean;
   /**
-   * Triggers the server-side create-or-get RPC and returns the note id.
-   * Cached in localStorage for the calendar day to avoid duplicate RPCs.
+   * Triggers the server-side create-or-get RPC and returns a result with
+   * the note id + authoritative `created` flag. Cached in localStorage
+   * for the calendar day to avoid duplicate RPCs. Returns null on error.
    */
-  ensureSession: () => Promise<string | null>;
+  ensureSession: () => Promise<EnsureSessionResult | null>;
   /** Last error thrown by ensureSession, if any. */
   error: Error | null;
   /** True iff the most recent ensureSession call created a new note. */
@@ -107,7 +114,7 @@ export function useSessionBootstrap(campaignId: string): UseSessionBootstrapResu
   const [created, setCreated] = useState(false);
   // De-dupe concurrent ensureSession calls (double-click on the CTA) so the
   // second caller waits on the same promise instead of racing the RPC.
-  const inFlightRef = useRef<Promise<string | null> | null>(null);
+  const inFlightRef = useRef<Promise<EnsureSessionResult | null> | null>(null);
 
   // Re-hydrate on campaignId change (initial mount handled by lazy state).
   useEffect(() => {
@@ -119,26 +126,27 @@ export function useSessionBootstrap(campaignId: string): UseSessionBootstrapResu
     setSessionNoteId(cached?.note_id ?? null);
   }, [campaignId]);
 
-  const ensureSession = useCallback(async (): Promise<string | null> => {
+  const ensureSession = useCallback(async (): Promise<EnsureSessionResult | null> => {
     if (!campaignId) return null;
     // Coalesce concurrent callers onto the same in-flight promise.
     if (inFlightRef.current) return inFlightRef.current;
 
     const today = getSessionDate();
 
-    // Fast path: hit cache.
+    // Fast path: hit cache. A cache hit means the note exists today on
+    // the server (we wrote it there), so created=false is correct.
     const cached = readCache(campaignId, today);
     if (cached) {
       setSessionNoteId(cached.note_id);
       setCreated(false);
       setError(null);
-      return cached.note_id;
+      return { noteId: cached.note_id, created: false };
     }
 
     setEnsuring(true);
     setError(null);
 
-    const task = (async (): Promise<string | null> => {
+    const task = (async (): Promise<EnsureSessionResult | null> => {
       try {
         const supabase = createClient();
         const { data, error: rpcError } = await supabase.rpc(
@@ -161,8 +169,9 @@ export function useSessionBootstrap(campaignId: string): UseSessionBootstrapResu
 
         writeCache(campaignId, today, payload.note_id);
         setSessionNoteId(payload.note_id);
-        setCreated(Boolean(payload.created));
-        return payload.note_id;
+        const didCreate = Boolean(payload.created);
+        setCreated(didCreate);
+        return { noteId: payload.note_id, created: didCreate };
       } catch (e) {
         const err = e instanceof Error ? e : new Error(String(e));
         setError(err);
