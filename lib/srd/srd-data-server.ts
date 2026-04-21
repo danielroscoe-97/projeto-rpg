@@ -26,31 +26,44 @@ function getSpellPtMap(): Record<string, string> {
   return spellPtMap!;
 }
 
+// Strip diacritics + force URL-safe chars. Protects against accented entries
+// in the PT-BR slug maps (e.g. "acólito") from producing 404 URLs.
+function normalizeUrlSlug(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 /** Convert EN monster slug to PT-BR slug (falls back to EN slug) */
 export function toMonsterSlugPt(enSlug: string): string {
-  return getMonsterPtMap()[enSlug] ?? enSlug;
+  return normalizeUrlSlug(getMonsterPtMap()[enSlug] ?? enSlug);
 }
 
 /** Convert EN spell slug to PT-BR slug (falls back to EN slug) */
 export function toSpellSlugPt(enSlug: string): string {
-  return getSpellPtMap()[enSlug] ?? enSlug;
+  return normalizeUrlSlug(getSpellPtMap()[enSlug] ?? enSlug);
 }
 
 /** Find a monster by its PT-BR slug */
 export function getMonsterBySlugPt(ptSlug: string): SrdMonster | undefined {
+  const lookup = normalizeUrlSlug(ptSlug);
   const reverseMap = Object.fromEntries(
-    Object.entries(getMonsterPtMap()).map(([en, pt]) => [pt, en])
+    Object.entries(getMonsterPtMap()).map(([en, pt]) => [normalizeUrlSlug(pt), en])
   );
-  const enSlug = reverseMap[ptSlug] ?? ptSlug;
+  const enSlug = reverseMap[lookup] ?? lookup;
   return getMonsterBySlug(enSlug);
 }
 
 /** Find a spell by its PT-BR slug */
 export function getSpellBySlugPt(ptSlug: string): SrdSpell | undefined {
+  const lookup = normalizeUrlSlug(ptSlug);
   const reverseMap = Object.fromEntries(
-    Object.entries(getSpellPtMap()).map(([en, pt]) => [pt, en])
+    Object.entries(getSpellPtMap()).map(([en, pt]) => [normalizeUrlSlug(pt), en])
   );
-  const enSlug = reverseMap[ptSlug] ?? ptSlug;
+  const enSlug = reverseMap[lookup] ?? lookup;
   return getSpellBySlug(enSlug);
 }
 

@@ -103,6 +103,13 @@ export default async function MonsterPage({
         />
 
         <main className="mx-auto max-w-5xl px-4 py-8">
+          <Link
+            href="/monsters"
+            className="inline-flex items-center gap-1 text-sm text-gold hover:underline mb-4"
+          >
+            <span aria-hidden>←</span> Back to Bestiary
+          </Link>
+
           {/* Collapsible search */}
           <PublicMonsterSearch monsters={allMonsters} />
 

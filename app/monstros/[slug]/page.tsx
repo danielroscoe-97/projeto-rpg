@@ -120,6 +120,13 @@ export default async function MonstroPage({
         />
 
         <main className="mx-auto max-w-5xl px-4 py-8">
+          <Link
+            href="/monstros"
+            className="inline-flex items-center gap-1 text-sm text-gold hover:underline mb-4"
+          >
+            <span aria-hidden>←</span> Voltar ao Bestiário
+          </Link>
+
           {/* Collapsible search */}
           <PublicMonsterSearch
             monsters={allMonsters}
