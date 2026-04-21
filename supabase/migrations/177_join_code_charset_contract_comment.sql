@@ -1,0 +1,37 @@
+-- 177_join_code_charset_contract_comment.sql
+-- Pure-docs migration. Documents the charset contract between the SQL join
+-- code generator and the TypeScript validator, as a guardrail against a
+-- repeat of the 2026-04-21 drift incident.
+--
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Incident: join-code regex drift (2026-04-21)
+-- ─────────────────────────────────────────────────────────────────────────────
+--
+-- The server generates 8-char join codes from uppercase md5 hex:
+--   `upper(substr(md5(random()::text), 1, 8))`
+-- (in `create_campaign_with_settings`, see migration 122_create_campaign_atomic.sql).
+-- md5 hex emits `[0-9a-f]`, uppercased to `[0-9A-F]`.
+--
+-- The TypeScript validator in three separate files had drifted to
+-- `/^[A-Z2-9]{8}$/` — excluding `0` and `1`. The result: ~93% of generated
+-- codes were rejected by the client-side validator before any DB call,
+-- producing 500s in the entire accept flow. See:
+--   docs/bugfix-join-code-validator-drift-2026-04-21.md
+--
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Contract
+-- ─────────────────────────────────────────────────────────────────────────────
+--
+-- 1. Server side (this function, migration 122): emits `[0-9A-F]{8}`.
+-- 2. Client/server TS validator: `lib/validation/join-code.ts` exports
+--    `JOIN_CODE_RE = /^[0-9A-F]{8}$/i`, enforced by
+--    `lib/validation/join-code.test.ts`.
+--
+-- Any change to the charset or length on ONE side MUST land in the SAME PR
+-- as the change to the other side, plus an update to the test. The test
+-- samples 1000 codes generated with the same algorithm and asserts the
+-- regex accepts all of them — if the SQL is changed without updating the
+-- test, CI will fail.
+
+COMMENT ON FUNCTION public.create_campaign_with_settings IS
+  'Atomic campaign creation. Emits 8-char join_code from `[0-9A-F]` (md5 hex uppercased). Charset is a contract with lib/validation/join-code.ts — any charset/length change must update BOTH sides + lib/validation/join-code.test.ts in the same PR. See migration 177 for the incident that motivated this guardrail.';

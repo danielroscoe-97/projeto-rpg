@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
 import { checkRateLimit } from "../rate-limit";
+import { JOIN_CODE_RE } from "../validation/join-code";
 
 /** Routes that never need a Supabase session refresh.
  *  Skipping auth here avoids AbortError on fast client-side navigations
@@ -156,7 +157,7 @@ export async function updateSession(request: NextRequest) {
       url.pathname = `/invite/${invite}`;
       url.searchParams.delete("invite");
       url.searchParams.delete("campaign");
-    } else if (joinCode && /^[0-9A-F]{8}$/i.test(joinCode)) {
+    } else if (joinCode && JOIN_CODE_RE.test(joinCode)) {
       url.pathname = `/join-campaign/${joinCode}`;
       url.searchParams.delete("join_code");
     } else {

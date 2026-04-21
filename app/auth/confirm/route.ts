@@ -2,6 +2,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getUserLanguagePreference } from "@/lib/supabase/user";
 import { sendWelcomeEmail } from "@/lib/notifications/welcome-email";
 import { trackServerEvent } from "@/lib/analytics/track-server";
+import { JOIN_CODE_RE } from "@/lib/validation/join-code";
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -105,10 +106,11 @@ export async function GET(request: NextRequest) {
   // Determine redirect: new signups go to onboarding, otherwise to specified next
   async function getRedirectTarget(): Promise<string> {
     // If join_code param present, redirect back to join flow.
-    // Charset is hex (`[0-9A-F]`) because join codes are md5-derived by the
-    // SQL generator — see commit b46beba6 for the full writeup.
+    // Charset validation lives in lib/validation/join-code.ts — kept in
+    // lock-step with the SQL generator. See commit b46beba6 for the drift
+    // incident that motivated centralizing this.
     const joinCode = searchParams.get("join_code");
-    if (joinCode && /^[0-9A-F]{8}$/i.test(joinCode)) {
+    if (joinCode && JOIN_CODE_RE.test(joinCode)) {
       return `/join-campaign/${joinCode}`;
     }
     // If invite params present, go straight to invite page (user is now authenticated)

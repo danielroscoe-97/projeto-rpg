@@ -3,6 +3,7 @@
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sendInviteAcceptedEmail } from "@/lib/notifications/invite-accepted-email";
 import { trackServerEvent } from "@/lib/analytics/track-server";
+import { JOIN_CODE_RE } from "@/lib/validation/join-code";
 
 const APP_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
 
@@ -17,15 +18,6 @@ interface JoinCampaignData {
   // Existing character path
   existingCharacterId?: string;
 }
-
-// Accepts the full md5-hex charset the SQL generator produces
-// (`upper(substr(md5(random()::text), 1, 8))` in create_campaign_with_settings,
-// see supabase/migrations/122_create_campaign_atomic.sql). The previous
-// `[A-Z2-9]{8}` definition rejected the 0s and 1s that hex emits — ~every
-// generated code failed this check, producing 500s for the whole accept
-// flow (Sentry events from 2026-04-21 QA run). Keep this charset in
-// lock-step with the SQL generator if either side ever changes.
-const JOIN_CODE_RE = /^[0-9A-F]{8}$/;
 
 /**
  * Result contract intentionally returns a plain object instead of calling
