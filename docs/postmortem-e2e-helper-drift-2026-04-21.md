@@ -239,14 +239,28 @@ O comment no helper `anonJoinCombat` que dizia "auto-accept is a feature" era de
 - `dmAcceptPlayer` ganhou 4ª estratégia via `aria-label` do JoinRequestBanner button (o texto visível é só "Aceitar", sem player_name — regex anterior não matchava).
 - Specs `turn-safety` e `waiting-room-signup-race (c)` atualizados pra passar `dmPage` / chamar `dmAcceptPlayer` explicitamente.
 
-**Camada adicional NÃO resolvida (scope-parked):** Mesmo com os fixes, o JoinRequestBanner **não renderiza no DM** durante o teste. O player mostra "Aguardando aprovação" (broadcast sent, aguardando), mas o DM não exibe banner para aceitar. Screenshot do DM mostra combat UI limpo, sem o banner.
+**Camada adicional investigada a fundo — root cause narrowed mas não resolvida:**
 
-**Hipóteses a investigar:**
-1. **Realtime subscription timing:** DM's `session:${sid}` channel pode não estar subscribed quando player broadcasta — Supabase broadcast não retenta entrega a late subscribers.
-2. **Broadcast via client vs server:** Player usa `channelRef.current.send()` direto; DM usa `getDmChannel(sid)`. Se canais são instâncias diferentes, broadcast perdido.
-3. **`is_active` race:** DM's late_join listener (`CombatSessionClient.tsx:1138`) tem guard `if (!sid || !is_active) return;`. Se o effect roda antes de `is_active` virar true, listener não attacha.
+Instrumentação via `console.log` no `CombatSessionClient.useEffect(late_join)` + no subscribe callback de `getDmChannel` + no player `.send()` revelou:
 
-**Próximos passos recomendados:** adicionar diag log em `CombatSessionClient.handleLateJoin` capturando quantas vezes o handler é chamado no DM durante um run de teste. Se zero, é realtime/channel issue; se > 0, é JoinRequestBanner render issue.
+- **Player side**: broadcast enviado com sucesso. Channel state `joined`. `send() result: ok`. Supabase server aceitou.
+- **DM side**: `channel.subscribe` callback retorna **sempre `CLOSED` ou `TIMED_OUT`, nunca `SUBSCRIBED`**. `handleLateJoin` NUNCA dispara (count = 0 em 3 test runs). O listener foi anexado ao canal, mas o canal não conseguiu entrar em estado subscribed.
+
+**Causa narrowed (mas não proven como fix único):** `EncounterSetup` criava seu próprio `supabase.channel("session:${sid}")` enquanto `getDmChannel` (usado por `CombatSessionClient`) criava outro com topic idêntico. **Um único Supabase client não pode ter 2 canais no mesmo topic** — o segundo subscribe falha com CHANNEL_ERROR. Legacy `resetDmChannel()` chamado pelo cleanup tentava coordenar mas acabava orfanando um canal ainda subscribing.
+
+**Fix aplicado (commit subsequente):** `EncounterSetup` agora subscribe via `getDmChannel` — uma única instância de canal por topic por client. Mudança arquiteturalmente correta.
+
+**Problema persiste após o fix:** Mesmo sem duplicação de canal, o DM continua com `CLOSED`/`TIMED_OUT` no subscribe. Há algo mais fundo — possivelmente:
+- WebSocket connection state
+- Auth token propagation para realtime
+- Rate limit do Supabase Realtime (muitos canais por conexão)
+- Dev server turbopack/WS proxy interference
+
+**Próximos passos (além do scope helper drift):**
+1. Inspecionar Supabase Realtime server logs durante o teste
+2. Adicionar instrumentação em `lib/supabase/client.ts` pra capturar estado do WS
+3. Testar contra Supabase localmente (supabase start) pra isolar se é issue de produção vs dev
+4. Considerar usar `createServerClient` + API route broadcast em vez de direto do client pra late-join (já existe `broadcastViaServer` em `lib/realtime/broadcast-server.ts` — pode ser que o fluxo do DM deveria usar isso)
 
 ---
 
