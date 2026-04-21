@@ -38,16 +38,24 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 import { captureError } from "@/lib/errors/capture";
 import { sendCampaignInviteEmail } from "@/lib/notifications/campaign-invite";
+import { withRateLimit } from "@/lib/rate-limit";
 
 const MAX_INVITES_PER_DAY = 20;
 const MAX_BULK_INVITE_SIZE = 50; // H2 — matches get_past_companions default page
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // M1 — same as single-invite
+const EMAIL_SEND_TIMEOUT_MS = 8000; // re-review C — per-email cap; parallel fan-out below
 
-export async function POST(
+// Re-review C: Vercel default serverless timeout is 10s. A 50-invitee batch
+// with 700ms-per-email Resend latency would exceed it. Parallel fan-out
+// (allSettled) brings wall time down to one email's latency, but we still
+// bump the function budget for worst-case Resend incidents.
+export const maxDuration = 60;
+
+async function handler(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  { params }: { params: Promise<Record<string, string>> },
+): Promise<NextResponse> {
   const { id: campaignId } = await params;
   const supabase = await createClient();
 
@@ -276,6 +284,7 @@ export async function POST(
   // ── INSERT + send email per invite ──
   const sent: string[] = [];
   const emailFailed: string[] = [];
+  const insertFailed: string[] = [];
 
   if (toInvite.length > 0) {
     // Pull DM display name once — used in every email body.
@@ -293,9 +302,17 @@ export async function POST(
       process.env.NEXT_PUBLIC_SITE_URL ?? "https://pocketdm.com.br";
     const expiresAt = new Date(Date.now() + INVITE_TTL_MS).toISOString();
 
-    // Serial INSERT+send (not batch insert) so per-invite email failures
-    // are observable. A batch insert would make the "sent" classification
-    // ambiguous when a duplicate uniq-violates mid-batch.
+    // Re-review C — parallel fan-out. We still INSERT each invite row one
+    // at a time (so a duplicate token / constraint violation is classified
+    // per-companion instead of sinking the batch), but the email sends run
+    // with `Promise.allSettled` + a per-email timeout. Wall time is
+    // O(slowestEmail) instead of O(N * avgEmailLatency), keeping us under
+    // the 60s serverless budget even when Resend is degraded.
+    const sendTasks: Array<{
+      companionId: string;
+      task: Promise<{ companionId: string; outcome: "sent" | "failed" }>;
+    }> = [];
+
     for (const r of toInvite) {
       const token = crypto.randomUUID();
       const { error: insertErr } = await supabase
@@ -317,30 +334,62 @@ export async function POST(
           category: "database",
           extra: { companionId: r.id },
         });
-        emailFailed.push(r.id);
+        // Observability fix vs prior lumping into email_failed: INSERT
+        // failures have a distinct bucket so clients can tell a DB issue
+        // from a mail-transport issue.
+        insertFailed.push(r.id);
         continue;
       }
 
       // C2 — actually send the email (prior version never did).
       const inviteLink = `${baseUrl}/auth/sign-up?invite=${token}&campaign=${campaignId}`;
-      const emailSent = await sendCampaignInviteEmail({
-        email: r.email,
-        dmName,
-        campaignName: (campaign.name as string) ?? "Campanha",
-        inviteLink,
-        inviteToken: token,
-      });
+      const companionId = r.id;
 
-      if (emailSent) {
-        sent.push(r.id);
-      } else {
-        emailFailed.push(r.id);
+      sendTasks.push({
+        companionId,
+        task: (async () => {
+          let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+          const timeoutPromise = new Promise<false>((resolve) => {
+            timeoutHandle = setTimeout(() => resolve(false), EMAIL_SEND_TIMEOUT_MS);
+          });
+          try {
+            const ok = await Promise.race([
+              sendCampaignInviteEmail({
+                email: r.email,
+                dmName,
+                campaignName: (campaign.name as string) ?? "Campanha",
+                inviteLink,
+                inviteToken: token,
+              }),
+              timeoutPromise,
+            ]);
+            return { companionId, outcome: ok ? "sent" : "failed" as const };
+          } catch {
+            return { companionId, outcome: "failed" as const };
+          } finally {
+            // Release the timer so the Node runtime (and jest) doesn't
+            // hold an open handle past the race resolution.
+            if (timeoutHandle) clearTimeout(timeoutHandle);
+          }
+        })(),
+      });
+    }
+
+    const settled = await Promise.allSettled(sendTasks.map((s) => s.task));
+    for (const result of settled) {
+      if (result.status === "fulfilled") {
+        if (result.value.outcome === "sent") sent.push(result.value.companionId);
+        else emailFailed.push(result.value.companionId);
       }
+      // status === 'rejected' shouldn't happen (Promise.race catches), but
+      // if it does, we have no companionId — log and drop.
     }
   }
 
   // M2 — analytics fires in every non-401/403/400 path with enough detail
-  // to distinguish success, partial, budget-exhausted, all-no-email.
+  // to distinguish success, partial, budget-exhausted, all-no-email. The
+  // 429 early-return at the top of the handler is intentionally quiet —
+  // rate-limited requests did no work.
   trackServerEvent("dm_upsell:invite_past_companions_sent", {
     userId: user.id,
     properties: {
@@ -351,6 +400,7 @@ export async function POST(
       skippedDuplicateCount: skippedDuplicate.length,
       skippedBudgetCount: skippedBudget.length,
       emailFailedCount: emailFailed.length,
+      insertFailedCount: insertFailed.length,
     },
     req: request,
   });
@@ -361,6 +411,14 @@ export async function POST(
     skipped_duplicate: skippedDuplicate,
     skipped_budget: skippedBudget,
     email_failed: emailFailed,
+    insert_failed: insertFailed,
     rate_limited: false,
   });
 }
+
+// Re-review G — wrap with the same IP-level Upstash limiter the single-
+// invite endpoint uses. The in-handler SQL count is user-scoped (20/24h);
+// this IP-scoped layer (20/15min via withRateLimit default) catches burst
+// abuse from a single source even if the attacker owns multiple auth
+// sessions. Defense-in-depth, not replacement.
+export const POST = withRateLimit(handler, { max: 20, window: "15 m" });

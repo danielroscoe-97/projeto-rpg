@@ -439,6 +439,27 @@ describe("POST /api/campaign/[id]/invites/bulk — Epic 04 Story 04-D (post-revi
     expect(state.insertedRows).toHaveLength(2);
   });
 
+  it("re-review: insert_failed bucket — DB insert error is distinct from email_failed", async () => {
+    state.serviceUsers = [
+      { id: "u-1", email: "a@x.com" },
+      { id: "u-2", email: "b@x.com" },
+    ];
+    // INSERT errors for u-1's email; u-2 succeeds through.
+    state.insertErrorsFor.add("a@x.com");
+
+    const res = await POST(
+      makeReq({ invitee_user_ids: ["u-1", "u-2"] }),
+      makeParams(),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.sent).toEqual(["u-2"]);
+    expect(body.insert_failed).toEqual(["u-1"]);
+    expect(body.email_failed).toEqual([]); // NOT lumped into email_failed
+    // Only u-2 reached the email step
+    expect(sendEmailMock).toHaveBeenCalledTimes(1);
+  });
+
   it("users missing from the service lookup are skipped_no_email (hard-delete race)", async () => {
     // u-1 is a companion but was hard-deleted between past_companions and here
     state.serviceUsers = [{ id: "u-2", email: "b@x.com" }];
