@@ -119,6 +119,7 @@ Termos adicionados 2026-04-19 durante a iniciativa [Player Identity & Continuity
 | 20 | Claim por anon user (temporário) | `claimed_by_session_token` | **Soft claim** | Reserva via `session_token` — player anônimo pode editar via RLS específica, mas ainda não tem `user_id`. Promove a hard claim no upgrade. |
 | 21 | Claim por auth user (permanente) | `user_id` em `player_characters` | **Hard claim** | Posse definitiva. Player tem edição plena via RLS normal (`user_id = auth.uid()`). |
 | 22 | Último UUID anônimo visto (informativo) | `session_tokens.anon_user_id` | **Identidade anterior** | Pode **regenerar** em cookie loss (ver [spec-resilient-reconnection.md](spec-resilient-reconnection.md)). NÃO é histórico imutável — apenas "último valor observado". Nunca exposto em UI. |
+| 23 | Jogador que já jogou com você | `past_companions` (RPC `get_past_companions`) / **Past companion** | **Ex-companheiros** | Usuário com **pelo menos 1 sessão** em comum com `auth.uid()` — critério `COUNT(DISTINCT s.id) >= 1` via JOIN `sessions → encounters → combatants → player_characters`. Fonte do "Convide quem jogou com você" (Épico 04, Área 5). Respeita opt-out `users.share_past_companions` (D8). |
 
 ### Nota sobre `character` vs `player_characters` vs `/app/characters/*`
 
