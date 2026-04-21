@@ -1148,7 +1148,6 @@ export function CombatSessionClient({
       };
       setJoinRequests((prev) => {
         if (prev.some((r) => r.request_id === request_id)) return prev;
-        // B2: Capture sender_token_id for ID-based combatant linking
         return [...prev, { request_id, player_name, hp: pHp, ac: pAc, initiative: pInit, senderTokenId: sender_token_id }];
       });
     };

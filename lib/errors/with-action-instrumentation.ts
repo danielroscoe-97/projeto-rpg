@@ -29,11 +29,19 @@ export function withActionInstrumentation<TArgs extends unknown[], TResult>(
     try {
       return await fn(...args);
     } catch (err) {
+      // 0. `redirect()` and `notFound()` propagate via thrown control-flow
+      // errors carrying a digest string. These are the SUCCESS path in Next.js
+      // — logging them or reporting to Sentry would spam ops dashboards with
+      // false alarms on every successful redirect. Let them through untouched.
+      if (isNextControlFlowError(err)) throw err;
+
       // 1. Preserve the raw message in Vercel runtime logs.
       // Use a stable prefix so operators can grep. Guard against non-Error
       // throws (strings, plain objects, undefined) so the logger itself never
-      // throws and drops the signal.
-      const rawMessage =
+      // throws and drops the signal. Strip CR/LF so a message containing
+      // user input (`throw new Error(\`bad: ${userInput}\`)`) cannot forge
+      // a fake `[action:...]` entry on a subsequent line.
+      const rawMessage = (
         err instanceof Error
           ? err.message
           : typeof err === "string"
@@ -44,20 +52,40 @@ export function withActionInstrumentation<TArgs extends unknown[], TResult>(
               } catch {
                 return String(err);
               }
-            })();
+            })()
+      ).replace(/[\r\n]+/g, " ");
       // eslint-disable-next-line no-console -- Intentional: Vercel runtime log signal.
       console.error(`[action:${actionName}] ${rawMessage}`);
 
-      // 2. Report to Sentry + Supabase with structured tags. captureError
-      // already guards against non-Error throws internally.
-      captureError(err, {
-        component: actionName,
-        action: "entry",
-      });
+      // 2. Report to Sentry + Supabase with structured tags. Guard the
+      // observability call itself: if the Sentry SDK throws (rare but
+      // documented), we must NOT shadow the original action error. Callers
+      // always care about `err`, not the telemetry failure.
+      try {
+        captureError(err, {
+          component: actionName,
+          action: "entry",
+        });
+      } catch {
+        // Swallow observability failures.
+      }
 
-      // 3. Re-throw untouched so Next.js can convert `redirect()` / render
-      // errors normally and error boundaries still fire.
+      // 3. Re-throw untouched so Next.js can surface render errors normally
+      // and error boundaries still fire.
       throw err;
     }
   };
+}
+
+/**
+ * Next.js encodes `redirect()` and `notFound()` as thrown errors carrying a
+ * `digest` string of the form `NEXT_REDIRECT;...` or `NEXT_NOT_FOUND`. They
+ * are the control-flow success path, not failure — framework code downstream
+ * catches them and converts to the intended response.
+ */
+function isNextControlFlowError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const digest = (err as { digest?: unknown }).digest;
+  if (typeof digest !== "string") return false;
+  return digest.startsWith("NEXT_REDIRECT") || digest === "NEXT_NOT_FOUND";
 }

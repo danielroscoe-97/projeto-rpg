@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { createClient } from "@/lib/supabase/client";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
 import { Info, Package } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -24,7 +23,7 @@ import { hasLairActions, hasLairActionEntry, createLairActionCombatant } from "@
 import { generateCreatureName } from "@/lib/utils/creature-name-generator";
 import { generateEncounterName } from "@/lib/utils/encounter-name";
 import { getMonsterById } from "@/lib/srd/srd-search";
-import { resetDmChannel } from "@/lib/realtime/broadcast";
+import { getDmChannel } from "@/lib/realtime/broadcast";
 import { EncounterGeneratorDialog } from "@/components/encounter-generator/EncounterGeneratorDialog";
 import type { EncounterPreset } from "@/lib/types/encounter-preset";
 
@@ -153,53 +152,55 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
   useEffect(() => {
     const sid = sessionId;
     if (!sid) return;
-    const supabase = createClient();
-    const channel = supabase.channel(`session:${sid}`, {
-      config: { broadcast: { self: false } },
-    });
+    // Use the shared singleton channel (broadcast.ts) to avoid duplicate
+    // channel subscriptions with the same topic — two channels on the same
+    // Supabase client sharing topic `session:${sid}` cause CHANNEL_ERROR /
+    // TIMED_OUT on the second subscribe attempt. One topic, one channel.
+    const channel = getDmChannel(sid);
+    let active = true;
 
-    channel
-      .on("broadcast", { event: "player:joined" }, ({ payload }: { payload: { id?: string; name?: string; hp?: number; ac?: number; initiative?: number | null } }) => {
-        if (!payload.name || !payload.id) return;
-        const currentCombatants = useCombatStore.getState().combatants;
-        // Avoid duplicate — use token ID, not name (two players could share a name)
-        if (currentCombatants.some((c) => c.is_player && c.dm_notes === `token:${payload.id}`)) return;
-        addCombatant({
-          name: payload.name,
-          current_hp: payload.hp ?? 0,
-          max_hp: payload.hp ?? 0,
-          temp_hp: 0,
-          ac: payload.ac ?? 0,
-          spell_save_dc: null,
-          initiative: payload.initiative ?? null,
-          initiative_order: null,
-          conditions: [],
-          ruleset_version: null,
-          is_defeated: false,
-          is_hidden: false,
-          is_player: true,
-          monster_id: null,
-          token_url: null,
-          creature_type: null,
-          display_name: null,
-          monster_group_id: null,
-          group_order: null,
-          dm_notes: `token:${payload.id}`,
-          player_notes: "",
-          player_character_id: null,
-          combatant_role: null,
-          legendary_actions_total: null,
-          legendary_actions_used: 0,
-          reaction_used: false,
-        });
-      })
-      .subscribe();
+    const handlePlayerJoined = ({ payload }: { payload: { id?: string; name?: string; hp?: number; ac?: number; initiative?: number | null } }) => {
+      if (!active) return;
+      if (!payload.name || !payload.id) return;
+      const currentCombatants = useCombatStore.getState().combatants;
+      // Avoid duplicate — use token ID, not name (two players could share a name)
+      if (currentCombatants.some((c) => c.is_player && c.dm_notes === `token:${payload.id}`)) return;
+      addCombatant({
+        name: payload.name,
+        current_hp: payload.hp ?? 0,
+        max_hp: payload.hp ?? 0,
+        temp_hp: 0,
+        ac: payload.ac ?? 0,
+        spell_save_dc: null,
+        initiative: payload.initiative ?? null,
+        initiative_order: null,
+        conditions: [],
+        ruleset_version: null,
+        is_defeated: false,
+        is_hidden: false,
+        is_player: true,
+        monster_id: null,
+        token_url: null,
+        creature_type: null,
+        display_name: null,
+        monster_group_id: null,
+        group_order: null,
+        dm_notes: `token:${payload.id}`,
+        player_notes: "",
+        player_character_id: null,
+        combatant_role: null,
+        legendary_actions_total: null,
+        legendary_actions_used: 0,
+        reaction_used: false,
+      });
+    };
+
+    channel.on("broadcast", { event: "player:joined" }, handlePlayerJoined);
 
     return () => {
-      supabase.removeChannel(channel);
-      // Invalidate the broadcast singleton so CombatSessionClient recreates
-      // a fresh channel instead of reusing the now-removed one.
-      resetDmChannel();
+      // Don't removeChannel — the singleton is shared across CombatSessionClient
+      // listeners. Just flag this listener as inactive; the handler short-circuits.
+      active = false;
     };
   }, [sessionId, addCombatant]);
 

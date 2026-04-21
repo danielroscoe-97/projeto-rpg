@@ -85,7 +85,10 @@ export function waitForChannel(): Promise<void> {
 }
 
 /** Invalidate the DM channel singleton so the next getDmChannel call recreates it.
- *  Call this when the channel has been externally removed (e.g. via supabase.removeChannel). */
+ *  Call this when the channel has been externally removed (e.g. via supabase.removeChannel).
+ *  NOTE: EncounterSetup no longer calls this — it now uses the singleton via
+ *  getDmChannel directly, avoiding the two-channels-same-topic race that caused
+ *  CHANNEL_ERROR / TIMED_OUT on player late-join broadcasts. */
 export function resetDmChannel(): void {
   channel = null;
   currentSessionId = null;

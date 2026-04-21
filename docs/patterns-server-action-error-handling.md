@@ -10,9 +10,10 @@ This turns "read the error, find the line" into "add temporary `console.log`, re
 
 Wrap server actions with `withActionInstrumentation(actionName, fn)` from `lib/errors/with-action-instrumentation.ts`. The wrapper:
 
-1. Logs the **original** unsanitized message to `console.error` with a `[action:<name>]` prefix — stdout in Vercel Functions is durable and searchable.
-2. Reports the exception to Sentry + Supabase via the existing `captureError` helper with `component: <actionName>, action: "entry"` tags.
-3. Re-throws the original error untouched so `redirect()`, error boundaries, and the client action contract all still work.
+1. **Passes through Next.js control-flow errors first.** `redirect()` and `notFound()` propagate via thrown digest-errors (`NEXT_REDIRECT;…`, `NEXT_NOT_FOUND`). These are the SUCCESS path — the wrapper re-throws them immediately without logging or reporting, so wrapping a redirect-using action does not spam stdout or Sentry on every happy-path call.
+2. Logs the **original** unsanitized message to `console.error` with a `[action:<name>]` prefix — stdout in Vercel Functions is durable and searchable. CR/LF are stripped from the message so that an error whose text interpolates user input cannot forge a fake `[action:…]` line.
+3. Reports the exception to Sentry + Supabase via the existing `captureError` helper with `component: <actionName>, action: "entry"` tags. The `captureError` call is wrapped in its own `try/catch` — an observability failure must not shadow the real action error the caller cares about.
+4. Re-throws the original error untouched so error boundaries and the client action contract still work.
 
 Zero change to the action's body. No sanitization, no swallowing.
 
