@@ -156,7 +156,7 @@ export async function updateSession(request: NextRequest) {
       url.pathname = `/invite/${invite}`;
       url.searchParams.delete("invite");
       url.searchParams.delete("campaign");
-    } else if (joinCode && /^[A-Z2-9]{8}$/i.test(joinCode)) {
+    } else if (joinCode && /^[0-9A-F]{8}$/i.test(joinCode)) {
       url.pathname = `/join-campaign/${joinCode}`;
       url.searchParams.delete("join_code");
     } else {
