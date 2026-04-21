@@ -7,6 +7,8 @@ import type {
   PartyMemberSnapshot,
 } from "@/lib/supabase/encounter-snapshot";
 import { Sword, Skull, Flag, History } from "lucide-react";
+import { CombatTimelineEntry } from "./CombatTimelineEntry";
+import type { RevisitEntry } from "./CombatRevisitModal";
 
 /**
  * Epic 12, Story 12.6a — Combat Timeline on the campaign workspace.
@@ -35,6 +37,8 @@ interface TimelineEntry {
   combat_result: CombatResult | null;
   party_size: number;
   creature_count: number;
+  /** Story 12.10 — full snapshot forwarded to the revisit modal on click. */
+  revisit: RevisitEntry;
 }
 
 function formatDuration(seconds: number | null): string | null {
@@ -167,6 +171,8 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
       combat_result,
       party_snapshot,
       creatures_snapshot,
+      dm_difficulty_rating,
+      dm_notes,
       sessions!inner (
         campaign_id
       )
@@ -206,6 +212,8 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
     combat_result: CombatResult | null;
     party_snapshot: PartyMemberSnapshot[] | null;
     creatures_snapshot: CreatureSnapshot[] | null;
+    dm_difficulty_rating: number | null;
+    dm_notes: string | null;
   }>;
 
   // Defensive mapping — JSONB columns can surprise us if an old/corrupted row
@@ -231,9 +239,10 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
       });
     }
 
+    const name = r.name ?? t("unnamed_encounter");
     return {
       id: r.id,
-      name: r.name ?? t("unnamed_encounter"),
+      name,
       ended_at: r.ended_at,
       duration_seconds: r.duration_seconds,
       round_number: r.round_number,
@@ -243,6 +252,18 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
         (sum, c) => sum + (c && typeof c.quantity === "number" ? c.quantity : 1),
         0,
       ),
+      revisit: {
+        id: r.id,
+        name,
+        ended_at: r.ended_at,
+        duration_seconds: r.duration_seconds,
+        round_number: r.round_number,
+        combat_result: r.combat_result,
+        party_snapshot: realParty,
+        creatures_snapshot: creatures,
+        dm_difficulty_rating: r.dm_difficulty_rating,
+        dm_notes: r.dm_notes,
+      },
     };
   });
 
@@ -266,6 +287,23 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
     );
   }
 
+  // Story 12.11 — lightweight aggregate stats surfaced at the top of the
+  // timeline. Enough for the DM to glance at win-rate + average pace; the
+  // full "Avaliar" tab with per-player damage and CR-vs-rating deltas is a
+  // follow-up (Wave 3 v2).
+  const wins = entries.filter((e) => e.combat_result === "victory").length;
+  const tpks = entries.filter((e) => e.combat_result === "tpk").length;
+  const ratedEntries = rows.filter((r) => r.dm_difficulty_rating != null && r.dm_difficulty_rating > 0);
+  const avgRating = ratedEntries.length > 0
+    ? ratedEntries.reduce((sum, r) => sum + (r.dm_difficulty_rating ?? 0), 0) / ratedEntries.length
+    : null;
+  const timedEntries = entries.filter((e) => e.duration_seconds && e.duration_seconds > 0);
+  const avgDurationSec = timedEntries.length > 0
+    ? timedEntries.reduce((sum, e) => sum + (e.duration_seconds ?? 0), 0) / timedEntries.length
+    : null;
+  const avgDurationStr = avgDurationSec ? formatDuration(Math.round(avgDurationSec)) : null;
+  const winRatePct = entries.length > 0 ? Math.round((wins / entries.length) * 100) : 0;
+
   return (
     <section
       className="rounded-xl border border-border bg-card/60 p-6"
@@ -274,43 +312,77 @@ export async function CombatTimeline({ campaignId, limit = 10 }: CombatTimelineP
     >
       <TimelineHeader t={t} count={entries.length} />
 
+      <dl
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5"
+        data-testid="combat-timeline-stats"
+        aria-label={t("stats_label")}
+      >
+        <div className="rounded-md bg-background/40 p-3 border border-border/40">
+          <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("stats_win_rate")}</dt>
+          <dd className="mt-1 text-lg font-semibold text-emerald-300 tabular-nums">
+            {winRatePct}%
+          </dd>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
+            {t("stats_wins_summary", { wins, tpks })}
+          </p>
+        </div>
+        <div className="rounded-md bg-background/40 p-3 border border-border/40">
+          <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("stats_avg_duration")}</dt>
+          <dd className="mt-1 text-lg font-semibold text-foreground tabular-nums">
+            {avgDurationStr ?? "—"}
+          </dd>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
+            {t("stats_avg_duration_hint", { count: timedEntries.length })}
+          </p>
+        </div>
+        <div className="rounded-md bg-background/40 p-3 border border-border/40">
+          <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("stats_total")}</dt>
+          <dd className="mt-1 text-lg font-semibold text-foreground tabular-nums">
+            {entries.length}
+          </dd>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
+            {t("stats_total_hint")}
+          </p>
+        </div>
+        <div className="rounded-md bg-background/40 p-3 border border-border/40">
+          <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("stats_avg_difficulty")}</dt>
+          <dd className="mt-1 text-lg font-semibold text-amber-300 tabular-nums">
+            {avgRating ? `${avgRating.toFixed(1)} / 5` : "—"}
+          </dd>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
+            {t("stats_avg_difficulty_hint", { count: ratedEntries.length })}
+          </p>
+        </div>
+      </dl>
+
       <ol className="relative space-y-4 border-l border-border/60 pl-4">
         {entries.map((e) => {
           const duration = formatDuration(e.duration_seconds);
           const rel = relativeKey(e.ended_at);
           const relText = rel.vars ? t(rel.key, rel.vars) : t(rel.key);
           const absoluteTitle = new Date(e.ended_at).toLocaleString(locale);
+          const meta = [
+            relText,
+            t("rounds_label", { count: e.round_number }),
+            duration,
+            t("party_vs_creatures", { party: e.party_size, creatures: e.creature_count }),
+          ].filter(Boolean) as string[];
+
           return (
-            <li key={e.id} className="relative">
-              <span
-                aria-hidden="true"
-                className="absolute -left-[21px] top-1.5 size-3 rounded-full border-2 border-gold bg-background"
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
+            <CombatTimelineEntry
+              key={e.id}
+              id={e.id}
+              revisit={e.revisit}
+              header={
+                <>
                   <span className="font-medium text-foreground">{e.name}</span>
                   <ResultBadge result={e.combat_result} labels={resultLabels} />
-                </div>
-                <div className="mt-1 text-xs text-muted-foreground flex flex-wrap gap-x-3 gap-y-0.5">
-                  <time dateTime={e.ended_at} title={absoluteTitle}>{relText}</time>
-                  <span aria-hidden="true">•</span>
-                  <span>{t("rounds_label", { count: e.round_number })}</span>
-                  {duration && (
-                    <>
-                      <span aria-hidden="true">•</span>
-                      <span>{duration}</span>
-                    </>
-                  )}
-                  <span aria-hidden="true">•</span>
-                  <span>
-                    {t("party_vs_creatures", {
-                      party: e.party_size,
-                      creatures: e.creature_count,
-                    })}
-                  </span>
-                </div>
-              </div>
-            </li>
+                </>
+              }
+              meta={meta}
+              endedAt={e.ended_at}
+              absoluteTitle={absoluteTitle}
+            />
           );
         })}
       </ol>

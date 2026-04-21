@@ -486,7 +486,22 @@
     "timeline_relative_yesterday": "ontem",
     "timeline_relative_days_ago": "há {count} dias",
     "timeline_relative_month_ago": "há 1 mês",
-    "timeline_relative_months_ago": "há {count} meses"
+    "timeline_relative_months_ago": "há {count} meses",
+    "modal_close": "Fechar",
+    "modal_party_heading": "{count, plural, one {# jogador} other {# jogadores}}",
+    "modal_creatures_heading": "Criaturas ({defeated}/{total} abatidas)",
+    "modal_level_abbrev": "Nv",
+    "modal_difficulty_label": "Dificuldade avaliada: {rating} de 5",
+    "modal_dm_notes_heading": "Notas do Mestre",
+    "stats_label": "Estatísticas da campanha",
+    "stats_win_rate": "Taxa de vitória",
+    "stats_wins_summary": "{wins} vitórias · {tpks} TPKs",
+    "stats_avg_duration": "Duração média",
+    "stats_avg_duration_hint": "{count, plural, =0 {sem medições} one {# combate medido} other {# combates medidos}}",
+    "stats_total": "Combates",
+    "stats_total_hint": "finalizados na mesa",
+    "stats_avg_difficulty": "Dificuldade média",
+    "stats_avg_difficulty_hint": "{count, plural, =0 {sem avaliações} one {# avaliação} other {# avaliações}}"
   },
   "briefing": {
     "welcome_back": "Bem-vindo de volta, Mestre.",

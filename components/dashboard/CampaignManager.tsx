@@ -243,9 +243,12 @@ export function CampaignManager({ initialCampaigns, userId }: Props) {
                       unoptimized
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                    {/* Epic 12 Story 12.7 — role chip so DM/Player cards read at a glance. */}
+                    {/* Epic 12 Story 12.7 — role chip so DM/Player cards read at a glance.
+                        Wave 2.1 review #11 — amber-200 on black/80 holds contrast
+                        (~11:1) even when the hero image is bright, where the
+                        previous gold-on-black/50 fell below WCAG AA. */}
                     <span
-                      className="absolute top-2 left-2 inline-flex items-center gap-1 text-[10px] font-semibold text-gold bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-gold/40"
+                      className="absolute top-2 left-2 inline-flex items-center gap-1 text-[10px] font-semibold text-amber-200 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-amber-300/50 shadow-sm"
                       data-testid="campaign-role-chip-dm"
                     >
                       <Crown className="size-3" aria-hidden="true" />

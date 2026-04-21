@@ -73,9 +73,12 @@ export function PlayerCampaignCard({
 
       {/* Content overlay */}
       <div className="relative h-full flex flex-col justify-end p-4">
-        {/* Epic 12 Story 12.7 — role chip so DM/Player cards read at a glance. */}
+        {/* Epic 12 Story 12.7 — role chip so DM/Player cards read at a glance.
+            Wave 2.1 review #11 — emerald-200 on black/80 crosses WCAG AAA
+            (~10:1); the previous /50 overlay could dip below AA on a bright
+            hero image. */}
         <span
-          className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-300 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-emerald-400/40"
+          className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-200 bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-emerald-300/50 shadow-sm"
           data-testid="campaign-role-chip-player"
         >
           <UserCircle2 className="size-3" aria-hidden="true" />
