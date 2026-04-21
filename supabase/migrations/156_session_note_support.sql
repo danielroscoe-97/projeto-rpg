@@ -175,12 +175,20 @@ DECLARE
   v_note_id UUID;
   v_default_title TEXT;
 BEGIN
-  -- 1. Auth guard.
+  -- 1. Input guard. A NULL session_date would bypass the partial unique index
+  --    (predicate WHERE session_date IS NOT NULL), letting every call insert a
+  --    new row → unbounded leak. Same for campaign_id being NULL — the owner
+  --    check would fail soft but we surface a cleaner error code.
+  IF p_campaign_id IS NULL OR p_session_date IS NULL THEN
+    RETURN json_build_object('ok', false, 'code', 'invalid_input');
+  END IF;
+
+  -- 2. Auth guard.
   IF v_user_id IS NULL THEN
     RETURN json_build_object('ok', false, 'code', 'unauthenticated');
   END IF;
 
-  -- 2. Scope guard: only the campaign owner can create session notes.
+  -- 3. Scope guard: only the campaign owner can create session notes.
   SELECT EXISTS (
     SELECT 1 FROM campaigns
     WHERE id = p_campaign_id AND owner_id = v_user_id
