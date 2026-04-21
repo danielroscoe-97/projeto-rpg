@@ -11,27 +11,38 @@
  * Primary read: `my_sessions_played` wrapper view (cookie-aware; `auth.uid()`
  * resolves against the caller's JWT).
  *
- * F19 — Hot-path fallback
- * =======================
+ * F19 — Hot-path fallback (⚠️ currently dormant — see Sprint 2 TODO)
+ * ================================================================
  * The matview refreshes every 15 min via pg_cron. That leaves a window where a
  * user just finished a session and lands on the dashboard: `my_sessions_played`
  * would still be "2" when it should be "3", and the CTA would suppress one
- * render longer than it should. To close that gap cheaply we:
+ * render longer than it should. The intended closure is:
  *
  *   1. Read the wrapper view (always).
  *   2. If the matview's `last_counted_session_at` is older than 5 min AND
- *      `users.last_session_at` (updated by existing combat flows) is STRICTLY
- *      newer than `last_counted_session_at`, we know the matview is stale for
- *      THIS user specifically.
- *   3. Issue a live COUNT that mirrors migration 165's WHERE clause exactly —
- *      joining sessions × encounters × combatants × player_characters and
- *      requiring at least one defeated combatant in the encounter.
+ *      `users.last_session_at` is STRICTLY newer than `last_counted_session_at`,
+ *      we know the matview is stale for THIS user specifically.
+ *   3. Issue a live COUNT that mirrors migration 165's WHERE clause.
  *
- * Both fallback guards are required: "matview older than 5 min" alone would
- * trigger for every user on every cron cycle; "user newer than matview" alone
- * would trigger for a user who just finished a session even if the matview
- * refresh is seconds away. Together they only fire when (a) the cron hasn't
- * caught up yet and (b) this specific user has data newer than the snapshot.
+ * **REALITY CHECK** — adversarial re-review (Apr 21, 2026) found that
+ * `users.last_session_at` is written in exactly ONE place today:
+ * `lib/supabase/player-identity.ts:544` (anon→auth upgrade finalizer).
+ * Combat flows do NOT update it. After a user's first upgrade the column
+ * is effectively frozen, so in production the `userNewer` gate is never
+ * true and the live-COUNT pipeline below is unreachable. The matview
+ * IS the source of truth.
+ *
+ * We keep the pipeline (instead of deleting) because:
+ *   - Unit tests exercise it (they synthesize `last_session_at`).
+ *   - Wiring up `last_session_at` on encounter-close is a one-liner
+ *     deferred to Sprint 2. Once it lands, F19 becomes live again with
+ *     zero other edits here.
+ *   - The H4 monotonicity guard (Math.max) is still a useful safety net
+ *     the day `last_session_at` starts updating.
+ *
+ * If you're reading this comment and `last_session_at` is still only
+ * written by Epic 01, the 15-min lag is the real CTA cadence. Live with
+ * it, or ship the Sprint 2 TODO.
  *
  * Return contract
  * ===============

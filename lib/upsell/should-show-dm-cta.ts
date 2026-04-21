@@ -99,20 +99,38 @@ export async function shouldShowDmCta(userId: string): Promise<DmCtaDecision> {
     if (onboardingError) {
       return { show: false, reason: "error", sessionsPlayed: 0 };
     }
-    // M12 — missing onboarding row for role=both is an anomalous state
-    // (migration 046's on_auth_user_created trigger should create it on
-    // signup; role=both is the default). Treat as unknown → hide rather
-    // than fall through to the sessions gate with "never created campaign"
-    // assumption. The only ways to reach this state are (a) pre-046
-    // legacy account whose row got deleted, (b) race during signup. Both
-    // are real but rare, and hiding the CTA is safer than showing one to
-    // a user we can't reason about.
-    if (!onboarding) {
-      return { show: false, reason: "error", sessionsPlayed: 0 };
-    }
-    if (onboarding.first_campaign_created_at) {
+    // M12 / re-review H — missing onboarding row for role=both.
+    //
+    // Migration 046's on_auth_user_created trigger should create the row
+    // on signup. A missing row can still happen: (a) pre-046 legacy
+    // account, (b) create_user_onboarding swallowed an exception
+    // silently (its `EXCEPTION WHEN OTHERS THEN RAISE WARNING` shape),
+    // (c) an admin cleanup dropped it. Earlier pass treated this as
+    // fatal 'error' → user stuck with CTA hidden forever, no self-heal.
+    //
+    // Self-heal: fall through to the campaigns table as an authoritative
+    // check for "has the user ever owned a campaign?". If yes → already
+    // a DM, suppress CTA. If no → treat as if first_campaign_created_at
+    // is NULL and flow into the sessions gate. Either way, no perma-stuck
+    // user.
+    const firstCampaignAt = onboarding?.first_campaign_created_at;
+    if (firstCampaignAt) {
       // (e) already crossed into DM — suppress regardless of sessions.
       return { show: false, reason: "already_dm", sessionsPlayed: 0 };
+    }
+    if (!onboarding) {
+      const { count: ownedCount, error: campaignErr } = await supabase
+        .from("campaigns")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", userId);
+      if (campaignErr) {
+        return { show: false, reason: "error", sessionsPlayed: 0 };
+      }
+      if ((ownedCount ?? 0) > 0) {
+        return { show: false, reason: "already_dm", sessionsPlayed: 0 };
+      }
+      // Row truly missing AND user owns zero campaigns → fall through as
+      // if first_campaign_created_at were null.
     }
   }
 

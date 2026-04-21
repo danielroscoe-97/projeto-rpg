@@ -30,11 +30,17 @@ const state: {
   sessionsPlayed: number;
   // Explicit toggle for getSessionsPlayed-called assertion
   getSessionsPlayedCalls: number;
+  // Re-review H — self-heal path: when onboarding row is missing and
+  // role = 'both', the function consults campaigns.count to decide.
+  campaignsOwnedCount: number;
+  campaignsQueryError: { message: string } | null;
 } = {
   userRow: { data: null, error: null },
   onboardingRow: { data: null, error: null },
   sessionsPlayed: 0,
   getSessionsPlayedCalls: 0,
+  campaignsOwnedCount: 0,
+  campaignsQueryError: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -59,10 +65,27 @@ function makeOnboardingBuilder() {
   return b;
 }
 
+function makeCampaignsBuilder() {
+  // The self-heal path does: from('campaigns').select('id', {count:'exact', head:true}).eq('owner_id', userId)
+  const b = {
+    select: jest.fn(() => b),
+    eq: jest.fn(() => b),
+    then: (resolve: (v: { count: number; error: { message: string } | null }) => unknown) => {
+      resolve({
+        count: state.campaignsOwnedCount,
+        error: state.campaignsQueryError,
+      });
+      return Promise.resolve();
+    },
+  };
+  return b;
+}
+
 const createClientMock = jest.fn(async () => ({
   from: jest.fn((table: string) => {
     if (table === "users") return makeUsersBuilder();
     if (table === "user_onboarding") return makeOnboardingBuilder();
+    if (table === "campaigns") return makeCampaignsBuilder();
     throw new Error(`Unexpected table in test: ${table}`);
   }),
 }));
@@ -96,6 +119,8 @@ beforeEach(() => {
   state.onboardingRow = { data: { first_campaign_created_at: null }, error: null };
   state.sessionsPlayed = 0;
   state.getSessionsPlayedCalls = 0;
+  state.campaignsOwnedCount = 0;
+  state.campaignsQueryError = null;
 });
 
 // ---------------------------------------------------------------------------
@@ -215,13 +240,35 @@ describe("shouldShowDmCta — error + defensive fallbacks", () => {
     expect(createClientMock).not.toHaveBeenCalled();
   });
 
-  it("M12 — role=both with NO user_onboarding row returns error (fail-closed)", async () => {
-    // Migration 046 creates user_onboarding on signup; a missing row for
-    // a role=both user means something's wrong (pre-046 legacy, race,
-    // manual delete). Hiding the CTA is safer than guessing.
+  it("re-review H self-heal — role=both, no onboarding row, 0 owned campaigns → falls through to sessions gate", async () => {
+    // Missing user_onboarding is anomalous but not fatal. If the user
+    // owns zero campaigns, we know for sure they haven't crossed into
+    // DM yet, so we treat first_campaign_created_at as NULL implicitly
+    // and honor the sessions gate.
     state.userRow = { data: { role: "both" }, error: null };
     state.onboardingRow = { data: null, error: null };
+    state.campaignsOwnedCount = 0;
     state.sessionsPlayed = 2;
+
+    const res = await shouldShowDmCta(USER_ID);
+    expect(res).toEqual({ show: true, reason: "shown", sessionsPlayed: 2 });
+  });
+
+  it("re-review H self-heal — role=both, no onboarding row, owns >=1 campaign → already_dm", async () => {
+    // If the user owns campaigns but user_onboarding is missing, they
+    // ARE a DM by ground truth — suppress CTA.
+    state.userRow = { data: { role: "both" }, error: null };
+    state.onboardingRow = { data: null, error: null };
+    state.campaignsOwnedCount = 3;
+
+    const res = await shouldShowDmCta(USER_ID);
+    expect(res).toEqual({ show: false, reason: "already_dm", sessionsPlayed: 0 });
+  });
+
+  it("re-review H self-heal — campaigns query error → fall through to error", async () => {
+    state.userRow = { data: { role: "both" }, error: null };
+    state.onboardingRow = { data: null, error: null };
+    state.campaignsQueryError = { message: "rls" };
 
     const res = await shouldShowDmCta(USER_ID);
     expect(res).toEqual({ show: false, reason: "error", sessionsPlayed: 0 });

@@ -35,6 +35,7 @@ const MIGRATIONS = [
   "171_populate_starter_templates.sql",
   "172_sprint1_corrective.sql",
   "173_sprint1_followups.sql",
+  "174_sprint1_rereview_fixes.sql",
 ];
 
 interface ParseResult {
