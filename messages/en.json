@@ -925,6 +925,7 @@
   },
   "session_notes": {
     "cta_start_today": "Start today's session",
+    "preparing": "Preparing…",
     "created_toast": "Today's session notes are ready",
     "resumed_toast": "Resuming today's session notes",
     "error_toast": "Could not prepare session notes"
