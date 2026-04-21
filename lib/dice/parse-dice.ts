@@ -2,7 +2,8 @@
 // Extract clickable dice notations from SRD monster description text.
 //
 // Recognises patterns found in standard 5e stat blocks:
-//   "+9 to hit"              → 1d20+9  (attack roll)
+//   "+9 to hit"              → 1d20+9  (attack roll — 2014 format)
+//   "Attack: +5"             → 1d20+5  (attack roll — 2024 format)
 //   "12 (2d6 + 5)"          → 2d6+5   (damage with average)
 //   "DC 14 Constitution"    → 1d20    (saving throw — DC display only)
 //   "1d4 hours"             → 1d4     (standalone dice expression)
@@ -28,13 +29,14 @@ export function parseDiceInText(text: string, actionName?: string): DiceSegment[
 
   // Combined regex — ordered so longer/more-specific patterns match first.
   //
-  // Group 1: "X (NdS + M) type damage"  — damage with average
-  //   captures: avg, dice notation (with optional spaces around +/-), damage type
-  // Group 2: "+N to hit"               — attack roll
-  // Group 3: standalone dice "NdS+M"   — e.g. "1d4 hours"
+  // Groups 1+2: "X (NdS + M) type damage"  — damage with average
+  //   captures: avg, dice notation (with optional spaces around +/-)
+  // Group 3:    "+N to hit"                 — attack roll (2014 format)
+  // Group 4:    "Attack: +N"                — attack roll (2024 format, lookbehind)
+  // Group 5:    standalone dice "NdS+M"     — e.g. "1d4 hours"
   const DICE_RE =
     // eslint-disable-next-line security/detect-unsafe-regex -- Static regex for dice notation parsing; input is bounded SRD text, no ReDoS risk
-    /(\d+)\s*\((\d+d\d+(?:\s*[+-]\s*\d+)?)\)|\+(\d+) to hit|(?<!\w)(\d*d\d+(?:\s*[+-]\s*\d+)?)(?!\w)/gi;
+    /(\d+)\s*\((\d+d\d+(?:\s*[+-]\s*\d+)?)\)|\+(\d+) to hit|(?<=Attack:\s*)\+(\d+)|(?<!\w)(\d*d\d+(?:\s*[+-]\s*\d+)?)(?!\w)/gi;
 
   const segments: DiceSegment[] = [];
   let lastIndex = 0;
@@ -57,7 +59,7 @@ export function parseDiceInText(text: string, actionName?: string): DiceSegment[
         label,
       });
     } else if (match[3] !== undefined) {
-      // Attack pattern: "+9 to hit"
+      // Attack pattern (2014): "+9 to hit"
       const bonus = match[3];
       const notation = `1d20+${bonus}`;
       const label = actionName ? `${actionName} (attack)` : "Attack";
@@ -68,8 +70,19 @@ export function parseDiceInText(text: string, actionName?: string): DiceSegment[
         label,
       });
     } else if (match[4] !== undefined) {
+      // Attack pattern (2024): "Attack: +5" — lookbehind keeps "Attack: " in text segment
+      const bonus = match[4];
+      const notation = `1d20+${bonus}`;
+      const label = actionName ? `${actionName} (attack)` : "Attack";
+      segments.push({
+        kind: "dice",
+        content: match[0],
+        notation,
+        label,
+      });
+    } else if (match[5] !== undefined) {
       // Standalone dice: "1d4", "2d6+3"
-      const notation = match[4].replace(/\s/g, "");
+      const notation = match[5].replace(/\s/g, "");
       const label = actionName ?? "Roll";
       segments.push({
         kind: "dice",
