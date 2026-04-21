@@ -48,19 +48,25 @@ export function getHpThresholds(flagV2: boolean): typeof HP_THRESHOLDS_LEGACY | 
 }
 
 /**
- * Render the percentage string for a given status + flag state.
+ * Render the percentage string for a given status + flag state as an inclusive
+ * range (e.g. LIGHT legacy → "70–100%"). Readers understand ranges faster than
+ * inequalities, and the range endpoints double as a visual anchor that the
+ * legend is in sync with the classifier.
  *
  * This is the ONLY allowed way to display threshold percentages in UI —
- * hardcoding `">70%"` anywhere else will desync when the flag flips.
+ * hardcoding `"70-100%"` anywhere else will desync when the flag flips.
  */
 export function formatHpPct(status: HpStatus, flagV2: boolean): string {
   if (status === "FULL") return "100%";
   const t = getHpThresholds(flagV2);
+  const light = Math.round(t.light * 100);
+  const moderate = Math.round(t.moderate * 100);
+  const heavy = Math.round(t.heavy * 100);
   switch (status) {
-    case "LIGHT":    return `>${Math.round(t.light * 100)}%`;
-    case "MODERATE": return `>${Math.round(t.moderate * 100)}%`;
-    case "HEAVY":    return `>${Math.round(t.heavy * 100)}%`;
-    case "CRITICAL": return `≤${Math.round(t.heavy * 100)}%`;
+    case "LIGHT":    return `${light}\u2013100%`;       // e.g. 70–100%
+    case "MODERATE": return `${moderate}\u2013${light}%`; // e.g. 40–70%
+    case "HEAVY":    return `${heavy}\u2013${moderate}%`; // e.g. 10–40%
+    case "CRITICAL": return `0\u2013${heavy}%`;         // e.g. 0–10%
   }
 }
 

@@ -104,18 +104,18 @@ describe("formatHpPct — legend/tooltip strings stay in sync with thresholds", 
     expect(formatHpPct("FULL", true)).toBe("100%");
   });
 
-  it("renders legacy bands (70/40/10) when flag OFF", () => {
-    expect(formatHpPct("LIGHT", false)).toBe(">70%");
-    expect(formatHpPct("MODERATE", false)).toBe(">40%");
-    expect(formatHpPct("HEAVY", false)).toBe(">10%");
-    expect(formatHpPct("CRITICAL", false)).toBe("≤10%");
+  it("renders legacy bands (70/40/10) as inclusive ranges when flag OFF", () => {
+    expect(formatHpPct("LIGHT", false)).toBe("70\u2013100%");
+    expect(formatHpPct("MODERATE", false)).toBe("40\u201370%");
+    expect(formatHpPct("HEAVY", false)).toBe("10\u201340%");
+    expect(formatHpPct("CRITICAL", false)).toBe("0\u201310%");
   });
 
-  it("renders v2 bands (75/50/25) when flag ON", () => {
-    expect(formatHpPct("LIGHT", true)).toBe(">75%");
-    expect(formatHpPct("MODERATE", true)).toBe(">50%");
-    expect(formatHpPct("HEAVY", true)).toBe(">25%");
-    expect(formatHpPct("CRITICAL", true)).toBe("≤25%");
+  it("renders v2 bands (75/50/25) as inclusive ranges when flag ON", () => {
+    expect(formatHpPct("LIGHT", true)).toBe("75\u2013100%");
+    expect(formatHpPct("MODERATE", true)).toBe("50\u201375%");
+    expect(formatHpPct("HEAVY", true)).toBe("25\u201350%");
+    expect(formatHpPct("CRITICAL", true)).toBe("0\u201325%");
   });
 
   it("getHpThresholds returns the matching constants for each flag state", () => {
@@ -123,15 +123,18 @@ describe("formatHpPct — legend/tooltip strings stay in sync with thresholds", 
     expect(getHpThresholds(true)).toBe(HP_THRESHOLDS_V2);
   });
 
-  it("REGRESSION: pct string matches the band used by getHpStatusWithFlag", () => {
-    // If this pair ever diverges, the HP legend will lie to the user —
-    // which is exactly the bug the formatHpPct helper exists to prevent.
+  it("REGRESSION: range endpoints match the bands used by getHpStatusWithFlag", () => {
+    // If these diverge, the HP legend will lie to the user — which is
+    // exactly the bug the formatHpPct helper exists to prevent.
     for (const flagV2 of [false, true]) {
       const t = getHpThresholds(flagV2);
-      expect(formatHpPct("LIGHT", flagV2)).toBe(`>${Math.round(t.light * 100)}%`);
-      expect(formatHpPct("MODERATE", flagV2)).toBe(`>${Math.round(t.moderate * 100)}%`);
-      expect(formatHpPct("HEAVY", flagV2)).toBe(`>${Math.round(t.heavy * 100)}%`);
-      expect(formatHpPct("CRITICAL", flagV2)).toBe(`≤${Math.round(t.heavy * 100)}%`);
+      const light = Math.round(t.light * 100);
+      const moderate = Math.round(t.moderate * 100);
+      const heavy = Math.round(t.heavy * 100);
+      expect(formatHpPct("LIGHT", flagV2)).toBe(`${light}\u2013100%`);
+      expect(formatHpPct("MODERATE", flagV2)).toBe(`${moderate}\u2013${light}%`);
+      expect(formatHpPct("HEAVY", flagV2)).toBe(`${heavy}\u2013${moderate}%`);
+      expect(formatHpPct("CRITICAL", flagV2)).toBe(`0\u2013${heavy}%`);
     }
   });
 });

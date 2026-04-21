@@ -25,6 +25,7 @@ const DATA_URL =
   "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data";
 const ITEMS_URL = `${DATA_URL}/items.json`;
 const ITEMS_BASE_URL = `${DATA_URL}/items-base.json`;
+const MAGIC_VARIANTS_URL = `${DATA_URL}/magicvariants.json`;
 const OUTPUT_DIR = join(process.cwd(), "data", "srd");
 const PUBLIC_DIR = join(process.cwd(), "public", "srd");
 
@@ -611,6 +612,161 @@ function expandItemGroups(
   return expanded;
 }
 
+// ── magicvariant (generic magic items) ────────────────────────────
+
+/**
+ * 5e.tools stores iconic magic modifiers (Flame Tongue, Holy Avenger, Vorpal
+ * Sword, Adamantine Armor, etc.) as `magicvariant` entries — templates that
+ * apply to any qualifying base item. They are NOT in the main `item` array.
+ *
+ * For search UX we materialize one generic entry per variant using its
+ * `.name` (no `namePrefix`) + `.inherits` block, so a DM searching
+ * "Flame Tongue" finds the concept directly instead of only concrete fusions
+ * like "Flame Tongue Shortsword of Greed".
+ */
+
+function inferTypeFromRequires(
+  requires: Array<Record<string, unknown>> | undefined,
+): ItemType {
+  if (!requires || requires.length === 0) return "other";
+
+  // Each entry in the requires array is an alternative target for this
+  // magicvariant (union semantics). We probe every entry and return the
+  // first recognized type — an Object.assign merge would overwrite earlier
+  // keys (e.g. Adamantine Armor has [{type:"HA"},{type:"MA"},…] and the
+  // last wins, hiding the heavy-armor signal).
+  //
+  // `type` fields in 5etools use source-suffix encoding: `"HA|XPHB"` must
+  // be stripped to `"HA"` before comparison or armor checks silently fail.
+  const stripSrc = (v: unknown): string =>
+    typeof v === "string" ? v.split("|")[0].toUpperCase() : "";
+
+  for (const r of requires) {
+    const typeCode = stripSrc(r.type);
+
+    // Armor / shield
+    if (typeCode === "HA") return "heavy-armor";
+    if (typeCode === "MA") return "medium-armor";
+    if (typeCode === "LA") return "light-armor";
+    if (typeCode === "S") return "shield";
+    if (r.armor === true) return "medium-armor"; // generic armor marker
+
+    // Ammunition (5etools codes: A = arrow/bolt/bullet, AF = firearm ammo).
+    // These must come before the generic weapon check because `+1 Ammunition`
+    // et al. target type codes and have no bow/arrow flag.
+    if (typeCode === "A" || typeCode === "AF") return "ammunition";
+    if (r.arrow === true || r.bolt === true) return "ammunition";
+
+    // Ranged weapon markers (must come before generic weaponCategory)
+    if (r.bow === true || r.crossbow === true) return "ranged-weapon";
+    if (typeCode === "R" || r.weaponCategory === "ranged") return "ranged-weapon";
+    if (r.net === true) return "ranged-weapon";
+
+    // Melee / generic weapon markers
+    if (
+      r.sword === true ||
+      r.axe === true ||
+      r.polearm === true ||
+      r.spear === true ||
+      r.weapon === true ||
+      typeCode === "M" ||
+      r.weaponCategory === "melee" ||
+      // 2024 ruleset categorizes weapons as simple/martial (no ranged flag
+      // at this level — ranged intent comes alongside `bow`/`crossbow`/…
+      // which we already matched above).
+      r.weaponCategory === "simple" ||
+      r.weaponCategory === "martial"
+    ) {
+      return "melee-weapon";
+    }
+
+    // Damage type / weapon property imply a weapon target
+    if (r.dmgType || r.property) return "melee-weapon";
+
+    if (r.scfType) return "spellcasting-focus";
+
+    // Base-item reference (e.g. `{name:"Longsword",source:"XPHB"}`). 5etools
+    // uses this shape exclusively for weapon-targeting variants — armor
+    // targets always use `type: "HA"/"MA"/"LA"` or `armor: true` (already
+    // matched above). Falling back to melee-weapon here catches the XDMG
+    // reprints of Holy Avenger, Vorpal Sword, Luck Blade, etc.
+    if (typeof r.name === "string" && typeof r.source === "string") {
+      return "melee-weapon";
+    }
+  }
+
+  return "other";
+}
+
+function transformMagicVariant(
+  raw: Record<string, unknown>,
+): SrdItem | null {
+  const inherits = raw.inherits as Record<string, unknown> | undefined;
+  if (!inherits) return null;
+
+  const name = String(raw.name || "Unknown");
+  const source = String(inherits.source || "DMG");
+  // Upstream only sets `raw.edition` for classic-ruleset variants; 2024
+  // reprints (XDMG/XPHB/XMM) leave it undefined. Deriving edition from the
+  // canonical source set matches how regular items are handled earlier in
+  // this file and avoids XDMG variants silently landing as "classic".
+  const edition: "classic" | "one" = SOURCES_2024.has(source)
+    ? "one"
+    : (String(raw.edition || inherits.edition || "classic") as "classic" | "one");
+
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  const id = `${slug}-${source.toLowerCase()}`;
+
+  const rarity = normalizeRarity(inherits.rarity);
+  const type = inferTypeFromRequires(
+    raw.requires as Array<Record<string, unknown>> | undefined,
+  );
+
+  // Render entries via the same pipeline used for regular items.
+  const entriesRaw = inherits.entries as unknown[] | undefined;
+  const entriesStrings: string[] = [];
+  if (entriesRaw && Array.isArray(entriesRaw)) {
+    for (const e of entriesRaw) {
+      const rendered = renderEntries(e);
+      if (rendered) entriesStrings.push(rendered);
+    }
+  }
+
+  // Attunement + bonuses + weight pass through
+  let reqAttune: boolean | string | undefined;
+  if (inherits.reqAttune === true) reqAttune = true;
+  else if (typeof inherits.reqAttune === "string")
+    reqAttune = stripTags(inherits.reqAttune);
+
+  const item: SrdItem = {
+    id,
+    name,
+    source,
+    type,
+    rarity,
+    isMagic: true,
+    entries: entriesStrings,
+    edition,
+  };
+
+  if (inherits.weight != null) item.weight = Number(inherits.weight);
+  if (inherits.bonusWeapon) item.bonusWeapon = String(inherits.bonusWeapon);
+  if (inherits.bonusAc) item.bonusAc = String(inherits.bonusAc);
+  if (inherits.charges != null) item.charges = Number(inherits.charges);
+  if (typeof inherits.recharge === "string") item.recharge = inherits.recharge;
+  if (inherits.wondrous === true) item.wondrous = true;
+  if (inherits.curse === true) item.curse = true;
+  if (reqAttune != null) item.reqAttune = reqAttune;
+  if (inherits.srd === true || inherits.srd52 === true) item.srd = true;
+  if (inherits.basicRules === true || inherits.basicRules2024 === true)
+    item.basicRules = true;
+
+  return item;
+}
+
 // ── Main ───────────────────────────────────────────────────────────
 
 async function main() {
@@ -632,6 +788,18 @@ async function main() {
   const magicItems = (itemsData.item || []) as Record<string, unknown>[];
   const itemGroups = (itemsData.itemGroup || []) as Record<string, unknown>[];
   console.log(`  Found ${magicItems.length} items + ${itemGroups.length} item groups`);
+
+  // 2b. Fetch magicvariants — iconic items (Flame Tongue, Holy Avenger, Vorpal
+  // Sword, Adamantine Armor, …) live here as templates, not in items.json.
+  console.log("Fetching magicvariants from 5e.tools mirror...");
+  const variantsData = (await fetchJSON(MAGIC_VARIANTS_URL)) as
+    | Record<string, unknown>
+    | null;
+  const magicVariants = (variantsData?.magicvariant || []) as Record<
+    string,
+    unknown
+  >[];
+  console.log(`  Found ${magicVariants.length} magicvariants`);
 
   // 3. Resolve _copy inheritance chains in magic items
   console.log("\nResolving _copy inheritance...");
@@ -675,12 +843,36 @@ async function main() {
   }
   console.log(`  Group sub-items: ${allItems.length - groupStart} transformed`);
 
+  // Magic variants — iconic generics (Flame Tongue, Vorpal Sword, …)
+  const variantStart = allItems.length;
+  for (const raw of magicVariants) {
+    const transformed = transformMagicVariant(raw);
+    if (!transformed) { skipped++; continue; }
+    allItems.push(transformed);
+  }
+  console.log(`  Magic variants: ${allItems.length - variantStart} transformed`);
+
   // 6. Deduplicate by id (keep first occurrence)
+  // Regular items are pushed before magicvariants, so when a magicvariant
+  // shares a slug+source with a concrete item from items.json the
+  // (usually richer) regular entry wins. We surface collisions so a
+  // meaningful quality regression doesn't slip past this step silently.
   const seen = new Map<string, SrdItem>();
+  const collisions: Array<{ id: string; kept: string; dropped: string }> = [];
   for (const item of allItems) {
-    if (!seen.has(item.id)) {
+    const existing = seen.get(item.id);
+    if (!existing) {
       seen.set(item.id, item);
+    } else if (existing.name !== item.name) {
+      collisions.push({ id: item.id, kept: existing.name, dropped: item.name });
     }
+  }
+  if (collisions.length > 0) {
+    console.log(`\n  ⚠️  ${collisions.length} id collision(s) — first occurrence kept:`);
+    for (const c of collisions.slice(0, 10)) {
+      console.log(`      ${c.id}: "${c.kept}" kept, "${c.dropped}" dropped`);
+    }
+    if (collisions.length > 10) console.log(`      …and ${collisions.length - 10} more`);
   }
   const deduped = Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
 
