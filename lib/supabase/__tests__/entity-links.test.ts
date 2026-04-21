@@ -219,6 +219,18 @@ describe("entity-links lib — unlinkEntities", () => {
       /Failed to unlink entities: permission denied/,
     );
   });
+
+  // D2 audit — docs/audit-unlinkEntities-idempotency.md
+  // Locks in the "missing row → no throw" contract that the multi-tab
+  // double-commit safety of useEntityUnlinkUndo.flush() depends on. If a
+  // future change chains .select().single() onto the delete, or swaps to an
+  // RPC with RAISE EXCEPTION WHEN NOT FOUND, this test fails and the hook's
+  // self-heal assumption (only reject on real failures) must be revisited.
+  it("is idempotent: resolves without throwing when the row is already gone", async () => {
+    // PostgREST shape for a 0-row delete: error=null, data=null, no count.
+    mockEq.mockResolvedValueOnce({ data: null, error: null });
+    await expect(unlinkEntities("edge-already-deleted")).resolves.toBeUndefined();
+  });
 });
 
 describe("entity-links lib — listEntityLinks", () => {
