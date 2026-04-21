@@ -703,9 +703,11 @@ describe("GuestRecapFlow", () => {
   });
 
   // -------------------------------------------------------------------------
-  // Q#13 — unmount during fetch does not crash or call setState after unmount
+  // Cluster Δ C3 — analytics MUST fire before the mount-check so unmounted
+  // users who navigated mid-fetch still have their conversion recorded.
+  // (Previous behaviour dropped the event when `mountedRef.current === false`.)
   // -------------------------------------------------------------------------
-  it("Q#13: unmount during in-flight fetch does not crash (no setState after unmount)", async () => {
+  it("Cluster Δ C3: unmount during in-flight fetch STILL fires trackConversionCompleted (analytics first)", async () => {
     const user = userEvent.setup();
     const players = [makePlayer("p1", "Thorin")];
     mockGetState.mockReturnValue({
@@ -730,7 +732,9 @@ describe("GuestRecapFlow", () => {
     // Fetch is mid-flight — tear down.
     unmount();
 
-    // Now let the fetch resolve — no setState, no toast, no router, no throw.
+    // Now let the fetch resolve — no toast, no router push (those are DOM/nav
+    // side-effects guarded by mountedRef), BUT analytics MUST fire because
+    // the sale actually happened.
     await act(async () => {
       resolveFetch({
         ok: true,
@@ -742,9 +746,108 @@ describe("GuestRecapFlow", () => {
       await Promise.resolve();
     });
 
-    // Analytics NOT fired because we bailed on the unmount check.
-    expect(mockTrackConversionCompleted).not.toHaveBeenCalled();
-    // Cleanup still ran once migrate resolved (defensive dedupe of pending record).
+    // Cluster Δ C3: analytics fired even though the component unmounted.
+    expect(mockTrackConversionCompleted).toHaveBeenCalledWith("recap_guest", {
+      campaignId: undefined,
+      characterId: "char-X",
+      flow: "signup_and_migrate",
+      guestCombatantCount: 1,
+    });
+    // DOM side-effects gated by mountedRef — toast + router push NOT called.
+    expect(mockToast.success).not.toHaveBeenCalled();
+    expect(mockRouterPush).not.toHaveBeenCalled();
+    // Cleanup ran.
+    expect(mockClearGuestMigratePending).toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+  // Cluster Δ C2 — client-side dedupe of conversion event + fetch on re-entry
+  // -------------------------------------------------------------------------
+  it("Cluster Δ C2: a second AuthModal success (e.g. 429 retry race) does NOT double-fire analytics or fetch", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+    mockFetch.mockResolvedValueOnce(successResponse("char-dedup-1"));
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    // First success: analytics + fetch fired exactly once.
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockTrackConversionCompleted).toHaveBeenCalledTimes(1);
+
+    // Reopen modal (simulating a 429 retry re-enter) — modal is re-opened
+    // automatically in the 429 branch, but conversionFiredRef is already
+    // true so second success must be a no-op for analytics and fetch.
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-signup"));
+    });
+
+    // No second fetch, no second analytics — dedupe held.
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockTrackConversionCompleted).toHaveBeenCalledTimes(1);
+  });
+
+  // -------------------------------------------------------------------------
+  // Cluster Δ C4 — login path clears pending migrate (prevents cross-user leak)
+  // -------------------------------------------------------------------------
+  it("Cluster Δ C4: login (isNewAccount=false) clears guest-migrate-pending so a later OAuth by a different user cannot inherit the character", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+
+    // The click already wrote pending. Clear the spy so we only see the
+    // clear that fires inside the login branch.
+    mockClearGuestMigratePending.mockClear();
+
+    await act(async () => {
+      await user.click(screen.getByTestId("mock-auth-modal.succeed-login"));
+    });
+
+    // Pending cleared — future OAuth on this browser can't migrate the char.
+    expect(mockClearGuestMigratePending).toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+  // Cluster Δ C4 — cancel / modal close without success clears pending
+  // -------------------------------------------------------------------------
+  it("Cluster Δ C4: closing the AuthModal without success clears guest-migrate-pending", async () => {
+    const user = userEvent.setup();
+    const players = [makePlayer("p1", "Thorin")];
+    mockGetState.mockReturnValue({
+      combatants: players,
+      currentTurnIndex: 0,
+      roundNumber: 1,
+    });
+
+    render(<GuestRecapFlow context={makeContext(players)} />);
+    await user.click(screen.getByTestId("recap-cta.guest.cta-primary"));
+    mockClearGuestMigratePending.mockClear();
+
+    // Retrieve the most recent AuthModal call and invoke onOpenChange(false)
+    // to simulate the user clicking the X / escape key.
+    const lastCall =
+      mockAuthModalSpy.mock.calls[mockAuthModalSpy.mock.calls.length - 1]?.[0];
+    expect(lastCall).toBeDefined();
+    await act(async () => {
+      lastCall.onOpenChange(false);
+    });
+
     expect(mockClearGuestMigratePending).toHaveBeenCalled();
   });
 

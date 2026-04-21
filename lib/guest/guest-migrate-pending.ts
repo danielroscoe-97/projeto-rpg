@@ -27,13 +27,83 @@ import type { Combatant } from "@/lib/types/combat";
 export const GUEST_MIGRATE_PENDING_KEY = "pocketdm_guest_migrate_pending_v1";
 export const GUEST_MIGRATE_PENDING_TTL_MS = 10 * 60 * 1000; // 10 min
 
+/**
+ * sessionStorage key holding the per-session fingerprint UUID. This lets the
+ * OAuth callback verify that the pending record was written by the same tab
+ * that the user is now returning to — prevents a leaked `guest-migrate-pending`
+ * from being consumed by a different user who signs in on the same device
+ * within the 10-minute TTL window (Cluster Δ C4).
+ */
+export const GUEST_SESSION_FINGERPRINT_KEY =
+  "pocketdm_guest_session_fingerprint_v1";
+
 export type GuestMigratePending = {
   version: 1;
   guestCharacter: Combatant;
   campaignId?: string;
   /** ISO-8601 timestamp of when the user picked this character. */
   selectedAt: string;
+  /**
+   * UUID generated once per browsing session and kept in sessionStorage.
+   * The OAuth callback compares this with its own sessionStorage entry to
+   * detect cross-tab / cross-user contamination and abort the migrate.
+   * Optional for backward compatibility — legacy pending records (pre-Cluster Δ)
+   * will be accepted as-is, but new writes always populate it (Cluster Δ C4).
+   */
+  ownerFingerprint?: string;
 };
+
+/**
+ * Returns a stable per-session fingerprint UUID, generating one the first time
+ * it's called in the session. Uses sessionStorage so it's automatically
+ * discarded when the tab closes (and therefore can't leak to other users).
+ *
+ * SSR / storage-disabled returns null; callers should tolerate that (the
+ * fingerprint check degrades to a best-effort — absence of fingerprint on
+ * either side is treated as "legacy / unknown" and doesn't block the migrate).
+ */
+export function getOrCreateGuestSessionFingerprint(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const storage = window.sessionStorage;
+    const existing = storage.getItem(GUEST_SESSION_FINGERPRINT_KEY);
+    if (existing && typeof existing === "string" && existing.length > 0) {
+      return existing;
+    }
+    // crypto.randomUUID is widely available (Edge 92+, Firefox 95+, Safari 15.4+).
+    // Fallback path uses getRandomValues — both produce unguessable UUIDs.
+    let fp: string;
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      fp = crypto.randomUUID();
+    } else if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      fp = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+    } else {
+      fp = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+    }
+    storage.setItem(GUEST_SESSION_FINGERPRINT_KEY, fp);
+    return fp;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Reads the fingerprint without writing. Used by the callback for comparison
+ * — if the callback's sessionStorage is empty (different tab / new session)
+ * this returns null and the caller detects mismatch.
+ */
+export function readGuestSessionFingerprint(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const storage = window.sessionStorage;
+    const existing = storage.getItem(GUEST_SESSION_FINGERPRINT_KEY);
+    return typeof existing === "string" && existing.length > 0 ? existing : null;
+  } catch {
+    return null;
+  }
+}
 
 /** Safe storage accessor — SSR, iframe, ITP, storage-disabled all return null. */
 function getStorage(): Storage | null {
@@ -54,16 +124,22 @@ function getStorage(): Storage | null {
  * directly; this key only exists for the async return paths.
  */
 export function writeGuestMigratePending(
-  data: Omit<GuestMigratePending, "version" | "selectedAt">,
+  data: Omit<GuestMigratePending, "version" | "selectedAt" | "ownerFingerprint">,
 ): void {
   const storage = getStorage();
   if (!storage) return;
+
+  // Cluster Δ C4 — stamp the current tab's fingerprint so the OAuth callback
+  // can reject records consumed in a foreign tab / by a different user.
+  const ownerFingerprint =
+    getOrCreateGuestSessionFingerprint() ?? undefined;
 
   const payload: GuestMigratePending = {
     version: 1,
     guestCharacter: data.guestCharacter,
     campaignId: data.campaignId,
     selectedAt: new Date().toISOString(),
+    ownerFingerprint,
   };
 
   try {

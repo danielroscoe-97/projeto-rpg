@@ -60,6 +60,33 @@ export function savePersistedUpgradeContext(
 }
 
 /**
+ * Non-consuming read — returns the persisted context if fresh, else `null`.
+ * Does NOT clear the entry (vs. `consumePersistedUpgradeContext`). Used by
+ * AuthModal's `handleBeforeGoogleOAuth` (Cluster Δ C1) to merge-preserve a
+ * `moment` tag written earlier by PlayerJoinClient.
+ */
+export function readPersistedUpgradeContext(): PersistedUpgradeContext | null {
+  try {
+    const raw = localStorage.getItem(IDENTITY_UPGRADE_CONTEXT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedUpgradeContext;
+    if (
+      !parsed ||
+      typeof parsed.sessionTokenId !== "string" ||
+      typeof parsed.savedAt !== "number"
+    ) {
+      return null;
+    }
+    if (Date.now() - parsed.savedAt > IDENTITY_UPGRADE_CONTEXT_TTL_MS) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Read-and-consume — returns the persisted context if fresh, else `null`.
  * Always clears the entry so the next navigation doesn't re-trigger.
  */

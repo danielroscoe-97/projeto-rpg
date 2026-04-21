@@ -119,6 +119,9 @@ async function flushAsync(): Promise<void> {
 beforeEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
+  // Cluster Δ C4 — sessionStorage fingerprint must be reset between tests so
+  // stale values don't leak into the ownership-check assertions.
+  sessionStorage.clear();
 });
 
 describe("AuthCallbackContinueClient — Wave 3a Cluster β", () => {
@@ -363,8 +366,8 @@ describe("AuthCallbackContinueClient — Wave 3a Cluster β", () => {
     });
   });
 
-  describe("precedence when BOTH persisted", () => {
-    it("runs /upgrade first, then /migrate-guest-character, firing both completed events", async () => {
+  describe("precedence when BOTH persisted (Cluster Δ Winston#3)", () => {
+    it("runs /upgrade only and SKIPS /migrate-guest-character when the upgrade succeeded", async () => {
       writeUpgradeContext({
         sessionTokenId: "tok-both-1",
         campaignId: "camp-upgrade",
@@ -375,41 +378,140 @@ describe("AuthCallbackContinueClient — Wave 3a Cluster β", () => {
         campaignId: "camp-guest",
       });
 
-      mockFetch
-        .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => ({ ok: true, character: { id: "pc-both-1" } }),
-        });
+      // Only the upgrade call should fire — the guest migrate gets skipped.
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ ok: true }),
+      });
 
       await act(async () => {
         render(React.createElement(AuthCallbackContinueClient));
       });
       await flushAsync();
 
-      expect(mockFetch).toHaveBeenCalledTimes(2);
+      // Exactly one fetch — the upgrade. The guest migrate was suppressed
+      // because the upgrade saga is authoritative when both are persisted.
+      expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(mockFetch.mock.calls[0][0]).toBe(
         "/api/player-identity/upgrade",
       );
-      expect(mockFetch.mock.calls[1][0]).toBe(
-        "/api/player-identity/migrate-guest-character",
-      );
 
-      // Both analytics events fired.
+      // Upgrade's completion event fires, but the guest-specific event must
+      // NOT — otherwise the funnel double-counts.
       expect(trackEventMock).toHaveBeenCalledWith(
         "conversion:completed",
         expect.objectContaining({ moment: "recap_anon", flow: "upgrade" }),
       );
+      const guestCompletedCalls = trackEventMock.mock.calls.filter(
+        ([name, payload]) =>
+          name === "conversion:completed" &&
+          (payload as { moment?: string }).moment === "recap_guest",
+      );
+      expect(guestCompletedCalls).toHaveLength(0);
+
+      // Pending key was cleared so a refresh can't retry the orphan migrate.
+      expect(localStorage.getItem(GUEST_MIGRATE_PENDING_KEY)).toBeNull();
+      expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
+    });
+  });
+
+  describe("Cluster Δ C4 — fingerprint ownership", () => {
+    it("skips migrate when pending carries ownerFingerprint that does not match current session", async () => {
+      // Pre-seed a pending record with a fingerprint that does NOT match
+      // whatever the current tab's sessionStorage holds (empty by default).
+      const leakedPending = {
+        version: 1,
+        guestCharacter: makeCombatant({ id: "c-leak-1" }),
+        campaignId: "camp-leak",
+        selectedAt: new Date().toISOString(),
+        ownerFingerprint: "fp-from-different-user",
+      };
+      localStorage.setItem(
+        GUEST_MIGRATE_PENDING_KEY,
+        JSON.stringify(leakedPending),
+      );
+
+      await act(async () => {
+        render(React.createElement(AuthCallbackContinueClient));
+      });
+      await flushAsync();
+
+      // No migrate fetch — fingerprint mismatch aborted it.
+      expect(mockFetch).not.toHaveBeenCalled();
+      // No conversion events either — the leaked pending was quarantined.
+      const conversionEvents = trackEventMock.mock.calls.filter(
+        ([name]) => typeof name === "string" && name.startsWith("conversion:"),
+      );
+      expect(conversionEvents).toHaveLength(0);
+      // Key cleared to prevent loop.
+      expect(localStorage.getItem(GUEST_MIGRATE_PENDING_KEY)).toBeNull();
+      // Redirect still completes — we don't strand the user.
+      expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
+    });
+
+    it("allows migrate when pending carries ownerFingerprint that matches the sessionStorage fingerprint", async () => {
+      // Match the sessionStorage fingerprint to the pending record's.
+      const matchingFingerprint = "fp-matches-me";
+      sessionStorage.setItem(
+        "pocketdm_guest_session_fingerprint_v1",
+        matchingFingerprint,
+      );
+      const matchedPending = {
+        version: 1,
+        guestCharacter: makeCombatant({ id: "c-ok-1" }),
+        campaignId: "camp-ok",
+        selectedAt: new Date().toISOString(),
+        ownerFingerprint: matchingFingerprint,
+      };
+      localStorage.setItem(
+        GUEST_MIGRATE_PENDING_KEY,
+        JSON.stringify(matchedPending),
+      );
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true, character: { id: "pc-ok-1" } }),
+      });
+
+      await act(async () => {
+        render(React.createElement(AuthCallbackContinueClient));
+      });
+      await flushAsync();
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(trackEventMock).toHaveBeenCalledWith(
         "conversion:completed",
-        expect.objectContaining({
-          moment: "recap_guest",
-          flow: "signup_and_migrate",
-          characterId: "pc-both-1",
-        }),
+        expect.objectContaining({ moment: "recap_guest", characterId: "pc-ok-1" }),
       );
-      expect(replaceMock).toHaveBeenCalledWith("/app/dashboard");
+      // Cleanup
+      sessionStorage.removeItem("pocketdm_guest_session_fingerprint_v1");
+    });
+
+    it("allows migrate when pending lacks ownerFingerprint (legacy / backward compat)", async () => {
+      // Legacy pre-Cluster Δ record — no fingerprint at all.
+      writeGuestPending({
+        guestCharacter: makeCombatant({ id: "c-legacy-1" }),
+        campaignId: "camp-legacy",
+      });
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true, character: { id: "pc-legacy-1" } }),
+      });
+
+      await act(async () => {
+        render(React.createElement(AuthCallbackContinueClient));
+      });
+      await flushAsync();
+
+      // Legacy record without fingerprint is tolerated — migrate runs.
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(trackEventMock).toHaveBeenCalledWith(
+        "conversion:completed",
+        expect.objectContaining({ moment: "recap_guest" }),
+      );
     });
   });
 });

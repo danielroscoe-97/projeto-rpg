@@ -196,11 +196,25 @@ export function SignUpForm({
 
       // Ordinary signup path (no upgradeContext). We still post to our own
       // confirm flow so the modal consumer can redirect wherever it wants.
+      //
+      // Cluster Δ C5 — route email-confirmation clicks through
+      // `/auth/callback/continue` so that `readGuestMigratePending` can run
+      // on the post-confirm landing page. Without this, Supabase's default
+      // `emailRedirectTo` points at `/auth/confirm` which is a server route
+      // (no access to client-side localStorage) and therefore cannot
+      // drain the pending migrate. The callback handler is already wired to
+      // tolerate a no-upgradeContext arrival and just run the guest migrate
+      // (see AuthCallbackContinueClient's fallback branch).
+      const emailRedirectTo =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback/continue?next=/app/dashboard`
+          : undefined;
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: displayName ? { display_name: displayName } : undefined,
+          emailRedirectTo,
         },
       });
       if (error) throw error;

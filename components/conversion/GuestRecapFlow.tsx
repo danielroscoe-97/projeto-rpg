@@ -109,6 +109,16 @@ export function GuestRecapFlow({
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
 
+  // Cluster Δ C2 — client-side dedupe of the conversion event + migrate POST.
+  // A 429 retry can cause the user to click succeed-signup twice in quick
+  // succession; re-entrance of `handleAuthSuccess` would otherwise fire
+  // trackConversionCompleted twice AND trigger a second (duplicating)
+  // /migrate-guest-character POST. This ref flips true after the first
+  // success path fires analytics and stays sticky for the lifetime of the
+  // component — subsequent re-enters short-circuit to a no-op (clearPending +
+  // onComplete).
+  const conversionFiredRef = useRef(false);
+
   // W#7 — sync selectedId with the current player list. Handles snapshot
   // refreshes where the single-player case flips, players are removed, or the
   // currently-selected id disappears.
@@ -257,13 +267,30 @@ export function GuestRecapFlow({
 
     // No selection (should never happen since button is disabled) — bail.
     if (!selected) {
+      // Cluster Δ C4 — never leak the pending migrate to a subsequent user
+      // that may OAuth on this browser within the TTL window.
+      clearGuestMigratePending();
       onComplete?.();
+      return;
+    }
+
+    // Cluster Δ C2 — 429 / fast-double-click dedupe. If we've already fired a
+    // successful completion, skip fetch entirely. The pending record is
+    // already cleared from the first success; just close out cleanly.
+    if (conversionFiredRef.current) {
+      clearGuestMigratePending();
+      onComplete?.();
+      if (result.isNewAccount) router.push("/app/dashboard");
       return;
     }
 
     // If the user picked the login tab instead of signup, there's nothing to
     // migrate: their existing account already owns its own characters.
+    // Cluster Δ C4 — clear the pending record so a subsequent OAuth signup
+    // by a different user on the same browser cannot accidentally consume
+    // this guest's character.
     if (!result.isNewAccount) {
+      clearGuestMigratePending();
       onComplete?.();
       router.push("/app/dashboard");
       return;
@@ -341,17 +368,13 @@ export function GuestRecapFlow({
         throw err;
       }
 
-      if (!mountedRef.current) {
-        // Migrate succeeded but the user navigated away — clean up the
-        // pending marker so the callback path doesn't re-run migrate.
-        clearGuestMigratePending();
-        return;
-      }
-
-      // W#2 cleanup — live-session migrate succeeded, drop the pending
-      // record so the callback path doesn't duplicate.
-      clearGuestMigratePending();
-
+      // Cluster Δ C3 — fire analytics BEFORE the mount-check. Analytics is a
+      // fire-and-forget side-effect with no DOM writes; if the component has
+      // unmounted mid-fetch but the server succeeded, we STILL want the
+      // funnel to record the conversion (otherwise we drop a legit sale).
+      // Cluster Δ C2 — flip the dedupe flag up-front so a re-entrance (e.g.
+      // user clicks the modal success button twice) cannot double-record.
+      conversionFiredRef.current = true;
       trackConversionCompleted("recap_guest", {
         // M#1 — include campaignId so the funnel can segment by campaign context
         // when guest-with-campaign flows land (future edge case).
@@ -360,6 +383,17 @@ export function GuestRecapFlow({
         flow: "signup_and_migrate",
         guestCombatantCount: playerCombatants.length,
       });
+      // W#2 cleanup — live-session migrate succeeded, drop the pending
+      // record so the callback path doesn't duplicate. Also done before the
+      // mount-check so an unmounted user who later returns doesn't re-migrate.
+      clearGuestMigratePending();
+
+      if (!mountedRef.current) {
+        // Migrate succeeded but the user navigated away — analytics + cleanup
+        // already ran above; just bail without touching DOM (toast/router).
+        return;
+      }
+
       toast.success(tPost("recap_guest", { characterName: selected.name }));
       onComplete?.();
       router.push("/app/dashboard");
@@ -474,7 +508,18 @@ export function GuestRecapFlow({
 
       <AuthModal
         open={authModalOpen}
-        onOpenChange={setAuthModalOpen}
+        onOpenChange={(open) => {
+          // Cluster Δ C4 — when the user closes the modal WITHOUT completing
+          // signup (cancel / X button), drop the pending migrate record. Any
+          // subsequent OAuth on the same browser by a different user would
+          // otherwise inherit this guest's character within the 10-min TTL.
+          // Only clear when we haven't already fired a conversion (successful
+          // paths clear on their own and shouldn't be stomped here).
+          if (!open && !conversionFiredRef.current) {
+            clearGuestMigratePending();
+          }
+          setAuthModalOpen(open);
+        }}
         defaultTab="signup"
         onSuccess={handleAuthSuccess}
         // D3b: intentionally NO upgradeContext — guest signs up as a fresh

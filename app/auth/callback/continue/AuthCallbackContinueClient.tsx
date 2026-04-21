@@ -8,6 +8,7 @@ import type { PersistedUpgradeContext } from "@/lib/auth/upgrade-context-storage
 import {
   readGuestMigratePending,
   clearGuestMigratePending,
+  readGuestSessionFingerprint,
 } from "@/lib/guest/guest-migrate-pending";
 import {
   trackConversionCompleted,
@@ -77,6 +78,27 @@ export function AuthCallbackContinueClient() {
   const runGuestMigrate = useCallback(async (): Promise<void> => {
     const pending = readGuestMigratePending();
     if (!pending) return;
+
+    // Cluster Δ C4 — fingerprint ownership check. If the pending record carries
+    // an `ownerFingerprint` (new format) and the current session's fingerprint
+    // differs (or is absent), the pending record was written by a different
+    // tab / user — most likely another user who opened the modal in this
+    // browser, never completed signup, left pending in localStorage, and now a
+    // different user is landing on the callback. Clearing + skipping prevents
+    // the guest character from migrating to the wrong account. Records without
+    // `ownerFingerprint` (legacy, pre-Cluster Δ) are tolerated for backward
+    // compat — no check, behaviour unchanged.
+    if (pending.ownerFingerprint) {
+      const current = readGuestSessionFingerprint();
+      if (current !== pending.ownerFingerprint) {
+        clearGuestMigratePending();
+        // eslint-disable-next-line no-console
+        console.warn(
+          "[auth/callback] Guest migrate pending fingerprint mismatch — skipping migrate to avoid cross-user contamination.",
+        );
+        return;
+      }
+    }
 
     try {
       const response = await fetch(
@@ -169,11 +191,15 @@ export function AuthCallbackContinueClient() {
           });
         }
 
-        // W#2: after the anon branch resolves successfully, drain any
-        // pending guest-migrate record. Sequential (not parallel) so the
-        // user is already authenticated when the guest migrate hits —
-        // `/migrate-guest-character` 409s if `is_anonymous`.
-        await runGuestMigrate();
+        // Cluster Δ Winston#3 — when the anon upgrade succeeded, the server
+        // saga has already carried the anon user's character into the
+        // authenticated account. Running a parallel /migrate-guest-character
+        // here would either double-insert (same character arrives twice) or
+        // fire a second redundant `conversion:completed` event. Clear the
+        // pending marker and skip — upgrade is the authoritative path.
+        // Legitimate guest flows (no upgradeContext) still reach
+        // runGuestMigrate via the other branch in the useEffect below.
+        clearGuestMigratePending();
 
         setState("done");
         router.replace(next);
@@ -187,7 +213,7 @@ export function AuthCallbackContinueClient() {
         setState("error");
       }
     },
-    [next, router, runGuestMigrate, t],
+    [next, router, t],
   );
 
   useEffect(() => {

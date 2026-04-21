@@ -553,6 +553,67 @@ describe("AuthModal", () => {
       expect(localStorage.getItem(IDENTITY_UPGRADE_CONTEXT_KEY)).toBeNull();
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
+
+    // Cluster Δ C1 — when PlayerJoinClient pre-writes moment="recap_anon"
+    // and the subsequent AuthModal upgradeContext prop has no moment, the
+    // OAuth serialiser MUST preserve the pre-written moment (merge behaviour).
+    it("Cluster Δ C1: preserves pre-written moment when incoming upgradeContext has none", async () => {
+      const user = userEvent.setup();
+      // Simulate PlayerJoinClient's pre-write (moment='recap_anon' within 30s).
+      localStorage.setItem(
+        IDENTITY_UPGRADE_CONTEXT_KEY,
+        JSON.stringify({
+          sessionTokenId: "tok-pre",
+          campaignId: "camp-pre",
+          moment: "recap_anon",
+          savedAt: Date.now(),
+        }),
+      );
+      render(
+        <AuthModal
+          {...makeProps({
+            defaultTab: "signup",
+            upgradeContext: {
+              sessionTokenId: "tok-pre",
+              campaignId: "camp-pre",
+              // NOTE: no moment — simulating the legacy upgradeContext prop.
+            },
+          })}
+        />,
+      );
+
+      await user.click(screen.getByTestId("auth.modal.oauth-google-button"));
+
+      const persisted = JSON.parse(
+        localStorage.getItem(IDENTITY_UPGRADE_CONTEXT_KEY)!,
+      );
+      // Merge preserved the earlier moment.
+      expect(persisted.moment).toBe("recap_anon");
+      expect(persisted.sessionTokenId).toBe("tok-pre");
+    });
+
+    it("Cluster Δ C1: forwards moment on the upgradeContext prop through to persisted record", async () => {
+      const user = userEvent.setup();
+      render(
+        <AuthModal
+          {...makeProps({
+            defaultTab: "signup",
+            upgradeContext: {
+              sessionTokenId: "tok-wr",
+              campaignId: "camp-wr",
+              moment: "waiting",
+            },
+          })}
+        />,
+      );
+
+      await user.click(screen.getByTestId("auth.modal.oauth-google-button"));
+
+      const persisted = JSON.parse(
+        localStorage.getItem(IDENTITY_UPGRADE_CONTEXT_KEY)!,
+      );
+      expect(persisted.moment).toBe("waiting");
+    });
   });
 
   describe("contract: all required testids present", () => {

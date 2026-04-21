@@ -62,6 +62,7 @@ import { trackConversionCompleted, trackCtaShown } from "@/lib/conversion/analyt
 import type { RecapCtaRequestAuthModalPayload } from "@/components/conversion/RecapCtaCard";
 import type { SaveSignupContext } from "@/components/conversion/types";
 import type { AuthModalSuccessPayload } from "@/components/auth/AuthModal";
+import { savePersistedUpgradeContext } from "@/lib/auth/upgrade-context-storage";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 
@@ -2798,10 +2799,28 @@ export function PlayerJoinClient({
   // the recap_anon attribution moment. We stash the ctx so `handleAuth
   // ModalSuccess` routes the subsequent success into the recap_anon
   // funnel (see the branch that checks `recapCtaTriggeredRef`).
+  //
+  // Cluster Δ C1 — ALSO write the upgrade-context to localStorage with
+  // `moment: "recap_anon"` BEFORE the modal opens. If the user chooses
+  // Google OAuth, the full-page redirect blows away in-memory state; the
+  // callback then relies on this persisted moment to fire
+  // `conversion:completed(moment=recap_anon)`. Without this write the anon
+  // OAuth funnel would never record a completion. Email flow is unaffected
+  // (handleAuthModalSuccess's in-memory ref is still authoritative).
   const handleRequestRecapAuthModal = useCallback(
     (payload: RecapCtaRequestAuthModalPayload) => {
       recapCtaTriggeredRef.current = true;
       setPendingUpgradeCtx(payload);
+      try {
+        savePersistedUpgradeContext({
+          sessionTokenId: payload.sessionTokenId,
+          campaignId: payload.campaignId,
+          moment: "recap_anon",
+          savedAt: Date.now(),
+        });
+      } catch {
+        // best-effort — storage quota / ITP falls back to email-only attribution
+      }
       openAuthModal("signup");
     },
     [openAuthModal],
@@ -3278,10 +3297,24 @@ export function PlayerJoinClient({
   // to `effectiveTokenId` + `effectiveUpgradeCampaignId` already, so the
   // ctx is kept for future extension but not forwarded. The ref flip is
   // what routes the success into the waiting-room funnel analytics.
+  //
+  // Cluster Δ C1 — ALSO write the upgrade-context to localStorage with
+  // `moment: "waiting"` BEFORE the modal opens so an OAuth redirect doesn't
+  // lose attribution. Symmetric to `handleRequestRecapAuthModal` above.
   const handleWaitingRoomCtaOpen = (
-    _ctx: { sessionTokenId: string; campaignId: string; characterId: string | null },
+    ctx: { sessionTokenId: string; campaignId: string; characterId: string | null },
   ) => {
     waitingRoomCtaTriggeredRef.current = true;
+    try {
+      savePersistedUpgradeContext({
+        sessionTokenId: ctx.sessionTokenId,
+        campaignId: ctx.campaignId,
+        moment: "waiting",
+        savedAt: Date.now(),
+      });
+    } catch {
+      // best-effort — see handleRequestRecapAuthModal.
+    }
     openAuthModal("signup");
   };
   const handleWaitingRoomCtaDismiss = () => {

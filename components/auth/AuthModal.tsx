@@ -33,6 +33,7 @@ import { SignUpForm } from "@/components/sign-up-form";
 import type { Combatant } from "@/lib/types/combat";
 import {
   IDENTITY_UPGRADE_CONTEXT_KEY,
+  readPersistedUpgradeContext,
   type PersistedUpgradeContext,
 } from "@/lib/auth/upgrade-context-storage";
 
@@ -46,6 +47,15 @@ export type AuthModalUpgradeContext = {
   sessionTokenId: string;
   campaignId?: string;
   guestCharacter?: Combatant;
+  /**
+   * Origin CTA (Epic 03 — Cluster Δ C1). When provided, the Google OAuth
+   * pre-redirect serialiser forwards this to the persisted upgrade context so
+   * the `/auth/callback/continue` handler can fire `conversion:completed`
+   * with the right `moment`. Without this, the callback has no way to know
+   * which CTA started the flow (in-memory state is lost across the OAuth
+   * redirect) and the anon funnel lands in 0 across every moment.
+   */
+  moment?: "waiting" | "recap_anon";
 };
 
 export interface AuthModalProps {
@@ -97,12 +107,20 @@ export function AuthModal({
 
   // Snapshot the upgrade context into a serialisable form each render. We
   // persist it just before the OAuth redirect — see `handleGoogleOAuth`.
+  //
+  // Cluster Δ C1 — carry the `moment` attribution tag through. Without it,
+  // `/auth/callback/continue` has no way to distinguish waiting-room-triggered
+  // OAuth from recap-triggered OAuth, which is why the anon conversion funnel
+  // was landing in 0. Legacy callers that don't pass `moment` simply emit
+  // nothing from the callback (old contract preserved — see
+  // AuthCallbackContinueClient.runUpgrade's `if (persisted.moment)` guard).
   const serialisedContext = useMemo<PersistedUpgradeContext | null>(() => {
     if (!upgradeContext) return null;
     return {
       sessionTokenId: upgradeContext.sessionTokenId,
       campaignId: upgradeContext.campaignId,
       guestCharacter: upgradeContext.guestCharacter,
+      moment: upgradeContext.moment,
       savedAt: Date.now(),
     };
   }, [upgradeContext]);
@@ -113,9 +131,27 @@ export function AuthModal({
     // upgrade" state if needed.
     if (serialisedContext) {
       try {
+        // Cluster Δ C1 — merge-preserve any already-persisted `moment`.
+        // PlayerJoinClient now writes `moment` directly at CTA-click time
+        // (before the modal even opens) so the attribution survives even if
+        // `upgradeContext.moment` is undefined on this particular render
+        // (e.g. the CTA wires moment via the pre-write rather than via
+        // props). If a fresh entry (< 30s) exists with a moment and the
+        // incoming serialised context has no moment, keep the existing
+        // moment; in all other cases overwrite (the incoming context is
+        // more authoritative about sessionTokenId / campaignId).
+        const existing = readPersistedUpgradeContext();
+        const existingMomentFresh =
+          !!existing?.moment &&
+          typeof existing.savedAt === "number" &&
+          Date.now() - existing.savedAt < 30_000;
+        const payload: PersistedUpgradeContext =
+          existingMomentFresh && !serialisedContext.moment
+            ? { ...serialisedContext, moment: existing?.moment }
+            : serialisedContext;
         localStorage.setItem(
           IDENTITY_UPGRADE_CONTEXT_KEY,
-          JSON.stringify(serialisedContext),
+          JSON.stringify(payload),
         );
       } catch {
         // Safari ITP or storage disabled — we degrade to a plain OAuth signup
