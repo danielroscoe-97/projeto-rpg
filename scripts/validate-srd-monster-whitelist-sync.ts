@@ -51,24 +51,38 @@ function readJsonSlugs(): Set<string> {
 
 function readMigrationSlugs(): Set<string> {
   const raw = readFileSync(MIGRATION_PATH, "utf8");
-  // Grab everything between the INSERT and the ON CONFLICT terminator
-  // for srd_monster_slugs.
+  // Re-review hardening: handle MULTIPLE INSERT blocks for
+  // srd_monster_slugs (ops sometimes split batches, and future migrations
+  // may add more). Scan every block between the start and end markers.
   const startMarker = "INSERT INTO srd_monster_slugs (slug) VALUES";
   const endMarker = "ON CONFLICT (slug) DO NOTHING";
-  const startIdx = raw.indexOf(startMarker);
-  const endIdx = raw.indexOf(endMarker, startIdx);
-  if (startIdx === -1 || endIdx === -1) {
-    throw new Error(
-      `Could not locate srd_monster_slugs INSERT block in ${MIGRATION_PATH}`,
-    );
-  }
-  const block = raw.slice(startIdx + startMarker.length, endIdx);
-  // Each entry is ('slug'). Extract via regex; tolerate whitespace/newlines.
-  const re = /\(\s*'([^']+)'\s*\)/g;
+  const entryRe = /\(\s*'([^']+)'\s*\)/g;
   const out = new Set<string>();
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(block)) !== null) {
-    out.add(match[1]);
+
+  let cursor = 0;
+  while (cursor < raw.length) {
+    const startIdx = raw.indexOf(startMarker, cursor);
+    if (startIdx === -1) break;
+    const endIdx = raw.indexOf(endMarker, startIdx);
+    if (endIdx === -1) {
+      throw new Error(
+        `Found INSERT block without terminator in ${MIGRATION_PATH} at char ${startIdx}`,
+      );
+    }
+    const block = raw.slice(startIdx + startMarker.length, endIdx);
+    // Reset regex state per block.
+    entryRe.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = entryRe.exec(block)) !== null) {
+      out.add(match[1]);
+    }
+    cursor = endIdx + endMarker.length;
+  }
+
+  if (out.size === 0) {
+    throw new Error(
+      `No slug entries found in ${MIGRATION_PATH} — start/end markers mis-matched or file empty`,
+    );
   }
   return out;
 }

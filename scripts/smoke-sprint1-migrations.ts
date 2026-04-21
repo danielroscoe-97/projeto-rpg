@@ -14,7 +14,7 @@
 //
 // Run with: `npx tsx scripts/smoke-sprint1-migrations.ts`
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 // pg-query-emscripten CJS exports { default: factory } where factory()
@@ -25,18 +25,26 @@ const pgQueryModule = require("pg-query-emscripten");
 const pgQueryFactory: (() => Promise<any>) = pgQueryModule.default ?? pgQueryModule;
 
 const ROOT = join(__dirname, "..");
-const MIGRATIONS = [
-  "165_v_player_sessions_played.sql",
-  "166_user_onboarding_dm.sql",
-  "167_campaign_templates.sql",
-  "168_seed_starter_templates.sql",
-  "169_past_companions.sql",
-  "170_clone_campaign_from_template.sql",
-  "171_populate_starter_templates.sql",
-  "172_sprint1_corrective.sql",
-  "173_sprint1_followups.sql",
-  "174_sprint1_rereview_fixes.sql",
-];
+const MIGRATIONS_DIR = join(ROOT, "supabase", "migrations");
+
+// Re-review hardening: glob Sprint 1+ migrations (range 159-199 for now) so
+// new migrations are included automatically. Hard-coding the list let older
+// runs of this script silently skip new files.
+function discoverMigrations(): string[] {
+  const pattern = /^(\d{3})_.*\.sql$/;
+  return readdirSync(MIGRATIONS_DIR)
+    .filter((f) => {
+      const m = f.match(pattern);
+      if (!m) return false;
+      const n = parseInt(m[1], 10);
+      // 159+ covers the Sprint 1 window and anything downstream until we
+      // expand the range intentionally.
+      return n >= 159;
+    })
+    .sort();
+}
+
+const MIGRATIONS = discoverMigrations();
 
 interface ParseResult {
   file: string;
@@ -129,4 +137,10 @@ async function smoke(): Promise<ParseResult[]> {
 
   process.stdout.write(JSON.stringify({ results, ok: okCount, failed: failed.length }, null, 2) + "\n");
   process.exitCode = failed.length === 0 ? 0 : 1;
-})();
+})().catch((err) => {
+  // Re-review hardening: unhandled promise rejection (wasm init failure,
+  // permission error escaping the inner try, etc.) must surface as an
+  // exit-1 so CI fails loudly rather than reporting green.
+  process.stderr.write(`FATAL ${String(err?.stack ?? err)}\n`);
+  process.exit(1);
+});
