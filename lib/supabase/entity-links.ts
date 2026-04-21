@@ -203,6 +203,14 @@ export async function syncTextMentions(
   source: EntityRef,
   text: string,
   existingEdges: EntityLink[],
+  /**
+   * Additional refs that must be preserved even if absent from `text`. Use
+   * this when the caller has a parallel source of truth (e.g. explicit chip
+   * selectors in CampaignNotes) — those refs are already represented as
+   * edges by some other code path, and syncTextMentions must not garbage-
+   * collect them just because they aren't re-stated inline as `@[type:uuid]`.
+   */
+  preserveRefs: ReadonlyArray<{ type: MentionEntityType; id: string }> = [],
 ): Promise<{ added: EntityLink[]; removedEdgeIds: string[] }> {
   const MENTION_TYPES: readonly MentionEntityType[] = [
     "npc",
@@ -224,6 +232,10 @@ export async function syncTextMentions(
 
   const parsedRefs = extractMentionRefs(text);
   const parsedKeys = new Set(parsedRefs.map((r) => `${r.type}:${r.id}`));
+  // Keys to NEVER delete: union of text-parsed refs and caller-supplied
+  // preserveRefs. The "desired final set" of edges is this union.
+  const desiredKeys = new Set(parsedKeys);
+  for (const r of preserveRefs) desiredKeys.add(`${r.type}:${r.id}`);
   const existingKeys = new Set(
     relevant.map((e) => `${e.target_type}:${e.target_id}`),
   );
@@ -248,10 +260,13 @@ export async function syncTextMentions(
     );
   }
 
-  // Removals: existing edges whose target no longer appears in the text.
+  // Removals: existing edges whose target no longer appears in the text
+  // AND is not in the preservation set. This is the load-bearing merge
+  // with explicit chip selectors — a chip-only ref stays alive even if
+  // the user never inlined it with `@`.
   for (const edge of relevant) {
     const key = `${edge.target_type}:${edge.target_id}`;
-    if (parsedKeys.has(key)) continue;
+    if (desiredKeys.has(key)) continue;
     const edgeId = edge.id;
     tasks.push(
       unlinkEntities(edgeId).then<SyncTask>(() => ({

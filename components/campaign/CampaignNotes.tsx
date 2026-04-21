@@ -45,7 +45,11 @@ import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
 import { NpcTagSelector } from "./NpcTagSelector";
 import { EntityMentionEditor, MentionChipRenderer, type MentionLookupMap } from "@/components/ui/EntityMentionEditor";
-import { stripMentionsToPlainText } from "@/lib/utils/mention-parser";
+import {
+  stripMentionsToPlainText,
+  extractMentionRefs,
+  type MentionEntityType,
+} from "@/lib/utils/mention-parser";
 import { EntityTagSelector } from "./EntityTagSelector";
 import {
   getFolders,
@@ -333,6 +337,15 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
       noteId: string,
       entityType: Exclude<EntityType, "note" | "session" | "encounter" | "player" | "bag_item">,
       nextIds: string[],
+      /**
+       * Optional: IDs of this entity type that are also referenced inline
+       * via `@[type:uuid]` tokens in the note body. syncNoteMentions must
+       * not delete the edge for a ref that the inline text still implies
+       * (and vice versa in syncTextMentions via its preserveRefs param).
+       * Without this merge, removing an explicit chip that matches an
+       * inline mention would orphan the inline chip on next load.
+       */
+      preserveIdsFromText: ReadonlyArray<string> = [],
     ) => {
       let freshEdges: EntityLink[] = [];
       try {
@@ -359,6 +372,9 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         },
       );
       const target = new Set(nextIds);
+      // Desired set for retention = chip selection ∪ inline-text refs.
+      const preserved = new Set<string>(target);
+      for (const id of preserveIdsFromText) preserved.add(id);
       const existing = new Set(current);
 
       const additions: EntityLink[] = [];
@@ -381,7 +397,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         }
       }
       for (const id of existing) {
-        if (!target.has(id)) {
+        if (!preserved.has(id)) {
           const edgeId = findEdgeId(
             freshEdges,
             { type: "note", id: noteId },
@@ -539,31 +555,37 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-focus a note when the URL carries ?noteId=. Wait for the note to
-  // actually be in state (can take a render after initial fetch), then
-  // expand it and scroll it into view. Runs once per (focusedNoteId, notes)
-  // combination — we don't try to keep scrolling on every re-render.
-  const focusedNoteHandledRef = useRef<string | null>(null);
+  // Auto-focus a note when the URL carries ?noteId=. Two-phase flow so
+  // repeat-clicks on the briefing CTA work even when the URL doesn't
+  // change: we key the "handled" state on the searchParams object identity
+  // (Next.js gives a fresh instance on every navigation), not on the
+  // noteId string alone. Review finding F14.
+  const focusedNoteHandledRef = useRef<URLSearchParams | null>(null);
   useEffect(() => {
-    if (!focusedNoteId) return;
-    if (focusedNoteHandledRef.current === focusedNoteId) return;
+    if (!focusedNoteId || !searchParams) return;
+    if (focusedNoteHandledRef.current === searchParams) return;
     if (!notes.some((n) => n.id === focusedNoteId)) return;
-    focusedNoteHandledRef.current = focusedNoteId;
+    focusedNoteHandledRef.current = searchParams;
     setExpandedIds((prev) => {
       if (prev.has(focusedNoteId)) return prev;
       const next = new Set(prev);
       next.add(focusedNoteId);
       return next;
     });
-    // Defer scroll until after the expand-state flush paints the expanded
-    // block at its full height (otherwise scroll targets the collapsed row).
+    // Double RAF so the scroll targets the EXPANDED layout, not the
+    // collapsed row that existed at commit time. First RAF lands after
+    // React flushes the setExpandedIds commit; second RAF lands after
+    // the browser paints the expanded block at its full height. Review
+    // finding F15.
     requestAnimationFrame(() => {
-      const el = document.querySelector<HTMLElement>(
-        `[data-note-id="${CSS.escape(focusedNoteId)}"]`,
-      );
-      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(
+          `[data-note-id="${CSS.escape(focusedNoteId)}"]`,
+        );
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
     });
-  }, [focusedNoteId, notes]);
+  }, [focusedNoteId, notes, searchParams]);
 
   const toggleExpanded = useCallback((id: string) => {
     setExpandedIds((prev) => {
@@ -590,13 +612,27 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         // note body. Only runs when content was part of this save so unrelated
         // saves (title-only, note_type toggle) don't re-walk the text. Errors
         // are logged but don't block the save completion toast.
+        //
+        // preserveRefs = explicit chip-selector state for this note, so that
+        // removing a chip-only ref isn't double-deleted by this text sync
+        // (the symmetric guard lives in syncNoteMentions' preserveIdsFromText
+        // param). The two sources are unioned as "desired final edges".
         if (fields.content !== undefined) {
           try {
+            const chipState = mentionsByNote.get(id);
+            const preserveRefs: Array<{ type: MentionEntityType; id: string }> = [];
+            if (chipState) {
+              for (const nid of chipState.npcs) preserveRefs.push({ type: "npc", id: nid });
+              for (const lid of chipState.locations) preserveRefs.push({ type: "location", id: lid });
+              for (const fid of chipState.factions) preserveRefs.push({ type: "faction", id: fid });
+              for (const qid of chipState.quests) preserveRefs.push({ type: "quest", id: qid });
+            }
             const { added, removedEdgeIds } = await syncTextMentions(
               campaignId,
               { type: "note", id },
               fields.content,
               campaignEdges,
+              preserveRefs,
             );
             if (added.length > 0 || removedEdgeIds.length > 0) {
               setCampaignEdges((prev) => {
@@ -631,7 +667,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         });
       }
     },
-    [supabase, campaignId, campaignEdges],
+    [supabase, campaignId, campaignEdges, mentionsByNote],
   );
 
   const debouncedSave = useCallback(
@@ -1100,9 +1136,12 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                               selectedIds={
                                 mentionsByNote.get(note.id)?.locations ?? []
                               }
-                              onChange={(ids) =>
-                                void syncNoteMentions(note.id, "location", ids)
-                              }
+                              onChange={(ids) => {
+                                const inline = extractMentionRefs(note.content)
+                                  .filter((r) => r.type === "location")
+                                  .map((r) => r.id);
+                                void syncNoteMentions(note.id, "location", ids, inline);
+                              }}
                               testIdPrefix={`note-locations-${note.id}`}
                             />
                           </div>
@@ -1122,9 +1161,12 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                               selectedIds={
                                 mentionsByNote.get(note.id)?.factions ?? []
                               }
-                              onChange={(ids) =>
-                                void syncNoteMentions(note.id, "faction", ids)
-                              }
+                              onChange={(ids) => {
+                                const inline = extractMentionRefs(note.content)
+                                  .filter((r) => r.type === "faction")
+                                  .map((r) => r.id);
+                                void syncNoteMentions(note.id, "faction", ids, inline);
+                              }}
                               testIdPrefix={`note-factions-${note.id}`}
                             />
                           </div>
@@ -1144,9 +1186,12 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                               selectedIds={
                                 mentionsByNote.get(note.id)?.quests ?? []
                               }
-                              onChange={(ids) =>
-                                void syncNoteMentions(note.id, "quest", ids)
-                              }
+                              onChange={(ids) => {
+                                const inline = extractMentionRefs(note.content)
+                                  .filter((r) => r.type === "quest")
+                                  .map((r) => r.id);
+                                void syncNoteMentions(note.id, "quest", ids, inline);
+                              }}
                               testIdPrefix={`note-quests-${note.id}`}
                             />
                           </div>
