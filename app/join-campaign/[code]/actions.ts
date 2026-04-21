@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sendInviteAcceptedEmail } from "@/lib/notifications/invite-accepted-email";
 import { trackServerEvent } from "@/lib/analytics/track-server";
@@ -64,8 +65,11 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
     .select()
     .maybeSingle();
 
-  // P4: already a member → stop here (don't create a duplicate character)
-  if (memberError?.code === "23505") return;
+  // P4: already a member → skip char link/create and go straight to dashboard
+  // (idempotent path — prevents duplicate character creation on retry)
+  if (memberError?.code === "23505") {
+    redirect("/app/dashboard");
+  }
   if (memberError) throw new Error("Erro ao ingressar na campanha");
 
   if (data.existingCharacterId) {
@@ -140,4 +144,20 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<void
   } catch {
     // Notification failure must not block the join
   }
+
+  // Server-side redirect AFTER all DB writes + notifications complete.
+  //
+  // Prior to 2026-04-21 this action returned void and both (a) the page.tsx
+  // RSC post-action re-render and (b) the client-side router.push("/app/dashboard")
+  // raced to navigate. The page.tsx re-render path hits `if (existing) redirect(...)`
+  // which would throw NEXT_REDIRECT during a React 19.3 canary / Next.js 15 RSC
+  // re-render cycle that the framework failed to convert cleanly — producing a
+  // 500 response ("An error occurred in the Server Components render") even
+  // though the DB writes had already succeeded. The user ended up as a member
+  // but without a linked character, and the UI showed an invite-failed toast.
+  //
+  // Redirecting from inside the action sidesteps the re-render: the action
+  // response is a redirect directive, so Next.js never re-evaluates page.tsx.
+  // Client-side router.push becomes unnecessary and was removed.
+  redirect("/app/dashboard");
 }
