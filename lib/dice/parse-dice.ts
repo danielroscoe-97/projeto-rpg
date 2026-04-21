@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------
 // Extract clickable dice notations from SRD monster description text.
 //
-// Recognises patterns found in standard 5e stat blocks:
-//   "+9 to hit"              → 1d20+9  (attack roll — 2014 format)
-//   "Attack: +5"             → 1d20+5  (attack roll — 2024 format)
-//   "12 (2d6 + 5)"          → 2d6+5   (damage with average)
-//   "DC 14 Constitution"    → 1d20    (saving throw — DC display only)
-//   "1d4 hours"             → 1d4     (standalone dice expression)
+// Recognises patterns found in standard 5e stat blocks (EN + PT-BR):
+//   "+9 to hit" / "+9 para acertar"     → 1d20+9  (attack roll — 2014 format)
+//   "Attack: +5" / "Ataque ...: +5"     → 1d20+5  (attack roll — 2024 format)
+//   "12 (2d6 + 5)"                      → 2d6+5   (damage with average)
+//   "(Recharge 5-6)" / "(Recharge 6)"   → 1d6     (recharge roll)
+//   "1d4 hours"                         → 1d4     (standalone dice expression)
 // ---------------------------------------------------------------------------
 
 export interface DiceSegment {
@@ -29,14 +29,14 @@ export function parseDiceInText(text: string, actionName?: string): DiceSegment[
 
   // Combined regex — ordered so longer/more-specific patterns match first.
   //
-  // Groups 1+2: "X (NdS + M) type damage"  — damage with average
-  //   captures: avg, dice notation (with optional spaces around +/-)
-  // Group 3:    "+N to hit"                 — attack roll (2014 format)
-  // Group 4:    "Attack: +N"                — attack roll (2024 format, lookbehind)
-  // Group 5:    standalone dice "NdS+M"     — e.g. "1d4 hours"
+  // Groups 1+2: "X (NdS + M) type damage"        — damage with average
+  // Group 3:    "+N to hit" / "+N para acertar"  — attack roll (2014 EN+PT)
+  // Group 4:    "Attack: +N" / "Ataque ...: +N"  — attack roll (2024 EN+PT, lookbehind)
+  // Group 5+6:  "Recharge N-M" / "Recharge N"    — recharge roll (rolls 1d6)
+  // Group 7:    standalone dice "NdS+M"          — e.g. "1d4 hours"
   const DICE_RE =
     // eslint-disable-next-line security/detect-unsafe-regex -- Static regex for dice notation parsing; input is bounded SRD text, no ReDoS risk
-    /(\d+)\s*\((\d+d\d+(?:\s*[+-]\s*\d+)?)\)|\+(\d+) to hit|(?<=Attack:\s*)\+(\d+)|(?<!\w)(\d*d\d+(?:\s*[+-]\s*\d+)?)(?!\w)/gi;
+    /(\d+)\s*\((\d+d\d+(?:\s*[+-]\s*\d+)?)\)|\+(\d+)\s+(?:to hit|para acertar)|(?<=(?:Attack|Ataque[^:\n]{0,80}):\s*)\+(\d+)|Recharge\s+(\d+)(?:[-–](\d+))?|(?<!\w)(\d*d\d+(?:\s*[+-]\s*\d+)?)(?!\w)/gi;
 
   const segments: DiceSegment[] = [];
   let lastIndex = 0;
@@ -70,7 +70,7 @@ export function parseDiceInText(text: string, actionName?: string): DiceSegment[
         label,
       });
     } else if (match[4] !== undefined) {
-      // Attack pattern (2024): "Attack: +5" — lookbehind keeps "Attack: " in text segment
+      // Attack pattern (2024 EN+PT): lookbehind keeps preamble in text segment
       const bonus = match[4];
       const notation = `1d20+${bonus}`;
       const label = actionName ? `${actionName} (attack)` : "Attack";
@@ -81,8 +81,17 @@ export function parseDiceInText(text: string, actionName?: string): DiceSegment[
         label,
       });
     } else if (match[5] !== undefined) {
+      // Recharge: "Recharge 5-6" / "Recharge 6" → roll 1d6
+      const label = actionName ? `${actionName} (recharge)` : "Recharge";
+      segments.push({
+        kind: "dice",
+        content: match[0],
+        notation: "1d6",
+        label,
+      });
+    } else if (match[7] !== undefined) {
       // Standalone dice: "1d4", "2d6+3"
-      const notation = match[5].replace(/\s/g, "");
+      const notation = match[7].replace(/\s/g, "");
       const label = actionName ?? "Roll";
       segments.push({
         kind: "dice",

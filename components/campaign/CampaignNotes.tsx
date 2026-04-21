@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { captureError } from "@/lib/errors/capture";
@@ -101,6 +102,11 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
   const { factions: campaignFactions } = useCampaignFactions(campaignId);
   const { quests: campaignQuests } = useCampaignQuests(campaignId);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  // Hydrate focused-note from the URL (e.g. Campaign HQ's "Iniciar sessão
+  // de hoje" CTA routes here with ?section=notes&noteId=<id>). When the
+  // note renders, we auto-expand it and scroll it into view.
+  const searchParams = useSearchParams();
+  const focusedNoteId = searchParams?.get("noteId") ?? null;
   const [dmUserId, setDmUserId] = useState<string | null>(null);
   const [playerNames, setPlayerNames] = useState<Record<string, string>>({});
   const [playerNotesExpanded, setPlayerNotesExpanded] = useState(false);
@@ -533,6 +539,32 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Auto-focus a note when the URL carries ?noteId=. Wait for the note to
+  // actually be in state (can take a render after initial fetch), then
+  // expand it and scroll it into view. Runs once per (focusedNoteId, notes)
+  // combination — we don't try to keep scrolling on every re-render.
+  const focusedNoteHandledRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!focusedNoteId) return;
+    if (focusedNoteHandledRef.current === focusedNoteId) return;
+    if (!notes.some((n) => n.id === focusedNoteId)) return;
+    focusedNoteHandledRef.current = focusedNoteId;
+    setExpandedIds((prev) => {
+      if (prev.has(focusedNoteId)) return prev;
+      const next = new Set(prev);
+      next.add(focusedNoteId);
+      return next;
+    });
+    // Defer scroll until after the expand-state flush paints the expanded
+    // block at its full height (otherwise scroll targets the collapsed row).
+    requestAnimationFrame(() => {
+      const el = document.querySelector<HTMLElement>(
+        `[data-note-id="${CSS.escape(focusedNoteId)}"]`,
+      );
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, [focusedNoteId, notes]);
+
   const toggleExpanded = useCallback((id: string) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
@@ -872,6 +904,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
             return (
               <div
                 key={note.id}
+                data-note-id={note.id}
                 className="rounded-xl border border-white/[0.04] bg-card shadow-card overflow-hidden transition-all duration-200"
               >
                 {/* Collapsed header */}

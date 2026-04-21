@@ -50,15 +50,21 @@ export function BriefingToday({
   const router = useRouter();
   const [combatOpen, setCombatOpen] = useState(false);
   const [plannerOpen, setPlannerOpen] = useState(false);
-  const { ensureSession, ensuring } = useSessionBootstrap(campaignId);
+  const { ensureSession, ensuring, sessionNoteId } = useSessionBootstrap(campaignId);
 
   const handleStartTodaySession = async () => {
+    // Capture cache state BEFORE the call so we can pick the right toast
+    // copy. If we already had a sessionNoteId (cache hit from earlier
+    // today), this is a resume; otherwise it's a fresh create.
+    const wasCached = sessionNoteId !== null;
     const noteId = await ensureSession();
     if (!noteId) {
       toast.error(tSession("error_toast"));
       return;
     }
-    toast.success(tSession("created_toast"));
+    toast.success(
+      wasCached ? tSession("resumed_toast") : tSession("created_toast"),
+    );
     router.push(`/app/campaigns/${campaignId}?section=notes&noteId=${noteId}`);
   };
 
@@ -115,27 +121,40 @@ export function BriefingToday({
       )}
 
       {state === "active_session" && (
-        <button
-          type="button"
-          onClick={() => setCombatOpen(true)}
-          className="w-full text-left flex items-center gap-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 transition-colors hover:bg-amber-500/10 focus-visible:bg-amber-500/10 min-h-[44px]"
-          style={{ boxShadow: "var(--halo-available, 0 0 8px rgba(200, 160, 80, 0.1))" }}
-        >
-          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-amber-400/15 flex-shrink-0">
-            <Play className="w-6 h-6 text-amber-400" aria-hidden="true" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs uppercase tracking-wide text-amber-400 font-semibold">
-              {t("today_session_active")}
-            </p>
-            <p className="text-base text-foreground font-semibold truncate">
-              {activeSessionName ?? t("today_session_unnamed")}
-            </p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {t("today_session_cta")}
-            </p>
-          </div>
-        </button>
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() => setCombatOpen(true)}
+            className="w-full text-left flex items-center gap-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 transition-colors hover:bg-amber-500/10 focus-visible:bg-amber-500/10 min-h-[44px]"
+            style={{ boxShadow: "var(--halo-available, 0 0 8px rgba(200, 160, 80, 0.1))" }}
+          >
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-amber-400/15 flex-shrink-0">
+              <Play className="w-6 h-6 text-amber-400" aria-hidden="true" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs uppercase tracking-wide text-amber-400 font-semibold">
+                {t("today_session_active")}
+              </p>
+              <p className="text-base text-foreground font-semibold truncate">
+                {activeSessionName ?? t("today_session_unnamed")}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {t("today_session_cta")}
+              </p>
+            </div>
+          </button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="min-h-[40px] text-muted-foreground hover:text-foreground gap-1.5 text-xs"
+            onClick={handleStartTodaySession}
+            disabled={ensuring}
+            data-testid="briefing-open-today-notes"
+          >
+            <NotebookPen className="w-3.5 h-3.5" aria-hidden="true" />
+            {ensuring ? tSession("preparing") : tSession("cta_start_today")}
+          </Button>
+        </div>
       )}
 
       {state === "planned_next" && nextPlannedSession && (
@@ -156,6 +175,17 @@ export function BriefingToday({
               {nextPlannedSession.description}
             </p>
           )}
+          <Button
+            size="sm"
+            variant="ghost"
+            className="min-h-[40px] text-muted-foreground hover:text-foreground gap-1.5 text-xs"
+            onClick={handleStartTodaySession}
+            disabled={ensuring}
+            data-testid="briefing-open-today-notes"
+          >
+            <NotebookPen className="w-3.5 h-3.5" aria-hidden="true" />
+            {ensuring ? tSession("preparing") : tSession("cta_start_today")}
+          </Button>
         </div>
       )}
 
@@ -183,7 +213,7 @@ export function BriefingToday({
               data-testid="briefing-start-today-session"
             >
               <NotebookPen className="w-3.5 h-3.5" aria-hidden="true" />
-              {tSession("cta_start_today")}
+              {ensuring ? tSession("preparing") : tSession("cta_start_today")}
             </Button>
             <Button
               size="sm"

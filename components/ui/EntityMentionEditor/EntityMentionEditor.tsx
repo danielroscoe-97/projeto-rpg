@@ -256,15 +256,33 @@ export const EntityMentionEditor = forwardRef<
     recomputeTrigger();
   }, [recomputeTrigger]);
 
+  // Keep the popover anchored when the textarea scrolls internally. Without
+  // this, a long multi-line note whose caret is past the visible area
+  // leaves the popover frozen at its open-time position. We only listen
+  // while a trigger is active — outside that, scroll is a no-op for us.
+  useEffect(() => {
+    if (!trigger) return;
+    const el = textareaRef.current;
+    if (!el) return;
+    const onScroll = () => updateAnchor(trigger.atIndex);
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [trigger, updateAnchor]);
+
   const insertMention = useCallback(
     (type: MentionEntityType, id: string) => {
       const el = textareaRef.current;
       if (!el || !trigger) return;
       if (!MENTION_TYPES_SET.has(type)) return;
 
+      // Read from the live DOM value instead of the closed-over `value`
+      // prop. If an external source (autosave, collab sync) updated the
+      // textarea between trigger detection and this click, the closure's
+      // `value` is stale while `el.value` reflects the committed state.
+      const current = el.value;
       const token = formatMentionToken(type, id);
-      const before = value.slice(0, trigger.atIndex);
-      const after = value.slice(trigger.caretIndex);
+      const before = current.slice(0, trigger.atIndex);
+      const after = current.slice(trigger.caretIndex);
       // Append a trailing space so the user can keep typing.
       const needsSpace = !after.startsWith(" ") && !after.startsWith("\n");
       const insertion = needsSpace ? `${token} ` : token;
@@ -283,7 +301,7 @@ export const EntityMentionEditor = forwardRef<
       setTrigger(null);
       setAnchor(null);
     },
-    [trigger, value, onChange],
+    [trigger, onChange],
   );
 
   const handleKeyDown = useCallback(

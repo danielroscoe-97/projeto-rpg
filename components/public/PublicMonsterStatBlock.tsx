@@ -73,6 +73,24 @@ function LinkedTerms({ text, knownTerms, href, isPt }: {
   );
 }
 
+// "Lightning Breath (Recharge 5-6)" → plain text + clickable 1d6 roll.
+// Recharge is in the action NAME (not the desc), so DiceText doesn't see it.
+function RechargeName({ name, source }: { name: string; source: string }) {
+  const match = name.match(/\(Recharge\s+(\d+)(?:[-–]\d+)?\)/i);
+  if (!match || match.index === undefined) return <>{name}</>;
+  const before = name.slice(0, match.index);
+  const inner = match[0].slice(1, -1);
+  return (
+    <>
+      {before}(
+      <ClickableRoll notation="1d6" label={`${name} (recharge)`} source={source}>
+        {inner}
+      </ClickableRoll>
+      )
+    </>
+  );
+}
+
 function abilityMod(score: number): string {
   const mod = Math.floor((score - 10) / 2);
   return mod >= 0 ? `+${mod}` : `${mod}`;
@@ -242,26 +260,26 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
             before Abilities, to match 5e Tools / D&D Beyond reading order
             (Finding 7, spike 2026-04-17). Parity with MonsterStatBlock (auth/guest combat). */}
         {damageVuln && (
-          <p className="prop-line prop-defense prop-defense-vulnerability">
-            <span className="prop-label">{L.damageVulnerabilities}</span>{" "}
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.damageVulnerabilities}</strong>{" "}
             <LinkedTerms text={damageVuln} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageRes && (
-          <p className="prop-line prop-defense prop-defense-resistance">
-            <span className="prop-label">{L.damageResistances}</span>{" "}
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.damageResistances}</strong>{" "}
             <LinkedTerms text={damageRes} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {damageImm && (
-          <p className="prop-line prop-defense prop-defense-immunity">
-            <span className="prop-label">{L.damageImmunities}</span>{" "}
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.damageImmunities}</strong>{" "}
             <LinkedTerms text={damageImm} knownTerms={t ? DAMAGE_TYPES_PT : DAMAGE_TYPES} href={t ? "/tipos-de-dano" : "/damage-types"} isPt={!!t} />
           </p>
         )}
         {conditionImm && (
-          <p className="prop-line prop-defense prop-defense-immunity">
-            <span className="prop-label">{L.conditionImmunities}</span>{" "}
+          <p>
+            <strong className="text-[var(--5e-accent-red)]">{L.conditionImmunities}</strong>{" "}
             <LinkedTerms text={conditionImm} knownTerms={t ? CONDITIONS_PT : CONDITIONS} href={t ? "/condicoes" : "/conditions"} isPt={!!t} />
           </p>
         )}
@@ -371,7 +389,9 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           <div className="space-y-2 text-sm">
             {monster.actions.map((action, i) => (
               <p key={i}>
-                <strong className="italic text-[var(--5e-accent-gold)]">{action.name}.</strong>{" "}
+                <strong className="italic text-[var(--5e-accent-gold)]">
+                  <RechargeName name={action.name} source={monster.name} />.
+                </strong>{" "}
                 <DiceText
                   text={getDesc("actions", action.name, action.desc)}
                   rulesetVersion={monster.ruleset_version}
@@ -394,7 +414,9 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           <div className="space-y-2 text-sm">
             {monster.reactions.map((reaction, i) => (
               <p key={i}>
-                <strong className="italic text-[var(--5e-accent-gold)]">{reaction.name}.</strong>{" "}
+                <strong className="italic text-[var(--5e-accent-gold)]">
+                  <RechargeName name={reaction.name} source={monster.name} />.
+                </strong>{" "}
                 <DiceText
                   text={getDesc("reactions", reaction.name, reaction.desc)}
                   rulesetVersion={monster.ruleset_version}
@@ -417,7 +439,9 @@ export function PublicMonsterStatBlock({ monster, locale = "en", slug = "" }: Pu
           <div className="space-y-2 text-sm">
             {monster.legendary_actions.map((la, i) => (
               <p key={i}>
-                <strong className="italic text-[var(--5e-accent-gold)]">{la.name}.</strong>{" "}
+                <strong className="italic text-[var(--5e-accent-gold)]">
+                  <RechargeName name={la.name} source={monster.name} />.
+                </strong>{" "}
                 <DiceText
                   text={getDesc("legendary_actions", la.name, la.desc)}
                   rulesetVersion={monster.ruleset_version}

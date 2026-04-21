@@ -224,18 +224,23 @@ export function useCampaignEntitySearch(
     };
   }, [campaignId]);
 
+  // Accent-fold: strip diacritics so PT-BR users typing "vitor" match
+  // "Víctor" / "Vitória" etc. Also handles ç → c for "caracao" → "coração".
+  const foldText = (s: string): string =>
+    s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
   const normalized = useMemo(
     () =>
       entities.map((e) => ({
         entity: e,
-        needle: e.name.toLowerCase(),
+        needle: foldText(e.name),
       })),
     [entities],
   );
 
   const search = useCallback(
     (query: string): SearchableEntity[] => {
-      const q = query.trim().toLowerCase();
+      const q = foldText(query.trim());
       if (q.length === 0) {
         // No query → show a stable alphabetical slice so the popover feels
         // populated the instant it opens.

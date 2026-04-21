@@ -33,8 +33,14 @@ interface CachedBootstrap {
   session_date: string;
 }
 
+/**
+ * Prefix used by every bootstrap cache entry. Kept narrow so the sweeper
+ * in writeCache never touches unrelated localStorage keys.
+ */
+const CACHE_PREFIX = "pocketdm:session-bootstrap:";
+
 function cacheKey(campaignId: string, today: string): string {
-  return `pocketdm:session-bootstrap:${campaignId}:${today}`;
+  return `${CACHE_PREFIX}${campaignId}:${today}`;
 }
 
 function readCache(campaignId: string, today: string): CachedBootstrap | null {
@@ -57,6 +63,17 @@ function writeCache(campaignId: string, today: string, noteId: string): void {
       cacheKey(campaignId, today),
       JSON.stringify({ note_id: noteId, session_date: today }),
     );
+    // Housekeeping: sweep any entries for this campaign whose date is
+    // earlier than `today`. Prevents unbounded key growth over months of
+    // use. Only touches this campaign's namespace.
+    const keep = cacheKey(campaignId, today);
+    const campaignPrefix = `${CACHE_PREFIX}${campaignId}:`;
+    for (let i = window.localStorage.length - 1; i >= 0; i--) {
+      const k = window.localStorage.key(i);
+      if (!k || k === keep) continue;
+      if (!k.startsWith(campaignPrefix)) continue;
+      window.localStorage.removeItem(k);
+    }
   } catch {
     // localStorage unavailable / quota — silent fallback: cache is best-effort.
   }
