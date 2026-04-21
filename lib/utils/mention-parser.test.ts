@@ -99,11 +99,26 @@ describe("parseMentions", () => {
     expect(parseMentions(input)).toEqual([{ kind: "text", text: input }]);
   });
 
-  it("accepts uppercase UUIDs", () => {
+  it("accepts uppercase UUIDs and normalizes to lowercase", () => {
+    // Regex tolerates case; token id is lowercased so downstream diffs
+    // against Postgres-lowercased edge rows compare cleanly (no spurious
+    // add+remove churn when re-saving a note with mixed-case pasted tokens).
     const input = `@[npc:${UUID_UPPER}]`;
     const tokens = parseMentions(input);
     expect(tokens).toHaveLength(1);
-    expect(tokens[0]).toMatchObject({ kind: "mention", id: UUID_UPPER });
+    expect(tokens[0]).toMatchObject({
+      kind: "mention",
+      id: UUID_UPPER.toLowerCase(),
+    });
+    expect(tokens[0]).toMatchObject({ raw: input });
+  });
+
+  it("diff treats uppercase + lowercase UUIDs as the same ref", () => {
+    // Regression guard for the "every save churns every edge" bug: a note
+    // with uppercase inline tokens must diff-equal its lowercase neighbor.
+    const upper = extractMentionRefs(`@[npc:${UUID_UPPER}]`);
+    const lower = extractMentionRefs(`@[npc:${UUID_UPPER.toLowerCase()}]`);
+    expect(diffMentionRefs(upper, lower)).toEqual({ added: [], removed: [] });
   });
 
   it("is lossless: concatenated tokens reproduce the source", () => {

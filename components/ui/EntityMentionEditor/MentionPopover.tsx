@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 import {
   useFloating,
   autoUpdate,
@@ -21,6 +22,7 @@ import {
   offset,
   shift,
   size,
+  FloatingPortal,
 } from "@floating-ui/react";
 import type { SearchableEntity } from "@/lib/hooks/use-campaign-entity-search";
 
@@ -52,11 +54,13 @@ const TYPE_COLOR: Record<SearchableEntity["type"], string> = {
   quest: "text-emerald-300",
 };
 
-const TYPE_LABEL: Record<SearchableEntity["type"], string> = {
-  npc: "NPC",
-  location: "Local",
-  faction: "Facção",
-  quest: "Quest",
+// TYPE_LABEL is now resolved via next-intl inside the component body so
+// English-locale DMs don't see Portuguese labels. See messages.mentions.
+const TYPE_LABEL_KEY: Record<SearchableEntity["type"], string> = {
+  npc: "chip_npc",
+  location: "chip_location",
+  faction: "chip_faction",
+  quest: "chip_quest",
 };
 
 export function MentionPopover({
@@ -71,6 +75,7 @@ export function MentionPopover({
   loading,
   testIdPrefix = "mention-popover",
 }: MentionPopoverProps) {
+  const t = useTranslations("mentions");
   const listRef = useRef<HTMLUListElement | null>(null);
 
   // Virtual reference: Floating UI lets us feed it a DOMRect without needing
@@ -137,7 +142,12 @@ export function MentionPopover({
 
   if (!open || !anchor) return null;
 
+  // Portal the popover out of the editor's DOM subtree. Without this, any
+  // ancestor with overflow:hidden / clip-path (dialogs, scrollable panels,
+  // campaign notes list) visually clips the popover at the exact moment
+  // the user needs it most — near the bottom of a scroll container.
   return (
+    <FloatingPortal>
     <div
       ref={refs.setFloating}
       style={floatingStyles}
@@ -199,7 +209,7 @@ export function MentionPopover({
                 <span
                   className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${TYPE_COLOR[entity.type]}`}
                 >
-                  {TYPE_LABEL[entity.type]}
+                  {t(TYPE_LABEL_KEY[entity.type])}
                 </span>
               </li>
             );
@@ -207,5 +217,6 @@ export function MentionPopover({
         </ul>
       )}
     </div>
+    </FloatingPortal>
   );
 }

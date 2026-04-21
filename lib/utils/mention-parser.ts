@@ -87,10 +87,15 @@ export function parseMentions(text: string): ParsedToken[] {
       });
     }
 
+    // Normalize UUIDs to lowercase. Postgres uuid columns always store
+    // lowercase regardless of input case; a raw `@[npc:0AB12345-...]` would
+    // otherwise appear as "different" from the stored edge target_id when
+    // diffed, causing spurious add+remove churn on every save.
+    const normalizedId = id.toLowerCase();
     tokens.push({
       kind: "mention",
       entityType: rawType,
-      id,
+      id: normalizedId,
       start: match.index,
       end: match.index + raw.length,
       raw,
@@ -175,4 +180,29 @@ export function diffMentionRefs(
  */
 export function formatMentionToken(type: MentionEntityType, id: string): string {
   return `@[${type}:${id}]`;
+}
+
+/**
+ * Collapse `@[type:uuid]` tokens into a flat string suitable for single-line
+ * previews, search indexing, or wherever a full chip render is unwanted.
+ * Each token becomes `@name` if the entity is resolvable in `lookup`,
+ * otherwise an empty string (so truncated previews don't leak UUIDs).
+ *
+ * Callers that want to render chips in rich surfaces should use
+ * `MentionChipRenderer` instead.
+ */
+export function stripMentionsToPlainText(
+  text: string,
+  lookup: ReadonlyMap<string, { name: string }>,
+): string {
+  let out = "";
+  for (const token of parseMentions(text)) {
+    if (token.kind === "text") {
+      out += token.text;
+    } else {
+      const entity = lookup.get(`${token.entityType}:${token.id}`);
+      out += entity ? `@${entity.name}` : "";
+    }
+  }
+  return out;
 }

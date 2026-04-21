@@ -52,6 +52,8 @@ export interface EntityMentionEditorProps {
   disabled?: boolean;
   className?: string;
   rows?: number;
+  /** Textarea `id`; used by parent `<label htmlFor=...>` for a11y. */
+  id?: string;
   "data-testid"?: string;
   /** Called on every keydown; useful for parent-level Submit-on-Enter handlers. */
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
@@ -62,6 +64,15 @@ export interface EntityMentionEditorProps {
   /** Optional aria-label for the textarea when no visible label is present. */
   "aria-label"?: string;
 }
+
+/**
+ * Default textarea className — mirrors the canonical shadcn-ish styling
+ * used by the legacy `<textarea>` fields we replaced (Npc/Location/
+ * Faction Form description + CampaignNotes content). Callers can still
+ * override via the `className` prop.
+ */
+const DEFAULT_TEXTAREA_CLASS =
+  "flex w-full rounded-lg border border-input bg-surface-tertiary px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background resize-none md:text-sm disabled:cursor-not-allowed disabled:opacity-70";
 
 export interface EntityMentionEditorHandle {
   focus: () => void;
@@ -138,6 +149,7 @@ export const EntityMentionEditor = forwardRef<
     disabled,
     className,
     rows = 4,
+    id,
     onKeyDown,
     onBlur,
     onFocus,
@@ -148,6 +160,10 @@ export const EntityMentionEditor = forwardRef<
 ) {
   const t = useTranslations("mentions");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  // IME / dead-key composition flag. PT-BR dead keys (á, ã, etc.) and CJK
+  // methods emit intermediate characters during composition that could
+  // falsely fire detectTrigger. Suppress trigger detection while composing.
+  const composingRef = useRef(false);
   const { search, loading: searchLoading } = useCampaignEntitySearch(campaignId);
 
   const [trigger, setTrigger] = useState<TriggerState | null>(null);
@@ -209,12 +225,36 @@ export const EntityMentionEditor = forwardRef<
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       onChange(e.target.value);
-      // Defer trigger detection until React commits the new value into the
-      // DOM so `selectionStart` is accurate.
-      queueMicrotask(recomputeTrigger);
+      // During IME composition the value is partial — skip trigger detection.
+      // On compositionend we'll re-run it via handleCompositionEnd.
+      if (composingRef.current) return;
+      // Read caret + value directly from the event's DOM target — already
+      // committed at this point — avoiding the stale-read race that
+      // queueMicrotask could hit with controlled components under React 18
+      // concurrent rendering.
+      const el = e.target;
+      const caret = el.selectionStart ?? el.value.length;
+      const next = detectTrigger(el.value, caret);
+      setTrigger(next);
+      if (next) {
+        updateAnchor(next.atIndex);
+      } else {
+        setAnchor(null);
+      }
     },
-    [onChange, recomputeTrigger],
+    [onChange, updateAnchor],
   );
+
+  const handleCompositionStart = useCallback(() => {
+    composingRef.current = true;
+  }, []);
+
+  const handleCompositionEnd = useCallback(() => {
+    composingRef.current = false;
+    // After composition settles, re-evaluate the trigger against current
+    // textarea state.
+    recomputeTrigger();
+  }, [recomputeTrigger]);
 
   const insertMention = useCallback(
     (type: MentionEntityType, id: string) => {
@@ -248,17 +288,25 @@ export const EntityMentionEditor = forwardRef<
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (trigger && results.length > 0) {
-        if (e.key === "ArrowDown") {
+      // When the popover is open, capture navigation/confirm keys regardless
+      // of whether results are present. Letting Enter/Tab bubble with an
+      // empty result set caused the textarea to insert a newline / jump
+      // focus when the user meant "dismiss the popover".
+      if (trigger) {
+        if (e.key === "Escape") {
           e.preventDefault();
-          setSelectedIndex((i) => (i + 1) % results.length);
+          setTrigger(null);
+          setAnchor(null);
           return;
         }
-        if (e.key === "ArrowUp") {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
           e.preventDefault();
-          setSelectedIndex(
-            (i) => (i - 1 + results.length) % results.length,
-          );
+          if (results.length > 0) {
+            setSelectedIndex((i) => {
+              const delta = e.key === "ArrowDown" ? 1 : -1;
+              return (i + delta + results.length) % results.length;
+            });
+          }
           return;
         }
         if (e.key === "Enter" || e.key === "Tab") {
@@ -267,12 +315,6 @@ export const EntityMentionEditor = forwardRef<
           if (pick) insertMention(pick.type, pick.id);
           return;
         }
-      }
-      if (trigger && e.key === "Escape") {
-        e.preventDefault();
-        setTrigger(null);
-        setAnchor(null);
-        return;
       }
       onKeyDown?.(e);
     },
@@ -296,17 +338,20 @@ export const EntityMentionEditor = forwardRef<
     <div className="relative">
       <textarea
         ref={textareaRef}
+        id={id}
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onSelect={handleSelect}
         onClick={handleSelect}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
         onBlur={handleBlur}
         onFocus={onFocus}
         placeholder={placeholder}
         rows={rows}
         disabled={disabled}
-        className={className}
+        className={className ?? DEFAULT_TEXTAREA_CLASS}
         data-testid={testId}
         aria-label={ariaLabel}
         aria-autocomplete="list"

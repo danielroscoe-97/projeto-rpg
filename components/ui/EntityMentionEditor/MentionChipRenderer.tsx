@@ -15,6 +15,7 @@
  */
 
 import { memo, useMemo, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { parseMentions, type MentionEntityType } from "@/lib/utils/mention-parser";
 
 export interface MentionLookupEntry {
@@ -61,6 +62,8 @@ export const MentionChipRenderer = memo(function MentionChipRenderer({
   className,
   testIdPrefix = "mention-renderer",
 }: MentionChipRendererProps) {
+  const t = useTranslations("mentions");
+  const orphanLabel = t("orphan_label");
   const nodes = useMemo<ReactNode[]>(() => {
     const tokens = parseMentions(text);
     const out: ReactNode[] = [];
@@ -86,9 +89,9 @@ export const MentionChipRenderer = memo(function MentionChipRenderer({
             key={chipKey}
             className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs ring-1 ring-inset ${ORPHAN_CLASSES}`}
             data-testid={`${baseTestId}-orphan`}
-            aria-label="Referência removida"
+            aria-label={orphanLabel}
           >
-            Referência removida
+            {orphanLabel}
           </span>,
         );
         return;
@@ -118,7 +121,7 @@ export const MentionChipRenderer = memo(function MentionChipRenderer({
     });
 
     return out;
-  }, [text, lookup, onChipClick]);
+  }, [text, lookup, onChipClick, orphanLabel]);
 
   return (
     <div className={className} data-testid={testIdPrefix}>

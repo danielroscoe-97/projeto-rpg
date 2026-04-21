@@ -75,23 +75,65 @@ export function useCampaignEntitySearch(
 
     const fetchAll = async () => {
       try {
+        // Soft limit so pathological campaigns (thousands of NPCs/quests)
+        // don't bloat the editor's memory or the autocomplete payload.
+        // RLS on each table still gates visibility for non-owners; we add
+        // an explicit `is_visible_to_players` filter here as defense-in-
+        // depth so a player opening the popover cannot learn about NPCs
+        // or locations the DM hid from them (quest visibility is gated
+        // via mig 086). Campaign owners see everything because RLS's
+        // owner-bypass runs before the filter logically (we include rows
+        // where visible OR owner).
+        const PREVIEW_LIMIT = 1000;
+        const { data: userData } = await supabase.auth.getUser();
+        const currentUserId = userData.user?.id ?? null;
+
+        // Build filters differently depending on whether the caller is the
+        // campaign owner. Owners see everything; non-owners only see
+        // player-visible rows. We fetch the campaign owner_id up-front.
+        const { data: campaign } = await supabase
+          .from("campaigns")
+          .select("owner_id")
+          .eq("id", campaignId)
+          .single();
+        const isOwner =
+          !!currentUserId && campaign?.owner_id === currentUserId;
+
+        const npcQuery = supabase
+          .from("campaign_npcs")
+          .select("id, name")
+          .eq("campaign_id", campaignId)
+          .limit(PREVIEW_LIMIT);
+        const locationQuery = supabase
+          .from("campaign_locations")
+          .select("id, name, location_type")
+          .eq("campaign_id", campaignId)
+          .limit(PREVIEW_LIMIT);
+        const factionQuery = supabase
+          .from("campaign_factions")
+          .select("id, name, alignment")
+          .eq("campaign_id", campaignId)
+          .limit(PREVIEW_LIMIT);
+        const questQuery = supabase
+          .from("campaign_quests")
+          .select("id, title, status")
+          .eq("campaign_id", campaignId)
+          .limit(PREVIEW_LIMIT);
+
+        if (!isOwner) {
+          npcQuery.eq("is_visible_to_players", true);
+          // Locations use `is_discovered` (mig 081) rather than
+          // is_visible_to_players — semantics "players know about this".
+          locationQuery.eq("is_discovered", true);
+          factionQuery.eq("is_visible_to_players", true);
+          questQuery.eq("is_visible_to_players", true);
+        }
+
         const [npcsRes, locationsRes, factionsRes, questsRes] = await Promise.all([
-          supabase
-            .from("campaign_npcs")
-            .select("id, name")
-            .eq("campaign_id", campaignId),
-          supabase
-            .from("campaign_locations")
-            .select("id, name, location_type")
-            .eq("campaign_id", campaignId),
-          supabase
-            .from("campaign_factions")
-            .select("id, name, alignment")
-            .eq("campaign_id", campaignId),
-          supabase
-            .from("campaign_quests")
-            .select("id, title, status")
-            .eq("campaign_id", campaignId),
+          npcQuery,
+          locationQuery,
+          factionQuery,
+          questQuery,
         ]);
 
         if (cancelled) return;
