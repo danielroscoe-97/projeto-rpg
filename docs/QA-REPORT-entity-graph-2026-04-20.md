@@ -152,3 +152,41 @@ Commit `010b1c1e` (Tarefa 3) adds chip-navigation from read-only notes to entity
 2. **Track the Turbopack issue** on the Next.js repo with the panic log (it's already auto-generated).
 3. **CI gating policy:** do NOT make this suite required for merges yet — the Turbopack panic is non-deterministic (observed cold-cache vs warm-cache divergence), which would create flakes.
 4. **Next QA wave** should add the still-missing specs for AC-3b-09/10, 3c-05, 3e-05, 3f-04, REG-03, plus the chip-navigation spec deferred from Tarefa 3.
+
+---
+
+## Execution Results — 2026-04-21 (prod re-run)
+
+Addressed Recommendation #1: ran the suite against `https://pocketdm.com.br` (production webpack build, no Turbopack dev-mode). Environment blocker shifted, but a new blocker surfaced: the production bundle is NOT built with `NEXT_PUBLIC_E2E_MODE=true`, so `window.__pocketdm_supabase` (the session bridge every non-parity spec depends on to learn the logged-in user's UUID) is absent. Every seed-requiring spec sets `skipReason = "No Supabase session bridge (window.__pocketdm_supabase). Set NEXT_PUBLIC_E2E_MODE=true."` in beforeAll, and its tests skip.
+
+### Headline numbers (2nd execution, prod)
+
+| Target | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|
+| `https://pocketdm.com.br` (desktop-chrome) | 34 | 4 | 0 | 30 |
+
+34 (not 30) because commit `010b1c1e` added the new `entity-graph-chip-navigation.spec.ts` (4 tests) written during this sprint.
+
+### What flipped green
+
+The 4 combat-parity tests — the **REG-04 / REG-05 gate** — now have **live production validation** for the first time. Two separate runs (localhost warm cache + prod) now confirm the parity holds.
+
+### What's still blocked
+
+26 tests from 5 specs (factions, location-hierarchy, mindmap-focus, note-mentions, npc-location-link) + the 4 new chip-nav tests = **30 skipped**. All on the same bridge: these specs call `loginAsDM()` → then `getLoggedInUserId()` which queries `window.__pocketdm_supabase.auth.getUser()`. Prod doesn't define the bridge.
+
+### Two paths forward (pick one)
+
+**(a) Dedicated Vercel preview with the flag.** Deploy a branch with `NEXT_PUBLIC_E2E_MODE=true` set in the Vercel env for the preview only. Every seed-requiring spec then exercises end-to-end against that URL. Ops work: ~10 min once per branch.
+
+**(b) Patch the helper to bypass the bridge.** Replace `getLoggedInUserId(page)` with a service-role lookup by email: `supabase.auth.admin.listUsers()` filtered to `E2E_DM_EMAIL`. Zero client-side bridge needed — works against any deployment, including prod. Ops work: ~20 min, one commit.
+
+Path (b) is less fragile long-term and doesn't require per-branch Vercel config. Path (a) is faster if the bridge already exists in a preview.
+
+### New spec shipped this run
+
+- `e2e/features/entity-graph-chip-navigation.spec.ts` (commit `010b1c1e`) — 4 receiver tests (NPC, Location, Faction, Quest) that navigate directly to `?<type>Id=<uuid>` URLs and assert (1) the card is visible, (2) it's in viewport after double-RAF scroll, (3) URL preserves the focus param. Location test additionally verifies the ancestor-uncollapse walk; Quest test verifies the filter auto-reset. All 4 currently skipped on prod for the bridge reason above.
+
+### ⚪ AC repriorization (2nd pass)
+
+No change from the 1st pass. Same 9 open ACs; same recommendation to revisit after the bridge is resolved. D2 (multi-tab `unlinkEntities` idempotency) verified independently — `docs/audit-unlinkEntities-idempotency.md` — **safe, no fix needed**, locked in by a non-regression test at `lib/supabase/__tests__/entity-links.test.ts`.
