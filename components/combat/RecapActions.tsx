@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import type { CombatReport } from "@/lib/types/combat-report";
 import { formatRecapShareText } from "@/lib/utils/combat-stats";
 import { DifficultyRatingStrip } from "./DifficultyRatingStrip";
-import { RecapCtaCard } from "@/components/conversion/RecapCtaCard";
+import { RecapCtaCard, type RecapCtaRequestAuthModalPayload } from "@/components/conversion/RecapCtaCard";
 import type { SaveSignupContext } from "@/components/conversion/types";
 
 /**
@@ -64,9 +64,15 @@ interface RecapActionsProps {
    * "Salvar Combate" button follows `shouldShowSaveCombat`.
    */
   saveSignupContext?: SaveSignupContext;
+  /**
+   * Cluster γ (A#1) — forwarded to `RecapCtaCard` for the anon flow.
+   * The parent (PlayerJoinClient) uses this to open its singleton
+   * AuthModal with the recap_anon attribution moment.
+   */
+  onRequestAuthModal?: (payload: RecapCtaRequestAuthModalPayload) => void;
 }
 
-export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign, sessionId, saveSignupContext }: RecapActionsProps) {
+export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingShareUrl, campaignId, encounterId, onRate, initialRating, onJoinCampaign, sessionId, saveSignupContext, onRequestAuthModal }: RecapActionsProps) {
   const t = useTranslations("combat");
   const tFeedback = useTranslations("feedback");
   const router = useRouter();
@@ -180,7 +186,11 @@ export function RecapActions({ report, onNewCombat, onSaveAndSignup, existingSha
     >
       {/* Story 03-D — conversion CTA card (anon) / delegated flow (guest) */}
       {saveSignupContext && (
-        <RecapCtaCard context={saveSignupContext} onComplete={onNewCombat} />
+        <RecapCtaCard
+          context={saveSignupContext}
+          onComplete={onNewCombat}
+          onRequestAuthModal={onRequestAuthModal}
+        />
       )}
 
       {/* JO-04: Primary CTA — Join Campaign (anonymous player in campaign session) */}

@@ -18,6 +18,7 @@ import { TurnTimer } from "@/components/combat/TurnTimer";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
 import { PolymorphModal, shouldShowPolymorphTrigger } from "@/components/combat/PolymorphModal";
 import { CombatRecap } from "@/components/combat/CombatRecap";
+import type { SaveSignupContext } from "@/components/conversion/types";
 import { useGuestCombatStats } from "@/lib/stores/guest-combat-stats";
 import { useCombatLogStore } from "@/lib/stores/combat-log-store";
 import { buildCombatReportFromStats } from "@/lib/utils/combat-stats";
@@ -999,6 +1000,20 @@ export function GuestCombatClient() {
     const map = new Map<string, number>();
     combatants.forEach((c, i) => map.set(c.id, i));
     return map;
+  }, [combatants]);
+
+  // Cluster γ (Q#2) — memoize the guest saveSignupContext passed to
+  // <CombatRecap>. Without this, every render creates a fresh object and
+  // identity-sensitive effects inside RecapCtaCard (GuestRecapFlow) would
+  // re-fire on unrelated combatants-state mutations (HP deltas, turn
+  // advance). Only recomputes when the player roster changes.
+  const guestSaveSignupContext = useMemo<SaveSignupContext>(() => {
+    const players = combatants.filter((c) => c.is_player === true);
+    return {
+      mode: "guest",
+      guestCombatants: players,
+      characterName: players[0]?.name ?? null,
+    };
   }, [combatants]);
 
   // Turn timer — now sourced from the store (accumulates on advanceTurn)
@@ -2220,12 +2235,9 @@ export function GuestCombatClient() {
             // delegates to <GuestRecapFlow> which owns the signup → migrate
             // pipeline. Adding this prop is purely additive — the legacy
             // onSaveAndSignup path above is still wired.
-            saveSignupContext={{
-              mode: "guest",
-              guestCombatants: combatants.filter((c) => c.is_player === true),
-              characterName:
-                combatants.find((c) => c.is_player === true)?.name ?? null,
-            }}
+            // Cluster γ (Q#2): stable identity via `guestSaveSignupContext`
+            // useMemo above — prevents unnecessary child re-renders.
+            saveSignupContext={guestSaveSignupContext}
           />
         )}
       </AnimatePresence>

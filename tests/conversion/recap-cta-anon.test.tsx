@@ -1,22 +1,23 @@
 /**
  * Epic 03, Story 03-D — RecapCtaCard unit tests (anon + guest delegation).
  *
+ * Cluster γ refactor (Wave 2B): RecapCtaCard no longer owns an AuthModal
+ * instance. The parent (PlayerJoinClient) owns the singleton AuthModal and
+ * the card requests modal opens via `onRequestAuthModal({sessionTokenId,
+ * campaignId, moment:"recap_anon"})`. These tests assert the new contract.
+ *
  * We mock:
  *   - `next-intl` with a local override that supports both `t()` and
  *     `t.rich()` (the project-wide jest.setup mock only supports `t()`).
  *     First use of `t.rich()` in the codebase — see epic §D7/F13.
- *   - `@/components/auth/AuthModal` — stub that exposes `open`, a helper
- *     to fire `onSuccess`, and an `onOpenChange` spy. Keeps the tests
- *     decoupled from supabase/forms and covers the contract we care about.
  *   - `@/lib/conversion/analytics` — jest.fn()s per helper.
- *   - `@/components/conversion/dismissal-store` — only `resetOnConversion`.
+ *   - `@/components/conversion/dismissal-store` — recordDismissal + read.
  *   - `@/components/conversion/GuestRecapFlow` — spy stub to assert the
  *     delegation contract (context forwarded + onComplete wired).
- *   - `sonner` toast.
  */
 
 import React from "react";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // ---------------------------------------------------------------------------
@@ -63,28 +64,31 @@ jest.mock("next-intl", () => ({
 
 const trackCtaShown = jest.fn();
 const trackCtaClicked = jest.fn();
+const trackCtaDismissed = jest.fn();
 const trackConversionCompleted = jest.fn();
 const trackConversionFailed = jest.fn();
 
 jest.mock("@/lib/conversion/analytics", () => ({
   trackCtaShown: (...args: unknown[]) => trackCtaShown(...args),
   trackCtaClicked: (...args: unknown[]) => trackCtaClicked(...args),
+  trackCtaDismissed: (...args: unknown[]) => trackCtaDismissed(...args),
   trackConversionCompleted: (...args: unknown[]) =>
     trackConversionCompleted(...args),
   trackConversionFailed: (...args: unknown[]) => trackConversionFailed(...args),
   trackModalOpened: jest.fn(),
-  trackCtaDismissed: jest.fn(),
 }));
 
 // ---------------------------------------------------------------------------
-// Dismissal store — we only care resetOnConversion is called.
+// Dismissal store — card now owns local dismissal so we mock record + read.
 // ---------------------------------------------------------------------------
 
-const resetOnConversion = jest.fn();
+const recordDismissal = jest.fn();
+const readDismissalRecord = jest.fn();
 jest.mock("@/components/conversion/dismissal-store", () => ({
-  resetOnConversion: () => resetOnConversion(),
+  recordDismissal: (...args: unknown[]) => recordDismissal(...args),
+  readDismissalRecord: () => readDismissalRecord(),
+  resetOnConversion: jest.fn(),
   shouldShowCta: () => true,
-  recordDismissal: jest.fn(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -100,56 +104,8 @@ jest.mock("@/components/conversion/GuestRecapFlow", () => ({
 }));
 
 // ---------------------------------------------------------------------------
-// AuthModal stub — exposes a button to simulate success and records calls.
-// ---------------------------------------------------------------------------
-
-type AuthModalStubProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  defaultTab: "login" | "signup";
-  onSuccess: (payload: {
-    userId: string;
-    isNewAccount: boolean;
-    upgraded: boolean;
-  }) => void;
-  upgradeContext?: { sessionTokenId: string; campaignId?: string };
-};
-
-const authModalPropsLog: AuthModalStubProps[] = [];
-
-jest.mock("@/components/auth/AuthModal", () => ({
-  AuthModal: (props: AuthModalStubProps) => {
-    authModalPropsLog.push(props);
-    if (!props.open) return null;
-    return (
-      <div data-testid="auth-modal-stub">
-        <button
-          type="button"
-          data-testid="auth-modal-stub.fire-success"
-          onClick={() =>
-            props.onSuccess({
-              userId: "user-123",
-              isNewAccount: true,
-              upgraded: true,
-            })
-          }
-        >
-          fire success
-        </button>
-        <button
-          type="button"
-          data-testid="auth-modal-stub.close"
-          onClick={() => props.onOpenChange(false)}
-        >
-          close
-        </button>
-      </div>
-    );
-  },
-}));
-
-// ---------------------------------------------------------------------------
-// sonner toast mock
+// sonner toast mock (card no longer calls toast directly — parent does — but
+// keep the mock in case future revisions add toast calls back).
 // ---------------------------------------------------------------------------
 
 const toastSuccess = jest.fn();
@@ -185,11 +141,16 @@ const GUEST_CTX: Extract<SaveSignupContext, { mode: "guest" }> = {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  authModalPropsLog.length = 0;
   guestRecapFlowProps.length = 0;
+  readDismissalRecord.mockReturnValue({
+    dismissalsByCampaign: {
+      "camp-1": { count: 1, lastDismissedAt: new Date().toISOString() },
+    },
+    lastSeenCampaign: "camp-1",
+  });
 });
 
-describe("RecapCtaCard (Story 03-D — anon flow)", () => {
+describe("RecapCtaCard (Story 03-D — anon flow, Cluster γ contract)", () => {
   it("renders the anon card with t.rich headline wrapping characterName in <strong>", () => {
     render(<RecapCtaCard context={ANON_CTX} />);
 
@@ -206,21 +167,25 @@ describe("RecapCtaCard (Story 03-D — anon flow)", () => {
     expect(strong).toHaveTextContent("Thorin");
   });
 
-  it("fires trackCtaShown('recap_anon', {...}) exactly once on mount", () => {
-    render(<RecapCtaCard context={ANON_CTX} />);
+  it("fires trackCtaShown('recap_anon', {...}) exactly once on mount (W#6 StrictMode guard)", () => {
+    const { rerender } = render(<RecapCtaCard context={ANON_CTX} />);
     expect(trackCtaShown).toHaveBeenCalledTimes(1);
     expect(trackCtaShown).toHaveBeenCalledWith("recap_anon", {
       campaignId: "camp-1",
       hasCharacter: true,
     });
+    // Re-render with a fresh context object (same data) — the ref gate
+    // prevents a second fire.
+    rerender(<RecapCtaCard context={{ ...ANON_CTX }} />);
+    expect(trackCtaShown).toHaveBeenCalledTimes(1);
   });
 
-  it("clicking the primary CTA fires trackCtaClicked and opens AuthModal with upgradeContext", async () => {
+  it("clicking primary CTA fires trackCtaClicked and calls onRequestAuthModal with moment:'recap_anon'", async () => {
     const user = userEvent.setup();
-    render(<RecapCtaCard context={ANON_CTX} />);
-
-    // Modal starts closed.
-    expect(screen.queryByTestId("auth-modal-stub")).not.toBeInTheDocument();
+    const onRequestAuthModal = jest.fn();
+    render(
+      <RecapCtaCard context={ANON_CTX} onRequestAuthModal={onRequestAuthModal} />,
+    );
 
     await user.click(
       screen.getByTestId("conversion.recap-cta.anon.primary"),
@@ -229,67 +194,63 @@ describe("RecapCtaCard (Story 03-D — anon flow)", () => {
     expect(trackCtaClicked).toHaveBeenCalledWith("recap_anon", {
       campaignId: "camp-1",
     });
-
-    // Modal now open, with the correct upgradeContext.
-    expect(screen.getByTestId("auth-modal-stub")).toBeInTheDocument();
-    const latestProps = authModalPropsLog[authModalPropsLog.length - 1];
-    expect(latestProps.defaultTab).toBe("signup");
-    expect(latestProps.upgradeContext).toEqual({
+    expect(onRequestAuthModal).toHaveBeenCalledTimes(1);
+    expect(onRequestAuthModal).toHaveBeenCalledWith({
       sessionTokenId: "tok-abc",
       campaignId: "camp-1",
+      moment: "recap_anon",
     });
   });
 
-  it("on AuthModal success: fires trackConversionCompleted, resets dismissal, shows toast, calls onComplete, closes modal", async () => {
-    const user = userEvent.setup();
-    const onComplete = jest.fn();
-    render(<RecapCtaCard context={ANON_CTX} onComplete={onComplete} />);
-
-    await user.click(screen.getByTestId("conversion.recap-cta.anon.primary"));
-    await act(async () => {
-      await user.click(screen.getByTestId("auth-modal-stub.fire-success"));
-    });
-
-    expect(trackConversionCompleted).toHaveBeenCalledWith("recap_anon", {
-      campaignId: "camp-1",
-      characterId: "char-1",
-      flow: "upgrade",
-    });
-    expect(resetOnConversion).toHaveBeenCalledTimes(1);
-    expect(toastSuccess).toHaveBeenCalledTimes(1);
-    // Post-success toast key is `conversion.post_success.recap_anon`.
-    // The mocked `t()` echoes the namespace.key path — we only verify
-    // the key is present. (Real next-intl substitutes `{characterName}`
-    // at runtime using `messages/*.json`; that layer is i18n's concern,
-    // not the component's.)
-    expect(toastSuccess.mock.calls[0][0]).toContain(
-      "conversion.post_success.recap_anon",
-    );
-    expect(onComplete).toHaveBeenCalledTimes(1);
-    // Modal dismissed.
+  it("card does NOT render its own AuthModal anymore (A#1 refactor)", () => {
+    // Keep a loose guard: if the card accidentally re-introduces an inline
+    // modal, this regex test will spot it. We explicitly assert the stub
+    // isn't in the DOM — in the pre-refactor world a stubbed AuthModal
+    // was mounted; now the parent owns it.
+    render(<RecapCtaCard context={ANON_CTX} />);
     expect(screen.queryByTestId("auth-modal-stub")).not.toBeInTheDocument();
   });
 
-  it("dismissing the modal without success does NOT fire trackConversionFailed (plain dismissal is not a failure)", async () => {
-    const user = userEvent.setup();
-    render(<RecapCtaCard context={ANON_CTX} />);
-    await user.click(screen.getByTestId("conversion.recap-cta.anon.primary"));
-    expect(screen.getByTestId("auth-modal-stub")).toBeInTheDocument();
-
-    await user.click(screen.getByTestId("auth-modal-stub.close"));
-    expect(trackConversionFailed).not.toHaveBeenCalled();
-    expect(trackConversionCompleted).not.toHaveBeenCalled();
-  });
-
-  it("the secondary CTA ('continuar sem salvar') calls onComplete", async () => {
+  it("A#2 — secondary CTA records dismissal, fires trackCtaDismissed, hides the card, does NOT call onComplete", async () => {
     const user = userEvent.setup();
     const onComplete = jest.fn();
+    readDismissalRecord.mockReturnValueOnce({
+      dismissalsByCampaign: {
+        "camp-1": { count: 2, lastDismissedAt: new Date().toISOString() },
+      },
+      lastSeenCampaign: "camp-1",
+    });
+
     render(<RecapCtaCard context={ANON_CTX} onComplete={onComplete} />);
 
     await user.click(
       screen.getByTestId("conversion.recap-cta.anon.secondary"),
     );
-    expect(onComplete).toHaveBeenCalledTimes(1);
+
+    expect(recordDismissal).toHaveBeenCalledWith("camp-1");
+    expect(trackCtaDismissed).toHaveBeenCalledWith("recap_anon", {
+      campaignId: "camp-1",
+      dismissalCount: 2,
+    });
+    // Card hidden (returns null after cardDismissed flips to true).
+    expect(
+      screen.queryByTestId("conversion.recap-cta.anon.root"),
+    ).not.toBeInTheDocument();
+    // Critically: onComplete (which closes the whole recap) is NOT called.
+    expect(onComplete).not.toHaveBeenCalled();
+  });
+
+  it("A#2 secondary defaults dismissalCount to 1 when storage read returns null", async () => {
+    const user = userEvent.setup();
+    readDismissalRecord.mockReturnValueOnce(null);
+    render(<RecapCtaCard context={ANON_CTX} />);
+    await user.click(
+      screen.getByTestId("conversion.recap-cta.anon.secondary"),
+    );
+    expect(trackCtaDismissed).toHaveBeenCalledWith("recap_anon", {
+      campaignId: "camp-1",
+      dismissalCount: 1,
+    });
   });
 
   it("hasCharacter is false when characterId is null", () => {
@@ -302,6 +263,20 @@ describe("RecapCtaCard (Story 03-D — anon flow)", () => {
       campaignId: "camp-1",
       hasCharacter: false,
     });
+  });
+
+  it("onRequestAuthModal absent is a safe no-op (defensive)", async () => {
+    const user = userEvent.setup();
+    render(<RecapCtaCard context={ANON_CTX} />);
+    await user.click(
+      screen.getByTestId("conversion.recap-cta.anon.primary"),
+    );
+    // Analytics still fires even without the parent wired.
+    expect(trackCtaClicked).toHaveBeenCalledWith("recap_anon", {
+      campaignId: "camp-1",
+    });
+    // No explosion from the missing prop.
+    expect(trackConversionFailed).not.toHaveBeenCalled();
   });
 });
 

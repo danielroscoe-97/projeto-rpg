@@ -28,7 +28,7 @@
  * `docs/patterns-i18n-rich-text.md` for the canonical `em:` handler pattern.
  */
 
-import { useEffect, useId, useRef } from "react";
+import { useId } from "react";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -46,7 +46,7 @@ import {
 import {
   trackCtaClicked,
   trackCtaDismissed,
-  trackCtaShown,
+  trackConversionFailed,
 } from "@/lib/conversion/analytics";
 
 export type WaitingRoomSignupCTAProps = {
@@ -83,22 +83,10 @@ export function WaitingRoomSignupCTA({
   const t = useTranslations("conversion.waiting_room");
   const headingId = useId();
 
-  // Fire `conversion:cta_shown` exactly once per mount. StrictMode double-
-  // invocation is guarded by the ref so dev never fires twice. (Production
-  // React does not double-invoke effects.)
-  const shownFiredRef = useRef(false);
-  useEffect(() => {
-    if (shownFiredRef.current) return;
-    shownFiredRef.current = true;
-    trackCtaShown("waiting", {
-      campaignId,
-      hasCharacter: !!characterId,
-    });
-    // We intentionally depend on nothing — this must fire once per mount,
-    // not every time `characterId` is resolved. The gate above is the
-    // sentinel.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Cluster γ (Q#17) — `conversion:cta_shown` is fired by the parent
+  // (PlayerJoinClient) keyed by `effectiveTokenId` so reconnects (child
+  // remounts, parent survives) cannot double-count. The child used to own
+  // a mount-level ref; that responsibility is now the parent's alone.
 
   const handlePrimary = () => {
     trackCtaClicked("waiting", { campaignId });
@@ -110,7 +98,23 @@ export function WaitingRoomSignupCTA({
     // count from storage (best-effort — null-safe) so analytics reflects
     // the post-increment value. If storage is unavailable we default to 1
     // (the action still happened, we just can't read the persisted total).
-    recordDismissal(campaignId);
+    // Cluster γ (Q#3) — emit a `conversion:failed` breadcrumb when the
+    // write itself throws so we can distinguish "user dismissed" from
+    // "storage full / private mode / quota exceeded" in funnel analytics.
+    try {
+      recordDismissal(campaignId);
+    } catch (err) {
+      // Diagnostic only — user-visible behavior is unchanged (card still
+      // closes via onDismiss below).
+      // eslint-disable-next-line no-console
+      console.warn("dismissal-store: storage write failed", err);
+      try {
+        trackConversionFailed("waiting", {
+          campaignId,
+          error: "storage_write_failed",
+        });
+      } catch { /* analytics best-effort */ }
+    }
     let dismissalCount = 1;
     try {
       const record = readDismissalRecord();

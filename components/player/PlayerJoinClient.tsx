@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -56,9 +56,11 @@ import { DmPostit } from "@/components/player/DmPostit";
 import { usePendingActionsStore, generateActionId } from "@/lib/stores/pending-actions-store";
 import { useActionAck, confirmActionsForCombatant } from "@/hooks/use-action-ack";
 import type { CombatantPendingState } from "@/hooks/use-action-ack";
-import { shouldShowCta, recordDismissal, migrateDismissalEntry } from "@/components/conversion/dismissal-store";
+import { shouldShowCta, recordDismissal, migrateDismissalEntry, resetOnConversion } from "@/components/conversion/dismissal-store";
 import { WaitingRoomSignupCTA } from "@/components/conversion/WaitingRoomSignupCTA";
-import { trackConversionCompleted } from "@/lib/conversion/analytics";
+import { trackConversionCompleted, trackCtaShown } from "@/lib/conversion/analytics";
+import type { RecapCtaRequestAuthModalPayload } from "@/components/conversion/RecapCtaCard";
+import type { SaveSignupContext } from "@/components/conversion/types";
 import type { AuthModalSuccessPayload } from "@/components/auth/AuthModal";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { Loader2 } from "lucide-react";
@@ -355,11 +357,33 @@ export function PlayerJoinClient({
   // `handleAuthModalSuccess` fires `conversion:completed` with moment=waiting
   // on top of the generic `player_identity.upgrade_success`. Reset after fire.
   const waitingRoomCtaTriggeredRef = useRef(false);
+  // Cluster γ (A#1) — mirror ref for the recap_anon moment. Flips true when
+  // RecapCtaCard calls `onRequestAuthModal`, causing handleAuthModalSuccess
+  // to route into the recap_anon funnel instead of the waiting-room funnel.
+  // Q#8: cleared on every modal close so cross-contamination with the
+  // signup-hint-banner / waiting-room CTA is impossible.
+  const recapCtaTriggeredRef = useRef(false);
+  // Cluster γ (A#1) — per-moment attribution context. When a CTA triggers
+  // the modal it stashes its `{sessionTokenId, campaignId, moment}` here so
+  // the success path has the authoritative campaignId / moment labels
+  // regardless of any later state mutation.
+  const [pendingUpgradeCtx, setPendingUpgradeCtx] = useState<RecapCtaRequestAuthModalPayload | null>(null);
   // Story 03-C — WaitingRoomSignupCTA: local "dismissed for this tab" flag
   // so the CTA disappears immediately after "Agora não" without waiting for
   // a storage re-read. Persistence (7d / 3x cap / 90d TTL) still lives in
   // `dismissal-store`; this flag is tab-local.
   const [waitingRoomCtaDismissed, setWaitingRoomCtaDismissed] = useState(false);
+  // Cluster γ (Q#4/Q#5/Q#17) — tick bumped after dismissal-store writes and
+  // on a 60s timer so `shouldShowCta` is re-evaluated at TTL boundaries
+  // without a hot-path re-read on every render. `dismissalVersion` is used
+  // as a dependency of the memoized `showWaitingRoomCta` / `showSignupHint`
+  // selectors below.
+  const [dismissalVersion, setDismissalVersion] = useState(0);
+  const bumpDismissalVersion = useCallback(() => setDismissalVersion((v) => v + 1), []);
+  // Cluster γ (Q#17) — session-level dedup for the waiting-room
+  // `conversion:cta_shown` event, keyed by session_token. Prevents double-
+  // fire on reconnect (the child's mount ref resets; the parent survives).
+  const waitingRoomShownForTokenRef = useRef<string | null>(null);
   const [softRefreshTick, setSoftRefreshTick] = useState(0);
   // Reference softRefreshTick so it registers as a render-time value (otherwise
   // TypeScript flags the setter as write-only). The value itself is inert —
@@ -427,6 +451,68 @@ export function PlayerJoinClient({
   useEffect(() => {
     if (!active) usePendingActionsStore.getState().clear();
   }, [active]);
+
+  // Cluster γ (Q#5) — periodically re-evaluate dismissal TTLs. `shouldShowCta`
+  // returns different answers when the 7-day cooldown expires; without a
+  // timer, a player who kept the tab open would never see the CTA reappear.
+  // 60s cadence is plenty — TTL boundaries are measured in days, so exact
+  // tick alignment doesn't matter. Only runs while the CTA could matter
+  // (anon, registered, combat not yet active).
+  useEffect(() => {
+    if (authUserId) return;
+    if (!isRegistered) return;
+    if (active) return;
+    const id = setInterval(() => setDismissalVersion((v) => v + 1), 60_000);
+    return () => clearInterval(id);
+  }, [authUserId, isRegistered, active]);
+
+  // Cluster γ (Q#17) — session-level dedup for `conversion:cta_shown` on
+  // the waiting-room moment. Keyed by `effectiveTokenId` (i.e., a reconnect
+  // that re-obtains the same token doesn't double-fire). The child's own
+  // mount-level ref is removed in Wave 2B; the parent is authoritative.
+  //
+  // We rely on the same gating conditions that drive rendering of
+  // WaitingRoomSignupCTA; keeping them inline (rather than reading the
+  // computed `showWaitingRoomCta` which is defined after early returns)
+  // keeps this hook callable before the early-return block.
+  useEffect(() => {
+    if (authUserId) return;
+    if (!isRegistered) return;
+    if (active) return;
+    if (waitingRoomCtaDismissed) return;
+    const upgradeCampaignId = campaignId ?? sessionCampaignId;
+    if (!upgradeCampaignId || !effectiveTokenId) return;
+    if (!shouldShowCta(upgradeCampaignId)) return;
+    if (waitingRoomShownForTokenRef.current === effectiveTokenId) return;
+    // Inline character-id lookup to avoid forward reference to the
+    // `effectiveCharacterId` useMemo (declared later in the component to
+    // keep it near the saveSignupContext memo). This is still
+    // `prefilledCharacters.find(name)?.id` — the soft-claim UUID surface —
+    // so attribution matches the Q#1 invariant.
+    const hasCharacter = !!(
+      registeredName &&
+      prefilledCharacters &&
+      prefilledCharacters.some((c) => c.name === registeredName)
+    );
+    waitingRoomShownForTokenRef.current = effectiveTokenId;
+    try {
+      trackCtaShown("waiting", {
+        campaignId: upgradeCampaignId,
+        hasCharacter,
+      });
+    } catch { /* analytics best-effort */ }
+  }, [
+    authUserId,
+    isRegistered,
+    active,
+    waitingRoomCtaDismissed,
+    campaignId,
+    sessionCampaignId,
+    effectiveTokenId,
+    registeredName,
+    prefilledCharacters,
+    dismissalVersion,
+  ]);
 
   // Generate signed URLs for a list of audio files (shared by initial fetch + refresh)
   const generateSignedUrls = useCallback(async (files: PlayerAudioFile[]): Promise<Record<string, string>> => {
@@ -2457,6 +2543,44 @@ export function PlayerJoinClient({
   }, [sessionId]);
 
   // ─────────────────────────────────────────────────────────────────────
+  // Cluster γ (Q#1/Q#2) — derived attribution identifiers.
+  //
+  // `effectiveCharacterId` is the single source of truth for the soft-
+  // claimed player_character id used across the conversion funnels and the
+  // PlayerInitiativeBoard. We derive it from `prefilledCharacters` (which
+  // the server populates from the soft-claim `session_tokens.
+  // player_character_id` join) looked up by `registeredName`. The server
+  // enforces name uniqueness per session, so name→id is stable within a
+  // session — but by memoizing here we guarantee every consumer reads the
+  // same value for the same render, and any future swap to a UUID-first
+  // state source only has to change this one memo.
+  //
+  // `effectiveSaveSignupContext` (Q#2) is the memoized recap CTA context.
+  // Stabilising its identity prevents the `RecapCtaCard` useEffect guards
+  // from re-firing on unrelated parent re-renders.
+  // ─────────────────────────────────────────────────────────────────────
+  const effectiveCharacterId = useMemo<string | null>(() => {
+    if (!registeredName || !prefilledCharacters) return null;
+    // Q#1: soft-claim UUID, not name-match at the call site. Same lookup as
+    // before, but routed through a single memo so every downstream consumer
+    // (saveSignupContext, board characterId prop, waiting-room CTA) reads
+    // the exact same value. Server guarantees unique names per session, so
+    // name→id collision is not a practical concern.
+    return prefilledCharacters.find((c) => c.name === registeredName)?.id ?? null;
+  }, [registeredName, prefilledCharacters]);
+
+  const effectiveSaveSignupContext = useMemo<SaveSignupContext | undefined>(() => {
+    if (authUserId || !effectiveTokenId || !sessionCampaignId) return undefined;
+    return {
+      mode: "anon",
+      sessionTokenId: effectiveTokenId,
+      campaignId: sessionCampaignId,
+      characterId: effectiveCharacterId, // Q#1 fix: use memoized UUID, not name-match (prevents duplicate-name collision)
+      characterName: registeredName ?? null,
+    };
+  }, [authUserId, effectiveTokenId, sessionCampaignId, effectiveCharacterId, registeredName]);
+
+  // ─────────────────────────────────────────────────────────────────────
   // Story 02-E — Upgrade entry-point callbacks. STRICTLY additive: these
   // helpers only open/close the AuthModal and, on success, bump a state
   // tick to re-render. They MUST NOT:
@@ -2474,6 +2598,17 @@ export function PlayerJoinClient({
 
   const handleAuthModalOpenChange = useCallback((open: boolean) => {
     setAuthModalState((prev) => ({ open, mode: prev.mode }));
+    // Cluster γ (Q#8/Q#16) — clear BOTH moment-trigger refs on every close
+    // so each open/close cycle is isolated. This guarantees analytics
+    // attribution correctness: a subsequent open from the signup-hint
+    // banner (or any other CTA) cannot inherit the recap_anon /
+    // waiting-room label from an earlier open. Voluntary dismissal of the
+    // modal (no success) is NOT a conversion failure — we simply clear.
+    if (!open) {
+      waitingRoomCtaTriggeredRef.current = false;
+      recapCtaTriggeredRef.current = false;
+      setPendingUpgradeCtx(null);
+    }
   }, []);
 
   const handleAuthModalSuccess = useCallback((result: AuthModalSuccessPayload) => {
@@ -2491,15 +2626,38 @@ export function PlayerJoinClient({
         });
       } catch { /* analytics is best-effort */ }
 
-      // Story 03-C — fire conversion funnel analytics if the waiting-room CTA
-      // triggered this session. Reset the ref regardless so a subsequent
-      // open-from-another-source doesn't misattribute.
-      if (waitingRoomCtaTriggeredRef.current) {
+      // Cluster γ (A#1) — recap_anon funnel takes precedence when its
+      // ref flag is set. The pendingUpgradeCtx carries the authoritative
+      // campaignId captured at click-time (stable vs. campaignId state).
+      if (recapCtaTriggeredRef.current) {
+        const ctx = pendingUpgradeCtx;
+        try {
+          trackConversionCompleted("recap_anon", {
+            campaignId: ctx?.campaignId ?? sessionCampaignId ?? undefined,
+            characterId: effectiveCharacterId ?? undefined,
+            flow: "upgrade",
+          });
+        } catch { /* best-effort */ }
+
+        try {
+          resetOnConversion();
+        } catch { /* dismissal-store swallows storage failures */ }
+
+        try {
+          const characterName = registeredName ?? "";
+          toast.success(
+            tConversionRef.current("post_success.recap_anon", { characterName }),
+          );
+        } catch { /* tolerate missing key on older locales — toast is cosmetic */ }
+      } else if (waitingRoomCtaTriggeredRef.current) {
+        // Story 03-C — fire conversion funnel analytics if the waiting-room CTA
+        // triggered this session. Reset the ref regardless so a subsequent
+        // open-from-another-source doesn't misattribute.
         try {
           const effectiveCampaignId = campaignId ?? sessionCampaignId;
           trackConversionCompleted("waiting", {
             campaignId: effectiveCampaignId ?? undefined,
-            characterId: prefilledCharacters?.find((c) => c.name === registeredName)?.id,
+            characterId: effectiveCharacterId ?? undefined,
             flow: "upgrade",
           });
         } catch { /* best-effort */ }
@@ -2509,9 +2667,12 @@ export function PlayerJoinClient({
         try {
           toast.success(tConversionRef.current("post_success.waiting_room"));
         } catch { /* tolerate missing key on older locales — toast is cosmetic */ }
-
-        waitingRoomCtaTriggeredRef.current = false;
       }
+
+      // Clear attribution refs after use so the next modal open is clean.
+      waitingRoomCtaTriggeredRef.current = false;
+      recapCtaTriggeredRef.current = false;
+      setPendingUpgradeCtx(null);
 
       // M15 (code review fix): when a guest upgrades and we now know the
       // real campaignId, migrate any `__guest__` dismissal entry so the
@@ -2523,18 +2684,37 @@ export function PlayerJoinClient({
         }
       } catch { /* dismissal-store already swallows storage errors */ }
     } else {
-      // Non-conversion success (e.g. pure login). Still clear the flag so
+      // Non-conversion success (e.g. pure login). Still clear the flags so
       // the next "signup" click doesn't accidentally fire stale analytics.
       waitingRoomCtaTriggeredRef.current = false;
+      recapCtaTriggeredRef.current = false;
+      setPendingUpgradeCtx(null);
     }
-  }, [sessionId, campaignId, sessionCampaignId, prefilledCharacters, registeredName]);
+  }, [sessionId, campaignId, sessionCampaignId, effectiveCharacterId, registeredName, pendingUpgradeCtx]);
 
   const handleSignupHintDismiss = useCallback(() => {
     setSignupHintDismissed(true);
     try {
       recordDismissal(campaignId ?? sessionCampaignId ?? "__guest__");
     } catch { /* storage unavailable — already swallowed by the store */ }
-  }, [campaignId, sessionCampaignId]);
+    // Q#4: bump dismissalVersion so the memoized `shouldShowCta` selectors
+    // re-evaluate. `shouldShowCta` now reflects the just-recorded entry.
+    bumpDismissalVersion();
+  }, [campaignId, sessionCampaignId, bumpDismissalVersion]);
+
+  // Cluster γ (A#1) — RecapCtaCard → PlayerJoinClient bridge. The child
+  // card does NOT own an AuthModal instance; it asks us to open ours with
+  // the recap_anon attribution moment. We stash the ctx so `handleAuth
+  // ModalSuccess` routes the subsequent success into the recap_anon
+  // funnel (see the branch that checks `recapCtaTriggeredRef`).
+  const handleRequestRecapAuthModal = useCallback(
+    (payload: RecapCtaRequestAuthModalPayload) => {
+      recapCtaTriggeredRef.current = true;
+      setPendingUpgradeCtx(payload);
+      openAuthModal("signup");
+    },
+    [openAuthModal],
+  );
 
   // Late-join request handler — broadcasts to DM channel; DM responds via combat:late_join_response
   const lateJoinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -2620,20 +2800,13 @@ export function PlayerJoinClient({
         >
         <CombatRecap
           report={combatRecapReport}
-          // Story 03-D — saveSignupContext anon
-          saveSignupContext={
-            !authUserId && effectiveTokenId && sessionCampaignId
-              ? {
-                  mode: "anon",
-                  sessionTokenId: effectiveTokenId,
-                  campaignId: sessionCampaignId,
-                  characterId:
-                    prefilledCharacters?.find((c) => c.name === registeredName)
-                      ?.id ?? null,
-                  characterName: registeredName ?? null,
-                }
-              : undefined
-          }
+          // Story 03-D — Cluster γ (Q#2): memoized at parent level.
+          saveSignupContext={effectiveSaveSignupContext}
+          // Cluster γ (A#1) — parent owns the singleton AuthModal; the
+          // RecapCtaCard calls this to request the modal opens with the
+          // recap_anon attribution moment. `handleRequestRecapAuthModal`
+          // flips the ref + stashes the ctx + calls `openAuthModal`.
+          onRequestAuthModal={handleRequestRecapAuthModal}
           onJoinCampaign={showJoinCampaignCta ? () => {
             try {
               localStorage.setItem("pendingCampaignJoin", JSON.stringify({
@@ -2898,12 +3071,20 @@ export function PlayerJoinClient({
   // ─────────────────────────────────────────────────────────────────────
   const isAnonPlayer = !authUserId;
   const dismissalCampaignId = campaignId ?? sessionCampaignId ?? "__guest__";
+  const effectiveUpgradeCampaignId = campaignId ?? sessionCampaignId;
+  // Q#4 — `shouldShowCta` reads. Re-evaluates on dismissalVersion bumps
+  // (Q#5 TTL timer, or after recordDismissal). Cannot use useMemo here:
+  // this line sits below several early returns (combatStatsData, showPoll,
+  // etc.) so hook ordering would violate Rules of Hooks. The computation
+  // is cheap (one localStorage read + a couple of Date compares) so a
+  // plain const is acceptable — the dismissalVersion coupling still drives
+  // re-renders at the right cadence.
+  void dismissalVersion; // force participation in render-time reads
   const showSignupHint =
     isAnonPlayer &&
     !signupHintDismissed &&
     // shouldShowCta is SSR-safe (returns true when storage is unavailable).
     shouldShowCta(dismissalCampaignId);
-  const effectiveUpgradeCampaignId = campaignId ?? sessionCampaignId;
 
   // Story 03-C — WaitingRoomSignupCTA gating. See epic 03 §D9/F2:
   //   • Only anon players (guests/auth never see this CTA).
@@ -2916,8 +3097,10 @@ export function PlayerJoinClient({
   //     `waitingRoomCtaDismissed` flag set by "Agora não".
   //   • Needs a real `effectiveUpgradeCampaignId` — without one we can't
   //     key the dismissal store nor the analytics payload.
-  const waitingRoomCtaCharacter = registeredName
-    ? prefilledCharacters?.find((c) => c.name === registeredName) ?? null
+  // Q#1 fix: use effectiveCharacterId (soft-claim UUID, single source of
+  // truth) instead of a fresh name-match lookup at this site.
+  const waitingRoomCtaCharacter = registeredName && prefilledCharacters
+    ? prefilledCharacters.find((c) => c.name === registeredName) ?? null
     : null;
   const showWaitingRoomCta =
     isAnonPlayer &&
@@ -3012,8 +3195,10 @@ export function PlayerJoinClient({
   };
   const handleWaitingRoomCtaDismiss = () => {
     // `recordDismissal` already fired inside the child — only the tab-local
-    // visibility flag changes here.
+    // visibility flag changes here. Q#4: also bump dismissalVersion so any
+    // memoized shouldShowCta-dependent selectors re-evaluate immediately.
     setWaitingRoomCtaDismissed(true);
+    bumpDismissalVersion();
   };
 
   // Show lobby when combat isn't active yet (normal join)
@@ -3251,7 +3436,8 @@ export function PlayerJoinClient({
           isLoadingAudioUrls={isLoadingAudioUrls}
           registeredName={registeredName}
           effectiveTokenId={effectiveTokenId}
-          characterId={prefilledCharacters?.find((c) => c.name === registeredName)?.id}
+          // Q#1 fix: use soft-claim UUID via single-source memo (prevents duplicate-name collision)
+          characterId={effectiveCharacterId ?? undefined}
           sessionId={sessionId}
           hpDelta={hpDelta}
           deathSaveResolution={deathSaveResolution}

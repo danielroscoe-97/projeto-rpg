@@ -10,6 +10,7 @@ import { RecapNarratives } from "./RecapNarratives";
 import { RecapSummary } from "./RecapSummary";
 import { RecapActions } from "./RecapActions";
 import type { SaveSignupContext } from "@/components/conversion/types";
+import type { RecapCtaRequestAuthModalPayload } from "@/components/conversion/RecapCtaCard";
 
 type RecapPhase = "awards" | "details";
 
@@ -41,9 +42,15 @@ interface CombatRecapProps {
    * Additive and optional — callers that don't pass it see the prior UX.
    */
   saveSignupContext?: SaveSignupContext;
+  /**
+   * Cluster γ (A#1) — forwarded to `RecapCtaCard` via `RecapActions`
+   * so the parent (PlayerJoinClient) can open its singleton AuthModal
+   * for the anon recap upgrade flow.
+   */
+  onRequestAuthModal?: (payload: RecapCtaRequestAuthModalPayload) => void;
 }
 
-export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign, sessionId, saveSignupContext }: CombatRecapProps) {
+export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl, campaignId, encounterId, previousDurationMs, onRate, initialRating, onJoinCampaign, sessionId, saveSignupContext, onRequestAuthModal }: CombatRecapProps) {
   const t = useTranslations("combat");
   const [phase, setPhase] = useState<RecapPhase>(() => {
     if (report.awards.length === 0) return "details";
@@ -174,6 +181,7 @@ export function CombatRecap({ report, onClose, onSaveAndSignup, existingShareUrl
                   onJoinCampaign={onJoinCampaign}
                   sessionId={sessionId}
                   saveSignupContext={saveSignupContext}
+                  onRequestAuthModal={onRequestAuthModal}
                 />
               </motion.div>
             )}

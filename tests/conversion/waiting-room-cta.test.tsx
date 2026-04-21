@@ -79,10 +79,12 @@ jest.mock("@/components/conversion/dismissal-store", () => ({
 const mockTrackCtaShown = jest.fn();
 const mockTrackCtaDismissed = jest.fn();
 const mockTrackCtaClicked = jest.fn();
+const mockTrackConversionFailed = jest.fn();
 jest.mock("@/lib/conversion/analytics", () => ({
   trackCtaShown: (...args: unknown[]) => mockTrackCtaShown(...args),
   trackCtaDismissed: (...args: unknown[]) => mockTrackCtaDismissed(...args),
   trackCtaClicked: (...args: unknown[]) => mockTrackCtaClicked(...args),
+  trackConversionFailed: (...args: unknown[]) => mockTrackConversionFailed(...args),
 }));
 
 // ---------------------------------------------------------------------------
@@ -169,38 +171,20 @@ describe("WaitingRoomSignupCTA", () => {
     });
   });
 
-  describe("mount analytics", () => {
-    it("fires trackCtaShown exactly once per mount with hasCharacter=true", () => {
+  describe("mount analytics (Cluster γ Q#17 — responsibility moved to parent)", () => {
+    it("does NOT fire trackCtaShown on mount (the parent PlayerJoinClient now owns session-level dedup by effectiveTokenId)", () => {
       render(<WaitingRoomSignupCTA {...makeProps()} />);
-      expect(mockTrackCtaShown).toHaveBeenCalledTimes(1);
-      expect(mockTrackCtaShown).toHaveBeenCalledWith("waiting", {
-        campaignId: "camp-1",
-        hasCharacter: true,
-      });
+      expect(mockTrackCtaShown).not.toHaveBeenCalled();
     });
 
-    it("fires trackCtaShown with hasCharacter=false when characterId is null", () => {
-      render(
-        <WaitingRoomSignupCTA
-          {...makeProps({ characterId: null, characterName: null })}
-        />,
-      );
-      expect(mockTrackCtaShown).toHaveBeenCalledWith("waiting", {
-        campaignId: "camp-1",
-        hasCharacter: false,
-      });
-    });
-
-    it("does not re-fire trackCtaShown when parent re-renders the same mount", () => {
+    it("does NOT fire trackCtaShown on re-render either", () => {
       const { rerender } = render(
         <WaitingRoomSignupCTA {...makeProps({ characterName: "A" })} />,
       );
-      expect(mockTrackCtaShown).toHaveBeenCalledTimes(1);
       rerender(
         <WaitingRoomSignupCTA {...makeProps({ characterName: "B" })} />,
       );
-      // Same mount, different prop — the once-per-mount guard holds.
-      expect(mockTrackCtaShown).toHaveBeenCalledTimes(1);
+      expect(mockTrackCtaShown).not.toHaveBeenCalled();
     });
   });
 
@@ -265,6 +249,30 @@ describe("WaitingRoomSignupCTA", () => {
         campaignId: "camp-1",
         dismissalCount: 1,
       });
+    });
+
+    it("Q#3 — emits conversion:failed breadcrumb when recordDismissal throws (storage write failed)", async () => {
+      const user = userEvent.setup();
+      const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+      mockRecordDismissal.mockImplementationOnce(() => {
+        throw new Error("QuotaExceededError");
+      });
+      const onDismiss = jest.fn();
+      render(<WaitingRoomSignupCTA {...makeProps({ onDismiss })} />);
+
+      await user.click(
+        screen.getByTestId("conversion.waiting-room-cta.dismiss"),
+      );
+
+      // Breadcrumb analytic fired with the sentinel error key.
+      expect(mockTrackConversionFailed).toHaveBeenCalledWith("waiting", {
+        campaignId: "camp-1",
+        error: "storage_write_failed",
+      });
+      // User-visible behavior unchanged: onDismiss still invoked so the
+      // parent hides the card.
+      expect(onDismiss).toHaveBeenCalledTimes(1);
+      warnSpy.mockRestore();
     });
   });
 });
