@@ -1,0 +1,30 @@
+[
+  {
+    "event_name": "auth:signup_start",
+    "unique_users": 5
+  },
+  {
+    "event_name": "auth:login",
+    "unique_users": 45
+  },
+  {
+    "event_name": "campaign:created",
+    "unique_users": 0
+  },
+  {
+    "event_name": "session:created",
+    "unique_users": 0
+  },
+  {
+    "event_name": "combat:started",
+    "unique_users": 14
+  },
+  {
+    "event_name": "combat:ended",
+    "unique_users": 6
+  },
+  {
+    "event_name": "player:joined",
+    "unique_users": 1
+  }
+]

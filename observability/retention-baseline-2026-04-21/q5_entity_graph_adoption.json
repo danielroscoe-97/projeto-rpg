@@ -1,0 +1,27 @@
+{
+  "a": {
+    "table_used": "campaign_mind_map_edges",
+    "total_campaigns": 204,
+    "campaigns_with_graph": 0,
+    "graph_adoption_pct": 0
+  },
+  "b": [
+    {
+      "week": "2026-04-06",
+      "edges_created": 45,
+      "active_campaigns_linking": 45
+    },
+    {
+      "week": "2026-03-30",
+      "edges_created": 126,
+      "active_campaigns_linking": 126
+    }
+  ],
+  "c": [
+    {
+      "relationship": "lives_in",
+      "usage_count": 171,
+      "campaigns_using": 171
+    }
+  ]
+}

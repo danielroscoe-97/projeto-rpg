@@ -1,0 +1,9 @@
+{
+  "total_dms": 19,
+  "returned_dms": 2,
+  "return_rate_7d_pct": 10.5,
+  "cohort_window_days": 30,
+  "cohort_start": "2026-03-15T17:10:50.403Z",
+  "cohort_end": "2026-04-14T17:10:50.403Z",
+  "hasDeletedAtColumn": false
+}

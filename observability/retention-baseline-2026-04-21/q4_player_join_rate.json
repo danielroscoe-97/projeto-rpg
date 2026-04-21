@@ -1,0 +1,14 @@
+{
+  "tokens": {
+    "tokens_created": 1699,
+    "tokens_used": 1003,
+    "join_rate_pct": 59
+  },
+  "invites": {
+    "invites_sent": 9,
+    "invites_accepted": 0,
+    "invites_expired": 7,
+    "invites_pending": 2,
+    "acceptance_rate_pct": 0
+  }
+}

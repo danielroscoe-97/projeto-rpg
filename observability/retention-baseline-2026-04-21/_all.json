@@ -1,0 +1,183 @@
+{
+  "q1": {
+    "total_dms": 19,
+    "returned_dms": 2,
+    "return_rate_7d_pct": 10.5,
+    "cohort_window_days": 30,
+    "cohort_start": "2026-03-15T17:10:50.403Z",
+    "cohort_end": "2026-04-14T17:10:50.403Z",
+    "hasDeletedAtColumn": false
+  },
+  "q2": {
+    "weeks": [
+      {
+        "week_start": "2026-04-20",
+        "active_dms": 3,
+        "total_sessions": 4,
+        "avg_sessions_per_dm": 1.33
+      },
+      {
+        "week_start": "2026-04-13",
+        "active_dms": 4,
+        "total_sessions": 175,
+        "avg_sessions_per_dm": 43.75
+      },
+      {
+        "week_start": "2026-04-06",
+        "active_dms": 11,
+        "total_sessions": 346,
+        "avg_sessions_per_dm": 31.45
+      },
+      {
+        "week_start": "2026-03-30",
+        "active_dms": 4,
+        "total_sessions": 588,
+        "avg_sessions_per_dm": 147
+      },
+      {
+        "week_start": "2026-03-23",
+        "active_dms": 3,
+        "total_sessions": 76,
+        "avg_sessions_per_dm": 25.33
+      }
+    ],
+    "currentWeekPartial": "2026-04-20",
+    "overallAvgCompleteWeeks": 61.88,
+    "filters": {
+      "drafts_excluded": 0,
+      "admin_owned_excluded": 901,
+      "raw_session_rows": 2090,
+      "kept_session_rows": 1189,
+      "hasDraftColumn": false
+    }
+  },
+  "q3": {
+    "campaigns_with_combat": 183,
+    "p25_days": 0,
+    "p50_days_median": 0,
+    "p75_days": 0,
+    "total_campaigns_created": 201,
+    "conversion_to_combat_pct": 91
+  },
+  "q4": {
+    "tokens": {
+      "tokens_created": 1699,
+      "tokens_used": 1003,
+      "join_rate_pct": 59
+    },
+    "invites": {
+      "invites_sent": 9,
+      "invites_accepted": 0,
+      "invites_expired": 7,
+      "invites_pending": 2,
+      "acceptance_rate_pct": 0
+    }
+  },
+  "q5": {
+    "a": {
+      "table_used": "campaign_mind_map_edges",
+      "total_campaigns": 204,
+      "campaigns_with_graph": 0,
+      "graph_adoption_pct": 0
+    },
+    "b": [
+      {
+        "week": "2026-04-06",
+        "edges_created": 45,
+        "active_campaigns_linking": 45
+      },
+      {
+        "week": "2026-03-30",
+        "edges_created": 126,
+        "active_campaigns_linking": 126
+      }
+    ],
+    "c": [
+      {
+        "relationship": "lives_in",
+        "usage_count": 171,
+        "campaigns_using": 171
+      }
+    ]
+  },
+  "q6": {
+    "dau": 3,
+    "wau": 12,
+    "mau": 114,
+    "dau_mau_stickiness_pct": 2.6
+  },
+  "q7": [
+    {
+      "cohort_week": "2026-04-20",
+      "cohort_size": 1,
+      "week_1_retained": 0,
+      "week_2_retained": 0,
+      "week_4_retained": 0
+    },
+    {
+      "cohort_week": "2026-04-13",
+      "cohort_size": 3,
+      "week_1_retained": 0,
+      "week_2_retained": 0,
+      "week_4_retained": 0
+    },
+    {
+      "cohort_week": "2026-04-06",
+      "cohort_size": 11,
+      "week_1_retained": 0,
+      "week_2_retained": 0,
+      "week_4_retained": 0
+    },
+    {
+      "cohort_week": "2026-03-30",
+      "cohort_size": 4,
+      "week_1_retained": 2,
+      "week_2_retained": 2,
+      "week_4_retained": 0
+    },
+    {
+      "cohort_week": "2026-03-23",
+      "cohort_size": 2,
+      "week_1_retained": 0,
+      "week_2_retained": 1,
+      "week_4_retained": 0
+    }
+  ],
+  "q8": {
+    "total_encounters": 1744,
+    "completed_encounters": 250,
+    "completion_pct": 14.3,
+    "avg_duration_min": 22.6,
+    "avg_rounds": 3.1
+  },
+  "q9": [
+    {
+      "event_name": "auth:signup_start",
+      "unique_users": 5
+    },
+    {
+      "event_name": "auth:login",
+      "unique_users": 45
+    },
+    {
+      "event_name": "campaign:created",
+      "unique_users": 0
+    },
+    {
+      "event_name": "session:created",
+      "unique_users": 0
+    },
+    {
+      "event_name": "combat:started",
+      "unique_users": 14
+    },
+    {
+      "event_name": "combat:ended",
+      "unique_users": 6
+    },
+    {
+      "event_name": "player:joined",
+      "unique_users": 1
+    }
+  ]
+}
