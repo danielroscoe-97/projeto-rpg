@@ -269,6 +269,7 @@ export function LocationForm({
             <Label htmlFor="location-description">{t("field_description")}</Label>
             {campaignId ? (
               <EntityMentionEditor
+                id="location-description"
                 value={description}
                 onChange={setDescription}
                 placeholder={t("description_placeholder")}

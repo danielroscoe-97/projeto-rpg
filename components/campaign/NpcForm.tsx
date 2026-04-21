@@ -256,6 +256,7 @@ export function NpcForm({
             <Label htmlFor="npc-description">{t("description")}</Label>
             {campaignId ? (
               <EntityMentionEditor
+                id="npc-description"
                 value={description}
                 onChange={setDescription}
                 placeholder={t("description")}

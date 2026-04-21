@@ -328,6 +328,7 @@ export function FactionForm({
                 {t("field_description")}
               </Label>
               <EntityMentionEditor
+                id="faction-description"
                 value={description}
                 onChange={setDescription}
                 placeholder={t("description_placeholder")}

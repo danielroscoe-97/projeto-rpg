@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getSessionDate } from "@/lib/time/session-date";
 
@@ -78,24 +78,35 @@ function writeCache(campaignId: string, today: string, noteId: string): void {
  * automatically because today's key differs.
  */
 export function useSessionBootstrap(campaignId: string): UseSessionBootstrapResult {
-  const [sessionNoteId, setSessionNoteId] = useState<string | null>(null);
+  // Lazy initializer reads cache synchronously on the first render. On the
+  // server `typeof window === "undefined"` short-circuits readCache to null,
+  // so SSR output is stable and hydration doesn't diff.
+  const [sessionNoteId, setSessionNoteId] = useState<string | null>(() => {
+    if (!campaignId) return null;
+    return readCache(campaignId, getSessionDate())?.note_id ?? null;
+  });
   const [ensuring, setEnsuring] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [created, setCreated] = useState(false);
+  // De-dupe concurrent ensureSession calls (double-click on the CTA) so the
+  // second caller waits on the same promise instead of racing the RPC.
+  const inFlightRef = useRef<Promise<string | null> | null>(null);
 
-  // Hydrate from cache on mount / when campaignId changes.
+  // Re-hydrate on campaignId change (initial mount handled by lazy state).
   useEffect(() => {
     if (!campaignId) {
       setSessionNoteId(null);
       return;
     }
-    const today = getSessionDate();
-    const cached = readCache(campaignId, today);
+    const cached = readCache(campaignId, getSessionDate());
     setSessionNoteId(cached?.note_id ?? null);
   }, [campaignId]);
 
   const ensureSession = useCallback(async (): Promise<string | null> => {
     if (!campaignId) return null;
+    // Coalesce concurrent callers onto the same in-flight promise.
+    if (inFlightRef.current) return inFlightRef.current;
+
     const today = getSessionDate();
 
     // Fast path: hit cache.
@@ -109,37 +120,44 @@ export function useSessionBootstrap(campaignId: string): UseSessionBootstrapResu
 
     setEnsuring(true);
     setError(null);
-    try {
-      const supabase = createClient();
-      const { data, error: rpcError } = await supabase.rpc(
-        "create_or_get_session_note",
-        {
-          p_campaign_id: campaignId,
-          p_session_date: today,
-        },
-      );
 
-      if (rpcError) {
-        throw rpcError;
+    const task = (async (): Promise<string | null> => {
+      try {
+        const supabase = createClient();
+        const { data, error: rpcError } = await supabase.rpc(
+          "create_or_get_session_note",
+          {
+            p_campaign_id: campaignId,
+            p_session_date: today,
+          },
+        );
+
+        if (rpcError) {
+          throw rpcError;
+        }
+
+        const payload = data as SessionBootstrapRpcResponse | null;
+        if (!payload?.ok || !payload.note_id) {
+          const code = payload?.code ?? "unknown";
+          throw new Error(`create_or_get_session_note failed: ${code}`);
+        }
+
+        writeCache(campaignId, today, payload.note_id);
+        setSessionNoteId(payload.note_id);
+        setCreated(Boolean(payload.created));
+        return payload.note_id;
+      } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        setError(err);
+        return null;
+      } finally {
+        setEnsuring(false);
+        inFlightRef.current = null;
       }
+    })();
 
-      const payload = data as SessionBootstrapRpcResponse | null;
-      if (!payload?.ok || !payload.note_id) {
-        const code = payload?.code ?? "unknown";
-        throw new Error(`create_or_get_session_note failed: ${code}`);
-      }
-
-      writeCache(campaignId, today, payload.note_id);
-      setSessionNoteId(payload.note_id);
-      setCreated(Boolean(payload.created));
-      return payload.note_id;
-    } catch (e) {
-      const err = e instanceof Error ? e : new Error(String(e));
-      setError(err);
-      return null;
-    } finally {
-      setEnsuring(false);
-    }
+    inFlightRef.current = task;
+    return task;
   }, [campaignId]);
 
   return {

@@ -43,7 +43,8 @@ import { NotesListSkeleton } from "@/components/ui/skeletons/NotesListSkeleton";
 import { NotesFolderTree } from "./NotesFolderTree";
 import { NoteCard } from "./NoteCard";
 import { NpcTagSelector } from "./NpcTagSelector";
-import { EntityMentionEditor } from "@/components/ui/EntityMentionEditor";
+import { EntityMentionEditor, MentionChipRenderer, type MentionLookupMap } from "@/components/ui/EntityMentionEditor";
+import { stripMentionsToPlainText } from "@/lib/utils/mention-parser";
 import { EntityTagSelector } from "./EntityTagSelector";
 import {
   getFolders,
@@ -64,6 +65,7 @@ import {
   unlinkEntities,
   listCampaignEdges,
   listEntityLinks,
+  syncTextMentions,
 } from "@/lib/supabase/entity-links";
 import {
   selectCounterpartyIds,
@@ -286,6 +288,32 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
     }
     return map;
   }, [campaignEdges]);
+
+  /**
+   * Lookup map consumed by MentionChipRenderer + stripMentionsToPlainText
+   * to resolve `@[type:uuid]` tokens into readable names. Rebuilt whenever
+   * any underlying entity list changes; the map is tiny (one entry per
+   * entity) so per-keystroke rebuilds are acceptable.
+   */
+  const mentionLookup = useMemo<MentionLookupMap>(() => {
+    const map = new Map<
+      string,
+      { type: "npc" | "location" | "faction" | "quest"; id: string; name: string }
+    >();
+    for (const n of campaignNpcs) {
+      map.set(`npc:${n.id}`, { type: "npc", id: n.id, name: n.name });
+    }
+    for (const l of campaignLocations) {
+      map.set(`location:${l.id}`, { type: "location", id: l.id, name: l.name });
+    }
+    for (const f of campaignFactions) {
+      map.set(`faction:${f.id}`, { type: "faction", id: f.id, name: f.name });
+    }
+    for (const q of campaignQuests) {
+      map.set(`quest:${q.id}`, { type: "quest", id: q.id, name: q.title });
+    }
+    return map;
+  }, [campaignNpcs, campaignLocations, campaignFactions, campaignQuests]);
 
   /**
    * Reconcile the set of `mentions` edges from a note to entities of a
@@ -526,6 +554,35 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
 
         if (error) throw error;
 
+        // Reconcile `mentions` edges with inline @[type:uuid] tokens in the
+        // note body. Only runs when content was part of this save so unrelated
+        // saves (title-only, note_type toggle) don't re-walk the text. Errors
+        // are logged but don't block the save completion toast.
+        if (fields.content !== undefined) {
+          try {
+            const { added, removedEdgeIds } = await syncTextMentions(
+              campaignId,
+              { type: "note", id },
+              fields.content,
+              campaignEdges,
+            );
+            if (added.length > 0 || removedEdgeIds.length > 0) {
+              setCampaignEdges((prev) => {
+                const kept = prev.filter(
+                  (e) => !removedEdgeIds.includes(e.id) && !added.some((a) => a.id === e.id),
+                );
+                return [...kept, ...added];
+              });
+            }
+          } catch (syncErr) {
+            captureError(syncErr, {
+              component: "CampaignNotes",
+              action: "saveNote.syncTextMentions",
+              category: "network",
+            });
+          }
+        }
+
         setSaveStatus((prev) => ({ ...prev, [id]: "saved" }));
         setTimeout(() => {
           setSaveStatus((prev) => {
@@ -542,7 +599,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         });
       }
     },
-    [supabase],
+    [supabase, campaignId, campaignEdges],
   );
 
   const debouncedSave = useCallback(
@@ -852,12 +909,18 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                         />
                       )}
                     </div>
-                    {!isExpanded && note.content && (
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">
-                        {note.content.split("\n")[0].slice(0, 80)}
-                        {note.content.length > 80 ? "..." : ""}
-                      </p>
-                    )}
+                    {!isExpanded && note.content && (() => {
+                      const preview = stripMentionsToPlainText(note.content, mentionLookup);
+                      const firstLine = preview.split("\n")[0] ?? "";
+                      const truncated = firstLine.slice(0, 80);
+                      if (!truncated) return null;
+                      return (
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">
+                          {truncated}
+                          {firstLine.length > 80 ? "..." : ""}
+                        </p>
+                      );
+                    })()}
                     {/* Linked NPC chips in collapsed view */}
                     {!isExpanded && (linksByNote.get(note.id) ?? []).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
@@ -951,7 +1014,7 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                       }
                       placeholder={t("content_placeholder")}
                       campaignId={campaignId}
-                      rows={3}
+                      rows={8}
                       data-testid={`note-content-${note.id}`}
                     />
 
@@ -1191,9 +1254,12 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
                       </span>
                     </div>
                     {note.content && (
-                      <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                        {note.content}
-                      </p>
+                      <div className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                        <MentionChipRenderer
+                          text={note.content}
+                          lookup={mentionLookup}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
