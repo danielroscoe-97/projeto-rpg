@@ -30,7 +30,7 @@
 --   fixed it; this pins the contract.
 
 begin;
-select plan(7);
+select plan(8);
 
 select helpers.test_clear_auth();
 set local role postgres;
@@ -185,6 +185,26 @@ select ok(
     )
   ),
   'Test 15 / F-BONUS: creatures_snapshot equals template monsters_payload for every cloned encounter'
+);
+
+-- ---------------------------------------------------------------------------
+-- TEST 16 (H6 real): ordered clone — the encounter with the template's
+-- lowest sort_order must end up with the lowest sort_order in the
+-- cloned session. Guards the whole H6 invariant (migration 174 added
+-- encounters.sort_order to make this ordering durable).
+-- ---------------------------------------------------------------------------
+select is(
+  (
+    select array_agg(name order by sort_order, created_at)
+    from encounters
+    where session_id = ((select envelope::jsonb->>'session_id' from t_ok_result))::uuid
+  ),
+  (
+    select array_agg(name order by sort_order, id)
+    from campaign_template_encounters
+    where template_id = (select tpl_ok_id from t_ids)
+  ),
+  'Test 16 / H6: cloned encounters preserve template sort_order (goblin ambush before wolves)'
 );
 
 select * from finish();

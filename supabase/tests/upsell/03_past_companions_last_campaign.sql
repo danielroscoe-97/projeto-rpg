@@ -162,10 +162,16 @@ select isnt(
 -- DETERMINISTIC last_campaign_name across runs (migration 172 added
 -- campaign_id ASC as the tiebreaker to DISTINCT ON).
 -- ---------------------------------------------------------------------------
--- Upgrade superuser to update session timestamps directly, then bounce
--- back into user_a to re-query.
+-- IMPORTANT: `sessions` has a BEFORE UPDATE trigger `trg_sessions_updated_at`
+-- (migration 002:61-63) that sets `NEW.updated_at = now()`, which would
+-- overwrite the literal timestamp we're trying to set. DISABLE the trigger
+-- for this fixture window, UPDATE, then re-enable. Without this, the
+-- "identical timestamps" scenario is never actually constructed and the
+-- test passes for the wrong reason.
 set local role postgres;
 select helpers.test_clear_auth();
+
+alter table sessions disable trigger trg_sessions_updated_at;
 
 update sessions
    set updated_at = '2026-04-20 12:00:00+00'
@@ -173,6 +179,8 @@ update sessions
    (select session_1_id from t_ids),
    (select session_2_id from t_ids)
  );
+
+alter table sessions enable trigger trg_sessions_updated_at;
 
 select helpers.test_setup_user('f3-user-a@example.com');
 
