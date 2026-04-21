@@ -224,7 +224,7 @@ Adicionada após review adversarial (2026-04-20) — fecha dois defeitos latente
 - **AC-3c-01** Ao editar NPC Viktor, seção "Morada" permite selecionar 1 local; salva cria edge `npc→location lives_in`
 - **AC-3c-02** Card do Viktor (fechado) mostra chip "Vive em: Taverna do Pêndulo" em ≤300ms
 - **AC-3c-03** Detalhe de "Taverna do Pêndulo" mostra seção "Habitantes" com Viktor + link clicável
-- **AC-3c-04** ~~Remover link via X no chip é reversível dentro de 5s (toast undo)~~ — **DEFERIDO para Onda 6** (UX depth pass). `upsertEntityLink` + `unlinkEntities` são idempotentes, então re-linkar tem custo baixo; toast undo entrará junto com mention editor inline (§7.8 do PRD).
+- **AC-3c-04** ✅ **Shipped 2026-04-21** (commit `6e537b2c`) — Remover link via X no chip é reversível dentro de 5s: hook `useEntityUnlinkUndo` consolida múltiplas remoções em toast único ("N vínculos removidos · Desfazer tudo"), commit do edge + legacy `note_npc_links` deferido 5s, `pagehide`/`visibilitychange` flush best-effort. Wire em [components/campaign/CampaignNotes.tsx:handleUnlinkNpc](../components/campaign/CampaignNotes.tsx). 8 Jest tests cobrindo TTL, undo-click, batch consolidation, idempotência, onCommit ordering e error self-healing. Originalmente deferido para Onda 6 — fechado antes no sprint pós-Entity-Graph.
 - **AC-3c-05** RLS: jogador membro não vê edge para NPC invisível (`is_visible_to_players=false`)
 - **AC-3c-06** Double-click no botão "Salvar" não cria 2 edges (usa `upsertEntityLink`)
 

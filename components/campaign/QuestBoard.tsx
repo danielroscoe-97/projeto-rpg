@@ -77,20 +77,43 @@ export function QuestBoard({ campaignId, isEditable }: QuestBoardProps) {
     return quests.filter((q) => q.status === filter);
   }, [quests, filter]);
 
-  // Chip-navigate receiver. If the focused quest is filtered out by the
-  // current status filter, fall back to "all" so the card is actually on
-  // screen before we scroll. See NpcList for the handled-ref-on-searchParams
-  // pattern that lets repeat chip clicks still refocus.
-  const focusedQuestHandledRef = useRef<URLSearchParams | null>(null);
+  // Chip-navigate receiver. Two phases so the scroll target is guaranteed to
+  // be in the DOM before we reach for it:
+  //
+  //   Phase 1 — when a new ?questId= lands and the target is filtered out by
+  //   the current status filter, setFilter("all"). This is the only change
+  //   this run; we mark the searchParams as "filter-handled" so we don't
+  //   re-trigger on the next render, but we don't set the scroll-handled ref
+  //   yet because React hasn't re-rendered with the new filter.
+  //
+  //   Phase 2 — on the NEXT render (when filter === "all" or the target's
+  //   status now matches the filter), filteredQuests contains the target,
+  //   the card is in the DOM, and we schedule the double-RAF scroll.
+  //
+  // Without this split, setFilter fires async but scroll runs synchronously
+  // after double-RAF — the re-render with filter="all" commits after the
+  // scroll's querySelector, which returns null and the scroll silently no-ops.
+  const focusedQuestFilterHandledRef = useRef<URLSearchParams | null>(null);
+  const focusedQuestScrollHandledRef = useRef<URLSearchParams | null>(null);
   useEffect(() => {
     if (!focusedQuestId || !searchParams) return;
-    if (focusedQuestHandledRef.current === searchParams) return;
+    if (focusedQuestScrollHandledRef.current === searchParams) return;
+
     const target = quests.find((q) => q.id === focusedQuestId);
     if (!target) return;
-    focusedQuestHandledRef.current = searchParams;
-    if (filter !== "all" && target.status !== filter) {
-      setFilter("all");
+
+    const filterNeedsReset = filter !== "all" && target.status !== filter;
+    if (filterNeedsReset) {
+      if (focusedQuestFilterHandledRef.current !== searchParams) {
+        focusedQuestFilterHandledRef.current = searchParams;
+        setFilter("all");
+      }
+      // Wait for the re-render — scroll will fire on the next effect pass.
+      return;
     }
+
+    // Target is already in `filteredQuests` now, so the card IS in the DOM.
+    focusedQuestScrollHandledRef.current = searchParams;
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const el = document.querySelector<HTMLElement>(

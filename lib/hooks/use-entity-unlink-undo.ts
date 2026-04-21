@@ -47,6 +47,12 @@ export interface PendingUnlink {
    * the errorSingle/errorBatch toast, mirroring edge-delete failure UX.
    * The caller's onUndo is NOT invoked — the edge is already gone from
    * the DB, so rolling back the UI would create a desync with reality.
+   *
+   * Last-wins on re-schedule: if `schedule()` is called twice with the
+   * same `edgeId`, both `onUndo` AND `onCommit` from the earlier call are
+   * silently replaced by the later one. Callers that need different
+   * commit side-effects for the same edge must not re-schedule; they
+   * should flushNow() first or pick a different key.
    */
   onCommit?: () => void | Promise<void>;
 }
@@ -107,6 +113,10 @@ async function flush(): Promise<void> {
   if (flushInFlight) return;
   if (pending.size === 0) return;
   flushInFlight = true;
+  // try/finally so an unexpected throw downstream (toast.error, batch indexing,
+  // callback re-entry) can't leave flushInFlight stuck true — that would
+  // permanently block future undo-click handling and future flushes.
+  try {
   const batch = Array.from(pending.values());
   pending.clear();
   toast.dismiss(BATCH_TOAST_ID);
@@ -163,7 +173,9 @@ async function flush(): Promise<void> {
         : currentStrings.errorBatch(totalFailed),
     );
   }
-  flushInFlight = false;
+  } finally {
+    flushInFlight = false;
+  }
 }
 
 async function undoAll(): Promise<void> {
@@ -213,7 +225,18 @@ export function useEntityUnlinkUndo(strings: Strings) {
         unlinkEntities(p.edgeId)
           .then(() => p.onCommit?.())
           .catch(() => {
-            // Best-effort — the page is leaving. Cannot surface error.
+            // Best-effort — the page is leaving. Cannot surface error via
+            // toast, but if the page comes back (visibilitychange hidden→
+            // visible, BFCache restore) the local UI would be desynced
+            // with the chip hidden and the edge still on the server. Mirror
+            // flush()'s self-heal: call onUndo so the chip reappears and
+            // the next real action reconciles with server state.
+            try {
+              void p.onUndo();
+            } catch {
+              // If onUndo also throws there's nothing left to do — the
+              // unmount path runs best-effort without a surface to report.
+            }
           });
       });
     };

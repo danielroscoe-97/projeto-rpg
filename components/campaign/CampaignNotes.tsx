@@ -137,6 +137,14 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         case "quest":
           router.push(`${base}?section=quests&questId=${entity.id}`);
           return;
+        default: {
+          // Exhaustiveness guard: adding a new MentionEntityType without
+          // wiring its route here becomes a compile error instead of a
+          // silent no-op.
+          const _exhaustive: never = entity.type;
+          void _exhaustive;
+          return;
+        }
       }
     },
     [campaignId, router],
@@ -548,6 +556,15 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
       // If the user clicks undo, we restore the exact rows we captured —
       // zero round-trip. If the TTL expires, the hook commits edge delete;
       // onCommit then deletes the legacy row. Failure surfaces via hook toast.
+      //
+      // Stale-closure caveat: `edge` and `legacyLink` are captured here by
+      // reference. If a realtime subscription or manual re-fetch replaces
+      // `campaignEdges`/`npcLinks` during the 5s window (e.g. another tab
+      // edits the note and broadcasts), undo will re-insert the snapshot we
+      // captured, not the post-mutation row. In practice this is bounded:
+      // the undo window is 5s and dedup on `edge.id` prevents duplicates.
+      // Accepting the drift for simplicity; the alternative (re-fetch on
+      // undo click) would defeat the zero-round-trip guarantee.
       const edge = campaignEdges.find(
         (e) =>
           e.relationship === "mentions" &&
