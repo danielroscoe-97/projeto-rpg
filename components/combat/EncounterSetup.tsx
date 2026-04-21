@@ -4,10 +4,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useCombatStore, getNumberedName } from "@/lib/stores/combat-store";
-import { Info, Share2, Package } from "lucide-react";
+import { Info, Package } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ShareSessionButton } from "@/components/combat-session/ShareSessionButton";
-import { createSessionOnly } from "@/lib/supabase/encounter";
 import { RulesetSelector } from "@/components/combat-session/RulesetSelector";
 import { CampaignLoader } from "@/components/combat-session/CampaignLoader";
 import { PresetLoader } from "@/components/presets/PresetLoader";
@@ -38,8 +36,6 @@ interface EncounterSetupProps {
   preloadedPreset?: EncounterPreset | null;
   /** Session ID for listening to player registrations via realtime */
   sessionId?: string | null;
-  /** Called when an on-demand session is created for sharing */
-  onSessionCreated?: (sessionId: string) => void;
 }
 
 interface AddRowForm {
@@ -67,7 +63,7 @@ function getDefaultDisplayName(creatureType: string | null | undefined, existing
   return generateCreatureName(creatureType, existingNames);
 }
 
-export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, preloadedPreset, sessionId, onSessionCreated }: EncounterSetupProps) {
+export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, preloadedPreset, sessionId }: EncounterSetupProps) {
   const t = useTranslations("combat");
   const {
     combatants,
@@ -88,11 +84,6 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
   const [addRowErrors, setAddRowErrors] = useState<Set<string>>(new Set());
   const lastSelectedMonster = useRef<{ id: string; version: RulesetVersion } | null>(null);
   const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // On-demand session creation for sharing before combat starts
-  const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
-  const [isCreatingSession, setIsCreatingSession] = useState(false);
-  // Effective session ID: use prop if available, otherwise on-demand created one
-  const effectiveSessionId = sessionId ?? onDemandSessionId;
 
   const initInputRef = useRef<HTMLInputElement>(null);
 
@@ -158,24 +149,9 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
     });
   }, [preloadedPlayers, addCombatant]);
 
-  // Create session on-demand when DM wants to share before combat starts
-  const handlePrepareShare = useCallback(async () => {
-    if (isCreatingSession || effectiveSessionId) return;
-    setIsCreatingSession(true);
-    try {
-      const newSessionId = await createSessionOnly(rulesetVersion, campaignId);
-      setOnDemandSessionId(newSessionId);
-      onSessionCreated?.(newSessionId);
-    } catch {
-      setSubmitError(t("share_session_error"));
-    } finally {
-      setIsCreatingSession(false);
-    }
-  }, [isCreatingSession, effectiveSessionId, rulesetVersion, campaignId, onSessionCreated, t]);
-
   // Listen for players joining via realtime (player:joined broadcast)
   useEffect(() => {
-    const sid = sessionId ?? onDemandSessionId;
+    const sid = sessionId;
     if (!sid) return;
     const supabase = createClient();
     const channel = supabase.channel(`session:${sid}`, {
@@ -225,7 +201,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
       // a fresh channel instead of reusing the now-removed one.
       resetDmChannel();
     };
-  }, [sessionId, onDemandSessionId, addCombatant]);
+  }, [sessionId, addCombatant]);
 
   // Auto-add monster with rolled initiative when selected from compendium
   const handleSelectMonster = useCallback(
@@ -756,31 +732,12 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 px-2">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-semibold text-foreground">{t("encounter_title")}</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            {t("encounter_description")}
-          </p>
-        </div>
-        {/* Share button — only show here when not inside /app/combat/[id] (which has its own) */}
-        {!sessionId && (
-          effectiveSessionId ? (
-            <ShareSessionButton sessionId={effectiveSessionId} />
-          ) : (
-            <button
-              type="button"
-              onClick={handlePrepareShare}
-              disabled={isCreatingSession}
-              className="px-4 py-2 text-sm font-semibold rounded-md bg-gold/90 text-surface-primary hover:bg-gold transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] disabled:opacity-50 min-h-[44px] flex items-center gap-2 shadow-[0_0_12px_rgba(212,168,83,0.3)]"
-              data-testid="share-prepare-btn"
-            >
-              <Share2 className="w-4 h-4" aria-hidden="true" />
-              {isCreatingSession ? t("starting") : t("share_session")}
-            </button>
-          )
-        )}
+      {/* Header — share button rendered at page level (see /new/page.tsx + /[id]/page.tsx) */}
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">{t("encounter_title")}</h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          {t("encounter_description")}
+        </p>
       </div>
 
       {/* Sprint 2: Preset banner */}

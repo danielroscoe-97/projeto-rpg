@@ -47,35 +47,49 @@ export async function goToNewSession(page: Page) {
 
 /**
  * Generate share token on /combat/new page.
- * Flow: share-prepare-btn (creates session) → share-session-generate → share-session-url
+ *
+ * Post-Epic-12 (eager session persistence) flow:
+ * ShareSessionButton now lives at the page level on /app/combat/new, so
+ * `share-session-generate` is visible immediately without a prepare step.
+ * Clicking generate auto-opens the QR popover → `share-session-url` is
+ * visible right after (see ShareSessionButton.handleGenerateLink setShowQr).
+ *
+ * Fallbacks handle the case where a token was auto-loaded on mount
+ * (existing session with live token), which hides `share-session-generate`
+ * and shows `share-session-qr-toggle` instead.
  */
 export async function getShareToken(page: Page): Promise<string | null> {
   try {
-    // Step 1: On /combat/new, click share-prepare-btn to create session
-    const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
-    await prepareBtn.scrollIntoViewIfNeeded();
-    await expect(prepareBtn).toBeVisible({ timeout: 5_000 });
-    await prepareBtn.click();
-    await page.waitForTimeout(2_000);
-
-    // Step 2: Now ShareSessionButton appears — click generate
+    // Primary flow: fresh session — click generate, auto-opens QR with URL.
     const generateBtn = page.locator('[data-testid="share-session-generate"]');
-    await generateBtn.scrollIntoViewIfNeeded();
-    await expect(generateBtn).toBeVisible({ timeout: 5_000 });
-    await generateBtn.click();
-    await page.waitForTimeout(2_000);
+    if (await generateBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await generateBtn.scrollIntoViewIfNeeded();
+      await generateBtn.click();
+      await page.waitForTimeout(2_000);
 
-    // Step 3: Get the share URL
-    const shareUrl = page.locator('[data-testid="share-session-url"]');
-    await expect(shareUrl).toBeVisible({ timeout: 5_000 });
-    const value = await shareUrl.inputValue();
-    const match = value.match(/\/join\/([a-zA-Z0-9_-]+)/);
-    if (match) return match[1];
+      const shareUrl = page.locator('[data-testid="share-session-url"]');
+      await expect(shareUrl).toBeVisible({ timeout: 5_000 });
+      const value = await shareUrl.inputValue();
+      const match = value.match(/\/join\/([a-zA-Z0-9_-]+)/);
+      if (match) return match[1];
+    }
+
+    // Secondary flow: token auto-loaded — toggle QR to reveal the URL input.
+    const qrToggle = page.locator('[data-testid="share-session-qr-toggle"]');
+    if (await qrToggle.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await qrToggle.click();
+      await page.waitForTimeout(500);
+      const shareUrl = page.locator('[data-testid="share-session-url"]');
+      await expect(shareUrl).toBeVisible({ timeout: 3_000 });
+      const value = await shareUrl.inputValue();
+      const match = value.match(/\/join\/([a-zA-Z0-9_-]+)/);
+      if (match) return match[1];
+    }
   } catch {
-    // Fall through to fallback
+    // Fall through to DOM-scan fallback
   }
 
-  // Fallback: search all inputs
+  // Last-resort: search all inputs for a /join/ URL pattern.
   return await page.evaluate(() => {
     const inputs = document.querySelectorAll("input");
     for (const input of inputs) {

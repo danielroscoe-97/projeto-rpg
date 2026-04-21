@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { CombatSessionClient } from "@/components/combat-session/CombatSessionClient";
+import { ShareSessionButton } from "@/components/combat-session/ShareSessionButton";
 import type { PlayerCharacter, RulesetVersion } from "@/lib/types/database";
 import { fetchEncounterPreset } from "@/lib/supabase/encounter-presets";
 import { createSessionOnly } from "@/lib/supabase/encounter";
@@ -283,20 +284,30 @@ function NewEncounterPageInner() {
     };
   }, [chosen, draftSessionId]);
 
-  // Once chosen, render the combat client
+  // Once chosen, render the combat client.
+  // Share button lives at the page level (mirrors /app/combat/[id]/page.tsx)
+  // so EncounterSetup stays focused on combatant setup — no ambiguous guard
+  // coupling share rendering to the presence of `sessionId`.
   if (chosen) {
     return (
-      <CombatSessionClient
-        sessionId={draftSessionId}
-        encounterId={null}
-        initialCombatants={EMPTY_COMBATANTS}
-        isActive={false}
-        roundNumber={1}
-        currentTurnIndex={0}
-        campaignId={chosen.campaignId}
-        preloadedPlayers={chosen.preloadedPlayers}
-        preloadedPreset={chosen.preloadedPreset ?? null}
-      />
+      <div className="space-y-3">
+        {draftSessionId && (
+          <div className="flex justify-end px-2">
+            <ShareSessionButton sessionId={draftSessionId} />
+          </div>
+        )}
+        <CombatSessionClient
+          sessionId={draftSessionId}
+          encounterId={null}
+          initialCombatants={EMPTY_COMBATANTS}
+          isActive={false}
+          roundNumber={1}
+          currentTurnIndex={0}
+          campaignId={chosen.campaignId}
+          preloadedPlayers={chosen.preloadedPlayers}
+          preloadedPreset={chosen.preloadedPreset ?? null}
+        />
+      </div>
     );
   }
 

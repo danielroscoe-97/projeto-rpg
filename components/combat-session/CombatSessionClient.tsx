@@ -123,8 +123,6 @@ export function CombatSessionClient({
   const [midCombatRuleset, setMidCombatRuleset] = useState<RulesetVersion>(rulesetVersion);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false);
-  // Session created on-demand by EncounterSetup for sharing before combat
-  const [onDemandSessionId, setOnDemandSessionId] = useState<string | null>(null);
   // Sprint 2: Track preset origin for usage counting and Sprint 3 snapshot
   const presetOriginRef = useRef<string | null>(preloadedPreset?.id ?? null);
   const [leaderboardData, setLeaderboardData] = useState<CombatantStats[] | null>(null);
@@ -741,15 +739,14 @@ export function CombatSessionClient({
           [...presetSlugs].some(([slug, qty]) => combatSlugs.get(slug) !== qty);
       }
 
-      // Story 12.2 — prefer the eagerly-created draft session from the page prop,
-      // then the "Share Link" on-demand session, then create-on-start as the fallback.
-      const reusableSessionId = sessionId ?? onDemandSessionId;
+      // Story 12.2 — prefer the eagerly-created draft session from the page prop;
+      // fall back to `null` (create-on-start) when eager persistence failed.
       const { session_id, encounter_id } = await createEncounterWithCombatants(
         sorted,
         rulesetVersion,
         campaignId,
         encounterName,
-        reusableSessionId,
+        sessionId,
         undefined, // dmPlan
         presetId ?? null,
         wasModified,
@@ -1510,7 +1507,7 @@ export function CombatSessionClient({
 
   // Show unified setup if not yet active
   if (!is_active) {
-    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} preloadedPreset={preloadedPreset} sessionId={sessionId} onSessionCreated={setOnDemandSessionId} />;
+    return <EncounterSetup onStartCombat={handleStartCombat} campaignId={campaignId} preloadedPlayers={preloadedPlayers} preloadedPreset={preloadedPreset} sessionId={sessionId} />;
   }
 
   // Active combat view
