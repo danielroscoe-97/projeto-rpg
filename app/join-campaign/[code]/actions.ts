@@ -45,83 +45,122 @@ export interface AcceptJoinCodeResult {
 }
 
 export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<AcceptJoinCodeResult> {
-  // P11: validate join_code format before any DB call
-  if (!JOIN_CODE_RE.test(data.code)) throw new Error("Código inválido");
+  // Temporary trace logging — Bug #1 (2026-04-21) reproduces in prod with no
+  // client-visible error detail. Remove these logs once the failing step is
+  // identified and the underlying cause is actually fixed.
+  const trace = (step: string, extra?: Record<string, unknown>) => {
+    console.log(`[acceptJoinCodeAction] ${step}`, extra ?? "");
+  };
 
-  const supabase = await createClient();
+  try {
+    trace("enter", { code: data.code, hasExistingCharacterId: !!data.existingCharacterId });
 
-  // Require authenticated user
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
-
-  // Use service client to bypass RLS for join_code lookup
-  const service = createServiceClient();
-
-  // Validate join code
-  const { data: campaign } = await service
-    .from("campaigns")
-    .select("id, name, owner_id, join_code_active, max_players")
-    .eq("join_code", data.code)
-    .eq("join_code_active", true)
-    .eq("is_archived", false)
-    .maybeSingle();
-
-  if (!campaign) throw new Error("Código inválido ou link desativado");
-
-  // Check max_players limit (null = unlimited)
-  if (campaign.max_players !== null) {
-    const { count } = await service
-      .from("campaign_members")
-      .select("id", { count: "exact", head: true })
-      .eq("campaign_id", campaign.id)
-      .eq("status", "active");
-
-    if ((count ?? 0) >= campaign.max_players) {
-      throw new Error("Campanha cheia");
+    // P11: validate join_code format before any DB call
+    if (!JOIN_CODE_RE.test(data.code)) {
+      trace("reject: invalid code format");
+      throw new Error("Código inválido");
     }
-  }
 
-  // Add to campaign_members (idempotent)
-  const { error: memberError } = await service
-    .from("campaign_members")
-    .insert({ campaign_id: campaign.id, user_id: user.id, role: "player" })
-    .select()
-    .maybeSingle();
+    const supabase = await createClient();
+    trace("createClient: ok");
 
-  // P4: already a member → skip char link/create and go straight to dashboard
-  // (idempotent path — prevents duplicate character creation on retry)
-  if (memberError?.code === "23505") {
-    return { redirectTo: "/app/dashboard" };
-  }
-  if (memberError) throw new Error("Erro ao ingressar na campanha");
+    // Require authenticated user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      trace("reject: no user");
+      throw new Error("Unauthorized");
+    }
+    trace("getUser: ok", { userId: user.id });
 
-  if (data.existingCharacterId) {
-    // Link existing standalone character to this campaign
-    const { error } = await service
-      .from("player_characters")
-      .update({ campaign_id: campaign.id })
-      .eq("id", data.existingCharacterId)
-      .eq("user_id", user.id)
-      .is("campaign_id", null);
+    // Use service client to bypass RLS for join_code lookup
+    const service = createServiceClient();
+    trace("createServiceClient: ok");
 
-    if (error) throw new Error("Erro ao vincular personagem");
-  } else {
-    // Create new character for this campaign
-    const { error: charError } = await service
-      .from("player_characters")
-      .insert({
-        campaign_id: campaign.id,
-        user_id: user.id,
-        name: data.name!.trim(),
-        max_hp: data.maxHp ?? 10,
-        current_hp: data.currentHp ?? 10,
-        ac: data.ac ?? 10,
-        spell_save_dc: data.spellSaveDc,
-      });
+    // Validate join code
+    const { data: campaign, error: campaignErr } = await service
+      .from("campaigns")
+      .select("id, name, owner_id, join_code_active, max_players")
+      .eq("join_code", data.code)
+      .eq("join_code_active", true)
+      .eq("is_archived", false)
+      .maybeSingle();
 
-    // P8: sanitize Supabase error before surfacing to client
-    if (charError) throw new Error("Erro ao criar personagem");
-  }
+    if (campaignErr) trace("campaignErr", { msg: campaignErr.message, code: campaignErr.code });
+    if (!campaign) {
+      trace("reject: no campaign");
+      throw new Error("Código inválido ou link desativado");
+    }
+    trace("campaign: ok", { campaignId: campaign.id });
+
+    // Check max_players limit (null = unlimited)
+    if (campaign.max_players !== null) {
+      const { count, error: countErr } = await service
+        .from("campaign_members")
+        .select("id", { count: "exact", head: true })
+        .eq("campaign_id", campaign.id)
+        .eq("status", "active");
+
+      if (countErr) trace("countErr", { msg: countErr.message, code: countErr.code });
+      trace("max_players check", { count, max: campaign.max_players });
+
+      if ((count ?? 0) >= campaign.max_players) {
+        throw new Error("Campanha cheia");
+      }
+    }
+
+    // Add to campaign_members (idempotent)
+    const { error: memberError } = await service
+      .from("campaign_members")
+      .insert({ campaign_id: campaign.id, user_id: user.id, role: "player" })
+      .select()
+      .maybeSingle();
+
+    if (memberError) trace("memberError", { msg: memberError.message, code: memberError.code, details: memberError.details, hint: memberError.hint });
+
+    // P4: already a member → skip char link/create and go straight to dashboard
+    // (idempotent path — prevents duplicate character creation on retry)
+    if (memberError?.code === "23505") {
+      trace("already a member, short-circuit");
+      return { redirectTo: "/app/dashboard" };
+    }
+    if (memberError) throw new Error("Erro ao ingressar na campanha");
+    trace("campaign_members insert: ok");
+
+    if (data.existingCharacterId) {
+      // Link existing standalone character to this campaign
+      const { error } = await service
+        .from("player_characters")
+        .update({ campaign_id: campaign.id })
+        .eq("id", data.existingCharacterId)
+        .eq("user_id", user.id)
+        .is("campaign_id", null);
+
+      if (error) {
+        trace("linkCharError", { msg: error.message, code: error.code });
+        throw new Error("Erro ao vincular personagem");
+      }
+      trace("link existing character: ok");
+    } else {
+      // Create new character for this campaign
+      const { error: charError } = await service
+        .from("player_characters")
+        .insert({
+          campaign_id: campaign.id,
+          user_id: user.id,
+          name: data.name!.trim(),
+          max_hp: data.maxHp ?? 10,
+          current_hp: data.currentHp ?? 10,
+          ac: data.ac ?? 10,
+          spell_save_dc: data.spellSaveDc,
+        });
+
+      if (charError) {
+        trace("createCharError", { msg: charError.message, code: charError.code });
+        // P8: sanitize Supabase error before surfacing to client
+        throw new Error("Erro ao criar personagem");
+      }
+      trace("create new character: ok");
+    }
 
   // Notify DM via email (fail-open)
   try {
@@ -164,9 +203,18 @@ export async function acceptJoinCodeAction(data: JoinCampaignData): Promise<Acce
         });
       }
     }
-  } catch {
-    // Notification failure must not block the join
-  }
+    } catch {
+      // Notification failure must not block the join
+    }
 
-  return { redirectTo: "/app/dashboard" };
+    trace("complete: returning redirectTo");
+    return { redirectTo: "/app/dashboard" };
+  } catch (err) {
+    console.error("[acceptJoinCodeAction] threw", {
+      name: (err as Error)?.name,
+      message: (err as Error)?.message,
+      stack: (err as Error)?.stack,
+    });
+    throw err;
+  }
 }
