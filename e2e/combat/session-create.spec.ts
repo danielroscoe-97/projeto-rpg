@@ -10,7 +10,8 @@ test.describe("P0 — DM Creates Session", () => {
 
   test("DM can navigate to create new session", async ({ page }) => {
     await goToNewSession(page);
-    await expect(page).toHaveURL(/\/app\/session\//);
+    // Route migrated /session → /combat (linguagem ubíqua refactor, commit bcc89934)
+    await expect(page).toHaveURL(/\/app\/combat\//);
   });
 
   test("DM session page shows encounter setup", async ({ page }) => {
@@ -37,18 +38,14 @@ test.describe("P0 — DM Creates Session", () => {
   test("DM can generate share link", async ({ page }) => {
     await goToNewSession(page);
 
-    // On /combat/new (sessionId=null), click share-prepare-btn to create session on-demand
-    const prepareBtn = page.locator('[data-testid="share-prepare-btn"]');
-    await expect(prepareBtn).toBeVisible({ timeout: 5_000 });
-    await prepareBtn.click();
-
-    // After session is created, ShareSessionButton replaces prepare-btn
-    // Now share-session-generate should appear
+    // Post-Epic-12 Wave 1 (eager session persistence), the ShareSessionButton
+    // lives at the page level of /app/combat/new, so share-session-generate
+    // is visible immediately without a prepare step.
     const generateBtn = page.locator('[data-testid="share-session-generate"]');
     await expect(generateBtn).toBeVisible({ timeout: 10_000 });
     await generateBtn.click();
 
-    // Share URL should appear
+    // Click auto-opens the QR popover, revealing the URL input
     await expect(
       page.locator('[data-testid="share-session-url"]')
     ).toBeVisible({ timeout: 10_000 });
