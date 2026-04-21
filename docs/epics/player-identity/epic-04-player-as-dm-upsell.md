@@ -318,7 +318,7 @@ type BecomeDmCtaProps = {
 
 ### Área 2 — Trigger Logic: Session Counting (materialized view + wrapper)
 
-**Migration nova:** `supabase/migrations/160_v_player_sessions_played.sql`
+**Migration nova:** `supabase/migrations/165_v_player_sessions_played.sql`
 
 ```sql
 -- Materialized view: counts sessions played (as player, not as DM)
@@ -435,7 +435,7 @@ Naming: **F14 — padronizado em `getSessionsPlayed` consumindo `my_sessions_pla
 
 ### Área 3 — DM Onboarding Tour + Wizard
 
-**Migration nova:** `supabase/migrations/161_user_onboarding_dm.sql`
+**Migration nova:** `supabase/migrations/166_user_onboarding_dm.sql`
 
 ```sql
 ALTER TABLE user_onboarding
@@ -502,7 +502,7 @@ Step 5: Oferece "Convide quem jogou com você" (Área 5)
 
 **Migrations novas:**
 
-**`supabase/migrations/162_campaign_templates.sql`**
+**`supabase/migrations/167_campaign_templates.sql`**
 ```sql
 CREATE TABLE campaign_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -579,7 +579,7 @@ CREATE TRIGGER trg_validate_template_monsters_srd
   FOR EACH ROW EXECUTE FUNCTION validate_template_monsters_srd();
 ```
 
-**`supabase/migrations/163_seed_starter_templates.sql`** — seed data para 2-3 templates iniciais:
+**`supabase/migrations/168_seed_starter_templates.sql`** — seed data para 2-3 templates iniciais:
 - "Taverna em Chamas" (one-shot, nível 1, 1 sessão, 3 encontros)
 - "A Cripta Perdida" (mini-dungeon, nível 3, 3 sessões, 5 encontros)
 - "Intro 5e" (campanha introdutória, nível 1-3, 4 sessões, tutorial de regras)
@@ -707,7 +707,7 @@ GRANT EXECUTE ON FUNCTION clone_campaign_from_template(UUID, UUID) TO authentica
 
 ### Área 5 — Viral Cross-invite: "Convide quem jogou com você"
 
-**Migration nova:** `supabase/migrations/164_past_companions.sql`
+**Migration nova:** `supabase/migrations/169_past_companions.sql`
 
 **F8 — plain VIEW não suporta RLS per-row de forma robusta. F11 — explicitamente REVOKE do PUBLIC + GRANT authenticated.**
 
@@ -866,11 +866,11 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 
 | Arquivo | Ação | Área |
 |---|---|---|
-| `supabase/migrations/160_v_player_sessions_played.sql` | **CRIAR** — matview + wrapper view + pg_cron idempotent | 2 |
-| `supabase/migrations/161_user_onboarding_dm.sql` | **CRIAR** — colunas DM tour + trigger idempotente + share_past_companions | 3 |
-| `supabase/migrations/162_campaign_templates.sql` | **CRIAR** — tabelas + trigger SRD validation + RLS no-delete | 4 |
-| `supabase/migrations/163_seed_starter_templates.sql` | **CRIAR** — 3 templates iniciais | 4 |
-| `supabase/migrations/164_past_companions.sql` | **CRIAR** — function SECURITY DEFINER (NÃO view plain) | 5 |
+| `supabase/migrations/165_v_player_sessions_played.sql` | **CRIAR** — matview + wrapper view + pg_cron idempotent | 2 |
+| `supabase/migrations/166_user_onboarding_dm.sql` | **CRIAR** — colunas DM tour + trigger idempotente + share_past_companions | 3 |
+| `supabase/migrations/167_campaign_templates.sql` | **CRIAR** — tabelas + trigger SRD validation + RLS no-delete | 4 |
+| `supabase/migrations/168_seed_starter_templates.sql` | **CRIAR** — 3 templates iniciais | 4 |
+| `supabase/migrations/169_past_companions.sql` | **CRIAR** — function SECURITY DEFINER (NÃO view plain) | 5 |
 | `lib/upsell/get-sessions-played.ts` | **CRIAR** — server action com fallback hot-path (F19) | 2 |
 | `lib/upsell/should-show-dm-cta.ts` | **CRIAR** — trigger logic | 1, 2 |
 | `lib/upsell/clone-template.ts` | **CRIAR** — wrapper da RPC; unwrap `{ok, missing_monsters}` | 4 |
@@ -917,17 +917,17 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
   - (f) role=dm, sessionsPlayed=5 → hidden (já é DM puro)
 
 ### Área 2 — Session Counting
-- [ ] Migration 160 aplicada; materialized view criada
+- [ ] Migration 165 aplicada; materialized view criada
 - [ ] **F2 — REVOKE ALL** em `v_player_sessions_played` do authenticated/anon/PUBLIC; wrapper `my_sessions_played` é único acesso
 - [ ] pg_cron refresh a cada 15 min (idempotente via DELETE-then-schedule — F16)
 - [ ] Wrapper view `my_sessions_played` usa `CREATE OR REPLACE VIEW` (idempotente — F17)
 - [ ] Performance: refresh CONCURRENTLY em &lt;500ms com 10k sessions (medido via EXPLAIN ANALYZE + pgbench teste)
 - [ ] Fallback 0 se user não tem row (nunca jogou)
 - [ ] **F19 hot-path fallback testado**: matview stale + `users.last_session_at` > `last_counted_session_at` → server action faz COUNT live
-- [ ] **F12 comment presente na migration 160** documentando JOIN via `player_characters.user_id`
+- [ ] **F12 comment presente na migration 165** documentando JOIN via `player_characters.user_id`
 
 ### Área 3 — DM Onboarding
-- [ ] Migration 161 aplicada (inclui `share_past_companions BOOLEAN DEFAULT true`)
+- [ ] Migration 166 aplicada (inclui `share_past_companions BOOLEAN DEFAULT true`)
 - [ ] `BecomeDmWizard` cobre 5 steps descritos
 - [ ] Role flip: `role = 'player'` → `'both'` no Step 3 submit
 - [ ] `DmTourProvider` inicia após criação de campanha no Step 3
@@ -953,7 +953,7 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 - [ ] Clone flow com 0 encounters (F21 reescrito): template vazio → campanha criada + session row + empty encounters set; UI não quebra
 
 ### Área 5 — Viral Invite
-- [ ] Migration 164 aplicada; `get_past_companions()` retorna rows corretos via `auth.uid()`
+- [ ] Migration 169 aplicada; `get_past_companions()` retorna rows corretos via `auth.uid()`
 - [ ] **F3** `last_campaign_name` correlacionado com `companion_user_id` — teste 2 companheiros distintos retornam valores diferentes quando últimas sessões compartilhadas diferem
 - [ ] **F8** VIEW plain foi rejeitada em favor de SECURITY DEFINER function (documentado em D7 e Área 5)
 - [ ] **F11** `REVOKE EXECUTE ... FROM PUBLIC; GRANT EXECUTE ... TO authenticated` aplicado
@@ -1152,7 +1152,7 @@ Review encontrou 7 🔴 críticos + 7 🟠 altos + 8 🟡 médios + 6 🟢 baixo
 | # | Issue | Resolução v3 |
 |---|---|---|
 | F1 | Privilege escalation em `clone_campaign_from_template` (SECURITY DEFINER sem auth check) | Escolha (b): manter param `p_new_dm_user_id`, adicionar `IF auth.uid() <> p_new_dm_user_id THEN RAISE 42501` no topo. D11 + Test 13 |
-| F2 | Matview RLS gap (Postgres não enforça RLS em matview) | Migration 160 adiciona `REVOKE ALL ON v_player_sessions_played FROM authenticated, anon, PUBLIC`; wrapper `my_sessions_played` único acesso público. Documentado em D10 |
+| F2 | Matview RLS gap (Postgres não enforça RLS em matview) | Migration 165 adiciona `REVOKE ALL ON v_player_sessions_played FROM authenticated, anon, PUBLIC`; wrapper `my_sessions_played` único acesso público. Documentado em D10 |
 | F3 | `last_campaign_name` decorrelation bug (subquery fixed-per-row em vez de per-companion) | SQL reescrito em Área 5 com subquery correlacionada `WHERE se_inner.companion_user_id = se.companion_user_id`. AC Story 04-A4 valida 2 companions retornam valores diferentes |
 | F4 | `users.email_marketing_opt_in` fiction | Escolha (b): coluna **não** existe; mitigação é rate_limits existente (`check_rate_limit`) + opt-out do graph (share_past_companions). Per-user email opt-out é follow-up ticket |
 | F5 | `sessions.is_active DEFAULT true` trap (clone aparecia live) | D13 + RPC INSERT explicita `is_active = false`. Migration e AC Área 4 |
@@ -1168,7 +1168,7 @@ Review encontrou 7 🔴 críticos + 7 🟠 altos + 8 🟡 médios + 6 🟢 baixo
 | F9 | Clone RPC retorna no primeiro encounter falho | RPC reescrito para acumular `v_failures JSONB` em loop e retornar `{ok: false, missing_monsters: [{encounter_id, missing_slugs}, ...]}`. Test 14 valida |
 | F10 | D7 text/code drift (`monster_ref` vs `monsters_payload`) | D7 reescrito usando `monsters_payload` consistentemente; shape documentado `[{slug, quantity, hp, ac}, ...]` |
 | F11 | Functions sem REVOKE EXECUTE explícito | Migrations 162 e 164: `REVOKE EXECUTE FROM PUBLIC; GRANT EXECUTE TO authenticated` em `clone_campaign_from_template` e `get_past_companions` |
-| F12 | Matview JOIN via `player_characters.user_id` sem comment de upgrade path | Migration 160 tem comment SQL explícito; Test 11 cobre cenário pre-upgrade via Story 01-E |
+| F12 | Matview JOIN via `player_characters.user_id` sem comment de upgrade path | Migration 165 tem comment SQL explícito; Test 11 cobre cenário pre-upgrade via Story 01-E |
 | F13 | Role flip broadcast contract thin | D9 expandido: canal `user:{userId}`, event `role_updated`, payload spec completo; listeners re-lêem role sem tocar `session_token_id`; Test 10 cabeado ao código |
 | F14 | Naming drift `getMySessionsPlayed` vs `my_sessions_played` | Padronizado: server action `getSessionsPlayed` lê `my_sessions_played` (wrapper view). V2 menção removida |
 
@@ -1176,14 +1176,14 @@ Review encontrou 7 🔴 críticos + 7 🟠 altos + 8 🟡 médios + 6 🟢 baixo
 
 | # | Issue | Resolução v3 |
 |---|---|---|
-| F15 | `users` RLS para `share_past_companions` self-update | Verificado: `users_update_own ON users FOR UPDATE USING (auth.uid() = id)` existe em `005_rls_policies.sql:24` — já cobre. Nenhuma policy nova necessária, documentado em migration 161 |
-| F16 | `cron.schedule` não-idempotent | Migration 160 guarda com `DELETE FROM cron.job WHERE jobname = 'refresh_v_player_sessions_played'` antes de `cron.schedule` |
-| F17 | `CREATE VIEW` não-idempotent | `CREATE OR REPLACE VIEW my_sessions_played` (migration 160) |
+| F15 | `users` RLS para `share_past_companions` self-update | Verificado: `users_update_own ON users FOR UPDATE USING (auth.uid() = id)` existe em `005_rls_policies.sql:24` — já cobre. Nenhuma policy nova necessária, documentado em migration 166 |
+| F16 | `cron.schedule` não-idempotent | Migration 165 guarda com `DELETE FROM cron.job WHERE jobname = 'refresh_v_player_sessions_played'` antes de `cron.schedule` |
+| F17 | `CREATE VIEW` não-idempotent | `CREATE OR REPLACE VIEW my_sessions_played` (migration 165) |
 | F18 | `first_campaign_created_at` trigger silent no-op | Trigger reescrito: `INSERT INTO user_onboarding (user_id, first_campaign_created_at) VALUES (NEW.owner_id, NOW()) ON CONFLICT (user_id) DO UPDATE SET ... = COALESCE(...)` |
 | F19 | 15-min pg_cron miss "just-ended-session" CTA | Server action `getSessionsPlayed` detecta matview stale (`> 5 min`) AND `users.last_session_at > last_counted_session_at` → COUNT live fallback. D10 escolheu abordagem simples, não pg_notify/edge-function |
 | F20 | Bulk invite schema mismatch (`email NOT NULL`) | Endpoint `/api/campaign/[id]/invites/bulk` resolve `user_ids → email` server-side via `users` lookup; usa `check_rate_limit` (20/day); users sem email → skip with warning |
 | F21 | Test 9 "orphan encounter" nonsensical (FK CASCADE) | Reescrito: "Clone with 0 encounters creates campaign + session row + empty encounters set gracefully" |
-| F22 | Hard delete RLS implícita | Migration 162 tem policy explícita `campaign_templates_no_delete ... USING (false)` + análogo para template_encounters |
+| F22 | Hard delete RLS implícita | Migration 167 tem policy explícita `campaign_templates_no_delete ... USING (false)` + análogo para template_encounters |
 
 **🟢 Baixos (6) resolvidos:**
 
