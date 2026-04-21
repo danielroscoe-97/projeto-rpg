@@ -4483,7 +4483,9 @@
       "cta_secondary": "Close",
       "picker_headline": "Which character do you want to save?",
       "picker_hint": "You can save one now — the rest stay in guest mode.",
-      "no_character": "No character to save"
+      "no_character": "No character to save",
+      "migration_failed_hint": "Couldn't save your character. You can retry from the dashboard.",
+      "rate_limit_hint": "Too many attempts. Try again in a few seconds."
     },
     "turn_safety_toast": {
       "combat_started": "Combat started. Finish signing up whenever — the DM knows you're here.",
@@ -4499,7 +4501,8 @@
     "post_success": {
       "waiting_room": "Account created. Your character is saved — back to the game.",
       "recap_anon": "Account created. {characterName} is safe in your account.",
-      "recap_guest": "Account created. {characterName} is saved to your account."
+      "recap_guest": "Account created. {characterName} is saved to your account.",
+      "recap_guest_email_pending": "Character saved. Confirm your email to finish signing up."
     },
     "errors": {
       "generic": "Something went wrong. Try again in a few seconds.",

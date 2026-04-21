@@ -4483,7 +4483,9 @@
       "cta_secondary": "Fechar",
       "picker_headline": "Qual personagem salvar?",
       "picker_hint": "Dá pra salvar um agora — os outros continuam no modo convidado.",
-      "no_character": "Sem personagem pra salvar"
+      "no_character": "Sem personagem pra salvar",
+      "migration_failed_hint": "Erro ao salvar personagem. Você pode tentar novamente no painel.",
+      "rate_limit_hint": "Muitas tentativas. Tente de novo em alguns segundos."
     },
     "turn_safety_toast": {
       "combat_started": "Combate começou. Pode terminar o cadastro sem pressa — o Mestre sabe que você está aqui.",
