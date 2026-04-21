@@ -228,20 +228,25 @@ Cada spec faz:
 3. **Rate-limit aware retry** no helper `loginAs` (se auth falhar, wait + retry).
 4. **Parallel isolation** — rodar specs in parallel com contexts dedicados (hoje suite é sequential por convention).
 
-### Real issue a investigar (2 specs): anon auto-accept player-view timeout
+### Real issue investigado — anon auto-accept é DUPLA camada
 
-`turn-safety.spec.ts` e `waiting-room-signup-race.spec.ts:233` (variante (c)) falham tanto em suite quanto isolados, no mesmo ponto: `expect(playerPage.locator('[data-testid="player-view"]')).toBeVisible({ timeout: 30_000 })` dentro de `anonJoinCombat` (fixtures/identity-upgrade-helpers.ts:86).
+**Investigação concluída (sessão 2026-04-21):** Auto-accept NUNCA existiu em produção. O workflow atual é sempre manual: player submita `combat:late_join_request` via broadcast → DM recebe e exibe JoinRequestBanner → DM clica "Aceitar" → `combat:late_join_response accepted=true` → player marca `isRegistered=true` → player-view renderiza.
 
-O comment do helper explica:
-```
-// Wait for player-view after DM auto-accepts (auto-accept is a feature
-// of recent player-identity work — if the target env disabled it, the
-// test-level helper must accept from the DM's page separately).
-```
+O comment no helper `anonJoinCombat` que dizia "auto-accept is a feature" era desatualizado/errado. O workflow de produção requer accept manual.
 
-**Hipótese**: `turn-safety` e `waiting-room-signup-race (c)` assumem auto-accept ligado, mas o env atual tem feature desligada (feature flag, migration, ou regressão de workflow).
+**Fix parcial aplicado** (commit seguinte ao post-mortem):
+- `anonJoinCombat` aceita `dmPage` opcional; quando passado, chama `dmAcceptPlayer` antes do `await expect(player-view)`.
+- `dmAcceptPlayer` ganhou 4ª estratégia via `aria-label` do JoinRequestBanner button (o texto visível é só "Aceitar", sem player_name — regex anterior não matchava).
+- Specs `turn-safety` e `waiting-room-signup-race (c)` atualizados pra passar `dmPage` / chamar `dmAcceptPlayer` explicitamente.
 
-**Investigação futura**: grep `auto_accept|autoAccept|join_request` em `components/combat-session/CombatSessionClient.tsx` + `components/player/PlayerJoinClient.tsx` + `lib/types/realtime.ts` pra mapear o workflow. Se auto-accept foi removido, specs precisam incluir passo explícito `dmAcceptPlayer` antes de aguardar `player-view`.
+**Camada adicional NÃO resolvida (scope-parked):** Mesmo com os fixes, o JoinRequestBanner **não renderiza no DM** durante o teste. O player mostra "Aguardando aprovação" (broadcast sent, aguardando), mas o DM não exibe banner para aceitar. Screenshot do DM mostra combat UI limpo, sem o banner.
+
+**Hipóteses a investigar:**
+1. **Realtime subscription timing:** DM's `session:${sid}` channel pode não estar subscribed quando player broadcasta — Supabase broadcast não retenta entrega a late subscribers.
+2. **Broadcast via client vs server:** Player usa `channelRef.current.send()` direto; DM usa `getDmChannel(sid)`. Se canais são instâncias diferentes, broadcast perdido.
+3. **`is_active` race:** DM's late_join listener (`CombatSessionClient.tsx:1138`) tem guard `if (!sid || !is_active) return;`. Se o effect roda antes de `is_active` virar true, listener não attacha.
+
+**Próximos passos recomendados:** adicionar diag log em `CombatSessionClient.handleLateJoin` capturando quantas vezes o handler é chamado no DM durante um run de teste. Se zero, é realtime/channel issue; se > 0, é JoinRequestBanner render issue.
 
 ---
 
