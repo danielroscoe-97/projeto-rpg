@@ -908,13 +908,14 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 - [ ] Copy diferente para `'player'` vs `'both'`
 - [ ] Dismissal store respeitado (reusa Épico 03 Área 6; namespace `pocketdm_dm_upsell_dismissal_v1`)
 - [ ] Abre `BecomeDmWizard` no clique primário
-- [ ] **Test 4 scenarios** (enumerados — F28):
-  - (a) role=player, sessionsPlayed=0 → hidden
-  - (b) role=player, sessionsPlayed=2, first_campaign_created_at=null → **shown**
-  - (c) role=both, sessionsPlayed=0 → hidden
-  - (d) role=both, sessionsPlayed=3, first_campaign_created_at=null → **shown**
-  - (e) role=both, sessionsPlayed=3, first_campaign_created_at=SET → **hidden** (já virou DM)
-  - (f) role=dm, sessionsPlayed=5 → hidden (já é DM puro)
+- [ ] **Test 4 scenarios** (enumerados — F28 + M12):
+  - (a) role=player, sessionsPlayed=0 → hidden (`reason: "below_threshold"`)
+  - (b) role=player, sessionsPlayed=2, first_campaign_created_at=null → **shown** (`reason: "shown"`)
+  - (c) role=both, sessionsPlayed=0 → hidden (`reason: "below_threshold"`)
+  - (d) role=both, sessionsPlayed=3, first_campaign_created_at=null → **shown** (`reason: "shown"`)
+  - (e) role=both, sessionsPlayed=3, first_campaign_created_at=SET → hidden (`reason: "already_dm"` — já virou DM)
+  - (f) role=dm, sessionsPlayed=5 → hidden (`reason: "already_dm"` — DM puro)
+  - (g) **M12 self-heal:** role=both, `user_onboarding` row MISSING, owned-campaign count = 0 → fall through para gate de sessions (effectively treated as first_campaign=null; `reason: "shown"` or `"below_threshold"` depending on sessionsPlayed). Handles pre-046 legacy accounts, silent failure of `create_user_onboarding` trigger, ou admin cleanup que dropou a row. Verified via query em `campaigns(owner_id=userId)`; se owned-count > 0, falls back para `"already_dm"`.
 
 ### Área 2 — Session Counting
 - [ ] Migration 165 aplicada; materialized view criada
@@ -924,6 +925,7 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 - [ ] Performance: refresh CONCURRENTLY em &lt;500ms com 10k sessions (medido via EXPLAIN ANALYZE + pgbench teste)
 - [ ] Fallback 0 se user não tem row (nunca jogou)
 - [ ] **F19 hot-path fallback testado**: matview stale + `users.last_session_at` > `last_counted_session_at` → server action faz COUNT live
+- [ ] **F19-WIRE (Sprint 2 prereq de 04-I):** `users.last_session_at` é escrito sempre que um encounter fecha (trigger SQL em `encounters.ended_at` AFTER UPDATE, para cada `combatants.player_character_id.user_id` do encounter). Sem esse wire-up, o hot-path F19 é dead code — matview lag de até 15min é a cadência real do CTA E do funil de analytics. Ship **antes** de 04-I. Migration dedicada (178), não 1-liner de client-side.
 - [ ] **F12 comment presente na migration 165** documentando JOIN via `player_characters.user_id`
 
 ### Área 3 — DM Onboarding
@@ -965,6 +967,7 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 - [ ] **F26 glossário** — termo "Ex-companheiros" definido como "user com pelo menos **1 sessão** em comum" (match SQL `COUNT(DISTINCT s.id)`)
 
 ### Área 6 — Analytics
+- [ ] **Prereq F19-WIRE shipped** (migration 178 — trigger `encounters.ended_at AFTER UPDATE` → `users.last_session_at`). Sem isso o funnel de `first_session_run → cta_shown` mede com 15min de defasagem.
 - [ ] 9 eventos de funil emitidos via `trackServerEvent` com namespace `dm_upsell:*` (colon-style, não underscore)
 - [ ] **F6** rota admin criada em `app/admin/dm-upsell-funnel/page.tsx` (NÃO `app/app/admin/...`)
 - [ ] **F7** `MetricsDashboard.tsx` ganha nova seção "DM Upsell Funnel" (mesmo pattern de Combat Stats — `<SectionTitle>` + barras horizontais); NÃO há tab container
@@ -985,7 +988,7 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 
 | Área | Unit | Integration | E2E |
 |---|---|---|---|
-| 1 — CTA | RTL + 6 scenarios Test 4 (F28) | — | `player-becomes-dm-full-flow.spec.ts` |
+| 1 — CTA | RTL + 7 scenarios Test 4 (F28 + M12) | — | `player-becomes-dm-full-flow.spec.ts` |
 | 2 — Session counting | SQL query validation | Matview refresh + wrapper view + hot-path fallback | — |
 | 3 — Onboarding | Wizard RTL + role flip + broadcast (Test 10) | Tour transitions | Incluído em full-flow |
 | 4 — Templates | RTL gallery + modal | Clone RPC correctness incl. F9, F-BONUS, F5, F1 | `template-clone-first-session.spec.ts` |
@@ -997,7 +1000,7 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 1. **E2E full flow:** player com 2 sessões jogadas → vê CTA → abre wizard → escolhe template → role flipa para `'both'` → campanha criada → tour inicia → convida ex-companion
 2. **E2E template clone:** DM novo clona "Taverna em Chamas" → campanha tem 3 encontros → `encounters.creatures_snapshot` populado com monsters_payload do template (F-BONUS) → DM pode iniciar 1º encontro com monstros SRD pré-populados
 3. **E2E past companions:** user já jogou com A e B em campanhas diferentes → ao virar DM, vê ambos na lista → `last_campaign_name` diferente para A vs B (F3) → envia convite → A e B recebem email contextual via endpoint bulk (F20)
-4. **Unit: should-show-dm-cta lógica** — **6 cenários enumerados (F28):** (a)–(f) conforme Área 1 ACs
+4. **Unit: should-show-dm-cta lógica** — **7 cenários enumerados (F28 + M12):** (a)–(g) conforme Área 1 ACs. (g) é o self-heal branch que roda uma query extra em `campaigns(owner_id=userId)` quando `user_onboarding` row está missing; ver `lib/upsell/should-show-dm-cta.ts:102-134`
 5. **SQL: get_past_companions RLS** — user A lê só próprias rows via `auth.uid()` (tentativa de passar user_id de outro via anything retorna do proprio token); tentativa via anon ou PUBLIC → permission denied (F11)
 6. **Matview race:** 2 encontros encerram em 100ms de diferença → pg_cron próxima rodada reflete ambos sem duplicar (refresh CONCURRENTLY é idempotent)
 7. **Tour interruption:** user inicia tour, fecha aba no meio → progresso salvo em `dm_tour_step` → reabre dashboard, tour retoma
@@ -1180,7 +1183,7 @@ Review encontrou 7 🔴 críticos + 7 🟠 altos + 8 🟡 médios + 6 🟢 baixo
 | F16 | `cron.schedule` não-idempotent | Migration 165 guarda com `DELETE FROM cron.job WHERE jobname = 'refresh_v_player_sessions_played'` antes de `cron.schedule` |
 | F17 | `CREATE VIEW` não-idempotent | `CREATE OR REPLACE VIEW my_sessions_played` (migration 165) |
 | F18 | `first_campaign_created_at` trigger silent no-op | Trigger reescrito: `INSERT INTO user_onboarding (user_id, first_campaign_created_at) VALUES (NEW.owner_id, NOW()) ON CONFLICT (user_id) DO UPDATE SET ... = COALESCE(...)` |
-| F19 | 15-min pg_cron miss "just-ended-session" CTA | Server action `getSessionsPlayed` detecta matview stale (`> 5 min`) AND `users.last_session_at > last_counted_session_at` → COUNT live fallback. D10 escolheu abordagem simples, não pg_notify/edge-function |
+| F19 | 15-min pg_cron miss "just-ended-session" CTA | Server action `getSessionsPlayed` detecta matview stale (`> 5 min`) AND `users.last_session_at > last_counted_session_at` → COUNT live fallback. D10 escolheu abordagem simples, não pg_notify/edge-function. **Sprint 1 re-review flagou que `users.last_session_at` só é escrito em 1 local (`player-identity.ts:544` anon→auth upgrade) — fallback é dormant em prod.** Sprint 2 prereq de 04-I: migration 178 adiciona trigger AFTER UPDATE em `encounters.ended_at` que atualiza `users.last_session_at` para cada `player_character.user_id` do encounter. Ver AC Área 2 "F19-WIRE". |
 | F20 | Bulk invite schema mismatch (`email NOT NULL`) | Endpoint `/api/campaign/[id]/invites/bulk` resolve `user_ids → email` server-side via `users` lookup; usa `check_rate_limit` (20/day); users sem email → skip with warning |
 | F21 | Test 9 "orphan encounter" nonsensical (FK CASCADE) | Reescrito: "Clone with 0 encounters creates campaign + session row + empty encounters set gracefully" |
 | F22 | Hard delete RLS implícita | Migration 167 tem policy explícita `campaign_templates_no_delete ... USING (false)` + análogo para template_encounters |
@@ -1194,7 +1197,7 @@ Review encontrou 7 🔴 críticos + 7 🟠 altos + 8 🟡 médios + 6 🟢 baixo
 | F25 | ESLint/next lint ausente | Integração AC ganhou `rtk next lint limpo` (match epic-01) |
 | F26 | Glossário "Ex-companheiros" dizia "encounter em comum" em vez de "sessão em comum" | AC Área 5 documenta "pelo menos 1 sessão em comum" match SQL `COUNT(DISTINCT s.id)` |
 | F27 | `dm_upsell:first_campaign_created` via SQL trigger | D14: emitido do server action `campaign-settings.ts` após a RPC retornar (SQL triggers não podem chamar Node). Trigger SQL apenas popula `user_onboarding.first_campaign_created_at` |
-| F28 | Test 4 ambiguidade | Enumerados 6 cenários (a)-(f) em Área 1 ACs; explicitamente cobre "3 sessions played AND first_campaign_created_at set → hidden" |
+| F28 | Test 4 ambiguidade | Enumerados 6 cenários (a)-(f) em Área 1 ACs; explicitamente cobre "3 sessions played AND first_campaign_created_at set → hidden". **M12 (Sprint 1 re-review) adicionou (g)** — self-heal quando `user_onboarding` row está missing: falls back para `campaigns.owner_id` count check. Área 1 ACs atualizada para enumerar 7. |
 
 **Mudanças de numeração:** v2 usava 149-153 (antes de `149_player_notes_visibility.sql` e `150_fix_campaign_notes_default_visibility.sql` serem mergeados em main). v3 usa **160-164** (buffer zone — 152 e 153 já tomados por entity-graph; 151 é hardening) (152 ocupada por entity-graph, 151 é hardening do search_path; ver changelog v3.2) (migration 151 é hardening standalone do search_path do 122; ver changelog v3.1) — próximo bloco livre após 150 (verificado via `ls supabase/migrations/ | tail`).
 

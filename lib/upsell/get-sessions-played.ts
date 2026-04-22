@@ -11,12 +11,12 @@
  * Primary read: `my_sessions_played` wrapper view (cookie-aware; `auth.uid()`
  * resolves against the caller's JWT).
  *
- * F19 — Hot-path fallback (⚠️ currently dormant — see Sprint 2 TODO)
+ * F19 — Hot-path fallback (LIVE as of Sprint 2, migration 178)
  * ================================================================
  * The matview refreshes every 15 min via pg_cron. That leaves a window where a
  * user just finished a session and lands on the dashboard: `my_sessions_played`
  * would still be "2" when it should be "3", and the CTA would suppress one
- * render longer than it should. The intended closure is:
+ * render longer than it should. The closure:
  *
  *   1. Read the wrapper view (always).
  *   2. If the matview's `last_counted_session_at` is older than 5 min AND
@@ -24,25 +24,14 @@
  *      we know the matview is stale for THIS user specifically.
  *   3. Issue a live COUNT that mirrors migration 165's WHERE clause.
  *
- * **REALITY CHECK** — adversarial re-review (Apr 21, 2026) found that
- * `users.last_session_at` is written in exactly ONE place today:
- * `lib/supabase/player-identity.ts:544` (anon→auth upgrade finalizer).
- * Combat flows do NOT update it. After a user's first upgrade the column
- * is effectively frozen, so in production the `userNewer` gate is never
- * true and the live-COUNT pipeline below is unreachable. The matview
- * IS the source of truth.
- *
- * We keep the pipeline (instead of deleting) because:
- *   - Unit tests exercise it (they synthesize `last_session_at`).
- *   - Wiring up `last_session_at` on encounter-close is a one-liner
- *     deferred to Sprint 2. Once it lands, F19 becomes live again with
- *     zero other edits here.
- *   - The H4 monotonicity guard (Math.max) is still a useful safety net
- *     the day `last_session_at` starts updating.
- *
- * If you're reading this comment and `last_session_at` is still only
- * written by Epic 01, the 15-min lag is the real CTA cadence. Live with
- * it, or ship the Sprint 2 TODO.
+ * History: Sprint 1 shipped this pipeline while `users.last_session_at` was
+ * only written by `lib/supabase/player-identity.ts:544` (anon→auth upgrade).
+ * Combat flows did NOT update it, so the `userNewer` gate never fired and
+ * the pipeline was dead code in prod. Sprint 2 migration 178 added a trigger
+ * on `encounters.ended_at` that propagates to `users.last_session_at`
+ * server-side for every player_character bound to the encounter. The
+ * pipeline is now live and the CTA adjusts within ~seconds of an
+ * encounter closing instead of waiting on the 15-min cron.
  *
  * Return contract
  * ===============
