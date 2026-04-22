@@ -350,9 +350,11 @@ export async function syncTextMentions(
     | { kind: "removed"; edgeId: string };
 
   const tasks: Array<Promise<SyncTask>> = [];
-  // Shared client for the legacy mirror-writes below. Created once per sync
-  // call so we don't pay the auth/session setup per task.
-  const legacyClient = createClient();
+  // Shared client for the legacy mirror-writes below, lazy-initialized so
+  // we skip the auth/session setup entirely when a given sync call has no
+  // NPC edges to mirror (e.g. user typed only location mentions).
+  let _legacyClient: ReturnType<typeof createClient> | null = null;
+  const getLegacyClient = () => (_legacyClient ??= createClient());
 
   // Additions: parsed refs not present in the existing edge set.
   for (const ref of parsedRefs) {
@@ -368,7 +370,7 @@ export async function syncTextMentions(
         // Legacy mirror-write: only meaningful for note → npc edges.
         // See the dual-table comment above for rationale.
         if (isNoteNpcPair(source.type, ref.type)) {
-          await mirrorInsertLegacyNpcLink(legacyClient, source.id, ref.id);
+          await mirrorInsertLegacyNpcLink(getLegacyClient(), source.id, ref.id);
         }
         return { kind: "added", edge };
       }),
@@ -390,12 +392,17 @@ export async function syncTextMentions(
     // (removal is driven by iterating existing edges, not parsed text).
     const legacyNoteId = edge.source_id;
     const legacyNpcId = edge.target_id;
+    // `relevant` (lines 330-336) already guarantees `source_type === source.type`
+    // — in practice the call site always passes `source.type === "note"`, so
+    // only the `target_type === "npc"` half of this predicate discriminates.
+    // Kept as a full pair check for defense-in-depth against future callers
+    // that might sync a non-note source.
     const shouldMirror = isNoteNpcPair(edge.source_type, edge.target_type);
     tasks.push(
       unlinkEntities(edgeId).then<SyncTask>(async () => {
         if (shouldMirror) {
           await mirrorDeleteLegacyNpcLink(
-            legacyClient,
+            getLegacyClient(),
             legacyNoteId,
             legacyNpcId,
           );
