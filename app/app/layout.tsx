@@ -11,6 +11,10 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { ConnectionStatus } from "@/components/pwa/ConnectionStatus";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { CombatInviteListenerMount } from "@/components/notifications/CombatInviteListenerMount";
+// Epic 04 Story 04-F — listen for `role_updated` broadcasts from other tabs
+// of the same user so a role flip in wizard propagates across open windows
+// without a refresh. See components/realtime/UserRoleListenerMount.tsx.
+import { UserRoleListenerMount } from "@/components/realtime/UserRoleListenerMount";
 import { AppSidebarClient } from "@/components/layout/AppSidebarClient";
 import { AppSidebarMain } from "@/components/layout/AppSidebarMain";
 import { BookOpen, Skull, Sparkles, HeartPulse, Backpack, GraduationCap, Star } from "lucide-react";
@@ -164,6 +168,7 @@ export default async function AppLayout({
         </AppSidebarClient>
         <SrdInitializer fullData={isBetaTester} />
         <CombatInviteListenerMount userId={user.id} />
+        <UserRoleListenerMount userId={user.id} />
         <ConnectionStatus />
         <ErrorBoundary name="Oracle">
           <LazyOracleWidgets />
@@ -201,6 +206,7 @@ export default async function AppLayout({
       />
       <SrdInitializer fullData={isBetaTester} />
       <CombatInviteListenerMount userId={user.id} />
+      <UserRoleListenerMount userId={user.id} />
       <ConnectionStatus />
       <ErrorBoundary name="Oracle">
         <LazyOracleWidgets />

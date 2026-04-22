@@ -19,6 +19,10 @@ import { ContinueFromLastSessionSkeleton } from "@/components/dashboard/Continue
 // because the card is ambient, not critical; a late paint into the
 // dashboard is fine.
 import { BecomeDmCtaServer } from "@/components/upsell/BecomeDmCtaServer";
+// Epic 04 Story 04-F — DM onboarding tour. Auto-starts on first dashboard
+// visit after a role flip (user_onboarding.dm_tour_completed === false AND
+// role includes "dm"). Self-cleans when completed or skipped.
+import { DmTourProvider } from "@/components/tour/DmTourProvider";
 import { MyCharactersServer } from "@/components/dashboard/MyCharactersServer";
 import { MyCharactersGridSkeleton } from "@/components/dashboard/MyCharactersGridSkeleton";
 import { MyCampaignsServer } from "@/components/dashboard/MyCampaignsServer";
@@ -69,7 +73,7 @@ export default async function DashboardPage() {
       .eq("id", user.id)
       .maybeSingle(),
     getUserMemberships(user.id),
-    supabase.from("user_onboarding").select("wizard_completed, dashboard_tour_completed, source").eq("user_id", user.id).maybeSingle(),
+    supabase.from("user_onboarding").select("wizard_completed, dashboard_tour_completed, dm_tour_completed, source").eq("user_id", user.id).maybeSingle(),
     getPendingInvites(user.email ?? ""),
     supabase.from("campaigns").select("id, name, created_at, updated_at, cover_image_url, player_characters(count)").eq("owner_id", user.id).order("created_at", { ascending: false }),
     supabase.from("encounters").select("id, name, round_number, is_active, updated_at, session_id, sessions!inner(id, name, owner_id)").eq("sessions.owner_id", user.id).eq("is_active", true).order("updated_at", { ascending: false }).limit(5),
@@ -85,7 +89,13 @@ export default async function DashboardPage() {
   // own JOIN query (users × player_characters × campaigns). The card gates
   // itself on `users.last_session_at` and returns null when the player has
   // never played. See `components/dashboard/ContinueFromLastSessionServer.tsx`.
-  const onboarding = onboardingRes.data as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "source"> | null;
+  const onboarding = onboardingRes.data as Pick<UserOnboarding, "wizard_completed" | "dashboard_tour_completed" | "dm_tour_completed" | "source"> | null;
+  // Epic 04 Story 04-F — gate the DM tour on DB auth + local persist.
+  // Only users whose role ever includes DM get the tour (player-only
+  // users see the player-HQ tour instead, wired in `/app/player/[id]`).
+  const dmTourShouldAutoStart =
+    (userRole === "dm" || userRole === "both") &&
+    !(onboarding?.dm_tour_completed ?? false);
   const hasUsedCombat = (encounterCountRes.count ?? 0) > 0;
 
   // Re-fetch pending invites with DB email if it differs from auth email
@@ -318,8 +328,15 @@ export default async function DashboardPage() {
   const showPlayerSections = isPlayerRoleForQueries;
 
   return (
-    <div>
+    <div data-tour-id="dm-dashboard">
       <GuestDataImportModal />
+      {/* Epic 04 Story 04-F — DM onboarding tour. Renders nothing when the
+          user has already completed it OR isn't a DM. Self-mounts an
+          overlay + tooltip when active. Tour step selectors intentionally
+          degrade gracefully: any missing `data-tour-id` auto-skips to the
+          next valid step, so adding tour hooks to the dashboard surfaces
+          can happen incrementally in follow-up work without bricking. */}
+      <DmTourProvider shouldAutoStart={dmTourShouldAutoStart} />
       {/* Section 1 — "Continue de onde parou" */}
       <Suspense fallback={<ContinueFromLastSessionSkeleton />}>
         <ContinueFromLastSessionServer />

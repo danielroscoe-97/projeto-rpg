@@ -2,43 +2,33 @@ export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase/server";
-import { getTranslations } from "next-intl/server";
+import { listPublicTemplates } from "@/lib/upsell/templates";
+import { BecomeDmWizard } from "@/components/upsell/BecomeDmWizard";
 
 /**
- * /app/become-dm — Epic 04 Story 04-E landing stub.
+ * /app/become-dm — Epic 04 Story 04-F.
  *
- * The BecomeDmCta primary CTA routes here. Story 04-F replaces this page
- * with the BecomeDmWizard mount. Until then, we:
+ * Landing page for the BecomeDmWizard. Story 04-E's CTA routes here; the
+ * wizard mounts client-side and walks the user through the 5-step flow
+ * (welcome → template → (name+level) → role flip → success + tour).
  *
- *   1. Require auth (any unauthed hit redirects to login with returnTo).
- *   2. Render a minimal landing card so a user who clicked through doesn't
- *      land on 404 / empty screen if they refresh mid-rollout.
- *
- * Rationale for a stub (vs. gating the primary button): the stub preserves
- * the analytics funnel (`dm_upsell:cta_clicked` fires on any primary click)
- * and gives E2E coverage a stable navigation target to assert against
- * before the wizard exists.
+ * Server responsibilities:
+ *   - Auth gate with returnTo on failure
+ *   - Fetch public campaign templates ONCE on the server so the picker
+ *     renders without a spinner on first paint. Story 04-G expands this
+ *     into a richer gallery; the MVP picker lives inside the wizard
+ *     itself.
  */
 
-export default async function BecomeDmLandingPage() {
+export default async function BecomeDmPage() {
   const user = await getAuthUser();
   if (!user) redirect("/auth/login?returnTo=/app/become-dm");
-  const t = await getTranslations("dmUpsell");
 
-  // Story 04-F will replace this page with the mounted <BecomeDmWizard />.
-  // Until then, render a clean holding page so the primary CTA click lands
-  // on 200 (not 404) and the back button returns to the dashboard cleanly.
+  const templates = await listPublicTemplates();
+
   return (
-    <main
-      className="mx-auto max-w-xl px-4 py-12 sm:py-20"
-      data-testid="become-dm.stub"
-    >
-      <h1 className="mb-4 text-2xl font-semibold text-gold">
-        {t("wizard_title")}
-      </h1>
-      <p className="text-sm text-muted-foreground">
-        {t("wizard_step1_body")}
-      </p>
+    <main className="mx-auto max-w-3xl px-4" data-testid="become-dm.page">
+      <BecomeDmWizard userId={user.id} templates={templates} />
     </main>
   );
 }
