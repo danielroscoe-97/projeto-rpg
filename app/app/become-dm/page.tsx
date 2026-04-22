@@ -25,16 +25,19 @@ export default async function BecomeDmLandingPage() {
   if (!user) redirect("/auth/login?returnTo=/app/become-dm");
   const t = await getTranslations("dmUpsell");
 
+  // Story 04-F will replace this page with the mounted <BecomeDmWizard />.
+  // Until then, render a clean holding page so the primary CTA click lands
+  // on 200 (not 404) and the back button returns to the dashboard cleanly.
   return (
-    <main className="mx-auto max-w-xl px-4 py-12 sm:py-20">
+    <main
+      className="mx-auto max-w-xl px-4 py-12 sm:py-20"
+      data-testid="become-dm.stub"
+    >
       <h1 className="mb-4 text-2xl font-semibold text-gold">
         {t("wizard_title")}
       </h1>
       <p className="text-sm text-muted-foreground">
         {t("wizard_step1_body")}
-      </p>
-      <p className="mt-6 text-xs text-muted-foreground/70">
-        {/* Story 04-F replaces this with the 5-step wizard. */}
       </p>
     </main>
   );

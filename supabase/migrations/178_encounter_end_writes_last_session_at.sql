@@ -94,9 +94,14 @@ BEGIN
     AND pc.user_id = u.id
     AND pc.user_id IS NOT NULL
     AND (u.last_session_at IS NULL OR u.last_session_at < NEW.ended_at);
-  -- Monotonic guard on last_session_at — an admin replaying an old
-  -- encounter (ended_at back-dated) must not rewind a user's clock.
-  -- Pairs with the H4 monotonicity contract in get-sessions-played.ts.
+  -- Monotonic guard on last_session_at: never rewind. "Newer wins"
+  -- includes newer values that originated elsewhere (e.g. the anon→auth
+  -- upgrade finalizer in player-identity.ts that also writes this
+  -- column). If `users.last_session_at` is already ahead of NEW.ended_at
+  -- — whether from a genuinely later event or from clock drift — we
+  -- leave it alone. This is intentional: pairs with the H4 monotonicity
+  -- contract in get-sessions-played.ts (matview COUNT is authoritative;
+  -- the trigger only bumps when the new signal is strictly newer).
 
   RETURN NEW;
 END;

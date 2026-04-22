@@ -12,12 +12,17 @@
  * decision per user (not per-campaign), so the record is flat.
  *
  * Precedence rules in `shouldShowCta` (top-down):
- *   1. Storage inaccessible / parse error → true (graceful — prefer show)
- *   2. No record                          → true (first time)
- *   3. TTL expired (> 90d since first dismissal) → true (fresh slate)
- *   4. count >= CAP (3)                   → false (cap wins cooldown)
+ *   1. Storage inaccessible / parse error / tampered shape → true (graceful)
+ *   2. No record                                           → true (first time)
+ *   3. TTL expired (> 90d since firstDismissedAt) → record DELETED on read
+ *      and we treat the slate as fresh → true. Note: because the record is
+ *      wiped, prior `count` history is lost — a user who had hit CAP
+ *      regains all 3 lives on the 90-day boundary. That is intentional
+ *      (TTL resets the tally; it is not a "skip this rule" semantic).
+ *   4. count >= CAP (3)                     → false (cap wins cooldown
+ *                                              within a 90-day window)
  *   5. now - lastDismissedAt > COOLDOWN (7d) → true (cooldown passed)
- *   6. Default                            → false
+ *   6. Default (within cooldown, under cap) → false
  *
  * All storage access is wrapped in try/catch (Safari ITP, iframe, SSR safe).
  */
@@ -79,6 +84,21 @@ export function readDismissalRecord(): DismissalRecord | null {
   }
 
   const record = parsed as DismissalRecord;
+  // Adversarial-review tamper guard: a malicious script (or a broken future
+  // migration) could write `{ count: -1 }` or `{ count: Infinity }` which
+  // passes `typeof === "number"` but breaks every downstream rule:
+  //   - Negative count never reaches CAP → CTA shows forever.
+  //   - Infinity is always >= CAP → CTA permanently hidden.
+  // Reject out-of-range values as invalid shape; caller falls through to
+  // the "no record" path and the CTA shows (graceful).
+  if (
+    !Number.isFinite(record.count) ||
+    record.count < 0 ||
+    !Number.isInteger(record.count)
+  ) {
+    return null;
+  }
+
   const firstTs = Date.parse(record.firstDismissedAt);
   if (Number.isNaN(firstTs)) return null;
 

@@ -145,4 +145,36 @@ describe("dm-upsell-dismissal store", () => {
       expect(readDismissalRecord()).toBeNull();
     });
   });
+
+  describe("tamper resistance (adversarial review)", () => {
+    function writeRawRecord(obj: unknown) {
+      localStorage.setItem(KEY, JSON.stringify(obj));
+    }
+    const validDates = {
+      lastDismissedAt: new Date().toISOString(),
+      firstDismissedAt: new Date().toISOString(),
+    };
+
+    it("rejects a record with negative count (treats as no record → show)", () => {
+      writeRawRecord({ count: -1, ...validDates });
+      expect(readDismissalRecord()).toBeNull();
+      expect(shouldShowCta()).toBe(true);
+    });
+
+    it("rejects a record with Infinity count", () => {
+      writeRawRecord({ count: Number.POSITIVE_INFINITY, ...validDates });
+      expect(readDismissalRecord()).toBeNull();
+      expect(shouldShowCta()).toBe(true);
+    });
+
+    it("rejects a record with NaN count", () => {
+      writeRawRecord({ count: Number.NaN, ...validDates });
+      expect(readDismissalRecord()).toBeNull();
+    });
+
+    it("rejects a record with non-integer count (fractional)", () => {
+      writeRawRecord({ count: 1.5, ...validDates });
+      expect(readDismissalRecord()).toBeNull();
+    });
+  });
 });

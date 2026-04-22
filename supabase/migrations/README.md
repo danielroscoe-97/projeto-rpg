@@ -60,7 +60,7 @@ review surfaced defects; the chains below are the full story.
 
 | Migration | Role |
 |---|---|
-| 178 (pending) | F19-WIRE — trigger `encounters.ended_at AFTER UPDATE` → `users.last_session_at` for each `player_character.user_id` bound to the encounter via `combatants`. Makes the F19 hot-path fallback live (it was dormant in prod through Sprint 1 because `last_session_at` was only written by `player-identity.ts:544`). Prereq for analytics funnel in 04-I. |
+| [178_encounter_end_writes_last_session_at.sql](178_encounter_end_writes_last_session_at.sql) | F19-WIRE (shipped 2026-04-21 in commit `2175f381`) — trigger `encounters.ended_at AFTER UPDATE` → `users.last_session_at` for each `player_character.user_id` bound to the encounter via `combatants`. Makes the F19 hot-path fallback in `lib/upsell/get-sessions-played.ts` live (it was dormant in prod through Sprint 1 because `last_session_at` was only written by `player-identity.ts:544`). Prereq for analytics funnel in Story 04-I. Trigger is SECURITY DEFINER + `search_path` hardened; monotonic guard (`last_session_at < NEW.ended_at`) prevents backward rewinds. 6 pgTap asserts in `supabase/tests/upsell/05_encounter_end_last_session_at.sql`. |
 
 ---
 

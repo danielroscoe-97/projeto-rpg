@@ -19,7 +19,7 @@
 --      trigger filters them before function entry).
 
 begin;
-select plan(5);
+select plan(6);
 
 select helpers.test_clear_auth();
 set local role postgres;
@@ -150,6 +150,48 @@ select is(
   (select last_session_at from users where id = (select player_b_uid from t_ids)),
   '2026-04-21 18:00:00+00'::timestamptz,
   'column-other-than-ended_at update leaves last_session_at untouched'
+);
+
+-- ---------------------------------------------------------------------------
+-- TEST 6 (adversarial-review follow-up): encounter with ONLY NPCs — no
+-- player_characters bound via combatants. Trigger must be a no-op; no user
+-- in the system should have last_session_at touched.
+--
+-- Scenario: DM runs a solo combat (ambush demo, cinematic fight, solo boss
+-- testing, etc.) with no PC combatants. The UPDATE in the trigger joins
+-- through combatants × player_characters with a WHERE clause that
+-- requires a non-NULL player_character_id AND a non-NULL pc.user_id, so
+-- the set is empty and zero rows update.
+-- ---------------------------------------------------------------------------
+do $$
+declare
+  v_dm_uid      uuid := (select id from auth.users where email = 'dm-f19wire@example.com');
+  v_session_id  uuid := gen_random_uuid();
+  v_encounter_id uuid := gen_random_uuid();
+  v_campaign_id uuid := (select campaign_id from t_ids);
+begin
+  insert into sessions (id, campaign_id, owner_id, name)
+    values (v_session_id, v_campaign_id, v_dm_uid, 'NPC-only session');
+  insert into encounters (id, session_id, name, ended_at)
+    values (v_encounter_id, v_session_id, 'NPC ambush', NULL);
+  -- Only NPC combatants (player_character_id = NULL).
+  insert into combatants (encounter_id, name, current_hp, max_hp, ac, is_defeated)
+    values (v_encounter_id, 'Goblin A', 0, 7, 15, true),
+           (v_encounter_id, 'Goblin B', 0, 7, 15, true);
+
+  -- Close the encounter. Trigger fires NULL → NOT NULL but UPDATE hits 0 rows.
+  update encounters set ended_at = '2026-04-22 12:00:00+00' where id = v_encounter_id;
+end
+$$;
+
+-- playerA still has its value from TEST 1-2 (2026-04-21 18:00:00), NOT bumped
+-- forward by the NPC-only encounter closing at 12:00 the next day. If the
+-- trigger accidentally UPDATEd despite no PC rows being joined, last_
+-- session_at would have advanced to 2026-04-22 12:00:00.
+select is(
+  (select last_session_at from users where id = (select player_a_uid from t_ids)),
+  '2026-04-21 18:00:00+00'::timestamptz,
+  'encounter with ONLY NPC combatants triggers no users.last_session_at write'
 );
 
 select * from finish();

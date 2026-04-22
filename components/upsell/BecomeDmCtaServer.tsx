@@ -35,14 +35,26 @@ export async function BecomeDmCtaServer({ userRole }: BecomeDmCtaServerProps) {
   // so we can too.
   if (userRole === "dm") return null;
 
-  const user = await getAuthUser();
-  if (!user) return null;
+  // Adversarial-review fix: any throw from `getAuthUser()` (cookie decode
+  // errors, transient Supabase outages) would bubble through this RSC
+  // and the dashboard's Suspense boundary would surface an error state
+  // instead of silently hiding the CTA. Defensive try/catch keeps the
+  // dashboard resilient: when the upsell signal is unreachable, we
+  // simply don't show the card. `shouldShowDmCta` itself returns
+  // `{ reason: "error", show: false }` on internal failure, but the
+  // two awaits here are external boundaries worth hardening.
+  try {
+    const user = await getAuthUser();
+    if (!user) return null;
 
-  const decision = await shouldShowDmCta(user.id);
-  if (!decision.show) return null;
+    const decision = await shouldShowDmCta(user.id);
+    if (!decision.show) return null;
 
-  // `userRole` is narrowed to "player" | "both" by the short-circuit above.
-  return (
-    <BecomeDmCta role={userRole} sessionsPlayed={decision.sessionsPlayed} />
-  );
+    // `userRole` is narrowed to "player" | "both" by the short-circuit above.
+    return (
+      <BecomeDmCta role={userRole} sessionsPlayed={decision.sessionsPlayed} />
+    );
+  } catch {
+    return null;
+  }
 }
