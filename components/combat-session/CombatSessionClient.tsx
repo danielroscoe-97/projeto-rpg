@@ -660,34 +660,46 @@ export function CombatSessionClient({
       // Only clear on initial mount — subsequent re-runs must not wipe user-added combatants
       store.clearEncounter();
       hydrationDoneRef.current = true;
-
-      // QA 2026-04-22 P1-5 (Epic 12 Wave 1 full feature) — setup-mode state
-      // scope + backup recovery. When a sessionId is known (eager draft from
-      // /app/combat/new), record it in the store so subsequent debounced
-      // `saveCombatBackup` calls write the right session_id — without this,
-      // setup-mode backups would save `session_id: null` and fail to match on
-      // recovery below.
-      if (sessionId) {
-        store.setEncounterId(null, sessionId);
-
-        // Rehydrate any prior in-flight setup work (monsters added, not yet
-        // committed via "Iniciar Combate") saved by `useCombatResilience`'s
-        // beforeunload/pagehide/debounced auto-save. Scoped by session_id so
-        // we never cross-contaminate drafts from a different session.
-        // Pairs with the EncounterSetup preloadedPlayers dedup guard which
-        // short-circuits if combatants.length > 0 after this runs.
-        const backup = loadCombatBackup();
-        if (
-          backup &&
-          backup.session_id === sessionId &&
-          backup.encounter_id === null &&
-          backup.combatants.length > 0
-        ) {
-          store.hydrateCombatants(backup.combatants);
-        }
-      }
     }
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
+
+  // QA 2026-04-22 P1-5 (Epic 12 Wave 1 full feature) — setup-mode scope + backup recovery.
+  //
+  // Separate effect from the main hydration above because:
+  //   - sessionId is often null on first mount (draft session is created by a
+  //     later useEffect in page.tsx). The main hydration effect guards with
+  //     `hydrationDoneRef.current`, so once it fires it never re-runs — even
+  //     when sessionId resolves seconds later.
+  //   - This effect re-evaluates when sessionId changes and uses its own ref
+  //     so scope + recovery happen EXACTLY once, whenever sessionId first
+  //     arrives while we're in setup mode.
+  //
+  // Why it matters:
+  //   - Without this, debounced `saveCombatBackup` writes `session_id: null`
+  //     for any monsters the user adds during setup. On F5, recovery can't
+  //     match and the work is lost (observed in smoke 2026-04-22 00:59).
+  //   - Dedup against preloadedPlayers is done in EncounterSetup: if the
+  //     store already has combatants (from backup recovery here), the
+  //     preloadedPlayers microtask short-circuits.
+  const setupScopeAppliedRef = useRef(false);
+  useEffect(() => {
+    if (setupScopeAppliedRef.current) return;
+    if (encounterId) return; // not setup mode
+    if (!sessionId) return;  // wait for draft session to resolve
+    setupScopeAppliedRef.current = true;
+    const store = useCombatStore.getState();
+    store.setEncounterId(null, sessionId);
+    const backup = loadCombatBackup();
+    if (
+      backup &&
+      backup.session_id === sessionId &&
+      backup.encounter_id === null &&
+      backup.combatants.length > 0 &&
+      store.combatants.length === 0 // don't stack on top of preloadedPlayers
+    ) {
+      store.hydrateCombatants(backup.combatants);
+    }
+  }, [encounterId, sessionId]);
 
   const handleStartCombat = async (encounterName?: string) => {
     // Sprint 2: Track preset usage (fire-and-forget, once only)
