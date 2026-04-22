@@ -65,18 +65,3 @@ export function subscribeToCampaignMembers(
   return channel;
 }
 
-/**
- * Subscribe to new member joins across multiple campaigns (for Dashboard).
- * Uses one filtered channel per campaign to avoid leaking global metadata.
- * Returns array of RealtimeChannels for cleanup.
- */
-export function subscribeToDashboardMembers(
-  campaignIds: string[],
-  onMemberJoined: (event: MemberJoinEvent) => void,
-): RealtimeChannel[] {
-  if (campaignIds.length === 0) return [];
-
-  return campaignIds.map((id) =>
-    subscribeToCampaignMembers(id, onMemberJoined),
-  );
-}
