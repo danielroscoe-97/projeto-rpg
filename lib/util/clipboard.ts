@@ -17,7 +17,10 @@
  */
 
 export async function copyToClipboard(text: string): Promise<boolean> {
-  if (typeof window === "undefined") return false;
+  // This module is "use client", so window/document are always
+  // defined at call time. Any caller that somehow reaches this on
+  // SSR has a bigger problem than a failed copy — let the browser
+  // APIs throw and the catch below turns it into `false`.
   try {
     if (navigator?.clipboard?.writeText) {
       await navigator.clipboard.writeText(text);

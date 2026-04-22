@@ -960,11 +960,38 @@ A rota dedicada `app/admin/dm-upsell-funnel/page.tsx` mostra a mesma seção iso
 - [ ] **F8** VIEW plain foi rejeitada em favor de SECURITY DEFINER function (documentado em D7 e Área 5)
 - [ ] **F11** `REVOKE EXECUTE ... FROM PUBLIC; GRANT EXECUTE ... TO authenticated` aplicado
 - [ ] **D8** companion com `share_past_companions = false` é FILTRADO do resultado
-- [ ] Tab nova em `InvitePlayerDialog` aparece só se user tem companions
-- [ ] **F20** bulk endpoint resolve `user_ids → email` server-side antes de INSERT `campaign_invites` (email NOT NULL schema)
-- [ ] Bulk endpoint usa `check_rate_limit` existente (20/day/user)
-- [ ] Email de convite inclui contexto ("jogou com você em {lastCampaignName}")
 - [ ] **F26 glossário** — termo "Ex-companheiros" definido como "user com pelo menos **1 sessão** em comum" (match SQL `COUNT(DISTINCT s.id)`)
+
+**04-H REDESIGN (pós migration 180, 2026-04-22).** Os 4 AC bullets
+originais (tab em InvitePlayerDialog, F20 bulk endpoint, rate-limit,
+email contextual) foram **REMOVIDOS** porque o fluxo de `campaign_invites`
+por email inteiro foi deprecated (migration 180 / commit `a59cb78e`) após
+30-dia diagnostic mostrar 0% accept em 9 emails enviados vs. 1.746
+`session_tokens` no mesmo período (ratio 193× favor do join-link).
+Diagnostic: `docs/diagnostic-campaign-invites-zero-accept.md`. O Epic
+preserva o loop viral via manual-share pattern (match do comportamento
+real dos DMs em WhatsApp/Discord):
+
+- [ ] Collapsible **section** (não tab) em `InvitePlayerDialog` montada
+  quando `linkCode && linkActive` — self-hides quando DM tem zero past
+  companions carregados (UX: descoberta preservada no botão, mas sem
+  empty-state permanente ocupando espaço).
+- [ ] Botão "Copy message" por companion com template i18n
+  `companions_copy_message_template` = "Hey {playerName}! I'm starting
+  a new table: {campaignName}. Hop in here: {inviteLink}". Manual share
+  via clipboard (WhatsApp / Discord / SMS / qualquer canal).
+- [ ] `lib/util/clipboard.ts` helper com navigator.clipboard primary +
+  `document.execCommand('copy')` legacy fallback (iOS < 13.4, WebViews
+  sandboxed) — never throws, retorna `boolean`.
+- [ ] Analytics **novos** (`dm_upsell:*` namespace, colon-style):
+  `past_companions_loaded` (once per mount, inclui `count`) +
+  `past_companion_link_copied` (por click, inclui `success` flag pra
+  spotear iOS Safari clipboard failures sem PII).
+- [ ] Lazy-load gate state-based (not ref-based — ref approach stuck em
+  `true` across collapse + re-expand mid-flight, bug fixado em review).
+- [ ] D8 opt-out end-to-end: wizard Step 4 toggle →
+  `users.share_past_companions` → `get_past_companions()` RPC filter
+  (migration 169 line 118 `WHERE COALESCE(..., true) = true`).
 
 ### Área 6 — Analytics
 - [ ] **Prereq F19-WIRE shipped** (migration 178 — trigger `encounters.ended_at AFTER UPDATE` → `users.last_session_at`). Sem isso o funnel de `first_session_run → cta_shown` mede com 15min de defasagem.

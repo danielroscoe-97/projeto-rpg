@@ -38,7 +38,7 @@
  *     issues without PII in the payload.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Copy, Users } from "lucide-react";
@@ -67,19 +67,22 @@ export function InvitePastCompanions({
   const [companions, setCompanions] = useState<PastCompanion[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  // Guard so the lazy load runs exactly once per component lifetime.
-  // Using a ref (not state) avoids re-triggering the effect: putting
-  // `loading` or `companions` in the deps array caused setLoading(true)
-  // to re-fire the effect, which then cancelled its own fetch via the
-  // cleanup. Ref is stable across renders and isn't a dep.
-  const hasLoadStartedRef = useRef(false);
 
-  // First-expand lazy load. Re-expands (after collapse) are no-ops — the
-  // companions list is cached for the dialog's lifetime.
+  // Adversarial-review fix: state-based gate (was ref-based). Previous
+  // hasLoadStartedRef approach stuck at `true` across collapse + re-
+  // expand even when the first fetch was cancelled mid-flight (user
+  // collapsed before the Supabase RPC resolved), leaving `companions`
+  // permanently null and the section hidden forever.
+  //
+  // New gate: `companions !== null` (success cached) || `loading` (in
+  // flight). Neither is a dep (closure values at effect-run time are
+  // enough; we only re-enter the effect on `expanded` / `campaignId`
+  // flips). The `finally` unconditionally releases `loading` so a
+  // mid-flight collapse still unblocks the next expand's retry.
   useEffect(() => {
     if (!expanded) return;
-    if (hasLoadStartedRef.current) return;
-    hasLoadStartedRef.current = true;
+    if (companions !== null) return;
+    if (loading) return;
 
     let active = true;
     setLoading(true);
@@ -97,14 +100,17 @@ export function InvitePastCompanions({
         if (!active) return;
         setError(true);
       } finally {
-        if (active) setLoading(false);
+        // Always release loading. If the component unmounted mid-fetch
+        // React 18 treats setState on unmounted components as silent
+        // no-ops; the state update here does NOT race the cleanup.
+        setLoading(false);
       }
     })();
 
     return () => {
       active = false;
     };
-  }, [expanded, campaignId]);
+  }, [expanded, campaignId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const buildMessage = useCallback(
     (playerName: string) =>
@@ -118,7 +124,17 @@ export function InvitePastCompanions({
 
   const handleCopy = useCallback(
     async (companion: PastCompanion) => {
-      const name = companion.companion_display_name ?? "";
+      // Adversarial-review fix: fall back to a neutral "friend" label
+      // when `companion_display_name` is null/empty. Previously the
+      // copy message said "Hey ! I'm starting…" and the success toast
+      // read "...paste it to  wherever…" — double space + awkward
+      // grammar. The display card still renders "—" as its visible
+      // fallback; the clipboard/toast string takes the softer word.
+      const rawName =
+        typeof companion.companion_display_name === "string"
+          ? companion.companion_display_name.trim()
+          : "";
+      const name = rawName.length > 0 ? rawName : "friend";
       const message = buildMessage(name);
       const ok = await copyToClipboard(message);
       if (ok) {

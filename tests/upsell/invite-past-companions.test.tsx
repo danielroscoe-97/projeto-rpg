@@ -286,6 +286,38 @@ describe("<InvitePastCompanions />", () => {
     expect(getPastCompanionsMock).toHaveBeenCalledTimes(1);
   });
 
+  it("mid-fetch collapse + re-expand: retries the fetch (adversarial stale-cache fix)", async () => {
+    // First expand: fetch in flight. User collapses BEFORE resolve.
+    // Second expand: the fetch should retry (not stay null forever).
+    let firstResolve: (rows: unknown) => void = () => {};
+    getPastCompanionsMock.mockImplementationOnce(
+      () => new Promise((res) => (firstResolve = res)),
+    );
+    getPastCompanionsMock.mockResolvedValueOnce(COMPANIONS);
+    const user = userEvent.setup();
+    renderIt();
+    const toggle = screen.getByTestId(
+      "upsell.invite-past-companions.toggle",
+    );
+    await user.click(toggle); // expand → fetch #1 in flight
+    // Collapse while fetch #1 is pending.
+    await user.click(toggle);
+    // Resolve fetch #1 — its result should be ignored (active=false).
+    await act(async () => firstResolve(["ignored"]));
+    // Re-expand — should trigger fetch #2 because prior never completed
+    // the component state.
+    await user.click(toggle);
+    await waitFor(() => expect(getPastCompanionsMock).toHaveBeenCalledTimes(2));
+    // And the new results render.
+    await waitFor(() =>
+      expect(
+        screen.getByTestId(
+          `upsell.invite-past-companions.card-${COMPANIONS[0].companion_user_id}`,
+        ),
+      ).toBeInTheDocument(),
+    );
+  });
+
   it("missing display_name renders '—' fallback; copy still works", async () => {
     getPastCompanionsMock.mockResolvedValue([
       {
