@@ -66,6 +66,7 @@ const mockChannel = {
 jest.mock("@/lib/realtime/broadcast", () => ({
   broadcastEvent: jest.fn(),
   cleanupDmChannel: jest.fn(),
+  scheduleDmChannelCleanup: jest.fn(),
   getDmChannel: jest.fn(() => mockChannel),
   registerHiddenLookup: jest.fn(),
 }));
