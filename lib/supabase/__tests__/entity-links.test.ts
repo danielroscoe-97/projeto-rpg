@@ -64,6 +64,7 @@ import {
   unlinkEntities,
   listEntityLinks,
   listCampaignEdges,
+  syncTextMentions,
 } from "../entity-links";
 
 // ---------- Helpers ----------
@@ -278,6 +279,59 @@ describe("entity-links lib — listCampaignEdges", () => {
     const result = await listCampaignEdges(CAMP);
     expect(result).toHaveLength(2);
     expect(mockEq).toHaveBeenCalledWith("campaign_id", CAMP);
+  });
+});
+
+// Regression test for the 2026-04-22 "NPC auto-link gap" (batch 3 of the
+// follow-ups handoff): typing @[npc:uuid] in a note body must populate the
+// legacy `note_npc_links` table so the NPC chip surfaces in
+// CampaignNotes.linksByNote. Without the mirror-write inside syncTextMentions,
+// only the unified edge was created and the chip stayed invisible.
+// See docs/next-session-prompt-2026-04-22.md §3.1.
+describe("entity-links lib — syncTextMentions (NPC legacy mirror-write)", () => {
+  it("mirrors an added note→npc edge into note_npc_links", async () => {
+    const NOTE_ID = "00000000-0000-4000-8000-00000000aaaa";
+    const NPC_ID = "00000000-0000-4000-8000-00000000bbbb";
+
+    // Sequential call ordering against the shared chain mock:
+    //   1. upsertEntityLink:
+    //        .upsert(...).select().single()  — resolve on mockSingle
+    //   2. mirror insert:
+    //        .insert(...)                    — resolved directly (awaited)
+    const upsertedEdge: EntityLink = {
+      ...baseEdge,
+      id: "edge-mirror",
+      source_type: "note",
+      source_id: NOTE_ID,
+      target_type: "npc",
+      target_id: NPC_ID,
+      relationship: "mentions",
+    };
+    mockSingle.mockResolvedValueOnce({ data: upsertedEdge, error: null });
+    // Second .insert() call (mirror into note_npc_links) is awaited directly,
+    // no .select().single() after it. mockResolvedValueOnce keeps the default
+    // chain behaviour for unrelated tests.
+    mockInsert.mockResolvedValueOnce({ error: null });
+
+    const text = `Met @[npc:${NPC_ID}] at the tavern.`;
+    const { added, removedEdgeIds } = await syncTextMentions(
+      CAMP,
+      { type: "note", id: NOTE_ID },
+      text,
+      [],
+    );
+
+    expect(added).toHaveLength(1);
+    expect(added[0].id).toBe("edge-mirror");
+    expect(removedEdgeIds).toEqual([]);
+    // The legacy mirror-write must have hit note_npc_links with the correct
+    // (note_id, npc_id) pair.
+    const calledTables = mockFrom.mock.calls.map((c) => c[0]);
+    expect(calledTables).toContain("note_npc_links");
+    expect(mockInsert).toHaveBeenCalledWith({
+      note_id: NOTE_ID,
+      npc_id: NPC_ID,
+    });
   });
 });
 

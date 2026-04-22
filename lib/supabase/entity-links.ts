@@ -11,6 +11,7 @@
  */
 
 import { createClient } from "./client";
+import { captureError } from "@/lib/errors/capture";
 import type {
   EntityLink,
   EntityRef,
@@ -179,6 +180,106 @@ export async function listCampaignEdges(
   return (data ?? []) as EntityLink[];
 }
 
+// Dual-table NPC edges — LEGACY MIRROR-WRITE.
+//
+// Context: `note_npc_links` is the older NPC-only table (predates the unified
+// `campaign_mind_map_edges` graph). The NPC chip renderer in
+// `components/campaign/CampaignNotes.tsx` still reads NPC edges from that
+// legacy table via `linksByNote`, while Location/Faction/Quest chips already
+// read from the unified edges via `mentionsByNote`. Without mirroring,
+// typing `@[npc:uuid]` in a note body writes the edge but does NOT populate
+// the legacy row, so the NPC chip never appears — a silent inconsistency
+// that the 2026-04-22 handoff doc flags as the "NPC auto-link gap".
+//
+// The explicit dual-write lives in CampaignNotes.handleLinkNpc /
+// handleUnlinkNpc; this helper mirrors the same behaviour for the
+// @-mention-driven sync path so the two chip surfaces stay in lockstep
+// regardless of which path created the edge.
+//
+// Scope: only fires when `source.type === "note"` and the counterparty is
+// an NPC — the legacy table keys on `(note_id, npc_id)` and has no meaning
+// for other source types. All writes are best-effort (wrapped in try/catch,
+// failures go to captureError); the primary edge mutation outcome is never
+// affected by a legacy mirror failure.
+//
+// Next sprint: deprecate `note_npc_links` and switch `linksByNote` to read
+// from `campaign_mind_map_edges` (already the source of truth) — see
+// docs/next-session-prompt-2026-04-22.md §3 and docs/PRD-entity-graph.md
+// Fase 3e. At that point this mirror-write can be deleted.
+
+/** True when edge endpoint represents a (note, npc) pair. */
+function isNoteNpcPair(
+  sourceType: string,
+  targetType: string,
+): boolean {
+  return sourceType === "note" && targetType === "npc";
+}
+
+/** Best-effort mirror insert into legacy `note_npc_links`. Idempotent:
+ * the `(note_id, npc_id)` unique constraint makes duplicates surface as
+ * error code `23505`; we swallow those silently. Any other failure is
+ * logged but never propagated — the primary edge upsert already succeeded. */
+async function mirrorInsertLegacyNpcLink(
+  client: ReturnType<typeof createClient>,
+  noteId: string,
+  npcId: string,
+): Promise<void> {
+  try {
+    const { error } = await client
+      .from("note_npc_links")
+      .insert({ note_id: noteId, npc_id: npcId });
+    if (!error) return;
+    // PostgREST / PostgreSQL duplicate-key violation — expected on re-sync.
+    // Code field shape: `error.code === "23505"` from supabase-js.
+    const code = (error as { code?: string } | null)?.code;
+    if (code === "23505") return;
+    captureError(error, {
+      component: "entity-links",
+      action: "syncTextMentions.mirrorInsertLegacyNpcLink",
+      category: "database",
+      extra: { noteId, npcId },
+    });
+  } catch (err) {
+    captureError(err, {
+      component: "entity-links",
+      action: "syncTextMentions.mirrorInsertLegacyNpcLink",
+      category: "network",
+      extra: { noteId, npcId },
+    });
+  }
+}
+
+/** Best-effort mirror delete from legacy `note_npc_links`. No-ops if the
+ * row is already gone. Failures are logged but never propagated. */
+async function mirrorDeleteLegacyNpcLink(
+  client: ReturnType<typeof createClient>,
+  noteId: string,
+  npcId: string,
+): Promise<void> {
+  try {
+    const { error } = await client
+      .from("note_npc_links")
+      .delete()
+      .eq("note_id", noteId)
+      .eq("npc_id", npcId);
+    if (error) {
+      captureError(error, {
+        component: "entity-links",
+        action: "syncTextMentions.mirrorDeleteLegacyNpcLink",
+        category: "database",
+        extra: { noteId, npcId },
+      });
+    }
+  } catch (err) {
+    captureError(err, {
+      component: "entity-links",
+      action: "syncTextMentions.mirrorDeleteLegacyNpcLink",
+      category: "network",
+      extra: { noteId, npcId },
+    });
+  }
+}
+
 /**
  * Reconcile `mentions` edges from a source entity to whatever is referenced
  * in a free-form text field (note body, NPC description, faction lore, …).
@@ -197,6 +298,10 @@ export async function listCampaignEdges(
  * `mentions` edges linking to other types (if any exist) are left alone —
  * they were not created via the `@` syntax and should not be garbage-
  * collected by it.
+ *
+ * Dual-table mirror-write: note→npc edges are additionally mirrored into
+ * `note_npc_links` (legacy). See the block comment above `isNoteNpcPair`
+ * for rationale + deprecation plan.
  */
 export async function syncTextMentions(
   campaignId: string,
@@ -245,6 +350,9 @@ export async function syncTextMentions(
     | { kind: "removed"; edgeId: string };
 
   const tasks: Array<Promise<SyncTask>> = [];
+  // Shared client for the legacy mirror-writes below. Created once per sync
+  // call so we don't pay the auth/session setup per task.
+  const legacyClient = createClient();
 
   // Additions: parsed refs not present in the existing edge set.
   for (const ref of parsedRefs) {
@@ -256,7 +364,14 @@ export async function syncTextMentions(
         source,
         { type: ref.type, id: ref.id },
         "mentions",
-      ).then<SyncTask>((edge) => ({ kind: "added", edge })),
+      ).then<SyncTask>(async (edge) => {
+        // Legacy mirror-write: only meaningful for note → npc edges.
+        // See the dual-table comment above for rationale.
+        if (isNoteNpcPair(source.type, ref.type)) {
+          await mirrorInsertLegacyNpcLink(legacyClient, source.id, ref.id);
+        }
+        return { kind: "added", edge };
+      }),
     );
   }
 
@@ -268,11 +383,25 @@ export async function syncTextMentions(
     const key = `${edge.target_type}:${edge.target_id}`;
     if (desiredKeys.has(key)) continue;
     const edgeId = edge.id;
+    // Capture the (note_id, npc_id) pair off the edge BEFORE deletion so
+    // we can mirror the remove into the legacy table. The edge carries
+    // both endpoints (source_type/source_id + target_type/target_id) —
+    // these are what we need; the `removed` branch has no parsed `ref`
+    // (removal is driven by iterating existing edges, not parsed text).
+    const legacyNoteId = edge.source_id;
+    const legacyNpcId = edge.target_id;
+    const shouldMirror = isNoteNpcPair(edge.source_type, edge.target_type);
     tasks.push(
-      unlinkEntities(edgeId).then<SyncTask>(() => ({
-        kind: "removed",
-        edgeId,
-      })),
+      unlinkEntities(edgeId).then<SyncTask>(async () => {
+        if (shouldMirror) {
+          await mirrorDeleteLegacyNpcLink(
+            legacyClient,
+            legacyNoteId,
+            legacyNpcId,
+          );
+        }
+        return { kind: "removed", edgeId };
+      }),
     );
   }
 
