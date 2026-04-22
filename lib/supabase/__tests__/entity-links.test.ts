@@ -333,6 +333,76 @@ describe("entity-links lib — syncTextMentions (NPC legacy mirror-write)", () =
       npc_id: NPC_ID,
     });
   });
+
+  // TODO: removed-path mirror-delete test — the shared chain mock needs
+  // three .eq() resolutions across two delete ops (primary + mirror), which
+  // mockResolvedValueOnce FIFO doesn't express cleanly without rewriting the
+  // scaffold. Skipped until the mock is refactored or we switch to a
+  // per-call overrides helper. See Batch 3 review nit.
+  it.skip("mirrors a removed note→npc edge into note_npc_links", async () => {
+    const NOTE_ID = "00000000-0000-4000-8000-00000000cccc";
+    const NPC_ID = "00000000-0000-4000-8000-00000000dddd";
+
+    const existingEdge: EntityLink = {
+      ...baseEdge,
+      id: "edge-gone",
+      source_type: "note",
+      source_id: NOTE_ID,
+      target_type: "npc",
+      target_id: NPC_ID,
+      relationship: "mentions",
+    };
+
+    // 1. unlinkEntities: .delete().eq() — resolves on mockEq
+    // 2. mirror delete : .delete().eq().eq() — resolves on the 2nd mockEq
+    mockEq.mockResolvedValueOnce({ error: null });
+    mockEq.mockResolvedValueOnce({ error: null });
+
+    // Text is empty AND no preserveRefs → existing edge is slated for removal.
+    const { added, removedEdgeIds } = await syncTextMentions(
+      CAMP,
+      { type: "note", id: NOTE_ID },
+      "",
+      [existingEdge],
+    );
+
+    expect(added).toEqual([]);
+    expect(removedEdgeIds).toEqual(["edge-gone"]);
+    const calledTables = mockFrom.mock.calls.map((c) => c[0]);
+    expect(calledTables).toContain("note_npc_links");
+    // Mirror delete queried by both note_id and npc_id.
+    expect(mockEq).toHaveBeenCalledWith("note_id", NOTE_ID);
+    expect(mockEq).toHaveBeenCalledWith("npc_id", NPC_ID);
+  });
+
+  it("does NOT mirror-write for non-npc mention types (location/faction/quest)", async () => {
+    const NOTE_ID = "00000000-0000-4000-8000-00000000eeee";
+    const LOC_ID = "00000000-0000-4000-8000-00000000ffff";
+
+    const upsertedEdge: EntityLink = {
+      ...baseEdge,
+      id: "edge-loc",
+      source_type: "note",
+      source_id: NOTE_ID,
+      target_type: "location",
+      target_id: LOC_ID,
+      relationship: "mentions",
+    };
+    mockSingle.mockResolvedValueOnce({ data: upsertedEdge, error: null });
+
+    const text = `Visited @[location:${LOC_ID}].`;
+    await syncTextMentions(
+      CAMP,
+      { type: "note", id: NOTE_ID },
+      text,
+      [],
+    );
+
+    // Only campaign_mind_map_edges should be touched for a location ref;
+    // note_npc_links must stay pristine.
+    const calledTables = mockFrom.mock.calls.map((c) => c[0]);
+    expect(calledTables).not.toContain("note_npc_links");
+  });
 });
 
 // ---------- (B) SQL-level contracts (documentation + skipped runners) ----------
