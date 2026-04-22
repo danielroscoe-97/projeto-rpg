@@ -1,25 +1,20 @@
 "use server";
 
 import {
-  acceptCampaignInvite as _acceptCampaignInvite,
-  declineCampaignInvite as _declineCampaignInvite,
   getCampaignMembers as _getCampaignMembers,
   removeCampaignMember as _removeCampaignMember,
   removeMemberAndCharacter as _removeMemberAndCharacter,
 } from "@/lib/supabase/campaign-membership";
 
 /**
- * Server Action wrappers for campaign invite operations.
- * These are safe to call from client components.
+ * Server Action wrappers for campaign membership operations.
+ * Safe to call from client components.
+ *
+ * The email-invite accept/decline wrappers used to live here
+ * (`acceptInviteAction`, `declineInviteAction`) and were removed together
+ * with the `campaign_invites` table (migration 179, 2026-04-21). The
+ * canonical accept flow is `/join-campaign/[code]`.
  */
-
-export async function acceptInviteAction(token: string) {
-  return _acceptCampaignInvite(token);
-}
-
-export async function declineInviteAction(inviteId: string) {
-  return _declineCampaignInvite(inviteId);
-}
 
 export async function getCampaignMembersAction(campaignId: string) {
   return _getCampaignMembers(campaignId);

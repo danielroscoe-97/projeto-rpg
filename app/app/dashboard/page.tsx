@@ -34,10 +34,7 @@ import { grantXpAsync, getCooldownStart } from "@/lib/xp/grant-xp";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
 import type { UserRole } from "@/lib/stores/role-store";
 import type { UserOnboarding } from "@/lib/types/database";
-import {
-  getUserMemberships,
-  getPendingInvites,
-} from "@/lib/supabase/campaign-membership";
+import { getUserMemberships } from "@/lib/supabase/campaign-membership";
 
 export default async function DashboardPage() {
   // Phase 0: Parallelize all independent async setup (getAuthUser is cached per-request)
@@ -57,7 +54,6 @@ export default async function DashboardPage() {
     userDataRes,
     memberships,
     onboardingRes,
-    pendingInvites,
     campaignsRes,
     encountersRes,
     encounterCountRes,
@@ -74,7 +70,6 @@ export default async function DashboardPage() {
       .maybeSingle(),
     getUserMemberships(user.id),
     supabase.from("user_onboarding").select("wizard_completed, dashboard_tour_completed, dm_tour_completed, source").eq("user_id", user.id).maybeSingle(),
-    getPendingInvites(user.email ?? ""),
     supabase.from("campaigns").select("id, name, created_at, updated_at, cover_image_url, player_characters(count)").eq("owner_id", user.id).order("created_at", { ascending: false }),
     supabase.from("encounters").select("id, name, round_number, is_active, updated_at, session_id, sessions!inner(id, name, owner_id)").eq("sessions.owner_id", user.id).eq("is_active", true).order("updated_at", { ascending: false }).limit(5),
     supabase.from("encounters").select("id, sessions!inner(owner_id)", { count: "exact", head: true }).eq("sessions.owner_id", user.id),
@@ -82,7 +77,6 @@ export default async function DashboardPage() {
 
   const userData = userDataRes.data;
   const userRole = (userData?.role as UserRole) ?? "both";
-  const userEmail = userData?.email ?? user.email ?? "";
 
   // 02-F full — "Continue de onde parou" card is rendered below inside a
   // Suspense boundary via <ContinueFromLastSessionServer />, which owns its
@@ -97,11 +91,6 @@ export default async function DashboardPage() {
     (userRole === "dm" || userRole === "both") &&
     !(onboarding?.dm_tour_completed ?? false);
   const hasUsedCombat = (encounterCountRes.count ?? 0) > 0;
-
-  // Re-fetch pending invites with DB email if it differs from auth email
-  const finalPendingInvites = (userEmail && userEmail !== user.email)
-    ? await getPendingInvites(userEmail)
-    : pendingInvites;
 
   // Onboarding redirect — any user who hasn't completed the wizard and has no campaigns/memberships
   {
@@ -209,19 +198,12 @@ export default async function DashboardPage() {
     new_session: t("new_session"),
     dm_tables_title: t("dm_tables_title"),
     player_tables_title: t("player_tables_title"),
-    pending_invites: t("pending_invites"),
     quick_combat: t("quick_combat"),
     waiting_for_invite: t("waiting_for_invite"),
     waiting_for_invite_desc: t("waiting_for_invite_desc"),
     try_quick_combat: t("try_quick_combat"),
     active_session: t("active_session"),
     no_active_session: t("no_active_session"),
-    invited_by: t("invited_by"),
-    accept_invite: t("accept_invite"),
-    decline_invite: t("decline_invite"),
-    invite_accept_error: t("invite_accept_error"),
-    invite_decline_error: t("invite_decline_error"),
-    invite_accepted_redirect: t("invite_accepted_redirect"),
     campaigns_players_singular: t("campaigns_players_singular"),
     campaigns_players_plural: t("campaigns_players_plural"),
     dm_label: t("dm_label"),
@@ -351,7 +333,6 @@ export default async function DashboardPage() {
         userId={user.id}
         userRole={userRole}
         memberships={memberships}
-        pendingInvites={finalPendingInvites}
         translations={translations}
         streakWeeks={streakWeeks}
         hasUsedCombat={hasUsedCombat}

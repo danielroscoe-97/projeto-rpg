@@ -47,14 +47,6 @@ export interface CampaignMemberWithUser {
   character_class: string | null;
 }
 
-export interface CampaignInviteWithDetails {
-  id: string;
-  campaign_id: string;
-  campaign_name: string;
-  dm_name: string;
-  dm_email: string;
-  token: string;
-  status: "pending" | "accepted" | "expired";
-  created_at: string;
-  expires_at: string;
-}
+// CampaignInviteWithDetails removed in 2026-04-21 with the email-invite flow
+// (migration 179). The /join-campaign/[code] flow does not need a typed row
+// because it consumes session_tokens directly; see `app/join-campaign/[code]`.

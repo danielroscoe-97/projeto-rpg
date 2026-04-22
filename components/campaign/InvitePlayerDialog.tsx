@@ -8,7 +8,6 @@ import { captureError } from "@/lib/errors/capture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -16,15 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Mail, UserPlus, X, Clock, Check, AlertCircle, Copy, RefreshCw, Link as LinkIcon } from "lucide-react";
-
-interface Invite {
-  id: string;
-  email: string;
-  status: "pending" | "accepted" | "expired";
-  created_at: string;
-  expires_at: string;
-}
+import { UserPlus, Clock, AlertCircle, Copy, RefreshCw } from "lucide-react";
 
 interface InvitePlayerDialogProps {
   campaignId: string;
@@ -32,12 +23,15 @@ interface InvitePlayerDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-const STATUS_ICONS: Record<string, React.ReactNode> = {
-  pending: <Clock className="w-3.5 h-3.5 text-amber-400" />,
-  accepted: <Check className="w-3.5 h-3.5 text-green-400" />,
-  expired: <AlertCircle className="w-3.5 h-3.5 text-muted-foreground" />,
-};
-
+/**
+ * DM-side invite UI.
+ *
+ * 2026-04-21: the Email tab was removed together with the `campaign_invites`
+ * table (migration 179). See `docs/diagnostic-campaign-invites-zero-accept.md`
+ * for the deprecation rationale (0% accept over 30 days, 193× behind the
+ * Link flow). The Join-Link tab is now the only path — players enter the
+ * campaign via the `/join-campaign/[code]` route backed by `session_tokens`.
+ */
 export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenChange }: InvitePlayerDialogProps) {
   const t = useTranslations("campaign");
   const tc = useTranslations("common");
@@ -55,11 +49,6 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
   const [linkError, setLinkError] = useState(false);
   const [confirmRenew, setConfirmRenew] = useState(false);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
-
-  // ----- Via Email state -----
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [invites, setInvites] = useState<Invite[]>([]);
 
   const buildLink = (code: string) =>
     `${window.location.origin}/join-campaign/${code}`;
@@ -86,7 +75,7 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
     }
   }, [campaignId]);
 
-  // Load join link on dialog open (default tab is "link")
+  // Load join link on dialog open
   useEffect(() => {
     if (open && !linkCode) loadJoinLink();
   }, [open, linkCode, loadJoinLink]);
@@ -134,81 +123,10 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
     } catch (err) {
       captureError(err, { component: "InvitePlayerDialog", action: "renewLink", category: "network" });
     }
-  }, [campaignId, confirmRenew]);
-
-  // Load existing email invites when dialog opens
-  useEffect(() => {
-    if (!open) return;
-    const load = async () => {
-      try {
-        const res = await fetch(`/api/campaign/${campaignId}/invites`);
-        if (res.ok) {
-          const { data } = await res.json();
-          setInvites(data ?? []);
-        }
-      } catch (err) {
-        captureError(err, { component: "InvitePlayerDialog", action: "loadInvites", category: "network" });
-      }
-    };
-    load();
-  }, [open, campaignId]);
-
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-
-    setIsSubmitting(true);
-    try {
-      const res = await fetch(`/api/campaign/${campaignId}/invites`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-
-      const body = await res.json();
-
-      if (!res.ok) {
-        if (body.error === "rate_limit") {
-          toast.error(t("invite_limit_reached"));
-        } else if (body.error === "duplicate") {
-          toast.error(t("invite_already_pending"));
-        } else {
-          throw new Error(body.message || "Failed");
-        }
-        return;
-      }
-
-      toast.success(t("invite_sent", { email: email.trim() }));
-      setEmail("");
-
-      if (body.data) {
-        setInvites((prev) => [body.data, ...prev]);
-      }
-    } catch (err) {
-      toast.error(t("invite_error"));
-      captureError(err, { component: "InvitePlayerDialog", action: "sendInvite", category: "network" });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [email, campaignId, t]);
-
-  const handleCancel = useCallback(async (inviteId: string) => {
-    try {
-      const res = await fetch(`/api/campaign/${campaignId}/invites?inviteId=${inviteId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Cancel failed");
-      setInvites((prev) => prev.map((inv) =>
-        inv.id === inviteId ? { ...inv, status: "expired" as const } : inv
-      ));
-    } catch (err) {
-      toast.error(t("invite_cancel_error"));
-      captureError(err, { component: "InvitePlayerDialog", action: "cancelInvite", category: "network" });
-    }
-  }, [campaignId, t]);
+  }, [campaignId, confirmRenew, t]);
 
   return (
-    <Dialog open={open} onOpenChange={(nextOpen) => { setOpen(nextOpen); if (!nextOpen) setEmail(""); }}>
+    <Dialog open={open} onOpenChange={(nextOpen) => { setOpen(nextOpen); }}>
       {controlledOpen === undefined && (
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2">
@@ -222,145 +140,84 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
           <DialogTitle>{t("invite_title")}</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="link" onValueChange={(v) => { if (v === "link" && !linkCode) loadJoinLink(); }}>
-          <TabsList className="w-full">
-            <TabsTrigger value="link" className="flex-1 gap-1.5">
-              <LinkIcon className="w-3.5 h-3.5" />
-              {t("invite_tab_link")}
-            </TabsTrigger>
-            <TabsTrigger value="email" className="flex-1 gap-1.5">
-              <Mail className="w-3.5 h-3.5" />
-              {t("invite_tab_email")}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* ── Via Link ── */}
-          <TabsContent value="link" className="mt-4 space-y-4 flex-none">
-            {linkLoading ? (
-              <p className="text-sm text-muted-foreground text-center py-4">{t("invite_generating")}</p>
-            ) : linkError ? (
-              <div className="text-center py-4 space-y-3">
-                <AlertCircle className="w-5 h-5 text-destructive mx-auto" />
-                <p className="text-sm text-muted-foreground">{t("invite_error_generate")}</p>
-                <Button type="button" variant="outline" size="sm" onClick={loadJoinLink} className="gap-1.5">
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  {t("invite_retry")}
+        {/* Via Link — the only path since 2026-04-21 (email flow removed). */}
+        <div className="mt-2 space-y-4 flex-none">
+          {linkLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-4">{t("invite_generating")}</p>
+          ) : linkError ? (
+            <div className="text-center py-4 space-y-3">
+              <AlertCircle className="w-5 h-5 text-destructive mx-auto" />
+              <p className="text-sm text-muted-foreground">{t("invite_error_generate")}</p>
+              <Button type="button" variant="outline" size="sm" onClick={loadJoinLink} className="gap-1.5">
+                <RefreshCw className="w-3.5 h-3.5" />
+                {t("invite_retry")}
+              </Button>
+            </div>
+          ) : linkCode != null ? (
+            <>
+              {/* URL display + copy */}
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={buildLink(linkCode)}
+                  className="flex-1 text-xs bg-surface-tertiary border-white/[0.15] text-foreground"
+                />
+                <Button type="button" variant="outline" size="icon" onClick={handleCopy} title={t("invite_copy_title")}>
+                  <Copy className="w-4 h-4" />
                 </Button>
               </div>
-            ) : linkCode != null ? (
-              <>
-                {/* URL display + copy */}
-                <div className="flex gap-2">
-                  <Input
-                    readOnly
-                    value={buildLink(linkCode)}
-                    className="flex-1 text-xs bg-surface-tertiary border-white/[0.15] text-foreground"
-                  />
-                  <Button type="button" variant="outline" size="icon" onClick={handleCopy} title={t("invite_copy_title")}>
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
 
-                {/* Expiration info */}
-                {expiresAt && (
-                  <p className="text-xs text-muted-foreground">
-                    {(() => {
-                      const days = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86400000);
-                      if (days <= 0) return t("invite_link_expired");
-                      if (days === 1) return t("invite_link_expires_tomorrow");
-                      return t("invite_link_expires_in", { days });
-                    })()}
-                  </p>
-                )}
+              {/* Expiration info */}
+              {expiresAt && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Clock className="w-3 h-3" />
+                  {(() => {
+                    const days = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86400000);
+                    if (days <= 0) return t("invite_link_expired");
+                    if (days === 1) return t("invite_link_expires_tomorrow");
+                    return t("invite_link_expires_in", { days });
+                  })()}
+                </p>
+              )}
 
-                {/* Active toggle */}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">{t("invite_disable_link")}</span>
-                  <Switch checked={linkActive} onCheckedChange={handleToggleActive} />
-                </div>
-
-                {/* Renew */}
-                {!confirmRenew ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="gap-1.5 text-muted-foreground hover:text-foreground w-full"
-                    onClick={handleRenew}
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    {t("invite_renew_link")}
-                  </Button>
-                ) : (
-                  <div className="rounded-lg border border-white/[0.04] p-3 space-y-2">
-                    <p className="text-xs text-muted-foreground">
-                      {t("invite_renew_warning")}
-                    </p>
-                    <div className="flex gap-2">
-                      <Button type="button" variant="destructive" size="sm" className="flex-1" onClick={handleRenew}>
-                        {tc("confirm")}
-                      </Button>
-                      <Button type="button" variant="ghost" size="sm" className="flex-1" onClick={() => setConfirmRenew(false)}>
-                        {tc("cancel")}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">{t("invite_generating")}</p>
-            )}
-          </TabsContent>
-
-          {/* ── Via E-mail ── */}
-          <TabsContent value="email" className="mt-4 space-y-4 flex-none">
-            <p className="text-sm text-muted-foreground">
-              {t("invite_email_description")}
-            </p>
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("invite_email_placeholder")}
-                required
-                className="flex-1"
-                data-testid="invite-email-input"
-              />
-              <Button type="submit" variant="gold" disabled={isSubmitting}>
-                {isSubmitting ? "..." : t("invite_send")}
-              </Button>
-            </form>
-
-            {invites.length > 0 && (
-              <div className="space-y-2 max-h-[260px] overflow-y-auto">
-                <h4 className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                  {t("invite_list_title")}
-                </h4>
-                {invites.map((inv) => (
-                  <div
-                    key={inv.id}
-                    className="flex items-center gap-2 text-sm py-2 border-b border-white/[0.04] last:border-0"
-                  >
-                    {STATUS_ICONS[inv.status]}
-                    <span className="flex-1 truncate text-foreground">{inv.email}</span>
-                    <span className="text-xs text-muted-foreground capitalize">{inv.status}</span>
-                    {inv.status === "pending" && (
-                      <button
-                        type="button"
-                        onClick={() => handleCancel(inv.id)}
-                        className="text-muted-foreground hover:text-red-400 transition-colors"
-                        aria-label="Cancel invite"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                ))}
+              {/* Active toggle */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">{t("invite_disable_link")}</span>
+                <Switch checked={linkActive} onCheckedChange={handleToggleActive} />
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
+
+              {/* Renew */}
+              {!confirmRenew ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 text-muted-foreground hover:text-foreground w-full"
+                  onClick={handleRenew}
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  {t("invite_renew_link")}
+                </Button>
+              ) : (
+                <div className="rounded-lg border border-white/[0.04] p-3 space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    {t("invite_renew_warning")}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="destructive" size="sm" className="flex-1" onClick={handleRenew}>
+                      {tc("confirm")}
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="flex-1" onClick={() => setConfirmRenew(false)}>
+                      {tc("cancel")}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">{t("invite_generating")}</p>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -15,7 +15,6 @@ import { PocketDmLabBadge } from "@/components/dashboard/PocketDmLabBadge";
 import { MethodologyMilestoneToast } from "@/components/dashboard/MethodologyMilestoneToast";
 import { ResearcherBadge } from "@/components/dashboard/ResearcherBadge";
 import { XpCard } from "@/components/xp/XpCard";
-import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
 import { CampaignCard } from "@/components/dashboard/CampaignCard";
 import { CombatHistoryCard } from "@/components/dashboard/CombatHistoryCard";
@@ -28,10 +27,7 @@ import { useRoleStore } from "@/lib/stores/role-store";
 import { Button } from "@/components/ui/button";
 import type { UserRole, ActiveView } from "@/lib/stores/role-store";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
-import type {
-  UserMembership,
-  CampaignInviteWithDetails,
-} from "@/lib/types/campaign-membership";
+import type { UserMembership } from "@/lib/types/campaign-membership";
 
 interface DashboardOverviewProps {
   campaigns: {
@@ -45,26 +41,18 @@ interface DashboardOverviewProps {
   userId: string;
   userRole: UserRole;
   memberships: UserMembership[];
-  pendingInvites: CampaignInviteWithDetails[];
   translations: {
     title: string;
     description: string;
     new_session: string;
     dm_tables_title: string;
     player_tables_title: string;
-    pending_invites: string;
     quick_combat: string;
     waiting_for_invite: string;
     waiting_for_invite_desc: string;
     try_quick_combat: string;
     active_session: string;
     no_active_session: string;
-    invited_by: string;
-    accept_invite: string;
-    decline_invite: string;
-    invite_accept_error: string;
-    invite_decline_error: string;
-    invite_accepted_redirect: string;
     campaigns_players_singular: string;
     campaigns_players_plural: string;
     dm_label: string;
@@ -150,7 +138,6 @@ export function DashboardOverview({
   userId,
   userRole,
   memberships,
-  pendingInvites,
   translations: t,
   streakWeeks = 0,
   hasUsedCombat = false,
@@ -248,27 +235,6 @@ export function DashboardOverview({
 
   const isDmFirst = effectiveView === "dm";
   const isDmRole = userRole !== "player";
-  // JO-11: player with no campaigns + pending invites → show invites at absolute top
-  const isPlayerWaitingForCampaign = !isDmRole && !hasPlayerCampaigns;
-  const showInvitesAtTop = isPlayerWaitingForCampaign && pendingInvites.length > 0;
-
-  const pendingInvitesBlock = (
-    <div data-tour-id="dash-pending-invites">
-      <PendingInvites
-        initialInvites={pendingInvites}
-        highlighted={showInvitesAtTop}
-        translations={{
-          title: t.pending_invites,
-          invitedBy: t.invited_by,
-          accept: t.accept_invite,
-          decline: t.decline_invite,
-          acceptError: t.invite_accept_error,
-          declineError: t.invite_decline_error,
-          acceptedRedirect: t.invite_accepted_redirect,
-        }}
-      />
-    </div>
-  );
 
   return (
     <>
@@ -278,18 +244,6 @@ export function DashboardOverview({
           toastMessage={t.methodology_milestone_toast}
           linkText={t.methodology_milestone_link}
         />
-      )}
-
-      {/* JO-11: Pending invites at top for player with no campaigns */}
-      {showInvitesAtTop && (
-        <motion.div
-          className="mb-6"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        >
-          {pendingInvitesBlock}
-        </motion.div>
       )}
 
       {/* Header */}
@@ -352,13 +306,6 @@ export function DashboardOverview({
             cta_waiting: t.player_checklist_cta_waiting,
           }}
         />
-      )}
-
-      {/* Pending Invites — standard position (player with campaigns, or DM) */}
-      {!showInvitesAtTop && pendingInvites.length > 0 && (
-        <div className="mb-6">
-          {pendingInvitesBlock}
-        </div>
       )}
 
       {/* Quick Actions */}

@@ -5,15 +5,9 @@ import { captureError } from "@/lib/errors/capture";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
-import { CampaignManager } from "@/components/dashboard/CampaignManager";
-import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
-import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { CampaignsPageClient } from "@/components/dashboard/CampaignsPageClient";
 import type { UserRole } from "@/lib/stores/role-store";
-import {
-  getUserMemberships,
-  getPendingInvites,
-} from "@/lib/supabase/campaign-membership";
+import { getUserMemberships } from "@/lib/supabase/campaign-membership";
 
 export default async function CampaignsPage() {
   // Create a SINGLE supabase client and verify auth on it FIRST.
@@ -26,12 +20,11 @@ export default async function CampaignsPage() {
   if (!user) redirect("/auth/login");
 
   // Now parallelize translations + queries (all using the same authed client)
-  const [t, tSheet, userDataRes, memberships, pendingInvites, campaignsRes] = await Promise.all([
+  const [t, tSheet, userDataRes, memberships, campaignsRes] = await Promise.all([
     getTranslations("dashboard"),
     getTranslations("player_hq.sheet"),
     supabase.from("users").select("role, email").eq("id", user.id).maybeSingle(),
     getUserMemberships(user.id),
-    getPendingInvites(user.email ?? ""),
     supabase
       .from("campaigns")
       .select(`
@@ -47,7 +40,6 @@ export default async function CampaignsPage() {
 
   const userData = userDataRes.data;
   const userRole = (userData?.role as UserRole) ?? "both";
-  const userEmail = userData?.email ?? user.email ?? "";
 
   if (campaignsRes.error) {
     captureError(new Error(`Failed to fetch campaigns: ${campaignsRes.error.message}`), {
@@ -58,11 +50,6 @@ export default async function CampaignsPage() {
     });
   }
   const rawCampaigns = campaignsRes.data;
-
-  // Re-fetch pending invites with DB email if it differs from auth email
-  const finalPendingInvites = (userEmail && userEmail !== user.email)
-    ? await getPendingInvites(userEmail)
-    : pendingInvites;
 
   // Fetch last session date + encounter counts per campaign
   const campaignIds = (rawCampaigns ?? []).map((c) => c.id as string);
@@ -124,13 +111,6 @@ export default async function CampaignsPage() {
     campaigns_title: t("campaigns_title"),
     dm_tables_title: t("dm_tables_title"),
     player_tables_title: t("player_tables_title"),
-    pending_invites: t("pending_invites"),
-    invited_by: t("invited_by"),
-    accept_invite: t("accept_invite"),
-    decline_invite: t("decline_invite"),
-    invite_accept_error: t("invite_accept_error"),
-    invite_decline_error: t("invite_decline_error"),
-    invite_accepted_redirect: t("invite_accepted_redirect"),
     active_session: t("active_session"),
     no_active_session: t("no_active_session"),
     campaigns_players_singular: t("campaigns_players_singular"),
@@ -150,7 +130,6 @@ export default async function CampaignsPage() {
       userId={user.id}
       userRole={userRole}
       playerMemberships={playerMemberships}
-      pendingInvites={finalPendingInvites}
       translations={translations}
     />
   );

@@ -3,11 +3,12 @@
 import { createClient, createServiceClient } from "./server";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 import { captureError } from "@/lib/errors/capture";
-import { grantXpAsync } from "@/lib/xp/grant-xp";
+// Note: email-invite flow removed (migration 179) — getPendingInvites /
+// acceptCampaignInvite / declineCampaignInvite lived here previously.
+// The canonical accept path is /join-campaign/[code] (session_tokens).
 import type {
   CampaignMember,
   CampaignMemberWithUser,
-  CampaignInviteWithDetails,
   UserMembership,
 } from "@/lib/types/campaign-membership";
 
@@ -174,170 +175,6 @@ export async function getUserMemberships(
   });
 
   return results;
-}
-
-/**
- * Returns pending campaign invites for a given email address.
- * Only returns invites that are still pending and not expired.
- */
-export async function getPendingInvites(
-  userEmail: string
-): Promise<CampaignInviteWithDetails[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("campaign_invites")
-    .select(
-      `
-      id,
-      campaign_id,
-      token,
-      status,
-      created_at,
-      expires_at,
-      campaigns!inner (
-        name,
-        owner_id,
-        users!campaigns_owner_id_fkey ( display_name, email )
-      )
-    `
-    )
-    .eq("email", userEmail)
-    .eq("status", "pending")
-    .gt("expires_at", new Date().toISOString());
-
-  if (error) {
-    captureError(new Error(`Failed to fetch invites: ${error.message}`), {
-      component: "getPendingInvites",
-      action: "fetchInvites",
-      category: "database",
-      extra: { userEmail, code: error.code },
-    });
-    return [];
-  }
-
-  return (data ?? []).map((row: Record<string, unknown>) => {
-    const campaign = row.campaigns as Record<string, unknown>;
-    const dmUser = campaign.users as Record<string, unknown> | null;
-
-    return {
-      id: row.id as string,
-      campaign_id: row.campaign_id as string,
-      campaign_name: campaign.name as string,
-      dm_name: (dmUser?.display_name as string) ?? "",
-      dm_email: (dmUser?.email as string) ?? "",
-      token: row.token as string,
-      status: row.status as CampaignInviteWithDetails["status"],
-      created_at: row.created_at as string,
-      expires_at: row.expires_at as string,
-    };
-  });
-}
-
-/**
- * Accepts a campaign invite by calling the `accept_campaign_invite` RPC.
- * Returns the campaign_id and campaign_name on success, or an error message.
- */
-export async function acceptCampaignInvite(
-  token: string
-): Promise<
-  { campaign_id: string; campaign_name: string } | { error: string }
-> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.rpc("accept_campaign_invite", {
-    invite_token: token,
-  });
-
-  if (error) {
-    captureError(new Error(`Failed to accept invite: ${error.message}`), {
-      component: "acceptCampaignInvite",
-      action: "rpc",
-      category: "database",
-      extra: { code: error.code },
-    });
-    return { error: error.message };
-  }
-
-  // The RPC returns JSON with campaign_id and campaign_name, or an error key
-  const result = typeof data === "string" ? JSON.parse(data) : data;
-
-  if (result?.error) {
-    return { error: result.error };
-  }
-
-  trackServerEvent("campaign:invite_accepted", {
-    properties: { campaign_id: result.campaign_id },
-  });
-
-  // XP: Player joined campaign + DM gets XP for player invited
-  // Reuse the supabase client from line 246 — no extra createClient()
-  const { data: { user: currentUser } } = await supabase.auth.getUser();
-  if (currentUser) {
-    grantXpAsync(currentUser.id, "player_campaign_joined", "player", { campaign_id: result.campaign_id });
-    // Grant XP to DM who owns the campaign
-    if (result.campaign_id) {
-      const { data: campaign } = await supabase
-        .from("campaigns")
-        .select("owner_id")
-        .eq("id", result.campaign_id)
-        .single();
-      if (campaign?.owner_id && campaign.owner_id !== currentUser.id) {
-        grantXpAsync(campaign.owner_id, "dm_player_invited", "dm", { campaign_id: result.campaign_id });
-      }
-    }
-  }
-
-  return {
-    campaign_id: result.campaign_id,
-    campaign_name: result.campaign_name,
-  };
-}
-
-/**
- * Declines a campaign invite by marking it as expired.
- * Uses service client because recipients have no UPDATE RLS policy.
- * Validates the invite belongs to the caller's email before updating.
- */
-export async function declineCampaignInvite(inviteId: string): Promise<void> {
-  const userSupabase = await createClient();
-
-  // Get the caller's email to verify ownership
-  const {
-    data: { user },
-  } = await userSupabase.auth.getUser();
-  if (!user?.email) {
-    throw new Error("Authentication required");
-  }
-
-  const supabase = createServiceClient();
-
-  // Only update if the invite belongs to this user's email
-  const { data, error } = await supabase
-    .from("campaign_invites")
-    .update({ status: "expired" })
-    .eq("id", inviteId)
-    .eq("email", user.email)
-    .select("id")
-    .maybeSingle();
-
-  if (error) {
-    captureError(new Error(`Failed to decline invite: ${error.message}`), {
-      component: "declineCampaignInvite",
-      action: "updateStatus",
-      category: "database",
-      extra: { inviteId, code: error.code },
-    });
-    throw new Error(`Failed to decline invite: ${error.message}`);
-  }
-
-  if (!data) {
-    throw new Error("Invite not found or does not belong to this account");
-  }
-
-  trackServerEvent("campaign:invite_declined", {
-    properties: { invite_id: inviteId },
-  });
 }
 
 /**

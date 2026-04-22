@@ -43,7 +43,7 @@ const EXPECTED_POLICIES: Record<string, string[]> = {
   feature_flags: ["SELECT", "INSERT", "UPDATE", "DELETE"],
   session_notes: ["SELECT", "INSERT", "UPDATE", "DELETE"],
   session_files: ["SELECT", "INSERT", "DELETE"],
-  campaign_invites: ["SELECT", "INSERT", "UPDATE", "DELETE"],
+  // campaign_invites table dropped in migration 179 (2026-04-21).
   homebrew_monsters: ["SELECT", "INSERT", "UPDATE", "DELETE"],
   homebrew_spells: ["SELECT", "INSERT", "UPDATE", "DELETE"],
   homebrew_items: ["SELECT", "INSERT", "UPDATE", "DELETE"],

@@ -7,7 +7,6 @@ import { Swords, Package, Zap } from "lucide-react";
 
 import { CampaignManager } from "@/components/dashboard/CampaignManager";
 import { SavedEncounters } from "@/components/dashboard/SavedEncounters";
-import { PendingInvites } from "@/components/dashboard/PendingInvites";
 import { PlayerCampaignCard } from "@/components/dashboard/PlayerCampaignCard";
 import dynamic from "next/dynamic";
 
@@ -18,10 +17,7 @@ import { useRoleStore } from "@/lib/stores/role-store";
 import { Button } from "@/components/ui/button";
 import type { UserRole, ActiveView } from "@/lib/stores/role-store";
 import type { SavedEncounterRow } from "@/components/dashboard/SavedEncounters";
-import type {
-  UserMembership,
-  CampaignInviteWithDetails,
-} from "@/lib/types/campaign-membership";
+import type { UserMembership } from "@/lib/types/campaign-membership";
 
 interface DashboardContentProps {
   campaigns: {
@@ -35,7 +31,6 @@ interface DashboardContentProps {
   userId: string;
   userRole: UserRole;
   memberships: UserMembership[];
-  pendingInvites: CampaignInviteWithDetails[];
   translations: {
     title: string;
     description: string;
@@ -47,7 +42,6 @@ interface DashboardContentProps {
     player_join_hint: string;
     dm_tables_title: string;
     player_tables_title: string;
-    pending_invites: string;
     quick_combat: string;
     create_first_campaign: string;
     create_first_campaign_desc: string;
@@ -58,12 +52,6 @@ interface DashboardContentProps {
     no_active_session: string;
     tab_dm: string;
     tab_player: string;
-    invited_by: string;
-    accept_invite: string;
-    decline_invite: string;
-    invite_accept_error: string;
-    invite_decline_error: string;
-    invite_accepted_redirect: string;
     campaigns_players_singular: string;
     campaigns_players_plural: string;
     dm_label: string;
@@ -77,7 +65,6 @@ export function DashboardContent({
   userId,
   userRole,
   memberships,
-  pendingInvites,
   translations: t,
 }: DashboardContentProps) {
   const { activeView, initialized, loadRole } = useRoleStore();
@@ -130,24 +117,6 @@ export function DashboardContent({
           </div>
         )}
       </div>
-
-      {/* Pending Invites — always on top (most urgent on mobile) */}
-      {pendingInvites.length > 0 && (
-        <div className="mb-6">
-          <PendingInvites
-            initialInvites={pendingInvites}
-            translations={{
-              title: t.pending_invites,
-              invitedBy: t.invited_by,
-              accept: t.accept_invite,
-              decline: t.decline_invite,
-              acceptError: t.invite_accept_error,
-              declineError: t.invite_decline_error,
-              acceptedRedirect: t.invite_accepted_redirect,
-            }}
-          />
-        </div>
-      )}
 
       {/* Mobile Tabs (only when both DM and Player campaigns exist) */}
       {showTabs && (

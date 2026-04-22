@@ -186,19 +186,9 @@ async function main() {
     console.log(`📦 Encounter presets: ${encounterPresets.length}, creatures: ${presetCreatures.length}`);
   }
 
-  // 12. Get campaign invites
-  let campaignInvites: any[] = [];
-  if (campaignIds.length > 0) {
-    const { data: invites, error: invErr } = await supabase
-      .from("campaign_invites")
-      .select("*")
-      .in("campaign_id", campaignIds);
-
-    if (!invErr && invites) {
-      campaignInvites = invites;
-    }
-    console.log(`📨 Campaign invites encontrados: ${campaignInvites.length}`);
-  }
+  // 12. campaign_invites table was dropped in migration 179 (2026-04-21);
+  //     historical backups that pre-date that migration still carry this
+  //     field, but new backups simply omit it.
 
   // Build backup object
   const backup = {
@@ -212,7 +202,6 @@ async function main() {
         "users (DM)",
         "campaigns",
         "campaign_members",
-        "campaign_invites",
         "player_characters",
         "sessions",
         "encounters",
@@ -227,7 +216,6 @@ async function main() {
     dm_user: dmUser,
     campaigns: campaigns || [],
     campaign_members: campaignMembers,
-    campaign_invites: campaignInvites,
     player_characters: playerCharacters,
     sessions: sessions || [],
     encounters: encounters || [],
