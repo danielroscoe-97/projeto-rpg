@@ -63,19 +63,24 @@ BEGIN
 
   new_ts := now() - (p_age_hours || ' hours')::interval;
 
-  -- Bypass the BEFORE-UPDATE trigger by setting session_replication_role.
-  -- `replica` mode skips ALL user triggers including trg_sessions_updated_at.
-  -- Scoped to this transaction via `SET LOCAL`, so subsequent queries in
-  -- other sessions are unaffected.
-  SET LOCAL session_replication_role = 'replica';
+  -- Bypass `trg_sessions_updated_at` BEFORE-UPDATE trigger for this single
+  -- UPDATE. `SET session_replication_role = replica` would be cleaner but
+  -- Supabase managed Postgres refuses that parameter even for SECURITY
+  -- DEFINER functions (permission denied at runtime — verified 2026-04-22
+  -- on prod). ALTER TABLE DISABLE/ENABLE TRIGGER works because the function
+  -- runs as the `postgres` role (function owner), which owns the table.
+  --
+  -- A concurrent real UPDATE to the same row during these few ms would
+  -- skip the trigger too, but the race is accepted for a QA-only helper:
+  -- there is no hot-path writer other than DM session activity and tests
+  -- using this run in controlled scenarios.
+  ALTER TABLE public.sessions DISABLE TRIGGER trg_sessions_updated_at;
 
   UPDATE public.sessions
   SET updated_at = new_ts
   WHERE id = p_session_id;
 
-  -- Implicit RESET via transaction boundary — SET LOCAL only lasts for
-  -- this txn. Belt-and-suspenders:
-  SET LOCAL session_replication_role = 'origin';
+  ALTER TABLE public.sessions ENABLE TRIGGER trg_sessions_updated_at;
 
   RETURN new_ts;
 END;
