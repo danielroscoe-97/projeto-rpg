@@ -156,15 +156,15 @@ describe("<BecomeDmWizard />", () => {
     const user = userEvent.setup();
     renderWizard();
     await user.click(screen.getByTestId("wizard-step1-primary"));
-    expect(screen.getByTestId("wizard-template-picker")).toBeInTheDocument();
-    expect(screen.getByTestId(`wizard-template-${TEMPLATE.id}`)).toBeInTheDocument();
+    expect(screen.getByTestId("upsell.template-gallery")).toBeInTheDocument();
+    expect(screen.getByTestId(`upsell.template-card-${TEMPLATE.id}.select`)).toBeInTheDocument();
   });
 
   it("template path skips step 3 (advance 2 → 4)", async () => {
     const user = userEvent.setup();
     renderWizard();
     await user.click(screen.getByTestId("wizard-step1-primary")); // → 2
-    await user.click(screen.getByTestId(`wizard-template-${TEMPLATE.id}`));
+    await user.click(screen.getByTestId(`upsell.template-card-${TEMPLATE.id}.select`));
     await user.click(screen.getByTestId("wizard-step2-primary"));
     // Step 4 content present (privacy toggle + step4-primary); step 3 skipped
     // (step3-name input would be in the DOM otherwise).
@@ -222,7 +222,7 @@ describe("<BecomeDmWizard />", () => {
     renderWizard();
     // Navigate template path.
     await user.click(screen.getByTestId("wizard-step1-primary"));
-    await user.click(screen.getByTestId(`wizard-template-${TEMPLATE.id}`));
+    await user.click(screen.getByTestId(`upsell.template-card-${TEMPLATE.id}.select`));
     await user.click(screen.getByTestId("wizard-step2-primary"));
     // Toggle privacy off for variety.
     await user.click(screen.getByTestId("wizard-share-past-toggle"));
@@ -256,7 +256,7 @@ describe("<BecomeDmWizard />", () => {
     const user = userEvent.setup();
     renderWizard();
     await user.click(screen.getByTestId("wizard-step1-primary"));
-    await user.click(screen.getByTestId(`wizard-template-${TEMPLATE.id}`));
+    await user.click(screen.getByTestId(`upsell.template-card-${TEMPLATE.id}.select`));
     await user.click(screen.getByTestId("wizard-step2-primary"));
     await user.click(screen.getByTestId("wizard-step4-primary"));
     expect(screen.getByTestId("wizard-error")).toBeInTheDocument();
@@ -285,7 +285,7 @@ describe("<BecomeDmWizard />", () => {
     const user = userEvent.setup();
     renderWizard();
     await user.click(screen.getByTestId("wizard-step1-primary"));
-    await user.click(screen.getByTestId(`wizard-template-${TEMPLATE.id}`));
+    await user.click(screen.getByTestId(`upsell.template-card-${TEMPLATE.id}.select`));
     await user.click(screen.getByTestId("wizard-step2-primary"));
     await user.click(screen.getByTestId("wizard-step4-primary"));
     await user.click(screen.getByTestId("wizard-step5-primary"));
@@ -304,7 +304,7 @@ describe("<BecomeDmWizard />", () => {
     const user = userEvent.setup();
     renderWizard();
     await user.click(screen.getByTestId("wizard-step1-primary"));
-    await user.click(screen.getByTestId(`wizard-template-${TEMPLATE.id}`));
+    await user.click(screen.getByTestId(`upsell.template-card-${TEMPLATE.id}.select`));
     await user.click(screen.getByTestId("wizard-step2-primary"));
     await user.click(screen.getByTestId("wizard-step4-primary"));
     await user.click(screen.getByTestId("wizard-step5-skip-tour"));

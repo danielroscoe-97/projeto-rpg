@@ -34,6 +34,7 @@ import { useRoleStore } from "@/lib/stores/role-store";
 import { broadcastRoleUpdated } from "@/lib/realtime/user-broadcast";
 import { roleFlipAndCreateCampaign } from "@/lib/upsell/role-flip-and-create";
 import type { CampaignTemplateSummary } from "@/lib/upsell/templates";
+import { TemplateGallery } from "./TemplateGallery";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -297,6 +298,12 @@ export function BecomeDmWizard({ userId, templates }: BecomeDmWizardProps) {
             onPickTemplate={(tmpl) =>
               dispatch({ type: "set_mode", mode: "template", template: tmpl })
             }
+            onUseTemplate={(tmpl) => {
+              // Story 04-G: "Use this template" from the modal — pick
+              // AND advance the wizard in one click.
+              dispatch({ type: "set_mode", mode: "template", template: tmpl });
+              dispatch({ type: "advance" });
+            }}
             onPickBlank={() => dispatch({ type: "set_mode", mode: "blank" })}
           />
         )}
@@ -458,62 +465,35 @@ function Step2({
   templates,
   selectedTemplateId,
   onPickTemplate,
+  onUseTemplate,
   onPickBlank,
 }: {
   t: Translator;
   templates: CampaignTemplateSummary[];
   selectedTemplateId: string | null;
   onPickTemplate: (tmpl: CampaignTemplateSummary) => void;
+  /** Signals "pick AND advance" — TemplateDetailModal's primary CTA
+   *  flows through this so the user doesn't have to click twice. */
+  onUseTemplate: (tmpl: CampaignTemplateSummary) => void;
   onPickBlank: () => void;
 }) {
+  // Story 04-G — picker delegated to <TemplateGallery /> (with preview
+  // modal). The blank-mode CTA below is the escape hatch for users who
+  // want to start from scratch.
   return (
     <>
       <CardDescription className="text-base">
         {t("wizard_step2_heading")}
       </CardDescription>
       <p className="text-sm text-muted-foreground">{t("wizard_step2_body")}</p>
-      <div
-        role="radiogroup"
-        aria-label={t("wizard_step2_heading")}
-        className="grid gap-3"
-        data-testid="wizard-template-picker"
-      >
-        {templates.map((tmpl) => {
-          const selected = selectedTemplateId === tmpl.id;
-          return (
-            <button
-              key={tmpl.id}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              data-testid={`wizard-template-${tmpl.id}`}
-              onClick={() => onPickTemplate(tmpl)}
-              className={`rounded-lg border p-4 text-left transition-colors ${
-                selected
-                  ? "border-gold/60 bg-gold/[0.06]"
-                  : "border-white/[0.08] hover:border-gold/30"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-foreground">{tmpl.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {t("templates_card_party_level", {
-                    level: tmpl.target_party_level,
-                  })}
-                </span>
-              </div>
-              {tmpl.description && (
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {tmpl.description}
-                </p>
-              )}
-              <p className="mt-2 text-xs text-muted-foreground">
-                {t("templates_card_encounters", { count: tmpl.encounter_count })}
-              </p>
-            </button>
-          );
-        })}
-      </div>
+
+      <TemplateGallery
+        templates={templates}
+        selectedTemplateId={selectedTemplateId}
+        onSelect={onPickTemplate}
+        onUseSelected={onUseTemplate}
+      />
+
       <div className="mt-3 border-t border-white/[0.06] pt-3 text-sm">
         <p className="text-muted-foreground">{t("wizard_step2_empty_hint")}</p>
         <button
