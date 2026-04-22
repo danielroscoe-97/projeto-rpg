@@ -467,9 +467,9 @@
     "stats_avg_difficulty": "Avg difficulty",
     "stats_avg_difficulty_hint": "{count, plural, =0 {not rated yet} one {# rating} other {# ratings}}",
     "stale_title": "Resume stale combat?",
-    "stale_body": "\"{name}\" has been idle for {idle}. Resuming may rehydrate a stale Zustand snapshot that doesn't match your table's actual state.",
-    "stale_idle_hours": "{hours, plural, one {# hour} other {# hours}} and {minutes, plural, one {# minute} other {# minutes}}",
-    "stale_idle_minutes": "{minutes, plural, one {# minute} other {# minutes}}",
+    "stale_body": "\"{name}\" has been idle for {idle}. Resuming may pick up an old state that doesn't match your table right now.",
+    "stale_idle_hours": "{hours, plural, =0 {0 hours} one {# hour} other {# hours}} and {minutes, plural, =0 {0 minutes} one {# minute} other {# minutes}}",
+    "stale_idle_minutes": "{minutes, plural, =0 {0 minutes} one {# minute} other {# minutes}}",
     "stale_cancel": "Cancel",
     "stale_confirm": "Resume anyway"
   },

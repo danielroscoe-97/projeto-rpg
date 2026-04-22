@@ -467,9 +467,9 @@
     "stats_avg_difficulty": "Dificuldade média",
     "stats_avg_difficulty_hint": "{count, plural, =0 {sem avaliações} one {# avaliação} other {# avaliações}}",
     "stale_title": "Retomar combate parado?",
-    "stale_body": "\"{name}\" está parado há {idle}. Continuar pode ressuscitar um combate antigo — o estado do Zustand vem do snapshot e pode estar desalinhado com a mesa atual.",
-    "stale_idle_hours": "{hours, plural, one {# hora} other {# horas}} e {minutes, plural, one {# minuto} other {# minutos}}",
-    "stale_idle_minutes": "{minutes, plural, one {# minuto} other {# minutos}}",
+    "stale_body": "\"{name}\" está parado há {idle}. Continuar pode retomar um combate antigo — os dados locais podem não refletir o estado atual da mesa.",
+    "stale_idle_hours": "{hours, plural, =0 {0 horas} one {# hora} other {# horas}} e {minutes, plural, =0 {0 minutos} one {# minuto} other {# minutos}}",
+    "stale_idle_minutes": "{minutes, plural, =0 {0 minutos} one {# minuto} other {# minutos}}",
     "stale_cancel": "Cancelar",
     "stale_confirm": "Continuar mesmo assim"
   },

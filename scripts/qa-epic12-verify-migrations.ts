@@ -44,11 +44,15 @@ async function main() {
   // Migration 167: srd_monster_slugs table
   console.log("167:", await queryColumn("srd_monster_slugs", "slug"));
 
-  // Migration 169: past_companions RPC
-  console.log("169:", await tryRpc("get_past_companions", { p_user_id: "00000000-0000-0000-0000-000000000000", p_limit: 1 }));
+  // Migration 169: past_companions RPC (real signature: p_limit, p_offset — uses auth.uid() internally)
+  // Service role has no auth.uid(), so the function errors out with a 401-ish code but that proves it exists.
+  console.log("169:", await tryRpc("get_past_companions", { p_limit: 1, p_offset: 0 }));
 
-  // Migration 170: clone_campaign_from_template RPC
-  console.log("170:", await tryRpc("clone_campaign_from_template", { p_template_id: "00000000-0000-0000-0000-000000000000", p_campaign_id: "00000000-0000-0000-0000-000000000000" }));
+  // Migration 170: clone_campaign_from_template RPC (real signature: p_template_id, p_new_dm_user_id)
+  console.log("170:", await tryRpc("clone_campaign_from_template", { p_template_id: "00000000-0000-0000-0000-000000000000", p_new_dm_user_id: "00000000-0000-0000-0000-000000000000" }));
+
+  // Migration 179: qa_backdate_session RPC — QA helper
+  console.log("179:", await tryRpc("qa_backdate_session", { p_session_id: "00000000-0000-0000-0000-000000000000", p_age_hours: 1, p_caller_user_id: "00000000-0000-0000-0000-000000000000" }));
 
   // Migration 173: audit_template_srd_drift RPC
   console.log("173:", await tryRpc("audit_template_srd_drift", {}));
