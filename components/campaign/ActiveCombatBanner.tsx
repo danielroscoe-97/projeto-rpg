@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { RealtimeUserInvite } from "@/lib/types/realtime";
+import { subscribeToUserInvites } from "@/lib/realtime/user-invite-channel";
 
 interface ActiveCombatBannerProps {
   campaignId: string;
@@ -50,6 +50,12 @@ export function ActiveCombatBanner({
 
   // Helper: fetch latest active session + token (used on mount + poll fallback).
   useEffect(() => {
+    // Guard against empty/falsy userId. A blank suffix on the user-scoped
+    // topic (`user-invites:`) would collide every caller onto a single
+    // shared channel. The prop type is `string` non-null but the runtime
+    // guard is cheap insurance against caller regressions.
+    if (!userId) return;
+
     const supabase = createClient();
     let cancelled = false;
 
@@ -110,24 +116,20 @@ export function ActiveCombatBanner({
     refresh();
 
     // Broadcast: jump immediately when the DM starts a new combat.
-    // P2 consolidation — listens on the user-scoped channel so the tenant
-    // does not accumulate N `campaign:{id}:invites` channels per DM.
+    // P2 consolidation — listens on the user-scoped channel via the
+    // refcounted helper (lib/realtime/user-invite-channel.ts) so this
+    // banner shares ONE `RealtimeChannel` instance with the layout-level
+    // `CombatInviteListenerMount`. Avoids the teardown race where one
+    // consumer's `removeChannel` would kill broadcasts for the other.
     // Filter by `payload.campaign_id === campaignId` because the user-scoped
     // channel fans out invites from every campaign the user is a member of.
-    const channel = supabase
-      .channel(`user-invites:${userId}`)
-      .on(
-        "broadcast",
-        { event: "user:combat_invite" },
-        (msg: { payload?: unknown }) => {
-          const payload = (msg?.payload ?? null) as RealtimeUserInvite | null;
-          if (!payload || payload.campaign_id !== campaignId) return;
-          setSessionId(payload.session_id);
-          setJoinToken(payload.join_token);
-          setEncounterName(payload.encounter_name);
-        },
-      )
-      .subscribe();
+    const unsubscribeBroadcast = subscribeToUserInvites(userId, (payload) => {
+      if (payload.campaign_id !== campaignId) return;
+      if (cancelled) return;
+      setSessionId(payload.session_id);
+      setJoinToken(payload.join_token);
+      setEncounterName(payload.encounter_name);
+    });
 
     // Polling fallback for robustness (spec §5.1 defense-in-depth). 30s cadence.
     // Also covers pre-P2 clients whose broadcasts still go on the legacy
@@ -137,7 +139,7 @@ export function ActiveCombatBanner({
     return () => {
       cancelled = true;
       clearInterval(interval);
-      supabase.removeChannel(channel);
+      unsubscribeBroadcast();
     };
   }, [campaignId, userId]);
 

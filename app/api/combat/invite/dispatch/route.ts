@@ -176,10 +176,18 @@ export async function POST(req: NextRequest) {
     // Broadcast fan-out INCLUDES the DM's own user-invites channel so the DM's
     // own banner (e.g. in a secondary tab still on the campaign page) updates
     // in real time. Toast is filtered out client-side via `dm_user_id === userId`.
-    // Note: this is decoupled from `playerUserIds` which gates player_notifications
-    // inserts — the DM does not want a durable notification row for their own
-    // action.
-    const broadcastUserIds = members.map((m) => m.user_id);
+    //
+    // The DM is added EXPLICITLY via a Set union rather than relying on them
+    // appearing in `campaign_members`. Most campaigns do insert a DM row there
+    // (campaign-settings.ts:17, player-identity.ts:430) but historical data
+    // and some code paths do not guarantee it — missing this row previously
+    // meant the DM silently dropped off the broadcast fan-out.
+    //
+    // Decoupled from `playerUserIds` which gates `player_notifications` inserts —
+    // the DM does not want a durable notification row for their own action.
+    const broadcastUserIds = Array.from(
+      new Set<string>([user.id, ...members.map((m) => m.user_id)]),
+    );
 
     const startedAt = new Date().toISOString();
 
