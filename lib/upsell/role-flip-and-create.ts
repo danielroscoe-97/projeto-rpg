@@ -105,6 +105,14 @@ export async function roleFlipAndCreateCampaign(
   }
 
   // ── Read prev role (needed for rollback and analytics diff) ──
+  //
+  // Adversarial-review fix: previously defaulted to "player" when `userRow`
+  // was null. That is a silent data-corruption vector: if RLS blocked the
+  // SELECT (misconfigured policy) or the users row was genuinely missing
+  // (legacy account, FK cleanup), the subsequent rollback path would set
+  // role='player' even if the user was 'both' or 'dm' in the DB. Fail
+  // early when the row can't be read — the role flip gate protects the
+  // authoritative state.
   const { data: userRow, error: userErr } = await supabase
     .from("users")
     .select("role")
@@ -113,7 +121,14 @@ export async function roleFlipAndCreateCampaign(
   if (userErr) {
     return { ok: false, code: "role_flip_failed", message: userErr.message };
   }
-  const prevRole = (userRow?.role as UserRole) ?? "player";
+  if (!userRow) {
+    return {
+      ok: false,
+      code: "role_flip_failed",
+      message: "users row not found for authenticated user",
+    };
+  }
+  const prevRole = userRow.role as UserRole;
 
   // Defense-in-depth: wizard should never reach here with role='dm' (the
   // CTA gate already hides the entry point), but if it does, fail
@@ -233,25 +248,39 @@ export async function roleFlipAndCreateCampaign(
   // ── 3. Analytics (D14 — server-side, post-success only) ──
   //
   // Emit AFTER the transactional unit (flip + create) has succeeded so
-  // a failed path doesn't pollute the funnel. Fire-and-forget from the
-  // caller's POV — captureError inside trackServerEvent handles its own
-  // failures.
-  trackServerEvent("dm_upsell:role_upgraded_to_dm", {
-    userId: user.id,
-    properties: {
-      from: prevRole,
-      to: "both",
-      via: "become_dm_wizard",
-    },
-  });
-  trackServerEvent("dm_upsell:first_campaign_created", {
-    userId: user.id,
-    properties: {
-      campaignId,
-      mode: input.mode,
-      templateId: input.mode === "template" ? input.templateId : null,
-    },
-  });
+  // a failed path doesn't pollute the funnel.
+  //
+  // Adversarial-review fix: `trackServerEvent` is supposed to swallow its
+  // own failures via captureError, but a synchronous throw (e.g. Sentry
+  // init blown up, module-load crash) would bubble through this function
+  // and make the action return undefined instead of the success result.
+  // The wizard would then hit an unexpected `.ok` access on undefined.
+  // Wrap defensively — analytics is never allowed to break the happy
+  // path's return contract.
+  try {
+    trackServerEvent("dm_upsell:role_upgraded_to_dm", {
+      userId: user.id,
+      properties: {
+        from: prevRole,
+        to: "both",
+        via: "become_dm_wizard",
+      },
+    });
+  } catch {
+    /* swallow — analytics must never break the success return */
+  }
+  try {
+    trackServerEvent("dm_upsell:first_campaign_created", {
+      userId: user.id,
+      properties: {
+        campaignId,
+        mode: input.mode,
+        templateId: input.mode === "template" ? input.templateId : null,
+      },
+    });
+  } catch {
+    /* swallow */
+  }
 
   return {
     ok: true,

@@ -72,12 +72,38 @@ export function DmTourProvider({ shouldAutoStart }: DmTourProviderProps) {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
+      // Adversarial-review fix (AC Área 3): also null out dm_tour_step
+      // when the tour completes — it's no longer in-progress, so a
+      // fresh-device visit should NOT resume at a stored step. Epic 04
+      // spec AC explicitly requires dm_tour_step to be persisted; the
+      // original implementation only wrote dm_tour_completed, leaving
+      // the column orphaned.
       await supabase
         .from("user_onboarding")
-        .update({ dm_tour_completed: true })
+        .update({ dm_tour_completed: true, dm_tour_step: null })
         .eq("user_id", user.id);
     } catch {
       /* best-effort — local store still remembers completion */
+    }
+  }
+
+  /** Persist in-progress tour position. Called as the user advances or
+   *  backs through steps so a cross-device visit can resume. Best-effort;
+   *  a failed write leaves the local Zustand store as the resume source
+   *  (same-device only, but already covered). */
+  async function persistTourStep(step: number) {
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase
+        .from("user_onboarding")
+        .update({ dm_tour_step: String(step) })
+        .eq("user_id", user.id);
+    } catch {
+      /* swallow */
     }
   }
 
@@ -131,11 +157,17 @@ export function DmTourProvider({ shouldAutoStart }: DmTourProviderProps) {
       handleComplete();
     } else {
       goToStep(next);
+      // AC Área 3 persistence — save resume point server-side.
+      void persistTourStep(next);
     }
   }, [currentStep, steps.length, goToStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBack = useCallback(() => {
-    if (currentStep > 0) goToStep(currentStep - 1);
+    if (currentStep > 0) {
+      const prev = currentStep - 1;
+      goToStep(prev);
+      void persistTourStep(prev);
+    }
   }, [currentStep, goToStep]);
 
   const handleSkip = useCallback(() => {

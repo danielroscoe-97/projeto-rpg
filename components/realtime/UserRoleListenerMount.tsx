@@ -41,12 +41,22 @@ export function UserRoleListenerMount({ userId }: UserRoleListenerMountProps) {
       config: { broadcast: { self: false } },
     });
 
-    channel.on("broadcast", { event: "role_updated" }, () => {
+    channel.on("broadcast", { event: "role_updated" }, (msg: unknown) => {
+      // Adversarial-review fix: validate the broadcast message shape
+      // before acting. Supabase's type system says the callback gets
+      // `{ type, event, payload }`, but at runtime nothing prevents a
+      // malformed send from a misconfigured client or a future schema
+      // drift. Defensive guard: if the message isn't an object or the
+      // payload isn't present, treat as stale and skip.
+      if (!msg || typeof msg !== "object") return;
+      const envelope = msg as { payload?: unknown };
+      if (!envelope.payload || typeof envelope.payload !== "object") return;
+
       // Re-hydrate role from DB; this is the authoritative read path.
-      // We intentionally ignore the payload's `to` field and trust the
+      // We intentionally IGNORE the payload's `to` field and trust the
       // DB, so a stale or forged broadcast can't poison this tab.
       // `loadRole` is idempotent + short-circuits when already loading.
-      // Force a reset first so the short-circuit in loadRole doesn't fire.
+      // Force a reset first so the short-circuit doesn't fire.
       useRoleStore.setState({ initialized: false, loading: false });
       void useRoleStore.getState().loadRole();
     });

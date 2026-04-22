@@ -102,16 +102,32 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
       }
       return { ...state, step: (state.step - 1) as WizardStep };
     }
-    case "set_mode":
+    case "set_mode": {
+      // Adversarial-review fix: a user who picks a template then changes
+      // their mind and switches to blank mode would previously carry the
+      // template's name + party level forward as "stale" defaults. Since
+      // step 3 (blank-only form) is the only chance to re-enter those,
+      // but the template path skips step 3 entirely, the user could end
+      // up submitting a blank-mode campaign with the template's name,
+      // silently. Clear the carry-forward when mode flips to blank;
+      // pick up the template defaults when mode flips to template.
+      if (action.mode === "blank") {
+        return {
+          ...state,
+          mode: "blank",
+          selectedTemplate: null,
+          campaignName: "",
+          partyLevel: 1,
+        };
+      }
       return {
         ...state,
-        mode: action.mode,
+        mode: "template",
         selectedTemplate: action.template ?? null,
-        campaignName:
-          action.template?.name ?? state.campaignName,
-        partyLevel:
-          action.template?.target_party_level ?? state.partyLevel,
+        campaignName: action.template?.name ?? "",
+        partyLevel: action.template?.target_party_level ?? 1,
       };
+    }
     case "set_name":
       return { ...state, campaignName: action.value };
     case "set_party_level":
