@@ -107,44 +107,58 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Reset validation state when combatants change; including submitError/invalidInitIds would cause infinite loop
   }, [combatants]);
 
-  // Auto-load preloaded players from campaign selection (runs once on mount)
+  // Auto-load preloaded players from campaign selection (runs once on mount).
+  //
+  // QA 2026-04-22 P1-1 — auto-hydrate fix: defer the addCombatant calls to a
+  // microtask so the parent CombatSessionClient's hydration useEffect (which
+  // calls `store.clearEncounter()` on initial setup-mode mount at
+  // CombatSessionClient.tsx:651-654) can run first. React fires effects child
+  // → parent, so without this defer the parent would wipe the 5 combatants we
+  // just added. Microtask queue drains after both effects → parent clears,
+  // then microtask adds. End state: 5 preloaded combatants as intended.
   const hasPreloaded = useRef(false);
   useEffect(() => {
     if (hasPreloaded.current || !preloadedPlayers || preloadedPlayers.length === 0) return;
     hasPreloaded.current = true;
-    const currentCombatants = [...useCombatStore.getState().combatants];
-    preloadedPlayers.forEach((pc) => {
-      const numberedName = getNumberedName(pc.name, currentCombatants);
-      const newCombatant: Omit<Combatant, "id"> = {
-        name: numberedName,
-        current_hp: pc.max_hp,
-        max_hp: pc.max_hp,
-        temp_hp: 0,
-        ac: pc.ac,
-        spell_save_dc: pc.spell_save_dc,
-        initiative: null,
-        initiative_order: null,
-        conditions: [],
-        ruleset_version: null,
-        is_defeated: false,
-        is_hidden: false,
-        is_player: true,
-        monster_id: null,
-        token_url: null,
-        creature_type: null,
-        display_name: null,
-        monster_group_id: null,
-        group_order: null,
-        dm_notes: "",
-        player_notes: "",
-        player_character_id: pc.id.startsWith("__placeholder__") ? null : pc.id,
-        combatant_role: null,
-        legendary_actions_total: null,
-        legendary_actions_used: 0,
-        reaction_used: false,
-      };
-      addCombatant(newCombatant);
-      currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
+    queueMicrotask(() => {
+      const currentCombatants = [...useCombatStore.getState().combatants];
+      // QA 2026-04-22 P1-5 — if a backup already restored the user's in-flight
+      // setup work (via CombatSessionClient's setup-mode recovery), don't stack
+      // preloaded players on top. Backup wins.
+      if (currentCombatants.length > 0) return;
+      preloadedPlayers.forEach((pc) => {
+        const numberedName = getNumberedName(pc.name, currentCombatants);
+        const newCombatant: Omit<Combatant, "id"> = {
+          name: numberedName,
+          current_hp: pc.max_hp,
+          max_hp: pc.max_hp,
+          temp_hp: 0,
+          ac: pc.ac,
+          spell_save_dc: pc.spell_save_dc,
+          initiative: null,
+          initiative_order: null,
+          conditions: [],
+          ruleset_version: null,
+          is_defeated: false,
+          is_hidden: false,
+          is_player: true,
+          monster_id: null,
+          token_url: null,
+          creature_type: null,
+          display_name: null,
+          monster_group_id: null,
+          group_order: null,
+          dm_notes: "",
+          player_notes: "",
+          player_character_id: pc.id.startsWith("__placeholder__") ? null : pc.id,
+          combatant_role: null,
+          legendary_actions_total: null,
+          legendary_actions_used: 0,
+          reaction_used: false,
+        };
+        addCombatant(newCombatant);
+        currentCombatants.push({ ...newCombatant, id: crypto.randomUUID() });
+      });
     });
   }, [preloadedPlayers, addCombatant]);
 
@@ -328,6 +342,10 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
   );
 
   // Sprint 2: Auto-load preset creatures (runs once on mount when preset is provided)
+  //
+  // QA 2026-04-22 P1-1 — same race as the preloadedPlayers effect above. Defer
+  // via queueMicrotask so the parent's clearEncounter (fired AFTER this child
+  // effect per React's child-first order) doesn't wipe our adds.
   const hasPreloadedPreset = useRef(false);
   useEffect(() => {
     if (hasPreloadedPreset.current || !preloadedPreset || preloadedPreset.creatures.length === 0) return;
@@ -336,7 +354,14 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
     const sourceToVersion = (source: string): RulesetVersion =>
       source === "srd-2024" ? "2024" : "2014";
 
-    for (const creature of preloadedPreset.creatures) {
+    queueMicrotask(() => {
+      runPresetHydration(preloadedPreset, sourceToVersion);
+    });
+  }, [preloadedPreset, handleSelectMonster, handleSelectMonsterGroup, addCombatant]);
+
+  // Extracted preset hydration body so the queueMicrotask closure stays short.
+  function runPresetHydration(preset: NonNullable<typeof preloadedPreset>, sourceToVersion: (s: string) => RulesetVersion) {
+    for (const creature of preset.creatures) {
       const srdMonster = creature.monster_slug
         ? getMonsterById(creature.monster_slug, sourceToVersion(creature.source))
         : undefined;
@@ -384,8 +409,8 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
       }
     }
 
-    setRulesetVersion(preloadedPreset.formula_version as RulesetVersion);
-  }, [preloadedPreset, handleSelectMonster, handleSelectMonsterGroup, addCombatant]);
+    setRulesetVersion(preset.formula_version as RulesetVersion);
+  }
 
   // Trigger golden glow on the add row after monster selection
   const handleMonsterAdded = useCallback(() => {

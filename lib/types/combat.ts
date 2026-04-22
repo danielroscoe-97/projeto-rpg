@@ -157,7 +157,7 @@ export interface CombatActions {
   addCombatant: (combatant: Omit<Combatant, "id">) => void;
   removeCombatant: (id: string) => void;
   clearEncounter: () => void;
-  setEncounterId: (encounter_id: string, session_id: string) => void;
+  setEncounterId: (encounter_id: string | null, session_id: string) => void;
   setError: (error: string | null) => void;
   setLoading: (is_loading: boolean) => void;
   /** Update a single combatant's initiative value and re-sort the list. */

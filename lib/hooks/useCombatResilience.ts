@@ -35,10 +35,17 @@ export function useCombatResilience() {
   const dmUserIdRef = useRef<string | null>(null);
   const lastStateSyncRef = useRef(0); // P3: dedup guard for state_sync broadcasts
 
-  // Force-save current state to localStorage (called on unload + offline)
+  // Force-save current state to localStorage (called on unload + offline).
+  //
+  // QA 2026-04-22 P1-5 (Epic 12 Wave 1 full feature): also save in setup mode
+  // (encounter_id=null). This lets F5 during combatant setup preserve the work
+  // — previously only live combats were backed up, so users lost any monsters
+  // they'd added before clicking "Iniciar Combate". Gated by session_id so we
+  // never save a backup that can't be matched on recovery.
   const flushToLocalStorage = useCallback(() => {
     const state = useCombatStore.getState();
-    if (state.encounter_id && state.combatants.length > 0) {
+    const hasScope = state.encounter_id || state.session_id;
+    if (hasScope && state.combatants.length > 0) {
       saveCombatBackup(state);
     }
   }, []);

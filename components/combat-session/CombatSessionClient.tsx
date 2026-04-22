@@ -26,7 +26,7 @@ import { DmOfflineBanner } from "@/components/combat/DmOfflineBanner";
 import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
-import { broadcastEvent, getDmChannel, cleanupDmChannel, registerHiddenLookup } from "@/lib/realtime/broadcast";
+import { broadcastEvent, getDmChannel, scheduleDmChannelCleanup, registerHiddenLookup } from "@/lib/realtime/broadcast";
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
@@ -569,11 +569,28 @@ export function CombatSessionClient({
     return () => { registerHiddenLookup(() => false); };
   }, []);
 
-  // BUG-005: Clean up the DM broadcast channel when leaving the session.
-  // Without this, stale channels accumulate and cause CHANNEL_ERROR on re-entry.
+  // Tear down the DM broadcast channel when this component unmounts.
+  //
+  // Why DEFERRED (via scheduleDmChannelCleanup) instead of immediate:
+  //   Start Combat triggers `router.replace('/app/combat/[id]')` which
+  //   unmounts this CombatSessionClient and immediately mounts a fresh one
+  //   on the SAME session id. An eager teardown would race phx_leave against
+  //   the new mount's phx_join on the same topic, landing the DM channel
+  //   in TIMED_OUT — which then drops every broadcast that follows,
+  //   including the player's `combat:late_join_request`.
+  //
+  //   The deferred cleanup keeps the subscribed channel alive for a short
+  //   grace window (see UNMOUNT_CLEANUP_GRACE_MS in broadcast.ts). If a
+  //   fresh mount calls `getDmChannel` within the window, the pending
+  //   cleanup is cancelled and the live channel is reclaimed. On a real
+  //   navigation away (no remount), the cleanup fires as normal.
+  //
+  // For explicit end-session flows (DM clicks "End Session"), see
+  // `handleEndEncounter` in lib/hooks/useCombatActions.ts — it calls
+  // `cleanupDmChannel()` directly so the channel is gone immediately.
   useEffect(() => {
     return () => {
-      cleanupDmChannel();
+      scheduleDmChannelCleanup();
     };
   }, []);
 
@@ -643,6 +660,32 @@ export function CombatSessionClient({
       // Only clear on initial mount — subsequent re-runs must not wipe user-added combatants
       store.clearEncounter();
       hydrationDoneRef.current = true;
+
+      // QA 2026-04-22 P1-5 (Epic 12 Wave 1 full feature) — setup-mode state
+      // scope + backup recovery. When a sessionId is known (eager draft from
+      // /app/combat/new), record it in the store so subsequent debounced
+      // `saveCombatBackup` calls write the right session_id — without this,
+      // setup-mode backups would save `session_id: null` and fail to match on
+      // recovery below.
+      if (sessionId) {
+        store.setEncounterId(null, sessionId);
+
+        // Rehydrate any prior in-flight setup work (monsters added, not yet
+        // committed via "Iniciar Combate") saved by `useCombatResilience`'s
+        // beforeunload/pagehide/debounced auto-save. Scoped by session_id so
+        // we never cross-contaminate drafts from a different session.
+        // Pairs with the EncounterSetup preloadedPlayers dedup guard which
+        // short-circuits if combatants.length > 0 after this runs.
+        const backup = loadCombatBackup();
+        if (
+          backup &&
+          backup.session_id === sessionId &&
+          backup.encounter_id === null &&
+          backup.combatants.length > 0
+        ) {
+          store.hydrateCombatants(backup.combatants);
+        }
+      }
     }
   }, [encounterId, sessionId, isActive, initialCombatants, currentTurnIndex, roundNumber]);
 
