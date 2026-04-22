@@ -3,7 +3,7 @@
 import { createClient, createServiceClient } from "./server";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 import { captureError } from "@/lib/errors/capture";
-// Note: email-invite flow removed (migration 179) — getPendingInvites /
+// Note: email-invite flow removed (migration 180) — getPendingInvites /
 // acceptCampaignInvite / declineCampaignInvite lived here previously.
 // The canonical accept path is /join-campaign/[code] (session_tokens).
 import type {

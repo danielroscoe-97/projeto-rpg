@@ -27,7 +27,7 @@ interface InvitePlayerDialogProps {
  * DM-side invite UI.
  *
  * 2026-04-21: the Email tab was removed together with the `campaign_invites`
- * table (migration 179). See `docs/diagnostic-campaign-invites-zero-accept.md`
+ * table (migration 180). See `docs/diagnostic-campaign-invites-zero-accept.md`
  * for the deprecation rationale (0% accept over 30 days, 193× behind the
  * Link flow). The Join-Link tab is now the only path — players enter the
  * campaign via the `/join-campaign/[code]` route backed by `session_tokens`.

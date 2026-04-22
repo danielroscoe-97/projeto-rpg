@@ -12,7 +12,7 @@ import {
  *
  * The email-invite accept/decline wrappers used to live here
  * (`acceptInviteAction`, `declineInviteAction`) and were removed together
- * with the `campaign_invites` table (migration 179, 2026-04-21). The
+ * with the `campaign_invites` table (migration 180, 2026-04-21). The
  * canonical accept flow is `/join-campaign/[code]`.
  */
 

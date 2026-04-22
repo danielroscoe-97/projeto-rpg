@@ -48,5 +48,5 @@ export interface CampaignMemberWithUser {
 }
 
 // CampaignInviteWithDetails removed in 2026-04-21 with the email-invite flow
-// (migration 179). The /join-campaign/[code] flow does not need a typed row
+// (migration 180). The /join-campaign/[code] flow does not need a typed row
 // because it consumes session_tokens directly; see `app/join-campaign/[code]`.

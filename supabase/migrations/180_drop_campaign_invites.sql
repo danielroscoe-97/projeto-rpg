@@ -1,0 +1,75 @@
+-- 180_drop_campaign_invites.sql
+-- Deprecate the email-invite flow.
+--
+-- Context
+-- ───────
+-- The `campaign_invites` table and its RPCs powered an email-based campaign
+-- invite flow (DM types player's email → Resend sends a branded invite →
+-- recipient clicks link → lands on /invite/[token] → picks/creates character).
+-- The feature shipped in migration 025 (Story 4.3, pre-link-flow era) and has
+-- produced ZERO successful outcomes since launch.
+--
+-- Data (production, 2026-04-21, 30-day window):
+--   - campaign_invites rows created:            9 (all by 1 DM, self-testing)
+--   - campaign_invites accepted:                0
+--   - campaign_members.invited_by populated:    0 rows all-time
+--   - session_tokens (competing /join flow):    1,746
+--   - player:joined events (join flow):         507
+--
+-- Full diagnostic + decision log:
+--   `docs/diagnostic-campaign-invites-zero-accept.md`
+--   `docs/next-session-prompt-2026-04-22.md` §4.2
+--
+-- The /join-campaign/[code] flow (session_tokens + join_code) is the canonical
+-- accept path and stays intact. This migration removes the dead email flow
+-- end-to-end: API routes, server actions, UI components, notifications, and
+-- the database objects below.
+--
+-- What this migration drops
+-- ─────────────────────────
+-- 1. Function `public.accept_campaign_invite(uuid)` — migration 036.
+-- 2. Function `public.link_character_and_join_campaign(uuid, uuid, uuid)` —
+--    migration 155. Depends on campaign_invites (UPDATE on the invite row as
+--    part of its atomic-link RPC). The /join-campaign path links characters
+--    via `lib/identity/link-character-to-campaign` using a distinct code
+--    path that does not touch this RPC, so removing the function is safe.
+-- 3. Table `public.campaign_invites` (+ indexes, policies, row data) — CASCADE
+--    to drop any remaining FK constraints / policies in one shot.
+-- 4. Trigger schedule `invite-expiry` (Trigger.dev `trigger/invite-expiry.ts`)
+--    is being removed from the codebase in the same change — no DB action
+--    needed for the external scheduler.
+--
+-- Application-side callers removed in the same commit
+-- ────────────────────────────────────────────────────
+-- - app/api/campaign/[id]/invites/ (route + bulk)
+-- - app/invite/ (page, actions, error)
+-- - components/invite/ (InviteLanding + skeleton)
+-- - components/campaign/InviteAcceptClient.tsx, InviteMember.tsx
+-- - components/dashboard/PendingInvites.tsx
+-- - lib/notifications/campaign-invite.ts
+--   (invite-accepted-email.ts is preserved — /join-campaign still uses it
+--    to notify the DM when a player joins via the link flow.)
+-- - lib/identity/detect-invite-state.ts, link-character-to-campaign.ts
+-- - lib/supabase/campaign-membership.ts (getPendingInvites, acceptCampaignInvite, declineCampaignInvite)
+-- - lib/actions/invite-actions.ts (acceptInviteAction, declineInviteAction)
+-- - trigger/invite-expiry.ts
+-- - associated jest / e2e tests
+--
+-- Rollback
+-- ────────
+-- This is a one-way drop. Recreating the feature would require re-applying
+-- migrations 025, 036, 037, 104, 108, 155 (in order) plus restoring the
+-- application code. Given the 0% accept rate, rollback is not planned.
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 1. Drop RPCs that reference campaign_invites
+-- ─────────────────────────────────────────────────────────────────────────────
+
+DROP FUNCTION IF EXISTS public.accept_campaign_invite(uuid);
+DROP FUNCTION IF EXISTS public.link_character_and_join_campaign(uuid, uuid, uuid);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 2. Drop the table (CASCADE removes indexes + RLS policies in one shot)
+-- ─────────────────────────────────────────────────────────────────────────────
+
+DROP TABLE IF EXISTS public.campaign_invites CASCADE;
