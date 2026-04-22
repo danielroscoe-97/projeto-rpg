@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { RealtimeCombatInvite } from "@/lib/types/realtime";
+import type { RealtimeUserInvite } from "@/lib/types/realtime";
 
 interface ActiveCombatBannerProps {
   campaignId: string;
+  /** Viewer's auth.uid() — needed to subscribe to `user-invites:{userId}`. */
+  userId: string;
   /** When truthy on mount, we already know combat is live server-side. */
   initialSessionId?: string | null;
   initialJoinToken?: string | null;
@@ -21,13 +23,19 @@ interface ActiveCombatBannerProps {
  * Spec §4.2: banner permanente no topo enquanto sessions.is_active=true AND
  * encounters.is_active=true. Fonte de verdade:
  *   - SSR initial props (hydratation path — se já há encounter ativo, já mostra)
- *   - broadcast `campaign:{id}:invites` (mesmo canal do toast — reusa infra W5)
+ *   - broadcast `user-invites:{userId}` (P2 consolidation — migrado do legacy
+ *     `campaign:{id}:invites` em 2026-04-22 para eliminar N canais por DM).
  *   - fallback poll 30s (catch case onde broadcast falhou e a page ficou aberta)
+ *
+ * Filter `payload.campaign_id === campaignId` garante que invites de outras
+ * campanhas não atualizam este banner (o canal user-scoped delivery invites
+ * de todas as campanhas do usuário).
  *
  * CTA: link direto para /join/{token}, bypassing o form anônimo (spec §3.6).
  */
 export function ActiveCombatBanner({
   campaignId,
+  userId,
   initialSessionId = null,
   initialJoinToken = null,
   initialEncounterName = null,
@@ -102,16 +110,17 @@ export function ActiveCombatBanner({
     refresh();
 
     // Broadcast: jump immediately when the DM starts a new combat.
-    // Must subscribe to the SAME channel name the server publishes to.
-    // Supabase Realtime fan-outs to every subscriber of a given channel, so
-    // both the global listener and this banner share the fan-out safely.
+    // P2 consolidation — listens on the user-scoped channel so the tenant
+    // does not accumulate N `campaign:{id}:invites` channels per DM.
+    // Filter by `payload.campaign_id === campaignId` because the user-scoped
+    // channel fans out invites from every campaign the user is a member of.
     const channel = supabase
-      .channel(`campaign:${campaignId}:invites`)
+      .channel(`user-invites:${userId}`)
       .on(
         "broadcast",
-        { event: "campaign:combat_invite" },
+        { event: "user:combat_invite" },
         (msg: { payload?: unknown }) => {
-          const payload = (msg?.payload ?? null) as RealtimeCombatInvite | null;
+          const payload = (msg?.payload ?? null) as RealtimeUserInvite | null;
           if (!payload || payload.campaign_id !== campaignId) return;
           setSessionId(payload.session_id);
           setJoinToken(payload.join_token);
@@ -121,6 +130,8 @@ export function ActiveCombatBanner({
       .subscribe();
 
     // Polling fallback for robustness (spec §5.1 defense-in-depth). 30s cadence.
+    // Also covers pre-P2 clients whose broadcasts still go on the legacy
+    // channel: they're caught here within 30s.
     const interval = setInterval(refresh, 30_000);
 
     return () => {
@@ -128,7 +139,7 @@ export function ActiveCombatBanner({
       clearInterval(interval);
       supabase.removeChannel(channel);
     };
-  }, [campaignId]);
+  }, [campaignId, userId]);
 
   if (!sessionId || !joinToken) return null;
 

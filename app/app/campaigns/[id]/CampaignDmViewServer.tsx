@@ -199,6 +199,7 @@ export async function CampaignDmViewServer({
         />
         <ActiveCombatBanner
           campaignId={campaignId}
+          userId={userId}
           initialSessionId={activeEncounter ? activeSessionId : null}
           initialJoinToken={activeJoinToken}
           initialEncounterName={activeEncounter?.name ?? null}
@@ -235,6 +236,7 @@ export async function CampaignDmViewServer({
       <div className="flex-1 min-w-0 space-y-8">
         <ActiveCombatBanner
           campaignId={campaignId}
+          userId={userId}
           initialSessionId={activeEncounter ? activeSessionId : null}
           initialJoinToken={activeJoinToken}
           initialEncounterName={activeEncounter?.name ?? null}

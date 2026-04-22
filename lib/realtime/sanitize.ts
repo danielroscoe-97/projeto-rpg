@@ -86,10 +86,14 @@ export function sanitizePayloadServer(
   if (event.type === "player:hp_action") return null;
   // player:self_condition_toggle is player→DM only — DM re-broadcasts the result as combat:condition_change
   if (event.type === "player:self_condition_toggle") return null;
-  // W5 (F19): campaign:combat_invite is server-origin only and travels on a
-  // separate channel (`campaign:{id}:invites`). It must never enter the
-  // session:{id} DM-player sanitization pipeline.
+  // W5 (F19) + P2 consolidation: combat_invite events (legacy campaign-scoped
+  // and new user-scoped) are server-origin only and travel on separate
+  // broadcast channels (`campaign:{id}:invites` and `user-invites:{userId}`).
+  // They must never be rebroadcast from the DM's `session:{id}` channel.
+  // Split into two separate narrowing checks so the TS control-flow analyzer
+  // can exclude `RealtimeCombatInvite` from the `return event` below.
   if (event.type === "campaign:combat_invite") return null;
+  if (event.type === "user:combat_invite") return null;
 
   // Turn advance: adjust index for visible combatants
   if (event.type === "combat:turn_advance") {

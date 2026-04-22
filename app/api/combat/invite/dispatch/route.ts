@@ -4,7 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { captureError } from "@/lib/errors/capture";
 import { SITE_URL } from "@/lib/seo/site-url";
-import type { RealtimeCombatInvite } from "@/lib/types/realtime";
+import type {
+  RealtimeCombatInvite,
+  RealtimeUserInvite,
+} from "@/lib/types/realtime";
 
 /**
  * Wave 5 (F19) — Auto-invite pro Combate.
@@ -170,6 +173,14 @@ export async function POST(req: NextRequest) {
       .filter((m) => m.user_id !== user.id) // DM must not self-notify
       .map((m) => m.user_id);
 
+    // Broadcast fan-out INCLUDES the DM's own user-invites channel so the DM's
+    // own banner (e.g. in a secondary tab still on the campaign page) updates
+    // in real time. Toast is filtered out client-side via `dm_user_id === userId`.
+    // Note: this is decoupled from `playerUserIds` which gates player_notifications
+    // inserts — the DM does not want a durable notification row for their own
+    // action.
+    const broadcastUserIds = members.map((m) => m.user_id);
+
     const startedAt = new Date().toISOString();
 
     // 7. Persist first (durable fallback §3.3). Broadcast after (best-effort).
@@ -215,9 +226,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 8. Broadcast on the NEW `campaign:{id}:invites` channel (not session:).
-    const payload: RealtimeCombatInvite = {
-      type: "campaign:combat_invite",
+    // 8. Broadcast — dual path during P2 grace period (docs/prompt-p2-channel-consolidation.md).
+    //   PRIMARY (new):  user-invites:{playerUserId} — one broadcast per player.
+    //                   Client subscribes to a single user-scoped channel instead
+    //                   of N campaign-scoped channels, collapsing tenant channel
+    //                   count (Free tier 200-channel cap root cause).
+    //   LEGACY (grace): campaign:{campaignId}:invites — single broadcast, fan-out.
+    //                   Kept alive for ~7 days so tabs still running pre-P2 code
+    //                   keep receiving invites. Scheduled for removal post-rollout.
+    const payload: RealtimeUserInvite = {
+      type: "user:combat_invite",
       campaign_id: campaignId,
       campaign_name: campaignName,
       session_id: sessionId,
@@ -230,23 +248,70 @@ export async function POST(req: NextRequest) {
       started_at: startedAt,
     };
 
-    const channelName = `campaign:${campaignId}:invites`;
-    const channel = supabaseAdmin.channel(channelName);
+    // 8a. PRIMARY — per-user fan-out via fire-and-forget send (no subscribe).
+    //     Mirrors lib/supabase/player-identity.ts:broadcastIdentityUpgraded.
+    //     channel.send() without subscribe falls back to POST /realtime/v1/api/broadcast
+    //     internally (supabase-js), so no server-side channel subscription is held.
+    //     Parallel Promise.allSettled — one player's network blip must not
+    //     starve siblings.
+    const userBroadcastResults = await Promise.allSettled(
+      broadcastUserIds.map(async (uid) => {
+        const ch = supabaseAdmin.channel(`user-invites:${uid}`);
+        try {
+          await ch.send({
+            type: "broadcast",
+            event: "user:combat_invite",
+            payload,
+          });
+        } finally {
+          await supabaseAdmin.removeChannel(ch).catch(() => {});
+        }
+      }),
+    );
+
+    const userBroadcastFailures = userBroadcastResults.filter(
+      (r) => r.status === "rejected",
+    );
+    if (userBroadcastFailures.length > 0) {
+      captureError(
+        new Error(
+          `user-invites broadcast: ${userBroadcastFailures.length}/${broadcastUserIds.length} failed`,
+        ),
+        {
+          component: "CombatInviteDispatch",
+          action: "broadcast_user_scoped",
+          category: "realtime",
+          sessionId,
+        },
+      );
+    }
+
+    // 8b. LEGACY — campaign-scoped broadcast (grace period).
+    //     Using the unchanged subscribe-then-send pattern for minimum risk to
+    //     clients still running pre-P2 bundle. This entire block (legacyChannel
+    //     + try/finally) is scheduled for removal ~7d post-deploy once old tabs
+    //     have refreshed.
+    const { type: _ignored, ...legacyBase } = payload;
+    const legacyPayload: RealtimeCombatInvite = {
+      ...legacyBase,
+      type: "campaign:combat_invite",
+    };
+    const legacyChannelName = `campaign:${campaignId}:invites`;
+    const legacyChannel = supabaseAdmin.channel(legacyChannelName);
 
     try {
       await new Promise<void>((resolve, reject) => {
-        // Hard 5s timeout — don't let channel subscribe hang the function.
         const timeout = setTimeout(() => {
           reject(new Error("Channel subscribe timeout (5s)"));
         }, 5000);
 
-        channel.subscribe((status) => {
+        legacyChannel.subscribe((status) => {
           if (status === "SUBSCRIBED") {
-            channel
+            legacyChannel
               .send({
                 type: "broadcast",
                 event: "campaign:combat_invite",
-                payload,
+                payload: legacyPayload,
               })
               .then(() => {
                 clearTimeout(timeout);
@@ -263,16 +328,14 @@ export async function POST(req: NextRequest) {
         });
       });
     } catch (err) {
-      // Broadcast failure is non-fatal: player_notifications insert already
-      // ran. Capture so we see the blast radius in logs.
       captureError(err, {
         component: "CombatInviteDispatch",
-        action: "broadcast",
+        action: "broadcast_legacy_campaign_scoped",
         category: "realtime",
         sessionId,
       });
     } finally {
-      supabaseAdmin.removeChannel(channel);
+      supabaseAdmin.removeChannel(legacyChannel);
     }
 
     return NextResponse.json({

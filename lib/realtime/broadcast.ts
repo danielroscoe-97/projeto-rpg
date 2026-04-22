@@ -438,10 +438,14 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
   // player:self_condition_toggle is player→DM only — DM re-broadcasts as combat:condition_change
   if (event.type === "player:self_condition_toggle") return null;
 
-  // W5 (F19): campaign:combat_invite belongs to a separate broadcast channel
-  // (`campaign:{id}:invites`) and is server-originated. It must never be
-  // rebroadcast from the DM's `session:{id}` channel.
+  // W5 (F19) + P2 consolidation: combat_invite events (legacy campaign-scoped
+  // and new user-scoped) belong to separate broadcast channels
+  // (`campaign:{id}:invites` and `user-invites:{userId}`) and are server-
+  // originated. They must never be rebroadcast from the DM's `session:{id}`
+  // channel. Split into two narrowing checks so TS can exclude
+  // `RealtimeCombatInvite` from the `return event` below.
   if (event.type === "campaign:combat_invite") return null;
+  if (event.type === "user:combat_invite") return null;
 
   // Events that pass through unchanged (no sensitive data)
   return event;

@@ -130,6 +130,7 @@ export async function CampaignPlayerViewServer({
     <div className="space-y-4">
       <ActiveCombatBanner
         campaignId={campaignId}
+        userId={userId}
         initialSessionId={activeEncounter ? (activeSession?.id ?? null) : null}
         initialJoinToken={activeJoinToken}
         initialEncounterName={activeEncounter?.name ?? null}

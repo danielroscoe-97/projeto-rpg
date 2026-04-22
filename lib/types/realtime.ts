@@ -39,7 +39,8 @@ export type RealtimeEventType =
   | "player:self_condition_toggle"
   | "chat:player_message"
   | "chat:dm_postit"
-  | "campaign:combat_invite";
+  | "campaign:combat_invite"
+  | "user:combat_invite";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -329,18 +330,26 @@ export interface RealtimeChatDmPostit {
 }
 
 /**
- * Wave 5 (F19) — Auto-invite pro Combate.
+ * Wave 5 (F19) — Auto-invite pro Combate (shared payload shape).
  *
- * Broadcast no canal `campaign:{campaignId}:invites` quando o DM inicia um
- * combate vinculado a uma campanha. Jogadores logados em qualquer rota
- * `/app/*` recebem o toast via `useCombatInviteListener` + fallback durável
- * via `player_notifications`.
+ * Channel strategy (P2 consolidation, 2026-04-22):
+ *   - PRIMARY: `user-invites:{userId}` (1 canal por user, delivery direta pros
+ *     players ativos da campanha via dispatch route). Event:
+ *     `user:combat_invite` / type `RealtimeUserInvite`.
+ *   - LEGACY (grace period): `campaign:{campaignId}:invites` (N canais por DM).
+ *     Mantido por ~7 dias pós-deploy até todos clientes terem o código novo.
+ *     Event: `campaign:combat_invite` / type `RealtimeCombatInvite`.
  *
- * Canal novo, não reusa `session:{sessionId}` (que continua player-only em
- * fluxo guest/anon). Auth-only (Combat Parity Rule).
+ * Payload é idêntico em ambos os types (mesmos campos). Split em interfaces
+ * separadas pra que o TS control-flow narrowing funcione nos filtros de
+ * broadcast sanitization.
+ *
+ * Listeners fazem dedup por `session_id`. Fallback durável via
+ * `player_notifications` continua igual.
+ *
+ * Auth-only (Combat Parity Rule).
  */
-export interface RealtimeCombatInvite {
-  type: "campaign:combat_invite";
+interface RealtimeCombatInvitePayload {
   campaign_id: string;
   campaign_name: string;
   session_id: string;
@@ -354,6 +363,19 @@ export interface RealtimeCombatInvite {
   /** Monotonic seq (spec §3.2) — aligns with broadcast.ts:428-429 convention. */
   _seq?: number;
 }
+
+/** Legacy channel (`campaign:{id}:invites`) — grace period only. */
+export interface RealtimeCombatInvite extends RealtimeCombatInvitePayload {
+  type: "campaign:combat_invite";
+}
+
+/** Primary channel (`user-invites:{userId}`) — P2 consolidation, 2026-04-22. */
+export interface RealtimeUserInvite extends RealtimeCombatInvitePayload {
+  type: "user:combat_invite";
+}
+
+/** Union of both combat-invite event shapes (legacy + new). */
+export type RealtimeAnyCombatInvite = RealtimeCombatInvite | RealtimeUserInvite;
 
 export type RealtimeEvent =
   | RealtimeHpUpdate
@@ -390,7 +412,8 @@ export type RealtimeEvent =
   | RealtimeChatDmPostit
   | RealtimePlayerSelfConditionToggle
   | RealtimeCombatRecap
-  | RealtimeCombatInvite;
+  | RealtimeCombatInvite
+  | RealtimeUserInvite;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
