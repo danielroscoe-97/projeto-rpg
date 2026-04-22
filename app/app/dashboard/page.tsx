@@ -13,6 +13,12 @@ import { GuestDataImportModal } from "@/components/dashboard/GuestDataImportModa
 // behind a Suspense boundary so the skeleton paints on first flush.
 import { ContinueFromLastSessionServer } from "@/components/dashboard/ContinueFromLastSessionServer";
 import { ContinueFromLastSessionSkeleton } from "@/components/dashboard/ContinueFromLastSessionSkeleton";
+// Epic 04 Story 04-E — DM-upsell CTA. Self-gates on role/sessions/onboarding
+// and returns null when the server decision is "don't show", so rendering
+// unconditionally is safe. Streams behind Suspense with `null` fallback
+// because the card is ambient, not critical; a late paint into the
+// dashboard is fine.
+import { BecomeDmCtaServer } from "@/components/upsell/BecomeDmCtaServer";
 import { MyCharactersServer } from "@/components/dashboard/MyCharactersServer";
 import { MyCharactersGridSkeleton } from "@/components/dashboard/MyCharactersGridSkeleton";
 import { MyCampaignsServer } from "@/components/dashboard/MyCampaignsServer";
@@ -317,6 +323,10 @@ export default async function DashboardPage() {
       {/* Section 1 — "Continue de onde parou" */}
       <Suspense fallback={<ContinueFromLastSessionSkeleton />}>
         <ContinueFromLastSessionServer />
+      </Suspense>
+      {/* Epic 04 Story 04-E — DM-upsell CTA (self-hides for DM-only or ineligible). */}
+      <Suspense fallback={null}>
+        <BecomeDmCtaServer userRole={userRole} />
       </Suspense>
       <DashboardOverview
         campaigns={campaigns}

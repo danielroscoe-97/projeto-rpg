@@ -1,0 +1,41 @@
+export const dynamic = "force-dynamic";
+
+import { redirect } from "next/navigation";
+import { getAuthUser } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
+
+/**
+ * /app/become-dm — Epic 04 Story 04-E landing stub.
+ *
+ * The BecomeDmCta primary CTA routes here. Story 04-F replaces this page
+ * with the BecomeDmWizard mount. Until then, we:
+ *
+ *   1. Require auth (any unauthed hit redirects to login with returnTo).
+ *   2. Render a minimal landing card so a user who clicked through doesn't
+ *      land on 404 / empty screen if they refresh mid-rollout.
+ *
+ * Rationale for a stub (vs. gating the primary button): the stub preserves
+ * the analytics funnel (`dm_upsell:cta_clicked` fires on any primary click)
+ * and gives E2E coverage a stable navigation target to assert against
+ * before the wizard exists.
+ */
+
+export default async function BecomeDmLandingPage() {
+  const user = await getAuthUser();
+  if (!user) redirect("/auth/login?returnTo=/app/become-dm");
+  const t = await getTranslations("dmUpsell");
+
+  return (
+    <main className="mx-auto max-w-xl px-4 py-12 sm:py-20">
+      <h1 className="mb-4 text-2xl font-semibold text-gold">
+        {t("wizard_title")}
+      </h1>
+      <p className="text-sm text-muted-foreground">
+        {t("wizard_step1_body")}
+      </p>
+      <p className="mt-6 text-xs text-muted-foreground/70">
+        {/* Story 04-F replaces this with the 5-step wizard. */}
+      </p>
+    </main>
+  );
+}
