@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import type { RealtimeChannel } from "@supabase/supabase-js";
+import { REALTIME_SUBSCRIBE_STATES, type RealtimeChannel } from "@supabase/supabase-js";
 import type {
   RealtimeEvent,
   SanitizedEvent,
@@ -31,52 +31,166 @@ let currentSessionId: string | null = null;
 let _broadcastSeq = 0;
 export function getBroadcastSeq(): number { return _broadcastSeq; }
 
-/** Get or create the DM broadcast channel for a session.
- *  Recreates the channel when the session ID changes (guards stale singleton).
- *  Also recreates when the existing channel was externally removed/closed
- *  (e.g. by EncounterSetup calling supabase.removeChannel). */
 /** Promise that resolves when the current DM channel is subscribed. */
 let channelReady: Promise<void> | null = null;
 
+/** Pending deferred cleanup timer. See `scheduleDmChannelCleanup`.
+ *  A new consumer calling `getDmChannel` cancels a pending cleanup so the
+ *  existing (SUBSCRIBED) channel is reused instead of being torn down and
+ *  immediately recreated — which races phx_leave against phx_join on the
+ *  same topic and is a reliable way to get TIMED_OUT on the new subscribe. */
+let pendingCleanupTimer: ReturnType<typeof setTimeout> | null = null;
+
+/** Auto-reconnect timer for subscribe failures. See `createAndSubscribe`. */
+let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+/** Exponential backoff state for subscribe retries. Reset on SUBSCRIBED. */
+let reconnectBackoffMs = 1_000;
+
+/** Grace window between component unmount and actual channel teardown.
+ *  Sized to absorb router.replace remounts (`/app/combat/new → /app/combat/[id]`)
+ *  which consistently finish well under a second. Tuned conservatively because
+ *  a longer grace is cheap (channel sits subscribed a bit longer) while a
+ *  shorter grace risks racing the fresh mount. */
+const UNMOUNT_CLEANUP_GRACE_MS = 2_000;
+
+/** Subscribe timeout in ms. Longer than realtime-js's 10s default because
+ *  the DM client multiplexes presence + session + campaign-invite channels on
+ *  one WebSocket and phx_join can queue behind them. Player-side uses the
+ *  same tolerance (PlayerJoinClient reconnect logic triggers at the same
+ *  time scale). */
+const SUBSCRIBE_TIMEOUT_MS = 30_000;
+
+/** Subscribe retry ceiling. Doubles each failure until it hits this. Caps the
+ *  worst-case retry interval so the DM recovers automatically once the
+ *  underlying realtime issue clears. Mirrors the player-side ceiling. */
+const RECONNECT_BACKOFF_CEILING_MS = 30_000;
+
+/** Initial backoff for the first subscribe failure. */
+const RECONNECT_BACKOFF_INITIAL_MS = 1_000;
+
+/** Shared teardown for both `cleanupDmChannel` (immediate) and the deferred
+ *  path. Resets every piece of module-level state so a subsequent
+ *  `getDmChannel` call starts from a clean slate. */
+function teardownChannel(): void {
+  if (pendingCleanupTimer) {
+    clearTimeout(pendingCleanupTimer);
+    pendingCleanupTimer = null;
+  }
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+  reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
+  if (channel) {
+    const supabase = createClient();
+    supabase.removeChannel(channel);
+  }
+  channel = null;
+  currentSessionId = null;
+  channelReady = null;
+}
+
+/** Get or create the DM broadcast channel for a session.
+ *  Recreates the channel when the session ID changes (guards stale singleton).
+ *  Also recreates when the existing channel was externally removed/closed
+ *  (e.g. by EncounterSetup calling supabase.removeChannel).
+ *
+ *  On subscribe failure (TIMED_OUT / CHANNEL_ERROR), schedules an automatic
+ *  reconnect with exponential backoff. Consumers get a channel instance back
+ *  immediately so they can attach listeners; those listeners will be replayed
+ *  onto the reconnected channel IF they were registered via `onDmChannel`. */
 export function getDmChannel(sessionId: string): RealtimeChannel {
+  // A consumer wants the channel — cancel any scheduled cleanup from a
+  // previous unmount. Critical for the `/app/combat/new → /app/combat/[id]`
+  // router.replace transition: the old CombatSessionClient unmounts and
+  // the new one mounts back-to-back on the SAME session id; preserving the
+  // live channel avoids the subscribe/unsubscribe race on Supabase Realtime.
+  if (pendingCleanupTimer) {
+    clearTimeout(pendingCleanupTimer);
+    pendingCleanupTimer = null;
+  }
+
+  const supabase = createClient();
+
   if (channel && currentSessionId === sessionId) {
     // Guard against stale channel that was removed externally
     const state = (channel as unknown as { state: string }).state;
     if (state !== "closed" && state !== "leaving" && state !== "errored") {
       return channel;
     }
-    // Channel is dead — fall through to recreate
+    // Channel is dead — fully remove it from the realtime client's registry
+    // (supabase.removeChannel does leave + drop from the client.channels
+    // array; plain channel.unsubscribe leaves the errored instance sitting
+    // in the registry and starves the fresh subscribe of its server-side
+    // slot, which surfaces as a back-to-back TIMED_OUT loop).
     console.warn("[broadcast] DM channel was in stale state:", state, "— recreating");
+    supabase.removeChannel(channel);
     channel = null;
+    currentSessionId = null;
     channelReady = null;
   }
-  // Session changed or channel is stale — tear down old channel first
-  if (channel) {
-    channel.unsubscribe();
+  // Session changed — fully remove the old channel before creating a new one,
+  // and reset backoff so the new session's first retry doesn't start mid-curve.
+  if (channel && currentSessionId !== sessionId) {
+    supabase.removeChannel(channel);
     channel = null;
+    currentSessionId = null;
     channelReady = null;
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+    reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
   }
+
+  createAndSubscribe(sessionId);
+  return channel!;
+}
+
+/** Internal: create a fresh channel instance for `sessionId`, subscribe, and
+ *  schedule a retry on failure. Factored out so the retry path can re-enter
+ *  without duplicating the create+subscribe logic. */
+function createAndSubscribe(sessionId: string): void {
   const supabase = createClient();
-  channel = supabase.channel(`session:${sessionId}`, {
+  const fresh = supabase.channel(`session:${sessionId}`, {
     config: { broadcast: { self: false } },
   });
+
+  channel = fresh;
+  currentSessionId = sessionId;
   channelReady = new Promise<void>((resolve) => {
-    channel!.subscribe((status, err) => {
+    fresh.subscribe((status: REALTIME_SUBSCRIBE_STATES | string, err?: Error) => {
       if (status === "SUBSCRIBED") {
+        reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS; // reset on success
         resolve();
-      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        return;
+      }
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
         captureError(err ?? new Error(`Channel ${status} for session ${sessionId}`), {
           component: "broadcast",
           action: "subscribe",
           category: "realtime",
           sessionId,
         });
-        resolve(); // Resolve anyway to avoid hanging
+        // Auto-reconnect with exponential backoff — mirror of the
+        // player-side pattern in PlayerJoinClient. Guards:
+        //   1. Only retry if we're still on the same session (avoid stomping
+        //      a session change or an explicit cleanup).
+        //   2. Only retry if `channel` still points at THIS instance — a
+        //      parallel reclaim may have replaced it already.
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        const delay = Math.min(reconnectBackoffMs, RECONNECT_BACKOFF_CEILING_MS);
+        reconnectBackoffMs = Math.min(delay * 2, RECONNECT_BACKOFF_CEILING_MS);
+        reconnectTimer = setTimeout(() => {
+          reconnectTimer = null;
+          if (currentSessionId === sessionId && channel === fresh) {
+            // Tear down the errored instance and start fresh.
+            const sb = createClient();
+            sb.removeChannel(fresh);
+            createAndSubscribe(sessionId);
+          }
+        }, delay);
+        resolve(); // Don't hang callers waiting on channelReady.
       }
-    });
+    }, SUBSCRIBE_TIMEOUT_MS);
   });
-  currentSessionId = sessionId;
-  return channel!;
 }
 
 /** Wait for the DM channel to be subscribed. Resolves immediately if already subscribed. */
@@ -90,6 +204,15 @@ export function waitForChannel(): Promise<void> {
  *  getDmChannel directly, avoiding the two-channels-same-topic race that caused
  *  CHANNEL_ERROR / TIMED_OUT on player late-join broadcasts. */
 export function resetDmChannel(): void {
+  if (pendingCleanupTimer) {
+    clearTimeout(pendingCleanupTimer);
+    pendingCleanupTimer = null;
+  }
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+  reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
   channel = null;
   currentSessionId = null;
   channelReady = null;
@@ -519,12 +642,30 @@ export async function replayOfflineQueue(sessionId: string): Promise<void> {
   setSyncStatus(result.failed > 0 ? "error" : "online");
 }
 
-/** Cleanup the DM channel (call when leaving session). */
+/** Cleanup the DM channel (call when leaving session).
+ *  Immediate, synchronous teardown — for explicit end-session flows
+ *  (e.g. `handleEndEncounter`) where we know we're leaving for good.
+ *  Uses `supabase.removeChannel` (not bare `channel.unsubscribe`) to fully
+ *  drop the channel from the client registry — a leftover errored instance
+ *  would starve the next subscribe on the same topic. */
 export function cleanupDmChannel(): void {
-  if (channel) {
-    channel.unsubscribe();
-    channel = null;
-    currentSessionId = null;
-    channelReady = null;
-  }
+  teardownChannel();
+}
+
+/** Deferred cleanup — tears down the channel only if no new consumer claims
+ *  it within {@link UNMOUNT_CLEANUP_GRACE_MS}. Use this on React unmount
+ *  paths where the next mount may be the SAME session on a different route
+ *  (e.g. `/app/combat/new` → `/app/combat/[id]`): an immediate teardown
+ *  would race the fresh subscribe and leave the new channel in
+ *  TIMED_OUT / CHANNEL_ERROR.
+ *
+ *  `getDmChannel` cancels any pending cleanup on reclaim, so this is safe to
+ *  call aggressively. If no reclaim happens (real navigation away), the
+ *  cleanup fires and the singleton is torn down as before. */
+export function scheduleDmChannelCleanup(): void {
+  if (pendingCleanupTimer) clearTimeout(pendingCleanupTimer);
+  pendingCleanupTimer = setTimeout(() => {
+    pendingCleanupTimer = null;
+    teardownChannel();
+  }, UNMOUNT_CLEANUP_GRACE_MS);
 }

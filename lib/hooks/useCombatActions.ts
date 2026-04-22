@@ -922,6 +922,11 @@ export function useCombatActions({ sessionId, onNavigate }: UseCombatActionsOpti
         reason: "dm_ended",
       });
       await expireSessionTokens(sid);
+      // Immediate (not deferred) teardown: the DM is leaving the session
+      // for good, so we don't want the grace window from
+      // `scheduleDmChannelCleanup` — that would keep the channel subscribed
+      // while the DM is already on /app/dashboard and could deliver stray
+      // events from a concurrent session reusing the same topic.
       cleanupDmChannel();
       onNavigate("/app/dashboard");
     } catch (err) {

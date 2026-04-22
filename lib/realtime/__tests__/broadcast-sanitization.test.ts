@@ -19,6 +19,7 @@ const mockSubscribe = jest.fn((cb: (status: string) => void) => {
   cb("SUBSCRIBED");
 });
 const mockUnsubscribe = jest.fn();
+const mockRemoveChannel = jest.fn();
 const mockChannel = jest.fn(() => ({
   send: mockSend,
   subscribe: mockSubscribe,
@@ -27,7 +28,10 @@ const mockChannel = jest.fn(() => ({
 }));
 
 jest.mock("@/lib/supabase/client", () => ({
-  createClient: () => ({ channel: mockChannel }),
+  createClient: () => ({
+    channel: mockChannel,
+    removeChannel: mockRemoveChannel,
+  }),
 }));
 
 jest.mock("@/lib/errors/capture", () => ({

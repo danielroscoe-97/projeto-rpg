@@ -7,6 +7,7 @@ import type { Combatant } from "@/lib/types/combat";
 
 const mockSend = jest.fn();
 const mockUnsubscribe = jest.fn();
+const mockRemoveChannel = jest.fn();
 
 const mockChannel = {
   subscribe: jest.fn((cb?: (status: string) => void) => {
@@ -21,6 +22,7 @@ const mockChannel = {
 jest.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     channel: () => mockChannel,
+    removeChannel: mockRemoveChannel,
   }),
 }));
 

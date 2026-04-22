@@ -9,18 +9,23 @@
 // ── Supabase mock ────────────────────────────────────────────────
 const mockSend = jest.fn();
 const mockUnsubscribe = jest.fn();
+const mockRemoveChannel = jest.fn();
 const mockChannelInstance = {
   send: mockSend,
   subscribe: jest.fn((cb?: (status: string) => void) => {
     if (cb) cb("SUBSCRIBED");
     return mockChannelInstance;
   }),
+  on: jest.fn(function on(this: unknown) { return mockChannelInstance; }),
   unsubscribe: mockUnsubscribe,
   state: "joined",
 };
 
 jest.mock("@/lib/supabase/client", () => ({
-  createClient: () => ({ channel: () => mockChannelInstance }),
+  createClient: () => ({
+    channel: () => mockChannelInstance,
+    removeChannel: mockRemoveChannel,
+  }),
 }));
 
 jest.mock("@/lib/errors/capture", () => ({
