@@ -20,8 +20,13 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 
 // -----------------------------------------------------------------------
-// Shared fetch mock (both components go through /api/admin/metrics)
+// Shared fetch mock (both components go through /api/admin/metrics).
+// Adversarial-review fix: capture the original fetch in a module-level
+// var and restore in afterEach so a pending-promise mock in one test
+// doesn't leak into the next suite run.
 // -----------------------------------------------------------------------
+
+const realFetch = global.fetch;
 
 const mockFetchResponse = (body: unknown) => {
   global.fetch = jest.fn(
@@ -76,6 +81,11 @@ describe("MetricsDashboard — DM upsell section (F7)", () => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => {
+    // Restore fetch so pending-promise mocks can't leak into the next test.
+    global.fetch = realFetch;
+  });
+
   it("renders the section when dm_upsell_funnel is non-empty", async () => {
     mockFetchResponse(FULL_METRICS_BODY);
     render(<MetricsDashboard />);
@@ -120,24 +130,30 @@ describe("MetricsDashboard — DM upsell section (F7)", () => {
   it("normalises bar widths against max unique_users", async () => {
     mockFetchResponse(FULL_METRICS_BODY);
     render(<MetricsDashboard />);
-    const row1 = await screen.findByTestId(
-      "metrics.dm-upsell-row.dm_upsell:cta_shown",
+    // Stable testids on the bar inner divs — adversarial-review fix,
+    // replaces fragile `querySelector("div[style*='width']")` that
+    // matched whichever child div happened to carry an inline style.
+    const bar1 = await screen.findByTestId(
+      "metrics.dm-upsell-row.dm_upsell:cta_shown.bar",
     );
-    const row2 = await screen.findByTestId(
-      "metrics.dm-upsell-row.dm_upsell:cta_clicked",
+    const bar2 = await screen.findByTestId(
+      "metrics.dm-upsell-row.dm_upsell:cta_clicked.bar",
     );
-    const bar1 = row1.querySelector("div[style*='width']") as HTMLElement;
-    const bar2 = row2.querySelector("div[style*='width']") as HTMLElement;
     // cta_shown unique_users=80 (max), cta_clicked unique_users=35.
-    expect(bar1.style.width).toBe("100%");
+    expect((bar1 as HTMLElement).style.width).toBe("100%");
     // 35 / 80 = 43.75%
-    expect(bar2.style.width).toBe("43.75%");
+    expect((bar2 as HTMLElement).style.width).toBe("43.75%");
   });
 });
 
 describe("DmUpsellFunnelClient — standalone route (F6)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore fetch so pending-promise mocks can't leak into the next test.
+    global.fetch = realFetch;
   });
 
   it("shows loading state before fetch resolves", async () => {

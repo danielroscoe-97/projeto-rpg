@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { DM_UPSELL_LABELS } from "@/lib/upsell/dm-upsell-labels";
 
 interface FunnelEntry { event_name: string; unique_users: number }
 interface EventCount { event_name: string; event_count: number }
@@ -70,25 +71,8 @@ const GUEST_LABELS: Record<string, string> = {
   "guest:expired_cta_signup": "Expired → Signup",
 };
 
-/** Epic 04 Story 04-I — friendly labels for the dm_upsell funnel bars.
- *  Keys match the event_names declared in migration 181. Unknown events
- *  (new emits shipped after this list is written) fall back to the raw
- *  event_name so nothing disappears silently. */
-const DM_UPSELL_LABELS: Record<string, string> = {
-  "dm_upsell:cta_shown": "CTA Shown",
-  "dm_upsell:cta_clicked": "CTA Clicked",
-  "dm_upsell:cta_dismissed": "CTA Dismissed",
-  "dm_upsell:wizard_started": "Wizard Started",
-  "dm_upsell:wizard_failed": "Wizard Failed",
-  "dm_upsell:role_upgraded_to_dm": "Role → DM",
-  "dm_upsell:first_campaign_created": "First Campaign Created",
-  "dm_upsell:tour_start_clicked": "Tour: Start",
-  "dm_upsell:tour_start_skipped": "Tour: Skipped at Start",
-  "dm_upsell:tour_completed": "Tour Completed",
-  "dm_upsell:tour_skipped": "Tour Skipped Mid-way",
-  "dm_upsell:past_companions_loaded": "Past Companions Loaded",
-  "dm_upsell:past_companion_link_copied": "Past-companion Link Copied",
-};
+// DM_UPSELL_LABELS is shared with app/admin/dm-upsell-funnel/DmUpsellFunnelClient
+// via lib/upsell/dm-upsell-labels.ts to prevent drift between the two surfaces.
 
 export function MetricsDashboard() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -213,6 +197,7 @@ export function MetricsDashboard() {
                 </span>
                 <div className="flex-1 h-5 bg-white/5 rounded overflow-hidden">
                   <div
+                    data-testid={`metrics.dm-upsell-row.${f.event_name}.bar`}
                     className="h-full bg-amber-400/30 rounded"
                     style={{
                       width: `${(f.unique_users / maxDmUpsell) * 100}%`,

@@ -995,11 +995,11 @@ real dos DMs em WhatsApp/Discord):
 
 ### Área 6 — Analytics
 - [ ] **Prereq F19-WIRE shipped** (migration 178 — trigger `encounters.ended_at AFTER UPDATE` → `users.last_session_at`). Sem isso o funnel de `first_session_run → cta_shown` mede com 15min de defasagem.
-- [ ] 9 eventos de funil emitidos via `trackServerEvent` com namespace `dm_upsell:*` (colon-style, não underscore)
-- [ ] **F6** rota admin criada em `app/admin/dm-upsell-funnel/page.tsx` (NÃO `app/app/admin/...`)
-- [ ] **F7** `MetricsDashboard.tsx` ganha nova seção "DM Upsell Funnel" (mesmo pattern de Combat Stats — `<SectionTitle>` + barras horizontais); NÃO há tab container
-- [ ] **D14 / F27** `dm_upsell:first_campaign_created` emitido do server action `campaign-settings.ts` após a RPC retornar; NÃO via SQL trigger
-- [ ] Cohort query retorna dados (mesmo zerado inicialmente)
+- [ ] **13 eventos** de funil emitidos via `trackServerEvent`/`trackEvent` com namespace `dm_upsell:*` (colon-style, não underscore). Canonical list + ordem em `supabase/migrations/181_admin_dm_upsell_funnel_rpc.sql:45-58`. Spec original dizia "9 eventos"; a implementação cresceu para 13 durante 04-E/F/G/H (cobertura de tour lifecycle + past-companions surface). Label dict compartilhada em `lib/upsell/dm-upsell-labels.ts`.
+- [ ] **F6** rota admin criada em `app/admin/dm-upsell-funnel/page.tsx` (NÃO `app/app/admin/...`) com metadata `robots: { index: false, follow: false, nocache: true }`
+- [ ] **F7** `MetricsDashboard.tsx` ganha nova seção "DM Upsell Funnel" (mesmo pattern de Combat Stats — `<SectionTitle>` + barras horizontais amber); NÃO há tab container
+- [ ] **D14 / F27** `dm_upsell:first_campaign_created` — **dual source** hoje: wizard path emite de `lib/upsell/role-flip-and-create.ts` (server action Story 04-F), non-wizard path emite `campaign:created` de `lib/supabase/campaign-settings.ts`. Spec original pedia emit unificado via campaign-settings.ts; decisão de produto: manter split (eventos diferentes pra caminhos diferentes — wizard = first-time DM conversion; non-wizard = power user creating more campaigns). Nenhum dos dois via SQL trigger.
+- [ ] Cohort query retorna dados via RPC `admin_dm_upsell_funnel(since)` (migration 181 — SECURITY DEFINER, service_role only). Retorna `(event_name, event_count, unique_users, funnel_order)` sorted pela ordem canônica. 30-day rollup (não per-day cohort); suficiente para MVP.
 
 ### Integração
 - [ ] `rtk tsc --noEmit` limpo

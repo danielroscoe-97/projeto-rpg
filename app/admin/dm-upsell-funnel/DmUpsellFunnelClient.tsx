@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { DM_UPSELL_LABELS } from "@/lib/upsell/dm-upsell-labels";
 
 interface DmUpsellFunnelEntry {
   event_name: string;
@@ -18,22 +19,6 @@ interface DmUpsellFunnelEntry {
   unique_users: number;
   funnel_order: number;
 }
-
-const DM_UPSELL_LABELS: Record<string, string> = {
-  "dm_upsell:cta_shown": "CTA Shown",
-  "dm_upsell:cta_clicked": "CTA Clicked",
-  "dm_upsell:cta_dismissed": "CTA Dismissed",
-  "dm_upsell:wizard_started": "Wizard Started",
-  "dm_upsell:wizard_failed": "Wizard Failed",
-  "dm_upsell:role_upgraded_to_dm": "Role → DM",
-  "dm_upsell:first_campaign_created": "First Campaign Created",
-  "dm_upsell:tour_start_clicked": "Tour: Start",
-  "dm_upsell:tour_start_skipped": "Tour: Skipped at Start",
-  "dm_upsell:tour_completed": "Tour Completed",
-  "dm_upsell:tour_skipped": "Tour Skipped Mid-way",
-  "dm_upsell:past_companions_loaded": "Past Companions Loaded",
-  "dm_upsell:past_companion_link_copied": "Past-companion Link Copied",
-};
 
 export function DmUpsellFunnelClient() {
   const [rows, setRows] = useState<DmUpsellFunnelEntry[] | null>(null);
@@ -113,7 +98,8 @@ export function DmUpsellFunnelClient() {
           </span>
           <div className="flex-1 h-6 bg-white/5 rounded overflow-hidden">
             <div
-              className="h-full bg-amber-400/40 rounded"
+              data-testid={`admin.dm-upsell-funnel.row.${r.event_name}.bar`}
+              className="h-full bg-amber-400/30 rounded"
               style={{ width: `${(r.unique_users / maxUniq) * 100}%` }}
             />
           </div>
