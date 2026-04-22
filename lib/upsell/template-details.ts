@@ -75,7 +75,12 @@ export async function getTemplateDetails(
     .from("campaign_template_encounters")
     .select("id, name, description, sort_order, narrative_prompt, monsters_payload")
     .eq("template_id", templateId)
-    .order("sort_order", { ascending: true });
+    // Adversarial-review fix: explicit tiebreaker on id. Two encounters
+    // sharing the same sort_order would otherwise render in
+    // non-deterministic order (Postgres returns rows in undefined order
+    // absent a stable secondary key). UUID comparison is deterministic.
+    .order("sort_order", { ascending: true })
+    .order("id", { ascending: true });
   if (eErr) return null;
 
   const encounters: TemplateEncounterDetail[] = (encounterRows ?? []).map(
@@ -84,20 +89,54 @@ export async function getTemplateDetails(
         slug?: string;
         quantity?: number;
       }>;
-      const monsters: TemplateEncounterMonster[] = payload
-        .filter(
-          (m): m is { slug: string; quantity?: number } =>
-            typeof m?.slug === "string" && m.slug.length > 0,
-        )
-        .map((m) => {
+
+      // Adversarial-review fix: merge duplicate slugs. A template where
+      // monsters_payload has two entries for the same slug (e.g. split
+      // rows during authoring: [{slug:"goblin", qty:2}, {slug:"goblin",
+      // qty:1}]) would otherwise render as two pills "Goblin ×2" +
+      // "Goblin ×1" — confusing. Sum quantities into a single entry.
+      const merged = new Map<string, { slug: string; quantity: number }>();
+      for (const m of payload) {
+        if (typeof m?.slug !== "string" || m.slug.length === 0) continue;
+        const qty =
+          Number.isInteger(m.quantity) && (m.quantity as number) > 0
+            ? (m.quantity as number)
+            : 1;
+        const existing = merged.get(m.slug);
+        if (existing) {
+          existing.quantity += qty;
+        } else {
+          merged.set(m.slug, { slug: m.slug, quantity: qty });
+        }
+      }
+
+      // Adversarial-review fix: wrap SRD lookup in try/catch. If the SRD
+      // data bundle failed to deploy (missing file) or `srd-data-server`
+      // throws on init, the uncaught promise rejection would crash the
+      // whole server action and produce an unhelpful 500 for the modal.
+      // Treat any lookup failure as "unresolved for this slug" — the
+      // authoritative check is still the clone RPC's F9 accumulator.
+      const monsters: TemplateEncounterMonster[] = [];
+      for (const m of merged.values()) {
+        let displayName = m.slug;
+        let unresolved = true;
+        try {
           const srd = getMonsterBySlug(m.slug);
-          return {
-            slug: m.slug,
-            quantity: Number.isInteger(m.quantity) && m.quantity! > 0 ? m.quantity! : 1,
-            displayName: srd?.name ?? m.slug,
-            unresolved: !srd,
-          };
+          if (srd) {
+            displayName = srd.name;
+            unresolved = false;
+          }
+        } catch {
+          /* keep fallback: slug + unresolved=true */
+        }
+        monsters.push({
+          slug: m.slug,
+          quantity: m.quantity,
+          displayName,
+          unresolved,
         });
+      }
+
       return {
         id: row.id as string,
         name: row.name as string,

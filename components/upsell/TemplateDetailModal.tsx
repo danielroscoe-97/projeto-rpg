@@ -177,6 +177,16 @@ export function TemplateDetailModal({
                               {enc.monsters.map((m) => (
                                 <li
                                   key={m.slug}
+                                  // Adversarial-review fix: screen readers
+                                  // need to know this monster slug didn't
+                                  // resolve to a known SRD entry. Visual
+                                  // dashed-amber border was insufficient
+                                  // for non-sighted users.
+                                  aria-label={
+                                    m.unresolved
+                                      ? `${m.displayName}${m.quantity > 1 ? ` ×${m.quantity}` : ""} — unresolved, verify at clone time`
+                                      : undefined
+                                  }
                                   className={`rounded-full border px-2 py-0.5 text-xs ${
                                     m.unresolved
                                       ? "border-dashed border-amber-500/40 text-amber-300"

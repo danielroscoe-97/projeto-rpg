@@ -293,4 +293,52 @@ describe("<TemplateGallery />", () => {
     // Stays disabled because state.status is 'error', not 'ok'.
     expect(useBtn).toBeDisabled();
   });
+
+  it("stale closure: re-lookup by id prevents dispatching a removed template (adversarial)", async () => {
+    // Start with two templates; open preview on T1; parent re-renders
+    // with only T2 (T1 removed); click Use. Old code would have
+    // dispatched the stale T1 closure; new code re-looks-up by id and
+    // no-ops because T1 is gone.
+    getTemplateDetailsMock.mockResolvedValue({
+      id: T1.id,
+      name: T1.name,
+      description: null,
+      gameSystem: "5e",
+      targetPartyLevel: T1.target_party_level,
+      encounters: [],
+    });
+    const onUseSelected = jest.fn();
+    const { rerender } = render(
+      <TemplateGallery
+        templates={[T1, T2]}
+        selectedTemplateId={null}
+        onSelect={jest.fn()}
+        onUseSelected={onUseSelected}
+      />,
+    );
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByTestId(`upsell.template-card-${T1.id}.preview`),
+    );
+    const useBtn = await screen.findByTestId(
+      "upsell.template-detail-modal.use",
+    );
+    await waitFor(() => expect(useBtn).not.toBeDisabled());
+    // Parent re-render removes T1 from the gallery (e.g. admin unpublished
+    // the template). Modal stays open because React keeps its tree.
+    rerender(
+      <TemplateGallery
+        templates={[T2]}
+        selectedTemplateId={null}
+        onSelect={jest.fn()}
+        onUseSelected={onUseSelected}
+      />,
+    );
+    // After rerender the modal auto-closes because `previewing` is null
+    // (T1 no longer in templates). No onUseSelected call.
+    expect(
+      screen.queryByTestId("upsell.template-detail-modal"),
+    ).not.toBeInTheDocument();
+    expect(onUseSelected).not.toHaveBeenCalled();
+  });
 });

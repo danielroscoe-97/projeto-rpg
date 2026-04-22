@@ -64,11 +64,20 @@ export function TemplateGallery({
       : null;
 
   const handleConfirmFromModal = useCallback(() => {
-    if (previewing) {
-      onUseSelected(previewing);
+    // Adversarial-review fix: re-lookup by id instead of closing over
+    // `previewing`. If the parent re-rendered with a different `templates`
+    // array between modal open and this callback firing, `previewing` in
+    // the closure would point at a stale object. Re-lookup ensures we
+    // dispatch the CURRENT template record (or no-op if it's gone).
+    if (previewingId === null) {
+      return;
+    }
+    const current = templates.find((tmpl) => tmpl.id === previewingId);
+    if (current) {
+      onUseSelected(current);
     }
     setPreviewingId(null);
-  }, [previewing, onUseSelected]);
+  }, [previewingId, templates, onUseSelected]);
 
   return (
     <>
