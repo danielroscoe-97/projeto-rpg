@@ -993,9 +993,9 @@ export function CampaignNotes({ campaignId, isOwner = true }: CampaignNotesProps
         className="bg-surface-tertiary border-white/[0.15] text-foreground placeholder:text-muted-foreground/40 min-h-[44px] rounded-lg"
       />
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         {/* Sidebar: Folder tree */}
-        <div className="w-48 shrink-0 space-y-2">
+        <div className="w-full sm:w-48 sm:shrink-0 space-y-2">
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
             {t("folders")}
           </h3>
