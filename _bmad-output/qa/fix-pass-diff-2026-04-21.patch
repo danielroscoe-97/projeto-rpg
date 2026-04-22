@@ -1,0 +1,144 @@
+diff --git a/app/app/combat/new/page.tsx b/app/app/combat/new/page.tsx
+index 02e10cb8..f06207ef 100644
+--- a/app/app/combat/new/page.tsx
++++ b/app/app/combat/new/page.tsx
+@@ -21,7 +21,16 @@ const EMPTY_COMBATANTS: Combatant[] = [];
+ const DEFAULT_DRAFT_RULESET: RulesetVersion = "2014";
+ 
+ /** sessionStorage key for draft-session reuse across page refreshes within
+- *  the same tab. Keyed by "campaign:{id}" or "quick" to avoid cross-context bleed. */
++ *  the same tab. Keyed by "campaign:{id}" or "quick" to avoid cross-context bleed.
++ *
++ *  SCOPE NOTE (Epic 12 Wave 1 — QA 2026-04-21 W1-T1):
++ *  This persists only the `sessions` row ID. Combatants added during setup
++ *  live in Zustand state and are NOT written to the DB until "Start Combat"
++ *  creates the `encounters` row. Consequence: F5 during setup preserves the
++ *  draft session ID but re-hydrates with an empty combatant list.
++ *  Real combatant persistence during setup would require eagerly creating
++ *  the encounter row + POSTing each add to the DB + hydration on mount —
++ *  tracked as follow-up work, not included in Wave 1 scope. */
+ const DRAFT_STORAGE_PREFIX = "pocketdm.draft-session:";
+ 
+ interface CampaignOption {
+@@ -78,6 +87,19 @@ function NewEncounterPageInner() {
+       const supabase = createClient();
+       const campaignParam = searchParams.get("campaign");
+ 
++      // Epic 12 Wave 2 deep-link — `?campaign=<uuid>` (without preset) must skip
++      // the picker and hydrate setup with that campaign's players directly.
++      // Regression reported in QA 2026-04-21 (W2-T2): clicking "Combate" on a
++      // dashboard card carried the param but still opened the picker.
++      if (campaignParam && !presetParam) {
++        try {
++          await handlePickCampaign(campaignParam);
++        } catch {
++          // Fallback to picker if campaign fetch fails — keeps the flow usable.
++        }
++        return;
++      }
++
+       // If preset param is provided, fetch preset + campaign players directly (skip picker)
+       if (presetParam && campaignParam) {
+         try {
+diff --git a/components/campaign/BriefingToday.tsx b/components/campaign/BriefingToday.tsx
+index a1c1c133..c8a3441f 100644
+--- a/components/campaign/BriefingToday.tsx
++++ b/components/campaign/BriefingToday.tsx
+@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
+ import { NextSessionCard } from "@/components/campaign/NextSessionCard";
+ import { CombatLaunchSheet } from "@/components/campaign/CombatLaunchSheet";
+ import { SessionPlanner } from "@/components/campaign/SessionPlanner";
++import {
++  StaleSessionConfirm,
++  staleIdleMinutes,
++} from "@/components/campaign/StaleSessionConfirm";
+ import { startSession } from "@/lib/supabase/campaign-sessions";
+ import { useSessionBootstrap } from "@/lib/hooks/use-session-bootstrap";
+ import type { ActiveEncounterInfo } from "@/lib/types/campaign-briefing";
+@@ -23,6 +27,7 @@ interface BriefingTodayProps {
+   activeSessionName: string | null;
+   activeEncounter: ActiveEncounterInfo | null;
+   nextPlannedSession: PlannedSession | null;
++  lastSessionDate: string | null;
+ }
+ 
+ /**
+@@ -43,6 +48,7 @@ export function BriefingToday({
+   activeSessionName,
+   activeEncounter,
+   nextPlannedSession,
++  lastSessionDate,
+ }: BriefingTodayProps) {
+   const t = useTranslations("briefing");
+   const tCampaign = useTranslations("campaign");
+@@ -50,8 +56,21 @@ export function BriefingToday({
+   const router = useRouter();
+   const [combatOpen, setCombatOpen] = useState(false);
+   const [plannerOpen, setPlannerOpen] = useState(false);
++  // Story 12.9 AC5 — stale-combat guard. Mirrors the guard in CampaignHero
++  // so DMs past onboarding (the common case) also get confirmation before
++  // re-entering a >4h-idle session.
++  const [staleConfirmOpen, setStaleConfirmOpen] = useState(false);
++  const idleMinutes = staleIdleMinutes(lastSessionDate);
+   const { ensureSession, ensuring } = useSessionBootstrap(campaignId);
+ 
++  const openCombatSheet = () => {
++    if (activeSessionId && idleMinutes != null) {
++      setStaleConfirmOpen(true);
++    } else {
++      setCombatOpen(true);
++    }
++  };
++
+   const handleStartTodaySession = async () => {
+     // Use the server-authoritative `created` flag. The previous
+     // implementation read `sessionNoteId !== null` as a proxy, which
+@@ -92,7 +111,7 @@ export function BriefingToday({
+       {state === "active_combat" && (
+         <button
+           type="button"
+-          onClick={() => setCombatOpen(true)}
++          onClick={openCombatSheet}
+           className="w-full text-left flex items-center gap-4 rounded-xl border border-amber-500/60 bg-amber-500/10 p-4 sm:p-5 transition-colors hover:bg-amber-500/15 focus-visible:bg-amber-500/15 min-h-[44px]"
+           style={{ boxShadow: "var(--halo-active, 0 0 24px rgba(200, 160, 80, 0.35))" }}
+           aria-label={t("today_combat_active_aria", {
+@@ -127,7 +146,7 @@ export function BriefingToday({
+         <div className="space-y-2">
+           <button
+             type="button"
+-            onClick={() => setCombatOpen(true)}
++            onClick={openCombatSheet}
+             className="w-full text-left flex items-center gap-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 transition-colors hover:bg-amber-500/10 focus-visible:bg-amber-500/10 min-h-[44px]"
+             style={{ boxShadow: "var(--halo-available, 0 0 8px rgba(200, 160, 80, 0.1))" }}
+           >
+@@ -250,6 +269,18 @@ export function BriefingToday({
+         open={combatOpen}
+         onOpenChange={setCombatOpen}
+       />
++      {/* Story 12.9 AC5 — stale-combat guard. Only mounts when the DM has
++          actually tried to enter a >4h-idle session. */}
++      <StaleSessionConfirm
++        open={staleConfirmOpen}
++        encounterName={activeSessionName}
++        idleMinutes={idleMinutes ?? 0}
++        onCancel={() => setStaleConfirmOpen(false)}
++        onConfirm={() => {
++          setStaleConfirmOpen(false);
++          setCombatOpen(true);
++        }}
++      />
+       <SessionPlanner
+         campaignId={campaignId}
+         userId={userId}
+diff --git a/components/campaign/CampaignBriefing.tsx b/components/campaign/CampaignBriefing.tsx
+index f4d182ca..ae50ff1b 100644
+--- a/components/campaign/CampaignBriefing.tsx
++++ b/components/campaign/CampaignBriefing.tsx
+@@ -127,6 +127,7 @@ export function CampaignBriefing(props: CampaignBriefingProps) {
+         activeSessionName={props.activeSessionName}
+         activeEncounter={props.activeEncounter}
+         nextPlannedSession={props.nextPlannedSession}
++        lastSessionDate={props.lastSessionDate}
+       />
+ 
+       <BriefingActivityTimeline items={props.recentActivity} />
