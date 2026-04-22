@@ -49,7 +49,7 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler()
   const avgPlayers = avgPlayersResult.data as { dm_count: number; avg_players: number } | null;
 
   // Phase 2: Event-based analytics (funnel, feature usage, combat stats)
-  const [funnelResult, topEventsResult, guestFunnelResult, combatStatsResult] = await Promise.all([
+  const [funnelResult, topEventsResult, guestFunnelResult, combatStatsResult, dmUpsellFunnelResult] = await Promise.all([
     // Funnel: distinct users per event (last 30d)
     admin.rpc("admin_event_funnel", { since: thirtyDaysAgo }),
     // Top 15 events by count (last 30d)
@@ -58,12 +58,16 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler()
     admin.rpc("admin_guest_funnel", { since: thirtyDaysAgo }),
     // Combat stats: avg rounds, avg duration (last 30d)
     admin.rpc("admin_combat_stats", { since: thirtyDaysAgo }).single(),
+    // Epic 04 Sprint 2 Story 04-I — DM upsell funnel (dm_upsell:* events)
+    // sorted by canonical stage order. See migration 181.
+    admin.rpc("admin_dm_upsell_funnel", { since: thirtyDaysAgo }),
   ]);
 
   // Log Phase 2 RPC errors server-side (non-blocking)
   for (const [name, result] of [
     ["funnel", funnelResult], ["top_events", topEventsResult],
     ["guest_funnel", guestFunnelResult], ["combat_stats", combatStatsResult],
+    ["dm_upsell_funnel", dmUpsellFunnelResult],
   ] as const) {
     if ((result as { error?: unknown }).error) {
       console.warn(`[admin/metrics] RPC ${name} failed:`, (result as { error: unknown }).error);
@@ -83,6 +87,8 @@ const handler: Parameters<typeof withRateLimit>[0] = async function getHandler()
       top_events: topEventsResult.data ?? [],
       guest_funnel: guestFunnelResult.data ?? [],
       combat_stats: combatStatsResult.data ?? null,
+      // Epic 04 Story 04-I — DM upsell funnel (ordered by migration 181's stage)
+      dm_upsell_funnel: dmUpsellFunnelResult.data ?? [],
     },
   });
 };

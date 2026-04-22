@@ -5,6 +5,14 @@ import { useEffect, useState } from "react";
 interface FunnelEntry { event_name: string; unique_users: number }
 interface EventCount { event_name: string; event_count: number }
 interface CombatStats { total_encounters: number; avg_rounds: number; avg_duration_seconds: number; total_players_joined: number }
+/** Epic 04 Story 04-I — one row per `dm_upsell:*` event, sorted by the
+ *  canonical funnel stage order declared in migration 181. */
+interface DmUpsellFunnelEntry {
+  event_name: string;
+  event_count: number;
+  unique_users: number;
+  funnel_order: number;
+}
 
 interface Metrics {
   total_users: number;
@@ -17,6 +25,7 @@ interface Metrics {
   top_events: EventCount[];
   guest_funnel: EventCount[];
   combat_stats: CombatStats | null;
+  dm_upsell_funnel: DmUpsellFunnelEntry[];
 }
 
 function MetricCard({ label, value, suffix }: { label: string; value: number | string; suffix?: string }) {
@@ -61,6 +70,26 @@ const GUEST_LABELS: Record<string, string> = {
   "guest:expired_cta_signup": "Expired → Signup",
 };
 
+/** Epic 04 Story 04-I — friendly labels for the dm_upsell funnel bars.
+ *  Keys match the event_names declared in migration 181. Unknown events
+ *  (new emits shipped after this list is written) fall back to the raw
+ *  event_name so nothing disappears silently. */
+const DM_UPSELL_LABELS: Record<string, string> = {
+  "dm_upsell:cta_shown": "CTA Shown",
+  "dm_upsell:cta_clicked": "CTA Clicked",
+  "dm_upsell:cta_dismissed": "CTA Dismissed",
+  "dm_upsell:wizard_started": "Wizard Started",
+  "dm_upsell:wizard_failed": "Wizard Failed",
+  "dm_upsell:role_upgraded_to_dm": "Role → DM",
+  "dm_upsell:first_campaign_created": "First Campaign Created",
+  "dm_upsell:tour_start_clicked": "Tour: Start",
+  "dm_upsell:tour_start_skipped": "Tour: Skipped at Start",
+  "dm_upsell:tour_completed": "Tour Completed",
+  "dm_upsell:tour_skipped": "Tour Skipped Mid-way",
+  "dm_upsell:past_companions_loaded": "Past Companions Loaded",
+  "dm_upsell:past_companion_link_copied": "Past-companion Link Copied",
+};
+
 export function MetricsDashboard() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +115,8 @@ export function MetricsDashboard() {
   const maxFunnel = Math.max(...(metrics.funnel ?? []).map((f) => f.unique_users), 1);
   const maxTopEvent = Math.max(...(metrics.top_events ?? []).map((e) => e.event_count), 1);
   const maxGuest = Math.max(...(metrics.guest_funnel ?? []).map((f) => f.event_count), 1);
+  const dmUpsellRows = metrics.dm_upsell_funnel ?? [];
+  const maxDmUpsell = Math.max(...dmUpsellRows.map((f) => f.unique_users), 1);
 
   return (
     <div data-testid="metrics-dashboard">
@@ -154,6 +185,51 @@ export function MetricsDashboard() {
                 <span className="text-xs font-mono text-foreground w-10 text-right">{f.event_count}</span>
               </div>
             ))}
+          </div>
+        </>
+      )}
+
+      {/* Epic 04 Story 04-I — DM upsell funnel. F7 choice (b): SECTION
+          inside MetricsDashboard, not a tab. Same visual pattern as the
+          existing funnels (horizontal bars, canonical order from RPC). */}
+      {dmUpsellRows.length > 0 && (
+        <>
+          <SectionTitle>DM Upsell Funnel (30d)</SectionTitle>
+          <div
+            className="bg-card border border-border rounded-md p-4 space-y-2"
+            data-testid="metrics.dm-upsell-funnel"
+          >
+            {dmUpsellRows.map((f) => (
+              <div
+                key={f.event_name}
+                className="flex items-center gap-3"
+                data-testid={`metrics.dm-upsell-row.${f.event_name}`}
+              >
+                <span
+                  className="text-xs text-muted-foreground w-44 shrink-0 truncate"
+                  title={f.event_name}
+                >
+                  {DM_UPSELL_LABELS[f.event_name] ?? f.event_name}
+                </span>
+                <div className="flex-1 h-5 bg-white/5 rounded overflow-hidden">
+                  <div
+                    className="h-full bg-amber-400/30 rounded"
+                    style={{
+                      width: `${(f.unique_users / maxDmUpsell) * 100}%`,
+                    }}
+                  />
+                </div>
+                <span className="text-xs font-mono text-foreground w-10 text-right">
+                  {f.unique_users}
+                </span>
+                <span className="text-xs font-mono text-muted-foreground w-14 text-right">
+                  {f.event_count.toLocaleString()}
+                </span>
+              </div>
+            ))}
+            <p className="pt-2 text-[10px] text-muted-foreground">
+              Bars = unique users. Right column = raw event count.
+            </p>
           </div>
         </>
       )}
