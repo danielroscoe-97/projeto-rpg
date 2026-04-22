@@ -16,9 +16,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UserPlus, Clock, AlertCircle, Copy, RefreshCw } from "lucide-react";
+// Epic 04 Story 04-H — past-companions section rendered under the link
+// block. Self-gates (hides when 0 companions after first load); the host
+// dialog is unaware of companion state.
+import { InvitePastCompanions } from "@/components/upsell/InvitePastCompanions";
 
 interface InvitePlayerDialogProps {
   campaignId: string;
+  campaignName?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -32,7 +37,7 @@ interface InvitePlayerDialogProps {
  * Link flow). The Join-Link tab is now the only path — players enter the
  * campaign via the `/join-campaign/[code]` route backed by `session_tokens`.
  */
-export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenChange }: InvitePlayerDialogProps) {
+export function InvitePlayerDialog({ campaignId, campaignName, open: controlledOpen, onOpenChange }: InvitePlayerDialogProps) {
   const t = useTranslations("campaign");
   const tc = useTranslations("common");
   const [_open, _setOpen] = useState(false);
@@ -216,6 +221,17 @@ export function InvitePlayerDialog({ campaignId, open: controlledOpen, onOpenCha
             </>
           ) : (
             <p className="text-sm text-muted-foreground text-center py-4">{t("invite_generating")}</p>
+          )}
+
+          {/* Epic 04 Story 04-H — past-companions viral share. Mounted only
+              when we have a join link + active campaign; self-hides when
+              the DM has no past companions. */}
+          {linkCode && linkActive && (
+            <InvitePastCompanions
+              campaignId={campaignId}
+              campaignName={campaignName ?? ""}
+              inviteLink={buildLink(linkCode)}
+            />
           )}
         </div>
       </DialogContent>
