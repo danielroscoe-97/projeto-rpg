@@ -111,6 +111,10 @@ interface PlayerCombatant {
   };
   /** Whether this combatant has used their reaction this round */
   reaction_used?: boolean;
+  /** Total legendary actions per round (null = no LA) — party sees LA spend, decision 2026-04-23 */
+  legendary_actions_total?: number | null;
+  /** Legendary actions consumed so far this round */
+  legendary_actions_used?: number;
   /** Linked session_token ID — for ID-based reconnection (B3). */
   session_token_id?: string | null;
 }
@@ -1380,6 +1384,29 @@ export function PlayerInitiativeBoard({
                       turnCount={isPlayer && !isOwnChar ? combatant.condition_durations?.[condition] : undefined}
                     />
                   ))}
+                </div>
+              )}
+
+              {/* Legendary actions dots — read-only for all players (decision 2026-04-23: whole party sees LA spent) */}
+              {combatant.legendary_actions_total != null && combatant.legendary_actions_total > 0 && !combatant.is_defeated && (
+                <div
+                  className="flex items-center gap-1.5 mt-1.5"
+                  aria-label={`${tc("legendary_actions_inline")}: ${combatant.legendary_actions_used ?? 0}/${combatant.legendary_actions_total}`}
+                >
+                  <span className="text-xs text-muted-foreground font-medium">{tc("legendary_actions_inline")}</span>
+                  <div className="flex gap-1">
+                    {Array.from({ length: combatant.legendary_actions_total }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`w-4 h-4 lg:w-3.5 lg:h-3.5 rounded-full border inline-block ${
+                          i < (combatant.legendary_actions_used ?? 0)
+                            ? "bg-gold border-gold/60"
+                            : "bg-transparent border-zinc-500"
+                        }`}
+                        aria-label={i < (combatant.legendary_actions_used ?? 0) ? "Used" : "Available"}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
 

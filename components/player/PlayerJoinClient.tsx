@@ -150,6 +150,10 @@ interface PlayerCombatant {
   condition_durations?: Record<string, number>;
   /** Whether this combatant has used their reaction this round */
   reaction_used?: boolean;
+  /** Total legendary actions per round (null = no LA) — decision 2026-04-23: party sees LA spend */
+  legendary_actions_total?: number | null;
+  /** Legendary actions consumed so far this round */
+  legendary_actions_used?: number;
   /** Linked session_token ID — for ID-based reconnection. */
   session_token_id?: string | null;
 }
@@ -217,6 +221,10 @@ export function PlayerJoinClient({
   tConversionRef.current = tConversion;
   const [combatants, setCombatants] = useState(initialCombatants);
   const [round, setRound] = useState(roundNumber);
+  // Ref mirror of round — lets handlers compare prev/new without the
+  // setState-inside-setState side effect (round-bump LA reset in turn_advance).
+  const roundRef = useRef(roundNumber);
+  useEffect(() => { roundRef.current = round; }, [round]);
   const [turnIndex, setTurnIndex] = useState(currentTurnIndex);
   const [active, setActive] = useState(isActive);
   const [currentEncounterId, setCurrentEncounterId] = useState(encounterId);
@@ -1390,7 +1398,21 @@ export function PlayerJoinClient({
               } catch { /* toast is cosmetic */ }
             }
           }
-          if (payload.round_number !== undefined) setRound(payload.round_number);
+          if (payload.round_number !== undefined) {
+            const newRound = payload.round_number;
+            if (newRound > roundRef.current) {
+              // Round bumped — reset legendary actions for all combatants with LA.
+              // Mirrors DM's advanceTurn logic (combat-store.ts:207-209) so the
+              // player doesn't have to wait for a full state_sync to see LA reset.
+              // Compared against roundRef (not round state) to keep setState pure.
+              updateCombatants((combs) =>
+                combs.map((c) =>
+                  c.legendary_actions_total != null ? { ...c, legendary_actions_used: 0 } : c
+                )
+              );
+            }
+            setRound(newRound);
+          }
           setNextCombatantId(payload.next_combatant_id ?? null);
         })
         .on("broadcast", { event: "combat:hp_update" }, ({ payload }: { payload: { combatant_id: string; current_hp?: number; temp_hp?: number; max_hp?: number; hp_status?: string; hp_percentage?: number; death_saves?: { successes: number; failures: number }; _seq?: number } }) => {
@@ -1720,8 +1742,12 @@ export function PlayerJoinClient({
               prev.map((c) => {
                 if (c.id !== payload.combatant_id) return c;
                 const updated = { ...c };
-                // Only name changes come through — AC/HP/spell_save_dc are stripped by broadcast
+                // Name changes (AC/HP/spell_save_dc are stripped by broadcast sanitizer).
                 if (payload.name !== undefined) updated.name = payload.name;
+                // Legendary action counts flow through so the whole party sees spend
+                // (decision 2026-04-23). Recharge state stays DM-only by design.
+                if (payload.legendary_actions_used !== undefined) updated.legendary_actions_used = payload.legendary_actions_used;
+                if (payload.legendary_actions_total !== undefined) updated.legendary_actions_total = payload.legendary_actions_total;
                 return updated;
               })
             );

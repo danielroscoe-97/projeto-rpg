@@ -96,7 +96,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
     ? supabase
         .from("combatants")
         .select(
-          "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version"
+          "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, legendary_actions_total, legendary_actions_used"
         )
         .eq("encounter_id", encounter.id)
         .order("initiative_order", { ascending: true })
@@ -132,6 +132,9 @@ export default async function JoinPage({ params }: JoinPageProps) {
     ruleset_version: string | null;
     hp_status?: string;
     reaction_used: boolean;
+    /** Party sees legendary action spend — decision 2026-04-23 */
+    legendary_actions_total?: number | null;
+    legendary_actions_used?: number;
   }> = [];
 
   if (combatantRows) {

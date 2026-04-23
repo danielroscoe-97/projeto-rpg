@@ -219,10 +219,11 @@ export function resetDmChannel(): void {
 }
 
 /** Sanitize a full combatant for player broadcast.
- *  Strips DM notes, monster stats, LA counts, and applies display_name anti-metagaming. */
+ *  Strips DM notes and applies display_name anti-metagaming.
+ *  Legendary action counts flow through (decision 2026-04-23 — party visibility). */
 function sanitizeCombatant(c: Combatant): SanitizedCombatant {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit DM-only fields + LA counts + internal IDs
-  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, session_token_id: _stid, ...base } = c;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit DM-only fields + internal IDs
+  const { dm_notes, display_name, session_token_id: _stid, ...base } = c;
 
   if (c.is_player) {
     // Players: keep all stats, just strip dm_notes and display_name
@@ -422,6 +423,10 @@ function sanitizePayload(event: RealtimeEvent): SanitizedEvent | null {
       type: event.type,
       combatant_id: event.combatant_id,
       name: visibleName,
+      // Legendary action counts pass through so the whole party sees them live
+      // (decision 2026-04-23). Recharge state stays DM-only by design.
+      ...(event.legendary_actions_used !== undefined ? { legendary_actions_used: event.legendary_actions_used } : {}),
+      ...(event.legendary_actions_total !== undefined ? { legendary_actions_total: event.legendary_actions_total } : {}),
     };
     return result;
   }

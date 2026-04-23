@@ -147,6 +147,10 @@ export interface RealtimeStatsUpdate {
   current_hp?: number;
   ac?: number;
   spell_save_dc?: number | null;
+  /** Broadcast so the whole party can see how many legendary actions were spent (decision 2026-04-23). */
+  legendary_actions_used?: number;
+  /** Broadcast with the total so players can render "X / Y" even before a state_sync. */
+  legendary_actions_total?: number | null;
 }
 
 export interface RealtimePlayerNotesUpdate {
@@ -417,7 +421,10 @@ export type RealtimeEvent =
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
-/** Combatant data safe for player broadcast — no DM-only fields, no monster stats, no LA counts. */
+/** Combatant data safe for player broadcast — no DM-only fields, no monster stats.
+ *  Legendary action counts ARE included (decision 2026-04-23): the whole party
+ *  should see how many legendary actions a monster has left. Recharge state stays
+ *  DM-only (the Mestre rolls that behind the screen, by design). */
 export type SanitizedCombatant = Omit<
   Combatant,
   | "dm_notes"
@@ -427,8 +434,6 @@ export type SanitizedCombatant = Omit<
   | "temp_hp"
   | "ac"
   | "spell_save_dc"
-  | "legendary_actions_total"
-  | "legendary_actions_used"
 > & {
   /** Monsters get hp_status instead of exact HP values */
   hp_status?: HpStatus;
@@ -501,11 +506,14 @@ export interface SanitizedMonsterHpUpdate {
   hp_percentage: number;
 }
 
-/** Player-safe stats update — only name changes reach players */
+/** Player-safe stats update — name changes reach players, plus legendary action counts
+ *  (decision 2026-04-23: whole party sees LA spent). Recharge state stays DM-only. */
 export interface SanitizedStatsUpdate {
   type: "combat:stats_update";
   combatant_id: string;
   name?: string;
+  legendary_actions_used?: number;
+  legendary_actions_total?: number | null;
 }
 
 /** Union of all sanitized event types that can be broadcast to players */

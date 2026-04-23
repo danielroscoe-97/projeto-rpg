@@ -1018,22 +1018,94 @@ export function CombatSessionClient({
         toast(t("undo_empty"));
         return;
       }
+      // Broadcast the restored state so players stay in sync.
+      // Without this, the DM's Ctrl+Z is invisible to players until the next
+      // unrelated broadcast or polling refresh (10-30s of silent desync).
+      const sid = getSessionId();
+      const post = useCombatStore.getState();
       switch (entry.type) {
-        case "hp":
+        case "hp": {
           toast(t("undo_hp"));
+          if (sid) {
+            const c = post.combatants.find((x) => x.id === entry.combatantId);
+            if (c) broadcastEvent(sid, {
+              type: "combat:hp_update",
+              combatant_id: c.id,
+              current_hp: c.current_hp,
+              temp_hp: c.temp_hp,
+              max_hp: c.max_hp,
+              is_player: c.is_player,
+              death_saves: c.death_saves,
+            });
+          }
           break;
-        case "condition":
+        }
+        case "condition": {
           toast(entry.wasAdded ? t("undo_condition_add", { condition: entry.condition }) : t("undo_condition_remove", { condition: entry.condition }));
+          if (sid) {
+            const c = post.combatants.find((x) => x.id === entry.combatantId);
+            if (c) broadcastEvent(sid, {
+              type: "combat:condition_change",
+              combatant_id: c.id,
+              conditions: c.conditions,
+              condition_durations: c.condition_durations,
+            });
+          }
           break;
-        case "defeated":
+        }
+        case "defeated": {
           toast(t("undo_defeated"));
+          if (sid) {
+            const c = post.combatants.find((x) => x.id === entry.combatantId);
+            if (c) {
+              broadcastEvent(sid, {
+                type: "combat:defeated_change",
+                combatant_id: c.id,
+                is_defeated: c.is_defeated ?? false,
+              });
+              broadcastEvent(sid, {
+                type: "combat:hp_update",
+                combatant_id: c.id,
+                current_hp: c.current_hp,
+                temp_hp: c.temp_hp,
+                max_hp: c.max_hp,
+                is_player: c.is_player,
+                death_saves: c.death_saves,
+              });
+            }
+          }
           break;
-        case "turn":
+        }
+        case "turn": {
           toast(t("undo_turn"));
+          if (sid) {
+            // Turn undo can rewind round + combatants + ordering — full state_sync
+            // is the simplest correct way to express "we went back in time".
+            broadcastEvent(sid, {
+              type: "session:state_sync",
+              combatants: post.combatants,
+              current_turn_index: post.current_turn_index,
+              round_number: post.round_number,
+            });
+          }
           break;
-        case "hidden":
+        }
+        case "hidden": {
           toast(t("undo_hidden"));
+          if (sid) {
+            const c = post.combatants.find((x) => x.id === entry.combatantId);
+            if (c) {
+              // Mirror toggleHidden broadcast semantics: hidden→remove, visible→add.
+              // broadcastEvent's sanitizer handles filtering hidden combatants out.
+              if (c.is_hidden) {
+                broadcastEvent(sid, { type: "combat:combatant_remove", combatant_id: c.id });
+              } else {
+                broadcastEvent(sid, { type: "combat:combatant_add", combatant: c });
+              }
+            }
+          }
           break;
+        }
       }
     },
     onReorder: (fromIndex: number, toIndex: number) => {
@@ -1610,7 +1682,7 @@ export function CombatSessionClient({
           type="button"
           onClick={handleAdvanceTurn}
           disabled={turnPending}
-          className="px-3 py-1.5 bg-gold text-foreground font-medium rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] sm:min-h-[32px] disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap inline-flex items-center gap-2"
+          className="px-3 py-1.5 bg-gold text-surface-primary font-semibold rounded-md transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] text-sm min-h-[44px] sm:min-h-[32px] disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap inline-flex items-center gap-2"
           aria-label="Advance to next turn"
           data-testid="next-turn-btn"
         >
@@ -1815,7 +1887,19 @@ export function CombatSessionClient({
         onApplyToMultiple={handleApplyToMultiple}
         onToggleHidden={handleToggleHidden}
         onAdvanceTurn={handleAdvanceTurn}
-        onSetLegendaryActionsUsed={(id, count) => useCombatStore.getState().setLegendaryActionsUsed(id, count)}
+        onSetLegendaryActionsUsed={(id, count) => {
+          useCombatStore.getState().setLegendaryActionsUsed(id, count);
+          const sid = getSessionId();
+          if (!sid) return;
+          const c = useCombatStore.getState().combatants.find((x) => x.id === id);
+          if (c) broadcastEvent(sid, {
+            type: "combat:stats_update",
+            combatant_id: id,
+            is_player: c.is_player,
+            legendary_actions_used: c.legendary_actions_used,
+            legendary_actions_total: c.legendary_actions_total,
+          });
+        }}
         onToggleReaction={(id) => {
           useCombatStore.getState().toggleReaction(id);
           const sid = getSessionId();
@@ -1955,7 +2039,7 @@ export function CombatSessionClient({
             type="button"
             onClick={handleAdvanceTurn}
             disabled={turnPending}
-            className="flex items-center gap-2 px-4 py-3 bg-gold text-foreground font-semibold rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all duration-200 min-h-[48px] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-3 bg-gold text-surface-primary font-semibold rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all duration-200 min-h-[48px] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={t("next_turn")}
             data-testid="next-turn-fab"
           >

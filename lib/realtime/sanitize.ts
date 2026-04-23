@@ -19,10 +19,12 @@ import type {
 } from "@/lib/types/realtime";
 import { getHpStatus, getHpPercentage } from "@/lib/utils/hp-status";
 
-/** Sanitize a combatant for player-visible broadcast. */
+/** Sanitize a combatant for player-visible broadcast.
+ *  Legendary action counts flow through (decision 2026-04-23 — party visibility).
+ *  Recharge state stays DM-only by design. */
 export function sanitizeCombatant(c: Combatant): SanitizedCombatant {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { dm_notes, display_name, legendary_actions_total: _lat, legendary_actions_used: _lau, session_token_id: _stid, ...base } = c;
+  const { dm_notes, display_name, session_token_id: _stid, ...base } = c;
 
   if (c.is_player) {
     return {
@@ -216,6 +218,9 @@ export function sanitizePayloadServer(
       type: event.type,
       combatant_id: event.combatant_id,
       name: visibleName,
+      // Legendary action counts pass through — party visibility (decision 2026-04-23).
+      ...(event.legendary_actions_used !== undefined ? { legendary_actions_used: event.legendary_actions_used } : {}),
+      ...(event.legendary_actions_total !== undefined ? { legendary_actions_total: event.legendary_actions_total } : {}),
     };
     return result;
   }
