@@ -2,14 +2,19 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { Dot } from "@/components/ui/Dot";
 
 type DotSize = "sm" | "md" | "lg";
 
-// I-02 fix: all sizes have p-2 invisible padding for 44px touch target
-const DOT_SIZES: Record<DotSize, { dot: string; touch: string }> = {
-  sm: { dot: "w-2.5 h-2.5", touch: "p-1.5" },
-  md: { dot: "w-3.5 h-3.5", touch: "p-1" },
-  lg: { dot: "w-5 h-5", touch: "p-0.5" },
+// I-02 fix: all sizes have invisible padding around the dot for a 44×44
+// touch target (WCAG 2.1 SC 2.5.5). `dotSize` drives the <Dot> primitive's
+// size prop; `touch` is the wrapper padding. The <Dot> primitive's size
+// enum was tuned to match this component's legacy sizes so visuals stay
+// bit-identical during the EP-0 migration.
+const DOT_SIZES: Record<DotSize, { dotSize: DotSize; touch: string }> = {
+  sm: { dotSize: "sm", touch: "p-1.5" },
+  md: { dotSize: "md", touch: "p-1" },
+  lg: { dotSize: "lg", touch: "p-0.5" },
 };
 
 const NUMERIC_THRESHOLD = 20;
@@ -74,6 +79,11 @@ export function ResourceDots({
     >
       {Array.from({ length: max }, (_, i) => {
         const isFilled = i < remaining;
+        // Legacy semantic: transient resource with pre-inversion mapping
+        // (filled dot = slot AVAILABLE / remaining use). The <Dot>
+        // primitive is a dumb renderer; we compute `filled` from the
+        // legacy formula so behavior is bit-identical. Sprint 5's flag
+        // flip will flip this line (filled = i < usedCount), not Dot.
         return (
           <button
             key={i}
@@ -87,10 +97,16 @@ export function ResourceDots({
               readOnly ? "cursor-default" : "cursor-pointer"
             }`}
           >
-            <span
-              className={`${sizeStyle.dot} rounded-full border transition-transform duration-200 ${
-                isFilled ? color : "bg-white/[0.15] border-white/[0.08]"
-              } ${bouncingDot === i ? "scale-125" : "scale-100"}`}
+            <Dot
+              variant="transient"
+              size={sizeStyle.dotSize}
+              filled={isFilled}
+              filledClassName={color}
+              emptyClassName="bg-white/[0.15] border-white/[0.08]"
+              ariaLabel={`${label ?? t("trackers_title")} ${i + 1}/${max}`}
+              className={`transition-transform duration-200 ${
+                bouncingDot === i ? "scale-125" : "scale-100"
+              }`}
             />
           </button>
         );

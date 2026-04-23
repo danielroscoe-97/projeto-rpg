@@ -24,6 +24,7 @@ import {
   formatHpPct,
   HP_STATUS_STYLES,
 } from "@/lib/utils/hp-status";
+import { Dot } from "@/components/ui/Dot";
 import { isFeatureFlagEnabled } from "@/lib/flags";
 import { Eye, EyeOff, Shield } from "lucide-react";
 import {
@@ -478,24 +479,26 @@ export const CombatantRow = memo(function CombatantRow({
             >
               <span className="text-xs text-muted-foreground font-medium">{t("legendary_actions_inline")}</span>
               <div className="flex gap-1">
-                {Array.from({ length: combatant.legendary_actions_total }).map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Clicking dot i: set used to i+1 if not already there, or i to toggle last dot off
-                      const target = i + 1 === combatant.legendary_actions_used ? i : i + 1;
-                      onSetLegendaryActionsUsed?.(combatant.id, target);
-                    }}
-                    className={`w-3.5 h-3.5 rounded-full border transition-colors ${
-                      i < combatant.legendary_actions_used
-                        ? "bg-gold border-gold/60"
-                        : "bg-transparent border-zinc-500 hover:border-gold/40"
-                    }`}
-                    aria-label={i < combatant.legendary_actions_used ? "Used" : "Available"}
-                  />
-                ))}
+                {Array.from({ length: combatant.legendary_actions_total }).map((_, i) => {
+                  // Legendary actions: transient resource. Filled = USED
+                  // (already post-inversion here — preserved bit-for-bit).
+                  // The Dot primitive's onClick is no-arg, so we wrap the
+                  // toggle in a closure; the outer div owns stopPropagation.
+                  const isUsed = i < combatant.legendary_actions_used;
+                  const target = i + 1 === combatant.legendary_actions_used ? i : i + 1;
+                  return (
+                    <Dot
+                      key={i}
+                      variant="transient"
+                      size="md"
+                      filled={isUsed}
+                      filledClassName="bg-gold border-gold/60"
+                      emptyClassName="bg-transparent border-zinc-500 hover:border-gold/40"
+                      onClick={() => onSetLegendaryActionsUsed?.(combatant.id, target)}
+                      ariaLabel={isUsed ? "Used" : "Available"}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -508,18 +511,23 @@ export const CombatantRow = memo(function CombatantRow({
               onClick={(e) => e.stopPropagation()}
             >
               <span className="text-xs text-muted-foreground font-medium">{t("reaction_inline")}</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleReaction?.(combatant.id);
-                }}
-                className={`w-3.5 h-3.5 rounded-full border transition-colors ${
-                  combatant.reaction_used
-                    ? "bg-red-500 border-red-400/60"
-                    : "bg-transparent border-emerald-500 hover:border-emerald-400"
-                }`}
-                aria-label={combatant.reaction_used ? t("reaction_used") : t("reaction_available")}
+              {/* Reaction: transient resource. Today filled = USED (post-
+                  inversion convention already in play here — preserved).
+                  The outer div already calls stopPropagation on click but
+                  we keep the inner stop for belt-and-suspenders parity
+                  with the legacy handler.
+
+                  Because the `Dot` primitive takes a no-arg `onClick`, we
+                  wrap the reaction toggle in a closure that does NOT carry
+                  the event; the outer div owns the stopPropagation. */}
+              <Dot
+                variant="transient"
+                size="md"
+                filled={combatant.reaction_used}
+                filledClassName="bg-red-500 border-red-400/60"
+                emptyClassName="bg-transparent border-emerald-500 hover:border-emerald-400"
+                onClick={() => onToggleReaction?.(combatant.id)}
+                ariaLabel={combatant.reaction_used ? t("reaction_used") : t("reaction_available")}
               />
             </div>
           )}
