@@ -132,6 +132,75 @@ rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
 Overall average: **60-90% token reduction** on common development operations.
 <!-- /rtk-instructions -->
 
+# Vocabulário Ubíquo — REGRA IMUTÁVEL
+
+**Fonte única de verdade:** [docs/glossario-ubiquo.md](docs/glossario-ubiquo.md) (inclui adendo 2026-04-21 com modes + HP tiers)
+
+Qualquer código, UI text, i18n key, rota, componente ou documento que usa termos do domínio do Pocket DM DEVE consultar esse arquivo. Mudanças no vocabulário requerem decisão do Dani + atualização do doc + atualização de i18n + memory.
+
+## 🔒 Regra absoluta — "Mestre", nunca "DM"
+
+Travado 2026-04-21: em **todos** os contextos user-facing (UI, i18n, docs, comunicação, commits, PRs, respostas em chat, comentários de código explicativos), usar **"Mestre"** — nunca "DM". **Inclusive quando o Dani escreve "DM"** por hábito, minha resposta usa "Mestre".
+
+**Exceções pragmáticas (apenas código interno, nunca user-facing):**
+- `role = 'dm'` (Supabase enum, role string)
+- `dmOnly`, `isDm` (props booleanas em TypeScript)
+- Nome do produto "Pocket DM" (brand, intocável)
+
+Tudo o mais: **"Mestre"**. Ver memory [feedback_mestre_nao_dm.md](../memory/feedback_mestre_nao_dm.md) + `docs/glossario-ubiquo.md` adendo.
+
+## Quick reference (os travados críticos)
+
+### Modes da Campaign HQ
+| Code | Label UI (PT-BR fixo nos 2 locales) | Rota |
+|------|-------------------------------------|------|
+| `prep` | **Preparar Sessão** | `/app/campaigns/[id]/prep` |
+| `run` | **Rodar Combate** | `/app/campaigns/[id]/run` |
+| `recap` | **Recaps** | `/app/campaigns/[id]/recap` |
+| `journey` | **Minha Jornada** | `/app/campaigns/[id]/journey` |
+| `watch` | **Assistindo** | `/app/campaigns/[id]/watch` |
+
+TS enum: `type Mode = 'prep' | 'run' | 'recap' | 'journey' | 'watch'`. Mode é **stateless derivado do server** via `resolveMode()` — nunca persistido em `localStorage`.
+
+### HP Tiers (labels EN nos 2 locales)
+| Tier | Threshold | Source |
+|------|-----------|--------|
+| `FULL` | `current === max` (100%) | `lib/utils/hp-status.ts` |
+| `LIGHT` | `70% < pct < 100%` | idem |
+| `MODERATE` | `40% < pct ≤ 70%` | idem |
+| `HEAVY` | `10% < pct ≤ 40%` | idem |
+| `CRITICAL` | `pct ≤ 10%` | idem |
+
+Percentage strings em UI **sempre via `formatHpPct(status, flagV2)`** — jamais `"70-100%"` hardcoded.
+
+### Anti-patterns proibidos
+
+```
+// ❌ Traduzir HP tier labels
+t('hp_full') // "Cheio" ← NÃO
+// ✅ HP tiers em EN nos dois locales
+t('hp_full') // "FULL"
+
+// ❌ Hardcode de threshold na UI
+<span>70-100%</span>
+// ✅ Via formatHpPct
+<span>{formatHpPct('LIGHT', flagV2)}</span>
+
+// ❌ Label "Rodar" genérico
+<Tab>Rodar</Tab>
+// ✅ Label canônico completo
+<Tab>{t('campaign.modes.run_label')}</Tab> // "Rodar Combate"
+
+// ❌ localStorage.setItem('mode', 'run')
+// ✅ resolveMode(user, campaign, combat) — server-derived
+
+// ❌ Renomear "Quest" para "Missão"
+// ✅ Preservar "Quest" (anglicismo D&D)
+
+// ❌ Usar "Retro" ou "History" no redesign
+// ✅ "Recaps" (plural intencional)
+```
+
 # Combat Parity Rule — Guest vs Auth
 
 **REGRA IMUTÁVEL**: Toda alteração em experiência de combate ou arquitetura de combate DEVE incluir verificação de parity entre os 3 modos de acesso:

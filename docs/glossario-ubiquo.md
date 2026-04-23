@@ -145,3 +145,132 @@ Erro comum: escrever migration `ALTER TABLE characters ...` — sempre use `play
 - **Por que "Quest" e não "Missão"?** — Todo RPGista BR usa "quest" no dia-a-dia. Traduzir adiciona carga cognitiva desnecessária.
 - **Por que "Encontro" = preset?** — Na infraestrutura atual, `encounters` já é a tabela que guarda combates preparados. Alinha nomenclatura com realidade técnica.
 - **Por que manter "Preset" em inglês?** — Termo técnico universalmente entendido. "Modelo" ou "Predefinição" seriam confusos.
+
+---
+
+
+## ADENDO 2026-04-21 v0.3 — Campaign HQ Redesign (modes + HP tiers + entity graph)
+
+**Revisão 2026-04-21 tarde:** watch mode removido · player wiki adicionada · quests atribuíveis via graph existente · regra "Mestre nunca DM" travada.
+
+Aprovado por Dani 2026-04-21 durante sessões de redesign da Campaign HQ.
+Spec completa: [_bmad-output/qa/evidence/campaign-audit-2026-04-21/](../_bmad-output/qa/evidence/campaign-audit-2026-04-21/)
+
+### 🔒 Regra absoluta — "Mestre", nunca "DM"
+
+Em TODOS os contextos user-facing (UI, i18n, docs, comunicação, commits, PRs, respostas em chat, comentários de código explicativos), usar **"Mestre"** — nunca "DM". **Inclusive quando alguém escreve "DM"** por hábito, a resposta/doc usa "Mestre".
+
+**Exceções pragmáticas (apenas código interno, nunca user-facing):**
+- `role = 'dm'` (Supabase enum / role string)
+- `dmOnly`, `isDm` (props booleanas em TypeScript)
+- Nome do produto "Pocket DM" (brand, intocável)
+
+Memory relacionada: `feedback_mestre_nao_dm.md`.
+
+### Modes da Campaign HQ (4 modes — watch removido)
+
+Substituem a antiga pill bar de 13 abas. **4 modes**: 3 do Mestre + 1 do Jogador.
+
+| Code (EN) | Label UI (PT-BR, fixo nos 2 locales) | Rota | Papel | Propósito |
+|---|---|---|---|---|
+| `prep` | **Preparar Sessão** | `/app/campaigns/[id]/prep` | Mestre | Entre sessões: NPCs, quests, notas, prep da próxima |
+| `run` | **Rodar Combate** | `/app/campaigns/[id]/run` | Mestre | Iniciar/executar/fechar combate — cockpit live |
+| `recap` | **Recaps** (plural intencional) | `/app/campaigns/[id]/recap` | Mestre | Biblioteca de recaps + timeline narrativa |
+| `journey` | **Minha Jornada** | `/app/campaigns/[id]/journey` | Jogador | Ficha, última sessão, próxima, quests, mini-wiki de notas, party |
+
+**Combate ativo (Jogador):** não há mode switch. Aparece **banner sticky topo** em `journey`: *"O Mestre iniciou o combate — [Entrar no Combate]"*. Click navega pra `/app/combat/[id]` (tela existente, não nova surface). PWA push notification disparada se permissão concedida.
+
+**Regras imutáveis:**
+- Labels não traduzem pra EN — ficam em PT-BR nos dois locales (mesma convenção dos HP tiers).
+- TS enum: `type Mode = 'prep' | 'run' | 'recap' | 'journey'` (4 modes).
+- Mode é **stateless derivado do server** via `resolveMode(user, campaign, combat)` — **NUNCA persistido em localStorage** (quebra Resilient Reconnection).
+- Combate ativo força Mestre em `run`. Jogador **permanece em `journey`** com banner + CTA "Entrar no Combate".
+- Variantes curtas pra bottom-tab mobile (só Mestre): `"Preparar"`, `"Rodar"`, `"Recaps"`.
+
+### HP Tiers (labels EN nos 2 locales — memory `feedback_hp_tier_labels.md`)
+
+Canônico do projeto inteiro travado por Dani 2026-04-21:
+
+| Label (EN, não traduzir) | Threshold (legacy) | Contexto visual |
+|---|---|---|
+| `FULL` | `current === max` (100%) | Verde emerald, sem dano |
+| `LIGHT` | `70% < pct < 100%` | Verde claro, dano leve |
+| `MODERATE` | `40% < pct ≤ 70%` | Âmbar, dano moderado |
+| `HEAVY` | `10% < pct ≤ 40%` | Vermelho, dano pesado |
+| `CRITICAL` | `pct ≤ 10%` | Vermelho escuro + pulse |
+
+**Source-of-truth:** `lib/utils/hp-status.ts` — `HP_STATUS_STYLES`, `HP_THRESHOLDS_LEGACY`, `formatHpPct`.
+
+**Regras:**
+- Percentage strings em UI **sempre via `formatHpPct(status, flagV2)`** — jamais `"70-100%"` hardcoded.
+- Flag `ff_hp_thresholds_v2` shifta para `75/50/25` quando ON — `formatHpPct` reflete.
+- `DEFEATED` é display-only via `deriveDisplayState()` — NÃO entra na union `HpStatus` (ABI de broadcast).
+- Cores derivam do `HP_STATUS_STYLES` — nunca hardcode Tailwind class por componente.
+
+### Mini-wiki do Jogador (surface `my_notes` em `journey`)
+
+Dentro do mode Minha Jornada, surface `my_notes` é mini-wiki estilo Obsidian:
+
+- **MVP v1.0:** editor markdown (`content_md`) + `tags[]` + busca/filtro por tag
+- **v1.5:** backlinks `@nome` com autocomplete **filtrado por visibility** — Jogador NUNCA referencia entidades `hidden` do Mestre (NPCs, quests, locais ocultos)
+
+Schema novo: tabela `player_notes` (ver `_bmad-output/architecture/schema-investigation-winston.md §2 M1`). Dual-auth (user_id XOR session_token_id) seguindo pattern de `player_quest_notes` (mig 069).
+
+### Entity Graph (já existente) — fonte de "quests atribuíveis" e similares
+
+`campaign_mind_map_edges` (migrações 080 + 148 + 152 + 154) suporta **9 entidades × 18 relationships polimórficas**. Foi confirmado durante a sessão 2026-04-21 que toda a atribuição polimórfica que o redesign precisa **já está no schema**.
+
+**Entidades:** `npc`, `note`, `quest`, `session`, `location`, `faction`, `encounter`, `player`, `bag_item`
+
+**Relationships canônicas (18):** `linked_to`, `lives_in`, `participated_in`, `requires`, `leads_to`, `allied_with`, `enemy_of`, `gave_quest`, `dropped_item`, `member_of`, `happened_at`, `guards`, `owns`, `custom`, `headquarters_of`, `rival_of`, `family_of`, **`mentions`** (backbone dos backlinks).
+
+**Uso no redesign:**
+- "Quest atribuída a jogador" = `edges(player → quest, rel='participated_in')`
+- "Quest acontece em local" = `edges(quest → location, rel='happened_at')`
+- "NPC dá quest" = `edges(npc → quest, rel='gave_quest')`
+- "Facção ligada a quest" = `edges(faction → quest, rel='allied_with'|'enemy_of')`
+- "Backlink `@Grolda` em nota" = `edges(note → npc, rel='mentions')`
+
+**Regra:** nunca criar `quest_players`, `quest_locations`, `entity_mentions` ou tabelas similares — sempre usar o graph polimórfico existente.
+
+### Surfaces canônicas (code snake_case EN → label PT-BR)
+
+| Code | Label UI | Modes | Roles |
+|---|---|---|---|
+| `next_session` | Próxima Sessão | `prep` | Mestre |
+| `quests` | Quests | `prep`, `journey` | Mestre + Jogador (read) |
+| `npcs` | NPCs | `prep` | Mestre |
+| `locations` | Locais | `prep` | Mestre |
+| `factions` | Facções | `prep` | Mestre |
+| `notes` | Notas | `prep` | Mestre |
+| `mindmap` | Mapa Mental | `prep` | Mestre |
+| `soundboard` | Trilha | `prep`, `run` | Mestre |
+| `combat` | Combate | `run` | Mestre |
+| `party` | Party | `run`, `journey` | Mestre + Jogador |
+| `scene` | Cena | `run` | Mestre |
+| `last_session` | Última Sessão | `recap`, `journey` | Mestre + Jogador |
+| `recap_library` | Biblioteca de Recaps | `recap` | Mestre |
+| `timeline` | Linha do Tempo | `recap` | Mestre |
+| `stats` | Números | `recap` | Mestre |
+| `dm_notes` | Notas do Mestre | `recap` | Mestre (privado) |
+| `my_character` | Meu Personagem | `journey` | Jogador |
+| `my_notes` | Minhas Notas | `journey` | Jogador (auth; anon vê prompt "criar conta") |
+
+### Termos renomeados (deprecated → canônico do redesign)
+
+| Deprecated | Canônico novo | Motivo |
+|---|---|---|
+| "Companheiros" (label do jogador) | **Party** | Confuso quando `count === 1` (F-15); anglicismo D&D já usado |
+| "Mesa" (como nome de mode) | **Rodar Combate** | "Mesa" é ambíguo; Rodar Combate é explícito |
+| "Retro" / "Retrospectiva" | **Recaps** | Corporativês; Recap é termo de mídia familiar |
+| "Player HQ" / "Campaign HQ" | **Minha Jornada** / **Campanha** | Termos técnicos não user-facing |
+| "Assistindo" (watch mode) | **removido** | Jogador entra em combate via CTA em `journey`, não via mode-switch |
+| "DM" | **Mestre** | Anglicismo diluí brand PT-BR first. Nunca mais usar em user-facing |
+
+### Nota sobre "Histórico"
+
+O termo "Histórico" da versão 2026-04-16 (item #3 da tabela principal) **muda de escopo** no redesign:
+- **Antes:** surface única onde listavam combates passados
+- **Agora:** o conceito vive dentro de **Recaps** (mode) → **Timeline** (surface) + **Biblioteca de Recaps** (surface). Mais rico, mas nome "Histórico" isolado sai de circulação.
+
+A aba antiga "Histórico" da Campaign HQ atual (que mostrava sessões PLANEJADAS, não passadas — bug F-08) será renomeada como parte da Fase A (Story A.5 do implementation-guide).
