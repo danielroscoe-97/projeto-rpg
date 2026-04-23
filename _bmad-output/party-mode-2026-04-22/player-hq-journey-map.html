@@ -1,0 +1,3132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player HQ · Jornadas & Telas · Pocket DM Grimório</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #14161F;
+  --bg-elevated: #181A25;
+  --bg-raised: #1F222E;
+  --gold: #D4A853;
+  --gold-dim: #A88339;
+  --gold-soft: rgba(212, 168, 83, 0.15);
+  --gold-border: rgba(212, 168, 83, 0.4);
+  --text: #E6E5E1;
+  --text-muted: #9896A0;
+  --text-subtle: #6B6A72;
+  --success: #29A36E;
+  --warning: #F59E0B;
+  --destructive: #E05C3B;
+  --critical: #B91C1C;
+  --info: #5B8DEF;
+  --concentration: #7DD3FC; /* azul claro sky pra badge "conc" — diferenciado de warning */
+  --concentration-bg: rgba(125, 211, 252, 0.18);
+  --concentration-border: rgba(125, 211, 252, 0.45);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.20);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.cinzel { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 0.02em; }
+.mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+/* LAYOUT */
+.container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+#toc {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border-subtle);
+  padding: 24px 16px;
+  font-size: 13px;
+}
+
+#toc h3 {
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  font-size: 14px;
+  margin: 24px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+#toc h3:first-child { margin-top: 0; }
+
+#toc a {
+  display: block;
+  padding: 6px 10px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: all 150ms;
+}
+#toc a:hover { background: var(--gold-soft); color: var(--text); border-left-color: var(--gold); }
+
+main { padding: 48px 56px; max-width: 1400px; }
+
+/* HEADER */
+.hero {
+  margin-bottom: 64px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--gold-border);
+}
+.hero h1 {
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  font-size: 42px;
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.hero p.subtitle { color: var(--text-muted); font-size: 16px; margin: 0; max-width: 720px; }
+.hero .meta { display: flex; gap: 24px; margin-top: 20px; font-size: 12px; color: var(--text-subtle); }
+.hero .meta span::before { content: '· '; color: var(--gold); margin-right: 4px; }
+.hero .meta span:first-child::before { content: ''; margin: 0; }
+
+/* SECTIONS */
+section { margin-bottom: 80px; scroll-margin-top: 24px; }
+section > h2 {
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  font-size: 28px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+section > .section-lead {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 32px;
+  max-width: 780px;
+}
+
+/* CARDS */
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.card.hero-card { border: 1px solid var(--gold-border); background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-raised) 100%); }
+.card h3 { font-family: 'Cinzel', serif; color: var(--gold); margin: 0 0 16px; font-size: 20px; }
+.card h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 20px 0 10px;
+  font-weight: 600;
+}
+
+/* GRIDS */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+@media (max-width: 1024px) {
+  .container { grid-template-columns: 1fr; }
+  #toc { position: relative; height: auto; }
+  main { padding: 24px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* JTBD CARDS */
+.jtbd {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.jtbd .icon { font-size: 32px; margin-bottom: 12px; }
+.jtbd h4 {
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  margin: 0 0 8px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.jtbd p { color: var(--text-muted); font-size: 13px; margin: 0 0 12px; }
+.jtbd .tag { display: inline-block; padding: 2px 8px; background: var(--gold-soft); color: var(--gold); border-radius: 4px; font-size: 11px; font-weight: 600; }
+.jtbd.primary { border-color: var(--gold-border); }
+
+/* TABS */
+.tab-list { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); }
+.tab-list .tab {
+  padding: 8px 16px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-size: 13px;
+  font-weight: 500;
+}
+.tab-list .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* WIREFRAME ASCII */
+.wireframe {
+  background: #0D0E15;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-x: auto;
+  color: var(--text);
+  white-space: pre;
+  margin: 0;
+}
+.wireframe .w-gold { color: var(--gold); }
+.wireframe .w-muted { color: var(--text-muted); }
+.wireframe .w-success { color: var(--success); }
+.wireframe .w-warn { color: var(--warning); }
+.wireframe .w-danger { color: var(--destructive); }
+
+/* TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+th {
+  text-align: left;
+  padding: 10px 12px;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+tbody tr:hover { background: var(--bg-elevated); }
+
+/* LISTS */
+ul.clean, ol.clean { padding-left: 0; list-style: none; margin: 0; }
+ul.clean li, ol.clean li {
+  padding: 6px 0 6px 20px;
+  position: relative;
+  font-size: 13px;
+  color: var(--text);
+}
+ul.clean li::before {
+  content: '▸';
+  color: var(--gold);
+  position: absolute;
+  left: 0;
+  top: 6px;
+}
+ol.clean { counter-reset: item; }
+ol.clean li::before {
+  counter-increment: item;
+  content: counter(item);
+  background: var(--gold-soft);
+  color: var(--gold);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: -4px;
+  top: 4px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+ol.clean li { padding-left: 32px; }
+
+/* BADGE + CHIP */
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  margin: 2px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+.chip.gold { color: var(--gold); background: var(--gold-soft); border-color: var(--gold-border); }
+.chip.success { color: var(--success); background: rgba(41, 163, 110, 0.15); border-color: rgba(41, 163, 110, 0.4); }
+.chip.warning { color: var(--warning); background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); }
+.chip.danger { color: var(--destructive); background: rgba(224, 92, 59, 0.15); border-color: rgba(224, 92, 59, 0.4); }
+.chip.info { color: var(--info); background: rgba(91, 141, 239, 0.15); border-color: rgba(91, 141, 239, 0.4); }
+
+/* MERMAID */
+.mermaid {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  margin: 16px 0;
+}
+
+/* SIGNALS */
+.signal { display: flex; gap: 12px; padding: 12px; border-radius: 8px; background: var(--bg-raised); border: 1px solid var(--border-subtle); margin-bottom: 8px; }
+.signal .signal-icon { font-size: 18px; flex-shrink: 0; }
+.signal .signal-body { font-size: 12px; color: var(--text-muted); flex: 1; }
+.signal .signal-body strong { color: var(--text); display: block; font-size: 13px; }
+
+/* CALLOUT */
+.callout {
+  border-left: 3px solid var(--gold);
+  background: var(--gold-soft);
+  padding: 12px 20px;
+  margin: 16px 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+}
+.callout.warn { border-left-color: var(--warning); background: rgba(245, 158, 11, 0.08); }
+.callout.danger { border-left-color: var(--destructive); background: rgba(224, 92, 59, 0.08); }
+
+/* TAB SCREEN: the main "tela" cards */
+.screen-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--gold-border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 40px;
+}
+.screen-card > h3 {
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  font-size: 28px;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.screen-card > .tagline { color: var(--text-muted); margin: 0 0 28px; font-size: 14px; }
+
+.screen-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .screen-grid { grid-template-columns: 1fr; }
+}
+
+.info-block { background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+.info-block h5 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold-dim);
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  margin: 0 2px;
+}
+
+/* RIBBON MOCKUP */
+.ribbon-mockup {
+  background: linear-gradient(180deg, var(--bg-raised) 0%, var(--bg-elevated) 100%);
+  border: 1px solid var(--gold-border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  margin: 16px 0;
+  position: relative;
+}
+.ribbon-mockup::before {
+  content: 'RIBBON VIVO';
+  position: absolute;
+  top: -8px;
+  left: 16px;
+  background: var(--bg);
+  color: var(--gold);
+  padding: 0 8px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-family: 'Inter', sans-serif;
+}
+.hp-bar-mock {
+  display: inline-block;
+  width: 180px;
+  height: 12px;
+  background: rgba(41, 163, 110, 0.25);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 0 6px;
+}
+.hp-bar-mock::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 100%;
+  background: var(--success);
+  border-radius: 6px;
+}
+
+/* ABILITY CHIP — 2 zonas claras: CHECK (mod do atributo) + SAVE (mod + PB se prof) */
+.ability-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; }
+.ability-chip {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 10px 6px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ability-chip .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+/* Zona CHECK — fundo escuro, número branco */
+.ability-chip .check-zone {
+  background: rgba(0,0,0,0.25);
+  border-radius: 5px;
+  padding: 4px 0;
+  margin: 2px 0;
+  cursor: pointer;
+  transition: all 150ms;
+  position: relative;
+}
+.ability-chip .check-zone::after {
+  content: '🎲';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 9px;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+.ability-chip .check-zone:hover {
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.15) inset;
+}
+.ability-chip .check-zone:hover::after { opacity: 0.7; }
+.ability-chip .check-zone .check-label {
+  font-size: 8px;
+  color: var(--text-subtle);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.ability-chip .check-zone .check-mod {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+  display: block;
+  margin-top: 2px;
+}
+/* Zona SAVE — gold quando proficient, muted quando não */
+.ability-chip .save-zone {
+  background: rgba(212,168,83,0.08);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms;
+  position: relative;
+}
+.ability-chip .save-zone::after {
+  content: '🎲';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 9px;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+.ability-chip .save-zone:hover { background: rgba(212,168,83,0.18); border-color: var(--gold); }
+.ability-chip .save-zone:hover::after { opacity: 0.8; }
+.ability-chip .save-zone.prof:hover { background: rgba(212,168,83,0.28); box-shadow: 0 0 8px rgba(212,168,83,0.3); }
+.ability-chip .save-zone .sv-icon {
+  font-size: 11px;
+  opacity: 0.6;
+}
+.ability-chip .save-zone .sv-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--text-subtle);
+  display: inline-block;
+}
+.ability-chip .save-zone.prof {
+  background: var(--gold-soft);
+  border-color: var(--gold-border);
+  color: var(--gold);
+}
+.ability-chip .save-zone.prof .sv-icon { opacity: 1; }
+.ability-chip .save-zone.prof .sv-dot { background: var(--gold); border-color: var(--gold); }
+.ability-chip .score {
+  font-size: 10px;
+  color: var(--text-subtle);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* TAB PILL */
+.tab-pills { display: flex; gap: 8px; margin: 20px 0; }
+.tab-pill {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.tab-pill.active { background: var(--gold-soft); color: var(--gold); border-color: var(--gold-border); font-weight: 600; }
+.tab-pill .pulse {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  margin-left: 4px;
+  animation: pulse-gold 1.5s ease-in-out infinite;
+}
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--gold); }
+  50% { opacity: 0.5; box-shadow: 0 0 0 6px rgba(212, 168, 83, 0); }
+}
+
+/* LEGEND */
+.legend { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin: 16px 0; }
+.legend span { display: flex; align-items: center; gap: 6px; }
+.legend .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* PAGE NAV */
+.breadcrumb {
+  font-size: 11px;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+/* PHONE FRAME (mobile mockup) */
+.phone-frame {
+  width: 390px;
+  max-width: 100%;
+  margin: 0 auto;
+  border: 14px solid #0A0B12;
+  border-radius: 44px;
+  background: var(--bg);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+}
+.phone-frame::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 24px;
+  background: #0A0B12;
+  border-radius: 0 0 16px 16px;
+  z-index: 10;
+}
+.phone-frame .phone-content {
+  max-height: 720px;
+  overflow-y: auto;
+  padding: 30px 0 0;
+}
+.phone-frame .phone-content::-webkit-scrollbar { width: 0; }
+
+.phone-ui { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 12px; }
+.phone-ui .m-topbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border-subtle); }
+.phone-ui .m-header { padding: 10px 14px; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
+.phone-ui .m-header .name { font-family: 'Cinzel', serif; color: var(--gold); font-weight: 600; }
+.phone-ui .m-tabs { display: flex; gap: 2px; padding: 6px 10px; overflow-x: auto; border-bottom: 1px solid var(--border-subtle); }
+.phone-ui .m-tabs .m-tab { padding: 6px 12px; font-size: 12px; color: var(--text-muted); white-space: nowrap; border-bottom: 2px solid transparent; }
+.phone-ui .m-tabs .m-tab.active { color: var(--gold); border-bottom-color: var(--gold); font-weight: 600; }
+.phone-ui .m-ribbon {
+  padding: 10px 14px 8px;
+  background: linear-gradient(180deg, var(--bg-raised) 0%, var(--bg-elevated) 100%);
+  border-bottom: 1px solid var(--gold-border);
+  font-size: 12px;
+}
+.phone-ui .m-ribbon .hp-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.phone-ui .m-ribbon .hp-row .hp-bar { flex: 1; height: 10px; background: rgba(41,163,110,0.25); border-radius: 5px; overflow: hidden; position: relative; }
+.phone-ui .m-ribbon .hp-row .hp-bar::after { content: ''; display: block; position: absolute; inset: 0; background: var(--success); }
+.phone-ui .m-ribbon .hp-row .hp-label { color: var(--success); font-weight: 600; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+.phone-ui .m-ribbon .hp-row .hp-tier { color: var(--success); font-size: 10px; font-weight: 600; letter-spacing: 0.05em; }
+.phone-ui .m-ribbon .hp-controls { display: flex; gap: 4px; margin-top: 4px; }
+.phone-ui .m-ribbon .hp-controls .btn { flex: 1; padding: 4px 0; text-align: center; background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+.phone-ui .m-ribbon .meta-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+.phone-ui .m-ribbon .meta-row .meta-inline { display: flex; gap: 8px; }
+.phone-ui .m-ribbon .meta-row .meta-inline strong { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.phone-ui .m-ribbon .expand-btn { background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 2px 8px; color: var(--gold); font-size: 11px; }
+
+.phone-ui .m-section { padding: 14px; border-bottom: 1px solid var(--border-subtle); }
+.phone-ui .m-section h6 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold-dim); margin: 0 0 10px; font-weight: 600; }
+.phone-ui .ability-grid-m { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.phone-ui .ability-chip-m {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.phone-ui .ability-chip-m .l {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.phone-ui .ability-chip-m .check-z {
+  background: rgba(0,0,0,0.25);
+  border-radius: 4px;
+  padding: 3px 0;
+  cursor: pointer;
+  position: relative;
+}
+.phone-ui .ability-chip-m .check-z::after {
+  content: '🎲';
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 7px;
+  opacity: 0.4;
+}
+.phone-ui .ability-chip-m .check-z .ck-l { font-size: 7px; color: var(--text-subtle); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.phone-ui .ability-chip-m .check-z .ck-v { font-size: 17px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; line-height: 1; display: block; margin-top: 1px; }
+.phone-ui .ability-chip-m .save-z {
+  background: rgba(212,168,83,0.08);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  min-height: 28px;  /* touch target */
+}
+.phone-ui .ability-chip-m .save-z::after {
+  content: '🎲';
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 7px;
+  opacity: 0.4;
+}
+.phone-ui .ability-chip-m .check-z::before,
+.phone-ui .ability-chip-m .save-z::before {
+  content: '';
+  position: absolute;
+  inset: -8px;  /* invisible touch target extension to ~44px */
+}
+.phone-ui .ability-chip-m .save-z .sv-i { font-size: 9px; opacity: 0.6; }
+.phone-ui .ability-chip-m .save-z .sv-d { width: 5px; height: 5px; border-radius: 50%; background: transparent; border: 1px solid var(--text-subtle); display: inline-block; }
+.phone-ui .ability-chip-m .save-z.prof { background: var(--gold-soft); border-color: var(--gold-border); color: var(--gold); }
+.phone-ui .ability-chip-m .save-z.prof .sv-i { opacity: 1; }
+.phone-ui .ability-chip-m .save-z.prof .sv-d { background: var(--gold); border-color: var(--gold); }
+.phone-ui .ability-chip-m .s { font-size: 9px; color: var(--text-subtle); font-family: 'JetBrains Mono', monospace; }
+.phone-ui .saves-row-m { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+.phone-ui .saves-row-m div { background: var(--bg-raised); padding: 5px 6px; border-radius: 4px; border: 1px solid var(--border-subtle); }
+.phone-ui .accordion-m { background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--text); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.phone-ui .accordion-m .arrow { color: var(--text-subtle); }
+.phone-ui .effect-row-m { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; border-bottom: 1px solid var(--border-subtle); }
+.phone-ui .effect-row-m:last-child { border-bottom: none; }
+.phone-ui .effect-row-m .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+.phone-ui .effect-row-m .conc { padding: 1px 5px; background: var(--concentration-bg); color: var(--concentration); border: 1px solid var(--concentration-border); border-radius: 3px; font-size: 9px; font-weight: 600; }
+.phone-ui .slots-m { display: flex; gap: 12px; overflow-x: auto; padding: 4px 0; }
+.phone-ui .slot-group-m { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 32px; }
+.phone-ui .slot-group-m .sl-label { font-size: 10px; color: var(--gold); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+.phone-ui .slot-group-m .sl-dots { display: flex; gap: 2px; }
+.phone-ui .slot-group-m .sl-dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--gold); }
+.phone-ui .slot-group-m .sl-dot.used { background: transparent; }
+.phone-ui .slot-group-m .sl-dot.ready { background: var(--gold); }
+.phone-ui .slot-group-m.disabled .sl-label { color: var(--text-subtle); }
+.phone-ui .slot-group-m.disabled .sl-dot { border-color: var(--text-subtle); }
+
+.phone-ui .search-m { background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 7px 10px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.phone-ui .filter-chips-m { display: flex; gap: 4px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; }
+.phone-ui .filter-chips-m .chip-m { padding: 3px 10px; background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: 20px; font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+.phone-ui .filter-chips-m .chip-m.active { background: var(--gold-soft); color: var(--gold); border-color: var(--gold-border); font-weight: 600; }
+.phone-ui .spell-row-m { padding: 6px 0; border-bottom: 1px solid var(--border-subtle); font-size: 12px; display: flex; align-items: center; gap: 8px; }
+.phone-ui .spell-row-m .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.phone-ui .spell-row-m .meta { color: var(--text-subtle); font-size: 10px; margin-left: auto; }
+
+.phone-ui .fab-m {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  border: 2px solid var(--gold-dim);
+}
+
+.mobile-grid { display: grid; grid-template-columns: 420px 1fr; gap: 40px; align-items: start; }
+@media (max-width: 1100px) { .mobile-grid { grid-template-columns: 1fr; } }
+
+/* RIBBON SLOT DOTS — clicáveis com touch target 44px */
+.ribbon-slots { display: inline-flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.ribbon-slot-group { display: inline-flex; align-items: center; gap: 4px; }
+.ribbon-slot-group .lvl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: 600;
+  margin-right: 2px;
+}
+.ribbon-slot-dot {
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold);
+  background: transparent;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all 150ms;
+}
+.ribbon-slot-dot::before {
+  content: '';
+  position: absolute;
+  inset: -14px; /* invisible 44x44 touch target */
+}
+.ribbon-slot-dot.used { background: var(--gold); }
+.ribbon-slot-dot:hover { transform: scale(1.15); box-shadow: 0 0 8px rgba(212,168,83,0.4); }
+.ribbon-slot-dot.disabled { border-color: var(--text-subtle); cursor: default; }
+.ribbon-slot-dot.disabled:hover { transform: none; box-shadow: none; }
+
+/* Mobile compact: collapsed slot chip */
+.slot-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--gold-border);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--gold);
+  cursor: pointer;
+  min-height: 32px;
+}
+
+/* PRINT */
+@media print {
+  .container { grid-template-columns: 1fr; }
+  #toc { display: none; }
+  .mermaid { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<nav id="toc">
+  <h3>Mapa</h3>
+  <a href="#hero">Início</a>
+  <a href="#overview">1. Visão Geral</a>
+  <a href="#jtbds">2. 3 JTBDs Dominantes</a>
+  <a href="#topologia">3. Topologia 7→4</a>
+
+  <h3>As 4 Telas</h3>
+  <a href="#heroi">4. Herói ⚔ (desktop)</a>
+  <a href="#heroi-mobile">4b. Herói 📱 (mobile)</a>
+  <a href="#arsenal">5. Arsenal 🎒</a>
+  <a href="#diario">6. Diário 📖</a>
+  <a href="#mapa">7. Mapa 🗺</a>
+
+  <h3>Componentes</h3>
+  <a href="#ribbon">8. Ribbon Vivo</a>
+  <a href="#combate-auto">9. Modo Combate Auto</a>
+
+  <h3>12 Jornadas</h3>
+  <a href="#jornada-1">F1 · Primeiro acesso</a>
+  <a href="#jornada-2">F2 · Mestre inicia combate</a>
+  <a href="#jornada-3">F3 · Tomar dano</a>
+  <a href="#jornada-4">F4 · Usar magia</a>
+  <a href="#jornada-5">F5 · Rolagem com modifier</a>
+  <a href="#jornada-6">F6 · Descanso longo</a>
+  <a href="#jornada-7">F7 · Nota privada do Mestre</a>
+  <a href="#jornada-8">F8 · Nota rápida combate</a>
+  <a href="#jornada-9">F9 · Revisar sessão</a>
+  <a href="#jornada-10">F10 · Subir de nível</a>
+  <a href="#jornada-11">F11 · Adicionar item</a>
+  <a href="#jornada-12">F12 · Reconexão</a>
+  <a href="#jornada-13">F13 · Pós-combate → Herói</a>
+
+  <h3>Referências</h3>
+  <a href="#cross-nav">Cross-nav</a>
+  <a href="#appendix">Legenda & Refs</a>
+</nav>
+
+<main>
+
+<header class="hero" id="hero">
+  <div class="breadcrumb">Party Mode · 2026-04-23 · v0.4</div>
+  <h1>Player HQ — Jornadas & Telas</h1>
+  <p class="subtitle">Mapa visual do redesign do Player HQ do Pocket DM (codinome <span class="cinzel">Grimório</span>). Cada tela com JTBDs, informações visíveis, ações disponíveis e sinais. Cada jornada passo-a-passo.</p>
+  <div class="meta">
+    <span>36 decisões canônicas</span>
+    <span>4 tabs (ex-7)</span>
+    <span>12 fluxos mapeados</span>
+    <span>1 componente central (Ribbon Vivo)</span>
+  </div>
+</header>
+
+<!-- ================================================================== -->
+<section id="overview">
+  <h2>1 · Visão Geral</h2>
+  <p class="section-lead">Pocket DM tem shell unificado com <strong>4 modes</strong>: Mestre tem 3 (Preparar Sessão, Rodar Combate, Recaps); Jogador tem 1 (<strong>Minha Jornada</strong> / <code>journey</code>). Todo este documento vive dentro do mode do Jogador.</p>
+
+  <div class="card hero-card">
+    <h3>Shell unificado · 4 modes</h3>
+    <div class="mermaid">
+graph LR
+    Shell["🏰 Shell Pocket DM"] --> Dm["MESTRE"]
+    Shell --> Pl["JOGADOR"]
+    Dm --> P["🛠 Preparar Sessão"]
+    Dm --> R["⚔ Rodar Combate"]
+    Dm --> Rc["📖 Recaps"]
+    Pl --> J["🎭 Minha Jornada (journey)"]
+    J --> H["⚔ Herói (default)"]
+    J --> A["🎒 Arsenal"]
+    J --> D["📖 Diário"]
+    J --> M["🗺 Mapa"]
+    style J fill:#D4A853,stroke:#D4A853,color:#14161F
+    style H fill:#181A25,stroke:#D4A853,color:#D4A853
+    style A fill:#181A25,stroke:#D4A853,color:#D4A853
+    style D fill:#181A25,stroke:#D4A853,color:#D4A853
+    style M fill:#181A25,stroke:#D4A853,color:#D4A853
+    style P fill:#1F222E,stroke:#9896A0,color:#9896A0
+    style R fill:#1F222E,stroke:#9896A0,color:#9896A0
+    style Rc fill:#1F222E,stroke:#9896A0,color:#9896A0
+    </div>
+    <p style="color:var(--text-muted);font-size:13px;margin-top:16px;">O Jogador sempre está em <strong>Minha Jornada</strong>. As 4 sub-tabs (<strong>Herói · Arsenal · Diário · Mapa</strong>) são o escopo central deste redesign — substituem as 7 tabs antigas (Mapa/Ficha/Recursos/Habilidades/Inventário/Notas/Quests).</p>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<section id="jtbds">
+  <h2>2 · 3 JTBDs Dominantes</h2>
+  <p class="section-lead">Todo design do Player HQ serve estes 3 Jobs-to-be-Done. Cada tela prioriza um JTBD dominante.</p>
+
+  <div class="grid-3">
+    <div class="jtbd primary">
+      <div class="icon">🔥</div>
+      <h4>Rastrear volátil</h4>
+      <p>HP, slots de magia, efeitos ativos, condições — tudo que muda de turno em turno durante combate.</p>
+      <div>
+        <span class="tag">ALTA FREQ</span>
+        <span class="tag">COMBATE</span>
+      </div>
+      <p style="margin-top:12px;font-size:12px;"><strong>Tela primária:</strong> Herói (modo combate auto)</p>
+    </div>
+
+    <div class="jtbd primary">
+      <div class="icon">🧘</div>
+      <h4>Consultar estado</h4>
+      <p>AC, modifiers de atributo, proficiências, spells conhecidas — consulta rápida para rolagens e decisões.</p>
+      <div>
+        <span class="tag">MUITO ALTA</span>
+        <span class="tag">AMBOS</span>
+      </div>
+      <p style="margin-top:12px;font-size:12px;"><strong>Tela primária:</strong> Herói (ribbon sticky + chips sempre visíveis)</p>
+    </div>
+
+    <div class="jtbd primary">
+      <div class="icon">📖</div>
+      <h4>Registrar memória</h4>
+      <p>Notas, NPCs conhecidos, quests, recaps lidos, mini-wiki pessoal — narrativa da campanha.</p>
+      <div>
+        <span class="tag">MÉDIA FREQ</span>
+        <span class="tag">PÓS-SESSÃO</span>
+      </div>
+      <p style="margin-top:12px;font-size:12px;"><strong>Tela primária:</strong> Diário</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Princípio:</strong> Herói é tab dominante em <strong>7/12 fluxos</strong>. Diário em 4/12. Arsenal em 1/12. Mapa não é primária em fluxo crítico — é leitura profunda opcional.
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<section id="topologia">
+  <h2>3 · Topologia 7 → 4</h2>
+  <p class="section-lead">Redistribuição das tabs antigas em 4 novas. URLs antigas redirecionam automaticamente.</p>
+
+  <div class="mermaid">
+flowchart LR
+    subgraph Antes ["ANTES · 7 tabs"]
+        A1[Mapa]
+        A2[Ficha]
+        A3[Recursos]
+        A4[Habilidades]
+        A5[Inventário]
+        A6[Notas]
+        A7[Quests]
+    end
+    subgraph Depois ["DEPOIS · 4 tabs"]
+        B1["⚔ Herói"]
+        B2["🎒 Arsenal"]
+        B3["📖 Diário"]
+        B4["🗺 Mapa"]
+    end
+    A2 -->|ficha viva| B1
+    A3 -->|slots, efeitos| B1
+    A4 -->|hab combate| B1
+    A4 -->|passivas| B2
+    A5 -->|inventário| B2
+    A6 -->|notas| B3
+    A7 -->|quests| B3
+    A1 -->|mind map| B4
+    style B1 fill:#D4A853,color:#14161F,stroke:#D4A853
+    style B2 fill:#181A25,color:#D4A853,stroke:#D4A853
+    style B3 fill:#181A25,color:#D4A853,stroke:#D4A853
+    style B4 fill:#181A25,color:#D4A853,stroke:#D4A853
+  </div>
+
+  <h4 style="color:var(--gold);font-family:'Cinzel',serif;margin-top:32px;">Redirect automático de URLs antigas</h4>
+  <table>
+    <thead><tr><th>URL antiga</th><th>→</th><th>URL nova</th></tr></thead>
+    <tbody>
+      <tr><td><code>?tab=ficha</code></td><td>→</td><td><code>?tab=heroi</code></td></tr>
+      <tr><td><code>?tab=recursos</code></td><td>→</td><td><code>?tab=heroi&section=recursos</code></td></tr>
+      <tr><td><code>?tab=habilidades</code></td><td>→</td><td><code>?tab=arsenal&section=habilidades</code></td></tr>
+      <tr><td><code>?tab=inventario</code></td><td>→</td><td><code>?tab=arsenal</code></td></tr>
+      <tr><td><code>?tab=notas</code></td><td>→</td><td><code>?tab=diario&section=notas</code></td></tr>
+      <tr><td><code>?tab=quests</code></td><td>→</td><td><code>?tab=diario&section=quests</code></td></tr>
+      <tr><td><code>?tab=map</code></td><td>→</td><td><code>?tab=mapa</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================================================================== -->
+<!-- TELA 1: HERÓI -->
+<section id="heroi">
+  <div class="screen-card">
+    <h3>⚔ Herói <span class="chip gold">TAB DEFAULT</span></h3>
+    <p class="tagline">Sua ficha viva. HP, stats, slots, efeitos — tudo em uma tela. É o cockpit em combate e o manual de consulta fora dele.</p>
+
+    <div class="screen-grid">
+      <div>
+        <h4 style="color:var(--gold-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 12px;">Wireframe · desktop 1280px+</h4>
+        <pre class="wireframe">
+<span class="w-muted">┌─ HEADER ────────────────────────────────┐</span>
+<span class="w-muted">│ ◄</span> <span class="w-gold">CURSE OF STRAHD · CAPA BARSAVI</span>       <span class="w-muted">│</span>
+<span class="w-muted">│   Half-Elf Clérigo/Sorce Nv10  [PDF][✎] │</span>
+<span class="w-muted">├─ TAB BAR ──────────────────────────────┤</span>
+<span class="w-muted">│</span> <span class="w-gold">[⚔ HERÓI]</span> [🎒 Arsenal] [📖 Diário] [🗺] <span class="w-muted">│</span>
+<span class="w-muted">├─ RIBBON VIVO ──────────────── sticky ──┤</span>
+<span class="w-muted">│ </span><span class="w-success">❤ 88/88 ███████████████████ FULL</span><span class="w-muted">       │</span>
+<span class="w-muted">│ </span><span class="w-danger">[💥 Dano]</span><span class="w-muted"> </span><span class="w-success">[💚 Cura]</span><span class="w-muted"> </span><span class="w-gold">[🛡 Temp]</span><span class="w-muted">  (click=input)│</span>
+<span class="w-muted">│ 🛡21  ⚡+2  👣30ft  ✨—  🎯CD16         │</span>
+<span class="w-muted">│ Slots: I○○ II○○○ III○○○ IV○○○  cond: —│</span>
+<span class="w-muted">│   (○=disp · ●=gasto · recurso transitório)│</span>
+<span class="w-muted">├──────────────────────────────────────────┤</span>
+<span class="w-muted">│ </span><span class="w-gold">COL A (560px)</span><span class="w-muted">     │ </span><span class="w-gold">COL B (560px)</span><span class="w-muted">       │</span>
+<span class="w-muted">│                   │                     │</span>
+<span class="w-muted">│ ATRIBUTOS         │</span> <span class="w-gold">EFEITOS ATIVOS</span>      <span class="w-muted">│</span>
+<span class="w-muted">│ STR+0 DEX+2 CON+4 │ ○ Abençoar · 9min   │</span>
+<span class="w-muted">│ INT-1 WIS+2 CHA+4 │ ○ Escudo da fé·8min │</span>
+<span class="w-muted">│                   │ [+ Efeito]          │</span>
+<span class="w-muted">│ SAVES (permanent) │ ─────────────────── │</span>
+<span class="w-muted">│ ●CON+8 ●WIS+6     │</span> <span class="w-gold">RECURSOS CLASSE</span>     <span class="w-muted">│</span>
+<span class="w-muted">│ ●CHA+8            │ Canalizar Div  ○   │</span>
+<span class="w-muted">│ (●=prof ○=não)    │ Intervenção   ○   │</span>
+<span class="w-muted">│                   │ ─────────────────── │</span>
+<span class="w-muted">│ PERÍCIAS (3col)   │</span> <span class="w-gold">SPELL SLOTS</span>         <span class="w-muted">│</span>
+<span class="w-muted">│ ○Acrobacia   +2   │  I II III IV V VI   │</span>
+<span class="w-muted">│ ●Persuasão   +8   │ ○○ ○○○ ●●○ ○○○ ○○ ··│</span>
+<span class="w-muted">│ ●Religião    +4   │ (○=disp · ●=gasto)  │</span>
+<span class="w-muted">│ [... 18 linhas]   │ ─────────────────── │</span>
+<span class="w-muted">│ [Ferramentas ▾]   │</span> <span class="w-gold">SPELLS CONHECIDAS</span>   <span class="w-muted">│</span>
+<span class="w-muted">│ [Idiomas ▾]       │ [🔍 buscar...]      │</span>
+<span class="w-muted">│ [Armaduras ▾]     │ ● Bless · 1st conc  │</span>
+<span class="w-muted">│ [Armas ▾]         │ ● Cure Wounds · 1st │</span>
+<span class="w-muted">└───────────────────┴─────────────────────┘</span>
+</pre>
+
+        <div class="ribbon-mockup" style="padding-bottom:6px;">
+          <!-- Row 1: Core stats + HP actions -->
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--border-subtle);">
+            ❤ 88/88 <span class="hp-bar-mock" style="width:120px;"></span> <span style="color:var(--success);font-size:10px;font-weight:600;">FULL</span>
+            <span class="chip danger" style="cursor:pointer;">💥 Dano</span>
+            <span class="chip success" style="cursor:pointer;">💚 Cura</span>
+            <span class="chip gold" style="cursor:pointer;">🛡 Temp</span>
+            <span style="color:var(--text-subtle);">|</span>
+            🛡 <strong>21</strong> &nbsp; ⚡ <strong>+2</strong> &nbsp; 👣 <strong>30ft</strong> &nbsp; 🎯 CD <strong>16</strong>
+          </div>
+          <!-- Row 2: Temporary states (conditions + effects + slots) -->
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:8px;font-size:11px;">
+            <span style="color:var(--text-muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;">Cond:</span>
+            <span class="chip success" style="font-size:10px;">✨ Abençoado</span>
+            <span class="chip" style="font-size:10px;color:var(--gold-dim);">+</span>
+            <span style="color:var(--text-subtle);">|</span>
+            <span style="color:var(--text-muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;">Efeitos:</span>
+            <span class="chip gold" style="font-size:10px;">🪬 Abençoar · 9m <span style="background:var(--concentration-bg);color:var(--concentration);border:1px solid var(--concentration-border);padding:1px 5px;border-radius:3px;margin-left:2px;font-weight:600;font-size:9px;">conc</span></span>
+            <span class="chip gold" style="font-size:10px;">🛡 Escudo da fé · 8m</span>
+            <span class="chip" style="font-size:10px;color:var(--gold-dim);">+</span>
+            <span style="color:var(--text-subtle);">|</span>
+            <span style="color:var(--text-muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;">Slots:</span>
+            <span class="ribbon-slots">
+              <span class="ribbon-slot-group"><span class="lvl">I</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+              <span class="ribbon-slot-group"><span class="lvl">II</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+              <span class="ribbon-slot-group"><span class="lvl">III</span><span class="ribbon-slot-dot used"></span><span class="ribbon-slot-dot used"></span><span class="ribbon-slot-dot"></span></span>
+              <span class="ribbon-slot-group"><span class="lvl">IV</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+              <span class="ribbon-slot-group"><span class="lvl">V</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+            </span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-subtle);margin-top:-8px;margin-bottom:16px;padding:0 8px;">
+          <strong>Row 1</strong> — stats core permanentes (HP, AC, Init, Speed, CD) · botões HP abrem input inline.<br>
+          <strong>Row 2</strong> — estados temporários que afetam rolagens: condições, efeitos com duração/concentração, <strong>dots de slot clicáveis (16px visual + 44px touch target)</strong>.
+        </div>
+        <div class="ability-row">
+          <div class="ability-chip">
+            <div class="label">STR</div>
+            <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+0</span></div>
+            <div class="save-zone"><span class="sv-icon">🛡</span><span>sv +0</span><span class="sv-dot"></span></div>
+            <div class="score">10</div>
+          </div>
+          <div class="ability-chip">
+            <div class="label">DEX</div>
+            <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+2</span></div>
+            <div class="save-zone"><span class="sv-icon">🛡</span><span>sv +2</span><span class="sv-dot"></span></div>
+            <div class="score">14</div>
+          </div>
+          <div class="ability-chip">
+            <div class="label">CON</div>
+            <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+4</span></div>
+            <div class="save-zone prof"><span class="sv-icon">🛡</span><span>sv +8</span><span class="sv-dot"></span></div>
+            <div class="score">18</div>
+          </div>
+          <div class="ability-chip">
+            <div class="label">INT</div>
+            <div class="check-zone"><div class="check-label">check</div><span class="check-mod">−1</span></div>
+            <div class="save-zone"><span class="sv-icon">🛡</span><span>sv −1</span><span class="sv-dot"></span></div>
+            <div class="score">8</div>
+          </div>
+          <div class="ability-chip">
+            <div class="label">WIS</div>
+            <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+2</span></div>
+            <div class="save-zone prof"><span class="sv-icon">🛡</span><span>sv +6</span><span class="sv-dot"></span></div>
+            <div class="score">14</div>
+          </div>
+          <div class="ability-chip">
+            <div class="label">CHA</div>
+            <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+4</span></div>
+            <div class="save-zone prof"><span class="sv-icon">🛡</span><span>sv +8</span><span class="sv-dot"></span></div>
+            <div class="score">18</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-subtle);margin-top:8px;padding:0 8px;">
+          <strong>Cada chip = 2 valores claramente separados:</strong><br>
+          • <strong style="color:var(--text);">CHECK</strong> (zona escura no meio) — d20 + mod do atributo · usado em ability checks<br>
+          • <strong style="color:var(--gold);">SAVE</strong> (zona com fundo gold-soft + 🛡) — d20 + mod + PB se proficient · dot ● gold quando prof<br>
+          Capa Barsavi lv10 PB+4 · saves prof: CON/WIS/CHA (Clérigo+Sorcerer)
+        </div>
+
+        <div class="info-block" style="margin-top:16px;border-color:var(--gold-border);">
+          <h5 style="color:var(--gold);">🎲 Cada zona = botão de roll independente</h5>
+          <p style="font-size:13px;margin:0 0 12px;">Click direto na zona pra rolar. Hover mostra ícone 🎲. Sem modal, sem step extra — rolagem é um único click.</p>
+          <table style="margin-bottom:12px;">
+            <thead><tr><th>Zona</th><th>Click rola</th><th>Resultado</th></tr></thead>
+            <tbody>
+              <tr><td><strong style="color:var(--text);">CHECK</strong> (zona escura)</td><td><code>1d20 + mod</code></td><td>Toast: "STR check: 14 (12+2)"</td></tr>
+              <tr><td><strong style="color:var(--gold);">SAVE</strong> (zona gold-soft)</td><td><code>1d20 + mod + PB</code> (se prof)</td><td>Toast: "CON save: 22 (14+8) ✅ vs DC 15"</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:12px;color:var(--text-muted);margin:0;">Mestre vê resultado em broadcast (se realtime ativo) · histórico vai pra log do combate · cada roll fica salvo em <code>roll_history</code> da campanha.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBDs servidos</h5>
+          <ul class="clean">
+            <li><strong>Rastrear volátil</strong> (primário) — Col B + Ribbon</li>
+            <li><strong>Consultar estado</strong> (primário) — Ability chips + Ribbon + Col A</li>
+            <li>Registrar memória (secundário) — nota rápida overlay acessível via <span class="kbd">N</span></li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>👁 Informações visíveis (above-the-fold)</h5>
+          <ul class="clean">
+            <li>HP atual/máx + tier <span class="chip success">FULL</span></li>
+            <li>HP temporário (se >0)</li>
+            <li>AC · Iniciativa · Velocidade · Inspiração</li>
+            <li>CD Magia (se caster)</li>
+            <li>Resumo compacto de slots de magia</li>
+            <li>Condições ativas</li>
+            <li><strong>6 ability modifiers</strong> sempre visíveis (antes: escondidos em accordion)</li>
+            <li>6 testes de resistência</li>
+            <li>18 perícias em grid 3-col</li>
+            <li>Lista de efeitos ativos (conc destacada)</li>
+            <li>Recursos de classe (com dots de carga)</li>
+            <li>Grid de spell slots I-IX</li>
+            <li>Spells conhecidas (com search + filtros)</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⚡ Ações disponíveis</h5>
+          <ul class="clean">
+            <li><strong>HP:</strong> 3 botões <span class="chip danger">💥 Dano</span> <span class="chip success">💚 Cura</span> <span class="chip gold">🛡 Temp</span> (cada click abre input inline, digita e confirma) — mesmo padrão do combate do Mestre</li>
+            <li>Toggle condição (picker com 13 canônicas + exaustão)</li>
+            <li>Toggle proficient/expertise em save/perícia <span class="chip gold">permanente: ● = tenho</span></li>
+            <li>Consumir slot (click dot vazio → fica cheio = gasto) <span class="chip danger">transitório: ● = usado</span></li>
+            <li>Adicionar/dismissar efeito ativo</li>
+            <li>Resetar durações de efeitos</li>
+            <li>Incrementar/resetar recurso de classe</li>
+            <li>Buscar + filtrar spells conhecidas</li>
+            <li>Editar personagem completo (drawer)</li>
+            <li>Exportar ficha em PDF</li>
+            <li>Toggle inspiration</li>
+            <li>Resolver conflito de concentração</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>🚨 Sinais & estados</h5>
+          <div class="signal">
+            <div class="signal-icon">💔</div>
+            <div class="signal-body"><strong>HP tier transition</strong>Cor muda: verde → amarelo → laranja → vermelho conforme <code>getHpStatus()</code></div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">✨</div>
+            <div class="signal-body"><strong>Pulse gold em ack</strong>Após qualquer modificação, pulse 1.5s confirma persistência</div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">⚡</div>
+            <div class="signal-body"><strong>Badge pulsante na aba</strong>Quando combate ativa (decisão #33)</div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">🔥</div>
+            <div class="signal-body"><strong>Banner de combate</strong>"Round N · turno de X" aparece acima do ribbon</div>
+          </div>
+        </div>
+
+        <div class="info-block">
+          <h5>🚪 Saídas (cross-nav)</h5>
+          <ul class="clean">
+            <li>→ Arsenal (item mágico afeta stat)</li>
+            <li>→ Diário (anotar consequência de combate)</li>
+            <li>→ /combat/[id] (botão "Entrar no Combate")</li>
+            <li>→ Drawer Editar Personagem</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⌨ Atalhos de teclado</h5>
+          <div>
+            <span class="kbd">1</span> Ir pra Herói ·
+            <span class="kbd">N</span> Nota rápida ·
+            <span class="kbd">?</span> Ajuda
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<!-- TELA 1b: HERÓI MOBILE -->
+<section id="heroi-mobile">
+  <div class="screen-card">
+    <h3>📱 Herói · Mobile (390px) <span class="chip gold">iPhone 13 ref</span></h3>
+    <p class="tagline">Mesma tab Herói, layout single-column compacto. Ribbon de 2 rows fica colapsável (⌄). Slots viram chip resumo que abre popover. Touch targets 44px universais.</p>
+
+    <div class="mobile-grid">
+      <div>
+        <!-- ============================== -->
+        <!-- ESTADO 1: MODO LEITURA -->
+        <!-- ============================== -->
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dim);margin:0 0 12px;text-align:center;">🧘 Modo Leitura (fora de combate)</h4>
+        <div class="phone-frame">
+          <div class="phone-content">
+            <div class="phone-ui">
+              <!-- TOPBAR -->
+              <div class="m-topbar">
+                <span>☰ Pocket DM</span>
+                <span style="position:relative;">🔔 <span style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--destructive);border-radius:50%;"></span></span>
+              </div>
+
+              <!-- HEADER -->
+              <div class="m-header">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="color:var(--text-muted);">◄</span>
+                  <span class="name" style="font-family:'Cinzel',serif;color:var(--gold);font-weight:600;flex:1;">Capa Barsavi</span>
+                  <span style="color:var(--text-subtle);font-size:11px;">📄</span>
+                  <span style="color:var(--gold);font-size:11px;">✎</span>
+                </div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Half-Elf · Clérigo/Sorce · Nv10</div>
+              </div>
+
+              <!-- TAB BAR -->
+              <div class="m-tabs">
+                <span class="m-tab active">⚔ Herói</span>
+                <span class="m-tab">🎒 Arsenal</span>
+                <span class="m-tab">📖 Diário</span>
+                <span class="m-tab">🗺 Mapa</span>
+              </div>
+
+              <!-- RIBBON COMPACTO -->
+              <div class="m-ribbon">
+                <div class="hp-row">
+                  <span style="color:var(--success);">❤</span>
+                  <span class="hp-label">88/88</span>
+                  <div class="hp-bar"></div>
+                  <span class="hp-tier">FULL</span>
+                </div>
+                <div style="display:flex;gap:4px;margin-top:6px;">
+                  <span class="chip danger" style="flex:1;text-align:center;font-size:10px;padding:4px;">💥 Dano</span>
+                  <span class="chip success" style="flex:1;text-align:center;font-size:10px;padding:4px;">💚 Cura</span>
+                  <span class="chip gold" style="flex:1;text-align:center;font-size:10px;padding:4px;">🛡 Temp</span>
+                </div>
+                <div class="meta-row">
+                  <div class="meta-inline">
+                    🛡 <strong>21</strong> &nbsp; 🪄 <strong>13/15</strong> &nbsp; ✨ —
+                  </div>
+                  <span class="expand-btn">⌄ mais</span>
+                </div>
+                <!-- Linha de chips estados (sempre visível, scroll horizontal) -->
+                <div style="display:flex;gap:4px;margin-top:6px;overflow-x:auto;padding-bottom:2px;">
+                  <span class="chip success" style="font-size:9px;white-space:nowrap;">✨ Abençoado</span>
+                  <span class="slot-summary-chip" style="font-size:10px;padding:3px 8px;white-space:nowrap;">🪄 13/15</span>
+                  <span class="chip" style="font-size:9px;white-space:nowrap;">2 efeitos</span>
+                </div>
+              </div>
+
+              <!-- ABILITY SCORES 3x2 -->
+              <div class="m-section">
+                <h6>Atributos & Saves</h6>
+                <div class="ability-grid-m">
+                  <div class="ability-chip-m">
+                    <div class="l">STR</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+0</span></div>
+                    <div class="save-z"><span class="sv-i">🛡</span><span>+0</span><span class="sv-d"></span></div>
+                    <div class="s">10</div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">DEX</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+2</span></div>
+                    <div class="save-z"><span class="sv-i">🛡</span><span>+2</span><span class="sv-d"></span></div>
+                    <div class="s">14</div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">CON</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+4</span></div>
+                    <div class="save-z prof"><span class="sv-i">🛡</span><span>+8</span><span class="sv-d"></span></div>
+                    <div class="s">18</div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">INT</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">−1</span></div>
+                    <div class="save-z"><span class="sv-i">🛡</span><span>−1</span><span class="sv-d"></span></div>
+                    <div class="s">8</div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">WIS</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+2</span></div>
+                    <div class="save-z prof"><span class="sv-i">🛡</span><span>+6</span><span class="sv-d"></span></div>
+                    <div class="s">14</div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">CHA</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+4</span></div>
+                    <div class="save-z prof"><span class="sv-i">🛡</span><span>+8</span><span class="sv-d"></span></div>
+                    <div class="s">18</div>
+                  </div>
+                </div>
+                <div style="font-size:9px;color:var(--text-subtle);text-align:center;margin-top:6px;">borda gold = save proficient · sv: CON+8 WIS+6 CHA+8</div>
+              </div>
+
+              <!-- PERÍCIAS ACCORDION -->
+              <div class="m-section">
+                <h6>Perícias & Proficiências</h6>
+                <div class="accordion-m"><span>📜 Perícias (5 prof)</span><span class="arrow">▾</span></div>
+                <div class="accordion-m"><span>📚 Idiomas · Ferramentas</span><span class="arrow">▾</span></div>
+                <div class="accordion-m"><span>🛡 Armaduras · Armas</span><span class="arrow">▾</span></div>
+              </div>
+
+              <!-- EFEITOS ATIVOS -->
+              <div class="m-section">
+                <h6>✨ Efeitos Ativos</h6>
+                <div class="effect-row-m">
+                  <span class="dot"></span>
+                  <span style="flex:1;">Abençoar</span>
+                  <span class="conc">conc</span>
+                  <span style="color:var(--text-subtle);font-size:10px;">9m</span>
+                  <span style="color:var(--destructive);">×</span>
+                </div>
+                <div class="effect-row-m">
+                  <span class="dot"></span>
+                  <span style="flex:1;">Escudo da fé</span>
+                  <span style="color:var(--text-subtle);font-size:10px;">8m</span>
+                  <span style="color:var(--destructive);">×</span>
+                </div>
+                <div style="text-align:center;color:var(--gold);font-size:11px;padding:8px 0 0;">+ Adicionar efeito</div>
+              </div>
+
+              <!-- RECURSOS DE CLASSE -->
+              <div class="m-section">
+                <h6>⚡ Recursos de Classe</h6>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px;">
+                  <span>Canalizar Divindade</span>
+                  <span style="display:flex;gap:6px;align-items:center;">
+                    <span style="font-size:10px;color:var(--text-subtle);">1/1</span>
+                    <span class="ribbon-slot-dot"></span>
+                  </span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px;border-top:1px solid var(--border-subtle);">
+                  <span>Intervenção Divina</span>
+                  <span style="display:flex;gap:6px;align-items:center;">
+                    <span style="font-size:10px;color:var(--text-subtle);">1/1</span>
+                    <span class="ribbon-slot-dot"></span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- SPELL SLOTS -->
+              <div class="m-section">
+                <h6>🪄 Spell Slots</h6>
+                <div class="slots-m">
+                  <div class="slot-group-m">
+                    <span class="sl-label">I</span>
+                    <div class="sl-dots"><span class="sl-dot ready"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                  <div class="slot-group-m">
+                    <span class="sl-label">II</span>
+                    <div class="sl-dots"><span class="sl-dot ready"></span><span class="sl-dot ready"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                  <div class="slot-group-m">
+                    <span class="sl-label">III</span>
+                    <div class="sl-dots"><span class="sl-dot used"></span><span class="sl-dot used"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                  <div class="slot-group-m">
+                    <span class="sl-label">IV</span>
+                    <div class="sl-dots"><span class="sl-dot ready"></span><span class="sl-dot ready"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                  <div class="slot-group-m">
+                    <span class="sl-label">V</span>
+                    <div class="sl-dots"><span class="sl-dot ready"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                  <div class="slot-group-m disabled">
+                    <span class="sl-label">VI</span>
+                    <div class="sl-dots"><span class="sl-dot"></span><span class="sl-dot"></span></div>
+                  </div>
+                </div>
+                <div style="font-size:9px;color:var(--text-subtle);text-align:center;margin-top:8px;">scroll → · ○ disponível · ● gasto</div>
+              </div>
+
+              <!-- SPELLS CONHECIDAS -->
+              <div class="m-section">
+                <h6>📖 Spells Conhecidas</h6>
+                <div class="search-m">🔍 buscar magia...</div>
+                <div class="filter-chips-m">
+                  <span class="chip-m active">Todas</span>
+                  <span class="chip-m">Prep</span>
+                  <span class="chip-m">⭐ Favs</span>
+                  <span class="chip-m">Truques</span>
+                </div>
+                <div class="spell-row-m"><span class="dot"></span><span>Bless</span><span class="meta">1st · conc</span></div>
+                <div class="spell-row-m"><span class="dot"></span><span>Cure Wounds</span><span class="meta">1st</span></div>
+                <div class="spell-row-m"><span class="dot"></span><span>Shield of Faith</span><span class="meta">1st · conc</span></div>
+                <div class="spell-row-m"><span class="dot"></span><span>Spiritual Weapon</span><span class="meta">2nd</span></div>
+                <div style="text-align:center;color:var(--text-subtle);font-size:10px;padding:6px 0;">↓ scroll pra ver mais</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- ============================== -->
+        <!-- ESTADO 2: MODO COMBATE ATIVO -->
+        <!-- ============================== -->
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dim);margin:0 0 12px;text-align:center;">⚔ Modo Combate Ativo</h4>
+        <div class="phone-frame">
+          <div class="phone-content">
+            <div class="phone-ui">
+              <!-- TOPBAR -->
+              <div class="m-topbar">
+                <span>☰ Pocket DM</span>
+                <span style="position:relative;">🔔 <span style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--destructive);border-radius:50%;"></span></span>
+              </div>
+
+              <!-- HEADER -->
+              <div class="m-header">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="color:var(--text-muted);">◄</span>
+                  <span class="name" style="font-family:'Cinzel',serif;color:var(--gold);font-weight:600;flex:1;">Capa Barsavi</span>
+                  <span style="color:var(--gold);font-size:11px;">✎</span>
+                </div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Half-Elf · Clérigo/Sorce · Nv10</div>
+              </div>
+
+              <!-- TAB BAR (badge ⚡ na Herói) -->
+              <div class="m-tabs">
+                <span class="m-tab active">⚔ Herói<span class="pulse"></span></span>
+                <span class="m-tab">🎒</span>
+                <span class="m-tab">📖</span>
+                <span class="m-tab">🗺</span>
+              </div>
+
+              <!-- BANNER DE COMBATE -->
+              <div style="background:rgba(224,92,59,0.15);border-bottom:1px solid var(--destructive);padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:11px;">
+                <span style="color:var(--destructive);">⚔</span>
+                <div style="flex:1;">
+                  <div style="color:var(--text);font-weight:600;">Round 3 · Turno de Grolda</div>
+                  <div style="color:var(--text-subtle);font-size:10px;">próximo: Capa Barsavi</div>
+                </div>
+                <span class="chip gold" style="font-size:10px;">Entrar →</span>
+              </div>
+
+              <!-- RIBBON COMBATE (mais denso) -->
+              <div class="m-ribbon" style="border-color:var(--destructive);">
+                <div class="hp-row">
+                  <span style="color:var(--success);">❤</span>
+                  <span class="hp-label">76/88</span>
+                  <div class="hp-bar" style="background:rgba(41,163,110,0.25);"><div style="width:86%;height:100%;background:var(--success);"></div></div>
+                  <span class="hp-tier">LIGHT</span>
+                </div>
+                <div style="display:flex;gap:4px;margin-top:6px;">
+                  <span class="chip danger" style="flex:1;text-align:center;font-size:10px;padding:4px;">💥 Dano</span>
+                  <span class="chip success" style="flex:1;text-align:center;font-size:10px;padding:4px;">💚 Cura</span>
+                  <span class="chip gold" style="flex:1;text-align:center;font-size:10px;padding:4px;">🛡 Temp</span>
+                </div>
+                <div style="display:flex;gap:4px;margin-top:6px;overflow-x:auto;padding-bottom:2px;">
+                  <span class="chip success" style="font-size:9px;white-space:nowrap;">✨ Abençoado</span>
+                  <span class="slot-summary-chip" style="font-size:10px;padding:3px 8px;white-space:nowrap;">🪄 13/15</span>
+                  <span class="chip" style="font-size:9px;white-space:nowrap;">2 efeitos</span>
+                </div>
+              </div>
+
+              <!-- ABILITY SCORES — em combate save é IGUAL ou MAIS importante (decisão #46) -->
+              <div class="m-section" style="border-color:var(--gold-border);background:rgba(212,168,83,0.04);">
+                <h6 style="color:var(--gold);">⚔ Atributos & Saves (críticos em combate)</h6>
+                <div class="ability-grid-m">
+                  <div class="ability-chip-m">
+                    <div class="l">STR</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+0</span></div>
+                    <div class="save-z"><span class="sv-i">🛡</span><span>+0</span><span class="sv-d"></span></div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">DEX</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+2</span></div>
+                    <div class="save-z"><span class="sv-i">🛡</span><span>+2</span><span class="sv-d"></span></div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">CON</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+4</span></div>
+                    <div class="save-z prof"><span class="sv-i">🛡</span><span>+8</span><span class="sv-d"></span></div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">INT</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">−1</span></div>
+                    <div class="save-z"><span class="sv-i">🛡</span><span>−1</span><span class="sv-d"></span></div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">WIS</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+2</span></div>
+                    <div class="save-z prof"><span class="sv-i">🛡</span><span>+6</span><span class="sv-d"></span></div>
+                  </div>
+                  <div class="ability-chip-m">
+                    <div class="l">CHA</div>
+                    <div class="check-z"><div class="ck-l">check</div><span class="ck-v">+4</span></div>
+                    <div class="save-z prof"><span class="sv-i">🛡</span><span>+8</span><span class="sv-d"></span></div>
+                  </div>
+                </div>
+                <div style="font-size:9px;color:var(--text-subtle);text-align:center;margin-top:6px;">save proficient destacado em gold · click rola direto</div>
+              </div>
+
+              <!-- EFEITOS EXPANDIDOS -->
+              <div class="m-section" style="border-color:var(--gold-border);">
+                <h6 style="color:var(--gold);">✨ Efeitos Ativos (visível em combate)</h6>
+                <div class="effect-row-m">
+                  <span class="dot"></span>
+                  <span style="flex:1;">Abençoar</span>
+                  <span class="conc">conc</span>
+                  <span style="color:var(--warning);font-size:10px;">9m</span>
+                  <span style="color:var(--destructive);">×</span>
+                </div>
+                <div class="effect-row-m">
+                  <span class="dot"></span>
+                  <span style="flex:1;">Escudo da fé</span>
+                  <span style="color:var(--warning);font-size:10px;">8m</span>
+                  <span style="color:var(--destructive);">×</span>
+                </div>
+              </div>
+
+              <!-- SLOTS EXPANDIDOS -->
+              <div class="m-section" style="border-color:var(--gold-border);">
+                <h6 style="color:var(--gold);">🪄 Spell Slots</h6>
+                <div class="slots-m">
+                  <div class="slot-group-m">
+                    <span class="sl-label">I</span>
+                    <div class="sl-dots"><span class="sl-dot ready"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                  <div class="slot-group-m">
+                    <span class="sl-label">II</span>
+                    <div class="sl-dots"><span class="sl-dot ready"></span><span class="sl-dot ready"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                  <div class="slot-group-m">
+                    <span class="sl-label">III</span>
+                    <div class="sl-dots"><span class="sl-dot used"></span><span class="sl-dot used"></span><span class="sl-dot ready"></span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PERÍCIAS COLAPSADAS EM COMBATE -->
+              <div class="m-section">
+                <div class="accordion-m"><span>📜 Perícias (colapsadas)</span><span class="arrow">▾</span></div>
+              </div>
+
+              <!-- FAB nota rápida -->
+              <div class="fab-m">📝</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de adaptações desktop vs mobile -->
+    <h4 style="font-family:'Cinzel',serif;color:var(--gold);margin:40px 0 12px;font-size:18px;">Adaptações desktop → mobile</h4>
+    <table>
+      <thead><tr><th>Elemento</th><th>Desktop ≥1280px</th><th>Mobile 390px</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Layout principal</strong></td>
+          <td>2 colunas (Col A + Col B, ~560px cada)</td>
+          <td>Single column · scroll vertical</td>
+        </tr>
+        <tr>
+          <td><strong>Ribbon Vivo</strong></td>
+          <td>2 rows com tudo visível</td>
+          <td>Compacto: HP + botões + AC + ⌄ expand. Estados temporais em chips com scroll horizontal</td>
+        </tr>
+        <tr>
+          <td><strong>Slots no ribbon</strong></td>
+          <td>Grid clicável de dots 16px</td>
+          <td>Chip resumo "🪄 13/15" → tap abre popover com grid grande</td>
+        </tr>
+        <tr>
+          <td><strong>Botões HP</strong></td>
+          <td>Chips inline `[💥 Dano] [💚 Cura] [🛡 Temp]`</td>
+          <td>Mesmos chips em row própria full-width (flex:1 cada). Touch ≥40px de altura</td>
+        </tr>
+        <tr>
+          <td><strong>Ability scores</strong></td>
+          <td>Grid 6×1 (uma linha)</td>
+          <td>Grid 3×2 · borda gold = save proficient · sv mostrado em legenda abaixo</td>
+        </tr>
+        <tr>
+          <td><strong>Saves & Skills</strong></td>
+          <td>Grid 3-col com 18 perícias visíveis</td>
+          <td>Accordion fechado por default ("📜 Perícias (5 prof) ▾"). Justificável por screen real estate</td>
+        </tr>
+        <tr>
+          <td><strong>Efeitos Ativos</strong></td>
+          <td>Card vertical na Col B</td>
+          <td>Card stack abaixo dos atributos · destacado em gold quando combate</td>
+        </tr>
+        <tr>
+          <td><strong>Spell Slots</strong></td>
+          <td>Grid completo na Col B (todos os 9 níveis)</td>
+          <td>Row scroll horizontal · níveis disponíveis pro char (níveis VI+ disabled visualmente)</td>
+        </tr>
+        <tr>
+          <td><strong>Spell List</strong></td>
+          <td>Search + filter chips + lista rolável</td>
+          <td>Mesmo padrão · search sticky · scroll vertical</td>
+        </tr>
+        <tr>
+          <td><strong>Banner combate</strong></td>
+          <td>Banner 40px acima do ribbon</td>
+          <td>Banner mais compacto (32px) com CTA à direita</td>
+        </tr>
+        <tr>
+          <td><strong>FAB nota rápida</strong></td>
+          <td>Bottom-right 56×56px</td>
+          <td>Bottom-right 56×56px (mesmo) · acima da safe-area mobile</td>
+        </tr>
+        <tr>
+          <td><strong>Touch targets</strong></td>
+          <td>Não crítico (mouse)</td>
+          <td><strong>≥44×44px obrigatório</strong> em todos elementos interativos (regra WCAG)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="grid-2" style="margin-top:24px;">
+      <div class="info-block">
+        <h5>📐 Princípios mobile</h5>
+        <ul class="clean">
+          <li>Single column sempre</li>
+          <li>Sticky: header + tab bar + ribbon</li>
+          <li>Cards stackam abaixo</li>
+          <li>Accordions OK quando real estate justifica</li>
+          <li>Scroll horizontal só em chips (efeitos, slots resumo)</li>
+          <li>FAB pra ações em combate (nota rápida)</li>
+          <li>Touch targets sempre ≥44px</li>
+          <li>Safe area inset top + bottom respeitados</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <h5>🚨 O que NUNCA cortar em mobile</h5>
+        <ul class="clean">
+          <li>HP bar + tier (sempre visível no ribbon)</li>
+          <li>Botões Dano/Cura/Temp (1 tap pra ação)</li>
+          <li>AC + chip de slots (consulta de combate)</li>
+          <li>Ability score modifiers (grid 3×2 sempre presente em viewport inicial)</li>
+          <li>Indicação de combate ativo (badge ⚡ + banner)</li>
+          <li>Acesso à nota rápida (FAB em combate)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Decisão #35 reforçada:</strong> Player HQ é desktop-first; combate é bi-viável (desktop + mobile com paridade funcional). Nada do que afeta combate pode ficar inacessível em mobile.
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<!-- TELA 2: ARSENAL -->
+<section id="arsenal">
+  <div class="screen-card">
+    <h3>🎒 Arsenal</h3>
+    <p class="tagline">O que você carrega e o que sabe fazer passivamente. Inventário + habilidades de classe + sintonização de itens mágicos.</p>
+
+    <div class="screen-grid">
+      <div>
+        <pre class="wireframe">
+<span class="w-muted">┌──────────────────────────────────────────┐</span>
+<span class="w-muted">│ HEADER · TAB BAR · </span><span class="w-gold">RIBBON VIVO</span><span class="w-muted"> (sticky)   │</span>
+<span class="w-muted">├──────────────────────────────────────────┤</span>
+<span class="w-muted">│ </span><span class="w-gold">COL A</span><span class="w-muted">               │ </span><span class="w-gold">COL B</span><span class="w-muted">                │</span>
+<span class="w-muted">│                     │                     │</span>
+<span class="w-muted">│ </span><span class="w-gold">HABILIDADES</span><span class="w-muted">         │ </span><span class="w-gold">SINTONIZAÇÃO 2/3</span><span class="w-muted">     │</span>
+<span class="w-muted">│                     │ 💎 Anel Proteção [×]│</span>
+<span class="w-muted">│ ⚡ Canalizar Div.   │ 💎 Amuleto Saúde [×]│</span>
+<span class="w-muted">│    Clérigo Lv5      │ ⚪ Slot vazio [+Sin]│</span>
+<span class="w-muted">│    [Detalhes ▾]     │ ─────────────────── │</span>
+<span class="w-muted">│                     │ </span><span class="w-gold">MOEDAS</span><span class="w-muted">              │</span>
+<span class="w-muted">│ ✨ Font of Magic    │ CP0·SP12·EP0·GP245 │</span>
+<span class="w-muted">│    7 sorcery points │ PP3      [Ajustar] │</span>
+<span class="w-muted">│    [Detalhes ▾]     │ ─────────────────── │</span>
+<span class="w-muted">│                     │ </span><span class="w-gold">MEUS ITENS</span><span class="w-muted">          │</span>
+<span class="w-muted">│ 🎯 Turn Undead      │ [🔍 buscar item...] │</span>
+<span class="w-muted">│    Passiva          │ [Todos][Mágic][Consu]│</span>
+<span class="w-muted">│    [Detalhes ▾]     │                     │</span>
+<span class="w-muted">│                     │ ⚔ Espada +1   [Sin] │</span>
+<span class="w-muted">│ 🎭 Half-Elf Traits  │ 🛡 Escudo    [Equip]│</span>
+<span class="w-muted">│    Racial           │ 🧪 Poção Cura·3x[Usar]│</span>
+<span class="w-muted">│    [Detalhes ▾]     │ 🪙 Mochila     1x   │</span>
+<span class="w-muted">│                     │ [+ Adicionar Item]  │</span>
+<span class="w-muted">│ [+ Habilidade]      │ ─────────────────── │</span>
+<span class="w-muted">│                     │ </span><span class="w-gold">INV COMPARTILHADO</span><span class="w-muted">   │</span>
+<span class="w-muted">│                     │ Poções Cura·0/0/0/0 │</span>
+<span class="w-muted">│                     │ Goodberries·0       │</span>
+<span class="w-muted">│                     │ Ouro grupo·0        │</span>
+<span class="w-muted">└─────────────────────┴─────────────────────┘</span>
+</pre>
+      </div>
+
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBDs servidos</h5>
+          <ul class="clean">
+            <li><strong>Registrar memória</strong> (primário) — loot novo</li>
+            <li>Consultar estado (secundário) — habilidades passivas</li>
+            <li>Rastrear volátil (terciário) — consumir poção em combate</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>👁 Informações visíveis</h5>
+          <ul class="clean">
+            <li>Habilidades de classe (ativas + passivas + raciais)</li>
+            <li>Origem (classe + nível) e tipo de reset</li>
+            <li>Contagem de uso (1/1, 7pts, etc)</li>
+            <li>3 slots de sintonização + item em cada</li>
+            <li>Moedas: CP/SP/EP/GP/PP</li>
+            <li>Inventário pessoal filtrável</li>
+            <li>Inventário compartilhado (grupo)</li>
+            <li>Essenciais (poções, consumíveis) pré-estruturados</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⚡ Ações disponíveis</h5>
+          <ul class="clean">
+            <li>Expandir/colapsar detalhes de habilidade</li>
+            <li>Usar habilidade ativa (consome carga)</li>
+            <li>Editar/remover habilidade</li>
+            <li>Sintonizar item mágico (se slot disponível)</li>
+            <li>Des-sintonizar (libera slot)</li>
+            <li>Ajustar moedas</li>
+            <li>Buscar item + filtrar</li>
+            <li>Adicionar item (auto-complete SRD)</li>
+            <li>Usar poção / consumível (decrementa qty)</li>
+            <li>Equipar/des-equipar armadura/arma</li>
+            <li>Propor item pro grupo (aprovação Mestre)</li>
+            <li>Ajustar moedas do grupo</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>🚨 Sinais</h5>
+          <div class="signal">
+            <div class="signal-icon">⚡</div>
+            <div class="signal-body"><strong>Badge [N] na aba</strong>Items novos adicionados pelo Mestre (loot) não vistos</div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">⚠</div>
+            <div class="signal-body"><strong>Sintonização cheia</strong>Ao tentar sintonizar com 3/3 slots preenchidos</div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">📬</div>
+            <div class="signal-body"><strong>Pedido de remoção pendente</strong>Item do grupo aguarda aprovação do Mestre</div>
+          </div>
+        </div>
+
+        <div class="info-block">
+          <h5>🚪 Saídas</h5>
+          <ul class="clean">
+            <li>→ Herói (item sintonizado afeta stat → "Ver efeito na ficha?")</li>
+            <li>→ /combat/[id] se usou item em combate</li>
+            <li>→ Drawer detalhes SRD ao clicar em item</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⌨ Atalho</h5>
+          <div><span class="kbd">2</span> Ir pra Arsenal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<!-- TELA 3: DIÁRIO -->
+<section id="diario">
+  <div class="screen-card">
+    <h3>📖 Diário</h3>
+    <p class="tagline">O que você vive e o que lembra. Notas rápidas, mini-wiki pessoal, diário de sessão, NPCs conhecidos, quests, recaps publicados e inbox do Mestre — tudo em uma linha do tempo.</p>
+
+    <div class="tab-pills">
+      <span class="tab-pill">📝 Rápidas</span>
+      <span class="tab-pill active">📔 Minhas Notas</span>
+      <span class="tab-pill">🕰 Diário de Sessão</span>
+      <span class="tab-pill">👤 NPCs</span>
+      <span class="tab-pill">🎯 Quests</span>
+      <span class="tab-pill">📬 Do Mestre <span class="chip danger" style="margin-left:4px;padding:0 6px;">2</span></span>
+      <span class="tab-pill">⭐ Biblioteca</span>
+    </div>
+
+    <div class="screen-grid">
+      <div>
+        <pre class="wireframe">
+<span class="w-muted">┌── SUB-NAV DIÁRIO (6 sub-abas) ──────────┐</span>
+<span class="w-muted">│ [Rápidas] </span><span class="w-gold">[Minhas Notas]</span><span class="w-muted"> [Sessão]      │</span>
+<span class="w-muted">│ [NPCs] [Quests] [Mestre] </span><span class="w-gold">[⭐ Biblioteca]</span><span class="w-muted">   │</span>
+<span class="w-muted">├──────────────────────────────────────────┤</span>
+<span class="w-muted">│ </span><span class="w-gold">COL A (440px)</span><span class="w-muted">    │ </span><span class="w-gold">COL B (680px) — Timeline</span><span class="w-muted"> │</span>
+<span class="w-muted">│                   │                       │</span>
+<span class="w-muted">│ [+ Nova]          │ Hoje                  │</span>
+<span class="w-muted">│ [🔍 buscar...]    │ ├─14:30 Nota rápida   │</span>
+<span class="w-muted">│                   │                       │</span>
+<span class="w-muted">│ Tags:             │ Sexta · Sessão 12     │</span>
+<span class="w-muted">│ [all][#combate]   │ ├─22:14 Combate final │</span>
+<span class="w-muted">│ [#roleplay]       │ ├─22:00 Recap publicdo│</span>
+<span class="w-muted">│                   │ │  "O grupo achou..." │</span>
+<span class="w-muted">│ ┌───────────────┐ │ ├─20:30 Quest update │</span>
+<span class="w-muted">│ │Observ. Grolda │ │ ├─20:15 Nota @Grolda │</span>
+<span class="w-muted">│ │#suspeita·2d   │ │                       │</span>
+<span class="w-muted">│ └───────────────┘ │ Quinta · Sessão 11    │</span>
+<span class="w-muted">│ ┌───────────────┐ │ ├─22:00 Recap pub.    │</span>
+<span class="w-muted">│ │Sessão 11      │ │ ├─18:30 Quest iniciada│</span>
+<span class="w-muted">│ │loot·1sem      │ │                       │</span>
+<span class="w-muted">│ └───────────────┘ │ [Carregar mais ▾]     │</span>
+<span class="w-muted">│                   │                       │</span>
+<span class="w-muted">│ [+ Nova Nota]     │                       │</span>
+<span class="w-muted">└───────────────────┴───────────────────────┘</span>
+</pre>
+      </div>
+
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBDs servidos</h5>
+          <ul class="clean">
+            <li><strong>Registrar memória</strong> (primário) — mini-wiki + notas</li>
+            <li>Consultar história (secundário) — timeline + recaps</li>
+            <li>Contextualizar combate (terciário) — NPCs + quests ativas</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>👁 Informações visíveis</h5>
+          <ul class="clean">
+            <li><strong>📝 Rápidas:</strong> notas curtas com tags auto</li>
+            <li><strong>📔 Minhas Notas:</strong> mini-wiki com markdown + @mentions</li>
+            <li><strong>🕰 Diário de Sessão:</strong> timeline com recaps + notas vinculadas</li>
+            <li><strong>👤 NPCs conhecidos:</strong> cards com last-seen + humor + notas</li>
+            <li><strong>🎯 Quests:</strong> ativas/completas, status, NPCs ligados</li>
+            <li><strong>📬 Do Mestre:</strong> inbox de notas privadas</li>
+            <li><strong>⭐ Biblioteca:</strong> favoritos do compêndio (magias, monstros, itens, feats, NPCs públicos)</li>
+            <li>Timeline universal à direita (eventos de todas sub-abas)</li>
+            <li>Filtros globais por tag e tipo</li>
+          </ul>
+        </div>
+
+        <div class="info-block" style="border-color:var(--gold-border);background:linear-gradient(135deg,var(--bg-raised) 0%,var(--gold-soft) 100%);">
+          <h5 style="color:var(--gold);">⭐ Biblioteca — nova sub-aba (decisão #39)</h5>
+          <p style="font-size:13px;margin:0 0 10px;color:var(--text);"><strong>Mini-wiki de referências favoritadas</strong> do compêndio do app.</p>
+          <ul class="clean">
+            <li>🪄 <strong>Magias</strong> — lembrar mecânica de spells interessantes mesmo sem tê-las</li>
+            <li>👹 <strong>Monstros</strong> — stats de monstros já enfrentados ou estudados</li>
+            <li>⚔ <strong>Itens mágicos</strong> — items vistos em loot de outros jogadores</li>
+            <li>🎯 <strong>Feats / Features</strong> — ideias pra próximo level up</li>
+            <li>🧝 <strong>NPCs públicos</strong> — personagens icônicos da campanha</li>
+          </ul>
+          <p style="font-size:12px;color:var(--text-muted);margin:10px 0 0;">Invocação: <strong>sub-aba aqui</strong> (view curada) + <strong>Ctrl+K</strong> (busca rápida) + <strong>botão ⭐ Favoritar</strong> em toda ficha do compêndio. Anotação opcional por item. Magias favoritadas aparecem também em Herói > Spells filtro <span class="chip gold">⭐ Favoritas</span>.</p>
+        </div>
+
+        <div class="info-block">
+          <h5>⚡ Ações disponíveis</h5>
+          <ul class="clean">
+            <li>Criar nota (editor markdown)</li>
+            <li>Adicionar tags (chips)</li>
+            <li>@ autocomplete de NPCs/Quests/Locations/Factions</li>
+            <li>Auto-save 30s</li>
+            <li>Buscar texto full-text</li>
+            <li>Filtrar por tag</li>
+            <li>Marcar nota do Mestre como lida</li>
+            <li>Abandonar ou completar quest</li>
+            <li>Vincular nota a sessão específica</li>
+            <li>Expandir recap publicado</li>
+            <li>Anotar sobre NPC conhecido</li>
+            <li>Anotar sobre quest (inline)</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>🚨 Sinais</h5>
+          <div class="signal">
+            <div class="signal-icon">📬</div>
+            <div class="signal-body"><strong>Badge [N] na aba Diário</strong>Notas do Mestre não lidas + quests atualizadas</div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">✨</div>
+            <div class="signal-body"><strong>Highlight 2s em nova entrada</strong>Quando broadcast chega e user está na aba</div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">💾</div>
+            <div class="signal-body"><strong>Toast "Salvo há 15s"</strong>Feedback de auto-save não-invasivo</div>
+          </div>
+        </div>
+
+        <div class="info-block">
+          <h5>🚪 Saídas</h5>
+          <ul class="clean">
+            <li>→ Mapa (click em NPC em Diário > NPCs abre drawer no Mapa)</li>
+            <li>→ /combat/[id]/history (recap detalhado)</li>
+            <li>← Mapa → Diário (drawer do Mapa "Ver notas")</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⌨ Atalhos</h5>
+          <div>
+            <span class="kbd">3</span> Ir pra Diário ·
+            <span class="kbd">N</span> Nota rápida overlay ·
+            <span class="kbd">Ctrl+S</span> Salvar nota
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<!-- TELA 4: MAPA -->
+<section id="mapa">
+  <div class="screen-card">
+    <h3>🗺 Mapa</h3>
+    <p class="tagline">Mind map narrativo da campanha. NPCs · Locais · Facções · Quests · Sessões — tudo conectado via <code>campaign_mind_map_edges</code> (entity graph existente, 18 tipos de relação).</p>
+
+    <div class="screen-grid">
+      <div>
+        <pre class="wireframe">
+<span class="w-muted">┌── HEADER · TAB BAR · RIBBON ──────────┐</span>
+<span class="w-muted">├───────────────────────────────────────┤</span>
+<span class="w-muted">│ </span><span class="w-gold">FILTROS CHIP BAR</span><span class="w-muted"> (compacto)           │</span>
+<span class="w-muted">│ [NPCs][Notas][Jogadores][Histórico]   │</span>
+<span class="w-muted">│ [Quests][Bag][Locais][Facções][Pins]  │</span>
+<span class="w-muted">│                           [+ Add Pin] │</span>
+<span class="w-muted">├───────────────────────────────────────┤</span>
+<span class="w-muted">│ </span><span class="w-warn">⚡ 1 novidade desde sua última visita</span><span class="w-muted"> │</span>
+<span class="w-muted">├───────────────────────────────────────┤</span>
+<span class="w-muted">│                                       │</span>
+<span class="w-muted">│     ┌─────────────────┐               │</span>
+<span class="w-muted">│     │</span> <span class="w-gold">Curse of Strahd</span> <span class="w-muted">│               │</span>
+<span class="w-muted">│     └────────┬────────┘               │</span>
+<span class="w-muted">│              │                        │</span>
+<span class="w-muted">│      ┌───────┼───────┬────────┐       │</span>
+<span class="w-muted">│      │       │       │        │       │</span>
+<span class="w-muted">│   ┌──┴──┐ ┌──┴──┐ ┌──┴──┐ ┌──┴──┐     │</span>
+<span class="w-muted">│   │Capa │ │ Kee │ │Valla│ │Urmen│     │</span>
+<span class="w-muted">│   │Bars.│ │Feath│ │ ki  │ │     │     │</span>
+<span class="w-muted">│   └─────┘ └─────┘ └─────┘ └─────┘     │</span>
+<span class="w-muted">│                                       │</span>
+<span class="w-muted">│ [+][-][⛶]                 [minimap]   │</span>
+<span class="w-muted">└───────────────────────────────────────┘</span>
+</pre>
+      </div>
+
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBDs servidos</h5>
+          <ul class="clean">
+            <li>Registrar memória (secundário) — descobrir conexões</li>
+            <li>Consultar contexto narrativo (secundário)</li>
+            <li>Exploração profunda (deleite) — não é JTBD crítico mas é diferencial</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>👁 Informações visíveis</h5>
+          <ul class="clean">
+            <li>Nodes: NPCs · Locais · Facções · Quests · Sessões · Jogadores</li>
+            <li>Edges coloridas por relationship</li>
+            <li>Nomes em Cinzel gold</li>
+            <li>Minimap canto inferior direito</li>
+            <li>Banner "N novidades desde última visita"</li>
+            <li>Filtros chip (esconde tipo de node)</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⚡ Ações disponíveis</h5>
+          <ul class="clean">
+            <li>Zoom (scroll / +/-)</li>
+            <li>Pan (drag)</li>
+            <li>Click node → abre drawer lateral</li>
+            <li>Drawer: ver detalhes, notas, last-seen</li>
+            <li>Adicionar pin pessoal (marker)</li>
+            <li>Filtrar tipos de node</li>
+            <li>Fit-to-screen</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>🚨 Sinais</h5>
+          <div class="signal">
+            <div class="signal-icon">✨</div>
+            <div class="signal-body"><strong>Halo pulsante em node atualizado</strong>Quando entidade teve update desde última visita</div>
+          </div>
+          <div class="signal">
+            <div class="signal-icon">🔖</div>
+            <div class="signal-body"><strong>Badge [N] na aba</strong>Entidades novas desde última visita</div>
+          </div>
+        </div>
+
+        <div class="info-block">
+          <h5>🚪 Saídas</h5>
+          <ul class="clean">
+            <li>→ Diário (drawer de NPC tem "📖 Ver minhas notas")</li>
+            <li>← Diário → Mapa (NPC card em Diário tem "🗺 Ver no Mapa")</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⌨ Atalho</h5>
+          <div><span class="kbd">4</span> Ir pra Mapa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<!-- RIBBON VIVO -->
+<section id="ribbon">
+  <h2>8 · Ribbon Vivo</h2>
+  <p class="section-lead">O HUD permanente do Jogador. Sticky no topo de todas as 4 tabs. Nunca some. É o componente mais crítico do redesign — resolve os JTBDs "rastrear" e "consultar" simultaneamente.</p>
+
+  <div class="ribbon-mockup" style="font-size:13px;padding-bottom:10px;">
+    <!-- Row 1: Core -->
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--border-subtle);">
+      <span style="color:var(--success);font-weight:600;">❤ 88/88</span>
+      <span class="hp-bar-mock"></span>
+      <span style="color:var(--success);font-family:'Inter';font-size:11px;font-weight:600;letter-spacing:0.05em;">FULL</span>
+      <span class="chip danger">💥 Dano</span>
+      <span class="chip success">💚 Cura</span>
+      <span class="chip gold">🛡 Temp</span>
+      <span style="color:var(--text-subtle);">|</span>
+      🛡 <strong>21</strong> &nbsp; ⚡ <strong>+2</strong> &nbsp; 👣 <strong>30ft</strong> &nbsp; ✨ — &nbsp; 🎯 CD <strong>16</strong>
+    </div>
+    <!-- Row 2: Estados temporais -->
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:10px;font-size:11px;">
+      <span style="color:var(--text-muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Cond</span>
+      <span class="chip success" style="font-size:10px;">✨ Abençoado</span>
+      <span class="chip" style="font-size:10px;cursor:pointer;color:var(--gold-dim);">+ add</span>
+      <span style="color:var(--text-subtle);">|</span>
+      <span style="color:var(--text-muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Efeitos</span>
+      <span class="chip gold" style="font-size:10px;">🪬 Abençoar · 9m <span style="background:var(--concentration-bg);color:var(--concentration);border:1px solid var(--concentration-border);padding:1px 5px;border-radius:3px;margin-left:2px;font-weight:600;font-size:9px;">conc</span></span>
+      <span class="chip gold" style="font-size:10px;">🛡 Escudo da fé · 8m</span>
+      <span class="chip" style="font-size:10px;cursor:pointer;color:var(--gold-dim);">+ add</span>
+      <span style="color:var(--text-subtle);">|</span>
+      <span style="color:var(--text-muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Slots</span>
+      <span class="ribbon-slots">
+        <span class="ribbon-slot-group"><span class="lvl">I</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+        <span class="ribbon-slot-group"><span class="lvl">II</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+        <span class="ribbon-slot-group"><span class="lvl">III</span><span class="ribbon-slot-dot used"></span><span class="ribbon-slot-dot used"></span><span class="ribbon-slot-dot"></span></span>
+        <span class="ribbon-slot-group"><span class="lvl">IV</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+        <span class="ribbon-slot-group"><span class="lvl">V</span><span class="ribbon-slot-dot"></span><span class="ribbon-slot-dot"></span></span>
+      </span>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--text-subtle);margin:-12px 0 16px 8px;">
+    <strong>Duas linhas no ribbon:</strong> Row 1 = core stats permanentes (HP/AC/Init/Speed/CD). Row 2 = estados temporais (condições + efeitos com duração + slots clicáveis).<br>
+    <strong>Slots:</strong> dots de 16px visualmente · cada um com área invisível de 44×44px (regra WCAG mobile). Hover/touch dá scale + glow gold pra confirmar acerto. Padrão transitório (○ = disponível · ● = gasto).
+  </div>
+
+  <div class="card" style="margin-top:24px;">
+    <h3>📱 Adaptação mobile do ribbon (390px)</h3>
+    <p style="font-size:13px;color:var(--text-muted);">Em viewports estreitos, a row 2 dos slots vira um <strong>chip resumo clicável</strong> que expande pra grid grande em popover. Mantém o JTBD de "consumir slot rápido" sem estourar a largura.</p>
+
+    <div class="ribbon-mockup" style="font-size:12px;padding-bottom:10px;max-width:390px;">
+      <!-- Mobile compacto -->
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--border-subtle);">
+        <span style="color:var(--success);font-weight:600;">❤ 88/88</span>
+        <span class="hp-bar-mock" style="width:80px;"></span>
+        <span style="color:var(--success);font-size:10px;font-weight:600;">FULL</span>
+        <span class="chip danger" style="font-size:10px;">💥</span>
+        <span class="chip success" style="font-size:10px;">💚</span>
+        <span class="chip gold" style="font-size:10px;">🛡</span>
+        <span style="color:var(--gold);cursor:pointer;font-size:11px;">⌄</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:8px;font-size:11px;">
+        <span class="chip success" style="font-size:10px;">✨ Abençoado</span>
+        <span class="slot-summary-chip" style="font-size:11px;padding:4px 10px;">🪄 Slots <strong>13/15</strong></span>
+        <span class="chip" style="font-size:10px;">2 efeitos</span>
+        <span style="color:var(--gold);cursor:pointer;font-size:11px;margin-left:auto;">+</span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-subtle);margin-top:8px;">
+      <strong>Mobile compacto:</strong> ⌄ expande detalhes (Init/Speed/CD escondidos por default). Chip <strong>"Slots 13/15"</strong> abre popover com grid grande de dots (igual desktop). Chip <strong>"2 efeitos"</strong> abre lista. Tudo com touch targets ≥44px.
+    </div>
+  </div>
+
+  <!-- Estado: popover HP Dano aberto -->
+  <div class="ribbon-mockup" style="font-size:13px;border-color:var(--destructive);padding-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <span style="color:var(--success);font-weight:600;">❤ 88/88</span>
+      <span class="hp-bar-mock"></span>
+      <span style="color:var(--success);font-family:'Inter';font-size:11px;font-weight:600;letter-spacing:0.05em;">FULL</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(224,92,59,0.15);color:var(--destructive);border:1px solid var(--destructive);border-radius:4px;font-size:12px;">
+        💥 Dano:
+        <input type="text" value="12" style="width:40px;padding:2px 4px;background:var(--bg);border:1px solid var(--destructive);color:var(--text);font-family:'JetBrains Mono';font-size:12px;border-radius:3px;text-align:center;">
+        <span style="color:var(--success);font-weight:600;cursor:pointer;">↵</span>
+        <span style="color:var(--text-subtle);cursor:pointer;">✕</span>
+      </span>
+      <span style="color:var(--text-subtle);">|</span>
+      🛡 <strong>21</strong> &nbsp; ⚡ <strong>+2</strong> &nbsp; 👣 <strong>30ft</strong>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--text-subtle);margin:-12px 0 16px 8px;">↑ Estado com popover aberto — usuário clicou em <strong>Dano</strong>, digitou <code>12</code>, Enter aplica (HP 88 → 76). Esc cancela. Cura e Temp idênticos com cores verde/gold.</div>
+
+  <div class="callout warn" style="margin:24px 0;">
+    <strong style="color:var(--warning);">⚡ Distinção canônica de dots</strong><br>
+    <table style="margin:12px 0 0;">
+      <thead><tr><th>Tipo</th><th>Exemplos</th><th>○ vazio</th><th>● cheio</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Permanente</strong></td><td>Save proficient, skill proficient, idioma, ferramenta</td><td>não tenho</td><td><strong>TENHO</strong></td></tr>
+        <tr><td><strong>Transitório</strong></td><td>Spell slot, Canalizar Div, Intervenção, <strong>Reaction</strong></td><td><strong>disponível</strong></td><td>gasto</td></tr>
+      </tbody>
+    </table>
+    <p style="margin:8px 0 0;font-size:12px;">Source-of-truth do código: <code>CombatantRow.tsx:516-520</code> (reaction) segue o padrão transitório. <strong>SpellSlotTracker e ResourceDots precisam ser refatorados</strong> pra mesma convenção em Fase C.</p>
+  </div>
+
+  <div class="grid-2" style="margin-top:32px;">
+    <div class="card">
+      <h3>Comportamento normal</h3>
+      <ul class="clean">
+        <li>Altura 56px desktop, 48px mobile (com expand button)</li>
+        <li>Position: sticky; top: 0; z-index: 20</li>
+        <li>Background bg-elevated/80 com backdrop-blur 8px (efeito glass)</li>
+        <li>Border-bottom gold/25%</li>
+        <li>HP bar ocupa largura total atrás do texto</li>
+        <li>Hover em qualquer elemento mostra tooltip</li>
+        <li>Cliques em +/- fazem optimistic update</li>
+        <li>Pulse gold 1.5s como ack</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Comportamento em combate</h3>
+      <ul class="clean">
+        <li>Pulse gold ao mudar HP (mais destacado)</li>
+        <li>CTA "⚔ Entrar no Combate →" aparece à direita (link <code>/combat/[id]</code>)</li>
+        <li>Tier labels (FULL/LIGHT/MODERATE/HEAVY/CRITICAL) — em inglês sempre (memory)</li>
+        <li>Resumo de slots atualiza em tempo real quando qualquer slot é consumido</li>
+        <li>Conditions podem receber badges semânticos destacados</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Princípio absoluto:</strong> O Ribbon Vivo nunca é escondido. Ele é o HUD da mesa — o jogador precisa saber seu HP e AC de relance, sempre, em qualquer tab.
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<!-- MODO COMBATE AUTO -->
+<section id="combate-auto">
+  <h2>9 · Modo Combate Auto</h2>
+  <p class="section-lead">Quando <code>campaigns.combat_active = true</code>, a UI do Herói se reorganiza automaticamente sem forçar troca de tab. Detecção via realtime + polling fallback.</p>
+
+  <div class="mermaid">
+stateDiagram-v2
+    [*] --> Leitura
+    Leitura --> Combate: broadcast combat:started
+    Leitura --> Combate: polling combat_active=true
+    Combate --> Leitura: broadcast combat:ended
+    Combate --> Leitura: polling combat_active=false
+    Combate --> Leitura: timeout 5min (safety)
+    Leitura: layout normal · tabs default
+    Combate: banner · badge pulsante · layout swap · FAB nota
+  </div>
+
+  <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-top:32px;">O que muda quando ativa</h3>
+
+  <table>
+    <thead><tr><th>Elemento</th><th>Modo Leitura</th><th>Modo Combate</th></tr></thead>
+    <tbody>
+      <tr><td>Badge aba Herói</td><td>—</td><td><span class="chip gold">⚡ pulsante</span></td></tr>
+      <tr><td>Banner topo Herói</td><td>—</td><td>"⚔ Round N · Turno X · próximo Y"</td></tr>
+      <tr><td>Ribbon</td><td>Normal</td><td>Pulse gold em HP + CTA "Entrar no Combate"</td></tr>
+      <tr><td>Col A Herói</td><td>Balanceada com col B</td><td>Perícias colapsam em accordion</td></tr>
+      <tr><td>Col B Herói</td><td>Balanceada</td><td>Efeitos + Slots + Resources EXPANDEM</td></tr>
+      <tr><td>FAB nota rápida</td><td>Oculto</td><td>Visível bottom-right</td></tr>
+      <tr><td>Atalhos</td><td>1/2/3/4 · N</td><td>1/2/3/4 · N · setas (roadmap)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <strong>Importante:</strong> Modo Combate Auto <strong>NUNCA força troca de tab</strong>. Se o jogador está em Diário escrevendo, a aba Herói ganha o badge mas o jogador continua onde está. Destaca, não prende. (Decisão #33 · Princípio P6 do DS: "um caminho por destino")
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<!-- 12 JORNADAS -->
+
+<!-- F1 -->
+<section id="jornada-1">
+  <div class="screen-card">
+    <h3><span class="chip gold">F1</span> Primeiro acesso ao Player HQ</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Jogador aceita convite do Mestre e cria personagem pela primeira vez.</p>
+    <div class="grid-2">
+      <div>
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dim);">Fluxo mermaid</h4>
+        <div class="mermaid">
+flowchart TD
+    A["Dashboard · click card campanha"] --> B{"Membro?"}
+    B -->|"Não"| B1["/campaigns/id view geral"]
+    B -->|"Sim"| C{"Tem personagem?"}
+    C -->|"Não"| C1["Wizard de criação"]
+    C -->|"Sim"| D["Render /sheet tab=Heroi"]
+    D --> E{"1ª visita?"}
+    E -->|"Sim"| F["Tour auto-inicia"]
+    F --> G["4 passos: Herói, Arsenal, Diário, Mapa"]
+    G --> H["Flag completed=true"]
+    E -->|"Não"| I["Restaurar última tab (24h)"]
+    H --> J["Pousa em Herói"]
+    I --> J
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD</h5>
+          <p style="font-size:13px;margin:0;">Orientação inicial — descobrir onde estão as coisas</p>
+        </div>
+        <div class="info-block">
+          <h5>👁 Infos chave</h5>
+          <ul class="clean">
+            <li>Skeleton rápido durante fetch</li>
+            <li>Tour de 4 steps com highlights</li>
+            <li>Copy narrativo em empty states</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>⚠ Falhas tratadas</h5>
+          <ul class="clean">
+            <li>Não-membro → redirect</li>
+            <li>Sem personagem → wizard</li>
+            <li>Role mestre → view do mestre</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F2 -->
+<section id="jornada-2">
+  <div class="screen-card">
+    <h3><span class="chip danger">F2</span> Mestre inicia combate</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Mestre clica "Iniciar Combate" durante sessão. Broadcast chega ao jogador.</p>
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+sequenceDiagram
+    participant M as Mestre
+    participant S as Supabase Realtime
+    participant J as Jogador (Player HQ)
+    M->>S: Click Iniciar Combate
+    S->>S: UPDATE campaigns combat_active=true
+    S-->>J: broadcast combat:started
+    J->>J: useCampaignCombatState detecta
+    J->>J: Badge ⚡ em Herói · Banner aparece
+    Note over J: Jogador NÃO é forçado a trocar tab
+    J->>J: (opcional) Click "Entrar no Combate"
+    J->>J: navega /combat/[id]
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD</h5>
+          <p style="font-size:13px;margin:0;">Ser avisado sem ser interrompido · entrar quando estiver pronto</p>
+        </div>
+        <div class="info-block">
+          <h5>👁 Sinais recebidos</h5>
+          <ul class="clean">
+            <li>Toast topo: "O mestre iniciou o combate — [Entrar]"</li>
+            <li>Badge pulsante ⚡ na aba Herói</li>
+            <li>Banner em Herói: "Round 1 · turno de X"</li>
+            <li>Ribbon ganha CTA "Entrar no Combate →"</li>
+            <li>FAB 📝 nota rápida aparece</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>⚠ Fallbacks</h5>
+          <ul class="clean">
+            <li>Realtime timeout → polling 10s</li>
+            <li>Broadcast perdido → DM stale detection 15s</li>
+            <li>Jogador abre HQ depois → banner mostra assim mesmo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F3 -->
+<section id="jornada-3">
+  <div class="screen-card">
+    <h3><span class="chip danger">F3</span> Tomar dano em combate</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Mestre aplica dano OU jogador informa "tomei 12".</p>
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+flowchart LR
+    A["HP 88/88 FULL"] --> B["Click botão 💥 Dano"]
+    B --> C["Input inline abre"]
+    C --> D["Digita 12 + Enter"]
+    D --> E["Optimistic: 88 → 76"]
+    E --> F["Pulse gold ack"]
+    F --> G{"Mudou tier?"}
+    G -->|"Não"| H["Fim (ainda FULL)"]
+    G -->|"Sim"| I["HP bar muda cor"]
+    I --> J["Label atualiza (LIGHT/MODERATE/...)"]
+    J --> K["Toast opcional"]
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD</h5>
+          <p style="font-size:13px;margin:0;"><strong>Rastrear volátil</strong> — HP é o stat mais crítico</p>
+        </div>
+        <div class="info-block">
+          <h5>👁 Tier transitions (canônicas)</h5>
+          <div>
+            <span class="chip success">FULL 100%</span>
+            <span class="chip success">LIGHT 70-100%</span>
+            <span class="chip warning">MODERATE 40-70%</span>
+            <span class="chip danger">HEAVY 10-40%</span>
+            <span class="chip danger">CRITICAL 0-10%</span>
+          </div>
+          <p style="font-size:11px;color:var(--text-subtle);margin:8px 0 0;">Labels em inglês nos 2 locales (memory imutável).</p>
+        </div>
+        <div class="info-block">
+          <h5>⚡ Controles semânticos (igual combate do Mestre)</h5>
+          <ul class="clean">
+            <li><strong>💥 Dano</strong> — abre input vermelho, digita valor, Enter aplica subtração</li>
+            <li><strong>💚 Cura</strong> — abre input verde, digita valor, Enter aplica (clamp no max)</li>
+            <li><strong>🛡 Temp HP</strong> — abre input gold, digita valor, substitui HP temp atual (regra RAW 5e: não acumula)</li>
+            <li>Esc fecha sem aplicar · Enter aplica · ↵ visual no input</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>⚡ Optimistic + Error</h5>
+          <ul class="clean">
+            <li>UI atualiza antes do ack (&lt;100ms)</li>
+            <li>Servidor confirma em &lt;500ms (pulse gold)</li>
+            <li>Erro → revert + toast "Não foi dessa vez"</li>
+            <li>HP=0 → badge "INCONSCIENTE" aparece</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F4 -->
+<section id="jornada-4">
+  <div class="screen-card">
+    <h3><span class="chip warning">F4</span> Usar magia (slot + efeito + concentração)</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Jogador decide lançar Abençoar (1st level).</p>
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+flowchart TD
+    A["Herói · Col B"] --> B["Click dot vazio slot lvl 1"]
+    B --> C["Optimistic: ○○ → ●○ (1 gasto)"]
+    C --> D["Ribbon atualiza resumo slots"]
+    D --> E{"Spell tem conc?"}
+    E -->|"Não"| F["Pronto"]
+    E -->|"Sim"| G{"Já concentra?"}
+    G -->|"Não"| H["Add efeito · conc"]
+    G -->|"Sim"| I["Toast: Trocar conc?"]
+    I -->|"Confirma"| J["Remove antigo · add novo"]
+    I -->|"Cancela"| K["Slot reverte (undo)"]
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBDs</h5>
+          <ul class="clean">
+            <li><strong>Rastrear volátil</strong> — slots + concentration</li>
+            <li>Consultar estado — ver spell list</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>⚡ Ações num único viewport</h5>
+          <ul class="clean">
+            <li>Buscar spell em search</li>
+            <li>Filtrar [Preparadas] [Favoritas]</li>
+            <li>Click dot → consume slot</li>
+            <li>Add efeito via [+ Efeito]</li>
+            <li>Auto-complete SRD preenche duração</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>🚨 Concentration conflict</h5>
+          <p style="font-size:13px;margin:0;">Modal explícito: "Você já concentra em X. Adicionar Y removerá a concentração anterior." Opções: <span class="chip">Cancelar</span> <span class="chip gold">Trocar</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F5 -->
+<section id="jornada-5">
+  <div class="screen-card">
+    <h3><span class="chip info">F5</span> Rolagem com modifier (o JTBD mais frequente)</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Mestre pede "teste de Força DC 15". Jogador precisa saber seu +modifier.</p>
+
+    <table>
+      <thead><tr><th>Estado</th><th>ANTES (hoje)</th><th>DEPOIS (redesign)</th></tr></thead>
+      <tbody>
+        <tr><td>Ver atributo</td><td>Accordion fechado — 1 click pra expandir</td><td>Sempre visível em chips</td></tr>
+        <tr><td>Tempo até ver mod</td><td>3-5s (click + scroll + leitura)</td><td>&lt;1s (relance)</td></tr>
+        <tr><td>Durante combate 5h</td><td>~20-50 cliques perdidos</td><td>0 cliques</td></tr>
+      </tbody>
+    </table>
+
+    <div class="ability-row">
+      <div class="ability-chip">
+        <div class="label">STR</div>
+        <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+0</span></div>
+        <div class="save-zone"><span class="sv-icon">🛡</span><span>sv +0</span><span class="sv-dot"></span></div>
+        <div class="score">10</div>
+      </div>
+      <div class="ability-chip">
+        <div class="label">DEX</div>
+        <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+2</span></div>
+        <div class="save-zone"><span class="sv-icon">🛡</span><span>sv +2</span><span class="sv-dot"></span></div>
+        <div class="score">14</div>
+      </div>
+      <div class="ability-chip">
+        <div class="label">CON</div>
+        <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+4</span></div>
+        <div class="save-zone prof"><span class="sv-icon">🛡</span><span>sv +8</span><span class="sv-dot"></span></div>
+        <div class="score">18</div>
+      </div>
+      <div class="ability-chip">
+        <div class="label">INT</div>
+        <div class="check-zone"><div class="check-label">check</div><span class="check-mod">−1</span></div>
+        <div class="save-zone"><span class="sv-icon">🛡</span><span>sv −1</span><span class="sv-dot"></span></div>
+        <div class="score">8</div>
+      </div>
+      <div class="ability-chip">
+        <div class="label">WIS</div>
+        <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+2</span></div>
+        <div class="save-zone prof"><span class="sv-icon">🛡</span><span>sv +6</span><span class="sv-dot"></span></div>
+        <div class="score">14</div>
+      </div>
+      <div class="ability-chip">
+        <div class="label">CHA</div>
+        <div class="check-zone"><div class="check-label">check</div><span class="check-mod">+4</span></div>
+        <div class="save-zone prof"><span class="sv-icon">🛡</span><span>sv +8</span><span class="sv-dot"></span></div>
+        <div class="score">18</div>
+      </div>
+    </div>
+
+    <div class="info-block" style="margin-top:16px;">
+      <h5>🎲 Cada chip serve 3 rolagens diferentes</h5>
+      <table style="margin-top:8px;">
+        <thead><tr><th>Mestre pede...</th><th>Jogador olha</th><th>Rolagem</th></tr></thead>
+        <tbody>
+          <tr><td><em>"Teste de Força DC 15"</em> (ability check)</td><td>Mod grande</td><td>d20 <strong>+0</strong></td></tr>
+          <tr><td><em>"Save de Força DC 15"</em> (saving throw)</td><td>Linha <strong>sv</strong> no chip (dot indica se é proficient)</td><td>STR não-prof → d20 <strong>+0</strong></td></tr>
+          <tr><td><em>"Save de Constituição DC 15"</em></td><td>Linha <strong>sv</strong> do CON chip (dot gold = prof)</td><td>d20 <strong>+8</strong> (mod +4 + PB +4)</td></tr>
+          <tr><td><em>"Teste de Atletismo"</em> (perícia)</td><td>Seção <strong>Perícias</strong> na Col A (separada)</td><td>d20 + skill modifier</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin:12px 0 0;"><strong>Legenda do chip:</strong> <span class="sv-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;border:1px solid var(--text-subtle);vertical-align:middle;"></span> não proficient &nbsp;·&nbsp; <span class="sv-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);border:1px solid var(--gold);vertical-align:middle;"></span> proficient (save já calculado com PB)</p>
+    </div>
+
+    <div class="callout">
+      <strong>Impacto estimado:</strong> em sessão típica de 3-4h com 5 jogadores, 30-50 rolagens por jogador = <strong>centenas de segundos economizados</strong> com ability chips sempre visíveis <strong>+ save já pré-calculado</strong> (sem precisar somar prof bonus mentalmente).
+    </div>
+  </div>
+</section>
+
+<!-- F6 -->
+<section id="jornada-6">
+  <div class="screen-card">
+    <h3><span class="chip success">F6</span> Descanso longo</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Mestre narra "vocês descansam 8h".</p>
+
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+flowchart LR
+    A["Click Descanso Longo"] --> B["Modal: Resetar tudo?"]
+    B -->|"Cancelar"| Z["Abort"]
+    B -->|"Confirmar"| C["Batch optimistic"]
+    C --> D1["Slots ← max"]
+    C --> D2["Recursos long_rest ← max"]
+    C --> D3["Efeitos rest-based ← dismiss"]
+    C --> D4["HP ← max"]
+    D1 --> E["Persist transaction"]
+    D2 --> E
+    D3 --> E
+    D4 --> E
+    E -->|"ok"| F["Toast: Descansou bem"]
+    E -->|"erro"| G["Revert · toast retry"]
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD</h5>
+          <p style="font-size:13px;margin:0;">Reset em batch · remover friction (5+ cliques hoje)</p>
+        </div>
+        <div class="info-block">
+          <h5>⚡ Ações em 1 clique</h5>
+          <ul class="clean">
+            <li>Todos spell slots → max</li>
+            <li>Recursos long-rest → max</li>
+            <li>Efeitos rest-based → dismissed</li>
+            <li>HP → max</li>
+            <li>Concentração → mantida (RAW)</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>👁 Tipos de descanso</h5>
+          <div>
+            <span class="chip">Descanso Curto</span>
+            <span class="chip gold">Descanso Longo</span>
+            <span class="chip info">Amanhecer (homebrew)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F7 -->
+<section id="jornada-7">
+  <div class="screen-card">
+    <h3><span class="chip info">F7</span> Receber nota privada do Mestre</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Mestre escreve nota direcionada ao jogador.</p>
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+sequenceDiagram
+    participant M as Mestre
+    participant S as Realtime
+    participant J as Jogador
+    M->>S: Envia nota (visibility=player_X)
+    S-->>J: broadcast note:received
+    J->>J: Badge [1] em Diário · sub-aba Do Mestre
+    Note over J: Se em Diário · sub-aba Do Mestre:<br/>fade-in + highlight 2s
+    J->>J: Click → abre nota
+    J->>J: Marca como lida · badge some
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD</h5>
+          <p style="font-size:13px;margin:0;">Comunicação assíncrona Mestre → Jogador · canal privado</p>
+        </div>
+        <div class="info-block">
+          <h5>👁 Sinais</h5>
+          <ul class="clean">
+            <li>Badge [N] na aba Diário global</li>
+            <li>Badge [N] na sub-aba Do Mestre</li>
+            <li>Se em Diário → fade-in 2s highlight</li>
+            <li>Se em outra tab → só badge</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F8 -->
+<section id="jornada-8">
+  <div class="screen-card">
+    <h3><span class="chip warning">F8</span> Nota rápida em combate (overlay)</h3>
+    <p class="tagline"><strong>Gatilho:</strong> "Alguém chamou Boris — investigar depois". Jogador quer anotar sem tirar foco do combate.</p>
+
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> OffScreen
+    OffScreen --> Open: FAB click OR tecla N
+    Open --> Typing: user digita
+    Typing --> Saved: Enter (se não-vazio)
+    Typing --> OffScreen: Esc
+    Typing --> OffScreen: Blur (descarta se vazio)
+    Saved --> OffScreen: Fade-out 300ms
+    Saved: Toast Nota salva em Diário
+    Open: Overlay leve · não esconde combate
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD</h5>
+          <p style="font-size:13px;margin:0;"><strong>Registrar sem interromper</strong> — principal diferencial do Grimório vs planilha</p>
+        </div>
+        <div class="info-block">
+          <h5>⚡ Invocação</h5>
+          <ul class="clean">
+            <li>FAB 📝 bottom-right (só em combate)</li>
+            <li>Atalho <span class="kbd">N</span> de qualquer tab</li>
+            <li>Slide-up 200ms</li>
+            <li>Não cobre ribbon (mantém contexto)</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>💾 Salvo em</h5>
+          <p style="font-size:13px;margin:0;">Diário &gt; Rápidas · tag auto <span class="chip">#combate</span> · timestamp da sessão atual</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F9 -->
+<section id="jornada-9">
+  <div class="screen-card">
+    <h3><span class="chip info">F9</span> Revisar sessão (pós-sessão)</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Jogador quer reler o recap e ver suas notas da sessão passada.</p>
+    <div class="grid-2">
+      <div>
+        <ol class="clean">
+          <li>Abre Player HQ via dashboard</li>
+          <li>Click tab Diário</li>
+          <li>Sub-aba 🕰 Diário de Sessão</li>
+          <li>Sessão mais recente no topo (marca "novo" se publicado há &lt;48h)</li>
+          <li>Expande → recap completo renderizado</li>
+          <li>Chips clicáveis: @NPCs, @Quests, @Locais</li>
+          <li>Ao final: "Anotar algo sobre essa sessão?" CTA</li>
+          <li>Clique → cria nota vinculada à sessão</li>
+        </ol>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBDs</h5>
+          <ul class="clean">
+            <li><strong>Registrar memória</strong></li>
+            <li>Consultar história</li>
+            <li>Preparar-se pra próxima sessão</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h5>👁 Diferencial Grimório</h5>
+          <p style="font-size:13px;margin:0;">Recap do Mestre + notas do jogador na mesma timeline. Linear + Notion-like. D&D Beyond não tem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F10 -->
+<section id="jornada-10">
+  <div class="screen-card">
+    <h3><span class="chip gold">F10</span> Subir de nível (com Wizard)</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Mestre <em>libera</em> o level up para um ou mais jogadores via comando dele. Broadcast realtime chega no Player HQ. Jogador roda wizard guiado.</p>
+
+    <div class="grid-2">
+      <div>
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dim);">Sequência cross-mode</h4>
+        <div class="mermaid">
+sequenceDiagram
+    participant M as Mestre
+    participant S as Realtime
+    participant J as Jogador (Player HQ)
+    M->>M: Click "Liberar Level Up"
+    M->>M: Escolhe quem sobe + nível alvo + msg
+    M->>S: INSERT level_up_invitations
+    S-->>J: broadcast levelup:offered
+    J->>J: Chip dourado no ribbon "🎉 Subir de Nível!"
+    J->>J: Click chip → Wizard abre
+    Note over J: 6 passos guiados
+    J->>J: Confirma escolhas
+    J->>S: UPDATE character + status=completed
+    S-->>M: broadcast levelup:completed
+    M->>M: Toast "Capa Barsavi subiu pro lv 11"
+        </div>
+
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dim);margin-top:24px;">Wizard — 6 passos</h4>
+        <ol class="clean">
+          <li><strong>Classe que avança</strong> — multiclass mostra opções; single-class skip auto</li>
+          <li><strong>HP novo</strong> — opção "Rolar dado" (animação dado) ou "Pegar média" (recomendado)</li>
+          <li><strong>ASI ou Feat</strong> — só nos níveis canônicos (4, 8, 12, 16, 19) — com search SRD de feats</li>
+          <li><strong>Spells novas</strong> — se caster, mostra slots novos + spells aprendidas/preparadas</li>
+          <li><strong>Features de classe</strong> — preview do que ganha (ex: Sneak Attack +1d6, Channel Divinity 2/short rest)</li>
+          <li><strong>Subclass choice</strong> — só nos níveis canônicos da classe (Clérigo lv1, Sorc lv1, Bárbaro lv3...)</li>
+          <li><em>Resumo final + confirm</em></li>
+        </ol>
+      </div>
+
+      <div>
+        <div class="info-block" style="border-color:var(--gold-border);background:linear-gradient(135deg,var(--bg-raised) 0%,var(--gold-soft) 100%);">
+          <h5 style="color:var(--gold);">🎉 Sinal no ribbon do Jogador</h5>
+          <div class="ribbon-mockup" style="font-size:11px;margin:8px 0 0;padding:8px 12px;border-color:var(--gold);">
+            <span style="color:var(--success);font-weight:600;">❤ 88/88</span>
+            <span class="hp-bar-mock" style="width:60px;"></span>
+            <span style="color:var(--success);font-size:9px;">FULL</span>
+            <span style="color:var(--text-subtle);">|</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:linear-gradient(90deg,var(--gold) 0%,var(--gold-dim) 100%);color:var(--bg);border-radius:20px;font-weight:700;font-size:11px;cursor:pointer;animation:pulse-gold 1.5s infinite;">
+              🎉 Subir de Nível →
+            </span>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);margin:8px 0 0;">Pulse gold + texto bold. Acessível também via Ctrl+K → "level up" se jogador dispensar.</p>
+        </div>
+
+        <div class="info-block">
+          <h5>🎯 JTBDs servidos</h5>
+          <ul class="clean">
+            <li><strong>Mestre:</strong> Controlar pacing da campanha sem ter que validar planilha de cada jogador</li>
+            <li><strong>Jogador:</strong> Subir nível sem dor (zero cálculo manual de HP/PB/spells)</li>
+            <li><strong>Ambos:</strong> Audit trail de todos os level ups (quando, quem liberou, escolhas feitas)</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>⚡ Controles do Mestre</h5>
+          <ul class="clean">
+            <li>Liberar para 1 jogador específico, todos da party, ou subset</li>
+            <li>Mensagem opcional ("derrotaram o dragão vermelho!")</li>
+            <li>TTL configurável (default 7 dias — depois expira)</li>
+            <li>Cancelar invitation pendente</li>
+            <li>Aprovar override manual (jogador esqueceu, Mestre faz por ele)</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>🛡 Validações no wizard</h5>
+          <ul class="clean">
+            <li>HP mínimo (1 + CON mod por hit die)</li>
+            <li>ASI: 2 pontos pra atributos OU 1 atributo + meio-feat OU 1 feat completo</li>
+            <li>Spells: respeita "spells known" da classe</li>
+            <li>Multiclass: verifica pré-requisitos (ex: Sorcerer requer CHA 13)</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>🚪 Saídas</h5>
+          <ul class="clean">
+            <li>Wizard salva → ribbon atualiza imediatamente (HP/AC/PB/spells)</li>
+            <li>Cancelar → invitation fica pending até Mestre cancelar/expirar</li>
+            <li>Fallback manual: <span class="kbd">✎ Editar</span> no header continua existindo pra correções</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:16px;">
+      <strong>Por que Mestre é gatilho:</strong> em mesas de RPG, level up é momento narrativo (geralmente após sessão importante). Se jogador subisse sozinho, perde-se o ritual + Mestre precisaria validar manualmente cada ficha. Padrão D&D Beyond + Roll20 + Foundry.
+    </div>
+  </div>
+</section>
+
+<!-- F11 -->
+<section id="jornada-11">
+  <div class="screen-card">
+    <h3><span class="chip success">F11</span> Adicionar item ao inventário</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Jogador achou espada +1 no loot.</p>
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+flowchart TD
+    A["Aba Arsenal"] --> B["[+ Adicionar Item]"]
+    B --> C["AddItemForm"]
+    C --> D["Search espada longa"]
+    D --> E["Auto-complete SRD"]
+    E --> F["Select → campos preenchidos"]
+    F --> G["Customiza nome 'Espada Longa +1'"]
+    G --> H{"Mágico com attunement?"}
+    H -->|"Sim"| I["Prompt: Sintonizar?"]
+    H -->|"Não"| J["Add na lista"]
+    I -->|"Sim e slot livre"| K["Sintoniza auto"]
+    I -->|"Sim e cheio"| L["Avisa slots cheios"]
+    K --> J
+    J --> M["Toast: Item adicionado"]
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD</h5>
+          <p style="font-size:13px;margin:0;">Registrar loot rapidamente · auto-complete reduz fricção</p>
+        </div>
+        <div class="info-block">
+          <h5>⚡ Auto-complete SRD</h5>
+          <ul class="clean">
+            <li>Digite "espada" → lista SRD + homebrew</li>
+            <li>Select preenche: peso, dano, props</li>
+            <li>Campos customizáveis após</li>
+            <li>Icon por categoria automático</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F12 -->
+<section id="jornada-12">
+  <div class="screen-card">
+    <h3><span class="chip info">F12</span> Reconexão (zero-drop)</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Jogador fecha aba acidentalmente, WiFi cai, ou troca de device. Regra Resilient Reconnection (invariante).</p>
+    <div class="grid-2">
+      <div>
+        <div class="mermaid">
+flowchart TD
+    A["Fecha browser mid-combate"] --> B["Reabre em outro device"]
+    B --> C["Login (cookies)"]
+    C --> D["Dashboard card AO VIVO"]
+    D --> E["Click card"]
+    E --> F{"sessionStorage?"}
+    F -->|"Sim"| G["Restore imediato · sync bg"]
+    F -->|"Não"| H{"localStorage 24h?"}
+    H -->|"Sim"| I["Restore parcial · sync"]
+    H -->|"Não"| J["Skeleton · full fetch"]
+    G --> K["Re-ativa Modo Combate Auto"]
+    I --> K
+    J --> K
+    K --> L["Jogador está onde parou"]
+        </div>
+      </div>
+      <div>
+        <div class="info-block">
+          <h5>🎯 Invariante</h5>
+          <p style="font-size:13px;margin:0;"><strong>Zero drop perceptível.</strong> Skeleton sempre, nunca tela branca.</p>
+        </div>
+        <div class="info-block">
+          <h5>📐 Chain de recovery</h5>
+          <ol class="clean">
+            <li>sessionStorage (mesmo browser)</li>
+            <li>localStorage 24h</li>
+            <li>Cookie auth</li>
+            <li>Skeleton + fetch completo</li>
+            <li>Re-subscribe realtime</li>
+          </ol>
+        </div>
+        <div class="info-block">
+          <h5>⚠ Edge cases</h5>
+          <ul class="clean">
+            <li>Token expirou → redirect /auth/login, mas campaign state preservado</li>
+            <li>Servidor lento → skeleton segura &gt;3s só se necessário</li>
+            <li>Split-brain → valida token_owner no visibilitychange</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F13 -->
+<section id="jornada-13">
+  <div class="screen-card">
+    <h3><span class="chip gold">F13</span> Pós-combate → Login (se anon) → Herói</h3>
+    <p class="tagline"><strong>Gatilho:</strong> Combate finalizado pelo Mestre. Jogador (anônimo OU autenticado) é levado direto pro Herói pra revisar HP final, slots usados, condições, anotar o que aconteceu. Se anônimo, prompt de login antes.</p>
+
+    <div class="grid-2">
+      <div>
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dim);">Sequência por estado de auth</h4>
+        <div class="mermaid">
+flowchart TD
+    A["Mestre encerra combate"] --> B["broadcast combat:ended"]
+    B --> C{"Jogador autenticado?"}
+    C -->|"Sim"| D["Toast: Combate encerrado"]
+    D --> E["CTA: Ver sua ficha →"]
+    E --> F["Click → /sheet?tab=heroi"]
+    C -->|"Não (anônimo via /join)"| G["RecapCtaCard inline"]
+    G --> H["Salve seu personagem · Crie conta grátis"]
+    H -->|"Click Criar conta"| I["OAuth Google · redirect=/sheet?tab=heroi"]
+    H -->|"Já tenho conta"| J["Login modal · redirect=/sheet?tab=heroi"]
+    H -->|"Dispensar (3x cap)"| K["Continua anônimo · sessionStorage"]
+    I --> L["Personagem persistido · Herói abre"]
+    J --> L
+    K --> M["Pode sair · personagem perdido se aba fechar"]
+    F --> N["Herói: ribbon mostra HP final + chip combat-just-ended"]
+    L --> N
+        </div>
+
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold-dim);margin-top:24px;">Estado do Herói pós-combate (primeiro acesso)</h4>
+        <div class="ribbon-mockup" style="font-size:11px;padding:10px 14px;border-color:var(--success);">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="color:var(--success);">❤ 76/88</span>
+            <span class="hp-bar-mock" style="width:80px;"></span>
+            <span style="color:var(--success);font-size:9px;">LIGHT</span>
+            <span class="chip success" style="font-size:10px;background:rgba(41,163,110,0.25);">🎉 Combate vencido!</span>
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+            <strong style="color:var(--text);">Resumo:</strong> 1d 12min · 12 dano tomado · 2 slots usados (III) · Bless mantida ·
+            <span style="color:var(--gold);cursor:pointer;">Anotar →</span>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--text-subtle);margin-top:8px;">↑ Quando jogador chega no Herói após combate, banner de resumo aparece no topo do conteúdo. Some após 30s ou ao clicar "Anotar →" (cria nota rápida vinculada à sessão).</p>
+      </div>
+
+      <div>
+        <div class="info-block">
+          <h5>🎯 JTBD principal</h5>
+          <p style="font-size:13px;margin:0;"><strong>Capturar memória quente do combate</strong> (anotações, ajustes finos) e — pra anônimo — converter em conta antes que feche a aba e perca tudo.</p>
+        </div>
+
+        <div class="info-block">
+          <h5>🔁 Variantes por estado de auth</h5>
+          <table>
+            <thead><tr><th>Estado</th><th>Fluxo</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Autenticado</strong> (já é membro da campanha)</td><td>Toast + CTA "Ver sua ficha" → 1 click pra <code>/sheet?tab=heroi</code>. Auto-redirect opcional após 5s se não dispensar.</td></tr>
+              <tr><td><strong>Anônimo</strong> via <code>/join/token</code></td><td><strong>RecapCtaCard inline</strong> (já existe em <code>components/conversion/</code>) com prompt "Crie conta grátis pra salvar". OAuth/Login com <code>redirectTo=/sheet?tab=heroi</code>. Após auth, claim do personagem + redirect.</td></tr>
+              <tr><td><strong>Guest</strong> via <code>/try</code></td><td>Não aplica — guest não tem campanha persistente. RecapCtaCard padrão atual fica.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="info-block">
+          <h5>⚠ Status atual no código (gap identificado)</h5>
+          <ul class="clean">
+            <li>✅ <code>RecapCtaCard</code> existe em <code>components/conversion/</code></li>
+            <li>✅ <code>GuestRecapFlow</code> existe (Epic 03 Wave 3a, 2026-04-20)</li>
+            <li>✅ Trigger <code>"end-combat"</code> em <code>GuestUpsellModal</code></li>
+            <li>❌ <strong>Redirect default vai pra dashboard, não pro <code>/sheet?tab=heroi</code></strong></li>
+            <li>❌ Player anônimo via <code>/join</code> não tem fluxo claro pós-combate (cai em /combat/[id]/recap)</li>
+            <li>❌ Banner "Combate vencido!" no Herói não existe — precisa ser criado</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>📐 Decisões de produto</h5>
+          <ul class="clean">
+            <li><strong>Anônimo dispensável:</strong> respeitar dismissal-store (cap 3x/sessão)</li>
+            <li><strong>Auto-redirect autenticado:</strong> 5s se não interagir (configurável em settings)</li>
+            <li><strong>Manter dados anon:</strong> sessionStorage preserva HP/slots/efeitos por 24h mesmo sem login</li>
+            <li><strong>Claim transparente:</strong> ao logar pós-combate, personagem do session_token vira do user automaticamente (RPC já existe?)</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h5>🚪 Saídas possíveis</h5>
+          <ul class="clean">
+            <li>→ <code>/sheet?tab=heroi</code> (caminho feliz)</li>
+            <li>→ <code>/sheet?tab=diario&action=quick-note</code> (anotar agora)</li>
+            <li>→ <code>/dashboard</code> (dispensar tudo)</li>
+            <li>← <code>/combat/[id]/recap</code> (ler recap completo do Mestre quando publicado)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn" style="margin-top:16px;">
+      <strong>Gap a fechar:</strong> infra de prompt pós-combate existe mas <strong>redirect não aponta pro Herói</strong>. Story nova na Fase A (quick win) ajusta <code>redirectTo</code> default + cria banner "Combate vencido!" no Herói. Sem isso, decisão #43 fica meio implementada.
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<section id="cross-nav">
+  <h2>Cross-nav entre Tabs</h2>
+  <p class="section-lead">Conexões intencionais entre as 4 tabs — o Grimório é uma rede, não 4 silos.</p>
+
+  <div class="mermaid">
+flowchart LR
+    H["⚔ Herói"]
+    A["🎒 Arsenal"]
+    D["📖 Diário"]
+    M["🗺 Mapa"]
+
+    H -->|"item sintonizado afeta stat"| A
+    A -->|"Ver efeito na ficha?"| H
+    D -->|"@NPC em nota"| M
+    M -->|"Drawer NPC: Ver notas"| D
+    H -.->|"Usou magia? Anotar efeito"| D
+    A -.->|"Loot novo do Mestre"| D
+    H -->|"CTA Entrar no Combate"| EX["/combat/[id]"]
+
+    style H fill:#D4A853,color:#14161F
+    style A fill:#181A25,color:#D4A853,stroke:#D4A853
+    style D fill:#181A25,color:#D4A853,stroke:#D4A853
+    style M fill:#181A25,color:#D4A853,stroke:#D4A853
+    style EX fill:#1F222E,color:#E6E5E1,stroke:#E05C3B,stroke-dasharray: 4 4
+  </div>
+
+  <div class="callout">
+    <strong>Regra P6 do DS:</strong> um caminho por destino. Cross-links são exceções intencionais, não a regra. Cada item vive em UMA tab primária.
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<section id="appendix">
+  <h2>Legenda & Referências</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Cores canônicas (Grimório)</h3>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--gold)"></span> <code>#D4A853</code> gold brand</span>
+        <span><span class="dot" style="background:var(--success)"></span> <code>#29A36E</code> success / HP FULL</span>
+        <span><span class="dot" style="background:var(--warning)"></span> <code>#F59E0B</code> warning / MODERATE</span>
+        <span><span class="dot" style="background:var(--destructive)"></span> <code>#E05C3B</code> destructive / HEAVY</span>
+        <span><span class="dot" style="background:var(--critical)"></span> <code>#B91C1C</code> critical</span>
+        <span><span class="dot" style="background:var(--info)"></span> <code>#5B8DEF</code> info / tours</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>HP Tiers (canônicos · EN nos 2 locales)</h3>
+      <div>
+        <span class="chip success">FULL 100%</span>
+        <span class="chip success">LIGHT 70-100%</span>
+        <span class="chip warning">MODERATE 40-70%</span>
+        <span class="chip danger">HEAVY 10-40%</span>
+        <span class="chip danger">CRITICAL 0-10%</span>
+      </div>
+      <p style="color:var(--text-subtle);font-size:11px;margin:12px 0 0;">Source: <code>lib/utils/hp-status.ts</code> · NUNCA hardcode</p>
+    </div>
+
+    <div class="card">
+      <h3>Atalhos globais</h3>
+      <table>
+        <tr><td><span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span></td><td>Switch entre Herói · Arsenal · Diário · Mapa</td></tr>
+        <tr><td><span class="kbd">N</span></td><td>Nota rápida overlay (qualquer tab)</td></tr>
+        <tr><td><span class="kbd">Esc</span></td><td>Fecha drawer/overlay</td></tr>
+        <tr><td><span class="kbd">Ctrl+K</span> <span class="kbd">⌘K</span></td><td>Busca global</td></tr>
+        <tr><td><span class="kbd">?</span></td><td>Mostra esta lista de atalhos</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Vocabulário ubíquo — regras imutáveis</h3>
+      <ul class="clean">
+        <li><strong>"Mestre"</strong> (nunca "DM") — UI, docs, commits</li>
+        <li><strong>Quest</strong> em inglês (nunca "Missão")</li>
+        <li><strong>HP tier labels</strong> em inglês (FULL/LIGHT/...)</li>
+        <li><strong>Combate</strong> (não "Luta"), <strong>Encontro</strong> (preset), <strong>Histórico</strong> (combate passado)</li>
+        <li><strong>Herói · Arsenal · Diário · Mapa</strong> (novos termos)</li>
+        <li><strong>Ribbon Vivo</strong> (componente, 2 linhas), <strong>Modo Combate Auto</strong> (feature)</li>
+        <li><strong>Biblioteca</strong> (sub-aba do Diário com favoritos do compêndio · decisão #40)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Dots — distinção canônica</h3>
+      <table>
+        <thead><tr><th>Tipo</th><th>○ vazio</th><th>● cheio</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Permanente</strong><br><small>Save proficient · Skill proficient · Idioma · Ferramenta · Armadura/Arma prof</small></td><td>não tenho</td><td>tenho</td></tr>
+          <tr><td><strong>Transitório</strong><br><small>Spell slot · Canalizar Div · Intervenção · Reaction · Action Surge</small></td><td>disponível</td><td>gasto/usado</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--text-subtle);margin:8px 0 0;">Reaction no combate (<code>CombatantRow.tsx:516</code>) já segue o padrão transitório. Slots e resources serão refatorados em Fase C pra mesma convenção. Decisão #37.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px;">
+    <h3>Docs relacionados neste pacote</h3>
+    <ul class="clean">
+      <li><strong>PRD-EPICO-CONSOLIDADO.md</strong> — 36 decisões canônicas</li>
+      <li><strong>00-INDEX.md</strong> — mapa de leitura por papel</li>
+      <li><strong>01-player-journey.md</strong> — 12 fluxos detalhados</li>
+      <li><strong>02-topologia-navegacao.md</strong> — 7→4 tabs</li>
+      <li><strong>03-wireframe-heroi.md</strong> · <strong>04-arsenal</strong> · <strong>05-diario</strong> · <strong>06-mapa</strong></li>
+      <li><strong>07-spec-funcional.md</strong> — estados × ações × erros × a11y</li>
+      <li><strong>08-design-tokens-delta.md</strong> — spacing / typography</li>
+      <li><strong>09-implementation-plan.md</strong> — 22 stories em 4 fases</li>
+      <li><strong>10-mermaid-flows.md</strong> — 12 diagramas para FigJam</li>
+      <li><strong>screenshots/</strong> — 14 PNGs evidência real</li>
+    </ul>
+  </div>
+
+  <div style="margin-top:48px;padding-top:24px;border-top:1px solid var(--border-subtle);color:var(--text-subtle);font-size:12px;text-align:center;">
+    <p><strong style="color:var(--gold);font-family:'Cinzel',serif;">Pocket DM · Grimório</strong></p>
+    <p>Party Mode 2026-04-23 · Sally · Mary · John · Winston · Amelia · decisor Dani Roscoe</p>
+    <p>v0.4 consolidação · 36 decisões · 4 tabs · 12 jornadas</p>
+  </div>
+</section>
+
+</main>
+
+</div><!-- /container -->
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: {
+    darkMode: true,
+    background: '#14161F',
+    primaryColor: '#181A25',
+    primaryTextColor: '#E6E5E1',
+    primaryBorderColor: '#D4A853',
+    lineColor: '#9896A0',
+    secondaryColor: '#1F222E',
+    tertiaryColor: '#181A25',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '13px',
+    mainBkg: '#181A25',
+    secondBkg: '#1F222E',
+    mainContrastColor: '#E6E5E1',
+    actorBkg: '#181A25',
+    actorBorder: '#D4A853',
+    actorTextColor: '#E6E5E1',
+    actorLineColor: '#9896A0',
+    signalColor: '#D4A853',
+    signalTextColor: '#E6E5E1',
+    labelBoxBkgColor: '#1F222E',
+    labelBoxBorderColor: '#D4A853',
+    labelTextColor: '#E6E5E1',
+    noteBkgColor: '#1F222E',
+    noteTextColor: '#E6E5E1',
+    noteBorderColor: '#D4A853',
+    activationBkgColor: '#D4A853',
+    activationBorderColor: '#A88339',
+    sequenceNumberColor: '#14161F',
+    edgeLabelBackground: '#1F222E',
+    clusterBkg: '#14161F',
+    clusterBorder: '#D4A853',
+    titleColor: '#D4A853'
+  },
+  flowchart: { curve: 'basis', padding: 16 },
+  sequence: { actorMargin: 60, width: 180, mirrorActors: false, bottomMarginAdj: 12 }
+});
+
+// Smooth scroll
+document.querySelectorAll('#toc a').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href');
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      document.querySelector(href).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
