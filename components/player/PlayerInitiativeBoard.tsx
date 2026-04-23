@@ -7,7 +7,7 @@ import { ConditionBadge } from "@/components/oracle/ConditionBadge";
 import { PlayerBottomBar } from "@/components/player/PlayerBottomBar";
 import { TurnUpcomingBanner } from "@/components/player/TurnUpcomingBanner";
 import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOverlay";
-import { getHpBarColor, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
+import { getHpBarColor, getHpFraction, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus, Users as UsersIcon, ArrowLeft, Timer as TimerIcon, type LucideIcon } from "lucide-react";
@@ -783,7 +783,7 @@ export function PlayerInitiativeBoard({
             const currentHp = pc.current_hp ?? 0;
             const maxHp = pc.max_hp ?? 0;
             const tempHp = pc.temp_hp ?? 0;
-            const hpPct = maxHp > 0 ? Math.max(0, Math.min(1, currentHp / maxHp)) : 0;
+            const hpPct = getHpFraction(currentHp, maxHp);
             const hpBarColor = getHpBarColor(currentHp, maxHp);
             const hpThresholdKey = getHpThresholdKey(currentHp, maxHp);
             const hasTempHp = tempHp > 0;

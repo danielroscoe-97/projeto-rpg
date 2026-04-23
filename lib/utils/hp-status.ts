@@ -146,6 +146,22 @@ export function getHpPercentage(currentHp: number, maxHp: number): number {
   return Math.round(Math.max(0, Math.min(100, (currentHp / maxHp) * 100)));
 }
 
+/**
+ * Calculate HP as a clamped [0, 1] fraction. Unlike {@link getHpPercentage}
+ * this does NOT round, so the caller can feed the value directly into a
+ * CSS `width` / `transform: scaleX(...)` calculation without introducing a
+ * 1% rounding jitter during animations.
+ *
+ * The clamp + `maxHp <= 0 → 0` guard matches the ad-hoc inline expression
+ * that had drifted across several components (PlayerBottomBar,
+ * PlayerInitiativeBoard, MonsterGroupHeader's buildGroupHealth). Those
+ * sites now delegate here.
+ */
+export function getHpFraction(currentHp: number, maxHp: number): number {
+  if (maxHp <= 0) return 0;
+  return Math.max(0, Math.min(1, currentHp / maxHp));
+}
+
 /** i18n key suffix for the HP threshold label (e.g. "hp_light"). */
 export function getHpThresholdKey(currentHp: number, maxHp: number): string | null {
   if (maxHp <= 0) return null;
