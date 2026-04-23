@@ -1151,8 +1151,8 @@ export function PlayerInitiativeBoard({
 
           // Only own character gets full HP bar; other players get status badge
           const showFullHp = isOwnChar;
-          const hpPct = showFullHp && combatant.max_hp && combatant.max_hp > 0
-            ? Math.max(0, Math.min(1, (combatant.current_hp ?? 0) / combatant.max_hp))
+          const hpPct = showFullHp
+            ? getHpFraction(combatant.current_hp ?? 0, combatant.max_hp ?? 0)
             : 0;
           const hpBarColor = showFullHp ? getHpBarColor(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : "";
           const hpThresholdKey = showFullHp ? getHpThresholdKey(combatant.current_hp ?? 0, combatant.max_hp ?? 0) : null;
