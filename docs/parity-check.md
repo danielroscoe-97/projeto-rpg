@@ -14,7 +14,7 @@ Guest (`/try`), Anonymous (`/join`), and Authenticated (`/invite` + login).
 The gate:
 
 1. Diffs the PR against its base.
-2. Flags files under `components/combat/`, `components/player/`, `components/guest/`, or the corresponding `app/**` routes (`/try`, `/join`, `/invite`, `/app/combat`, `/app/campaigns/*/sheet|journey|run`).
+2. Flags files under `components/combat/`, `components/player/`, `components/guest/`, or the corresponding `app/**` routes (`/try`, `/join`, `/app/combat`, `/app/campaigns/*/sheet|journey|run`). Route-group segments like `(with-sidebar)` and `(focused)` are transparent to the matcher — a path like `app/app/(with-sidebar)/campaigns/[id]/sheet/page.tsx` triggers the gate.
 3. For each added/changed `e2e/**.spec.ts` in the same PR, scans for mode-specific signals:
    - **Guest** — `/try`, `GuestCombatClient`, `guest-try-mode` references
    - **Anon** — `/join/`, `signInAnonymously`, `session_tokens` references
@@ -40,7 +40,7 @@ hatches in order of preference:
 
 ### 1. Declare parity-intent in the PR body
 
-Best for features that genuinely are Auth-only (data persistence, DM-only
+Best for features that genuinely are Auth-only (data persistence, Mestre-only
 features, realtime that Guest can't do). Add a block anywhere in the PR
 description:
 
@@ -52,8 +52,10 @@ anon: n/a (requires campaign_members)
 ```
 
 The gate parses the block and accepts `n/a`, `na`, `skip`, or `exempt` as
-the value. The Auth mode cannot be declared n/a — every combat-touching
-change must have at least one Auth-mode spec covering it.
+the value **for `guest` and `anon` only**. Attempting `auth: n/a` makes the
+gate fail with an explicit error — every combat-touching change must have
+at least one Auth-mode spec covering it, full stop. If the feature truly
+does not apply to any authenticated user, it probably shouldn't ship.
 
 ### 2. Use the `parity-exempt` PR label
 

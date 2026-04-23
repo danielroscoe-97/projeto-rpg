@@ -43,7 +43,22 @@ try {
   labels = [];
 }
 
-/** Triggering paths — changes here invoke the parity rule. */
+/** Triggering paths — changes here invoke the parity rule.
+ *
+ * Next.js route groups: segments wrapped in `(...)` don't appear in the URL
+ * but ARE part of the filesystem path. Real paths look like
+ *   app/app/(with-sidebar)/campaigns/[id]/sheet/page.tsx
+ *   app/app/(focused)/combat/[id]/page.tsx
+ * so the triggers below optionally consume a `(...)` segment after
+ * `app/app/` (and after `app/` for the top-level combat mirror) to avoid
+ * silently skipping 90% of combat-touching PRs.
+ *
+ * Note: there is no `app/invite/` route in this codebase — the Authenticated
+ * entry point is the same PlayerJoinClient mounted via `/join/[token]` with
+ * a logged-in user (see CLAUDE.md Combat Parity Rule). `invite` stays in the
+ * SIGNALS map as a spec-side hint only.
+ */
+const ROUTE_GROUP = "(?:\\([^)]+\\)/)?"; // optionally consume a (group)/ segment
 const TRIGGER_GLOBS = [
   (f) => f.startsWith("components/combat/"),
   (f) => f.startsWith("components/player/"),
@@ -51,9 +66,11 @@ const TRIGGER_GLOBS = [
   // App routes that host those components
   (f) => f.startsWith("app/try/"),
   (f) => f.startsWith("app/join/"),
-  (f) => f.startsWith("app/invite/"),
-  (f) => f.startsWith("app/app/campaigns/") && /combat|sheet|journey|run/.test(f),
-  (f) => f.startsWith("app/combat/"),
+  // Campaign HQ modes (sheet/run/journey) under whatever route group.
+  (f) => new RegExp(`^app/app/${ROUTE_GROUP}campaigns/.*/(sheet|run|journey)(/|$)`).test(f),
+  // Dedicated combat screen under whatever route group.
+  (f) => new RegExp(`^app/app/${ROUTE_GROUP}combat/`).test(f),
+  (f) => new RegExp(`^app/${ROUTE_GROUP}combat/`).test(f),
 ];
 
 /** Test-only paths — don't count as "touching combat" even if they match triggers. */
@@ -179,12 +196,35 @@ if (missing.length === 0) {
  */
 const intentMatch = /<!--\s*parity-intent([\s\S]*?)-->/i.exec(PR_BODY);
 const declaredNA = new Set();
+let authNAAttempted = false;
 if (intentMatch) {
   const block = intentMatch[1];
   for (const line of block.split(/\r?\n/)) {
     const m = /^\s*(guest|anon|auth)\s*:\s*(n\/a|na|skip|exempt)\b/i.exec(line);
-    if (m) declaredNA.add(m[1].toLowerCase());
+    if (!m) continue;
+    const mode = m[1].toLowerCase();
+    // Auth mode is NEVER allowed to be declared n/a. Every combat-touching
+    // change must have at least one Auth-mode spec (see docs/parity-check.md).
+    // Silently dropping this was the most severe bypass in the gate.
+    if (mode === "auth") {
+      authNAAttempted = true;
+      continue;
+    }
+    declaredNA.add(mode);
   }
+}
+
+if (authNAAttempted) {
+  console.log("❌ Combat Parity Gate FAILED.");
+  console.log("");
+  console.log("PR body declares `auth: n/a` in its parity-intent block, but auth");
+  console.log("mode cannot be declared n/a — every combat-touching change must");
+  console.log("have at least one Auth-mode spec.");
+  console.log("");
+  console.log("Remove the `auth: ...` line from the parity-intent block and add a");
+  console.log("spec under e2e/ that exercises the Authenticated path (loginAs +");
+  console.log("the relevant flow). See docs/parity-check.md §'When the gate is wrong'.");
+  process.exit(1);
 }
 
 if (declaredNA.size > 0) {
