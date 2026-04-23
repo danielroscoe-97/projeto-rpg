@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { UserCircle, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { DrawerShell } from "./DrawerShell";
+import { Drawer } from "@/components/ui/Drawer";
 
 interface PlayerNpcDrawerProps {
   npcId: string;
@@ -115,7 +115,7 @@ export function PlayerNpcDrawer({
   ];
 
   return (
-    <DrawerShell
+    <Drawer
       title={npcName}
       icon={<UserCircle className="w-5 h-5" />}
       iconColor="text-purple-400"
@@ -172,6 +172,6 @@ export function PlayerNpcDrawer({
           )}
         </>
       )}
-    </DrawerShell>
+    </Drawer>
   );
 }

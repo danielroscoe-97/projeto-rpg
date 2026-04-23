@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Wand2, Pencil } from "lucide-react";
-import { ResourceDots } from "./ResourceDots";
+import { SpellSlotGrid } from "@/components/ui/SpellSlotGrid";
 
 interface SpellSlotsHqProps {
   spellSlots: Record<string, { max: number; used: number }> | null;
@@ -120,14 +120,15 @@ export function SpellSlotsHq({
                 {level}°
               </span>
               <div className="flex-1">
-                <ResourceDots
-                  usedCount={used}
+                <SpellSlotGrid
+                  used={used}
                   max={max}
-                  color="bg-amber-400 border-amber-400"
-                  size="md"
+                  variant="transient"
+                  density="comfortable"
+                  filledClassName="bg-amber-400 border-amber-400"
                   readOnly={readOnly}
                   onToggle={(idx) => handleToggle(level, idx)}
-                  label={`${t("spell_slots_level")} ${level}`}
+                  ariaLabel={`${t("spell_slots_level")} ${level}`}
                 />
               </div>
               {/* Inline max edit */}

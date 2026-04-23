@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { StickyNote, Trash2 } from "lucide-react";
 import type { PinColor } from "@/lib/hooks/usePlayerPins";
-import { DrawerShell } from "./DrawerShell";
+import { Drawer } from "@/components/ui/Drawer";
 
 interface PlayerPinDrawerProps {
   pinId: string;
@@ -73,7 +73,7 @@ export function PlayerPinDrawer({
   };
 
   return (
-    <DrawerShell
+    <Drawer
       title={label || t("default_title")}
       icon={<StickyNote className="w-5 h-5" />}
       iconColor="text-amber-400"
@@ -139,6 +139,6 @@ export function PlayerPinDrawer({
         <Trash2 className="w-4 h-4" />
         {t("delete")}
       </button>
-    </DrawerShell>
+    </Drawer>
   );
 }

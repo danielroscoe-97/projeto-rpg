@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Scroll } from "lucide-react";
-import { DrawerShell } from "./DrawerShell";
+import { Drawer } from "@/components/ui/Drawer";
 
 interface PlayerSessionDrawerProps {
   sessionName: string;
@@ -20,7 +20,7 @@ export function PlayerSessionDrawer({
   const t = useTranslations("player_hq.session_drawer");
 
   return (
-    <DrawerShell
+    <Drawer
       title={sessionName}
       icon={<Scroll className="w-5 h-5" />}
       iconColor="text-blue-400"
@@ -38,6 +38,6 @@ export function PlayerSessionDrawer({
         </span>
       </div>
       <p className="text-sm text-muted-foreground">{t("hint")}</p>
-    </DrawerShell>
+    </Drawer>
   );
 }

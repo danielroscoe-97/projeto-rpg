@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { ChevronRight, ChevronDown, Shield, Trash2, Skull } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Combatant } from "@/lib/types/combat";
+import { getHpFraction } from "@/lib/utils/hp-status";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,7 +69,7 @@ export function buildGroupHealth(members: Combatant[]): GroupHealth {
     current_hp: m.current_hp,
     max_hp: m.max_hp,
     is_defeated: m.is_defeated,
-    pct: m.max_hp > 0 ? Math.max(0, Math.min(1, m.current_hp / m.max_hp)) : 0,
+    pct: getHpFraction(m.current_hp, m.max_hp),
     tier: computeTier(m.current_hp, m.max_hp),
   }));
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Target, Star, StarOff, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { DrawerShell } from "./DrawerShell";
+import { Drawer } from "@/components/ui/Drawer";
 
 interface PlayerQuestDrawerProps {
   questId: string;
@@ -126,7 +126,7 @@ export function PlayerQuestDrawer({
   const badge = statusBadge[questStatus] ?? statusBadge.available;
 
   return (
-    <DrawerShell
+    <Drawer
       title={questTitle}
       icon={<Target className="w-5 h-5" />}
       iconColor="text-yellow-400"
@@ -191,6 +191,6 @@ export function PlayerQuestDrawer({
           )}
         </>
       )}
-    </DrawerShell>
+    </Drawer>
   );
 }

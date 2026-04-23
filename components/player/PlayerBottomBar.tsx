@@ -4,7 +4,11 @@ import { useTranslations } from "next-intl";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConditionBadge } from "@/components/oracle/ConditionBadge";
-import { getHpBarColor, getHpThresholdKey } from "@/lib/utils/hp-status";
+import {
+  getHpBarColor,
+  getHpFraction,
+  getHpThresholdKey,
+} from "@/lib/utils/hp-status";
 import type { RulesetVersion } from "@/lib/types/database";
 import { Shield, Zap, Search } from "lucide-react";
 import { DeathSaveTracker } from "@/components/combat/DeathSaveTracker";
@@ -85,7 +89,7 @@ export function PlayerBottomBar({ character, rulesetVersion, deathSaves, isPlaye
   const currentHp = character.current_hp;
   const maxHp = character.max_hp;
   const tempHp = character.temp_hp ?? 0;
-  const hpPct = maxHp > 0 ? Math.max(0, Math.min(1, currentHp / maxHp)) : 0;
+  const hpPct = getHpFraction(currentHp, maxHp);
   const hpBarColor = getHpBarColor(currentHp, maxHp);
   const hpThresholdKey = getHpThresholdKey(currentHp, maxHp);
   const hasTempHp = tempHp > 0;

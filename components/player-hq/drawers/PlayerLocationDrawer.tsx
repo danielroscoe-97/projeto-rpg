@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { MapPin, HelpCircle } from "lucide-react";
-import { DrawerShell } from "./DrawerShell";
+import { Drawer } from "@/components/ui/Drawer";
 
 interface PlayerLocationDrawerProps {
   locationName: string;
@@ -20,7 +20,7 @@ export function PlayerLocationDrawer({
   const t = useTranslations("player_hq.location_drawer");
 
   return (
-    <DrawerShell
+    <Drawer
       title={isDiscovered ? locationName : "???"}
       icon={isDiscovered ? <MapPin className="w-5 h-5" /> : <HelpCircle className="w-5 h-5" />}
       iconColor="text-green-400"
@@ -43,6 +43,6 @@ export function PlayerLocationDrawer({
           </p>
         </div>
       )}
-    </DrawerShell>
+    </Drawer>
   );
 }
