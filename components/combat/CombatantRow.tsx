@@ -18,6 +18,7 @@ import { StatsEditor } from "./StatsEditor";
 import { VersionSwitchConfirm } from "./VersionSwitchConfirm";
 import {
   getHpBarColor,
+  getHpFraction,
   getHpThresholdKey,
   getHpStatusWithFlag,
   formatHpPct,
@@ -277,21 +278,21 @@ export const CombatantRow = memo(function CombatantRow({
   // (opacity-60) below the form bar.
   const poly = combatant.polymorph;
   const isPolymorphed = !!poly?.enabled;
-  const polyHpPct =
-    poly && poly.temp_max_hp > 0
-      ? Math.max(0, Math.min(1, poly.temp_current_hp / poly.temp_max_hp))
-      : 0;
+  const polyHpPct = poly ? getHpFraction(poly.temp_current_hp, poly.temp_max_hp) : 0;
   const polyHpBarColor = poly
     ? getHpBarColor(poly.temp_current_hp, poly.temp_max_hp)
     : hpBarColor;
-  // Visual bar widths: temp HP extends the bar beyond normal max
+  // Visual bar widths: temp HP extends the bar beyond normal max.
+  // NOTE: `totalPool` here is NOT maxHp — it's a synthetic denominator for the
+  // stacked-bar layout (current/totalPool + temp/totalPool renders 2 adjacent
+  // segments). getHpFraction is a pure clamp (no tier logic), so feeding a
+  // non-max denominator is semantically fine; output is bit-identical to the
+  // prior inline expression.
   const totalPool = combatant.max_hp + combatant.temp_hp;
-  const hpPctOfTotal = totalPool > 0 ? Math.max(0, Math.min(1, combatant.current_hp / totalPool)) : 0;
-  const tempPctOfTotal = totalPool > 0 ? Math.max(0, Math.min(1, combatant.temp_hp / totalPool)) : 0;
+  const hpPctOfTotal = getHpFraction(combatant.current_hp, totalPool);
+  const tempPctOfTotal = getHpFraction(combatant.temp_hp, totalPool);
   // Legacy pct for aria (based on max_hp only)
-  const hpPct = combatant.max_hp > 0
-    ? Math.max(0, Math.min(1, combatant.current_hp / combatant.max_hp))
-    : 0;
+  const hpPct = getHpFraction(combatant.current_hp, combatant.max_hp);
 
   // HP bar tooltip: DM sees exact numbers, players see only tier name.
   // Tooltip pct MUST derive from formatHpPct(status, flag) so the label stays
