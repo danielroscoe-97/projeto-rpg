@@ -1,0 +1,67 @@
+name: Combat Parity Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [master]
+
+# Combat Parity Rule (see CLAUDE.md + docs/parity-check.md):
+# Any PR that touches combat/player/guest runtime components MUST ship
+# test coverage for the 3 access modes (Guest / Anon / Auth) OR declare
+# the parity intent explicitly in the PR description.
+#
+# This gate runs in parallel to the E2E suite — it doesn't run Playwright,
+# it only enforces the rule by diffing the PR. Result: near-instant check
+# (~15s) that blocks merge when the rule is violated.
+
+jobs:
+  parity-check:
+    name: Combat Parity Gate
+    runs-on: ubuntu-latest
+    # Skip for draft PRs — author is still iterating.
+    if: github.event.pull_request.draft == false
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout PR head + base
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Compute changed files (base..head)
+        id: diff
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          git fetch --no-tags --depth=50 origin "$BASE" >/dev/null 2>&1 || true
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
+          echo "Changed files between $BASE..$HEAD:"
+          echo "$CHANGED"
+          {
+            echo 'files<<__EOF__'
+            echo "$CHANGED"
+            echo '__EOF__'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run parity gate
+        id: gate
+        env:
+          CHANGED_FILES: ${{ steps.diff.outputs.files }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          set -euo pipefail
+          node scripts/ci/parity-check.mjs
+
+      - name: Post status summary
+        if: always()
+        run: |
+          {
+            echo "## Combat Parity Gate"
+            echo ""
+            echo "See \`docs/parity-check.md\` for rules. To bypass in rare cases where"
+            echo "parity genuinely does not apply (e.g. type-only refactor), add the label"
+            echo "\`parity-exempt\` to the PR and explain in the description."
+          } >> "$GITHUB_STEP_SUMMARY"
