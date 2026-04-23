@@ -23,6 +23,7 @@ import {
   formatHpPct,
   HP_STATUS_STYLES,
 } from "@/lib/utils/hp-status";
+import { Dot } from "@/components/ui/Dot";
 import { isFeatureFlagEnabled } from "@/lib/flags";
 import { Eye, EyeOff, Shield } from "lucide-react";
 import {
@@ -507,18 +508,23 @@ export const CombatantRow = memo(function CombatantRow({
               onClick={(e) => e.stopPropagation()}
             >
               <span className="text-xs text-muted-foreground font-medium">{t("reaction_inline")}</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleReaction?.(combatant.id);
-                }}
-                className={`w-3.5 h-3.5 rounded-full border transition-colors ${
-                  combatant.reaction_used
-                    ? "bg-red-500 border-red-400/60"
-                    : "bg-transparent border-emerald-500 hover:border-emerald-400"
-                }`}
-                aria-label={combatant.reaction_used ? t("reaction_used") : t("reaction_available")}
+              {/* Reaction: transient resource. Today filled = USED (post-
+                  inversion convention already in play here — preserved).
+                  The outer div already calls stopPropagation on click but
+                  we keep the inner stop for belt-and-suspenders parity
+                  with the legacy handler.
+
+                  Because the `Dot` primitive takes a no-arg `onClick`, we
+                  wrap the reaction toggle in a closure that does NOT carry
+                  the event; the outer div owns the stopPropagation. */}
+              <Dot
+                variant="transient"
+                size="md"
+                filled={combatant.reaction_used}
+                filledClassName="bg-red-500 border-red-400/60"
+                emptyClassName="bg-transparent border-emerald-500 hover:border-emerald-400"
+                onClick={() => onToggleReaction?.(combatant.id)}
+                ariaLabel={combatant.reaction_used ? t("reaction_used") : t("reaction_available")}
               />
             </div>
           )}
