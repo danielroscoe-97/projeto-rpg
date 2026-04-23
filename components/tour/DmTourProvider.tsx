@@ -110,6 +110,14 @@ export function DmTourProvider({ shouldAutoStart }: DmTourProviderProps) {
   const updateTargetRect = useCallback(() => {
     if (!isActive || currentStep >= steps.length) return;
     const step = steps[currentStep];
+
+    // Modal steps: don't spotlight; just set a rect so resize/scroll updates don't loop
+    if (step.modal) {
+      const target = document.querySelector(step.targetSelector);
+      setTargetRect(target ? target.getBoundingClientRect() : new DOMRect(0, 0, 0, 0));
+      return;
+    }
+
     const target = document.querySelector(step.targetSelector);
 
     if (target) {
@@ -185,6 +193,7 @@ export function DmTourProvider({ shouldAutoStart }: DmTourProviderProps) {
   if (!mounted || !isActive || currentStep >= steps.length) return null;
 
   const step = steps[currentStep];
+  const isModal = step.modal === true;
 
   // Mobile: override position to "bottom" for consistent tooltip placement.
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
@@ -196,8 +205,9 @@ export function DmTourProvider({ shouldAutoStart }: DmTourProviderProps) {
     <>
       <TourOverlay
         isActive={isActive}
-        targetRect={targetRect}
+        targetRect={isModal ? null : targetRect}
         allowInteraction={false}
+        dimOnly={isModal}
         onOverlayClick={() => {}}
       />
       <TourTooltip
@@ -210,6 +220,7 @@ export function DmTourProvider({ shouldAutoStart }: DmTourProviderProps) {
         onSkip={handleSkip}
         onComplete={handleComplete}
         translationNamespace="dmUpsell"
+        secondaryCTA={false}
       />
     </>
   );

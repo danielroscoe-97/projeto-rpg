@@ -25,6 +25,7 @@ export const DM_TOUR_STEPS: TourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "setup",
+    modal: true,
   },
   {
     id: "dm-invite",
@@ -52,5 +53,6 @@ export const DM_TOUR_STEPS: TourStepConfig[] = [
     type: "info",
     position: "bottom",
     phase: "complete",
+    modal: true,
   },
 ];
