@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
+import { BookOpen, ExternalLink } from "lucide-react";
 import { CombatSessionClient } from "@/components/combat-session/CombatSessionClient";
 import { ShareSessionButton } from "@/components/combat-session/ShareSessionButton";
 import { AuthCombatTourProvider } from "@/components/tour/AuthCombatTourProvider";
@@ -116,6 +117,18 @@ export default async function CombatPage({ params }: CombatPageProps) {
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <ShareSessionButton sessionId={sessionId} />
+          <a
+            href="/app/compendium?tab=monsters"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground hover:text-gold transition-colors duration-[250ms] min-h-[44px] inline-flex items-center gap-1.5 whitespace-nowrap"
+            aria-label={t("open_compendium_new_tab")}
+            title={t("open_compendium_new_tab")}
+          >
+            <BookOpen className="w-4 h-4" aria-hidden="true" />
+            <span>{t("compendium_short")}</span>
+            <ExternalLink className="w-3 h-3 opacity-60" aria-hidden="true" />
+          </a>
           <Link
             href="/app/dashboard"
             className="text-sm text-muted-foreground hover:text-foreground/80 transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[44px] inline-flex items-center whitespace-nowrap"

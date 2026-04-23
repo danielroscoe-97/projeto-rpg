@@ -1,4 +1,4 @@
-import { CampaignHero } from "@/app/app/campaigns/[id]/CampaignHero";
+import { CampaignHero } from "@/app/app/(with-sidebar)/campaigns/[id]/CampaignHero";
 import { BriefingStatusBadge } from "@/components/campaign/BriefingStatusBadge";
 import { BriefingToday } from "@/components/campaign/BriefingToday";
 import { BriefingActivityTimeline } from "@/components/campaign/BriefingActivityTimeline";

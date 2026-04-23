@@ -108,7 +108,7 @@ describe("sessions page cursor format", () => {
       "@/components/dashboard/SessionHistoryFullPageServer"
     );
     const { parseCursorParam } = await import(
-      "@/app/app/dashboard/sessions/page"
+      "@/app/app/(with-sidebar)/dashboard/sessions/page"
     );
     const original = {
       createdAt: "2026-04-10T18:00:00.000Z",
@@ -121,7 +121,7 @@ describe("sessions page cursor format", () => {
 
   it("parseCursorParam returns null for malformed input", async () => {
     const { parseCursorParam } = await import(
-      "@/app/app/dashboard/sessions/page"
+      "@/app/app/(with-sidebar)/dashboard/sessions/page"
     );
     expect(parseCursorParam(undefined)).toBeNull();
     expect(parseCursorParam("")).toBeNull();
@@ -137,7 +137,7 @@ describe("sessions page cursor format", () => {
       "@/components/dashboard/SessionHistoryFullPageServer"
     );
     const { parseCursorParam } = await import(
-      "@/app/app/dashboard/sessions/page"
+      "@/app/app/(with-sidebar)/dashboard/sessions/page"
     );
     const encoded = encodeCursor({
       createdAt: "2026-04-10T18:00:00.000Z",

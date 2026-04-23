@@ -8,7 +8,7 @@ import { Swords, Zap, ChevronRight, ArrowRight, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { toast } from "sonner";
-import { joinCampaignDirectAction } from "@/app/app/dashboard/actions";
+import { joinCampaignDirectAction } from "@/app/app/(with-sidebar)/dashboard/actions";
 import { InvitePlayersBanner } from "@/components/dashboard/InvitePlayersBanner";
 import { StreakBadge } from "@/components/dashboard/StreakBadge";
 import { PocketDmLabBadge } from "@/components/dashboard/PocketDmLabBadge";

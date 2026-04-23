@@ -16,7 +16,7 @@ import {
 import { QuestBoard } from "@/components/campaign/QuestBoard";
 import { InlineDifficultyVote } from "@/components/combat/InlineDifficultyVote";
 import { CharacterWizard, type WizardCharacterData } from "@/components/character/wizard/CharacterWizard";
-import { createCampaignCharacterAction } from "@/app/app/dashboard/characters/actions";
+import { createCampaignCharacterAction } from "@/app/app/(with-sidebar)/dashboard/characters/actions";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { getHpBarColor } from "@/lib/utils/hp-status";

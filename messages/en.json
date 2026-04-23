@@ -969,6 +969,8 @@
     "campaigns_players_plural": "players",
     "campaigns_players_singular": "player",
     "back_to_dashboard": "← Back to Dashboard",
+    "open_compendium_new_tab": "Open Compendium in new tab",
+    "compendium_short": "Compendium",
     "manage_players_description": "Manage the player characters for this campaign.",
     "campaigns_manage_players": "Manage Players",
     "campaigns_delete": "Delete Campaign",

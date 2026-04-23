@@ -21,7 +21,7 @@ import { getLocale } from "next-intl/server";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import { SessionHistoryFullPage } from "@/components/dashboard/SessionHistoryFullPage";
 import type { SessionHistoryRowData } from "@/components/dashboard/SessionHistoryList";
-import type { SessionsPageCursor } from "@/app/app/dashboard/sessions/page";
+import type { SessionsPageCursor } from "@/app/app/(with-sidebar)/dashboard/sessions/page";
 
 const PAGE_SIZE = 10;
 

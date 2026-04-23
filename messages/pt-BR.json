@@ -965,6 +965,8 @@
     "campaigns_update_error": "Falha ao atualizar campanha. Por favor, tente novamente.",
     "campaigns_delete_error": "Falha ao excluir campanha. Por favor, tente novamente.",
     "back_to_dashboard": "← Voltar ao Dashboard",
+    "open_compendium_new_tab": "Abrir Compêndio em nova aba",
+    "compendium_short": "Compêndio",
     "manage_players_description": "Gerencie os personagens dos jogadores desta campanha.",
     "campaigns_name_label": "Nome da campanha",
     "campaigns_empty": "Nenhuma campanha ainda. Crie sua primeira campanha!",

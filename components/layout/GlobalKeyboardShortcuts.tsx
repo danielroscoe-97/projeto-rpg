@@ -12,6 +12,7 @@ import { useKeyboardShortcut } from "@/lib/hooks/useKeyboardShortcut";
  * - `g p` → Meus personagens
  * - `g s` → Compêndio (SRD)
  * - `g o` → Soundboard
+ * - `b`   → Compêndio em nova aba (book) — preserva contexto do combate
  *
  * Chords (two keys within 800ms) are disabled inside inputs / textareas /
  * ProseMirror. Ctrl+K and Ctrl+B are handled by CommandPalette and
@@ -36,6 +37,19 @@ export function GlobalKeyboardShortcuts() {
     ",",
     useCallback(() => router.push("/app/dashboard/settings"), [router]),
     { ctrlOrMeta: true },
+  );
+
+  // `b` → Compêndio em nova aba (preserva contexto em combate ativo).
+  // Guard contra modificadores: Ctrl/Cmd+B já é usado pela AppSidebar pra colapsar.
+  // A lógica atual de useKeyboardShortcut faz `ctrlMatched = !ctrlOrMeta || e.ctrlKey`,
+  // então um atalho sem modificador declarado também dispara quando Ctrl/Cmd estão pressionados.
+  useKeyboardShortcut(
+    "b",
+    useCallback((e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      if (typeof window === "undefined") return;
+      window.open("/app/compendium?tab=monsters", "_blank", "noopener,noreferrer");
+    }, []),
   );
 
   return null;

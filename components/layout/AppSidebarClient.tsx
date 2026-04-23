@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "./AppSidebar";
-import { GlobalKeyboardShortcuts } from "./GlobalKeyboardShortcuts";
 
 interface AppSidebarClientProps {
   hasDmAccess?: boolean;
@@ -15,6 +14,9 @@ interface AppSidebarClientProps {
  * campaign is determined per-route (if needed) and defaults to false here
  * since the sidebar only uses it to filter a "DM-only" sub-nav item.
  * The campaign page itself still enforces permissions server-side.
+ *
+ * GlobalKeyboardShortcuts lives in the root `/app/*` layout (mounted once,
+ * persists across navigation between sidebar and focused routes).
  */
 export function AppSidebarClient({ hasDmAccess = false, children }: AppSidebarClientProps) {
   const pathname = usePathname();
@@ -27,11 +29,8 @@ export function AppSidebarClient({ hasDmAccess = false, children }: AppSidebarCl
   const isCampaignOwner = !!currentCampaignId && hasDmAccess;
 
   return (
-    <>
-      <AppSidebar hasDmAccess={hasDmAccess} currentCampaignId={currentCampaignId} isCampaignOwner={isCampaignOwner}>
-        {children}
-      </AppSidebar>
-      <GlobalKeyboardShortcuts />
-    </>
+    <AppSidebar hasDmAccess={hasDmAccess} currentCampaignId={currentCampaignId} isCampaignOwner={isCampaignOwner}>
+      {children}
+    </AppSidebar>
   );
 }

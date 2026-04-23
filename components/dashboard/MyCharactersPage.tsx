@@ -31,7 +31,7 @@ import {
   createStandaloneCharacterAction,
   updateCharacterAction,
   deleteCharacterAction,
-} from "@/app/app/dashboard/characters/actions";
+} from "@/app/app/(with-sidebar)/dashboard/characters/actions";
 import type { PlayerCharacter } from "@/lib/types/database";
 
 interface Campaign {
