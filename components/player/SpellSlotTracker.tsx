@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Moon } from "lucide-react";
+import { Dot } from "@/components/ui/Dot";
 
 interface SpellSlotTrackerProps {
   spellSlots: Record<string, { max: number; used: number }>;
@@ -105,20 +106,27 @@ export function SpellSlotTracker({
                 {Array.from({ length: max }, (_, i) => {
                   const isUsed = i >= max - used;
                   const dotKey = `${level}-${i}`;
+                  // Spell slots: transient resource (Sprint 5 will invert to
+                  // `filled = used` behind NEXT_PUBLIC_PLAYER_HQ_V2). For now
+                  // we preserve the pre-inversion mapping bit-for-bit:
+                  // `filled = !isUsed` (a filled purple dot = available).
+                  // The !transition-transform / !duration-200 overrides are
+                  // needed because the Dot primitive applies transition-colors
+                  // by default, and the bounce animation requires a transform
+                  // transition. Tailwind source-order would otherwise let the
+                  // colors transition win over the appended transform one.
                   return (
-                    <button
+                    <Dot
                       key={i}
-                      type="button"
-                      role="checkbox"
-                      aria-checked={!isUsed}
-                      aria-label={`${t("spell_slots_level", { level })} slot ${i + 1}, ${isUsed ? t("spell_slots_used") : t("spell_slots_available")}`}
+                      variant="transient"
+                      size="base"
+                      filled={!isUsed}
+                      filledClassName="bg-purple-400 border-purple-400"
+                      emptyClassName="bg-transparent border-muted-foreground/30"
                       onClick={() => handleToggle(level, i)}
                       disabled={readOnly}
-                      className={`w-3 h-3 rounded-full border transition-transform duration-200 ${
-                        isUsed
-                          ? "bg-transparent border-muted-foreground/30"
-                          : "bg-purple-400 border-purple-400"
-                      } ${bouncingDot === dotKey ? "scale-[1.3]" : ""} ${readOnly ? "cursor-default" : "cursor-pointer hover:opacity-80"}`}
+                      ariaLabel={`${t("spell_slots_level", { level })} slot ${i + 1}, ${isUsed ? t("spell_slots_used") : t("spell_slots_available")}`}
+                      className={`!transition-transform !duration-200 ${bouncingDot === dotKey ? "scale-[1.3]" : ""} ${readOnly ? "cursor-default" : "hover:opacity-80"}`}
                     />
                   );
                 })}

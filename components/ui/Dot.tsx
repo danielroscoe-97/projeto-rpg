@@ -55,7 +55,17 @@ import { forwardRef } from "react";
  */
 export type DotVariant = "permanent" | "transient";
 
-export type DotSize = "sm" | "md" | "lg";
+/**
+ * Size enum is deliberately small to discourage visual drift. Sizes sit on
+ * the same half-step progression used by the original hand-rolled call sites
+ * (`w-2.5` / `w-3` / `w-3.5` / `w-5`). `base` was added in Fase C when
+ * migrating `SpellSlotTracker` — its dots sit between `sm` and `md` and are
+ * also shared by `DeathSaveTracker` (future migration target). Prefer adding
+ * a named size over sprinkling `className="w-X h-X"` overrides at call sites:
+ * Tailwind's CSS source-order means a `size` default of `md` (`w-3.5`) would
+ * override a `className="w-3"` at runtime, which silently defeats the intent.
+ */
+export type DotSize = "sm" | "base" | "md" | "lg";
 
 export interface DotProps {
   /**
@@ -94,13 +104,13 @@ export interface DotProps {
 
 /**
  * Sizes mirror `components/player-hq/ResourceDots.tsx` (the oldest caller)
- * to keep visual parity during the EP-0 migration. When new surfaces need
- * a different dot diameter they should pass `className` (e.g.
- * `className="w-3 h-3"`) rather than teaching the primitive a new size —
- * the size enum is deliberately small to discourage visual drift.
+ * to keep visual parity during the EP-0 migration. `base` (`w-3`) was added
+ * in Fase C for `SpellSlotTracker` and future `DeathSaveTracker` migration —
+ * both hand-rolled the same diameter pre-primitive.
  */
 const SIZE_CLASS: Record<DotSize, string> = {
   sm: "w-2.5 h-2.5",
+  base: "w-3 h-3",
   md: "w-3.5 h-3.5",
   lg: "w-5 h-5",
 };

@@ -150,6 +150,18 @@ describe("Dot", () => {
       expect(container.querySelector("span")?.className).toContain("w-2.5");
     });
 
+    it("maps base → w-3 (matches SpellSlotTracker / DeathSaveTracker legacy)", () => {
+      const { container } = render(
+        <Dot filled variant="transient" size="base" ariaLabel="Slot" />
+      );
+      const cls = container.querySelector("span")?.className ?? "";
+      // Match exactly `w-3` as a whole class token (avoid matching `w-3.5`).
+      expect(cls.split(/\s+/)).toContain("w-3");
+      expect(cls.split(/\s+/)).toContain("h-3");
+      // Must NOT accidentally carry the md (w-3.5) classes.
+      expect(cls.split(/\s+/)).not.toContain("w-3.5");
+    });
+
     it("maps lg → w-5 (matches ResourceDots legacy lg)", () => {
       const { container } = render(
         <Dot filled variant="permanent" size="lg" ariaLabel="Slot" />
