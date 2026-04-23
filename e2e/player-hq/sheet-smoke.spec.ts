@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { loginAs } from "../helpers/auth";
 import { PLAYER_WARRIOR } from "../fixtures/test-accounts";
+import { TAB_KEYS } from "./_constants";
 
 /**
  * Player HQ — Auth smoke baseline (EP-INFRA.4, Sprint 1 Track B).
@@ -30,16 +31,6 @@ import { PLAYER_WARRIOR } from "../fixtures/test-accounts";
  * deploys where the test-account fixtures aren't yet seeded.
  */
 
-const TAB_KEYS = [
-  "map",
-  "sheet",
-  "resources",
-  "abilities",
-  "inventory",
-  "notes",
-  "quests",
-] as const;
-
 test.describe("Player HQ — Auth smoke (7-tab shell baseline)", () => {
   test.setTimeout(90_000);
 
@@ -54,7 +45,9 @@ test.describe("Player HQ — Auth smoke (7-tab shell baseline)", () => {
     const campaignLinks = page.locator('a[href^="/app/campaigns/"]');
     const count = await campaignLinks.count();
     if (count === 0) {
-      test.skip(true, "No campaigns seeded for PLAYER_WARRIOR in this environment");
+      const reason = "No campaigns seeded for PLAYER_WARRIOR in this environment";
+      test.info().annotations.push({ type: "skip-reason", description: reason });
+      test.skip(true, reason);
       return;
     }
 
@@ -64,7 +57,9 @@ test.describe("Player HQ — Auth smoke (7-tab shell baseline)", () => {
     expect(firstHref).toBeTruthy();
     const match = firstHref?.match(/\/app\/campaigns\/([0-9a-f-]+)/i);
     if (!match) {
-      test.skip(true, `Could not extract campaign id from href: ${firstHref}`);
+      const reason = `Could not extract campaign id from href: ${firstHref}`;
+      test.info().annotations.push({ type: "skip-reason", description: reason });
+      test.skip(true, reason);
       return;
     }
     const campaignId = match[1];
@@ -79,7 +74,9 @@ test.describe("Player HQ — Auth smoke (7-tab shell baseline)", () => {
     // seeded character. If that happens, skip — we don't want to fail
     // baseline tests in environments missing test seed data.
     if (!page.url().includes("/sheet")) {
-      test.skip(true, `Player redirected from /sheet — URL: ${page.url()}`);
+      const reason = `Player redirected from /sheet — URL: ${page.url()}`;
+      test.info().annotations.push({ type: "skip-reason", description: reason });
+      test.skip(true, reason);
       return;
     }
 

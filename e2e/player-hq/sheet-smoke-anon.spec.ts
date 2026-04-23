@@ -44,8 +44,12 @@ test.describe("Player HQ — Anon smoke (no /sheet access baseline)", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Expect redirect to login, NOT a rendered sheet.
+    // Source of truth: app/app/(with-sidebar)/campaigns/[id]/sheet/page.tsx:21
+    // → `if (!user) redirect("/auth/login")`. Match path exactly (with or
+    // without query string), not a permissive fallback that would accept
+    // the root `/` and mask future regressions.
     expect(page.url()).not.toMatch(/\/sheet(?:\?|$)/);
-    expect(page.url()).toMatch(/\/auth\/login|\/join\/|\/try|\/$/);
+    expect(page.url()).toMatch(/\/auth\/login(?:\?|$)/);
 
     // The tablist must NOT exist for anon visitors.
     const tablist = page.locator('[role="tablist"]');

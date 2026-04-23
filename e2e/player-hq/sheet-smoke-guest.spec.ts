@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { TAB_KEYS } from "./_constants";
 
 /**
  * Player HQ — Guest smoke baseline (EP-INFRA.4, Sprint 1 Track B).
@@ -35,7 +36,9 @@ test.describe("Player HQ — Guest smoke (no /sheet on /try baseline)", () => {
     // Just confirm /try actually loaded — skip if the landing redirected
     // us (e.g. middleware blocking in an odd env).
     if (!page.url().includes("/try")) {
-      test.skip(true, `/try redirected to ${page.url()} — cannot run guest baseline`);
+      const reason = `/try redirected to ${page.url()} — cannot run guest baseline`;
+      test.info().annotations.push({ type: "skip-reason", description: reason });
+      test.skip(true, reason);
       return;
     }
 
@@ -48,7 +51,7 @@ test.describe("Player HQ — Guest smoke (no /sheet on /try baseline)", () => {
     await expect(playerHqTablist).toHaveCount(0);
 
     // And none of the individual V1 tab buttons should render in /try.
-    for (const key of ["map", "sheet", "resources", "abilities", "inventory", "notes", "quests"]) {
+    for (const key of TAB_KEYS) {
       const tab = page.locator(`#tab-${key}`);
       await expect(tab, `#tab-${key} must NOT render in /try`).toHaveCount(0);
     }
@@ -59,7 +62,9 @@ test.describe("Player HQ — Guest smoke (no /sheet on /try baseline)", () => {
     await page.waitForLoadState("domcontentloaded");
 
     if (!page.url().includes("/try")) {
-      test.skip(true, `/try redirected to ${page.url()}`);
+      const reason = `/try redirected to ${page.url()}`;
+      test.info().annotations.push({ type: "skip-reason", description: reason });
+      test.skip(true, reason);
       return;
     }
 

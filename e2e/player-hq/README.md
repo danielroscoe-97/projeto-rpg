@@ -43,8 +43,9 @@ rtk playwright test e2e/player-hq/sheet-smoke.spec.ts --headed
 
 ## Why 3 specs for parity
 
-The Combat Parity CI gate (`docs/parity-check.md`) requires spec evidence
-for all 3 modes whenever combat/player runtime changes. The Anon and Guest
-specs document **why** those modes do NOT have a `/sheet` equivalent so
-that future refactors make that intentional gap explicit rather than
+The Combat Parity Rule (see `CLAUDE.md` § *Combat Parity Rule — Guest vs
+Auth*) requires spec evidence for all 3 modes (Guest / Anon / Auth)
+whenever combat or player runtime changes. The Anon and Guest specs
+document **why** those modes do NOT have a `/sheet` equivalent so that
+future refactors make that intentional gap explicit rather than
 accidentally introducing broken redirects.
