@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Moon } from "lucide-react";
+import { SpellSlotGrid } from "@/components/ui/SpellSlotGrid";
 
 interface SpellSlotTrackerProps {
   spellSlots: Record<string, { max: number; used: number }>;
@@ -21,25 +22,12 @@ export function SpellSlotTracker({
 }: SpellSlotTrackerProps) {
   const t = useTranslations("player");
   const [isExpanded, setIsExpanded] = useState(!collapsible);
-  const [bouncingDot, setBouncingDot] = useState<string | null>(null);
 
   const levels = Object.entries(spellSlots)
     .filter(([, v]) => v.max > 0)
     .sort(([a], [b]) => Number(a) - Number(b));
 
   if (levels.length === 0) return null;
-
-  const handleToggle = useCallback(
-    (level: string, index: number) => {
-      if (readOnly) return;
-      const dotKey = `${level}-${index}`;
-      setBouncingDot(dotKey);
-      setTimeout(() => setBouncingDot(null), 400);
-      navigator.vibrate?.([50]);
-      onToggleSlot(level, index);
-    },
-    [readOnly, onToggleSlot]
-  );
 
   const handleLongRest = useCallback(() => {
     if (readOnly) return;
@@ -101,28 +89,21 @@ export function SpellSlotTracker({
               <span className="text-[10px] text-muted-foreground w-6 shrink-0">
                 {level}°
               </span>
-              <div className="flex gap-1 flex-wrap">
-                {Array.from({ length: max }, (_, i) => {
-                  const isUsed = i >= max - used;
-                  const dotKey = `${level}-${i}`;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      role="checkbox"
-                      aria-checked={!isUsed}
-                      aria-label={`${t("spell_slots_level", { level })} slot ${i + 1}, ${isUsed ? t("spell_slots_used") : t("spell_slots_available")}`}
-                      onClick={() => handleToggle(level, i)}
-                      disabled={readOnly}
-                      className={`w-3 h-3 rounded-full border transition-transform duration-200 ${
-                        isUsed
-                          ? "bg-transparent border-muted-foreground/30"
-                          : "bg-purple-400 border-purple-400"
-                      } ${bouncingDot === dotKey ? "scale-[1.3]" : ""} ${readOnly ? "cursor-default" : "cursor-pointer hover:opacity-80"}`}
-                    />
-                  );
-                })}
-              </div>
+              <SpellSlotGrid
+                used={used}
+                max={max}
+                variant="transient"
+                density="compact"
+                filledClassName="bg-purple-400 border-purple-400"
+                readOnly={readOnly}
+                onToggle={(i) => onToggleSlot(level, i)}
+                ariaLabel={t("spell_slots_level", { level })}
+                dotAriaLabel={(i, isFilled) =>
+                  `${t("spell_slots_level", { level })} slot ${i + 1}, ${
+                    isFilled ? t("spell_slots_available") : t("spell_slots_used")
+                  }`
+                }
+              />
             </div>
           ))}
         </div>
