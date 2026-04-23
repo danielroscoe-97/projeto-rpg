@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Flag } from "lucide-react";
-import { DrawerShell } from "./DrawerShell";
+import { Drawer } from "@/components/ui/Drawer";
 
 interface PlayerFactionDrawerProps {
   factionName: string;
@@ -18,7 +18,7 @@ export function PlayerFactionDrawer({
   const t = useTranslations("player_hq.faction_drawer");
 
   return (
-    <DrawerShell
+    <Drawer
       title={factionName}
       icon={<Flag className="w-5 h-5" />}
       iconColor="text-rose-400"
@@ -30,6 +30,6 @@ export function PlayerFactionDrawer({
         </label>
         <span className="text-sm text-foreground">{alignment}</span>
       </div>
-    </DrawerShell>
+    </Drawer>
   );
 }
