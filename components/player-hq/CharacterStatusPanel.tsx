@@ -50,7 +50,7 @@ export function CharacterStatusPanel({
   );
 
   return (
-    <div className="space-y-4 bg-card border border-border rounded-xl p-4">
+    <div className="space-y-3 bg-card border border-border rounded-xl px-4 py-3">
       <HpDisplay
         currentHp={currentHp}
         maxHp={maxHp}

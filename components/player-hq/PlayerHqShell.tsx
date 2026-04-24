@@ -168,7 +168,7 @@ export function PlayerHqShell({
   }
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-3 pb-20">
       {/* Player HQ Tour — triggers on first visit */}
       <PlayerHqTourProvider shouldAutoStart={!playerHqTourCompleted} />
 
@@ -246,7 +246,7 @@ export function PlayerHqShell({
       )}
 
       {activeTab === "sheet" && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <CharacterStatusPanel
             currentHp={character.current_hp}
             maxHp={character.max_hp}
@@ -286,7 +286,7 @@ export function PlayerHqShell({
       )}
 
       {activeTab === "resources" && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <RestResetPanel
             resetByType={resourceHook.resetByType}
             countByResetType={resourceHook.countByResetType}
@@ -337,7 +337,7 @@ export function PlayerHqShell({
       )}
 
       {activeTab === "inventory" && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Attunement slots */}
           <AttunementSection characterId={characterId} />
 
