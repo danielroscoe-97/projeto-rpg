@@ -34,13 +34,30 @@ COMMENT ON COLUMN player_characters.hit_dice IS
 COMMENT ON COLUMN player_characters.class_resources IS
   'Class-specific primary resources — JSONB. Canonical shape: {primary: {name: string, max: number, used: number}, ...}. Flexible to support multi-resource classes. Default {} means data not yet tracked (A4 header shows em-dash).';
 
--- Optional soundness check: ensure hit_dice payload keeps its shape.
+-- Optional soundness check: ensure JSONB payloads keep their object shape.
 -- (Not a hard constraint — app code is the source of truth for JSON shape;
 -- check keeps grossly malformed rows out, doesn't enforce key presence.)
-ALTER TABLE player_characters
-  ADD CONSTRAINT player_characters_hit_dice_is_object
-    CHECK (jsonb_typeof(hit_dice) = 'object'),
-  ADD CONSTRAINT player_characters_class_resources_is_object
-    CHECK (jsonb_typeof(class_resources) = 'object');
+--
+-- Guarded with DO blocks so re-running the migration locally (e.g.
+-- supabase reset) doesn't fail on duplicate constraint names. Postgres
+-- doesn't support `ADD CONSTRAINT IF NOT EXISTS` for named CHECK
+-- constraints, so the DO/EXCEPTION pattern is the idiomatic fallback.
+DO $$
+BEGIN
+  ALTER TABLE player_characters
+    ADD CONSTRAINT player_characters_hit_dice_is_object
+      CHECK (jsonb_typeof(hit_dice) = 'object');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  ALTER TABLE player_characters
+    ADD CONSTRAINT player_characters_class_resources_is_object
+      CHECK (jsonb_typeof(class_resources) = 'object');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 COMMIT;
