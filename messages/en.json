@@ -1220,6 +1220,8 @@
       "hp_moderate": "MODERATE",
       "hp_heavy": "HEAVY",
       "hp_critical": "CRITICAL",
+      "hp_edit_title": "Click to edit HP",
+      "hp_edit_aria": "Edit current HP. Type the new value and press Enter; lower values apply damage, higher values heal.",
       "temp_hp": "Temp HP",
       "conditions_label": "Conditions",
       "condition_blinded": "Blinded",
