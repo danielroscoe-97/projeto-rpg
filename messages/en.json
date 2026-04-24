@@ -1149,6 +1149,15 @@
       "abilities": "Abilities",
       "aria_tablist": "Character tabs"
     },
+    "header": {
+      "back_aria": "Back to campaign",
+      "hd_label": "HD",
+      "cd_label": "CD",
+      "inspiration_short": "Insp",
+      "slots_chip_label": "Slots {used}/{max}",
+      "slots_chip_aria": "Spell slots: {used} used out of {max}. Click to see details.",
+      "empty_placeholder": "—"
+    },
     "npc_drawer": {
       "relationship": "Relationship",
       "rel_ally": "Ally",

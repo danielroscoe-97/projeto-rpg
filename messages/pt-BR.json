@@ -1149,6 +1149,15 @@
       "abilities": "Habilidades",
       "aria_tablist": "Abas do personagem"
     },
+    "header": {
+      "back_aria": "Voltar para a campanha",
+      "hd_label": "HD",
+      "cd_label": "CD",
+      "inspiration_short": "Insp",
+      "slots_chip_label": "Slots {used}/{max}",
+      "slots_chip_aria": "Espaços de magia: {used} usados de {max}. Clique para ver detalhes.",
+      "empty_placeholder": "—"
+    },
     "npc_drawer": {
       "relationship": "Relação",
       "rel_ally": "Aliado",
