@@ -5,8 +5,24 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PlayerJoinClient } from "./PlayerJoinClient";
 
+// Mock next/navigation — PlayerJoinClient:212 calls useRouter() on mount.
+// Without this mock every test throws "invariant expected app router to be mounted".
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+  }),
+  usePathname: () => "/join/token-123",
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 // Mock supabase client
 const mockGetSession = jest.fn();
+const mockGetUser = jest.fn();
 const mockSignInAnonymously = jest.fn();
 const mockChannel = jest.fn();
 const mockRemoveChannel = jest.fn();
@@ -15,6 +31,7 @@ jest.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     auth: {
       getSession: mockGetSession,
+      getUser: mockGetUser,
       signInAnonymously: mockSignInAnonymously,
     },
     channel: mockChannel,
@@ -95,6 +112,9 @@ describe("PlayerJoinClient", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetSession.mockResolvedValue({ data: { session: null } });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "anon-user-1", is_anonymous: true } },
+    });
     mockSignInAnonymously.mockResolvedValue({
       data: { user: { id: "anon-user-1" } },
       error: null,
@@ -292,5 +312,53 @@ describe("PlayerJoinClient", () => {
 
     // Should NOT have called registerPlayerCombatant (already registered)
     expect(mockRegisterPlayerCombatant).not.toHaveBeenCalled();
+  });
+
+  describe("isAnonPlayer gating (regression: 2026-04-24)", () => {
+    // `join.waiting-room.auth-cta` ("Já tenho conta") is the simplest gate:
+    // visible iff `isAnonPlayer === true`. Regression cause: pre-fix
+    // `isAnonPlayer = !authUserId` always returned false (anon users have UID).
+    it("anon user (is_anonymous=true) SEES the auth-cta button", async () => {
+      mockGetUser.mockResolvedValue({
+        data: { user: { id: "anon-user-1", is_anonymous: true } },
+      });
+
+      render(<PlayerJoinClient {...DEFAULT_PROPS} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("mock-player-lobby")).toBeInTheDocument();
+      });
+      await waitFor(() => {
+        expect(screen.getByTestId("join.waiting-room.auth-cta")).toBeInTheDocument();
+      });
+    });
+
+    it("real authenticated user (is_anonymous=false) does NOT see the auth-cta button", async () => {
+      mockGetSession.mockResolvedValue({
+        data: { session: { user: { id: "real-user-99" } } },
+      });
+      mockGetUser.mockResolvedValue({
+        data: { user: { id: "real-user-99", is_anonymous: false } },
+      });
+
+      render(<PlayerJoinClient {...DEFAULT_PROPS} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("mock-player-lobby")).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId("join.waiting-room.auth-cta")).not.toBeInTheDocument();
+    });
+
+    it("null user during boot window does NOT flash the auth-cta button", async () => {
+      // getUser never resolves → isRealAuthUser stays null → isAnonPlayer stays false
+      mockGetUser.mockReturnValue(new Promise(() => {}));
+
+      render(<PlayerJoinClient {...DEFAULT_PROPS} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("mock-player-lobby")).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId("join.waiting-room.auth-cta")).not.toBeInTheDocument();
+    });
   });
 });

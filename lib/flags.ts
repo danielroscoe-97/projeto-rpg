@@ -29,7 +29,12 @@ export type FeatureFlagKey =
   /** S5.2 Beta 4 P0 — shared Zustand store for favorites (rate-limit storm fix). */
   | "ff_favorites_v2_shared_state"
   /** S5.1 — Polymorph / Wild Shape with two HP bars (reserved; default OFF). */
-  | "ff_polymorph_v1";
+  | "ff_polymorph_v1"
+  /** 2026-04-24 postmortem R3 — coalesce /api/combat/[id]/state queries with
+   * per-kind TTLs (token 15s, session 10s, encounter 5s, token_owner 60s).
+   * Default ON in prod; env var flips it off without redeploy if anything
+   * surprises us in the wild. */
+  | "ff_combat_state_coalesce_v1";
 
 /**
  * Hard-coded defaults. Flipped to `true` on 2026-04-19 for beta 4 soak —
@@ -48,6 +53,7 @@ const DEFAULTS: Record<FeatureFlagKey, boolean> = {
   ff_favorites_v1: true,
   ff_favorites_v2_shared_state: true,
   ff_polymorph_v1: true,
+  ff_combat_state_coalesce_v1: true,
 };
 
 const TRUTHY = new Set(["1", "true", "on", "yes"]);

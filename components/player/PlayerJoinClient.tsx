@@ -3285,7 +3285,12 @@ export function PlayerJoinClient({
   // unmounts the PlayerLobby / PlayerInitiativeBoard — preserving realtime
   // channels, storage listeners, and the heartbeat interval. (Wave 0 ACs.)
   // ─────────────────────────────────────────────────────────────────────
-  const isAnonPlayer = !authUserId;
+  // Canonical auth check — `signInAnonymously()` returns a real Supabase UID,
+  // so `!authUserId` treats anon users as authenticated (bug: 2026-04-20..2026-04-24).
+  // Use `is_anonymous` semantics via isRealAuthUser (derivação em :697).
+  // `isRealAuthUser === null` during the auth boot window renders as "not anon"
+  // to avoid a flash of conversion CTAs before auth resolves.
+  const isAnonPlayer = isRealAuthUser === false;
   const dismissalCampaignId = campaignId ?? sessionCampaignId ?? "__guest__";
   const effectiveUpgradeCampaignId = campaignId ?? sessionCampaignId;
   // Q#4 — `shouldShowCta` reads. Re-evaluates on dismissalVersion bumps
