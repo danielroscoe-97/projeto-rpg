@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Shield, Zap, Footprints, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { Shield, Zap, Footprints, Sparkles } from "lucide-react";
 const ABILITY_SCORES = [
   { key: "str", label: "STR" },
   { key: "dex", label: "DEX" },
@@ -50,7 +49,6 @@ export function CharacterCoreStats({
   onToggleInspiration,
 }: CharacterCoreStatsProps) {
   const t = useTranslations("player_hq.sheet");
-  const [showAttributes, setShowAttributes] = useState(false);
 
   const abilityValues: Record<AbilityKey, number | null> = {
     str,
@@ -127,44 +125,38 @@ export function CharacterCoreStats({
         </div>
       )}
 
-      {/* Ability Scores (accordion) */}
+      {/* Ability Scores — always visible (EP-1 A2: accordion killed per 09-implementation-plan.md §A2) */}
       {hasAnyAbility && (
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setShowAttributes((v) => !v)}
-            className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <span>{t("attributes_label")}</span>
-            {showAttributes ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
-          </button>
-          {showAttributes && (
-            <div className="grid grid-cols-3 gap-2 px-4 pb-4">
-              {ABILITY_SCORES.map(({ key, label }) => {
-                const score = abilityValues[key];
-                return (
-                  <div
-                    key={key}
-                    className="bg-background/50 border border-border rounded-lg p-2 text-center"
-                  >
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      {label}
-                    </p>
-                    <p className="text-xl font-bold text-foreground tabular-nums">
-                      {getModifier(score)}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground tabular-nums">
-                      {score ?? "—"}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+        <div
+          className="bg-card border border-border rounded-xl px-4 py-3"
+          role="group"
+          aria-label={t("attributes_label")}
+        >
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
+            {t("attributes_label")}
+          </p>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+            {ABILITY_SCORES.map(({ key, label }) => {
+              const score = abilityValues[key];
+              return (
+                <div
+                  key={key}
+                  className="bg-background/50 border border-border rounded-lg p-2 text-center"
+                  data-testid={`ability-chip-${key}`}
+                >
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    {label}
+                  </p>
+                  <p className="text-xl font-bold text-foreground tabular-nums">
+                    {getModifier(score)}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground tabular-nums">
+                    {score ?? "—"}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
