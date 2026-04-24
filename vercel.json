@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/ebook-nurturing",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/sweep-session-tokens",
+      "schedule": "30 4 * * *"
     }
   ]
 }
