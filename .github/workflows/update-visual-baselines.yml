@@ -1,0 +1,123 @@
+name: Update Visual Baselines
+
+# Captures Playwright toHaveScreenshot baselines on ubuntu-latest (the same
+# OS as the regular E2E runner) and commits them back to the branch this
+# workflow was triggered on. Use when a visual baseline needs regenerating
+# on Linux — e.g. PR #46 Sprint 2 guest /try baseline, or any future
+# Wave 1+ density spec that lands toHaveScreenshot assertions.
+#
+# Usage (example):
+#   rtk gh workflow run update-visual-baselines.yml \
+#     --ref feat/ep-1-sprint-2-track-b \
+#     -f spec_path=e2e/player-hq/sheet-smoke-guest.spec.ts
+#
+# Leave `spec_path` at the default to update every Playwright snapshot the
+# project knows about on the selected branch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      spec_path:
+        description: "Spec path(s) to update (space-separated; empty = all)"
+        required: false
+        default: "e2e/player-hq/sheet-smoke-guest.spec.ts"
+      flag_v2:
+        description: "NEXT_PUBLIC_PLAYER_HQ_V2 value for the build"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Regenerate Playwright snapshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check secrets configured
+        id: check
+        run: |
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "Supabase secrets not configured — cannot run the dev server for snapshot capture."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+
+      - name: Checkout PR branch
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        if: steps.check.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check.outputs.skip != 'true'
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: steps.check.outputs.skip != 'true'
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Build app
+        if: steps.check.outputs.skip != 'true'
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_PLAYER_HQ_V2: ${{ inputs.flag_v2 }}
+
+      - name: Regenerate snapshots
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          if [ -z "${{ inputs.spec_path }}" ]; then
+            npx playwright test --update-snapshots
+          else
+            npx playwright test ${{ inputs.spec_path }} --update-snapshots
+          fi
+        env:
+          CI: "true"
+          NEXT_PUBLIC_PLAYER_HQ_V2: ${{ inputs.flag_v2 }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          E2E_DM_EMAIL: ${{ secrets.E2E_DM_EMAIL }}
+          E2E_DM_PASSWORD: ${{ secrets.E2E_DM_PASSWORD }}
+
+      - name: Commit and push regenerated snapshots
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 'e2e/**/*-snapshots/' || true
+          if git diff --staged --quiet; then
+            echo "No snapshot changes to commit."
+          else
+            git commit -m "test(grimório): regenerate visual baselines via CI ($GITHUB_REF_NAME)
+
+          Regenerated on ubuntu-latest via workflow_dispatch.
+          Spec(s): ${{ inputs.spec_path }}
+          Flag: NEXT_PUBLIC_PLAYER_HQ_V2=${{ inputs.flag_v2 }}"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+
+      - name: Upload Playwright report on failure
+        uses: actions/upload-artifact@v4
+        if: failure() && steps.check.outputs.skip != 'true'
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
