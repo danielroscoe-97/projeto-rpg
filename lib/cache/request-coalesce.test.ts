@@ -77,4 +77,22 @@ describe("request-coalesce", () => {
     await expect(coalesce("k1", 1_000, producer)).rejects.toBe(boom);
     expect(producer).toHaveBeenCalledTimes(1);
   });
+
+  it("LRU-evicts oldest entries when cap exceeded with nothing expired", async () => {
+    // All entries have 60s TTL so nothing expires during the test.
+    // Fill beyond MAX_ENTRIES (1000) and assert oldest keys got evicted.
+    const producer = jest.fn(async (n: number) => n);
+
+    for (let i = 0; i < 1050; i++) {
+      await coalesce(`k${i}`, 60_000, () => producer(i));
+    }
+
+    // The first ~100 keys should be evicted (10% of 1000). Pick key 10:
+    // forcing a new coalesce call must re-fire the producer.
+    const before = producer.mock.calls.length;
+    await coalesce("k10", 60_000, () => producer(10));
+    const after = producer.mock.calls.length;
+
+    expect(after).toBe(before + 1);
+  });
 });

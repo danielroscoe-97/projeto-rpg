@@ -75,4 +75,16 @@ function maybeSweep(now: number): void {
   for (const [k, v] of store) {
     if (v.expiresAt < now) store.delete(k);
   }
+  // LRU fallback — if nothing expired (all entries still fresh, which can
+  // happen under high key churn within a single TTL window), evict oldest
+  // 10% by insertion order. JS Map preserves insertion order, so the first
+  // keys are the oldest. Bounds memory at MAX_ENTRIES * 1.1 worst case.
+  if (store.size > MAX_ENTRIES) {
+    const toEvict = Math.floor(MAX_ENTRIES * 0.1);
+    let i = 0;
+    for (const k of store.keys()) {
+      if (i++ >= toEvict) break;
+      store.delete(k);
+    }
+  }
 }
