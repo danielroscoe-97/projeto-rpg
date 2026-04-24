@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { REALTIME_SUBSCRIBE_STATES, type RealtimeChannel } from "@supabase/supabase-js";
+import { transitionTo } from "./connection-state";
 import type {
   RealtimeEvent,
   SanitizedEvent,
@@ -162,6 +163,14 @@ function createAndSubscribe(sessionId: string): void {
 
   channel = fresh;
   currentSessionId = sessionId;
+  // CR-01: emit connecting transition before subscribe. `attempt` is the
+  // logical attempt number (1-based); `reconnectAttempts` holds the count
+  // of prior failures.
+  transitionTo({
+    kind: "connecting",
+    attempt: reconnectAttempts + 1,
+    since: Date.now(),
+  });
   // P-8: realtime-js can emit TIMED_OUT then CHANNEL_ERROR (or vice-versa)
   // in cascade failures. Without this guard the attempt counter would
   // double-increment per real failure and trip the ceiling in ~7 failures
@@ -176,6 +185,14 @@ function createAndSubscribe(sessionId: string): void {
         // P-3: restore sync status if a prior ceiling-hit marked us offline.
         // Caller surfaces (useCombatResilience, sync indicator) observe this.
         if (getSyncStatus() === "offline") setSyncStatus("online");
+        // CR-01: emit connected transition. currentSeq reflects the latest
+        // broadcast seq at subscribe time — consumers (useEventResume in
+        // CR-03) compare with their last-seen seq to detect a gap.
+        transitionTo({
+          kind: "connected",
+          subscribedAt: Date.now(),
+          currentSeq: _broadcastSeq,
+        });
         resolve();
         return;
       }
@@ -212,6 +229,14 @@ function createAndSubscribe(sessionId: string): void {
             sessionId,
           });
           setSyncStatus("offline");
+          // CR-01: emit degraded transition. Consumers (sync indicator UI,
+          // future "Retry" button) react to this to surface the permanent
+          // failure to the user instead of pretending nothing is wrong.
+          transitionTo({
+            kind: "degraded",
+            reason: "ceiling_hit",
+            since: Date.now(),
+          });
           resolve();
           return;
         }
@@ -226,6 +251,14 @@ function createAndSubscribe(sessionId: string): void {
         const jitter = Math.random() * 500;
         const delay = Math.min(base + jitter, RECONNECT_BACKOFF_CEILING_MS);
         reconnectBackoffMs = Math.min(base * 2, RECONNECT_BACKOFF_CEILING_MS);
+        // CR-01: emit reconnecting transition. Skeleton UI in
+        // PlayerJoinClient (CR-03) reacts to this after a 500ms debounce.
+        transitionTo({
+          kind: "reconnecting",
+          attempt: nextAttempt,
+          since: Date.now(),
+          backoffMs: delay,
+        });
         reconnectTimer = setTimeout(() => {
           reconnectTimer = null;
           if (currentSessionId === sessionId && channel === fresh) {
@@ -265,6 +298,13 @@ export function resetDmChannel(): void {
   channel = null;
   currentSessionId = null;
   channelReady = null;
+  // CR-01: emit the walk-down after the actual reset so listeners observing
+  // the final "idle" state see a consistent module. Walk closed → idle so
+  // consumers can distinguish "we tore down" (closed) from "we're ready for
+  // a new connect" (idle). Redundant same-state transitions are no-ops
+  // in the state machine (via invalid-transition warning + ignore).
+  transitionTo({ kind: "closed" });
+  transitionTo({ kind: "idle" });
 }
 
 /** Sanitize a full combatant for player broadcast.
@@ -718,6 +758,9 @@ export async function replayOfflineQueue(sessionId: string): Promise<void> {
  *  would starve the next subscribe on the same topic. */
 export function cleanupDmChannel(): void {
   teardownChannel();
+  // CR-01: emit closed after teardown so consumers can tear down their own
+  // resources (resume listeners, skeleton timers) in the correct order.
+  transitionTo({ kind: "closed" });
 }
 
 /** Deferred cleanup — tears down the channel only if no new consumer claims
@@ -735,5 +778,8 @@ export function scheduleDmChannelCleanup(): void {
   pendingCleanupTimer = setTimeout(() => {
     pendingCleanupTimer = null;
     teardownChannel();
+    // CR-01: emit closed so consumers tear down subscriptions on the same
+    // timer boundary as the channel teardown (mirrors cleanupDmChannel).
+    transitionTo({ kind: "closed" });
   }, UNMOUNT_CLEANUP_GRACE_MS);
 }
