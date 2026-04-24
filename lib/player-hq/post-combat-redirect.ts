@@ -92,14 +92,14 @@ export function resolvePostCombatRedirect(
  * "recent window" from the default 5 minutes to ~500ms so the E2E suite
  * doesn't need to sleep minutes to verify staleness behavior.
  *
- * Reads from `process.env.DEBUG_POST_COMBAT_REDIRECT_MS`. Safe in the
+ * Reads from `process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS`. Safe in the
  * browser bundle because Next inlines the value at build time; if it is
  * unset we return the production default.
  */
 export const DEFAULT_POST_COMBAT_WINDOW_MS = 5 * 60 * 1000; // 5 min
 
 export function postCombatWindowMs(): number {
-  const raw = process.env.DEBUG_POST_COMBAT_REDIRECT_MS;
+  const raw = process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS;
   if (!raw) return DEFAULT_POST_COMBAT_WINDOW_MS;
   const parsed = Number.parseInt(raw, 10);
   return Number.isFinite(parsed) && parsed > 0

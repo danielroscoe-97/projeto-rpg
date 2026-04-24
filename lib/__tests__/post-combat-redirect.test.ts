@@ -105,30 +105,30 @@ describe("buildHeroiSheetPath", () => {
 });
 
 describe("postCombatWindowMs", () => {
-  const originalEnv = process.env.DEBUG_POST_COMBAT_REDIRECT_MS;
+  const originalEnv = process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS;
 
   afterEach(() => {
     if (originalEnv === undefined) {
-      delete process.env.DEBUG_POST_COMBAT_REDIRECT_MS;
+      delete process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS;
     } else {
-      process.env.DEBUG_POST_COMBAT_REDIRECT_MS = originalEnv;
+      process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS = originalEnv;
     }
   });
 
   it("returns the production default when env var is unset", () => {
-    delete process.env.DEBUG_POST_COMBAT_REDIRECT_MS;
+    delete process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS;
     expect(postCombatWindowMs()).toBe(DEFAULT_POST_COMBAT_WINDOW_MS);
   });
 
-  it("honors DEBUG_POST_COMBAT_REDIRECT_MS when set to a positive integer", () => {
-    process.env.DEBUG_POST_COMBAT_REDIRECT_MS = "500";
+  it("honors NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS when set to a positive integer", () => {
+    process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS = "500";
     expect(postCombatWindowMs()).toBe(500);
   });
 
   it("falls back to default when env var is not a positive integer", () => {
-    process.env.DEBUG_POST_COMBAT_REDIRECT_MS = "not-a-number";
+    process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS = "not-a-number";
     expect(postCombatWindowMs()).toBe(DEFAULT_POST_COMBAT_WINDOW_MS);
-    process.env.DEBUG_POST_COMBAT_REDIRECT_MS = "-42";
+    process.env.NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS = "-42";
     expect(postCombatWindowMs()).toBe(DEFAULT_POST_COMBAT_WINDOW_MS);
   });
 });

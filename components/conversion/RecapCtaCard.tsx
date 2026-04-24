@@ -81,11 +81,13 @@ export interface RecapCtaCardProps {
    *   - Guest: `/app/dashboard` (locked by decision #43)
    *   - Anon: flag ON → `/app/campaigns/:id/sheet?tab=heroi`;
    *           flag OFF → `/app/dashboard`
-   * The anon branch itself does not `router.push`; navigation is owned
-   * by `PlayerJoinClient.handleAuthModalSuccess`, which reads this prop
-   * to route after successful upgrade. For Sprint 2 the anon branch
-   * treats `redirectTo` as an informational default: a later patch will
-   * wire it into the payload shape.
+   * The anon branch itself does NOT `router.push`. Sprint 2 ships the
+   * DOM contract only — the value is surfaced as a `data-redirect-to`
+   * attribute so E2Es can assert it. Sprint 3 wires the actual navigation
+   * inside `PlayerJoinClient.handleAuthModalSuccess` (today it does not
+   * read this prop — search `handleAuthModalSuccess` in PlayerJoinClient
+   * confirms). Until then, auth-callback middleware handles routing with
+   * its default behavior.
    */
   redirectTo?: string;
 }
@@ -148,8 +150,10 @@ function RecapCtaCardAnon({
   /**
    * A6 — flag-aware redirect target. Exposed on the DOM as a
    * `data-redirect-to` attribute so E2Es can assert the value without
-   * reaching into React internals. Not used for imperative navigation
-   * here — navigation is owned by `PlayerJoinClient.handleAuthModalSuccess`.
+   * reaching into React internals. Sprint 2 DOES NOT navigate from this
+   * prop — Sprint 3 wires `PlayerJoinClient.handleAuthModalSuccess` to
+   * consume it. Until then, auth-callback middleware drives post-signup
+   * routing with its default behavior.
    */
   redirectTo?: string;
 }): ReactElement | null {
