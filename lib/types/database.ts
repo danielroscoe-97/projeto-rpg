@@ -144,6 +144,13 @@ export interface Database {
           traits: { personality?: string; ideal?: string; bond?: string; flaw?: string } | null;
           proficiencies: CharacterProficiencies;
           currency: { cp: number; sp: number; ep: number; gp: number; pp: number };
+          /** Migration 184 — Hit Dice tracker. `{max:0,used:0}` means data not yet tracked (A4 header renders em-dash). */
+          hit_dice: { max: number; used: number };
+          /** Migration 184 — class-specific primary resources. Canonical shape `{primary:{name,max,used}}`; empty `{}` means data not yet tracked. */
+          class_resources: {
+            primary?: { name: string; max: number; used: number };
+            [key: string]: unknown;
+          };
           created_at: string;
           updated_at: string;
         };
@@ -182,6 +189,11 @@ export interface Database {
           proficiencies?: CharacterProficiencies;
           traits?: { personality?: string; ideal?: string; bond?: string; flaw?: string } | null;
           currency?: { cp: number; sp: number; ep: number; gp: number; pp: number };
+          hit_dice?: { max: number; used: number };
+          class_resources?: {
+            primary?: { name: string; max: number; used: number };
+            [key: string]: unknown;
+          };
           created_at?: string;
           updated_at?: string;
         };
@@ -219,6 +231,11 @@ export interface Database {
           proficiencies?: CharacterProficiencies;
           traits?: { personality?: string; ideal?: string; bond?: string; flaw?: string } | null;
           currency?: { cp: number; sp: number; ep: number; gp: number; pp: number };
+          hit_dice?: { max: number; used: number };
+          class_resources?: {
+            primary?: { name: string; max: number; used: number };
+            [key: string]: unknown;
+          };
           updated_at?: string;
         };
       };

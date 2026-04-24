@@ -254,6 +254,11 @@ function NewEncounterPageInner() {
         traits: null,
         proficiencies: {},
         currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+        // Migration 184 — header-optimized trackers. Placeholder rows start
+        // empty; real data hydrates from player_characters when the player
+        // joins for real. A4 header shows em-dash for {max:0,used:0}/{}.
+        hit_dice: { max: 0, used: 0 },
+        class_resources: {},
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       } as PlayerCharacter));
