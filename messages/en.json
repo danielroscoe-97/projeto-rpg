@@ -2630,6 +2630,7 @@
     "connecting": "Connecting to combat...",
     "connection_error": "Connection Error",
     "connection_error_detail": "Failed to connect to combat",
+    "reconnecting_label": "Reconnecting...",
     "waiting_dm": "Waiting for the DM to start combat...",
     "round": "Round",
     "spell_oracle_open": "Open spell oracle",
