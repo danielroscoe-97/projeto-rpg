@@ -151,7 +151,7 @@ export function PlayerHqShell({
 
   if (loading) {
     return (
-      <div className="space-y-4 animate-pulse">
+      <div className="space-y-3 animate-pulse">
         <div className="h-8 bg-white/5 rounded w-1/3" />
         <div className="h-40 bg-white/5 rounded-xl" />
         <div className="h-32 bg-white/5 rounded-xl" />

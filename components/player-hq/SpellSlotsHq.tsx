@@ -81,7 +81,7 @@ export function SpellSlotsHq({
   if (levels.length === 0 && readOnly) return null;
 
   return (
-    <div className="space-y-2 bg-card border border-border rounded-xl p-4">
+    <div className="space-y-2 bg-card border border-border rounded-xl p-3">
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
           {t("spell_slots_title")}
