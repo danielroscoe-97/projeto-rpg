@@ -19,6 +19,15 @@
 --   - Threshold: 21 dias (acordado com o Dani; TTL do
 --     spec-resilient-reconnection.md é 24h, 21d é folgadíssimo)
 --
+-- IMPORTANTE — escopo: esta sweep só ataca crescimento **pós-sessão**.
+-- Tokens ficam `is_active = false` apenas quando o Mestre encerra a sessão
+-- (via `expireSessionTokens` em lib/supabase/session-token.ts:65-73). As
+-- "7 sombras" documentadas no postmortem estavam em sessão ativa, logo
+-- `is_active = true` — NÃO são alvo desta função. Reduzir sombras em
+-- sessão ativa é problema adjacente (ver fix isAnonPlayer em PR #43 que
+-- ataca a causa raiz: sem CTA de conversão, cada player junta shadow novo
+-- em vez de upgradar a conta).
+--
 -- Auditoria: se algo for deletado, escreve info-level row em error_logs.
 -- Idempotente e safe pra invocar manualmente ou via Vercel Cron.
 
