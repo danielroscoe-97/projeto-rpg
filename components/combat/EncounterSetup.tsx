@@ -458,7 +458,7 @@ export function EncounterSetup({ onStartCombat, campaignId, preloadedPlayers, pr
       temp_hp: 0,
       ac: safeAc,
       spell_save_dc: null,
-      initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
+      initiative: initVal !== null && !isNaN(initVal) ? Math.max(-5, initVal) : null,
       initiative_order: null,
       conditions: [],
       ruleset_version: sel?.version ?? null,

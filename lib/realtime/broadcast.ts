@@ -45,6 +45,11 @@ let pendingCleanupTimer: ReturnType<typeof setTimeout> | null = null;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 /** Exponential backoff state for subscribe retries. Reset on SUBSCRIBED. */
 let reconnectBackoffMs = 1_000;
+/** Subscribe-retry attempt counter. Reset on SUBSCRIBED. When it hits the
+ *  ceiling we stop retrying to avoid a zombie loop hammering the broker
+ *  (R2 — Beta #4 postmortem 2026-04-24). */
+let reconnectAttempts = 0;
+const RECONNECT_ATTEMPTS_CEILING = 15;
 
 /** Grace window between component unmount and actual channel teardown.
  *  Sized to absorb router.replace remounts (`/app/combat/new → /app/combat/[id]`)
@@ -81,6 +86,7 @@ function teardownChannel(): void {
     reconnectTimer = null;
   }
   reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
+  reconnectAttempts = 0;
   if (channel) {
     const supabase = createClient();
     supabase.removeChannel(channel);
@@ -138,6 +144,7 @@ export function getDmChannel(sessionId: string): RealtimeChannel {
     channelReady = null;
     if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
     reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
+    reconnectAttempts = 0;
   }
 
   createAndSubscribe(sessionId);
@@ -155,19 +162,35 @@ function createAndSubscribe(sessionId: string): void {
 
   channel = fresh;
   currentSessionId = sessionId;
+  // P-8: realtime-js can emit TIMED_OUT then CHANNEL_ERROR (or vice-versa)
+  // in cascade failures. Without this guard the attempt counter would
+  // double-increment per real failure and trip the ceiling in ~7 failures
+  // instead of 15.
+  let errorHandledForThisLifecycle = false;
   channelReady = new Promise<void>((resolve) => {
     fresh.subscribe((status: REALTIME_SUBSCRIBE_STATES | string, err?: Error) => {
       if (status === "SUBSCRIBED") {
         reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS; // reset on success
+        reconnectAttempts = 0;
+        errorHandledForThisLifecycle = false;
+        // P-3: restore sync status if a prior ceiling-hit marked us offline.
+        // Caller surfaces (useCombatResilience, sync indicator) observe this.
+        if (getSyncStatus() === "offline") setSyncStatus("online");
         resolve();
         return;
       }
       if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        if (errorHandledForThisLifecycle) return;
+        errorHandledForThisLifecycle = true;
+        // P-7: report the attempt number for THIS failure (post-increment),
+        // not the pre-increment count — otherwise the first error logs `0`.
+        const nextAttempt = reconnectAttempts + 1;
         captureError(err ?? new Error(`Channel ${status} for session ${sessionId}`), {
           component: "broadcast",
           action: "subscribe",
           category: "realtime",
           sessionId,
+          extra: { reconnectAttempts: nextAttempt },
         });
         // Auto-reconnect with exponential backoff — mirror of the
         // player-side pattern in PlayerJoinClient. Guards:
@@ -175,9 +198,34 @@ function createAndSubscribe(sessionId: string): void {
         //      a session change or an explicit cleanup).
         //   2. Only retry if `channel` still points at THIS instance — a
         //      parallel reclaim may have replaced it already.
+        //   3. Cap total attempts (R2 — Beta #4 postmortem 2026-04-24) so
+        //      a broker-wide outage doesn't turn into an infinite retry
+        //      loop that hammers the edge once capacity returns.
+        //   4. On ceiling hit, surface "offline" so sync indicators warn
+        //      the DM — previously `resolve()` pretended everything was
+        //      fine and DM kept broadcasting into the void (P-3).
+        if (nextAttempt > RECONNECT_ATTEMPTS_CEILING) {
+          captureError(new Error(`Broadcast reconnect ceiling hit (${RECONNECT_ATTEMPTS_CEILING})`), {
+            component: "broadcast",
+            action: "subscribe_ceiling",
+            category: "realtime",
+            sessionId,
+          });
+          setSyncStatus("offline");
+          resolve();
+          return;
+        }
+        reconnectAttempts = nextAttempt;
         if (reconnectTimer) clearTimeout(reconnectTimer);
-        const delay = Math.min(reconnectBackoffMs, RECONNECT_BACKOFF_CEILING_MS);
-        reconnectBackoffMs = Math.min(delay * 2, RECONNECT_BACKOFF_CEILING_MS);
+        const base = Math.min(reconnectBackoffMs, RECONNECT_BACKOFF_CEILING_MS);
+        // R2: jitter [0, 500ms) to decorrelate reconnect storms across
+        // many clients returning at once after a broker blip.
+        // P-5: clamp the total delay to the advertised ceiling so existing
+        // tests that advance timers by exactly 30_000ms don't flake when
+        // jitter lands near the top of its range.
+        const jitter = Math.random() * 500;
+        const delay = Math.min(base + jitter, RECONNECT_BACKOFF_CEILING_MS);
+        reconnectBackoffMs = Math.min(base * 2, RECONNECT_BACKOFF_CEILING_MS);
         reconnectTimer = setTimeout(() => {
           reconnectTimer = null;
           if (currentSessionId === sessionId && channel === fresh) {
@@ -213,6 +261,7 @@ export function resetDmChannel(): void {
     reconnectTimer = null;
   }
   reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
+  reconnectAttempts = 0;
   channel = null;
   currentSessionId = null;
   channelReady = null;
@@ -241,10 +290,13 @@ function sanitizeCombatant(c: Combatant): SanitizedCombatant {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructure to omit sensitive fields
   const { current_hp, max_hp, temp_hp, ac, spell_save_dc, ...safe } = base;
 
+  // P-6 (Beta #4 review): trim before truthy-check so a whitespace-only
+  // alias ("   ") doesn't render as a blank row to players.
+  const trimmedDisplayName = typeof display_name === "string" ? display_name.trim() : "";
   const result: SanitizedCombatant = {
     ...safe,
     // Apply display_name as the visible name (anti-metagaming)
-    name: display_name || base.name,
+    name: trimmedDisplayName || base.name,
     hp_status: getHpStatus(c.current_hp, c.max_hp),
     hp_percentage: getHpPercentage(c.current_hp, c.max_hp),
   };
@@ -585,6 +637,13 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
         enqueueAction(sessionId, event);
       } else {
         if (getSyncStatus() === "offline") setSyncStatus("online");
+        // P-2: successful send proves the channel is healthy. Decay any
+        // lingering retry budget so transient flaps earlier in the session
+        // don't later trip the ceiling during a mid-combat blip.
+        if (reconnectAttempts > 0) {
+          reconnectAttempts = 0;
+          reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
+        }
       }
     } catch {
       setSyncStatus("offline");

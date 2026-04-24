@@ -5,6 +5,14 @@ import { createBrowserClient } from "@supabase/ssr";
  *  leading to "AbortError: The operation was aborted" (navigator.locks). */
 let singleton: ReturnType<typeof createBrowserClient> | null = null;
 
+/** P-4 (Beta #4 review): `worker: true` fails in contexts without Web Worker
+ *  support or with `worker-src 'none'` CSPs (enterprise/sandboxed iframes /
+ *  some mobile webviews). Guard with runtime feature detection so those
+ *  users fall back to main-thread realtime instead of the singleton
+ *  throwing at construction and white-screening the combat UI. */
+const workerSupported =
+  typeof Worker !== "undefined" && typeof window !== "undefined";
+
 export function createClient() {
   if (!singleton) {
     singleton = createBrowserClient(
@@ -12,6 +20,13 @@ export function createClient() {
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
       {
         realtime: {
+          // R1 (Beta #4 postmortem 2026-04-24): push realtime off the main
+          // thread and slow heartbeats. Under CDC pool saturation the main
+          // thread ran hot and heartbeats ping-ponged every 5s aggravating
+          // the queue timeout; a dedicated worker + 20s heartbeat gives
+          // the server breathing room without dropping presence.
+          worker: workerSupported,
+          heartbeatIntervalMs: 20000,
           params: {
             // Raise the send-side rate limit. The default 10 events/s is a
             // throttle on outgoing `channel.send()` calls — it does NOT affect

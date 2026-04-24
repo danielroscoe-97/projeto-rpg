@@ -96,7 +96,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
     ? supabase
         .from("combatants")
         .select(
-          "id, name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, legendary_actions_total, legendary_actions_used"
+          "id, name, display_name, current_hp, max_hp, temp_hp, ac, initiative_order, conditions, is_defeated, is_player, is_hidden, monster_id, ruleset_version, legendary_actions_total, legendary_actions_used"
         )
         .eq("encounter_id", encounter.id)
         .order("initiative_order", { ascending: true })
@@ -143,11 +143,22 @@ export default async function JoinPage({ params }: JoinPageProps) {
       .filter((c) => !c.is_hidden)
       .map((c) => {
         if (c.is_player) {
-          const { is_hidden: _h, ...rest } = c;
+          const { is_hidden: _h, display_name: _dn, ...rest } = c;
           return { ...rest, reaction_used: false };
         }
-        const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, is_hidden: _h, ...safe } = c;
-        return { ...safe, hp_status: getHpStatus(current_hp ?? 0, max_hp ?? 0), reaction_used: false };
+        // F02: apply display_name anti-metagaming at SSR to avoid real-name
+        // flash before client rehydration runs sanitizeCombatantsForPlayer.
+        // P-6 (review): trim before truthy-check so a whitespace-only alias
+        // ("   ") falls through to the real name rather than rendering a
+        // blank row to players.
+        const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, is_hidden: _h, display_name, ...safe } = c;
+        const trimmedDisplayName = typeof display_name === "string" ? display_name.trim() : "";
+        return {
+          ...safe,
+          name: trimmedDisplayName || safe.name,
+          hp_status: getHpStatus(current_hp ?? 0, max_hp ?? 0),
+          reaction_used: false,
+        };
       });
   }
 

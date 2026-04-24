@@ -408,7 +408,7 @@ function GuestEncounterSetup({ onStartCombat, onShareUpsell }: { onStartCombat: 
       temp_hp: 0,
       ac: isNaN(ac) || ac < 0 ? 0 : ac,
       spell_save_dc: null,
-      initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
+      initiative: initVal !== null && !isNaN(initVal) ? Math.max(-5, initVal) : null,
       initiative_order: null,
       conditions: [],
       ruleset_version: sel?.version ?? null,
@@ -1290,7 +1290,7 @@ export function GuestCombatClient() {
     addCombatant({
       name, current_hp: isNaN(hp) || hp < 0 ? 0 : hp, max_hp: isNaN(hp) || hp < 0 ? 0 : hp, temp_hp: 0,
       ac: isNaN(acVal) || acVal < 0 ? 0 : acVal, spell_save_dc: null,
-      initiative: initVal !== null && !isNaN(initVal) ? Math.min(50, Math.max(-5, initVal)) : null,
+      initiative: initVal !== null && !isNaN(initVal) ? Math.max(-5, initVal) : null,
       initiative_order: null, conditions: [], ruleset_version: null,
       is_defeated: false, is_hidden: false, is_player: midCombatAddRowRole === "player",
       monster_id: null, token_url: null, creature_type: null, display_name: displayName,

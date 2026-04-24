@@ -411,7 +411,7 @@ export const CombatantRow = memo(function CombatantRow({
                     onSetInitiative?.(combatant.id, null);
                   } else {
                     const val = parseInt(trimmed, 10);
-                    if (!isNaN(val)) onSetInitiative?.(combatant.id, Math.min(50, Math.max(-5, val)));
+                    if (!isNaN(val)) onSetInitiative?.(combatant.id, Math.max(-5, val));
                   }
                   closeInlineEdit();
                 }}

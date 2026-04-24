@@ -46,11 +46,15 @@ export function sanitizeCombatantsForPlayer(combatants: RawCombatantRow[]) {
         return { ...rest, initiative_order: index };
       }
       const { current_hp, max_hp, temp_hp: _temp_hp, ac: _ac, spell_save_dc: _dc, display_name, is_hidden: _h, condition_durations: _cd, session_token_id: _st, ...rest } = c;
+      // P-6 (Beta #4 review): trim before truthy-check so whitespace-only
+      // aliases ("   ") fall through to the real name instead of rendering
+      // as a blank row to players.
+      const trimmedDisplayName = typeof display_name === "string" ? display_name.trim() : "";
       return {
         ...rest,
         initiative_order: index,
         // Anti-metagaming: replace real name with display_name if set
-        name: display_name || rest.name,
+        name: trimmedDisplayName || rest.name,
         hp_status: getHpStatus(current_hp, max_hp),
         hp_percentage: getHpPercentage(current_hp, max_hp),
         // condition_durations intentionally omitted for monsters (DM-only)

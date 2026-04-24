@@ -73,6 +73,12 @@ beforeEach(() => {
   jest.useFakeTimers();
   jest.clearAllMocks();
   subscribeBehavior = (cb) => cb("SUBSCRIBED");
+  // Pin Math.random to 0 so the reconnect jitter (Math.random() * 500 in
+  // broadcast.ts — added for R2/Beta #4) is deterministic. Tests below
+  // advance timers by exact base delays (1s, 2s, 4s...); without this
+  // mock they'd need a 500ms tolerance and the "exactly 1s retry" assertion
+  // would become inherently flaky.
+  jest.spyOn(Math, "random").mockReturnValue(0);
   // Reset module-level state between tests so one test can't leak channel
   // singleton state into another. `cleanupDmChannel` clears every timer
   // and nulls every reference.
@@ -82,6 +88,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 
 // ── scheduleDmChannelCleanup: debounce grace window ──────────────
