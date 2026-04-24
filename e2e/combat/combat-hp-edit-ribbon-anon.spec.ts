@@ -48,6 +48,10 @@ test.describe("Gate Fase A — A5 HP inline ribbon for Anon /join", () => {
           initiative: "18",
           hp: "30",
           ac: "15",
+          // Pass the DM page so the helper drives the accept step —
+          // prod does not auto-accept late-join; without this the helper
+          // times out waiting for `player-view` and the spec skips 100%.
+          dmPage,
         });
       } catch (err) {
         test.skip(true, `Anon join failed: ${String(err)}`);
