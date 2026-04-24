@@ -11,7 +11,21 @@ export default defineConfig({
   workers: 1, // sequential — tests depend on shared combat sessions
   reporter: [["html", { open: "never" }], ["list"]],
   timeout: isRemote ? 90_000 : 60_000,
-  expect: { timeout: isRemote ? 15_000 : 10_000 },
+  // Drop the platform suffix so a single linux-CI-captured PNG is the
+  // source of truth for every spec that uses toHaveScreenshot. Specs
+  // enforce Linux-only execution via test.skip on non-linux platforms.
+  snapshotPathTemplate: "{testFilePath}-snapshots/{arg}-{projectName}{ext}",
+  expect: {
+    timeout: isRemote ? 15_000 : 10_000,
+    // Project-level defaults so specs do not hand-tune tolerances and
+    // drift apart. Absolute pixel budget beats ratio for regression
+    // checks; threshold handles per-pixel AA noise.
+    toHaveScreenshot: {
+      animations: "disabled",
+      maxDiffPixels: 200,
+      threshold: 0.2,
+    },
+  },
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",
     trace: "retain-on-failure",

@@ -65,7 +65,16 @@ rtk git push -u origin feat/ep-1-sprint-2-track-b
 **Importante:**
 - Baselines FLAG OFF (estado prod atual). Density diffs depois serão evidência concreta do delta.
 - Track A **NÃO pode começar** até Track B publicar este commit de baselines em master (evita capturar post-density como "baseline").
-- Se auth seed (PLAYER_WARRIOR) não disponível localmente, baseline da Auth spec fica skipped — tudo bem, mobile Guest/Anon cobre a densidade que importa.
+- **Cobertura realista dos 3 specs existentes em `e2e/player-hq/`** (corrigido 2026-04-24 pós-review PR #46):
+  - `sheet-smoke-guest.spec.ts` visita `/try` — É density-relevante (A5 combat parity guest). **Baseline capturado no PR #46.**
+  - `sheet-smoke-anon.spec.ts` visita `/auth/login` + `/join/bogus` — NÃO é density-relevante. Baseline do surface real de combat anon (via `/join/[token]` com token seeded) fica deferred pra A5 — o PR do A5 captura como parte do próprio escopo.
+  - `sheet-smoke.spec.ts` visita `/sheet` (Auth) — É density-relevante mas precisa de `PLAYER_WARRIOR` seed. Fica dormant até seed vir (Sprint 3+ catch-up).
+- Baselines PNG vivem em `sheet-smoke-guest.spec.ts-snapshots/` e são **Linux-captured** (match o CI runner `ubuntu-latest`). Spec tem `test.skip(process.platform !== 'linux', ...)` pra evitar Windows/macOS regenerar PNGs incompatíveis. Dev local regenera via Docker:
+  ```bash
+  docker run --rm --ipc=host -v "$PWD":/w -w /w \
+    mcr.microsoft.com/playwright:v1.55.0-jammy \
+    npx playwright test e2e/player-hq/ --update-snapshots
+  ```
 
 ---
 
