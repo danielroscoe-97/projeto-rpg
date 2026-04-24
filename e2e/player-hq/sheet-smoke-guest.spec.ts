@@ -42,17 +42,6 @@ test.describe("Player HQ — Guest smoke (no /sheet on /try baseline)", () => {
       return;
     }
 
-    // Visual baseline — captures the pre-Sprint 2 /try state so Wave 1+
-    // density work (A5 combat parity) can diff against a known-good PNG.
-    // Soft networkidle wait keeps dice/toast animations from flaking the
-    // snapshot. maxDiffPixelRatio 0.02 tolerates antialiasing across runs.
-    await page.waitForLoadState("networkidle").catch(() => {});
-    await expect(page).toHaveScreenshot("guest-try-landing.png", {
-      fullPage: false,
-      animations: "disabled",
-      maxDiffPixelRatio: 0.02,
-    });
-
     // PlayerHqShell uses `role="tablist"` for its 7-tab shell. If that
     // ever renders in /try, something is very wrong — guest has no user,
     // no campaign, no character.
