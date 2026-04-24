@@ -37,6 +37,7 @@ import {
 import { recordDismissal, readDismissalRecord } from "./dismissal-store";
 import { GuestRecapFlow } from "./GuestRecapFlow";
 import type { SaveSignupContext } from "./types";
+import { resolvePostCombatRedirect } from "@/lib/player-hq/post-combat-redirect";
 
 export type { SaveSignupContext } from "./types";
 
@@ -72,16 +73,50 @@ export interface RecapCtaCardProps {
    * because PlayerJoinClient always passes it).
    */
   onRequestAuthModal?: (payload: RecapCtaRequestAuthModalPayload) => void;
+  /**
+   * A6 (decision #43) — post-signup redirect target forwarded to the
+   * Guest branch (via `GuestRecapFlow`) and surfaced for anon callers
+   * that want to override the default. Defaults resolve via
+   * {@link resolvePostCombatRedirect}:
+   *   - Guest: `/app/dashboard` (locked by decision #43)
+   *   - Anon: flag ON → `/app/campaigns/:id/sheet?tab=heroi`;
+   *           flag OFF → `/app/dashboard`
+   * The anon branch itself does NOT `router.push`. Sprint 2 ships the
+   * DOM contract only — the value is surfaced as a `data-redirect-to`
+   * attribute so E2Es can assert it. Sprint 3 wires the actual navigation
+   * inside `PlayerJoinClient.handleAuthModalSuccess` (today it does not
+   * read this prop — search `handleAuthModalSuccess` in PlayerJoinClient
+   * confirms). Until then, auth-callback middleware handles routing with
+   * its default behavior.
+   */
+  redirectTo?: string;
 }
 
 export function RecapCtaCard({
   context,
   onComplete,
   onRequestAuthModal,
+  redirectTo,
 }: RecapCtaCardProps): ReactElement | null {
+  // A6 — resolve the flag-aware default once so both branches share the
+  // same policy source (resolvePostCombatRedirect). Guest is hard-locked
+  // to /app/dashboard by decision #43.
+  const resolvedRedirectTo =
+    redirectTo
+    ?? resolvePostCombatRedirect({
+      mode: context.mode,
+      campaignId: context.mode !== "guest" ? context.campaignId : undefined,
+    });
+
   // Guest mode — delegate entirely to agent C's flow (03-E).
   if (context.mode === "guest") {
-    return <GuestRecapFlow context={context} onComplete={onComplete} />;
+    return (
+      <GuestRecapFlow
+        context={context}
+        onComplete={onComplete}
+        redirectTo={resolvedRedirectTo}
+      />
+    );
   }
 
   return (
@@ -89,6 +124,7 @@ export function RecapCtaCard({
       context={context}
       onComplete={onComplete}
       onRequestAuthModal={onRequestAuthModal}
+      redirectTo={resolvedRedirectTo}
     />
   );
 }
@@ -106,11 +142,24 @@ function RecapCtaCardAnon({
   context,
   onComplete,
   onRequestAuthModal,
+  redirectTo,
 }: {
   context: Extract<SaveSignupContext, { mode: "anon" }>;
   onComplete?: () => void;
   onRequestAuthModal?: (payload: RecapCtaRequestAuthModalPayload) => void;
+  /**
+   * A6 — flag-aware redirect target. Exposed on the DOM as a
+   * `data-redirect-to` attribute so E2Es can assert the value without
+   * reaching into React internals. Sprint 2 DOES NOT navigate from this
+   * prop — Sprint 3 wires `PlayerJoinClient.handleAuthModalSuccess` to
+   * consume it. Until then, auth-callback middleware drives post-signup
+   * routing with its default behavior.
+   */
+  redirectTo?: string;
 }): ReactElement | null {
+  // `onComplete` is retained in the props surface for API symmetry but
+  // this branch intentionally does not call it (see A#2 comment above).
+  void onComplete;
   const t = useTranslations("conversion.recap_anon");
 
   // A#2 — local dismissal flag. When the user clicks secondary
@@ -175,6 +224,7 @@ function RecapCtaCardAnon({
   return (
     <section
       data-testid="conversion.recap-cta.anon.root"
+      data-redirect-to={redirectTo}
       className="rounded-lg border border-gold/30 bg-gold/5 px-4 py-3 space-y-2"
     >
       <h3

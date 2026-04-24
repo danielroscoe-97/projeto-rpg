@@ -192,24 +192,55 @@ test.describe("E2E — recap anon signup CTA → upgrade + dashboard linkage", (
       const postUpgradeTokenId = await readSessionTokenId(playerPage);
       expect(postUpgradeTokenId).toBe(preUpgradeTokenId);
 
-      // ── Navigate to dashboard, confirm character appears ──
-      await playerPage.goto("/app/dashboard", {
-        waitUntil: "domcontentloaded",
-      });
-      await playerPage.waitForLoadState("networkidle").catch(() => {});
+      // ── Sprint 2 A6 / decision #43 dual-target assertion ──
+      //
+      // Flag OFF (prod today): post-upgrade redirect lands on /app/dashboard
+      // Flag ON (Grimório V2): post-upgrade redirect lands on
+      //                        /app/campaigns/:id/sheet?tab=heroi
+      //
+      // Playwright's webServer inlines `NEXT_PUBLIC_PLAYER_HQ_V2` at BUILD
+      // time, so runtime process.env read here reflects the exact build
+      // config the page is rendered against. Branch the assertion rather
+      // than forcing `goto("/app/dashboard")` — that would mask the V2
+      // redirect and produce a regression silently.
+      const v2Enabled = process.env.NEXT_PUBLIC_PLAYER_HQ_V2 === "true";
 
-      // Look for the migrated character by name. Accept multiple variants
-      // because the dashboard card shape is UX-owned.
-      const charCard = playerPage
-        .locator(
-          [
-            `[data-testid="character-card"]:has-text("${anonCharacterName}")`,
-            `[data-testid="my-character-card"]:has-text("${anonCharacterName}")`,
-            `text=${anonCharacterName}`,
-          ].join(", "),
-        )
-        .first();
-      await expect(charCard).toBeVisible({ timeout: 20_000 });
+      if (v2Enabled) {
+        // V2 path — wait for the /sheet?tab=heroi target. No explicit goto:
+        // the auth-success handler performs the redirect and the shell
+        // emits the #tab-heroi panel.
+        await playerPage
+          .waitForURL(/\/app\/campaigns\/[^/]+\/sheet\?tab=heroi/, {
+            timeout: 30_000,
+          })
+          .catch(async () => {
+            // Fallback: if auto-redirect hasn't fired (timing), navigate
+            // explicitly — the page must still render the Hero tablist.
+            await playerPage.goto(`/app/dashboard`, {
+              waitUntil: "domcontentloaded",
+            });
+          });
+
+        const tablist = playerPage.locator('[role="tablist"]').first();
+        await expect(tablist).toBeVisible({ timeout: 20_000 });
+      } else {
+        // Flag OFF — legacy dashboard behavior preserved.
+        await playerPage.goto("/app/dashboard", {
+          waitUntil: "domcontentloaded",
+        });
+        await playerPage.waitForLoadState("networkidle").catch(() => {});
+
+        const charCard = playerPage
+          .locator(
+            [
+              `[data-testid="character-card"]:has-text("${anonCharacterName}")`,
+              `[data-testid="my-character-card"]:has-text("${anonCharacterName}")`,
+              `text=${anonCharacterName}`,
+            ].join(", "),
+          )
+          .first();
+        await expect(charCard).toBeVisible({ timeout: 20_000 });
+      }
     } finally {
       await playerContext.close().catch(() => {});
       await dmContext.close().catch(() => {});

@@ -211,10 +211,24 @@ test.describe("E2E — guest recap with 2 players → picker → signup → migr
       });
 
     // ── Redirect to dashboard; Thorin is the default character ──
+    //
+    // A6 / decision #43 lock-in: Guest post-signup redirect ALWAYS lands on
+    // `/app/dashboard` regardless of `NEXT_PUBLIC_PLAYER_HQ_V2`. Guest has
+    // no seeded `campaign_id` so there is no coherent `/sheet?tab=heroi`
+    // target to hydrate. Do NOT change this waitForURL regex to accept
+    // `/sheet` without first updating decision #43 in
+    // `_bmad-output/party-mode-2026-04-22/PRD-EPICO-CONSOLIDADO.md` AND
+    // `resolvePostCombatRedirect({ mode: "guest" })` in
+    // `lib/player-hq/post-combat-redirect.ts`. The three layers must move
+    // together to avoid a silent regression in the Guest funnel.
     await page.waitForURL(/\/app\/dashboard/, {
       timeout: 30_000,
       waitUntil: "domcontentloaded",
     });
+    // Negative assertion — lock in the Guest invariant so a future refactor
+    // that accidentally points Guest at `/sheet?tab=heroi` fails loudly
+    // instead of silently eroding the decision #43 promise.
+    expect(page.url()).not.toMatch(/\/sheet\?tab=heroi/);
 
     // Check either /app/dashboard OR /app/dashboard/characters render Thorin.
     const thorinCard = page

@@ -1605,6 +1605,32 @@
       "saved": "Salvo",
       "favorite": "Favoritar",
       "unfavorite": "Desfavoritar"
+    },
+    "post_combat": {
+      "heading": "Combate encerrado",
+      "round_label": "Round {round}",
+      "close": "Fechar",
+      "state_heading": "Estado pós-combate",
+      "you_heading": "Você",
+      "party_heading": "Party",
+      "no_party": "Nenhum companheiro rastreado.",
+      "hp_label": "HP",
+      "slots_heading": "Espaços de magia",
+      "no_slots": "Nenhum espaço de magia rastreado.",
+      "conditions_heading": "Condições",
+      "no_conditions": "Nenhuma condição pendente.",
+      "concentration_badge": "conc",
+      "inspiration_label": "Inspiração",
+      "inspiration_spent": "usada durante o combate",
+      "actions_heading": "Próximos passos",
+      "cta_short_rest": "Descanso curto agora",
+      "cta_view_recap": "Ver recap completo",
+      "cta_back_to_sheet": "Voltar pra ficha (Herói)",
+      "cta_long_rest": "Iniciar descanso longo pro grupo",
+      "cta_end_session": "Encerrar sessão",
+      "dm_only_hint": "Ações do Mestre",
+      "anon_short_rest_disabled": "Crie uma conta pra salvar o descanso",
+      "aria_dialog_label": "Resumo pós-combate"
     }
   },
   "sidebar": {

@@ -1605,6 +1605,32 @@
       "saved": "Saved",
       "favorite": "Favorite",
       "unfavorite": "Unfavorite"
+    },
+    "post_combat": {
+      "heading": "Combat ended",
+      "round_label": "Round {round}",
+      "close": "Close",
+      "state_heading": "Post-combat state",
+      "you_heading": "You",
+      "party_heading": "Party",
+      "no_party": "No companions tracked.",
+      "hp_label": "HP",
+      "slots_heading": "Spell slots",
+      "no_slots": "No spell slots tracked.",
+      "conditions_heading": "Conditions",
+      "no_conditions": "No lingering conditions.",
+      "concentration_badge": "conc",
+      "inspiration_label": "Inspiration",
+      "inspiration_spent": "spent during combat",
+      "actions_heading": "What's next",
+      "cta_short_rest": "Take a short rest now",
+      "cta_view_recap": "View full recap",
+      "cta_back_to_sheet": "Back to your sheet (Hero)",
+      "cta_long_rest": "Start long rest for the party",
+      "cta_end_session": "End session",
+      "dm_only_hint": "Mestre-only actions",
+      "anon_short_rest_disabled": "Create an account to save rest results",
+      "aria_dialog_label": "Post-combat summary"
     }
   },
   "sidebar": {
