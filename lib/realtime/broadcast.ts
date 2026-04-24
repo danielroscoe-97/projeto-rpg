@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { REALTIME_SUBSCRIBE_STATES, type RealtimeChannel } from "@supabase/supabase-js";
 import { transitionTo } from "./connection-state";
+import { recordEvent } from "./event-journal";
 import type {
   RealtimeEvent,
   SanitizedEvent,
@@ -659,6 +660,13 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
   // Inject sequence number for ordering — players can discard stale events
   const seq = ++_broadcastSeq;
   const payloadWithSeq = { ...safeEvent, _seq: seq };
+
+  // CR-02: record in the event journal so late-reconnecting clients can
+  // resume via /api/combat/:id/events?since_seq=X without a full refetch.
+  // Called BEFORE ch.send so a broker failure does not prevent the resume
+  // journal from having the event (other clients get it via resume even if
+  // this particular send failed).
+  recordEvent(sessionId, seq, safeEvent);
 
   const doSend = async () => {
     try {
