@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Swords, Users, LogIn, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { captureError } from "@/lib/errors/capture";
+import { PlayerRegistrationSchema } from "@/lib/schemas/player-registration";
 
 interface PrefilledCharacter {
   id: string;
@@ -366,16 +367,24 @@ export function PlayerLobby({
   }
 
   // Registration form (handles both normal and late-join)
+  // CR-05 (Estabilidade Combate): validation via shared Zod schema
+  // (lib/schemas/player-registration.ts) — same source of truth as server.
+  // Closes IG-1 from PR #48 review (client/server drift on upper bounds).
   const handleFormSubmit = async () => {
-    const trimmedName = name.trim();
     const initVal = parseInt(initiative, 10);
-    const newErrors = new Set<string>();
+    const hpVal = hp.trim() ? parseInt(hp, 10) : null;
+    const acVal = ac.trim() ? parseInt(ac, 10) : null;
 
-    if (!trimmedName) newErrors.add("name");
-    if (!initiative.trim() || isNaN(initVal) || initVal < 1) newErrors.add("initiative");
+    const parsed = PlayerRegistrationSchema.safeParse({
+      name,
+      initiative: Number.isFinite(initVal) ? initVal : undefined,
+      hp: hpVal !== null && Number.isFinite(hpVal) ? hpVal : null,
+      ac: acVal !== null && Number.isFinite(acVal) ? acVal : null,
+    });
 
-    if (newErrors.size > 0) {
-      setErrors(newErrors);
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      setErrors(new Set(Object.keys(fieldErrors)));
       return;
     }
 
@@ -383,14 +392,7 @@ export function PlayerLobby({
     setIsSubmitting(true);
 
     try {
-      const hpVal = hp.trim() ? parseInt(hp, 10) : null;
-      const acVal = ac.trim() ? parseInt(ac, 10) : null;
-      const data = {
-        name: trimmedName,
-        initiative: initVal,
-        hp: hpVal && !isNaN(hpVal) && hpVal > 0 ? hpVal : null,
-        ac: acVal && !isNaN(acVal) && acVal > 0 ? acVal : null,
-      };
+      const data = parsed.data;
 
       if (isCombatActive && onLateJoinRequest) {
         await onLateJoinRequest(data);
