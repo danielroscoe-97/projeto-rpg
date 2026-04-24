@@ -7,6 +7,7 @@ import { SrdInitializer } from "@/components/srd/SrdInitializer";
 import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 import { getHpStatus } from "@/lib/utils/hp-status";
+import { PLAYER_STALE_THRESHOLD_MS } from "@/lib/realtime/timing-constants";
 import type { Plan } from "@/lib/types/subscription";
 
 interface JoinPageProps {
@@ -169,7 +170,8 @@ export default async function JoinPage({ params }: JoinPageProps) {
 
   const dmPlan = (["free","pro","mesa"].includes(session.dm_plan) ? session.dm_plan : "free") as Plan;
 
-  const ACTIVE_THRESHOLD_MS = 45_000; // 45s — more responsive presence detection
+  // CR-06: sourced from lib/realtime/timing-constants.ts (single source of truth)
+  const ACTIVE_THRESHOLD_MS = PLAYER_STALE_THRESHOLD_MS;
   const now = Date.now();
 
   const registeredPlayerNames = (registeredTokens ?? [])

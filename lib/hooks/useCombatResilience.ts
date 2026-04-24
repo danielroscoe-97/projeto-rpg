@@ -7,11 +7,15 @@ import { reconcileFullState } from "@/lib/supabase/combat-sync";
 import { replayOfflineQueue, broadcastEvent } from "@/lib/realtime/broadcast";
 import { setSyncStatus } from "@/lib/realtime/offline-queue";
 import { createClient } from "@/lib/supabase/client";
+import { APP_HEARTBEAT_MS } from "@/lib/realtime/timing-constants";
 import { toast } from "sonner";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 3000, 8000]; // exponential-ish backoff
-const DM_HEARTBEAT_INTERVAL = 30_000; // 30s — players detect stale after 2 missed beats (~90s)
+// CR-06: sourced from lib/realtime/timing-constants.ts (single source of
+// truth). See that file for the invariants relating APP, WS, and stale
+// thresholds.
+const DM_HEARTBEAT_INTERVAL = APP_HEARTBEAT_MS;
 const STATE_SYNC_DEDUP_MS = 3_000; // P3: Prevent duplicate state_sync within 3s
 
 /**

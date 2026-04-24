@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { WS_HEARTBEAT_MS } from "@/lib/realtime/timing-constants";
 
 /** BUG-004: True singleton — every call returns the SAME instance.
  *  Multiple instances cause lock contention on the auth storage,
@@ -26,7 +27,7 @@ export function createClient() {
           // the queue timeout; a dedicated worker + 20s heartbeat gives
           // the server breathing room without dropping presence.
           worker: workerSupported,
-          heartbeatIntervalMs: 20000,
+          heartbeatIntervalMs: WS_HEARTBEAT_MS,
           params: {
             // Raise the send-side rate limit. The default 10 events/s is a
             // throttle on outgoing `channel.send()` calls — it does NOT affect

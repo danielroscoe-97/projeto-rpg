@@ -16,6 +16,7 @@ import type { RulesetVersion } from "@/lib/types/database";
 import type { Plan } from "@/lib/types/subscription";
 import { useSubscriptionStore } from "@/lib/stores/subscription-store";
 import { captureError } from "@/lib/errors/capture";
+import { DM_OFFLINE_THRESHOLD_MS } from "@/lib/realtime/timing-constants";
 import { persistPlayerIdentity, loadPlayerIdentity, clearPlayerIdentity } from "@/lib/player-identity-storage";
 import { classifyReconnect } from "@/lib/realtime/reconnect-classifier";
 import { fetchOrchestrator, type FetchPriority } from "@/lib/realtime/fetch-orchestrator";
@@ -2294,8 +2295,9 @@ export function PlayerJoinClient({
         if (typeof dmLastSeenAt === "string" && dmLastSeenAt.length > 0) {
           const lastSeen = new Date(dmLastSeenAt).getTime();
           dmLastSeenRef.current = lastSeen;
-          // DM is considered offline if no heartbeat for 90s (3 missed beats at 30s interval)
-          setDmOffline(Date.now() - lastSeen > 90_000);
+          // CR-06: sourced from lib/realtime/timing-constants.ts —
+          // DM_OFFLINE_THRESHOLD_MS (3 missed APP_HEARTBEAT_MS beats).
+          setDmOffline(Date.now() - lastSeen > DM_OFFLINE_THRESHOLD_MS);
         } else {
           // dm_last_seen_at is null — DM explicitly went offline (pagehide)
           setDmOffline(true);
