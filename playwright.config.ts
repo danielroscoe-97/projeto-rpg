@@ -42,10 +42,16 @@ export default defineConfig({
       // Activate dev-only test hooks for the Next.js server:
       //   - window.__pocketdm_supabase (client-side, see lib/e2e/expose-supabase.ts)
       //   - /api/e2e/* dev routes (seed-session-token, auth-as-anon, cleanup)
+      //   - PLAYER_HQ_V2 flag (Sprint 2 Wave 1+): specs gate on this
+      //     env value via `process.env.NEXT_PUBLIC_PLAYER_HQ_V2 === "true"`.
+      //     Without this line, all A5/A6 flag-ON specs silently skip and
+      //     buy zero coverage. Respects outer env when set (CI passes
+      //     NEXT_PUBLIC_PLAYER_HQ_V2 explicitly in the workflow).
       // Hard gate: must be exactly the string "true"; any other value = off.
       env: {
         ...process.env,
         NEXT_PUBLIC_E2E_MODE: "true",
+        NEXT_PUBLIC_PLAYER_HQ_V2: process.env.NEXT_PUBLIC_PLAYER_HQ_V2 ?? "true",
       } as Record<string, string>,
     },
   }),
