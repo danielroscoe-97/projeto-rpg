@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       captureError(error, {
-        component: "ProbeIdentityAccumulationCron",
+        component: "probe_identity_accumulation",
         action: "rpc",
         category: "database",
       });
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     captureError(err, {
-      component: "ProbeIdentityAccumulationCron",
+      component: "probe_identity_accumulation",
       action: "handler",
       category: "database",
     });
