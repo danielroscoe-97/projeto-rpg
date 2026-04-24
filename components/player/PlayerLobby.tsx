@@ -372,7 +372,7 @@ export function PlayerLobby({
     const newErrors = new Set<string>();
 
     if (!trimmedName) newErrors.add("name");
-    if (!initiative.trim() || isNaN(initVal) || initVal < 1 || initVal > 30) newErrors.add("initiative");
+    if (!initiative.trim() || isNaN(initVal) || initVal < 1) newErrors.add("initiative");
 
     if (newErrors.size > 0) {
       setErrors(newErrors);
@@ -586,7 +586,6 @@ export function PlayerLobby({
               }}
               placeholder={t("lobby_initiative_placeholder")}
               min={1}
-              max={30}
               className={`${inputClass} font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${errors.has("initiative") ? " border-red-400 ring-1 ring-red-400/50" : ""}`}
               aria-invalid={errors.has("initiative") || undefined}
               data-testid="lobby-initiative"
@@ -625,7 +624,6 @@ export function PlayerLobby({
               onChange={(e) => setAc(e.target.value)}
               placeholder={t("lobby_ac_placeholder")}
               min={1}
-              max={30}
               className={`${inputClass} font-mono opacity-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
               data-testid="lobby-ac"
             />

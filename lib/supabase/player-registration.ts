@@ -117,14 +117,17 @@ export async function registerPlayerCombatant(
   if (!name || name.length > 50) {
     throw new Error("Invalid name");
   }
-  if (!Number.isFinite(data.initiative) || data.initiative < 1 || data.initiative > 99) {
-    throw new Error("Initiative must be between 1 and 99");
+  // Beta #4 F05: no hard upper bound on initiative/AC. Floor remains at 1
+  // (the lobby form represents a player's own d20 roll — always ≥ 1).
+  // Negative/high-init edge cases are DM-editable post-registration.
+  if (!Number.isFinite(data.initiative) || data.initiative < 1) {
+    throw new Error("Initiative must be a positive number");
   }
   if (data.hp !== null && (!Number.isFinite(data.hp) || data.hp < 1)) {
     throw new Error("HP must be a positive number");
   }
-  if (data.ac !== null && (!Number.isFinite(data.ac) || data.ac < 1 || data.ac > 99)) {
-    throw new Error("AC must be between 1 and 99");
+  if (data.ac !== null && (!Number.isFinite(data.ac) || data.ac < 1)) {
+    throw new Error("AC must be a positive number");
   }
 
   // Validate the token belongs to this session and is active

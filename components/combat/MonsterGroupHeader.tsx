@@ -196,7 +196,7 @@ export function MonsterGroupHeader({
   const handleInitBlur = () => {
     const val = parseInt(initValue, 10);
     if (!isNaN(val) && onSetGroupInitiative) {
-      onSetGroupInitiative(Math.min(50, Math.max(-5, val)));
+      onSetGroupInitiative(Math.max(-5, val));
     }
     setEditingInit(false);
   };

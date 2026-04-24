@@ -128,7 +128,7 @@ export function CombatantSetupRow({
           onBlur={(e) => {
             const val = Number(e.target.value);
             if (!isNaN(val) && e.target.value !== "") {
-              onInitiativeChange(combatant.id, Math.min(50, Math.max(-5, val)));
+              onInitiativeChange(combatant.id, Math.max(-5, val));
             }
           }}
           onFocus={selectOnFocus}
