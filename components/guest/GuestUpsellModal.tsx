@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { GoogleOAuthButton } from "@/components/auth/GoogleOAuthButton";
+import { resolvePostCombatRedirect } from "@/lib/player-hq/post-combat-redirect";
 
 export type UpsellTrigger = "save" | "export" | "player-link" | "weather" | "background" | "end-combat";
 
@@ -39,6 +40,12 @@ export function GuestUpsellModal({ isOpen, onClose, trigger, redirectTo }: Guest
   const tc = useTranslations("common");
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  // A6 (decision #43) — Guest post-combat redirect is locked to
+  // `/app/dashboard`. `resolvePostCombatRedirect` enforces the invariant;
+  // explicit `redirectTo` still wins for tests / preview branches.
+  const resolvedRedirectTo =
+    redirectTo ?? resolvePostCombatRedirect({ mode: "guest" });
 
   // Focus trap: focus the close button when modal opens
   useEffect(() => {
@@ -132,7 +139,7 @@ export function GuestUpsellModal({ isOpen, onClose, trigger, redirectTo }: Guest
           {/* Google OAuth — redirect back to guest combat so data is migrated */}
           <GoogleOAuthButton
             namespace="guest"
-            redirectTo={redirectTo}
+            redirectTo={resolvedRedirectTo}
             data-testid="upsell-google-button"
           />
 

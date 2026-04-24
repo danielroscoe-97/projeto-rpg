@@ -53,17 +53,34 @@ import {
 } from "@/lib/guest/guest-migrate-pending";
 import type { Combatant } from "@/lib/types/combat";
 import type { SaveSignupContext } from "./types";
+import { resolvePostCombatRedirect } from "@/lib/player-hq/post-combat-redirect";
 
 export interface GuestRecapFlowProps {
   context: Extract<SaveSignupContext, { mode: "guest" }>;
   onComplete?: () => void;
+  /**
+   * A6 (decision #43) — post-signup navigation target. For the Guest path
+   * the canonical value is `/app/dashboard` (decision #43 locks this in
+   * regardless of `NEXT_PUBLIC_PLAYER_HQ_V2`). The prop exists for
+   * symmetry with `RecapCtaCard` / `GuestUpsellModal` and for test
+   * ergonomics (forcing a specific target without flag gymnastics).
+   * When undefined we call `resolvePostCombatRedirect({ mode: "guest" })`
+   * which returns `POST_COMBAT_DASHBOARD_PATH` today — the lock-in.
+   */
+  redirectTo?: string;
 }
 
 export function GuestRecapFlow({
   context,
   onComplete,
+  redirectTo,
 }: GuestRecapFlowProps): React.JSX.Element | null {
   const router = useRouter();
+  // A6 — decision #43 locks Guest to `/app/dashboard` regardless of the
+  // V2 flag. `resolvePostCombatRedirect` enforces the invariant in one
+  // place; override via `redirectTo` only for tests / preview branches.
+  const destination = redirectTo
+    ?? resolvePostCombatRedirect({ mode: "guest", campaignId: context.campaignId });
   const t = useTranslations("conversion.recap_guest");
   const tPost = useTranslations("conversion.post_success");
 
@@ -334,7 +351,7 @@ export function GuestRecapFlow({
     if (conversionFiredRef.current) {
       clearGuestMigratePending();
       onComplete?.();
-      if (result.isNewAccount) router.push("/app/dashboard");
+      if (result.isNewAccount) router.push(destination);
       return;
     }
 
@@ -346,7 +363,7 @@ export function GuestRecapFlow({
     if (!result.isNewAccount) {
       clearGuestMigratePending();
       onComplete?.();
-      router.push("/app/dashboard");
+      router.push(destination);
       return;
     }
 
@@ -475,7 +492,7 @@ export function GuestRecapFlow({
 
       toast.success(tPost("recap_guest", { characterName: selected.name }));
       onComplete?.();
-      router.push("/app/dashboard");
+      router.push(destination);
     } catch (err) {
       if (!mountedRef.current) return;
 
@@ -515,7 +532,7 @@ export function GuestRecapFlow({
       // i18n cleanup — key now guaranteed present in both locales; direct use.
       toast.error(t("migration_failed_hint"));
       onComplete?.();
-      router.push("/app/dashboard");
+      router.push(destination);
     } finally {
       if (mountedRef.current) setIsMigrating(false);
     }
