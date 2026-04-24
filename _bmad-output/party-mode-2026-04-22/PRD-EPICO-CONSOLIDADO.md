@@ -129,7 +129,7 @@ Leia tudo + satélites:
     - Coluna A colapsa perícias secundárias; Coluna B expande slots + efeitos
     - **Nunca força troca de tab** — jogador escolhe. Destaca, não prende.
 34. ✅ **Default tab do Player HQ = Herói** (hoje é Mapa). Deep link via `?tab=heroi|arsenal|diario|mapa`. Persistência `localStorage` 24h TTL.
-35. ✅ **Desktop-first para ficha; combate é bi-viável** (desktop + mobile). Mobile mantém single-column (já funciona bem em 390px).
+35. ✅ **Desktop + Mobile ambos MVP em todas as 4 tabs do journey** (UPDATED 2026-04-24 por Dani — MVP cut). Mobile mantém single-column (já funciona bem em 390px). Sem fase "mobile depois" — cada story da Fase A-E entrega as 2 viewports. QA matrix cobre 390px × 1440px; Playwright roda em 2 viewports.
 36. ✅ **Reconciliação vocabular: "Diário" já existia no glossário** (#13, journal=Diário). Novos termos: **Herói** (tab), **Arsenal** (tab), **Ribbon Vivo** (componente), **Modo Combate Auto** (feature). Incluir no glossário ubíquo.
 37. ✅ **Distinção canônica de dots — permanente vs transitório** (decisão Dani 2026-04-23):
     - **Permanente** (save proficient, skill proficient, idiomas, ferramentas, armaduras/armas prof): `○ = não tenho` · `● = tenho` (mantém padrão atual do código)
@@ -679,7 +679,7 @@ CREATE INDEX idx_level_up_campaign ON level_up_invitations (campaign_id, invited
 ALTER TABLE level_up_invitations ENABLE ROW LEVEL SECURITY;
 
 -- Mestre da campanha pode CRUD
-CREATE POLICY "DM manages level_up invitations" ON level_up_invitations FOR ALL
+CREATE POLICY "Mestre manages level_up invitations" ON level_up_invitations FOR ALL
   USING (
     campaign_id IN (SELECT id FROM campaigns WHERE created_by = auth.uid())
   );
@@ -797,7 +797,7 @@ Decisão pendente de Winston (Q-WIN-3). Proposta:
 
 ### 11.4 Feature flag
 
-Tudo isso vive atrás de `NEXT_PUBLIC_PLAYER_HQ_V4=true` (naming v4 pra ficar em linha com redesign-proposal v0.4). Default OFF em prod até QA completo.
+Tudo isso vive atrás de `NEXT_PUBLIC_PLAYER_HQ_V2=true` (naming padronizado em 2026-04-24 em todos os 5 docs do pacote). Default OFF em prod até QA completo.
 
 ---
 

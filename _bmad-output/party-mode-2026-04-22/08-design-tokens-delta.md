@@ -225,6 +225,94 @@ Aplicação: `p-${space[device][size]}`. MVP pode hardcodar por breakpoint via T
 - [ ] Ability chips têm altura ≤72px
 - [ ] Skill rows têm altura ≤36px
 - [ ] Nenhum `leading-normal` — sempre específico
+- [ ] HP interaction respeita tap target canônico (ver §14 — `min-h-[44px] sm:min-h-[28px]`)
+
+---
+
+## 13. Header linha 2 — Recursos rápidos (decisão 2026-04-23)
+
+Story A4 condensa o header de 4 linhas pra 2. Linha 1 permanece identidade (`◄ Campanha · Nome Personagem · Raça/Classe · Nv`). **Linha 2 = recursos turno-a-turno** + shortcut pra spell slots.
+
+### 13.1 Canonical
+
+```
+HD 6/10 · CD 1/1 · Insp 1 · [✨ Slots 3/24 →]
+```
+
+| Elemento | Regra |
+|---|---|
+| `HD x/y` | Hit Dice — current/max. `x=0` muta label pra muted. |
+| `CD x/y` | Channel Divinity (ou recurso de classe principal — driver de `class.resources.primary`) |
+| `Insp x` | Inspiração. `x=0` fica muted. |
+| `[✨ Slots X/Y →]` | Chip clickable. `X` = total spell slots usados. `Y` = total max. Gold accent. |
+
+### 13.2 Comportamento do chip `[✨ Slots X/Y →]`
+
+- Desktop (≥1024px): click → scroll suave até Col B §Spell Slots + highlight ring 600ms
+- Mobile (<1024px): click → abre popover inline com mini-summary por nível (`I ●● · II ●●● · III ●●`)
+- Icone `✨` = Lucide `Sparkles`, 14px, gold #D4A853
+- Tap target: `min-h-[32px]` desktop, `min-h-[44px]` mobile
+
+### 13.3 Typography
+
+- Separador: `·` (U+00B7) em `text-muted-foreground/60`
+- Labels (`HD`, `CD`, `Insp`): `text-[11px] uppercase tracking-[0.08em] text-muted-foreground`
+- Números: `text-[13px] tabular-nums text-foreground`
+- Chip spell slots: `text-[12px] text-gold font-medium`
+
+### 13.4 Mobile 390
+
+Line wraps acceptable — preservar ordem. Se não couber tudo em uma linha, quebrar após `Insp x` mantendo o chip de slots na linha própria.
+
+---
+
+## 14. HP interaction pattern (canonical — adotado de CombatantRow)
+
+**Decisão 2026-04-23:** A5 remove botões `[−5][−1][+1][+5]` do HpDisplay. Adota pattern **idêntico** ao `components/combat/CombatantRow.tsx:540-587` pra mobile E desktop.
+
+### 14.1 Pattern
+
+```
+HP read mode:  [ 45 ] / 88    ← button, click to edit
+HP edit mode:  [ ___ ] / 88    ← input type="number", autofocus
+               onBlur / Enter → calc delta → onApplyDamage or onApplyHealing
+               Escape → cancela
+```
+
+### 14.2 Spec
+
+| Prop | Valor |
+|---|---|
+| Button tap target | `min-h-[44px] sm:min-h-[28px]` (mobile 44px, desktop 28px — matches CombatantRow) |
+| Input | `type="number"`, `w-14`, `bg-transparent`, `border border-gold/60 rounded`, `text-center`, `font-mono`, `autoFocus` |
+| Delta calculation | `const delta = desired - combatant.current_hp; if (delta < 0) onApplyDamage(abs(delta)); else if (delta > 0) onApplyHealing(delta);` |
+| HP=0 edge case | If `desired === 0 && !is_defeated`, also call `onSetDefeated(true)` |
+| Keyboard | `Enter` → blur/commit · `Escape` → cancela |
+| aria-label | `edit_current_hp_aria` key (i18n) |
+| data-testid | `current-hp-btn-{id}` (button), `inline-current-hp-input-{id}` (input) |
+
+### 14.3 Por que esse pattern
+
+- **Já em prod e aprovado pelo Mestre** (CombatantRow não mudou em 6 meses de uso)
+- **Reflete fala em mesa**: Mestre narra "sofre 7 de dano" → Player tipo `-7` OR digita HP novo (`38` se tinha 45) — ambos funcionam via delta calc
+- **Mobile + desktop unified**: sem bifurcação de UX por viewport
+- **Tap target ≥40px no mobile** via `min-h-[44px]` — atende guideline a11y
+
+### 14.4 Anti-patterns proibidos
+
+- ❌ Botões `[−5][−1][+1][+5]` (removidos por decisão)
+- ❌ Slider drag no HP bar (não discoverable)
+- ❌ Popover/drawer separado (adiciona tap extra sem benefício)
+- ❌ Auto-commit sem Enter/blur (risco de typo destruir HP)
+
+### 14.5 Combat Parity
+
+A5 agora é **STRICT 3-mode**. HpDisplay `variant="ribbon"` renderiza em `/sheet` (Auth); CombatantRow em `/combat` usa mesmo pattern (já usa). Guest `/try` também tem HP interaction via GuestCombatClient — port do pattern obrigatório.
+
+E2E:
+- `sheet-hp-controls-inline.spec.ts` (Auth, /sheet)
+- `combat-hp-edit-ribbon-anon.spec.ts` (Anon, /join combat ribbon)
+- `guest-hp-edit-consistency.spec.ts` (Guest, /try)
 
 ### 10.2 Métricas automáticas (roadmap)
 

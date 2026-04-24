@@ -2,7 +2,7 @@
 
 **Prereq:** [PRD §11](./PRD-EPICO-CONSOLIDADO.md) + [07-spec-funcional.md](./07-spec-funcional.md)
 **Owner:** Amelia (dev) com review Winston (arch)
-**Feature flag:** `NEXT_PUBLIC_PLAYER_HQ_V4=true` (default OFF em prod)
+**Feature flag:** `NEXT_PUBLIC_PLAYER_HQ_V2=true` (default OFF em prod)
 
 ---
 
