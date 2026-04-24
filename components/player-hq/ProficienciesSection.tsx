@@ -67,6 +67,9 @@ function ProfDot({ level }: { level: SkillProficiency | undefined }) {
 }
 
 // ── Saving throw row ──────────────────────────────────────────────
+// Dense row used inside a grid (1-col mobile, 3-col desktop ≥1024px).
+// Target height ≤36px per 08-design-tokens-delta.md §2.4. Typography
+// follows §3.1 (`text-[13px]`, tabular-nums, caps tracking 0.08em).
 function SaveRow({
   ability,
   label,
@@ -86,20 +89,24 @@ function SaveRow({
 }) {
   const total = mod + (isProficient ? profBonus : 0);
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div
+      data-testid={`save-row-${ability}`}
+      className="flex items-center gap-2 py-1.5 min-h-[32px]"
+    >
       {editing ? (
         <button
           type="button"
           onClick={onToggle}
-          className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center hover:border-gold/50 transition-colors"
+          className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center hover:border-gold/50 transition-colors shrink-0"
+          aria-label={label}
         >
           {isProficient && <div className="w-2.5 h-2.5 rounded-full bg-gold" />}
         </button>
       ) : (
         <ProfDot level={isProficient ? "proficient" : undefined} />
       )}
-      <span className="text-sm text-foreground flex-1">{label}</span>
-      <span className={`text-sm font-mono font-semibold ${isProficient ? "text-gold" : "text-muted-foreground"}`}>
+      <span className="text-[13px] leading-[18px] text-foreground flex-1 truncate">{label}</span>
+      <span className={`text-[13px] font-mono font-semibold tabular-nums min-w-[28px] text-right ${isProficient ? "text-gold" : "text-muted-foreground"}`}>
         {formatMod(total)}
       </span>
     </div>
@@ -107,6 +114,8 @@ function SaveRow({
 }
 
 // ── Skill row ─────────────────────────────────────────────────────
+// Dense row used inside a 3-col grid on desktop (1-col on mobile).
+// Target height ≤36px per 08-design-tokens-delta.md §2.4.
 function SkillRow({
   skill,
   label,
@@ -130,13 +139,17 @@ function SkillRow({
   const total = mod + bonus;
 
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div
+      data-testid={`skill-row-${skill}`}
+      className="flex items-center gap-2 py-1.5 min-h-[32px]"
+    >
       {editing ? (
         <button
           type="button"
           onClick={onCycle}
-          className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center hover:border-gold/50 transition-colors"
+          className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center hover:border-gold/50 transition-colors shrink-0"
           title="Click: none → proficient → expertise → none"
+          aria-label={label}
         >
           {profLevel === "expertise" && <Star className="w-2.5 h-2.5 text-gold" />}
           {profLevel === "proficient" && <div className="w-2.5 h-2.5 rounded-full bg-gold" />}
@@ -144,9 +157,9 @@ function SkillRow({
       ) : (
         <ProfDot level={profLevel} />
       )}
-      <span className="text-sm text-foreground flex-1">{label}</span>
-      <span className="text-[10px] text-muted-foreground/60 uppercase">{abilityLabel}</span>
-      <span className={`text-sm font-mono font-semibold min-w-[28px] text-right ${profLevel ? "text-gold" : "text-muted-foreground"}`}>
+      <span className="text-[13px] leading-[18px] text-foreground flex-1 truncate">{label}</span>
+      <span className="text-[10px] text-muted-foreground/60 uppercase tracking-[0.08em] shrink-0">{abilityLabel}</span>
+      <span className={`text-[13px] font-mono font-semibold tabular-nums min-w-[28px] text-right ${profLevel ? "text-gold" : "text-muted-foreground"}`}>
         {formatMod(total)}
       </span>
     </div>
@@ -348,7 +361,10 @@ export function ProficienciesSection({
             onToggle={() => toggleSection("saves")}
           />
           {openSections.saves !== false && (
-            <div className="pl-2 mt-1">
+            <div
+              data-testid="saves-grid"
+              className="pl-2 mt-1 grid grid-cols-1 lg:grid-cols-3 gap-x-4"
+            >
               {SAVING_THROWS.map((ability) => (
                 <SaveRow
                   key={ability}
@@ -375,7 +391,10 @@ export function ProficienciesSection({
             onToggle={() => toggleSection("skills")}
           />
           {openSections.skills !== false && (
-            <div className="pl-2 mt-1">
+            <div
+              data-testid="skills-grid"
+              className="pl-2 mt-1 grid grid-cols-1 lg:grid-cols-3 gap-x-4"
+            >
               {SKILLS.map(({ key, ability }) => (
                 <SkillRow
                   key={key}
