@@ -1155,8 +1155,10 @@
       "cd_label": "CD",
       "inspiration_short": "Insp",
       "slots_chip_label": "Slots {used}/{max}",
-      "slots_chip_aria": "Spell slots: {used} used out of {max}. Click to see details.",
-      "empty_placeholder": "—"
+      "slots_chip_aria": "Spell slots: {used} used out of {max}. Click to switch to the Resources tab.",
+      "empty_placeholder": "—",
+      "hd_empty_aria": "Hit Dice tracking coming soon",
+      "cd_empty_aria": "Class resources tracking coming soon"
     },
     "npc_drawer": {
       "relationship": "Relationship",

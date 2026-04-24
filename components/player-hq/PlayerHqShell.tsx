@@ -157,19 +157,25 @@ function PlayerHqQuickResources({
       data-testid="hq-header-quick-resources"
     >
       {/* HD — data not yet modelled on player_characters */}
-      <span className="inline-flex items-baseline gap-1 text-muted-foreground">
-        <span className="text-[11px] uppercase tracking-[0.08em]">
+      <span
+        className="inline-flex items-baseline gap-1 text-muted-foreground"
+        aria-label={t("header.hd_empty_aria")}
+      >
+        <span className="text-[11px] uppercase tracking-[0.08em]" aria-hidden="true">
           {t("header.hd_label")}
         </span>
-        <span>{placeholder}</span>
+        <span aria-hidden="true">{placeholder}</span>
       </span>
       <Sep />
       {/* CD — data not yet modelled (class.resources.primary pending Sprint 3+) */}
-      <span className="inline-flex items-baseline gap-1 text-muted-foreground">
-        <span className="text-[11px] uppercase tracking-[0.08em]">
+      <span
+        className="inline-flex items-baseline gap-1 text-muted-foreground"
+        aria-label={t("header.cd_empty_aria")}
+      >
+        <span className="text-[11px] uppercase tracking-[0.08em]" aria-hidden="true">
           {t("header.cd_label")}
         </span>
-        <span>{placeholder}</span>
+        <span aria-hidden="true">{placeholder}</span>
       </span>
       <Sep />
       {/* Inspiration — muted when zero per §13.1 */}
@@ -183,7 +189,9 @@ function PlayerHqQuickResources({
         </span>
         <span>{inspCount}</span>
       </span>
-      {/* Spell slots chip — click jumps to Resources tab (Sprint 3+: scroll-to + highlight) */}
+      {/* Spell slots chip — click switches to Resources tab (Sprint 3+: the
+          spec §13.2 scroll-to + highlight ring upgrade lands with the V2
+          shell; today we switch tabs as a usable stop-gap). */}
       {hasSlots && (
         <button
           type="button"
@@ -193,7 +201,7 @@ function PlayerHqQuickResources({
             max: slotsMax,
           })}
           data-testid="hq-header-slots-chip"
-          className="inline-flex items-center gap-1 text-[12px] font-medium text-amber-400 hover:text-amber-300 transition-colors min-h-[44px] sm:min-h-[28px] px-1 -mx-1 rounded focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+          className="inline-flex items-center gap-1 basis-full sm:basis-auto justify-end sm:justify-start text-[12px] font-medium text-amber-400 hover:text-amber-300 transition-colors min-h-[44px] sm:min-h-[28px] px-1 -mx-1 rounded focus:outline-none focus:ring-2 focus:ring-amber-400/50"
         >
           <Sparkles className="w-3.5 h-3.5" aria-hidden />
           <span>

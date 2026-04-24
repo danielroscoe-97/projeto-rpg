@@ -1155,8 +1155,10 @@
       "cd_label": "CD",
       "inspiration_short": "Insp",
       "slots_chip_label": "Slots {used}/{max}",
-      "slots_chip_aria": "Espaços de magia: {used} usados de {max}. Clique para ver detalhes.",
-      "empty_placeholder": "—"
+      "slots_chip_aria": "Espaços de magia: {used} usados de {max}. Clique para ir para a aba Recursos.",
+      "empty_placeholder": "—",
+      "hd_empty_aria": "Rastreamento de Hit Dice em breve",
+      "cd_empty_aria": "Rastreamento de recursos de classe em breve"
     },
     "npc_drawer": {
       "relationship": "Relação",
