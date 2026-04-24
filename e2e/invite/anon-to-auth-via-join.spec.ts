@@ -131,22 +131,17 @@ test.describe("E2E — Anon player upgrades to auth via /join CTA banner", () =>
 
     await page.locator('[data-testid="lobby-submit"]').click();
 
-    // ── 2. CTA banner must appear (Story 02-E WaitingRoomSignupCTA) ──
-    // Testid contract §3.5: join.signup-cta.banner
-    const ctaBanner = page.locator('[data-testid="join.signup-cta.banner"]');
-    const legacyCtaWrapper = page.locator('[data-testid="join.signup-cta"]');
-
-    const hasCta = await ctaBanner
-      .or(legacyCtaWrapper)
-      .first()
-      .waitFor({ state: "visible", timeout: 15_000 })
-      .then(() => true)
-      .catch(() => false);
-
-    test.skip(
-      !hasCta,
-      "WaitingRoomSignupCTA not yet deployed — re-run after Story 02-E",
-    );
+    // ── 2. CTA banner must appear (Story 03-C WaitingRoomSignupCTA) ──
+    // Canonical testid: `conversion.waiting-room-cta` (components/conversion/WaitingRoomSignupCTA.tsx).
+    // Legacy testids `join.signup-cta.banner` / `join.signup-cta` kept only as fallback until removal.
+    // HARD ASSERT — if CTA doesn't render, test FAILS. A `test.skip` here is what let
+    // the 2026-04-20→24 regression (`isAnonPlayer = !authUserId`) ship silently.
+    const ctaCanonical = page.locator('[data-testid="conversion.waiting-room-cta"]');
+    const ctaLegacyBanner = page.locator('[data-testid="join.signup-cta.banner"]');
+    const ctaLegacyWrapper = page.locator('[data-testid="join.signup-cta"]');
+    await expect(
+      ctaCanonical.or(ctaLegacyBanner).or(ctaLegacyWrapper).first(),
+    ).toBeVisible({ timeout: 15_000 });
 
     // ── 3. Capture session_token_id BEFORE upgrade ──
     const preUpgradeTokenId = await readSessionTokenId(page);
@@ -160,7 +155,9 @@ test.describe("E2E — Anon player upgrades to auth via /join CTA banner", () =>
     }
 
     // ── 4. Click CTA → AuthModal opens with upgrade context ──
-    const primaryCtaBtn = page.locator('[data-testid="join.signup-cta.primary-button"]');
+    const primaryCanonical = page.locator('[data-testid="conversion.waiting-room-cta.primary"]');
+    const primaryLegacy = page.locator('[data-testid="join.signup-cta.primary-button"]');
+    const primaryCtaBtn = primaryCanonical.or(primaryLegacy).first();
     await expect(primaryCtaBtn).toBeVisible({ timeout: 5_000 });
     await primaryCtaBtn.click();
 
