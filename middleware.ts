@@ -18,7 +18,16 @@ function buildCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV !== "production";
   return [
     "default-src 'self'",
-    `script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' https:`,
+    // `blob:` in script-src is required because webkit (mobile-safari / iOS
+    // Safari) falls through to script-src when resolving Worker blob URLs —
+    // it does not honor `worker-src 'self' blob:` the way Chromium does. Beta
+    // #4 R1 enabled `worker: true` on the Supabase realtime client
+    // (lib/supabase/client.ts), which creates a blob-URL worker; without
+    // `blob:` here every webkit auth attempt crashed with "Refused to execute
+    // a script because it does not appear in the script-src directive",
+    // breaking 12 mobile-safari e2e specs (login + combat + journeys) on
+    // 2026-04-24.
+    `script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' blob: https:`,
     "worker-src 'self' blob:",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
