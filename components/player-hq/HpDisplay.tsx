@@ -22,6 +22,14 @@ interface HpDisplayProps {
    * the card-style layout used today in CharacterStatusPanel.
    */
   variant?: "default" | "ribbon";
+  /**
+   * Character identity — threaded through so the inline-edit testids get
+   * per-character suffixes (matching CombatantRow's `current-hp-btn-{id}`
+   * contract from spec §14.2) and the aria-label announces the right name.
+   * Optional for backward compat; falls back to `"player"` placeholder.
+   */
+  characterId?: string;
+  characterName?: string;
   onHpChange: (newHp: number) => void;
   onTempHpChange: (newTemp: number) => void;
 }
@@ -47,10 +55,16 @@ export function HpDisplay({
   hpTemp,
   readOnly = false,
   variant = "default",
+  characterId,
+  characterName,
   onHpChange,
   onTempHpChange,
 }: HpDisplayProps) {
   const t = useTranslations("player_hq.sheet");
+  // Canonical HP-edit i18n keys live under `combat` (already in prod via
+  // CombatantRow) — reuse them rather than inventing new keys, per spec §14.2.
+  const tCombat = useTranslations("combat");
+  const testIdSuffix = characterId ?? "player";
 
   const status = getHpStatus(currentHp, maxHp);
   const statusStyle = HP_STATUS_STYLES[status];
@@ -109,7 +123,7 @@ export function HpDisplay({
   const barSpacing = isRibbon ? "space-y-1" : "space-y-1.5";
 
   return (
-    <div className={rootSpacing} data-testid="hp-display" data-variant={variant}>
+    <div className={rootSpacing} data-testid={`hp-display-${testIdSuffix}`} data-variant={variant}>
       {/* HP Bar */}
       <div className={barSpacing}>
         <div className="flex items-center justify-between gap-2">
@@ -138,22 +152,22 @@ export function HpDisplay({
                 }}
                 className={`w-14 bg-transparent border border-amber-400/60 rounded px-1 py-0.5 text-center text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-amber-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textColor}`}
                 autoFocus
-                aria-label={t("hp_edit_aria")}
-                data-testid="inline-current-hp-input"
+                aria-label={tCombat("edit_current_hp_aria", { name: characterName ?? "" })}
+                data-testid={`inline-current-hp-input-${testIdSuffix}`}
               />
             ) : (
               <button
                 type="button"
                 onClick={openEdit}
                 disabled={readOnly}
-                title={!readOnly ? t("hp_edit_title") : undefined}
-                aria-label={!readOnly ? t("hp_edit_title") : undefined}
+                title={!readOnly ? tCombat("edit_current_hp_title") : undefined}
+                aria-label={!readOnly ? tCombat("edit_current_hp_aria", { name: characterName ?? "" }) : undefined}
                 className={`min-h-[44px] sm:min-h-[28px] inline-flex items-center text-lg font-bold tabular-nums rounded focus:outline-none focus:ring-2 focus:ring-amber-400/50 ${
                   readOnly
                     ? "cursor-default"
                     : "cursor-pointer hover:text-amber-300 transition-colors"
                 } ${textColor}`}
-                data-testid="current-hp-btn"
+                data-testid={`current-hp-btn-${testIdSuffix}`}
               >
                 {currentHp}
               </button>

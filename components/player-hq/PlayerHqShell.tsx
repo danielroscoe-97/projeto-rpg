@@ -379,6 +379,8 @@ export function PlayerHqShell({
             maxHp={character.max_hp}
             hpTemp={character.hp_temp}
             conditions={character.conditions}
+            characterId={character.id}
+            characterName={character.name}
             onHpChange={updateHp}
             onTempHpChange={updateTempHp}
             onToggleCondition={toggleCondition}
