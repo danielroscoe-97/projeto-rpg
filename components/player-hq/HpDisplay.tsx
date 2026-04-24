@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Heart, Shield, Minus, Plus } from "lucide-react";
 import {
@@ -16,19 +16,55 @@ interface HpDisplayProps {
   maxHp: number;
   hpTemp: number;
   readOnly?: boolean;
+  /**
+   * Visual density variant. `ribbon` tightens padding for use inside
+   * the future Ribbon Vivo composite (sprint 3 Ribbon work); `default` keeps
+   * the card-style layout used today in CharacterStatusPanel.
+   */
+  variant?: "default" | "ribbon";
+  /**
+   * Character identity — threaded through so the inline-edit testids get
+   * per-character suffixes (matching CombatantRow's `current-hp-btn-{id}`
+   * contract from spec §14.2) and the aria-label announces the right name.
+   * Optional for backward compat; falls back to `"player"` placeholder.
+   */
+  characterId?: string;
+  characterName?: string;
   onHpChange: (newHp: number) => void;
   onTempHpChange: (newTemp: number) => void;
 }
 
+/**
+ * HP edit pattern (EP-1 A5, 2026-04-23).
+ *
+ * Canonical reference: `components/combat/CombatantRow.tsx:540-587`. Click the
+ * current-HP number → inline `<input type="number">` opens in-place. On blur
+ * or Enter, compute the delta and apply: lower value = damage, higher = heal.
+ * Escape cancels.
+ *
+ * Replaces the legacy `[−5][−1][+1][+5]` button row removed per spec
+ * 08-design-tokens-delta.md §14. HP Temp controls stay as `[−][+]` because
+ * Temp HP is additive-only (no delta semantics apply).
+ *
+ * Mobile tap target pinned at min-h-[44px] via the button class; desktop
+ * shrinks to min-h-[28px] mirroring the CombatantRow spec.
+ */
 export function HpDisplay({
   currentHp,
   maxHp,
   hpTemp,
   readOnly = false,
+  variant = "default",
+  characterId,
+  characterName,
   onHpChange,
   onTempHpChange,
 }: HpDisplayProps) {
   const t = useTranslations("player_hq.sheet");
+  // Canonical HP-edit i18n keys live under `combat` (already in prod via
+  // CombatantRow) — reuse them rather than inventing new keys, per spec §14.2.
+  const tCombat = useTranslations("combat");
+  const testIdSuffix = characterId ?? "player";
 
   const status = getHpStatus(currentHp, maxHp);
   const statusStyle = HP_STATUS_STYLES[status];
@@ -36,15 +72,41 @@ export function HpDisplay({
   const textColor = getHpTextColor(currentHp, maxHp);
   const barColor = getHpBarColor(currentHp, maxHp);
 
-  const adjustHp = useCallback(
-    (delta: number) => {
-      if (readOnly) return;
-      const newHp = Math.max(0, Math.min(maxHp, currentHp + delta));
-      navigator.vibrate?.([30]);
-      onHpChange(newHp);
-    },
-    [readOnly, currentHp, maxHp, onHpChange]
-  );
+  // Inline HP edit state — mirrors the CombatantRow pattern (guard flag via
+  // ref so a blur triggered by Escape-cancel doesn't re-commit the value).
+  const [editing, setEditing] = useState(false);
+  const [inlineValue, setInlineValue] = useState("");
+  const editingRef = useRef(false);
+
+  const openEdit = useCallback(() => {
+    if (readOnly) return;
+    editingRef.current = true;
+    setInlineValue(String(currentHp));
+    setEditing(true);
+  }, [readOnly, currentHp]);
+
+  const closeEdit = useCallback(() => {
+    editingRef.current = false;
+    setEditing(false);
+    setInlineValue("");
+  }, []);
+
+  const commit = useCallback(() => {
+    if (!editingRef.current) return;
+    const desired = parseInt(inlineValue, 10);
+    if (!isNaN(desired) && desired >= 0) {
+      const clamped = Math.max(0, Math.min(maxHp, desired));
+      // Delta calculation per spec §14.2 — onHpChange is the unified setter
+      // in the Player HQ context so we pass the clamped absolute value. The
+      // `delta < 0 = damage` / `delta > 0 = heal` semantics from CombatantRow
+      // are encoded by the consumer's `updateHp` hook (see useCharacterStatus).
+      if (clamped !== currentHp) {
+        navigator.vibrate?.([30]);
+        onHpChange(clamped);
+      }
+    }
+    closeEdit();
+  }, [inlineValue, maxHp, currentHp, onHpChange, closeEdit]);
 
   const adjustTemp = useCallback(
     (delta: number) => {
@@ -56,13 +118,17 @@ export function HpDisplay({
     [readOnly, hpTemp, onTempHpChange]
   );
 
+  const isRibbon = variant === "ribbon";
+  const rootSpacing = isRibbon ? "space-y-2" : "space-y-3";
+  const barSpacing = isRibbon ? "space-y-1" : "space-y-1.5";
+
   return (
-    <div className="space-y-3">
+    <div className={rootSpacing} data-testid={`hp-display-${testIdSuffix}`} data-variant={variant}>
       {/* HP Bar */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Heart className={`w-4 h-4 ${textColor}`} aria-hidden="true" />
+      <div className={barSpacing}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <Heart className={`w-4 h-4 flex-shrink-0 ${textColor}`} aria-hidden="true" />
             <span className={`text-xs font-semibold uppercase tracking-wider ${textColor}`}>
               {t("hp_label")}
             </span>
@@ -70,9 +136,45 @@ export function HpDisplay({
               {t(statusStyle.labelKey)}
             </span>
           </div>
-          <span className={`text-lg font-bold tabular-nums ${textColor}`}>
-            {currentHp}/{maxHp}
-          </span>
+          {/* Click-to-edit current HP; max HP stays read-only in the Player HQ
+              context (max is edited via CharacterEditSheet — a dedicated form
+              with validation — not via inline drag). */}
+          <div className="flex items-center gap-0.5 tabular-nums">
+            {editing ? (
+              <input
+                type="number"
+                value={inlineValue}
+                onChange={(e) => setInlineValue(e.target.value)}
+                onBlur={commit}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                  if (e.key === "Escape") closeEdit();
+                }}
+                className={`w-14 bg-transparent border border-amber-400/60 rounded px-1 py-0.5 text-center text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-amber-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textColor}`}
+                autoFocus
+                aria-label={tCombat("edit_current_hp_aria", { name: characterName ?? "" })}
+                data-testid={`inline-current-hp-input-${testIdSuffix}`}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={openEdit}
+                disabled={readOnly}
+                title={!readOnly ? tCombat("edit_current_hp_title") : undefined}
+                aria-label={!readOnly ? tCombat("edit_current_hp_aria", { name: characterName ?? "" }) : undefined}
+                className={`min-h-[44px] sm:min-h-[28px] inline-flex items-center text-lg font-bold tabular-nums rounded focus:outline-none focus:ring-2 focus:ring-amber-400/50 ${
+                  readOnly
+                    ? "cursor-default"
+                    : "cursor-pointer hover:text-amber-300 transition-colors"
+                } ${textColor}`}
+                data-testid={`current-hp-btn-${testIdSuffix}`}
+              >
+                {currentHp}
+              </button>
+            )}
+            <span className={`text-lg font-bold ${textColor}`} aria-hidden>/</span>
+            <span className={`text-lg font-bold tabular-nums ${textColor}`}>{maxHp}</span>
+          </div>
         </div>
 
         {/* Progress bar */}
@@ -82,69 +184,37 @@ export function HpDisplay({
             style={{ width: `${pct}%` }}
           />
         </div>
-
-        {/* Quick buttons */}
-        {!readOnly && (
-          <div className="flex items-center gap-2 justify-center">
-            <button
-              type="button"
-              onClick={() => adjustHp(-5)}
-              className="px-2 py-1 text-xs font-medium rounded-md bg-red-900/30 text-red-300 border border-red-500/20 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
-            >
-              -5
-            </button>
-            <button
-              type="button"
-              onClick={() => adjustHp(-1)}
-              className="px-3 py-1 rounded-md bg-red-900/30 text-red-300 border border-red-500/20 hover:bg-red-900/50 transition-colors min-w-[44px] min-h-[44px]"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => adjustHp(1)}
-              className="px-3 py-1 rounded-md bg-emerald-900/30 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => adjustHp(5)}
-              className="px-2 py-1 text-xs font-medium rounded-md bg-emerald-900/30 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-900/50 transition-colors min-w-[44px] min-h-[44px]"
-            >
-              +5
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Temp HP */}
-      <div className="flex items-center gap-2 px-3 py-2 bg-blue-950/20 border border-blue-500/20 rounded-md">
-        <Shield className="w-3.5 h-3.5 text-blue-400" aria-hidden="true" />
-        <span className="text-xs text-blue-300 font-medium">{t("temp_hp")}</span>
-        <span className="text-sm font-bold tabular-nums text-blue-200 ml-auto">
-          {hpTemp}
-        </span>
-        {!readOnly && (
-          <div className="flex items-center gap-1 ml-2">
-            <button
-              type="button"
-              onClick={() => adjustTemp(-1)}
-              disabled={hpTemp <= 0}
-              className="min-w-[36px] min-h-[36px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 border border-blue-500/20 transition-colors disabled:opacity-40 text-xs flex items-center justify-center"
-            >
-              <Minus className="w-3 h-3" />
-            </button>
-            <button
-              type="button"
-              onClick={() => adjustTemp(1)}
-              className="min-w-[36px] min-h-[36px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 border border-blue-500/20 transition-colors text-xs flex items-center justify-center"
-            >
-              <Plus className="w-3 h-3" />
-            </button>
-          </div>
-        )}
-      </div>
+      {/* Temp HP — stays as +/- because temp HP is additive, no delta semantics */}
+      {(hpTemp > 0 || !readOnly) && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-blue-950/20 border border-blue-500/20 rounded-md">
+          <Shield className="w-3.5 h-3.5 text-blue-400" aria-hidden="true" />
+          <span className="text-xs text-blue-300 font-medium">{t("temp_hp")}</span>
+          <span className="text-sm font-bold tabular-nums text-blue-200 ml-auto">
+            {hpTemp}
+          </span>
+          {!readOnly && (
+            <div className="flex items-center gap-1 ml-2">
+              <button
+                type="button"
+                onClick={() => adjustTemp(-1)}
+                disabled={hpTemp <= 0}
+                className="min-w-[36px] min-h-[36px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 border border-blue-500/20 transition-colors disabled:opacity-40 text-xs flex items-center justify-center"
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => adjustTemp(1)}
+                className="min-w-[36px] min-h-[36px] rounded bg-blue-900/30 text-blue-300 hover:bg-blue-900/50 border border-blue-500/20 transition-colors text-xs flex items-center justify-center"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

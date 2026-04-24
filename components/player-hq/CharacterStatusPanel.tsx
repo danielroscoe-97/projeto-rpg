@@ -10,6 +10,9 @@ interface CharacterStatusPanelProps {
   hpTemp: number;
   conditions: string[];
   readOnly?: boolean;
+  /** Character identity for per-character testid suffix + aria announcements. */
+  characterId?: string;
+  characterName?: string;
   onHpChange: (newHp: number) => void;
   onTempHpChange: (newTemp: number) => void;
   onToggleCondition: (condition: string) => void;
@@ -22,6 +25,8 @@ export function CharacterStatusPanel({
   hpTemp,
   conditions,
   readOnly = false,
+  characterId,
+  characterName,
   onHpChange,
   onTempHpChange,
   onToggleCondition,
@@ -56,6 +61,8 @@ export function CharacterStatusPanel({
         maxHp={maxHp}
         hpTemp={hpTemp}
         readOnly={readOnly}
+        characterId={characterId}
+        characterName={characterName}
         onHpChange={onHpChange}
         onTempHpChange={onTempHpChange}
       />
