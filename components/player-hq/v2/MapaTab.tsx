@@ -1,21 +1,48 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { PlayerMindMap } from "../PlayerMindMap";
+
+export interface MapaTabProps {
+  characterId: string;
+  campaignId: string;
+  campaignName: string;
+  userId: string;
+}
 
 /**
- * MapaTab — stub placeholder for Sprint 3 Track A (Story B1).
+ * MapaTab — Sprint 3 Track B · Story B2d (1 pt).
  *
- * Track B fills this with PlayerMindMap (unchanged).
- * See [09-implementation-plan.md §B2](../../../_bmad-output/party-mode-2026-04-22/09-implementation-plan.md).
+ * Wraps PlayerMindMap unchanged per
+ * [09-implementation-plan.md §B2](../../../_bmad-output/party-mode-2026-04-22/09-implementation-plan.md)
+ * + [06-wireframe-mapa.md](../../../_bmad-output/party-mode-2026-04-22/06-wireframe-mapa.md):
+ *
+ *   "Mapa hoje é a tab mais polida do Player HQ ... mantém arquitetura
+ *    atual; ajustes cosméticos no §6."
+ *
+ * The only addition vs. the B1 stub is a wrapper div with `data-testid=
+ * "mapa-tab-content"` for E2E gating. PlayerMindMap and the entire drawer
+ * family stay verbatim — they ship 707 LOC of carry-over per the reuse
+ * matrix, with the `onNavigateTab` callback wired to a no-op since V2
+ * tab navigation is owned by PlayerHqShellV2 not the mind map.
+ *
+ * The §6.2 cosmetic ajustes ("Ver no Diário" link inline) and §2.3
+ * "halo gold em entidades atualizadas" land in Story D4 (cross-nav) and
+ * are intentionally NOT included here to keep B2d scope at 1 point.
  */
-export function MapaTab() {
-  const t = useTranslations("player_hq");
+export function MapaTab({
+  characterId,
+  campaignId,
+  campaignName,
+  userId,
+}: MapaTabProps) {
   return (
-    <div
-      data-testid="tab-stub-mapa"
-      className="rounded-xl border border-dashed border-border bg-card/40 p-6 text-center text-sm text-muted-foreground"
-    >
-      {t("tabs.mapa")}
+    <div data-testid="mapa-tab-content">
+      <PlayerMindMap
+        campaignId={campaignId}
+        campaignName={campaignName}
+        characterId={characterId}
+        userId={userId}
+      />
     </div>
   );
 }
