@@ -156,50 +156,103 @@ export function transitionTo(next: ConnectionState): void;
 - `degraded` é estado terminal até `connecting` explícito (`navigator.online` event ou UI retry)
 - Emissão é síncrona; listeners chamados em order de registro
 
-### 3.3 Event Journal (CR-02)
+### 3.3 Event Journal (CR-02) — Postgres-backed
+
+> **Revisado 2026-04-26 (Caminho A).** Implementação original (in-memory `Map` module-level) era dead code: `recordEvent` rodava no DM browser, `getEventsSince` no serverless function — runtimes separados, Map server-side sempre vazio. Migrado pra Postgres `combat_events` (migration 184).
 
 **Data model:**
 
+```sql
+CREATE TABLE combat_events (
+  seq          BIGSERIAL    PRIMARY KEY,        -- global monotonic
+  session_id   UUID         NOT NULL,           -- scoping
+  event_type   TEXT         NOT NULL,           -- denormalized pra logs
+  event        JSONB        NOT NULL,           -- payload sanitizado
+  created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_combat_events_session_seq
+  ON combat_events (session_id, seq DESC);
+CREATE INDEX idx_combat_events_session_created
+  ON combat_events (session_id, created_at DESC);
+
+ALTER TABLE combat_events ENABLE ROW LEVEL SECURITY;
+-- Sem policies = deny-all. Service-role bypassa.
+```
+
+**TypeScript shape:**
+
 ```typescript
 interface JournalEntry {
-  seq: number;           // monotonic per session; matches _seq on broadcast
-  sessionId: string;     // scoping
-  timestamp: number;     // Date.now() at record time
-  event: SanitizedEvent; // the full sanitized event payload
+  seq: number;           // global bigserial; comparações `> since_seq` preservam ordem per-session
+  sessionId: string;
+  timestamp: string;     // ISO 8601 de combat_events.created_at
+  event: SanitizedEvent;
 }
 
-// In-memory store
-const journals = new Map<string, JournalEntry[]>();
 const BUFFER_CAP = 100;
-const SESSION_TTL_MS = 60 * 60 * 1000; // 1h idle → purge
 ```
 
 **Operations:**
 
 ```typescript
-// Called by broadcast.ts on every successful send
-export function recordEvent(sessionId: string, seq: number, event: SanitizedEvent): void;
+// Server-side from /api/broadcast, AFTER sanitize gate
+export async function recordEvent(
+  sessionId: string,
+  event: SanitizedEvent,
+): Promise<number | null>;  // returns assigned seq, or null on DB error (non-fatal)
 
-// Called by API route
-export function getEventsSince(sessionId: string, sinceSeq: number): EventsSinceResult;
+// Server-side from /api/combat/[id]/events
+export async function getEventsSince(
+  sessionId: string,
+  sinceSeq: number,
+): Promise<EventsSinceResult>;
 
 type EventsSinceResult =
   | { kind: "events"; events: JournalEntry[]; currentSeq: number }
-  | { kind: "too_stale"; currentSeq: number; oldestSeq: number };
-
-// Called by background task every 5min
-export function purgeIdleSessions(): void;
+  | {
+      kind: "too_stale";
+      currentSeq: number;
+      oldestSeq: number;
+      instruction: "refetch_full_state";
+    }
+  | { kind: "empty"; currentSeq: number };
 ```
 
-**Ring buffer semantics:**
-- New events push to tail
-- When length > `BUFFER_CAP`, shift (drop oldest)
-- `getEventsSince(X)`: if `X < oldest.seq - 1`, return `too_stale`
-- Concurrency: single-threaded JS = no lock needed (Vercel serverless)
+**Ring buffer semantics (preservadas via trigger):**
+
+```sql
+-- AFTER INSERT trigger: mantém top 100 per session_id
+CREATE FUNCTION trim_combat_events_per_session() RETURNS TRIGGER AS $$
+BEGIN
+  DELETE FROM combat_events
+   WHERE session_id = NEW.session_id
+     AND seq <= (
+       SELECT seq FROM combat_events
+        WHERE session_id = NEW.session_id
+        ORDER BY seq DESC OFFSET 100 LIMIT 1
+     );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+- `getEventsSince(X)`: SELECT top 100 DESC, reverse client-side pra ASC. Se `X < oldest.seq - 1`, retorna `too_stale`.
+- Concurrency: Postgres MVCC + INSERT serializa via PK; sem locks de aplicação.
+- Per-session cap match com semântica do MVP original.
 
 **Persistence boundary:**
-- Process restart (serverless cold start, deploy) → journal perdido
-- Accepted tradeoff: fallback `/state` é o escape hatch
+
+- Sobrevive a serverless cold start, deploy, restart de processo
+- Não sobrevive a delete da tabela (rollback explicito)
+- Accepted tradeoff: fallback `/state` continua sendo o safety net pra qualquer falha de DB (`recordEvent` retorna null gracioso, broadcast prossegue)
+
+**Cursor source pro client:**
+
+- Server injeta `_journal_seq` no broadcast payload
+- Client tracking via `noteSeqFromBroadcast(payload._journal_seq)` exposto pelo hook `useEventResume`
+- Cursor persiste em `sessionStorage` (`estcombate:lastseq:<sessionId>`)
+- **Importante:** `_journal_seq` (server, global bigserial) ≠ `_seq` (client, per-tab counter). Não comparar; tratar como cursors independentes.
 
 ### 3.4 Resume Endpoint (CR-02)
 
@@ -229,53 +282,83 @@ Response 400: { error: "invalid_since_seq" }
 - `token` MUST match an active `session_tokens.token` for the session owning this encounter
 - Reject if `since_seq > currentSeq` (indicates client clock/state confusion)
 
-### 3.5 Client Resume Hook (CR-03)
+### 3.5 Client Resume Hook (CR-03) — revisado 2026-04-26
+
+> **Cursor source ≠ state machine.** Versão original tentava ler `currentSeq` de `state.connected.currentSeq` (alimentado por `_broadcastSeq`, um contador per-tab). Em tabs de player que não fazem broadcast, esse valor era sempre 0 → o hook nunca disparava. Caminho A muda a fonte do cursor pro `_journal_seq` que vem nos broadcasts (server-injected) — tracked via `noteSeqFromBroadcast`.
 
 **Storage:**
 
 ```typescript
 // lib/realtime/event-store.ts
-const STORAGE_KEY = (sessionId: string) => `estcombate:lastseq:${sessionId}`;
+const STORAGE_PREFIX = "estcombate:lastseq:";
+const storageKey = (sessionId: string) => `${STORAGE_PREFIX}${sessionId}`;
 
-export function getLastSeenSeq(sessionId: string): number;       // sessionStorage
+export function getLastSeenSeq(sessionId: string): number;        // sessionStorage
 export function setLastSeenSeq(sessionId: string, seq: number): void;
+export function clearLastSeenSeq(sessionId: string): void;
 ```
 
-**Hook shape:**
+**Hook API:**
 
 ```typescript
-// Pseudo
-function useEventResume({ sessionId, token, onEvents }: UseEventResumeProps) {
-  useEffect(() => {
-    return onConnectionStateChange((state) => {
-      if (state.kind !== "connected") return;
-      // Just transitioned to connected — check for gap
-      const lastSeen = getLastSeenSeq(sessionId);
-      if (lastSeen === state.currentSeq) return; // nothing to resume
-      fetch(`/api/combat/${encounterId}/events?since_seq=${lastSeen}&token=${token}`)
-        .then((r) => r.json())
-        .then((result) => {
-          if (result.kind === "too_stale") {
-            // Fallback: full refetch via existing /state endpoint
-            refetchFullState(sessionId, token);
-            return;
-          }
-          // Apply events through same reducer used by live broadcasts
-          for (const entry of result.events) {
-            onEvents(entry.event);
-            setLastSeenSeq(sessionId, entry.seq);
-          }
-        })
-        .catch(() => refetchFullState(sessionId, token));
-    });
-  }, [sessionId, token, onEvents]);
+interface UseEventResumeProps {
+  sessionId: string;
+  encounterId: string | null;
+  token: string | null;             // session_tokens.token (plain, used as ?token query)
+  onEvents: (events: SanitizedEvent[]) => void;
+  onFullRefetchNeeded: () => void;  // fallback path (too_stale, empty, network error)
 }
+
+interface UseEventResumeApi {
+  /** Caller registers this in EVERY broadcast handler. Updates the local
+   *  cursor whenever a broadcast carries `_journal_seq` from the server.
+   *  Safe no-op when payload._journal_seq is undefined (client-direct path). */
+  noteSeqFromBroadcast: (journalSeq: number | undefined) => void;
+}
+
+function useEventResume(props: UseEventResumeProps): UseEventResumeApi;
 ```
 
+**Lifecycle:**
+
+1. Hook subscribes to `onConnectionStateChange` from `connection-state.ts`
+2. On transition to `kind: "connected"`, schedules `runResume` after 300ms debounce (avoids flash on rapid retries)
+3. `runResume`:
+   - Reads `getLastSeenSeq(sessionId)` (from sessionStorage)
+   - Fetches `GET /api/combat/${encounterId}/events?since_seq=<lastSeen>&token=<token>`, with AbortController + 10s timeout
+   - On `kind: "events"`: calls `onEvents(events.map(e => e.event))`, advances cursor to `currentSeq`
+   - On `kind: "too_stale" | "empty"` OR HTTP error OR network error: calls `onFullRefetchNeeded()` (existing `/state` refetch path)
+   - On unmount or new transition mid-fetch: AbortController cancels the inflight request
+
+**Cursor advance — caller responsibility:**
+
+The caller MUST register `noteSeqFromBroadcast` in EVERY broadcast `.on(...)` handler:
+
+```typescript
+const { noteSeqFromBroadcast } = useEventResume({ ... });
+
+channel
+  .on("broadcast", { event: "combat:hp_update" }, ({ payload }) => {
+    noteSeqFromBroadcast(payload._journal_seq);  // advance cursor
+    // ... existing dedup + apply via _seq ...
+  })
+  .on("broadcast", { event: "combat:turn_advance" }, ({ payload }) => {
+    noteSeqFromBroadcast(payload._journal_seq);
+    // ...
+  })
+  // ... all other handlers
+```
+
+Without this wiring, the cursor stays at 0 in sessionStorage and every reconnect hits the journal at `since_seq=0` (returns last 100 events; idempotent handlers absorb the cost, but it's wasteful).
+
 **Integration points:**
-- `PlayerJoinClient.tsx` — wraps its broadcast consumer
-- `CombatSessionClient.tsx` (DM) — wraps its broadcast consumer
-- Both apply events via `applyRealtimeEvent` (existing reducer)
+
+- `components/player/PlayerJoinClient.tsx` — primary consumer (Anon + Auth player modes)
+- `components/combat/CombatSessionClient.tsx` (DM) — secondary consumer; DM also benefits from resume on its own reconnect
+
+**Skeleton render:**
+
+- Caller subscribes separately to `onConnectionStateChange`; when state is `reconnecting` OR `degraded` for ≥500ms, render `<ReconnectingSkeleton />` (see `components/player/ReconnectingSkeleton.tsx`). Bounded skeleton avoids flicker on sub-300ms retries (D5).
 
 ### 3.6 Skeleton UI during reconnect (CR-03 AC)
 

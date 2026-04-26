@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { REALTIME_SUBSCRIBE_STATES, type RealtimeChannel } from "@supabase/supabase-js";
-import { transitionTo } from "./connection-state";
+import { transitionTo, getConnectionState } from "./connection-state";
 import type {
   RealtimeEvent,
   SanitizedEvent,
@@ -229,12 +229,17 @@ function createAndSubscribe(sessionId: string): void {
             sessionId,
           });
           setSyncStatus("offline");
-          // CR-01: emit degraded transition. Consumers (sync indicator UI,
-          // future "Retry" button) react to this to surface the permanent
-          // failure to the user instead of pretending nothing is wrong.
+          // CR-01 + F5: distinguish ceiling cause. `navigator.onLine === false`
+          // means the OS network stack reports offline (Wi-Fi off, plane mode);
+          // anything else after burning the budget is a broker-side issue
+          // (Supabase outage, DNS, CDN). Tagging the reason lets the dashboard
+          // (Estabilidade Combate) split the metric — different remediation:
+          //   - network_offline → user fixes their network, no action needed
+          //   - broker_down → page DM, escalate, check Supabase status
+          const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
           transitionTo({
             kind: "degraded",
-            reason: "ceiling_hit",
+            reason: isOffline ? "network_offline" : "broker_down",
             since: Date.now(),
           });
           resolve();
@@ -768,6 +773,54 @@ export function cleanupDmChannel(): void {
   // CR-01: emit closed after teardown so consumers can tear down their own
   // resources (resume listeners, skeleton timers) in the correct order.
   transitionTo({ kind: "closed" });
+}
+
+/** F5 — proactive `network_offline` / recovery transitions.
+ *
+ *  Without this listener, the only way to enter `degraded` is to burn through
+ *  the 15-attempt ceiling (90s+ at default backoff). When the OS network
+ *  goes down, that's wasteful: realtime-js will fail every attempt anyway,
+ *  and meanwhile the user sees no signal. Listening on `offline` short-
+ *  circuits straight to `degraded { reason: "network_offline" }`, which
+ *  lets the sync indicator UI flag the connection immediately and the
+ *  Estabilidade Combate dashboard count the right reason.
+ *
+ *  On `online`, if we're degraded *because* of network_offline, kick off a
+ *  fresh subscribe immediately. Other degrade reasons (ceiling_hit /
+ *  broker_down) require explicit user retry — recovery via `online` would
+ *  hammer the broker if it was actually down.
+ *
+ *  Module-level listeners: registered once, never cleaned up. Browser tab
+ *  unload tears them down implicitly. Idempotent — only acts when there's
+ *  a live session. */
+if (typeof window !== "undefined") {
+  window.addEventListener("offline", () => {
+    if (!currentSessionId) return; // no active channel; nothing to degrade
+    const state = getConnectionState();
+    if (state.kind === "degraded" || state.kind === "closed") return;
+    transitionTo({
+      kind: "degraded",
+      reason: "network_offline",
+      since: Date.now(),
+    });
+  });
+
+  window.addEventListener("online", () => {
+    if (!currentSessionId) return;
+    const state = getConnectionState();
+    if (state.kind !== "degraded" || state.reason !== "network_offline") return;
+    // Reset retry budget so the recovery attempt isn't pre-burned by prior
+    // failures while offline.
+    reconnectAttempts = 0;
+    reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+    // Re-enter `connecting` via createAndSubscribe; the FSM accepts
+    // `degraded → connecting`.
+    createAndSubscribe(currentSessionId);
+  });
 }
 
 /** Deferred cleanup — tears down the channel only if no new consumer claims
