@@ -10,12 +10,7 @@ import { AttunementSection } from "../AttunementSection";
 import { BagOfHolding } from "../BagOfHolding";
 import { PersonalInventory } from "../PersonalInventory";
 import { NotificationFeed } from "../NotificationFeed";
-
-export interface ArsenalTabProps {
-  characterId: string;
-  campaignId: string;
-  userId: string;
-}
+import type { PlayerHqV2TabProps } from "./HeroiTab";
 
 /**
  * ArsenalTab — Sprint 3 Track B · Story B2b.
@@ -46,7 +41,7 @@ export function ArsenalTab({
   characterId,
   campaignId,
   userId,
-}: ArsenalTabProps) {
+}: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq");
   const { character, loading: charLoading } =
     useCharacterStatus(characterId);
