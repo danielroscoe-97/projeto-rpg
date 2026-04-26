@@ -1,142 +1,182 @@
 /**
- * Unit tests for lib/realtime/event-journal.ts.
+ * Unit tests for lib/realtime/event-journal.ts (Postgres-backed).
  *
- * Covers CR-02 AC8 — ring buffer wrapping, getEventsSince branches, purge.
+ * Caminho A revision (PR #59 review fix, 2026-04-26): the journal moved
+ * from an in-memory Map to the `combat_events` Postgres table. These
+ * tests mock @supabase/supabase-js client to verify the query shape and
+ * branch logic without hitting a real DB.
+ *
+ * For end-to-end coverage of the Postgres path, see CR-04 E2E spec
+ * (Sprint 1 follow-up) which exercises the real DB.
  */
+
+// Mock the server-only Supabase client. We control the chain so we can
+// assert call args + return shaped data per test scenario.
+const mockSingle = jest.fn();
+const mockSelectAfterInsert = jest.fn(() => ({ single: mockSingle }));
+const mockInsert = jest.fn(() => ({ select: mockSelectAfterInsert }));
+const mockLimit = jest.fn();
+const mockOrder = jest.fn(() => ({ limit: mockLimit }));
+const mockEq = jest.fn(() => ({ order: mockOrder }));
+const mockSelect = jest.fn(() => ({ eq: mockEq }));
+const mockFrom = jest.fn(() => ({
+  insert: mockInsert,
+  select: mockSelect,
+}));
+
+jest.mock("@/lib/supabase/server", () => ({
+  createServiceClient: jest.fn(() => ({
+    from: mockFrom,
+  })),
+}));
+
 import {
   recordEvent,
   getEventsSince,
-  purgeIdleSessions,
-  getBufferSize,
-  __resetForTests,
+  type EventsSinceResult,
 } from "../event-journal";
 import type { SanitizedEvent } from "@/lib/types/realtime";
 
-// Minimal stand-in for SanitizedEvent (shape doesn't matter for the journal).
-const mkEvent = (n: number): SanitizedEvent =>
-  ({ type: "combat:hp_update", combatant_id: `c-${n}`, hp_status: "FULL" as const }) as unknown as SanitizedEvent;
+// Minimal stand-in for SanitizedEvent.
+const mkEvent = (id: number): SanitizedEvent =>
+  ({
+    type: "combat:hp_update",
+    combatant_id: `c-${id}`,
+    hp_status: "FULL" as const,
+  }) as unknown as SanitizedEvent;
 
 beforeEach(() => {
-  __resetForTests();
-  jest.useFakeTimers();
-  jest.setSystemTime(new Date("2026-04-24T12:00:00Z"));
-});
-
-afterEach(() => {
-  jest.useRealTimers();
+  jest.clearAllMocks();
 });
 
 describe("recordEvent", () => {
-  it("creates a buffer on first record", () => {
-    recordEvent("sid-1", 1, mkEvent(1));
-    expect(getBufferSize("sid-1")).toBe(1);
+  it("inserts the event and returns the assigned seq", async () => {
+    mockSingle.mockResolvedValueOnce({ data: { seq: 42 }, error: null });
+    const seq = await recordEvent("sid-1", mkEvent(1));
+    expect(seq).toBe(42);
+    expect(mockFrom).toHaveBeenCalledWith("combat_events");
+    expect(mockInsert).toHaveBeenCalledWith({
+      session_id: "sid-1",
+      event_type: "combat:hp_update",
+      event: expect.objectContaining({ type: "combat:hp_update" }),
+    });
   });
 
-  it("appends subsequent events", () => {
-    recordEvent("sid-1", 1, mkEvent(1));
-    recordEvent("sid-1", 2, mkEvent(2));
-    recordEvent("sid-1", 3, mkEvent(3));
-    expect(getBufferSize("sid-1")).toBe(3);
+  it("coerces stringy seq to number", async () => {
+    mockSingle.mockResolvedValueOnce({ data: { seq: "100" }, error: null });
+    const seq = await recordEvent("sid-1", mkEvent(1));
+    expect(seq).toBe(100);
   });
 
-  it("scopes per sessionId", () => {
-    recordEvent("sid-a", 1, mkEvent(1));
-    recordEvent("sid-b", 1, mkEvent(1));
-    expect(getBufferSize("sid-a")).toBe(1);
-    expect(getBufferSize("sid-b")).toBe(1);
+  it("returns null on insert error (does not throw)", async () => {
+    mockSingle.mockResolvedValueOnce({
+      data: null,
+      error: { message: "constraint violation" },
+    });
+    const seq = await recordEvent("sid-1", mkEvent(1));
+    expect(seq).toBeNull();
   });
 
-  it("wraps at 100 entries (drops oldest)", () => {
-    for (let i = 1; i <= 150; i++) {
-      recordEvent("sid-1", i, mkEvent(i));
-    }
-    expect(getBufferSize("sid-1")).toBe(100);
-    const result = getEventsSince("sid-1", 0);
-    if (result.kind !== "too_stale") throw new Error(`expected too_stale, got ${result.kind}`);
-    expect(result.currentSeq).toBe(150);
-    expect(result.oldestSeq).toBe(51); // 150 - 100 + 1 = 51
-  });
-});
-
-describe("getEventsSince — events branch", () => {
-  beforeEach(() => {
-    for (let i = 1; i <= 10; i++) recordEvent("sid-1", i, mkEvent(i));
-  });
-
-  it("returns events after sinceSeq when buffer has them all", () => {
-    const result = getEventsSince("sid-1", 5);
-    if (result.kind !== "events") throw new Error(`expected events, got ${result.kind}`);
-    expect(result.events.map((e) => e.seq)).toEqual([6, 7, 8, 9, 10]);
-    expect(result.currentSeq).toBe(10);
-  });
-
-  it("returns empty events list when sinceSeq equals currentSeq", () => {
-    const result = getEventsSince("sid-1", 10);
-    if (result.kind !== "events") throw new Error(`expected events, got ${result.kind}`);
-    expect(result.events).toEqual([]);
-    expect(result.currentSeq).toBe(10);
-  });
-
-  it("returns all events when sinceSeq is 0 and all seqs are in buffer (boundary — 0 equals oldestSeq - 1)", () => {
-    // Buffer has seqs 1..10, oldest=1, so sinceSeq=0 means "give me everything after 0"
-    // 0 >= 1 - 1 → NOT too_stale, return all events
-    const result = getEventsSince("sid-1", 0);
-    if (result.kind !== "events") throw new Error(`expected events, got ${result.kind}`);
-    expect(result.events.map((e) => e.seq)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  });
-
-  it("returns empty events list when sinceSeq exceeds currentSeq (client ahead — no-op)", () => {
-    const result = getEventsSince("sid-1", 999);
-    if (result.kind !== "events") throw new Error(`expected events, got ${result.kind}`);
-    expect(result.events).toEqual([]);
-    expect(result.currentSeq).toBe(10);
-  });
-});
-
-describe("getEventsSince — too_stale branch", () => {
-  it("returns too_stale when sinceSeq is below oldestSeq - 1", () => {
-    // record seqs 50..60 → oldest=50, so sinceSeq 48 is below (50-1=49)
-    for (let i = 50; i <= 60; i++) recordEvent("sid-1", i, mkEvent(i));
-    const result = getEventsSince("sid-1", 48);
-    if (result.kind !== "too_stale") throw new Error(`expected too_stale, got ${result.kind}`);
-    expect(result.currentSeq).toBe(60);
-    expect(result.oldestSeq).toBe(50);
-  });
-
-  it("returns events (not too_stale) when sinceSeq equals oldestSeq - 1 (boundary)", () => {
-    // oldestSeq=50, sinceSeq=49 → 49 >= 49, events (and filter excludes seq<=49 — i.e. all 50..60 included)
-    for (let i = 50; i <= 60; i++) recordEvent("sid-1", i, mkEvent(i));
-    const result = getEventsSince("sid-1", 49);
-    if (result.kind !== "events") throw new Error(`expected events, got ${result.kind}`);
-    expect(result.events.map((e) => e.seq)).toEqual([50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]);
+  it("returns null when supabase throws (network error etc)", async () => {
+    mockSingle.mockRejectedValueOnce(new Error("network"));
+    const seq = await recordEvent("sid-1", mkEvent(1));
+    expect(seq).toBeNull();
   });
 });
 
 describe("getEventsSince — empty branch", () => {
-  it("returns empty when session has no buffer", () => {
-    const result = getEventsSince("sid-unknown", 0);
-    if (result.kind !== "empty") throw new Error(`expected empty, got ${result.kind}`);
-    expect(result.currentSeq).toBe(0);
+  it("returns empty when session has no events", async () => {
+    mockLimit.mockResolvedValueOnce({ data: [], error: null });
+    const result = await getEventsSince("sid-1", 0);
+    expect(result).toEqual({ kind: "empty", currentSeq: 0 });
+  });
+
+  it("returns empty on db error (graceful)", async () => {
+    mockLimit.mockResolvedValueOnce({
+      data: null,
+      error: { message: "connection timeout" },
+    });
+    const result = await getEventsSince("sid-1", 0);
+    expect(result.kind).toBe("empty");
   });
 });
 
-describe("purgeIdleSessions", () => {
-  it("removes sessions whose last event is older than 1h", () => {
-    // Session A: recent event
-    recordEvent("sid-a", 1, mkEvent(1));
-    // Advance 90min
-    jest.setSystemTime(new Date("2026-04-24T13:30:00Z"));
-    // Session B: fresh event at t+90min
-    recordEvent("sid-b", 1, mkEvent(1));
-    purgeIdleSessions();
-    expect(getBufferSize("sid-a")).toBe(0); // evicted
-    expect(getBufferSize("sid-b")).toBe(1); // kept
+describe("getEventsSince — events branch", () => {
+  it("returns events newer than sinceSeq, in ASC order", async () => {
+    // Server returns DESC; helper reverses to ASC for client application.
+    mockLimit.mockResolvedValueOnce({
+      data: [
+        rowAt(10, mkEvent(10)),
+        rowAt(9, mkEvent(9)),
+        rowAt(8, mkEvent(8)),
+        rowAt(7, mkEvent(7)),
+        rowAt(6, mkEvent(6)),
+        rowAt(5, mkEvent(5)),
+      ],
+      error: null,
+    });
+    const result = (await getEventsSince("sid-1", 7)) as Extract<
+      EventsSinceResult,
+      { kind: "events" }
+    >;
+    expect(result.kind).toBe("events");
+    expect(result.events.map((e) => e.seq)).toEqual([8, 9, 10]);
+    expect(result.currentSeq).toBe(10);
   });
 
-  it("does not remove sessions whose last event is within 1h", () => {
-    recordEvent("sid-1", 1, mkEvent(1));
-    jest.setSystemTime(new Date("2026-04-24T12:30:00Z")); // +30min
-    purgeIdleSessions();
-    expect(getBufferSize("sid-1")).toBe(1);
+  it("returns empty events list when client is at currentSeq", async () => {
+    mockLimit.mockResolvedValueOnce({
+      data: [rowAt(10, mkEvent(10)), rowAt(9, mkEvent(9))],
+      error: null,
+    });
+    const result = (await getEventsSince("sid-1", 10)) as Extract<
+      EventsSinceResult,
+      { kind: "events" }
+    >;
+    expect(result.kind).toBe("events");
+    expect(result.events).toEqual([]);
+    expect(result.currentSeq).toBe(10);
+  });
+
+  it("does NOT classify as too_stale when sinceSeq equals oldestSeq - 1 (boundary)", async () => {
+    // oldest=50, sinceSeq=49 → 49 >= 49, events branch (returns 50..60)
+    mockLimit.mockResolvedValueOnce({
+      data: [60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50].map((s) =>
+        rowAt(s, mkEvent(s)),
+      ),
+      error: null,
+    });
+    const result = await getEventsSince("sid-1", 49);
+    expect(result.kind).toBe("events");
+    if (result.kind !== "events") return;
+    expect(result.events.map((e) => e.seq)).toEqual([
+      50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+    ]);
   });
 });
+
+describe("getEventsSince — too_stale branch", () => {
+  it("returns too_stale when sinceSeq is below oldestSeq - 1", async () => {
+    // oldest=50, sinceSeq=48 → 48 < 49, too_stale
+    mockLimit.mockResolvedValueOnce({
+      data: [rowAt(60, mkEvent(60)), rowAt(50, mkEvent(50))],
+      error: null,
+    });
+    const result = await getEventsSince("sid-1", 48);
+    expect(result.kind).toBe("too_stale");
+    if (result.kind !== "too_stale") return;
+    expect(result.currentSeq).toBe(60);
+    expect(result.oldestSeq).toBe(50);
+    expect(result.instruction).toBe("refetch_full_state");
+  });
+});
+
+// ── helper ────────────────────────────────────────────────────────────
+function rowAt(seq: number, event: SanitizedEvent) {
+  return {
+    seq,
+    session_id: "sid-1",
+    event,
+    created_at: new Date(2026, 3, 26, 12, 0, 0, seq * 100).toISOString(),
+  };
+}

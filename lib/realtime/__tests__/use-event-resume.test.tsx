@@ -1,8 +1,13 @@
 /**
- * Unit tests for lib/realtime/use-event-resume.ts.
+ * Unit tests for lib/realtime/use-event-resume.ts (Caminho A revision).
  *
- * Verifies CR-03 AC3-AC5: subscribes to state machine, fires resume on
- * connected transition, applies events or falls back, debounces flaps.
+ * Semantics shifted in the C-2 fix (PR #59 review 2026-04-26):
+ *   - Cursor source is now `_journal_seq` from incoming broadcasts (set by
+ *     server in /api/broadcast). state.currentSeq is no longer the gating
+ *     signal — every `connected` transition triggers a resume fetch with
+ *     the locally tracked lastSeenSeq.
+ *   - The hook now exposes `noteSeqFromBroadcast` for the caller to
+ *     register in their broadcast handler.
  *
  * @jest-environment jsdom
  */
@@ -17,7 +22,7 @@ import {
   transitionTo,
   __resetForTests as resetConnectionState,
 } from "../connection-state";
-import { setLastSeenSeq } from "../event-store";
+import { setLastSeenSeq, getLastSeenSeq } from "../event-store";
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch as unknown as typeof fetch;
@@ -48,7 +53,7 @@ function errResponse(status: number): Response {
   } as Response;
 }
 
-describe("useEventResume — basic flow", () => {
+describe("useEventResume — gating", () => {
   it("does nothing if encounterId or token missing", () => {
     const onEvents = jest.fn();
     const onFullRefetchNeeded = jest.fn();
@@ -67,7 +72,7 @@ describe("useEventResume — basic flow", () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it("no-ops on transitions other than connected", () => {
+  it("does not fetch on non-connected transitions", () => {
     const onEvents = jest.fn();
     const onFullRefetchNeeded = jest.fn();
     renderHook(() =>
@@ -84,7 +89,7 @@ describe("useEventResume — basic flow", () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it("no-ops when lastSeenSeq === currentSeq (nothing missed)", () => {
+  it("fetches on every connected transition (server decides no-op via empty events list)", async () => {
     const onEvents = jest.fn();
     const onFullRefetchNeeded = jest.fn();
     setLastSeenSeq("sid-1", 10);
@@ -97,28 +102,18 @@ describe("useEventResume — basic flow", () => {
         onFullRefetchNeeded,
       }),
     );
-    transitionTo({ kind: "connecting", attempt: 1, since: 1 });
-    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 10 });
-    jest.advanceTimersByTime(400);
-    expect(mockFetch).not.toHaveBeenCalled();
-  });
-
-  it("no-ops when currentSeq is 0 (fresh server)", () => {
-    const onEvents = jest.fn();
-    const onFullRefetchNeeded = jest.fn();
-    renderHook(() =>
-      useEventResume({
-        sessionId: "sid-1",
-        encounterId: "enc-1",
-        token: "tkn",
-        onEvents,
-        onFullRefetchNeeded,
-      }),
+    mockFetch.mockResolvedValueOnce(
+      okJson({ kind: "events", events: [], currentSeq: 10 }),
     );
     transitionTo({ kind: "connecting", attempt: 1, since: 1 });
     transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
     jest.advanceTimersByTime(400);
-    expect(mockFetch).not.toHaveBeenCalled();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch.mock.calls[0][0]).toContain("since_seq=10");
+    expect(onEvents).not.toHaveBeenCalled(); // empty list
+    expect(onFullRefetchNeeded).not.toHaveBeenCalled();
   });
 });
 
@@ -145,16 +140,15 @@ describe("useEventResume — fetch paths", () => {
       okJson({
         kind: "events",
         events: [
-          { seq: 6, sessionId: "sid-1", timestamp: 1, event: { type: "combat:hp_update", combatant_id: "x" } },
-          { seq: 7, sessionId: "sid-1", timestamp: 2, event: { type: "combat:turn_advance" } },
+          { seq: 6, sessionId: "sid-1", timestamp: "t1", event: { type: "combat:hp_update", combatant_id: "x" } },
+          { seq: 7, sessionId: "sid-1", timestamp: "t2", event: { type: "combat:turn_advance" } },
         ],
         currentSeq: 7,
       }),
     );
     transitionTo({ kind: "connecting", attempt: 1, since: 1 });
-    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 7 });
+    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
     jest.advanceTimersByTime(400);
-    // Flush fetch microtask
     await Promise.resolve();
     await Promise.resolve();
 
@@ -165,17 +159,38 @@ describe("useEventResume — fetch paths", () => {
     expect(onEvents).toHaveBeenCalledTimes(1);
     expect(onEvents.mock.calls[0][0]).toHaveLength(2);
     expect(onFullRefetchNeeded).not.toHaveBeenCalled();
-    // Cursor advanced to currentSeq (7), not just last event seq.
-    expect(window.sessionStorage.getItem("estcombate:lastseq:sid-1")).toBe("7");
+    expect(getLastSeenSeq("sid-1")).toBe(7);
+  });
+
+  it("advances cursor even when events list is empty (server says caught up)", async () => {
+    const { onEvents, onFullRefetchNeeded } = setup();
+    mockFetch.mockResolvedValueOnce(
+      okJson({ kind: "events", events: [], currentSeq: 12 }),
+    );
+    transitionTo({ kind: "connecting", attempt: 1, since: 1 });
+    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
+    jest.advanceTimersByTime(400);
+    await Promise.resolve();
+    await Promise.resolve();
+    // No events to apply, but cursor moved forward — next reconnect won't
+    // re-query the same range.
+    expect(onEvents).not.toHaveBeenCalled();
+    expect(onFullRefetchNeeded).not.toHaveBeenCalled();
+    expect(getLastSeenSeq("sid-1")).toBe(12);
   });
 
   it("falls back to full refetch on too_stale", async () => {
     const { onEvents, onFullRefetchNeeded } = setup();
     mockFetch.mockResolvedValueOnce(
-      okJson({ kind: "too_stale", currentSeq: 200, oldestSeq: 100 }),
+      okJson({
+        kind: "too_stale",
+        currentSeq: 200,
+        oldestSeq: 100,
+        instruction: "refetch_full_state",
+      }),
     );
     transitionTo({ kind: "connecting", attempt: 1, since: 1 });
-    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 200 });
+    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
     jest.advanceTimersByTime(400);
     await Promise.resolve();
     await Promise.resolve();
@@ -187,11 +202,8 @@ describe("useEventResume — fetch paths", () => {
   it("falls back to full refetch on `empty` response", async () => {
     const { onEvents, onFullRefetchNeeded } = setup();
     mockFetch.mockResolvedValueOnce(okJson({ kind: "empty", currentSeq: 0 }));
-    // empty comes with currentSeq: 0 → our early-return skips fetch entirely
-    // but if server had events (currentSeq > 0 somehow)... test for the case where endpoint
-    // returns empty with currentSeq > 0 by forcing fetch path via lastSeen=5, currentSeq=10
     transitionTo({ kind: "connecting", attempt: 1, since: 1 });
-    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 10 });
+    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
     jest.advanceTimersByTime(400);
     await Promise.resolve();
     await Promise.resolve();
@@ -203,7 +215,7 @@ describe("useEventResume — fetch paths", () => {
     const { onEvents, onFullRefetchNeeded } = setup();
     mockFetch.mockResolvedValueOnce(errResponse(500));
     transitionTo({ kind: "connecting", attempt: 1, since: 1 });
-    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 10 });
+    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
     jest.advanceTimersByTime(400);
     await Promise.resolve();
     await Promise.resolve();
@@ -216,7 +228,7 @@ describe("useEventResume — fetch paths", () => {
     const { onEvents, onFullRefetchNeeded } = setup();
     mockFetch.mockRejectedValueOnce(new Error("network error"));
     transitionTo({ kind: "connecting", attempt: 1, since: 1 });
-    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 10 });
+    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
     jest.advanceTimersByTime(400);
     await Promise.resolve();
     await Promise.resolve();
@@ -244,7 +256,7 @@ describe("useEventResume — debounce", () => {
       okJson({ kind: "events", events: [], currentSeq: 10 }),
     );
     transitionTo({ kind: "connecting", attempt: 1, since: 1 });
-    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 10 });
+    transitionTo({ kind: "connected", subscribedAt: 2, currentSeq: 0 });
     jest.advanceTimersByTime(100);
     transitionTo({
       kind: "reconnecting",
@@ -253,10 +265,39 @@ describe("useEventResume — debounce", () => {
       backoffMs: 1000,
     });
     jest.advanceTimersByTime(50);
-    transitionTo({ kind: "connected", subscribedAt: 4, currentSeq: 10 });
+    transitionTo({ kind: "connected", subscribedAt: 4, currentSeq: 0 });
     jest.advanceTimersByTime(400);
     await Promise.resolve();
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("useEventResume — noteSeqFromBroadcast", () => {
+  it("returns an API with noteSeqFromBroadcast that updates the local cursor", () => {
+    const onEvents = jest.fn();
+    const onFullRefetchNeeded = jest.fn();
+    const { result } = renderHook(() =>
+      useEventResume({
+        sessionId: "sid-1",
+        encounterId: "enc-1",
+        token: "tkn",
+        onEvents,
+        onFullRefetchNeeded,
+      }),
+    );
+    expect(result.current.noteSeqFromBroadcast).toBeInstanceOf(Function);
+    result.current.noteSeqFromBroadcast(15);
+    expect(getLastSeenSeq("sid-1")).toBe(15);
+    // Higher seq advances
+    result.current.noteSeqFromBroadcast(20);
+    expect(getLastSeenSeq("sid-1")).toBe(20);
+    // Older or missing seq is ignored
+    result.current.noteSeqFromBroadcast(10);
+    expect(getLastSeenSeq("sid-1")).toBe(20);
+    result.current.noteSeqFromBroadcast(undefined);
+    expect(getLastSeenSeq("sid-1")).toBe(20);
+    result.current.noteSeqFromBroadcast(0);
+    expect(getLastSeenSeq("sid-1")).toBe(20);
   });
 });

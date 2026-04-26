@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { sanitizePayloadServer, validateEventData } from "@/lib/realtime/sanitize";
+import { recordEvent } from "@/lib/realtime/event-journal";
 import type { RealtimeEvent } from "@/lib/types/realtime";
 import type { Combatant } from "@/lib/types/combat";
 import { NextResponse, type NextRequest } from "next/server";
@@ -141,6 +142,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, suppressed: true });
     }
 
+    // 5b. CR-02 journal: record the sanitized event in `combat_events`
+    // BEFORE broadcasting, so a late-reconnecting player can resume even
+    // if the broadcast itself fails. Failure to journal is non-fatal —
+    // the broadcast still goes out (resume just won't have this event).
+    const journalSeq = await recordEvent(sessionId, safeEvent);
+
+    // The broadcast payload carries `_journal_seq` so connected players
+    // track the cursor in real-time. Players reconnecting later use the
+    // last `_journal_seq` they observed as the `since_seq` query param.
+    const broadcastPayload =
+      journalSeq != null
+        ? { ...safeEvent, _journal_seq: journalSeq }
+        : safeEvent;
+
     // 6. Broadcast to player channel via service-role Supabase client
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -160,7 +175,7 @@ export async function POST(req: NextRequest) {
             .send({
               type: "broadcast",
               event: safeEvent.type,
-              payload: safeEvent,
+              payload: broadcastPayload,
             })
             .then(() => { clearTimeout(timeout); resolve(); })
             .catch((err) => { clearTimeout(timeout); reject(err); });
@@ -174,7 +189,7 @@ export async function POST(req: NextRequest) {
     // Cleanup — remove channel to free resources
     supabaseAdmin.removeChannel(channel);
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, journal_seq: journalSeq });
   } catch (err) {
     captureError(err, { component: "BroadcastAPI", action: "broadcast", category: "network" });
     return NextResponse.json(

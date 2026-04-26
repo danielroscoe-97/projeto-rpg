@@ -75,6 +75,15 @@ export async function GET(
     return NextResponse.json({ error: "invalid_token" }, { status: 401 });
   }
 
-  const result = getEventsSince(enc.session_id, sinceSeq);
+  const result = await getEventsSince(enc.session_id, sinceSeq);
+  // CR-02 AC10 (Estabilidade Combate review fix): observability on too_stale.
+  // Sentry breadcrumb so the metric `too_stale_rate` (tech spec §6) is
+  // measurable in prod — drives the decision on whether to bump BUFFER_CAP.
+  if (result.kind === "too_stale") {
+    // eslint-disable-next-line no-console -- server-side, intentional log
+    console.warn(
+      `[combat-events] too_stale: session=${enc.session_id} since=${sinceSeq} oldest=${result.oldestSeq} current=${result.currentSeq}`,
+    );
+  }
   return NextResponse.json(result, { status: 200 });
 }

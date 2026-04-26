@@ -101,15 +101,24 @@ export function transitionTo(next: ConnectionState): void {
   }
 }
 
-/** Transition validity table. Codifies the FSM from the tech spec §3.2. */
+/** Transition validity table. Codifies the FSM from the tech spec §3.2.
+ *
+ *  H-1 fix (Estabilidade Combate review 2026-04-26):
+ *    - `reconnecting → connecting` is valid: the retry timer fires
+ *      `createAndSubscribe` which emits `connecting` for the new attempt.
+ *    - `closed → closed` is permitted as a no-op so cleanup chains
+ *      (cleanupDmChannel followed by resetDmChannel, or double-cleanup
+ *      from React StrictMode) don't generate spurious warnings.
+ *    - `idle → idle` is permitted for the same reason on reset paths.
+ */
 function isValidTransition(from: ConnectionState, to: ConnectionState): boolean {
   const table: Record<ConnectionState["kind"], ConnectionState["kind"][]> = {
-    idle: ["connecting", "closed"],
+    idle: ["idle", "connecting", "closed"],
     connecting: ["connected", "reconnecting", "closed"],
     connected: ["reconnecting", "degraded", "closed"],
-    reconnecting: ["connected", "degraded", "closed"],
+    reconnecting: ["connecting", "connected", "degraded", "closed"],
     degraded: ["connecting", "closed"],
-    closed: ["idle"],
+    closed: ["idle", "closed"],
   };
   return table[from.kind].includes(to.kind);
 }

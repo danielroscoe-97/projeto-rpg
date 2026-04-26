@@ -1,129 +1,169 @@
 /**
- * Event Journal — in-memory ring buffer of recent broadcast events per session.
+ * Event Journal — Postgres-backed (combat_events table).
  *
- * Purpose: enable sequence-cursor based resume when a client reconnects.
- * Without this, reconnect forces a full /state refetch — expensive, slow,
- * and fragile if DB 504s during persist (replay state could diverge from
- * live state).
+ * Caminho A fix (PR #59 code review, 2026-04-26): the previous in-memory
+ * Map-based implementation was broken because `recordEvent` ran in the DM
+ * browser while `getEventsSince` ran in the serverless function — separate
+ * runtimes meant the Map was always empty server-side and resume returned
+ * `kind: "empty"` every time.
  *
- * Architecture is standard for multiplayer/chat systems (IRC since 1988,
- * Matrix /sync, Slack RTM, Discord Gateway Resume). See tech spec §3.3.
+ * The journal now lives in `combat_events` (migration 184). Writes happen
+ * server-side from `/api/broadcast` AFTER sanitization (already the
+ * anti-metagaming gate). Reads happen server-side from
+ * `/api/combat/[id]/events`. All runtimes share Postgres state.
  *
- * MVP constraints (intentional):
- *   - In-memory Map — serverless cold start loses the journal; client falls
- *     back to /state fetch (same as too_stale response)
- *   - 100-entry ring buffer per session — ~1-2 combat rounds of gap
- *   - 1h idle TTL for memory pressure
+ * Per-session cap of 100 entries is enforced by an AFTER INSERT trigger
+ * (`trim_combat_events_per_session`) — matches the in-memory ring buffer
+ * semantics from the original MVP design.
  *
- * Trigger to migrate to Redis: too_stale_rate > 5% OR cold-start fallback > 10%.
+ * Sequence: bigserial GLOBAL (not per-session). Seqs ARE monotonic within
+ * a session because INSERTs serialize, but gaps are expected when other
+ * sessions interleave. Clients only compare `seq > since_seq`, which is
+ * order-preserving regardless of gaps.
  *
- * See: _bmad-output/estabilidade-combate/stories/CR-02-event-journal.md
+ * Server-only module — must NOT be imported from client bundles. Using
+ * `createServiceClient` enforces server-side only at runtime; this module
+ * has no `"use client"` directive and importing it client-side would fail
+ * to bundle the service-role key (env var is server-only).
+ *
+ * See: _bmad-output/estabilidade-combate/01-TECH-SPEC.md §3.3 (revised)
  */
+import { createServiceClient } from "@/lib/supabase/server";
 import type { SanitizedEvent } from "@/lib/types/realtime";
 
 export interface JournalEntry {
-  /** Monotonic per-session seq, matches `_seq` injected by broadcast.ts. */
+  /** Global monotonic seq from combat_events.seq (bigserial). */
   seq: number;
   sessionId: string;
-  /** Date.now() when recordEvent was called. Used for idle cleanup. */
-  timestamp: number;
+  /** ISO 8601 timestamp from combat_events.created_at. */
+  timestamp: string;
   event: SanitizedEvent;
 }
 
 export type EventsSinceResult =
-  | { kind: "events"; events: JournalEntry[]; currentSeq: number }
-  | { kind: "too_stale"; currentSeq: number; oldestSeq: number }
-  | { kind: "empty"; currentSeq: number };
+  | {
+      kind: "events";
+      events: JournalEntry[];
+      currentSeq: number;
+    }
+  | {
+      kind: "too_stale";
+      currentSeq: number;
+      oldestSeq: number;
+      /** Spec §3.4 — explicit instruction to client; included since the
+       *  alternative (silent kind discrimination) was a CR-02 spec drift. */
+      instruction: "refetch_full_state";
+    }
+  | {
+      kind: "empty";
+      currentSeq: number;
+    };
 
 const BUFFER_CAP = 100;
-const SESSION_TTL_MS = 60 * 60 * 1000; // 1h idle → purge
-
-const journals = new Map<string, JournalEntry[]>();
 
 /**
- * Record an event in the session's ring buffer. Called by broadcast.ts after
- * successful sanitization, on EVERY outbound event (DM→player and player→DM).
+ * Record an event in the journal. Called server-side from /api/broadcast
+ * AFTER sanitization. Returns the assigned `seq` so the broadcast payload
+ * can carry it as `_journal_seq` for client-side resume cursor tracking.
  *
- * Ring semantics: push to tail; when length > cap, shift oldest. This gives
- * us the last N events, regardless of session duration.
+ * Failure mode: returns null on DB error. Callers should still broadcast
+ * (the event still reaches connected players via the channel) — only
+ * resume for late-reconnects is impacted.
  */
-export function recordEvent(
+export async function recordEvent(
   sessionId: string,
-  seq: number,
   event: SanitizedEvent,
-): void {
-  let buffer = journals.get(sessionId);
-  if (!buffer) {
-    buffer = [];
-    journals.set(sessionId, buffer);
-  }
-  buffer.push({ seq, sessionId, timestamp: Date.now(), event });
-  if (buffer.length > BUFFER_CAP) {
-    buffer.shift();
+): Promise<number | null> {
+  try {
+    const supabase = createServiceClient();
+    const { data, error } = await supabase
+      .from("combat_events")
+      .insert({
+        session_id: sessionId,
+        event_type: event.type,
+        event: event as unknown as Record<string, unknown>,
+      })
+      .select("seq")
+      .single();
+
+    if (error || !data) {
+      // eslint-disable-next-line no-console -- server-side, intentional log
+      console.warn("[event-journal] recordEvent failed:", error?.message);
+      return null;
+    }
+    // Postgres bigserial returns as number-like; coerce to be safe.
+    return typeof data.seq === "number" ? data.seq : Number(data.seq);
+  } catch (err) {
+    // eslint-disable-next-line no-console -- server-side, intentional log
+    console.warn("[event-journal] recordEvent threw:", (err as Error).message);
+    return null;
   }
 }
 
 /**
- * Retrieve events with seq > sinceSeq.
+ * Retrieve events with seq > sinceSeq for a given session.
  *
  * Response shapes (discriminated by `kind`):
- *   - `events`: normal case; client applies the events via its reducer
- *   - `too_stale`: gap too large (sinceSeq < oldestSeq - 1); client falls
- *      back to a full /state refetch
- *   - `empty`: buffer has nothing for this session (never happened, or
- *      cold-started process); client falls back to /state
+ *   - `events`: events newer than sinceSeq (may be empty list if up-to-date)
+ *   - `too_stale`: sinceSeq is older than the oldest buffered event for
+ *      this session — client should refetch full state
+ *   - `empty`: no events recorded for this session (cold start, never
+ *      broadcast, or just-trimmed)
  */
-export function getEventsSince(
+export async function getEventsSince(
   sessionId: string,
   sinceSeq: number,
-): EventsSinceResult {
-  const buffer = journals.get(sessionId);
-  if (!buffer || buffer.length === 0) {
+): Promise<EventsSinceResult> {
+  const supabase = createServiceClient();
+
+  // Single query: newest events for this session, capped at BUFFER_CAP+1
+  // so we can detect too_stale. Ordering DESC + reversing client-side
+  // simplifies the index access.
+  const { data, error } = await supabase
+    .from("combat_events")
+    .select("seq, session_id, event, created_at")
+    .eq("session_id", sessionId)
+    .order("seq", { ascending: false })
+    .limit(BUFFER_CAP);
+
+  if (error) {
+    // eslint-disable-next-line no-console -- server-side, intentional log
+    console.warn("[event-journal] getEventsSince failed:", error.message);
     return { kind: "empty", currentSeq: 0 };
   }
-  const currentSeq = buffer[buffer.length - 1].seq;
-  const oldestSeq = buffer[0].seq;
-  // Gap too large: client's last-seen seq is older than what we still have.
-  // Oldest buffered is (oldestSeq); client sinceSeq < oldestSeq - 1 means at
-  // least one event between client's cursor and the oldest we have was dropped.
+
+  if (!data || data.length === 0) {
+    return { kind: "empty", currentSeq: 0 };
+  }
+
+  // data is DESC; first row is currentSeq (newest), last is oldestSeq.
+  const currentSeq = Number(data[0].seq);
+  const oldestSeq = Number(data[data.length - 1].seq);
+
+  // Gap too large: client cursor is older than what we still have buffered.
+  // Use `oldestSeq - 1` boundary to match the spec semantics: sinceSeq=49
+  // when oldestSeq=50 means "you are caught up to seq 49, next is 50" —
+  // we still have everything from 50 onward, so it's NOT too_stale.
   if (sinceSeq < oldestSeq - 1) {
-    return { kind: "too_stale", currentSeq, oldestSeq };
+    return {
+      kind: "too_stale",
+      currentSeq,
+      oldestSeq,
+      instruction: "refetch_full_state",
+    };
   }
-  const events = buffer.filter((e) => e.seq > sinceSeq);
+
+  // Filter and reverse to ASC order so the client applies events in the
+  // order the DM emitted them.
+  const events: JournalEntry[] = data
+    .filter((row) => Number(row.seq) > sinceSeq)
+    .map((row) => ({
+      seq: Number(row.seq),
+      sessionId: row.session_id as string,
+      timestamp: row.created_at as string,
+      event: row.event as unknown as SanitizedEvent,
+    }))
+    .reverse();
+
   return { kind: "events", events, currentSeq };
-}
-
-/**
- * Purge idle sessions. Called periodically via setInterval (5min).
- *
- * A session is idle if its newest event is older than SESSION_TTL_MS.
- * This bounds memory usage — infinite-session bugs won't leak.
- */
-export function purgeIdleSessions(): void {
-  const cutoff = Date.now() - SESSION_TTL_MS;
-  for (const [sid, buffer] of journals) {
-    const last = buffer[buffer.length - 1];
-    if (!last || last.timestamp < cutoff) {
-      journals.delete(sid);
-    }
-  }
-}
-
-/**
- * Current buffer size for a session (for observability / tests).
- */
-export function getBufferSize(sessionId: string): number {
-  return journals.get(sessionId)?.length ?? 0;
-}
-
-/**
- * Test-only: clear all journals.
- */
-export function __resetForTests(): void {
-  journals.clear();
-}
-
-// Start background cleanup only in server runtime (skip in tests, SSR-safe).
-if (typeof window === "undefined" && process.env.NODE_ENV !== "test") {
-  setInterval(purgeIdleSessions, 5 * 60 * 1000);
 }

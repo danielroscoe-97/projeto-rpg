@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { REALTIME_SUBSCRIBE_STATES, type RealtimeChannel } from "@supabase/supabase-js";
 import { transitionTo } from "./connection-state";
-import { recordEvent } from "./event-journal";
 import type {
   RealtimeEvent,
   SanitizedEvent,
@@ -661,12 +660,12 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
   const seq = ++_broadcastSeq;
   const payloadWithSeq = { ...safeEvent, _seq: seq };
 
-  // CR-02: record in the event journal so late-reconnecting clients can
-  // resume via /api/combat/:id/events?since_seq=X without a full refetch.
-  // Called BEFORE ch.send so a broker failure does not prevent the resume
-  // journal from having the event (other clients get it via resume even if
-  // this particular send failed).
-  recordEvent(sessionId, seq, safeEvent);
+  // CR-02 (revised 2026-04-26): journal recording is server-side only
+  // (in /api/broadcast). The previous client-side `recordEvent` call was
+  // a no-op in production because the in-memory Map module-level was not
+  // shared with the serverless function that read it. Server now writes
+  // to combat_events table; payload gets `_journal_seq` injected by the
+  // server broadcast path so players can track it for resume.
 
   const doSend = async () => {
     try {
