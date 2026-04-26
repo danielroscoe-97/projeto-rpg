@@ -29,6 +29,8 @@ import { AttunementSection } from "./AttunementSection";
 import { ProficienciesSection } from "./ProficienciesSection";
 import { CharacterPdfExport } from "./CharacterPdfExport";
 import { PlayerHqTourProvider } from "@/components/tour/PlayerHqTourProvider";
+import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
+import { PlayerHqShellV2 } from "./v2/PlayerHqShellV2";
 
 type Tab = "map" | "sheet" | "resources" | "abilities" | "inventory" | "notes" | "quests";
 
@@ -226,7 +228,28 @@ interface PlayerHqShellProps {
   playerHqTourCompleted?: boolean;
 }
 
-export function PlayerHqShell({
+export function PlayerHqShell(props: PlayerHqShellProps) {
+  // V2 flag gate (Sprint 3 Track A · Story B1). When ON, render the new
+  // 4-tab shell; the V1 7-tab path below stays untouched until Sprint 10
+  // flips the flag in prod and the V1 file is deleted.
+  //
+  // Conditional render via separate component (PlayerHqShellV1) keeps both
+  // branches' hook orders stable per the Rules of Hooks.
+  if (isPlayerHqV2Enabled()) {
+    return (
+      <PlayerHqShellV2
+        characterId={props.characterId}
+        campaignId={props.campaignId}
+        campaignName={props.campaignName}
+        userId={props.userId}
+        playerHqTourCompleted={props.playerHqTourCompleted}
+      />
+    );
+  }
+  return <PlayerHqShellV1 {...props} />;
+}
+
+function PlayerHqShellV1({
   characterId,
   campaignId,
   campaignName,
