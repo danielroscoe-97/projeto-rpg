@@ -206,6 +206,18 @@ test.describe("Gate Fase B — Player HQ topology (B6)", () => {
   });
 
   test("tab persists across reload within TTL window", async ({ page }) => {
+    // Wipe storage before navigating so prior tests in the same worker
+    // (e.g. the keyboard-shortcut spec, which switches to Arsenal and
+    // never resets) cannot leak state and mask a regression.
+    await page.addInitScript(() => {
+      try {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+      } catch {
+        /* best-effort */
+      }
+    });
+
     const id = await gotoFirstCampaignSheet(page);
     if (!id) {
       test.skip(true, "No campaigns seeded for PLAYER_WARRIOR");
