@@ -263,11 +263,9 @@ export function PlayerHqShellV2({
         aria-labelledby={`tab-v2-${activeTab}`}
         className="animate-in fade-in-0 duration-150"
       >
-        {/* All 4 tabs receive the canonical PlayerHqV2TabProps shape.
-            HeroiTab is the real wrapper from this PR (B2a); siblings
-            are still stubs from #62 follow-up (they accept the full
-            shape and ignore via `_` prefix). #71/#72/#73 each swap
-            their stub for a real wrapper that consumes what it needs. */}
+        {/* All 4 tabs receive PlayerHqV2TabProps. HeroiTab/ArsenalTab/
+            DiarioTab are real wrappers (merged in earlier B2 PRs); MapaTab
+            additionally needs `campaignName` per its extended interface. */}
         {activeTab === "heroi" && (
           <HeroiTab
             characterId={characterId}
@@ -293,6 +291,7 @@ export function PlayerHqShellV2({
           <MapaTab
             characterId={characterId}
             campaignId={campaignId}
+            campaignName={campaignName}
             userId={userId}
           />
         )}
