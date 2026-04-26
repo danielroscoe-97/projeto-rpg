@@ -713,14 +713,19 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     waitForChannel().then(doSend);
   }
 
-  // S1.2: Opt-out of server-side re-broadcast for events where a single
-  // ordered sender is critical. `broadcastViaServer` runs in parallel to
-  // the client-direct path, producing 2 senders with partial FIFO — that's
-  // the root cause of the combatant_add_reorder race condition. The payload
-  // is already fully sanitized here (sanitizePayload above), and
-  // SanitizedCombatantAddReorder carries no DM-only fields, so it's safe
-  // to skip the server re-broadcast.
+  // S1.2 + N2: events that require a single ordered sender (combatant_add_reorder)
+  // can't go through the dual-broadcast path — the server-direct send would race
+  // the client-direct send and break FIFO assumptions on the receiver. BUT they
+  // still need journal coverage so reconnecting players can resume past the
+  // event window.
+  //
+  // Solution: post to /api/broadcast with `skipRebroadcast: true`. The server
+  // records the event in `combat_events` (the journal) but does NOT emit it on
+  // the player channel — preserving the single-sender invariant while closing
+  // the journal gap. Without this, a player who dropped during a monster-add
+  // would always cascade into a /state full refetch on reconnect.
   if (shouldSkipServerBroadcast(event)) {
+    broadcastViaServer(sessionId, event, { skipRebroadcast: true }).catch(() => {});
     return;
   }
 
@@ -744,19 +749,46 @@ export function shouldSkipServerBroadcast(event: RealtimeEvent): boolean {
 }
 
 /** Replay queued offline actions for a session.
- *  Call this when connectivity is restored. */
+ *  Call this when connectivity is restored.
+ *
+ *  F4 (2026-04-26): replayed events route through /api/broadcast (server-side
+ *  path), NOT via direct ch.send. Why: the server is now the single point of
+ *  journal recording (combat_events table). A purely client-direct replay
+ *  would broadcast to live players but leave the journal empty for those
+ *  events — a player who reconnects mid-replay would miss them on resume
+ *  and silently drift. broadcastViaServer guarantees both the journal write
+ *  and the rebroadcast under the same code path used by live broadcasts.
+ *
+ *  Trade-off: each replayed event is one extra HTTP roundtrip vs. the
+ *  prior direct ch.send. Acceptable because (a) replay only runs on
+ *  reconnection, not in the hot path, and (b) the existing dedup guard in
+ *  replayQueue (idempotencyKey) bounds the burst. */
 export async function replayOfflineQueue(sessionId: string): Promise<void> {
   setSyncStatus("syncing");
   const result = await replayQueue(sessionId, async (sid, evt) => {
-    const ch = getDmChannel(sid);
+    // Validate locally before paying the network cost — same check the
+    // server does, but cheaper to fail fast on a malformed queued event.
     const safeEvent = sanitizePayload(evt);
     if (!safeEvent || !validateEvent(safeEvent)) return;
-    await waitForChannel();
-    ch.send({
-      type: "broadcast",
-      event: safeEvent.type,
-      payload: safeEvent,
-    });
+
+    // For events that opt out of server rebroadcast (combatant_add_reorder),
+    // we still need journal coverage AND we still need to deliver the event.
+    // Do BOTH: client-direct send to live players + server-side journal-only.
+    if (shouldSkipServerBroadcast(evt)) {
+      const ch = getDmChannel(sid);
+      await waitForChannel();
+      const seq = ++_broadcastSeq;
+      await ch.send({
+        type: "broadcast",
+        event: safeEvent.type,
+        payload: { ...safeEvent, _seq: seq },
+      });
+      await broadcastViaServer(sid, evt, { skipRebroadcast: true });
+      return;
+    }
+
+    // Default path: server records in journal AND emits on the channel.
+    await broadcastViaServer(sid, evt);
   });
 
   setSyncStatus(result.failed > 0 ? "error" : "online");

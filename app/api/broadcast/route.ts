@@ -14,13 +14,26 @@ import { captureError } from "@/lib/errors/capture";
  * The server sanitizes the payload and broadcasts to the player channel.
  *
  * POST /api/broadcast
- * Body: { sessionId: string, event: RealtimeEvent }
+ * Body: { sessionId: string, event: RealtimeEvent, skipRebroadcast?: boolean }
  * Auth: Bearer token (Supabase JWT)
+ *
+ * `skipRebroadcast` (N2 fix, 2026-04-26): when true, the server records the
+ * event in the journal but does NOT emit it on the player channel. Used by
+ * `broadcast.ts` for events that take the client-direct broadcast path
+ * exclusively (combatant_add_reorder — where dual-broadcast caused FIFO
+ * race) but still need journal coverage for resume on reconnect. Without
+ * this flag, those events were absent from `combat_events` and a player
+ * who dropped during a monster-add would always fall back to /state
+ * refetch.
  */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { sessionId, event } = body as { sessionId: string; event: RealtimeEvent };
+    const { sessionId, event, skipRebroadcast } = body as {
+      sessionId: string;
+      event: RealtimeEvent;
+      skipRebroadcast?: boolean;
+    };
 
     if (!sessionId || !event) {
       return NextResponse.json(
@@ -156,40 +169,45 @@ export async function POST(req: NextRequest) {
         ? { ...safeEvent, _journal_seq: journalSeq }
         : safeEvent;
 
-    // 6. Broadcast to player channel via service-role Supabase client
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    // 6. Broadcast to player channel via service-role Supabase client.
+    // N2 fix: when skipRebroadcast=true, journal already recorded above; no
+    // need to emit on the channel (the caller has already done so client-
+    // direct, and a server emit would create the dual-broadcast FIFO race).
+    if (!skipRebroadcast) {
+      const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
 
-    const channel = supabaseAdmin.channel(`session:${sessionId}`);
-    await new Promise<void>((resolve, reject) => {
-      // Hard timeout — don't let channel subscribe hang the function
-      const timeout = setTimeout(() => {
-        reject(new Error("Channel subscribe timeout (5s)"));
-      }, 5000);
+      const channel = supabaseAdmin.channel(`session:${sessionId}`);
+      await new Promise<void>((resolve, reject) => {
+        // Hard timeout — don't let channel subscribe hang the function
+        const timeout = setTimeout(() => {
+          reject(new Error("Channel subscribe timeout (5s)"));
+        }, 5000);
 
-      channel.subscribe((status) => {
-        if (status === "SUBSCRIBED") {
-          channel
-            .send({
-              type: "broadcast",
-              event: safeEvent.type,
-              payload: broadcastPayload,
-            })
-            .then(() => { clearTimeout(timeout); resolve(); })
-            .catch((err) => { clearTimeout(timeout); reject(err); });
-        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          clearTimeout(timeout);
-          reject(new Error(`Channel ${status}`));
-        }
+        channel.subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            channel
+              .send({
+                type: "broadcast",
+                event: safeEvent.type,
+                payload: broadcastPayload,
+              })
+              .then(() => { clearTimeout(timeout); resolve(); })
+              .catch((err) => { clearTimeout(timeout); reject(err); });
+          } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            clearTimeout(timeout);
+            reject(new Error(`Channel ${status}`));
+          }
+        });
       });
-    });
 
-    // Cleanup — remove channel to free resources
-    supabaseAdmin.removeChannel(channel);
+      // Cleanup — remove channel to free resources
+      supabaseAdmin.removeChannel(channel);
+    }
 
-    return NextResponse.json({ ok: true, journal_seq: journalSeq });
+    return NextResponse.json({ ok: true, journal_seq: journalSeq, skipped_rebroadcast: !!skipRebroadcast });
   } catch (err) {
     captureError(err, { component: "BroadcastAPI", action: "broadcast", category: "network" });
     return NextResponse.json(

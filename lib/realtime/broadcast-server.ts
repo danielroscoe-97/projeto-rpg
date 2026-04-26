@@ -60,6 +60,7 @@ async function sendBroadcast(
   sessionId: string,
   event: RealtimeEvent,
   accessToken: string,
+  skipRebroadcast?: boolean,
 ): Promise<Response> {
   return fetch("/api/broadcast", {
     method: "POST",
@@ -67,13 +68,25 @@ async function sendBroadcast(
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ sessionId, event }),
+    body: JSON.stringify({
+      sessionId,
+      event,
+      ...(skipRebroadcast ? { skipRebroadcast: true } : {}),
+    }),
   });
 }
 
+/**
+ * @param skipRebroadcast (N2): when true, the server records the event in
+ * the journal but does NOT emit on the player channel. Used for events
+ * whose ordering requires a single sender (combatant_add_reorder) — the
+ * client-direct path already broadcasts; this call only ensures journal
+ * coverage so reconnecting players can resume.
+ */
 export async function broadcastViaServer(
   sessionId: string,
   event: RealtimeEvent,
+  options?: { skipRebroadcast?: boolean },
 ): Promise<boolean> {
   try {
     const supabase = createClient();
@@ -84,7 +97,8 @@ export async function broadcastViaServer(
       return false; // No auth — fall back to client-side
     }
 
-    let res = await sendBroadcast(sessionId, event, accessToken);
+    const skipRebroadcast = options?.skipRebroadcast === true;
+    let res = await sendBroadcast(sessionId, event, accessToken, skipRebroadcast);
 
     if (res.status === 401) {
       const refreshed = await runRefreshSingleFlight();
@@ -117,7 +131,7 @@ export async function broadcastViaServer(
         return false;
       }
 
-      res = await sendBroadcast(sessionId, event, retryToken);
+      res = await sendBroadcast(sessionId, event, retryToken, skipRebroadcast);
       if (res.ok) {
         trackEvent("broadcast:401_retry_success", {
           event_type: event.type,
