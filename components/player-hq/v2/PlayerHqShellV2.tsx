@@ -263,17 +263,11 @@ export function PlayerHqShellV2({
         aria-labelledby={`tab-v2-${activeTab}`}
         className="animate-in fade-in-0 duration-150"
       >
-        {/* Stubs accept the same context props each tab will need once
-            B2 fills the wrappers (PlayerMindMap needs userId,
-            BagOfHolding needs campaignId, etc.). Forwarding now keeps
-            the prop contract stable so B2 PRs are pure additions. */}
-        {activeTab === "heroi" && (
-          <HeroiTab
-            characterId={characterId}
-            campaignId={campaignId}
-            userId={userId}
-          />
-        )}
+        {/* HeroiTab wrapper accepts only characterId (B2a scope).
+            Siblings remain stubs in this commit; they receive full
+            PlayerHqV2TabProps until #71/#72/#73 each swap their stub
+            for a real wrapper that consumes what it needs. */}
+        {activeTab === "heroi" && <HeroiTab characterId={characterId} />}
         {activeTab === "arsenal" && (
           <ArsenalTab
             characterId={characterId}
