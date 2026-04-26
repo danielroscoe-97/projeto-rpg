@@ -263,10 +263,9 @@ export function PlayerHqShellV2({
         aria-labelledby={`tab-v2-${activeTab}`}
         className="animate-in fade-in-0 duration-150"
       >
-        {/* Stubs accept the same context props each tab will need once
-            B2 fills the wrappers (PlayerMindMap needs userId,
-            BagOfHolding needs campaignId, etc.). Forwarding now keeps
-            the prop contract stable so B2 PRs are pure additions. */}
+        {/* All 4 tabs receive the canonical PlayerHqV2TabProps shape.
+            Stubs accept it via `_props` and ignore; real wrappers
+            consume what they need. */}
         {activeTab === "heroi" && (
           <HeroiTab
             characterId={characterId}
