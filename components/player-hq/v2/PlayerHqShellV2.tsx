@@ -142,6 +142,7 @@ export function PlayerHqShellV2({
   characterId,
   campaignId,
   campaignName,
+  userId,
   playerHqTourCompleted = true,
   initialTab,
 }: PlayerHqShellV2Props) {
@@ -262,7 +263,18 @@ export function PlayerHqShellV2({
         aria-labelledby={`tab-v2-${activeTab}`}
         className="animate-in fade-in-0 duration-150"
       >
-        {activeTab === "heroi" && <HeroiTab characterId={characterId} />}
+        {/* HeroiTab is wrapped in this PR — receives the canonical
+            PlayerHqV2TabProps shape (characterId + campaignId + userId).
+            Sibling tabs are still stubs without props in this branch;
+            #71/#72/#73 swap them in and add their own props as each
+            wrapper lands. */}
+        {activeTab === "heroi" && (
+          <HeroiTab
+            characterId={characterId}
+            campaignId={campaignId}
+            userId={userId}
+          />
+        )}
         {activeTab === "arsenal" && <ArsenalTab />}
         {activeTab === "diario" && <DiarioTab />}
         {activeTab === "mapa" && <MapaTab />}
