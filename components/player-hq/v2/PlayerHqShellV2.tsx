@@ -262,7 +262,7 @@ export function PlayerHqShellV2({
         aria-labelledby={`tab-v2-${activeTab}`}
         className="animate-in fade-in-0 duration-150"
       >
-        {activeTab === "heroi" && <HeroiTab />}
+        {activeTab === "heroi" && <HeroiTab characterId={characterId} />}
         {activeTab === "arsenal" && <ArsenalTab />}
         {activeTab === "diario" && <DiarioTab />}
         {activeTab === "mapa" && <MapaTab />}
