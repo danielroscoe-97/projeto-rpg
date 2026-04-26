@@ -43,6 +43,11 @@ function isEditableTarget(target: EventTarget | null): boolean {
   if (tag === "input" || tag === "textarea" || tag === "select") return true;
   if (target.isContentEditable) return true;
   if (target.closest(".ProseMirror")) return true;
+  // Suppress shortcuts while a dialog/cmdk surface is open above the
+  // shell — e.g. CharacterEditSheet, command palette, the help overlay
+  // itself. Otherwise pressing `1` would silently flip the underlying
+  // tab while the user is interacting with the modal.
+  if (target.closest('[role="dialog"], [cmdk-root]')) return true;
   return false;
 }
 
@@ -58,6 +63,11 @@ export function PlayerHqKeyboardShortcuts({
     if (!enabled) return;
 
     function onKeyDown(e: KeyboardEvent) {
+      // IME composition: JP/CN/KR users typing `?` mid-composition
+      // would otherwise toggle the overlay. `keyCode === 229` is the
+      // legacy fallback when `isComposing` is false but composition is
+      // still active in older browsers.
+      if (e.isComposing || e.keyCode === 229) return;
       if (isEditableTarget(e.target)) return;
       // Ignore when modifier keys are pressed (so Ctrl+1 etc. still
       // route to the browser).

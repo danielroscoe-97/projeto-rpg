@@ -18,6 +18,10 @@ interface KeyboardHelpOverlayProps {
 export function KeyboardHelpOverlay({ open, onClose }: KeyboardHelpOverlayProps) {
   const t = useTranslations("player_hq.keyboard");
   const dialogRef = useRef<HTMLDivElement>(null);
+  // Element that was focused before the overlay opened, so we can
+  // return focus to it on close (a11y baseline; matches the pattern in
+  // KeyboardCheatsheet.tsx).
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   // Local Esc handler — kept here (not in the global shortcut hook) so
   // the overlay can be unmounted/remounted without the shortcut having
@@ -34,10 +38,18 @@ export function KeyboardHelpOverlay({ open, onClose }: KeyboardHelpOverlayProps)
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
 
-  // Focus the dialog on open so screen readers announce it.
+  // Focus the dialog on open so screen readers announce it; on close,
+  // hand focus back to whatever the user was on before.
   useEffect(() => {
     if (open) {
+      previousFocusRef.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
       dialogRef.current?.focus();
+      return () => {
+        previousFocusRef.current?.focus();
+      };
     }
   }, [open]);
 
