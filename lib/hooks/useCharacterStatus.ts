@@ -35,6 +35,9 @@ type CharacterStatus = Pick<
   | "notes"
   | "token_url"
   | "proficiencies"
+  // Migration 184 (#58) — A4 header reads these to fill the HD/CD chips.
+  | "hit_dice"
+  | "class_resources"
 >;
 
 export function useCharacterStatus(characterId: string | null) {
@@ -60,7 +63,7 @@ export function useCharacterStatus(characterId: string | null) {
       const { data, error } = await supabase
         .from("player_characters")
         .select(
-          "id, current_hp, max_hp, hp_temp, ac, conditions, inspiration, speed, initiative_bonus, spell_slots, spell_save_dc, name, race, class, level, subclass, subrace, background, alignment, str, dex, con, int_score, wis, cha_score, notes, token_url, proficiencies"
+          "id, current_hp, max_hp, hp_temp, ac, conditions, inspiration, speed, initiative_bonus, spell_slots, spell_save_dc, name, race, class, level, subclass, subrace, background, alignment, str, dex, con, int_score, wis, cha_score, notes, token_url, proficiencies, hit_dice, class_resources"
         )
         .eq("id", characterId)
         .single();
