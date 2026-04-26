@@ -68,10 +68,21 @@ test.describe("Gate Fase B — Sheet a11y axe coverage", () => {
         test.skip(true, "No campaigns seeded for PLAYER_WARRIOR");
         return;
       }
-      if ((await tabButton(page, tab).count()) === 0) {
+      const tabBtn = tabButton(page, tab);
+      if ((await tabBtn.count()) === 0) {
         test.skip(true, `V2 shell tab '${tab}' not yet built`);
         return;
       }
+
+      // The `?tab=` SSR resolution may not propagate to client-rendered
+      // panel state if the V2 shell hydrates with a different default
+      // (e.g. localStorage-restored or the hard-coded `heroi`). Click
+      // the target tab explicitly so axe scans the tab the test claims
+      // to assert against — otherwise we'd silently scan Herói 4 times.
+      await tabBtn.click();
+      await expect(tabBtn).toHaveAttribute("aria-selected", "true", {
+        timeout: 5_000,
+      });
 
       // Wait briefly for any client hydration before scanning.
       await page

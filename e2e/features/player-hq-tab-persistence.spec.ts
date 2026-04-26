@@ -119,23 +119,20 @@ test.describe("Gate Fase B — Player HQ tab persistence (B4)", () => {
       return;
     }
 
-    // Pre-seed a "stale" persisted entry: 25h in the past. The hook
-    // implementation in B4 will use one of these key shapes; we cover
-    // both common ones.
+    // Pre-seed a "stale" persisted entry: 25h in the past. Canonical
+    // key + JSON shape come from `lib/hooks/usePlayerHqTabState.ts`
+    // (B4): key = `pocketdm:lastPlayerHqTab:${campaignId}`, value =
+    // `{ tab, savedAt }`. Drift here makes the test pass for the wrong
+    // reason — keep this in lockstep with the hook.
     await page.addInitScript(
       ({ campaignId, twentyFiveHoursAgo }) => {
         const stale = JSON.stringify({
           tab: "arsenal",
-          updatedAt: twentyFiveHoursAgo,
+          savedAt: twentyFiveHoursAgo,
         });
         try {
           window.localStorage.setItem(
             `pocketdm:lastPlayerHqTab:${campaignId}`,
-            stale,
-          );
-          // Alternative key naming the hook may adopt.
-          window.localStorage.setItem(
-            `pocketdm.player-hq.tab.${campaignId}`,
             stale,
           );
         } catch {
@@ -171,20 +168,16 @@ test.describe("Gate Fase B — Player HQ tab persistence (B4)", () => {
     }
 
     // Seed a persisted "diario" preference — a fresh ?tab=mapa visit
-    // must still land on Mapa, not Diário.
+    // must still land on Mapa, not Diário. Single canonical key per B4.
     await page.addInitScript(
       ({ campaignId }) => {
         const fresh = JSON.stringify({
           tab: "diario",
-          updatedAt: Date.now(),
+          savedAt: Date.now(),
         });
         try {
           window.localStorage.setItem(
             `pocketdm:lastPlayerHqTab:${campaignId}`,
-            fresh,
-          );
-          window.localStorage.setItem(
-            `pocketdm.player-hq.tab.${campaignId}`,
             fresh,
           );
         } catch {
