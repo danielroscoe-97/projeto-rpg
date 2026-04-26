@@ -15,8 +15,18 @@ import { ResourceTrackerList } from "../ResourceTrackerList";
 import { SpellListSection } from "../SpellListSection";
 import { RestResetPanel } from "../RestResetPanel";
 
-export interface HeroiTabProps {
+/**
+ * Canonical prop shape forwarded by `PlayerHqShellV2` to every B2 tab
+ * wrapper. Locked in B1 so all 4 wrappers (Heroi/Arsenal/Diario/Mapa)
+ * share one signature — see `_bmad-output/party-mode-2026-04-22/
+ * 09-implementation-plan.md` §B1/§B2 and the PR #62 follow-up. Sibling
+ * wrappers `import type { PlayerHqV2TabProps } from "./HeroiTab"` to
+ * avoid forking the contract.
+ */
+export interface PlayerHqV2TabProps {
   characterId: string;
+  campaignId: string;
+  userId: string;
 }
 
 /**
@@ -48,7 +58,15 @@ export interface HeroiTabProps {
  * into HeroiTab is deferred until the `feat/estabilidade-combate` sprint
  * completes — combat-stability owns the `combat:ended` broadcast wiring.
  */
-export function HeroiTab({ characterId }: HeroiTabProps) {
+export function HeroiTab({
+  characterId,
+  // campaignId/userId arrive from the shell for parity with sibling
+  // wrappers, but Herói currently composes only character-scoped data.
+  // Keeping them in the destructure (prefixed) silences unused-prop
+  // drift if ever a section here grows to need them.
+  campaignId: _campaignId,
+  userId: _userId,
+}: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq");
 
   const {
