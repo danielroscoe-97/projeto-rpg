@@ -142,6 +142,7 @@ export function PlayerHqShellV2({
   characterId,
   campaignId,
   campaignName,
+  userId,
   playerHqTourCompleted = true,
   initialTab,
 }: PlayerHqShellV2Props) {
@@ -263,7 +264,13 @@ export function PlayerHqShellV2({
         className="animate-in fade-in-0 duration-150"
       >
         {activeTab === "heroi" && <HeroiTab />}
-        {activeTab === "arsenal" && <ArsenalTab />}
+        {activeTab === "arsenal" && (
+          <ArsenalTab
+            characterId={characterId}
+            campaignId={campaignId}
+            userId={userId}
+          />
+        )}
         {activeTab === "diario" && <DiarioTab />}
         {activeTab === "mapa" && <MapaTab />}
       </div>
