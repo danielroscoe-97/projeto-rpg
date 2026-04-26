@@ -264,10 +264,8 @@ export function PlayerHqShellV2({
         className="animate-in fade-in-0 duration-150"
       >
         {/* All 4 tabs receive the canonical PlayerHqV2TabProps shape.
-            HeroiTab is the real wrapper from this PR (B2a); siblings
-            are still stubs from #62 follow-up (they accept the full
-            shape and ignore via `_` prefix). #71/#72/#73 each swap
-            their stub for a real wrapper that consumes what it needs. */}
+            HeroiTab + ArsenalTab + DiarioTab are real wrappers; MapaTab
+            stub still ignores via `_` prefix until B2d swaps it. */}
         {activeTab === "heroi" && (
           <HeroiTab
             characterId={characterId}
