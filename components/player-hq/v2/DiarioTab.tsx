@@ -17,12 +17,7 @@ import { QuickNotesList } from "../QuickNotesList";
 import { NpcJournal } from "../NpcJournal";
 import { PlayerQuestBoard } from "../PlayerQuestBoard";
 import { DmNotesInbox } from "../DmNotesInbox";
-
-export interface DiarioTabProps {
-  characterId: string;
-  campaignId: string;
-  userId: string;
-}
+import type { PlayerHqV2TabProps } from "./HeroiTab";
 
 type DiarioSubTab = "quick" | "minhas" | "npcs" | "quests" | "dm_inbox";
 
@@ -61,7 +56,7 @@ export function DiarioTab({
   characterId,
   campaignId,
   userId,
-}: DiarioTabProps) {
+}: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq.notes");
   const [activeSubTab, setActiveSubTab] = useState<DiarioSubTab>("quick");
 
