@@ -1149,6 +1149,15 @@
       "abilities": "Abilities",
       "aria_tablist": "Character tabs"
     },
+    "keyboard": {
+      "title": "Keyboard shortcuts",
+      "tab1": "Go to Herói",
+      "tab2": "Go to Arsenal",
+      "tab3": "Go to Diário",
+      "tab4": "Go to Mapa",
+      "help": "Show shortcuts",
+      "close": "Close"
+    },
     "header": {
       "back_aria": "Back to campaign",
       "hd_label": "HD",
