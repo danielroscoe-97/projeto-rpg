@@ -20,6 +20,13 @@ import { DM_OFFLINE_THRESHOLD_MS } from "@/lib/realtime/timing-constants";
 import { persistPlayerIdentity, loadPlayerIdentity, clearPlayerIdentity } from "@/lib/player-identity-storage";
 import { classifyReconnect } from "@/lib/realtime/reconnect-classifier";
 import { fetchOrchestrator, type FetchPriority } from "@/lib/realtime/fetch-orchestrator";
+// CR-03 (Estabilidade Combate, Sprint 1) — F1 deep integration: resume hook
+// + skeleton render. Resume runs on every SUBSCRIBED handshake, advancing
+// the per-session sessionStorage cursor as broadcasts arrive carrying
+// _journal_seq from the server. On disconnect/long gap, /events fills the
+// gap (or falls back to fetchFullState if too_stale).
+import { useEventResume } from "@/lib/realtime/use-event-resume";
+import { ReconnectingSkeleton } from "@/components/player/ReconnectingSkeleton";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type {
   SanitizedStateSync,
@@ -171,6 +178,10 @@ interface PrefilledCharacter {
 
 interface PlayerJoinClientProps {
   tokenId: string;
+  /** Plain `session_tokens.token` value (URL slug). Used by the resume
+   *  endpoint /api/combat/:id/events?token=… for auth (same pattern as
+   *  /state). Distinct from `tokenId` which is the row UUID. */
+  sessionToken: string;
   sessionId: string;
   sessionName: string;
   rulesetVersion: RulesetVersion;
@@ -195,6 +206,7 @@ interface PlayerJoinClientProps {
 
 export function PlayerJoinClient({
   tokenId,
+  sessionToken,
   sessionId,
   sessionName,
   rulesetVersion,
@@ -253,6 +265,32 @@ export function PlayerJoinClient({
       }, 1500);
     }
   }, []);
+
+  // CR-03 F1c — Reconnect skeleton gate.
+  //
+  // Resilient Reconnection Rule (CLAUDE.md): never blank screen, never
+  // re-registration form, DM not notified. Show <ReconnectingSkeleton/>
+  // only after a 500ms grace so sub-300ms retries don't flicker (D5 from
+  // tech spec). Only display during *active combat* — lobby flows have
+  // their own waiting/registered states. Hide immediately on "connected".
+  const [showResumeSkeleton, setShowResumeSkeleton] = useState(false);
+  const skeletonTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (connectionStatus === "connected") {
+      if (skeletonTimerRef.current) { clearTimeout(skeletonTimerRef.current); skeletonTimerRef.current = null; }
+      setShowResumeSkeleton(false);
+      return;
+    }
+    // connecting | disconnected — arm the 500ms grace before showing the skeleton.
+    if (skeletonTimerRef.current) clearTimeout(skeletonTimerRef.current);
+    skeletonTimerRef.current = setTimeout(() => {
+      skeletonTimerRef.current = null;
+      setShowResumeSkeleton(true);
+    }, 500);
+    return () => {
+      if (skeletonTimerRef.current) { clearTimeout(skeletonTimerRef.current); skeletonTimerRef.current = null; }
+    };
+  }, [connectionStatus]);
   const [showOracle, setShowOracle] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([]);
@@ -1288,6 +1326,45 @@ export function PlayerJoinClient({
   // A.1: Keep ref in sync for state machine polling
   fetchFullStateRef.current = fetchFullState;
 
+  // CR-03 (Estabilidade Combate, Sprint 1) — F1c deep integration.
+  //
+  // The hook owns the resume cursor (sessionStorage) and the /events fetch
+  // lifecycle. Wiring needs three parts:
+  //   1. `noteSeqFromBroadcast(payload._journal_seq)` — called inside every
+  //      broadcast handler to advance the cursor as live events arrive.
+  //   2. `triggerResume()` — called from the SUBSCRIBED handler to fill any
+  //      gap since the last seen seq (or fall back to /state via
+  //      onFullRefetchNeeded if the gap is too large / journal was reset).
+  //   3. onEvents — for now, delegates to fetchFullState. A per-event
+  //      reducer that applies the journal payload incrementally requires
+  //      a refactor of the inline broadcast handlers below (each one
+  //      mutates state directly via updateCombatants, setRound, etc.) and
+  //      is deferred to Sprint 2. The cursor still advances through the
+  //      hook's internal setLastSeenSeq, so subsequent caught-up reconnects
+  //      cost only one HTTP roundtrip with empty events.
+  const resumeApi = useEventResume({
+    sessionId,
+    encounterId,
+    token: sessionToken,
+    onEvents: () => {
+      const eid = encounterIdRef.current;
+      if (!eid) return;
+      fetchFullState(eid, { priority: "emergency", caller: "resume_events" });
+    },
+    onFullRefetchNeeded: () => {
+      const eid = encounterIdRef.current;
+      if (!eid) return;
+      fetchFullState(eid, { priority: "emergency", caller: "resume_too_stale" });
+    },
+  });
+  // Refs so the channel useEffect (which intentionally has stable deps)
+  // captures the latest hook closures without retriggering the realtime
+  // subscribe/unsubscribe cycle.
+  const noteSeqRef = useRef(resumeApi.noteSeqFromBroadcast);
+  useEffect(() => { noteSeqRef.current = resumeApi.noteSeqFromBroadcast; }, [resumeApi.noteSeqFromBroadcast]);
+  const triggerResumeRef = useRef(resumeApi.triggerResume);
+  useEffect(() => { triggerResumeRef.current = resumeApi.triggerResume; }, [resumeApi.triggerResume]);
+
   // Subscribe to realtime channel for combat updates
   useEffect(() => {
     if (!authReady || !sessionId) return;
@@ -1302,11 +1379,14 @@ export function PlayerJoinClient({
       });
 
       channel
-        .on("broadcast", { event: "session:state_sync" }, ({ payload }: { payload: SanitizedStateSync & { _seq?: number } }) => {
+        .on("broadcast", { event: "session:state_sync" }, ({ payload }: { payload: SanitizedStateSync & { _seq?: number; _journal_seq?: number } }) => {
           // DESYNC-FIX-2: state_sync is the full truth — ALWAYS reset sequence counter.
           // After DM refresh, _broadcastSeq resets to 0. If we only update lastSeqRef when
           // seq > 0, the player keeps the old high-water mark (e.g. 50) and drops all new
           // events (seq 1, 2, 3...) as "stale" for up to 30s until the next state_sync.
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           lastSeqRef.current = seq;
 
@@ -1362,8 +1442,11 @@ export function PlayerJoinClient({
             }
           }
         })
-        .on("broadcast", { event: "combat:turn_advance" }, ({ payload }: { payload: RealtimeTurnAdvance & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:turn_advance" }, ({ payload }: { payload: RealtimeTurnAdvance & { _seq?: number; _journal_seq?: number } }) => {
           // Discard out-of-order turn advances using broadcast sequence number
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1416,7 +1499,9 @@ export function PlayerJoinClient({
           }
           setNextCombatantId(payload.next_combatant_id ?? null);
         })
-        .on("broadcast", { event: "combat:hp_update" }, ({ payload }: { payload: { combatant_id: string; current_hp?: number; temp_hp?: number; max_hp?: number; hp_status?: string; hp_percentage?: number; death_saves?: { successes: number; failures: number }; _seq?: number } }) => {
+        .on("broadcast", { event: "combat:hp_update" }, ({ payload }: { payload: { combatant_id: string; current_hp?: number; temp_hp?: number; max_hp?: number; hp_status?: string; hp_percentage?: number; death_saves?: { successes: number; failures: number }; _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor.
+          noteSeqRef.current(payload._journal_seq);
           // Discard out-of-order HP updates using broadcast sequence number
           const hpSeq = typeof payload._seq === "number" ? payload._seq : 0;
           if (hpSeq > 0 && hpSeq <= lastSeqRef.current) return;
@@ -1502,7 +1587,10 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:condition_change" }, ({ payload }: { payload: RealtimeConditionChange & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:condition_change" }, ({ payload }: { payload: RealtimeConditionChange & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1523,7 +1611,10 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:reaction_toggle" }, ({ payload }: { payload: RealtimeReactionToggle & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:reaction_toggle" }, ({ payload }: { payload: RealtimeReactionToggle & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1541,7 +1632,10 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:defeated_change" }, ({ payload }: { payload: RealtimeDefeatedChange & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:defeated_change" }, ({ payload }: { payload: RealtimeDefeatedChange & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1555,7 +1649,10 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:combatant_add" }, ({ payload }: { payload: SanitizedCombatantAdd & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:combatant_add" }, ({ payload }: { payload: SanitizedCombatantAdd & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1603,7 +1700,7 @@ export function PlayerJoinClient({
             }
           }
         })
-        .on("broadcast", { event: "combat:combatant_add_reorder" }, ({ payload }: { payload: SanitizedCombatantAddReorder & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:combatant_add_reorder" }, ({ payload }: { payload: SanitizedCombatantAddReorder & { _seq?: number; _journal_seq?: number } }) => {
           // S1.2: Atomic combatant add + reorder + turn_index update in a single
           // React state transaction. Replaces the legacy combatant_add + state_sync
           // pair that raced on the receiver due to broadcastViaServer's dual sender.
@@ -1612,6 +1709,9 @@ export function PlayerJoinClient({
           // during the rollout window (see sprint-plan-beta3-remediation.md S1.2).
           // Old DM clients keep emitting the pair; new DM clients (flag on) emit
           // only this event. Old player clients ignore this event (safe no-op).
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1712,7 +1812,10 @@ export function PlayerJoinClient({
             }
           }
         })
-        .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }: { payload: RealtimeCombatantRemove & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:combatant_remove" }, ({ payload }: { payload: RealtimeCombatantRemove & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1720,7 +1823,10 @@ export function PlayerJoinClient({
             updateCombatants((prev) => prev.filter((c) => c.id !== payload.combatant_id));
           }
         })
-        .on("broadcast", { event: "combat:version_switch" }, ({ payload }: { payload: RealtimeVersionSwitch & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:version_switch" }, ({ payload }: { payload: RealtimeVersionSwitch & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1734,7 +1840,10 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:stats_update" }, ({ payload }: { payload: SanitizedStatsUpdate & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:stats_update" }, ({ payload }: { payload: SanitizedStatsUpdate & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1754,7 +1863,10 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:player_notes_update" }, ({ payload }: { payload: RealtimePlayerNotesUpdate & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:player_notes_update" }, ({ payload }: { payload: RealtimePlayerNotesUpdate & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1768,7 +1880,10 @@ export function PlayerJoinClient({
             );
           }
         })
-        .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }: { payload: SanitizedInitiativeReorder & { _seq?: number } }) => {
+        .on("broadcast", { event: "combat:initiative_reorder" }, ({ payload }: { payload: SanitizedInitiativeReorder & { _seq?: number; _journal_seq?: number } }) => {
+          // CR-03 F1c: advance journal cursor (no-op when payload comes via
+          // client-direct path; meaningful when via /api/broadcast).
+          noteSeqRef.current(payload._journal_seq);
           const seq = typeof payload._seq === "number" ? payload._seq : 0;
           if (seq > 0 && seq <= lastSeqRef.current) return;
           if (seq > 0) lastSeqRef.current = seq;
@@ -1941,6 +2056,17 @@ export function PlayerJoinClient({
             reconnectBackoffRef.current = 1000;
             // A.1: Transition to CONNECTED — stops all polling, fetches reconciliation state
             transitionTo("CONNECTED", "SUBSCRIBED");
+            // CR-03 F1c: invoke resume on every SUBSCRIBED. Hook reads
+            // sessionStorage cursor (advanced via noteSeqFromBroadcast in
+            // the live handlers above) and calls /events?since_seq=N.
+            //   - If gap is empty → no-op (cursor already at currentSeq)
+            //   - If small gap → applies via onEvents (currently fetchFullState
+            //     until the per-event reducer lands in Sprint 2)
+            //   - If too_stale or error → onFullRefetchNeeded (also fetchFullState)
+            // The legacy fetchFullState calls below provide defense in depth
+            // for the journal-disabled / journal-failure paths and should
+            // remain until Beta #5 confirms the resume path is reliable.
+            triggerResumeRef.current();
             if (encounterIdRef.current) {
               // S3.5: channel SUBSCRIBED handshake is a recovery path —
               // bypass throttle so reconciliation isn't delayed.
@@ -3509,6 +3635,19 @@ export function PlayerJoinClient({
         {authUpgradeEntryPoints}
       </div>
     );
+  }
+
+  // CR-03 F1c — Reconnect skeleton.
+  //
+  // Renders only during active combat (`active === true`). Lobby flows
+  // never reach here; their own component already handles `connecting`
+  // states with a waiting-room UI. The skeleton fully replaces the
+  // combat view during reconnect — preferable to showing a frozen state
+  // that may be silently stale. As soon as the channel reconnects,
+  // `connectionStatus` flips to `"connected"`, the skeleton unmounts,
+  // and the (resumed via useEventResume) state is applied.
+  if (active && showResumeSkeleton) {
+    return <ReconnectingSkeleton />;
   }
 
   return (

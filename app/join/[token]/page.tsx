@@ -195,6 +195,12 @@ export default async function JoinPage({ params }: JoinPageProps) {
     <FloatingCardContainer />
     <PlayerJoinClient
       tokenId={tokenRow.id}
+      // CR-03 (Estabilidade Combate): plain `session_tokens.token` value.
+      // Used by the resume endpoint /api/combat/:id/events?token=… for
+      // auth (same pattern as /state). Distinct from `tokenId` which is
+      // the row UUID. Both are needed: tokenId for client-side identity
+      // tracking (combatant association), token for server auth.
+      sessionToken={token}
       sessionId={session.id}
       sessionName={session.name}
       rulesetVersion={session.ruleset_version}
