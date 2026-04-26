@@ -92,7 +92,14 @@ export function PlayerLobby({
   const [hp, setHp] = useState(selectedChar ? String(selectedChar.max_hp) : "");
   const [ac, setAc] = useState(selectedChar ? String(selectedChar.ac) : "");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Set<string>>(new Set());
+  // F7 (Estabilidade Combate): map of field → schema error code (snake_case
+  // matching `player.validation.<code>` i18n keys). Replaces the previous
+  // `Set<string>` that only tracked which fields had errors and threw the
+  // specific message away. With the code, the UI can render the precise
+  // reason ("must be a whole number" vs "must be ≥ 1") instead of a single
+  // generic message per field.
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const tValidation = useTranslations("player.validation");
   const [isRejoining, setIsRejoining] = useState(false);
   const [confirmActivePlayer, setConfirmActivePlayer] = useState<string | null>(null);
 
@@ -370,10 +377,16 @@ export function PlayerLobby({
   // CR-05 (Estabilidade Combate): validation via shared Zod schema
   // (lib/schemas/player-registration.ts) — same source of truth as server.
   // Closes IG-1 from PR #48 review (client/server drift on upper bounds).
+  // F7 (2026-04-26): per-field i18n mapping via tValidation (replaces
+  // generic toast / dead string-match catch).
   const handleFormSubmit = async () => {
-    const initVal = parseInt(initiative, 10);
-    const hpVal = hp.trim() ? parseInt(hp, 10) : null;
-    const acVal = ac.trim() ? parseInt(ac, 10) : null;
+    // F8 (2026-04-26): use Number() instead of parseInt() so decimals
+    // ("15.5") and trailing junk ("15abc") become NaN/non-integer and the
+    // schema's int() check catches them. Previously parseInt silently
+    // truncated decimals, so a user typing "15.5" got HP=15 with no signal.
+    const initVal = initiative.trim() ? Number(initiative) : NaN;
+    const hpVal = hp.trim() ? Number(hp) : null;
+    const acVal = ac.trim() ? Number(ac) : null;
 
     const parsed = PlayerRegistrationSchema.safeParse({
       name,
@@ -384,11 +397,17 @@ export function PlayerLobby({
 
     if (!parsed.success) {
       const fieldErrors = parsed.error.flatten().fieldErrors;
-      setErrors(new Set(Object.keys(fieldErrors)));
+      // Pick the first error code per field (Zod returns array; first is
+      // typically the most-relevant for UX — required-before-format).
+      const codeMap: Record<string, string> = {};
+      for (const [field, codes] of Object.entries(fieldErrors)) {
+        if (codes && codes.length > 0) codeMap[field] = codes[0];
+      }
+      setErrors(codeMap);
       return;
     }
 
-    setErrors(new Set());
+    setErrors({});
     setIsSubmitting(true);
 
     try {
@@ -401,10 +420,22 @@ export function PlayerLobby({
       }
     } catch (error) {
       setIsSubmitting(false);
-      // Show specific validation message if available, otherwise generic error
       const msg = error instanceof Error ? error.message : "";
-      if (msg.includes("AC must") || msg.includes("Initiative must") || msg.includes("HP must") || msg.includes("Invalid name")) {
-        toast.error(msg);
+      // The server's `registerPlayerCombatant` re-throws Zod issue messages
+      // (the code, e.g. "name_required") on parse failure — defense in
+      // depth for the case where the client schema accepted but the server
+      // disagreed. Translate the code if it matches the validation
+      // namespace; otherwise fall through to generic.
+      //
+      // Why hasMessage check: tValidation throws on missing keys in dev,
+      // so we probe the namespace before surfacing the toast.
+      const isValidationCode = /^(name|initiative|hp|ac)_/.test(msg);
+      if (isValidationCode) {
+        try {
+          toast.error(tValidation(msg));
+        } catch {
+          toast.error(t('registerError'));
+        }
       } else {
         toast.error(t('registerError'));
       }
@@ -559,17 +590,19 @@ export function PlayerLobby({
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-                if (errors.has("name")) setErrors((prev) => { const n = new Set(prev); n.delete("name"); return n; });
+                if (errors.name) setErrors((prev) => { const next = { ...prev }; delete next.name; return next; });
               }}
               placeholder={t("lobby_name_placeholder")}
               maxLength={50}
-              className={`${inputClass}${errors.has("name") ? " border-red-400 ring-1 ring-red-400/50" : ""}`}
-              aria-invalid={errors.has("name") || undefined}
+              className={`${inputClass}${errors.name ? " border-red-400 ring-1 ring-red-400/50" : ""}`}
+              aria-invalid={!!errors.name || undefined}
               autoFocus
               data-testid="lobby-name"
             />
-            {errors.has("name") && (
-              <p className="text-red-400 text-xs mt-1">{t("lobby_error_name")}</p>
+            {errors.name && (
+              <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-name">
+                {tValidation(errors.name)}
+              </p>
             )}
           </div>
 
@@ -584,16 +617,18 @@ export function PlayerLobby({
               value={initiative}
               onChange={(e) => {
                 setInitiative(e.target.value);
-                if (errors.has("initiative")) setErrors((prev) => { const n = new Set(prev); n.delete("initiative"); return n; });
+                if (errors.initiative) setErrors((prev) => { const next = { ...prev }; delete next.initiative; return next; });
               }}
               placeholder={t("lobby_initiative_placeholder")}
               min={1}
-              className={`${inputClass} font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${errors.has("initiative") ? " border-red-400 ring-1 ring-red-400/50" : ""}`}
-              aria-invalid={errors.has("initiative") || undefined}
+              className={`${inputClass} font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${errors.initiative ? " border-red-400 ring-1 ring-red-400/50" : ""}`}
+              aria-invalid={!!errors.initiative || undefined}
               data-testid="lobby-initiative"
             />
-            {errors.has("initiative") && (
-              <p className="text-red-400 text-xs mt-1">{t("lobby_error_initiative")}</p>
+            {errors.initiative && (
+              <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-initiative">
+                {tValidation(errors.initiative)}
+              </p>
             )}
           </div>
 
@@ -606,12 +641,21 @@ export function PlayerLobby({
               id="lobby-hp"
               type="number"
               value={hp}
-              onChange={(e) => setHp(e.target.value)}
+              onChange={(e) => {
+                setHp(e.target.value);
+                if (errors.hp) setErrors((prev) => { const next = { ...prev }; delete next.hp; return next; });
+              }}
               placeholder={t("lobby_hp_placeholder")}
               min={1}
-              className={`${inputClass} font-mono opacity-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+              className={`${inputClass} font-mono opacity-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${errors.hp ? " border-red-400 ring-1 ring-red-400/50" : ""}`}
+              aria-invalid={!!errors.hp || undefined}
               data-testid="lobby-hp"
             />
+            {errors.hp && (
+              <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-hp">
+                {tValidation(errors.hp)}
+              </p>
+            )}
           </div>
 
           {/* AC (optional) */}
@@ -623,12 +667,21 @@ export function PlayerLobby({
               id="lobby-ac"
               type="number"
               value={ac}
-              onChange={(e) => setAc(e.target.value)}
+              onChange={(e) => {
+                setAc(e.target.value);
+                if (errors.ac) setErrors((prev) => { const next = { ...prev }; delete next.ac; return next; });
+              }}
               placeholder={t("lobby_ac_placeholder")}
               min={1}
-              className={`${inputClass} font-mono opacity-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+              className={`${inputClass} font-mono opacity-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none${errors.ac ? " border-red-400 ring-1 ring-red-400/50" : ""}`}
+              aria-invalid={!!errors.ac || undefined}
               data-testid="lobby-ac"
             />
+            {errors.ac && (
+              <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-ac">
+                {tValidation(errors.ac)}
+              </p>
+            )}
           </div>
         </div>
 

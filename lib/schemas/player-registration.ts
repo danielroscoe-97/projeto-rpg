@@ -22,13 +22,20 @@
  * Portuguese strings that leaked into English locale toasts when the
  * server's `parse()` threw and the message was forwarded raw.
  *
- * Locale code convention: kebab-case grouped by field —
- *   "name.required", "name.too-long", "initiative.not-number",
- *   "initiative.not-integer", "initiative.below-floor", "hp.not-number",
- *   "hp.not-integer", "hp.not-positive", "ac.*" mirrors hp.*
+ * Locale code convention: snake_case grouped by field — matches the i18n
+ * key shape under `messages/{en,pt-BR}.json` `player.validation.<code>`,
+ * so a caller can translate with one call: `t(\`validation.${code}\`)`.
  *
- * Mapping to user-facing strings happens via `messages/{en,pt-BR}.json`
- * keys under `player.validation.<code>`.
+ *   "name_required", "name_too_long",
+ *   "initiative_not_number", "initiative_not_integer", "initiative_below_floor",
+ *   "hp_not_number", "hp_not_integer", "hp_not_positive",
+ *   "ac_not_number", "ac_not_integer", "ac_not_positive"
+ *
+ * F7 (Estabilidade Combate, 2026-04-26): codes were originally kebab-case
+ * with dots (e.g. "name.required") but the i18n keys use snake_case
+ * (`name_required`). The client never bridged the two — error mapping
+ * was effectively dead code. Aligning conventions lets the client do
+ * `t(\`validation.${code}\`)` directly.
  *
  * See: _bmad-output/estabilidade-combate/stories/CR-05-zod-shared-validation.md
  */
@@ -38,21 +45,21 @@ export const PlayerRegistrationSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "name.required")
-    .max(50, "name.too-long"),
+    .min(1, "name_required")
+    .max(50, "name_too_long"),
   initiative: z
-    .number({ message: "initiative.not-number" })
-    .int("initiative.not-integer")
-    .min(1, "initiative.below-floor"),
+    .number({ message: "initiative_not_number" })
+    .int("initiative_not_integer")
+    .min(1, "initiative_below_floor"),
   hp: z
-    .number({ message: "hp.not-number" })
-    .int("hp.not-integer")
-    .positive("hp.not-positive")
+    .number({ message: "hp_not_number" })
+    .int("hp_not_integer")
+    .positive("hp_not_positive")
     .nullable(),
   ac: z
-    .number({ message: "ac.not-number" })
-    .int("ac.not-integer")
-    .positive("ac.not-positive")
+    .number({ message: "ac_not_number" })
+    .int("ac_not_integer")
+    .positive("ac_not_positive")
     .nullable(),
 });
 
