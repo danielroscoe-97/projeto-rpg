@@ -10,7 +10,14 @@ import { useTranslations } from "next-intl";
  *   ActiveEffectsPanel + SpellSlotsHq + ResourceTrackerList + SpellListSection
  * per [09-implementation-plan.md §B2](../../../_bmad-output/party-mode-2026-04-22/09-implementation-plan.md).
  */
-export function HeroiTab() {
+
+export interface PlayerHqV2TabProps {
+  characterId: string;
+  campaignId: string;
+  userId: string;
+}
+
+export function HeroiTab(_props: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq");
   return (
     <div

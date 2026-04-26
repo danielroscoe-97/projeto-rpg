@@ -142,6 +142,7 @@ export function PlayerHqShellV2({
   characterId,
   campaignId,
   campaignName,
+  userId,
   playerHqTourCompleted = true,
   initialTab,
 }: PlayerHqShellV2Props) {
@@ -262,10 +263,38 @@ export function PlayerHqShellV2({
         aria-labelledby={`tab-v2-${activeTab}`}
         className="animate-in fade-in-0 duration-150"
       >
-        {activeTab === "heroi" && <HeroiTab />}
-        {activeTab === "arsenal" && <ArsenalTab />}
-        {activeTab === "diario" && <DiarioTab />}
-        {activeTab === "mapa" && <MapaTab />}
+        {/* Stubs accept the same context props each tab will need once
+            B2 fills the wrappers (PlayerMindMap needs userId,
+            BagOfHolding needs campaignId, etc.). Forwarding now keeps
+            the prop contract stable so B2 PRs are pure additions. */}
+        {activeTab === "heroi" && (
+          <HeroiTab
+            characterId={characterId}
+            campaignId={campaignId}
+            userId={userId}
+          />
+        )}
+        {activeTab === "arsenal" && (
+          <ArsenalTab
+            characterId={characterId}
+            campaignId={campaignId}
+            userId={userId}
+          />
+        )}
+        {activeTab === "diario" && (
+          <DiarioTab
+            characterId={characterId}
+            campaignId={campaignId}
+            userId={userId}
+          />
+        )}
+        {activeTab === "mapa" && (
+          <MapaTab
+            characterId={characterId}
+            campaignId={campaignId}
+            userId={userId}
+          />
+        )}
       </div>
     </div>
   );

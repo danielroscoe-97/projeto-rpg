@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { PlayerHqV2TabProps } from "./HeroiTab";
 
 /**
  * MapaTab — stub placeholder for Sprint 3 Track A (Story B1).
@@ -8,7 +9,7 @@ import { useTranslations } from "next-intl";
  * Track B fills this with PlayerMindMap (unchanged).
  * See [09-implementation-plan.md §B2](../../../_bmad-output/party-mode-2026-04-22/09-implementation-plan.md).
  */
-export function MapaTab() {
+export function MapaTab(_props: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq");
   return (
     <div
