@@ -65,8 +65,14 @@ test.describe("Gate Fase A — A5 HP inline controls on /sheet (Auth)", () => {
     }
 
     // Legacy button absence — the canonical pattern removes these.
-    const legacyMinus5 = page.locator('button:has-text("-5"), button:has-text("−5")');
-    const legacyPlus5 = page.locator('button:has-text("+5")');
+    // Use exact-match (regex anchored) so "-5" does NOT match "-50",
+    // "-15", etc. Both ASCII hyphen-minus ("-") and Unicode minus ("−")
+    // need coverage because the legacy buttons rendered the typographic
+    // glyph in some locales.
+    const legacyMinus5 = page.getByRole("button", {
+      name: /^[-−]5$/,
+    });
+    const legacyPlus5 = page.getByRole("button", { name: /^\+5$/ });
     await expect(
       legacyMinus5,
       "legacy [-5] button must NOT render in V2 HP ribbon",

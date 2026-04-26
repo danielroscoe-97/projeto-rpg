@@ -56,10 +56,14 @@ test.describe("Gate Fase A — ability chips always visible (A2)", () => {
     // A2 contract: each ability label must be visible in the DOM without
     // needing to click an accordion toggle. We assert by scanning for the
     // uppercase 3-letter code (STR/DEX/...) rather than tight testids —
-    // the underlying component names may evolve.
+    // the underlying component names may evolve. Use an exact-match
+    // text locator (anchored regex) so "STR" does NOT match "STRENGTH"
+    // or "STRIKE", "INT" does NOT match "INTUITION", etc.
     for (const key of ABILITIES) {
       const upper = key.toUpperCase();
-      const label = page.locator(`text=${upper}`).first();
+      const label = page
+        .getByText(new RegExp(`^${upper}$`))
+        .first();
       await expect(
         label,
         `ability "${upper}" must be visible on /sheet without any click`,
