@@ -94,8 +94,14 @@ function formatModifier(mod: number | null): string {
  * Detect whether the current event activation should request advantage or
  * disadvantage. Mouse + touch path uses the long-press timer (separate
  * code path). Keyboard activation looks at modifier keys.
+ *
+ * Accepts any event type that exposes the four modifier-key booleans —
+ * KeyboardEvent, MouseEvent, and TouchEvent (and their React synthetics)
+ * all carry these as optional booleans.
  */
-function modeFromKeyboard(e: React.KeyboardEvent | React.MouseEvent): RollMode {
+function modeFromKeyboard(
+  e: { shiftKey?: boolean; altKey?: boolean; ctrlKey?: boolean; metaKey?: boolean },
+): RollMode {
   // Shift = advantage, Alt/Ctrl/Meta = disadvantage. Mirrors the convention
   // used by Roll20 / Foundry. Mouse buttons hold the same modifier behavior
   // so power-users on desktop don't have to context-menu every time.
