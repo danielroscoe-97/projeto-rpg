@@ -19,7 +19,7 @@ import {
   clearGuestState,
   addAllCombatants,
   startCombat,
-} from "../guest-qa/helpers";
+} from "./helpers";
 
 const ROSTER = [
   { name: "Hero", hp: "30", ac: "15", init: "15", role: "player" as const },
@@ -48,10 +48,13 @@ test.describe("Gate Fase A — A5 HP inline for Guest /try", () => {
     ).toBeVisible({ timeout: 15_000 });
 
     // Legacy buttons must not exist on the guest ribbon in V2.
-    const legacyMinus5 = page.locator(
-      'button:has-text("-5"), button:has-text("−5")',
-    );
-    const legacyPlus5 = page.locator('button:has-text("+5")');
+    // Use exact-match (regex anchored) so "-5" does NOT match "-50",
+    // "-15", etc. Both ASCII hyphen-minus and Unicode minus glyphs are
+    // covered because legacy markup rendered both depending on locale.
+    const legacyMinus5 = page.getByRole("button", {
+      name: /^[-−]5$/,
+    });
+    const legacyPlus5 = page.getByRole("button", { name: /^\+5$/ });
     await expect(
       legacyMinus5,
       "guest /try must not expose legacy [-5] after A5",

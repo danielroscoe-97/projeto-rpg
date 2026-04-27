@@ -58,11 +58,15 @@ test.describe("Gate Fase A — A5 HP inline ribbon for Anon /join", () => {
         return;
       }
 
-      // Legacy buttons absent.
-      const legacyMinus5 = playerPage.locator(
-        'button:has-text("-5"), button:has-text("−5")',
-      );
-      const legacyPlus5 = playerPage.locator('button:has-text("+5")');
+      // Legacy buttons absent. Use exact-match (regex anchored) so
+      // "-5" does NOT match "-50", "-15", etc. Both ASCII hyphen-minus
+      // and Unicode minus glyphs are covered.
+      const legacyMinus5 = playerPage.getByRole("button", {
+        name: /^[-−]5$/,
+      });
+      const legacyPlus5 = playerPage.getByRole("button", {
+        name: /^\+5$/,
+      });
       await expect(
         legacyMinus5,
         "anon combat ribbon must not expose legacy [-5] in V2",
