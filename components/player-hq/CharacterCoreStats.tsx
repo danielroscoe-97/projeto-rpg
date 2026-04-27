@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Shield, Zap, Footprints, Sparkles } from "lucide-react";
 import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
@@ -85,6 +86,41 @@ export function CharacterCoreStats({
   characterName = null,
 }: CharacterCoreStatsProps) {
   const t = useTranslations("player_hq.sheet");
+  // Localized strings for the AbilityChip toast + aria-label + menu. Pulled
+  // from `player_hq.ability_chip` so PT-BR users see proper translations
+  // instead of the EN defaults baked into AbilityChip.tsx.
+  const tChip = useTranslations("player_hq.ability_chip");
+  // Memo so AbilityChip's prop identity is stable across re-renders — useful
+  // when the chip's effects depend on label identity (none today, but cheap
+  // to keep tidy + it avoids spurious downstream re-renders).
+  const toastLabels = useMemo(
+    () => ({
+      checkLabel: tChip("check_verb"),
+      saveLabel: tChip("save_verb"),
+      advantageLabel: tChip("with_advantage"),
+      disadvantageLabel: tChip("with_disadvantage"),
+    }),
+    [tChip],
+  );
+  const chipLabels = useMemo(
+    () => ({
+      rollVerb: tChip("roll_verb"),
+      checkAriaSuffix: tChip("check_aria_suffix"),
+      saveAriaSuffix: tChip("save_aria_suffix"),
+      withProficiency: tChip("with_proficiency"),
+      modifierLabel: tChip("modifier_label"),
+      advantage: tChip("menu_advantage"),
+      disadvantage: tChip("menu_disadvantage"),
+      normal: tChip("menu_normal"),
+      manualModifierMenu: tChip("manual_modifier_menu"),
+      manualModifierLabel: tChip("manual_modifier_label"),
+      manualModifierApply: tChip("manual_modifier_apply"),
+      manualModifierCancel: tChip("manual_modifier_cancel"),
+      manualModifierInputAria: tChip("manual_modifier_input_aria"),
+      saveProficientAria: tChip("save_proficient_aria"),
+    }),
+    [tChip],
+  );
 
   const abilityValues: Record<AbilityKey, number | null> = {
     str,
@@ -207,16 +243,22 @@ export function CharacterCoreStats({
                       characterName,
                       profBonus,
                     }}
+                    toastLabels={toastLabels}
+                    chipLabels={chipLabels}
                   />
                 );
               }
 
               // ── Legacy V1 cell (preserved for flag-OFF environments) ──
+              // Use the canonical 3-letter ability code (str/dex/con/int/wis/cha)
+              // for the testid so V1 + V2 stay aligned. The internal `key`
+              // still uses `int_score`/`cha_score` to avoid the JS reserved-word
+              // collision noted in the ABILITY_SCORES comment.
               return (
                 <div
                   key={key}
                   className="bg-background/50 border border-border rounded-lg p-2 text-center"
-                  data-testid={`ability-chip-${key}`}
+                  data-testid={`ability-chip-${ability}`}
                 >
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
                     {label}
