@@ -108,6 +108,7 @@ test.describe("Wave 3b · C7 — AbilityChip SAVE roller", () => {
 
     const headline = page.getByTestId("ability-roll-toast-headline");
     // Verb varies by locale but the ability code is always upper-case EN.
+    // eslint-disable-next-line security/detect-non-literal-regexp -- bounded to the 6 hard-coded ability codes
     await expect(headline).toContainText(new RegExp(ability.toUpperCase()));
 
     const total = page.getByTestId("ability-roll-toast-total");
