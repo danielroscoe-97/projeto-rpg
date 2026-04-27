@@ -32,6 +32,16 @@ interface MinhasNotasProps {
    * `true` when the player has no auth identity AND no session_token row.
    * Surfaces the upgrade prompt above the list. The hook also short-circuits
    * add() with a toast in this case as a defense-in-depth.
+   *
+   * TODO(future-wave): unreachable today — the only entry point to this
+   * component is `app/app/(with-sidebar)/campaigns/[id]/sheet/page.tsx`,
+   * which forces `redirect("/auth/login")` when there is no auth user.
+   * Anon players reach combat via `/join/[token]` but never reach the V2
+   * Player HQ shell that hosts DiarioTab. This prop + the matching banner
+   * are kept as defensive scaffolding so that when a future wave promotes
+   * `/join` to surface the V2 shell (see issue #90 P3-2), the RLS-prepared
+   * anon flow lights up without further UI churn. Until then, every render
+   * receives `isAnonWithoutSession={false}` and the banner stays hidden.
    */
   isAnonWithoutSession?: boolean;
 }

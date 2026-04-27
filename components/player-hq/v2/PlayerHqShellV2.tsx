@@ -163,13 +163,26 @@ export function PlayerHqShellV2({
 }: PlayerHqShellV2Props) {
   const t = useTranslations("player_hq");
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<TabV2>(initialTab ?? "heroi");
 
-  // Wave 3c D4 cross-nav: keep `activeTab` synced with `?tab=` so links
-  // emitted from sibling drawers (NpcCard → "Ver no Mapa", PlayerNpcDrawer
-  // → "Ver no Diário") update the visible tab without a hard reload. The
-  // shell still renders the SSR-resolved `initialTab` first paint; this
-  // effect reconciles after hydration AND on every subsequent query change.
+  // Wave 3c D4 cross-nav: resolve the initial tab from `?tab=` *during* the
+  // initial render via a lazy initializer so the first paint already shows
+  // the right tab — no flash from `initialTab → queryTab`. The reactive
+  // effect below keeps the state in sync when callers update the query
+  // (NpcCard → "Ver no Mapa", PlayerNpcDrawer → "Ver no Diário") without a
+  // hard reload.
+  const [activeTab, setActiveTab] = useState<TabV2>(() => {
+    const queryTab = searchParams?.get("tab");
+    if (
+      queryTab === "heroi" ||
+      queryTab === "arsenal" ||
+      queryTab === "diario" ||
+      queryTab === "mapa"
+    ) {
+      return queryTab;
+    }
+    return initialTab ?? "heroi";
+  });
+
   useEffect(() => {
     const queryTab = searchParams?.get("tab");
     if (
