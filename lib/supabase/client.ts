@@ -44,6 +44,22 @@ export function createClient() {
         },
       },
     );
+
+    // Issue #90 P1-2 — Test-only handle for Playwright E2E broadcast
+    // helpers (`e2e/features/player-hq-combat-auto.spec.ts`). The spec
+    // simulates `combat:started` / `combat:ended` from the page context
+    // and needs to reach the SAME singleton the page already uses (so
+    // the channel multiplexes onto the existing socket and the hook's
+    // listener actually receives the event). NEVER enabled in
+    // production: the NODE_ENV check ensures the property is never
+    // attached on user devices.
+    if (
+      typeof window !== "undefined" &&
+      process.env.NODE_ENV !== "production"
+    ) {
+      (window as Window & { __supabase__?: typeof singleton }).__supabase__ =
+        singleton;
+    }
   }
   return singleton;
 }

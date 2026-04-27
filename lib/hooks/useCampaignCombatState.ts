@@ -101,8 +101,21 @@ export interface UseCampaignCombatStateOptions {
    * Fired synchronously when `combat:ended` is observed (whether via
    * broadcast or polling transition). HeroiTab uses this to bridge into
    * `usePostCombatState.recordCombatEnded`.
+   *
+   * The second argument is the most recent round number observed by the
+   * hook (from `combat:started` or `combat:turn_advance`). This is
+   * captured SYNCHRONOUSLY in the broadcast handlers — not via React
+   * state — to defeat the fast-TPK race (issue #90 P2-3): if
+   * `combat:started (round=1)` and `combat:ended` arrive in the same
+   * microtask, React hasn't committed the round into state yet, so
+   * reading `state.round` would yield `undefined`. The `lastKnownRound`
+   * arg lets the consumer build a snapshot that always carries the
+   * round the combat actually had.
    */
-  onCombatEnded?: (snapshot: PostCombatSnapshot | undefined) => void;
+  onCombatEnded?: (
+    snapshot: PostCombatSnapshot | undefined,
+    lastKnownRound: number | undefined,
+  ) => void;
   /** Disable the hook entirely (handy for tests). */
   enabled?: boolean;
 }
@@ -165,6 +178,14 @@ export function useCampaignCombatState(
   // because their presence proves the channel is alive.
   const lastEventAtRef = useRef<number>(Date.now());
 
+  // Issue #90 P2-3: most recent round observed via broadcast. Updated
+  // SYNCHRONOUSLY inside the `combat:started` / `combat:turn_advance`
+  // handlers (before `setState`) so the value is durable through the
+  // fast-TPK race window where React hasn't committed yet but
+  // `combat:ended` is already firing. Forwarded into the `onCombatEnded`
+  // callback so consumers don't need to mirror this ref themselves.
+  const lastKnownRoundRef = useRef<number | undefined>(undefined);
+
   // Public state setter wrapper — also bumps `lastEventAt` so polling
   // can quiesce as soon as realtime resumes.
   const noteEvent = useCallback(() => {
@@ -179,6 +200,10 @@ export function useCampaignCombatState(
 
     channel.on("broadcast", { event: "combat:started" }, ({ payload }: { payload: CombatStartedPayload }) => {
       noteEvent();
+      // P2-3: bump the ref BEFORE setState so a same-microtask
+      // combat:ended sees the fresh round even if React hasn't
+      // committed yet.
+      lastKnownRoundRef.current = payload.round;
       setState({
         active: true,
         round: payload.round,
@@ -202,24 +227,60 @@ export function useCampaignCombatState(
       // future Mestre-side enhancements can opt in. Pre-fix this guard
       // gated on `payload.snapshot &&` and PostCombatBanner was dead
       // code in production — see adversarial review of PR #86.
+      //
+      // P2-3: pass `lastKnownRoundRef.current` so the consumer can
+      // build a snapshot with the correct round even when combat:started
+      // and combat:ended arrived in the same microtask (fast TPK).
+      const lastRound = lastKnownRoundRef.current;
       if (onCombatEndedRef.current) {
         try {
-          onCombatEndedRef.current(payload.snapshot);
+          onCombatEndedRef.current(payload.snapshot, lastRound);
         } catch {
           // Snapshot delivery is best-effort — never let a consumer
           // exception nuke the state transition.
         }
       }
+      // Reset ref AFTER firing the callback — the next combat starts
+      // fresh and a stale value here would only matter if no
+      // combat:started event preceded a combat:ended (in which case
+      // `undefined` is the correct answer anyway).
+      lastKnownRoundRef.current = undefined;
       setState(EMPTY);
     });
 
     channel.on("broadcast", { event: "combat:turn_advance" }, ({ payload }: { payload: TurnAdvancePayload }) => {
       noteEvent();
+      // P2-3 mirror: keep the round ref in sync with turn_advance
+      // payloads — written OUTSIDE the setState updater so the bump
+      // happens synchronously even if React defers the state update.
+      // Reading payload.round_number here is safe because the guard
+      // below only rejects when state.active is false AND the payload
+      // is incomplete; in that case the ref bump is harmless (no
+      // combat:started landed yet, so no consumer is reading the ref).
+      if (typeof payload.round_number === "number") {
+        lastKnownRoundRef.current = payload.round_number;
+      }
       setState((prev) => {
-        // Ignore turn_advance arriving before combat:started (race on
-        // first connect): we don't have a combat_id yet so the resulting
-        // state would be partial.
-        if (!prev.active && !payload.combat_id) return prev;
+        // Defensive: drop turn_advance payloads that don't carry enough
+        // context to build a meaningful state when we have no prior
+        // combat:started to merge against. Today the Mestre's
+        // `broadcastCombatTurnAdvanceMirror` (CombatSessionClient.tsx)
+        // ALWAYS includes `combat_id` + `current_combatant_name`, so in
+        // the happy path this guard never fires. It exists for two
+        // future-proofing reasons:
+        //   1. If the broadcast shape is ever extended/lossy (e.g. a
+        //      stripped-down mirror on a different surface), an
+        //      `active=true` state without currentTurn would render the
+        //      Ribbon with `currentTurnName === undefined` and the
+        //      "Entrar no Combate" CTA without a combatId — a worse UX
+        //      than skipping the event and waiting for the next one.
+        //   2. Issue #90 P2-1: this guard was originally documented as a
+        //      "race on first connect" defense but the affirmative path
+        //      always carries combat_id, so the comment was misleading.
+        //      Re-documented to reflect the real (defensive) intent.
+        if (!prev.active && (!payload.combat_id || !payload.current_combatant_name)) {
+          return prev;
+        }
         return {
           active: true,
           round: payload.round_number,
@@ -288,7 +349,13 @@ export function useCampaignCombatState(
         if (error || !data) {
           // No active encounter — make sure state reflects that.
           setState((prev) => (prev.active ? EMPTY : prev));
+          // P2-3: keep the round ref in sync with the polled state so a
+          // future broadcast race finds a clean slate.
+          lastKnownRoundRef.current = undefined;
         } else {
+          // P2-3: bump the round ref from the DB row in case the
+          // realtime path missed the most recent broadcast.
+          lastKnownRoundRef.current = data.round_number;
           setState((prev) => ({
             active: true,
             round: data.round_number,
