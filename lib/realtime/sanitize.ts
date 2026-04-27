@@ -88,6 +88,8 @@ export function sanitizePayloadServer(
   if (event.type === "player:hp_action") return null;
   // player:self_condition_toggle is player→DM only — DM re-broadcasts the result as combat:condition_change
   if (event.type === "player:self_condition_toggle") return null;
+  // player:sos_resync_requested is player→DM only — DM re-emits session:state_sync silently (Resilient Reconnection §18)
+  if (event.type === "player:sos_resync_requested") return null;
   // W5 (F19) + P2 consolidation: combat_invite events (legacy campaign-scoped
   // and new user-scoped) are server-origin only and travel on separate
   // broadcast channels (`campaign:{id}:invites` and `user-invites:{userId}`).
