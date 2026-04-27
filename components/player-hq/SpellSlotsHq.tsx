@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Wand2, Pencil } from "lucide-react";
 import { SpellSlotGrid } from "@/components/ui/SpellSlotGrid";
+import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
 
 interface SpellSlotsHqProps {
   spellSlots: Record<string, { max: number; used: number }> | null;
@@ -20,6 +21,9 @@ export function SpellSlotsHq({
 }: SpellSlotsHqProps) {
   const t = useTranslations("player_hq.resources");
   const [editingMax, setEditingMax] = useState<string | null>(null);
+  // PRD decision #37 — V2 ON inverts the dot semantic for transient
+  // resources: filled = used/spent (instead of filled = available).
+  const v2 = isPlayerHqV2Enabled();
 
   const slots = spellSlots ?? {};
   const levels = Object.entries(slots)
@@ -32,13 +36,25 @@ export function SpellSlotsHq({
       const slot = slots[level];
       if (!slot) return;
 
-      const filled = slot.max - slot.used;
+      // Toggle semantics depend on the visual mapping:
+      //   Legacy (V2 OFF): dot is filled when i < remaining → clicking a
+      //     filled dot consumes (used+1); clicking an empty dot restores.
+      //   Inverted (V2 ON): dot is filled when i < used → clicking a
+      //     filled dot restores (used-1); clicking an empty dot consumes.
       let newUsed: number;
-
-      if (dotIndex < filled) {
-        newUsed = slot.used + 1;
+      if (v2) {
+        if (dotIndex < slot.used) {
+          newUsed = slot.used - 1;
+        } else {
+          newUsed = slot.used + 1;
+        }
       } else {
-        newUsed = slot.used - 1;
+        const filled = slot.max - slot.used;
+        if (dotIndex < filled) {
+          newUsed = slot.used + 1;
+        } else {
+          newUsed = slot.used - 1;
+        }
       }
       newUsed = Math.max(0, Math.min(slot.max, newUsed));
 
@@ -46,7 +62,7 @@ export function SpellSlotsHq({
       navigator.vibrate?.([50]);
       onUpdateSpellSlots(updated);
     },
-    [slots, readOnly, onUpdateSpellSlots]
+    [slots, readOnly, onUpdateSpellSlots, v2]
   );
 
   const handleMaxChange = useCallback(
@@ -129,6 +145,7 @@ export function SpellSlotsHq({
                   readOnly={readOnly}
                   onToggle={(idx) => handleToggle(level, idx)}
                   ariaLabel={`${t("spell_slots_level")} ${level}`}
+                  inverted={v2}
                 />
               </div>
               {/* Inline max edit */}

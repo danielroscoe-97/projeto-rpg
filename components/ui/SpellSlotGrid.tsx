@@ -14,12 +14,23 @@
  *   zero-based dot index the user clicked. Hosts translate the index into
  *   a `used` count exactly as they do today.
  * - For `variant="transient"` (today's only real caller) the filled state
- *   is **filled dot = slot available**. That is,
+ *   is **filled dot = slot available** by default. That is,
  *   `isFilled = i < (max - used)`. This matches the legacy `ResourceDots`
  *   and combat `SpellSlotTracker` behavior bit-for-bit.
  * - For `variant="permanent"` the filled state is **filled dot = acquired**.
  *   No existing spell-slot caller uses this variant; the prop exists so
  *   PRD decision #37 can flip semantics behind a flag later.
+ *
+ * ## Inversion (PRD decision #37, Sprint 5)
+ *
+ * When `inverted={true}` AND `variant="transient"`, the mapping flips to
+ * **filled dot = used/spent** (`isFilled = i < used`). This brings transient
+ * resources in line with the reaction dot in `CombatantRow.tsx:516` (the
+ * canonical post-inversion reference) and matches the new mental model:
+ * "filled dot = consumed action". Hosts gate this on the
+ * `NEXT_PUBLIC_PLAYER_HQ_V2` flag — see `lib/flags/player-hq-v2.ts` and
+ * the call sites in `SpellSlotsHq.tsx` + `SpellSlotTracker.tsx`. Default
+ * remains `inverted={false}` so legacy callers stay bit-identical.
  *
  * ## What this component does NOT do
  *
@@ -80,6 +91,13 @@ export interface SpellSlotGridProps {
    * The combat variant uses richer per-dot labels so we expose this hook.
    */
   dotAriaLabel?: (index: number, isFilled: boolean) => string;
+  /**
+   * PRD decision #37 dot inversion. When `true` AND `variant="transient"`,
+   * filled dots represent **used/spent** slots (`filled = i < used`) instead
+   * of available slots. Default `false` preserves legacy behavior. Hosts
+   * gate this on `isPlayerHqV2Enabled()`. No-op for `variant="permanent"`.
+   */
+  inverted?: boolean;
 }
 
 interface DensityStyles {
@@ -120,6 +138,7 @@ export function SpellSlotGrid({
   readOnly = false,
   ariaLabel,
   dotAriaLabel,
+  inverted = false,
 }: SpellSlotGridProps) {
   const [bouncingDot, setBouncingDot] = useState<number | null>(null);
   const d = DENSITY[density];
@@ -135,9 +154,15 @@ export function SpellSlotGrid({
     [readOnly, onToggle]
   );
 
-  // transient → filled = remaining/available (legacy bit-identical).
-  // permanent → filled = acquired.
-  const filledCount = variant === "transient" ? Math.max(0, max - used) : used;
+  // transient → filled = remaining/available (legacy bit-identical) OR
+  //             filled = used/spent when `inverted` (PRD #37, V2 flag).
+  // permanent → filled = acquired (inversion is a no-op).
+  const filledCount =
+    variant === "transient"
+      ? inverted
+        ? Math.max(0, Math.min(max, used))
+        : Math.max(0, max - used)
+      : used;
   const hasTouchPad = d.touch.length > 0;
 
   return (

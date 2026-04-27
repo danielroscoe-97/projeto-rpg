@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Dot } from "@/components/ui/Dot";
+import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
 
 type DotSize = "sm" | "md" | "lg";
 
@@ -67,7 +68,12 @@ export function ResourceDots({
     );
   }
 
-  const remaining = max - usedCount; // filled dots = remaining uses
+  const remaining = max - usedCount;
+  // PRD decision #37 — Sprint 5 dot inversion gated by V2 flag:
+  //   V2 OFF → filled = i < remaining (legacy "filled = available")
+  //   V2 ON  → filled = i < usedCount (canonical "filled = used/spent")
+  // The <Dot> primitive stays a dumb renderer; we compute `filled` here.
+  const v2 = isPlayerHqV2Enabled();
 
   const sizeStyle = DOT_SIZES[size];
 
@@ -78,12 +84,7 @@ export function ResourceDots({
       aria-label={label ?? t("trackers_title")}
     >
       {Array.from({ length: max }, (_, i) => {
-        const isFilled = i < remaining;
-        // Legacy semantic: transient resource with pre-inversion mapping
-        // (filled dot = slot AVAILABLE / remaining use). The <Dot>
-        // primitive is a dumb renderer; we compute `filled` from the
-        // legacy formula so behavior is bit-identical. Sprint 5's flag
-        // flip will flip this line (filled = i < usedCount), not Dot.
+        const isFilled = v2 ? i < usedCount : i < remaining;
         return (
           <button
             key={i}
