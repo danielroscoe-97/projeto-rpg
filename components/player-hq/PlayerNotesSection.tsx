@@ -10,6 +10,7 @@ import { NpcJournal } from "./NpcJournal";
 import { DmNotesInbox } from "./DmNotesInbox";
 import { usePlayerNotes } from "@/lib/hooks/usePlayerNotes";
 import { useNpcJournal } from "@/lib/hooks/useNpcJournal";
+import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
 
 // W4/149: added `dm_inbox` sub-tab — read-only list of DM-private notes
 // addressed to this character.
@@ -39,11 +40,20 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
 
   const loading = notesLoading || npcHook.loading;
 
+  // B2c: when V2 flag is ON, the DM inbox is hosted by DiarioTab — drop the
+  // sub-tab here to avoid double-render. V1's shell currently early-returns
+  // when V2 is enabled (PlayerHqShell.tsx:232) so PlayerNotesSection itself
+  // does not mount in V2 mode, but this defensive filter protects against
+  // any future code path that re-uses PlayerNotesSection inside V2 surfaces.
+  const hideDmInbox = isPlayerHqV2Enabled();
+
   const tabs: { key: NotesTab; icon: typeof StickyNote; label: string }[] = [
     { key: "quick", icon: StickyNote, label: t("tab_quick") },
     { key: "journal", icon: BookOpen, label: t("tab_journal") },
     { key: "npcs", icon: Users, label: t("tab_npcs") },
-    { key: "dm_inbox", icon: Scroll, label: t("tab_dm_inbox") },
+    ...(hideDmInbox
+      ? []
+      : ([{ key: "dm_inbox", icon: Scroll, label: t("tab_dm_inbox") }] as const)),
   ];
 
   const handleAddJournal = async () => {
@@ -189,8 +199,10 @@ export function PlayerNotesSection({ characterId, campaignId }: PlayerNotesSecti
         />
       )}
 
-      {/* W4/149: DM private notes addressed to this character (read-only) */}
-      {!loading && activeTab === "dm_inbox" && (
+      {/* W4/149: DM private notes addressed to this character (read-only).
+          B2c: skip render when V2 hides the sub-tab so the host-move to
+          DiarioTab is the single source of truth. */}
+      {!loading && !hideDmInbox && activeTab === "dm_inbox" && (
         <DmNotesInbox characterId={characterId} />
       )}
     </div>

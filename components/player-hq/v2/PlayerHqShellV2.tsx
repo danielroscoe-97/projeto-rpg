@@ -293,6 +293,7 @@ export function PlayerHqShellV2({
           <MapaTab
             characterId={characterId}
             campaignId={campaignId}
+            campaignName={campaignName}
             userId={userId}
           />
         )}
