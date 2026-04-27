@@ -1153,6 +1153,15 @@
       "mapa": "Mapa",
       "aria_tablist": "Abas do personagem"
     },
+    "keyboard": {
+      "title": "Atalhos do teclado",
+      "tab1": "Ir para Herói",
+      "tab2": "Ir para Arsenal",
+      "tab3": "Ir para Diário",
+      "tab4": "Ir para Mapa",
+      "help": "Mostrar atalhos",
+      "close": "Fechar"
+    },
     "header": {
       "back_aria": "Voltar para a campanha",
       "hd_label": "HD",
