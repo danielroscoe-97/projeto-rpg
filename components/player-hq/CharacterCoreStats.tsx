@@ -2,14 +2,27 @@
 
 import { useTranslations } from "next-intl";
 import { Shield, Zap, Footprints, Sparkles } from "lucide-react";
+import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
+import { profBonusForLevel } from "@/lib/constants/dnd-skills";
+import { AbilityChip } from "@/components/player-hq/v2/AbilityChip";
+import type { Ability } from "@/lib/utils/dice-roller";
+import type { CharacterProficiencies } from "@/lib/types/database";
+
+/**
+ * Ability score row mapping. The `key` matches the field name on
+ * `CharacterStatus` (note `int_score` / `cha_score` instead of `int` / `cha`
+ * to avoid the JS reserved-word + readability collision); the `ability`
+ * field is the canonical 3-letter code used by `AbilityChip` and the
+ * proficiency map (which mirrors `lib/constants/dnd-skills.ts`).
+ */
 const ABILITY_SCORES = [
-  { key: "str", label: "STR" },
-  { key: "dex", label: "DEX" },
-  { key: "con", label: "CON" },
-  { key: "int_score", label: "INT" },
-  { key: "wis", label: "WIS" },
-  { key: "cha_score", label: "CHA" },
-] as const;
+  { key: "str", label: "STR", ability: "str" },
+  { key: "dex", label: "DEX", ability: "dex" },
+  { key: "con", label: "CON", ability: "con" },
+  { key: "int_score", label: "INT", ability: "int" },
+  { key: "wis", label: "WIS", ability: "wis" },
+  { key: "cha_score", label: "CHA", ability: "cha" },
+] as const satisfies ReadonlyArray<{ key: string; label: string; ability: Ability }>;
 
 type AbilityKey = (typeof ABILITY_SCORES)[number]["key"];
 
@@ -32,6 +45,24 @@ interface CharacterCoreStatsProps {
   wis: number | null;
   chaScore: number | null;
   onToggleInspiration: () => void;
+  /**
+   * V2-only optional context. When `isPlayerHqV2Enabled()` AND these are
+   * provided, the 6 ability cells render as interactive `AbilityChip`
+   * components with CHK + SAVE roll buttons. When omitted (or V1), the
+   * legacy static cells render — preserving backward compatibility for
+   * any caller that hasn't been updated yet.
+   *
+   * `proficiencies` drives the save proficiency dot; `level` drives the
+   * proficiency bonus; the remaining fields drive the broadcast payload.
+   */
+  proficiencies?: CharacterProficiencies | null;
+  level?: number | null;
+  /** Campaign id for the broadcast topic (Auth-only context). */
+  campaignId?: string | null;
+  /** Character id for sessionStorage history + broadcast payload. */
+  characterId?: string | null;
+  /** Character display name for the broadcast payload. */
+  characterName?: string | null;
 }
 
 export function CharacterCoreStats({
@@ -47,6 +78,11 @@ export function CharacterCoreStats({
   wis,
   chaScore,
   onToggleInspiration,
+  proficiencies = null,
+  level = null,
+  campaignId = null,
+  characterId = null,
+  characterName = null,
 }: CharacterCoreStatsProps) {
   const t = useTranslations("player_hq.sheet");
 
@@ -60,6 +96,21 @@ export function CharacterCoreStats({
   };
 
   const hasAnyAbility = Object.values(abilityValues).some((v) => v != null);
+
+  // V2 chip render depends on the flag being live AT mount time (we never
+  // need to re-evaluate per-render — `isPlayerHqV2Enabled` reads a build-
+  // time env var). Stored as a const so jest tests can `jest.mock` the
+  // flag module to flip behavior without touching runtime conditionals.
+  const v2Enabled = isPlayerHqV2Enabled();
+  const profBonus = profBonusForLevel(level ?? null);
+  // Save proficiency lookup — saving_throws is an array of ability codes
+  // ("str", "dex", ...). Build a Set for O(1) lookup per chip render.
+  const profSaves = new Set(proficiencies?.saving_throws ?? []);
+  // The roll surface is Auth-only. We light it up only when ALL the
+  // broadcast context is available (campaign + character + name). Anonymous
+  // contexts and missing-context renders fall through to clickable=false
+  // which preserves the legacy visual without action zones.
+  const rollClickable = v2Enabled && Boolean(campaignId && characterId && characterName);
 
   return (
     <div className="space-y-3">
@@ -125,7 +176,9 @@ export function CharacterCoreStats({
         </div>
       )}
 
-      {/* Ability Scores — always visible (EP-1 A2: accordion killed per 09-implementation-plan.md §A2) */}
+      {/* Ability Scores — always visible (EP-1 A2: accordion killed per 09-implementation-plan.md §A2).
+          V2 (Wave 3b) renders interactive AbilityChip with CHK + SAVE roll
+          zones (PRD #44 + #46). V1 renders the legacy static cells unchanged. */}
       {hasAnyAbility && (
         <div
           className="bg-card border border-border rounded-xl px-4 py-3"
@@ -136,8 +189,29 @@ export function CharacterCoreStats({
             {t("attributes_label")}
           </p>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-            {ABILITY_SCORES.map(({ key, label }) => {
+            {ABILITY_SCORES.map(({ key, label, ability }) => {
               const score = abilityValues[key];
+
+              if (v2Enabled) {
+                return (
+                  <AbilityChip
+                    key={key}
+                    ability={ability}
+                    label={label}
+                    score={score}
+                    proficient={profSaves.has(ability)}
+                    clickable={rollClickable}
+                    rollContext={{
+                      campaignId,
+                      characterId,
+                      characterName,
+                      profBonus,
+                    }}
+                  />
+                );
+              }
+
+              // ── Legacy V1 cell (preserved for flag-OFF environments) ──
               return (
                 <div
                   key={key}
