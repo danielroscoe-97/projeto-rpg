@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpFraction, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus, Users as UsersIcon, ArrowLeft, Timer as TimerIcon, type LucideIcon } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus, Timer as TimerIcon, type LucideIcon } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -24,6 +24,7 @@ import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 import { ActiveEffectsBadges } from "@/components/player/ActiveEffectsBadges";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
+import { SosResyncButton } from "@/components/player/SosResyncButton";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import {
   QUICK_ACTIONS,
@@ -37,10 +38,6 @@ import { trackEvent } from "@/lib/analytics/track";
 /** Lucide icon per quick action — mirrors ConditionSelector. */
 const PLAYER_QUICK_ACTION_ICON: Record<QuickAction, LucideIcon> = {
   dodge: Shield,
-  dash: Zap,
-  help: UsersIcon,
-  disengage: ArrowLeft,
-  hide: EyeOff,
   ready: TimerIcon,
 };
 
@@ -234,6 +231,10 @@ interface PlayerInitiativeBoardProps {
   // WEATHER_DISABLED: weatherEffect?: string;
   /** Realtime channel ref for broadcasting audio events */
   channelRef?: React.RefObject<RealtimeChannel | null>;
+  /** F03: timestamp of the most recent DM broadcast received. Drives the SOS
+   *  button's stale-hint pulse + the click telemetry. Optional — without it
+   *  the SOS button still works, just without the staleness affordance. */
+  lastBroadcastAtRef?: React.RefObject<number>;
   /** Player's custom audio files */
   customAudioFiles?: PlayerAudioFile[];
   /** Signed URLs for custom audio files */
@@ -292,6 +293,7 @@ export function PlayerInitiativeBoard({
   // WEATHER_DISABLED: weatherEffect,
   onPlayerNote,
   channelRef,
+  lastBroadcastAtRef,
   customAudioFiles = [],
   customAudioUrls = {},
   registeredName,
@@ -1646,6 +1648,24 @@ export function PlayerInitiativeBoard({
           <BookOpen className="w-5 h-5 text-gold" />
         </button>
       </div>
+
+      {/* F03: SOS resync FAB mirrors the compendium FAB on the right. Always
+          visible during active+registered combat (canonical doc §5.1) — the
+          button is the user's escape hatch when the DM goes silent, so it must
+          NOT be opacity-gated by the turn-notification overlay. */}
+      {channelRef && effectiveTokenId && registeredName && (
+        <div
+          className="fixed right-4 z-30 lg:hidden"
+          style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
+        >
+          <SosResyncButton
+            channelRef={channelRef}
+            tokenId={effectiveTokenId}
+            playerName={registeredName}
+            lastBroadcastAtRef={lastBroadcastAtRef}
+          />
+        </div>
+      )}
 
       {/* Compendium browser dialog */}
       <PlayerCompendiumBrowser

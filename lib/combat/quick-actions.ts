@@ -1,5 +1,11 @@
 /**
- * S4.3 — Quick actions (Dodge / Dash / Help / Disengage / Hide / Ready).
+ * Quick actions surfaced as one-tap chips for the player and the Mestre.
+ *
+ * Trimmed catalogue: only Dodge and Ready remain in the UI. Dash / Help /
+ * Disengage / Hide were dropped because at a presencial table the player
+ * narrates them aloud — the app does not need a button. Existing
+ * combatants persisted with `action:dash` etc. stay valid in the schema
+ * (free-form text); the player just can't self-apply those four anymore.
  *
  * Storage format: `action:<kind>` (e.g. `action:dodge`). Uses the dedicated
  * `action:` prefix to avoid colliding with:
@@ -12,20 +18,15 @@
  *   - **Dodge** auto-expires when the caster's NEXT turn begins
  *     (D&D 5e RAW — "until your next turn"). Cleared in `handleAdvanceTurn`
  *     on the combatant whose turn is starting.
- *   - Dash/Help/Disengage/Hide/Ready do NOT auto-expire. Their lifetime is
- *     logical (player/DM removes manually when the trigger fires or combat
- *     ends).
+ *   - **Ready** does NOT auto-expire. Lifetime is logical (player/Mestre
+ *     removes manually when the trigger fires or combat ends).
  *
- * Player self-apply (anon + auth) is allowed for all 6 quick actions — this
- * is the SAFE subset (no PII, no custom text). `custom:*` stays DM-only.
+ * Player self-apply (anon + auth) is allowed for both. `custom:*` stays
+ * Mestre-only.
  */
 
 export const QUICK_ACTIONS = [
   "dodge",
-  "dash",
-  "help",
-  "disengage",
-  "hide",
   "ready",
 ] as const;
 
@@ -56,8 +57,9 @@ export function formatQuickAction(kind: QuickAction): string {
 
 /**
  * Return a conditions array with auto-expiring quick actions removed
- * (currently only `action:dodge`). Non-auto-expiring actions (Dash/Help/
- * Disengage/Hide/Ready) are preserved.
+ * (currently only `action:dodge`). Non-auto-expiring actions (Ready and
+ * any legacy `action:*` rows persisted before the catalogue trim) are
+ * preserved.
  *
  * Used by `handleAdvanceTurn` when a combatant's turn is starting — Dodge
  * is RAW "until your next turn", so we clean it up exactly at that point.
@@ -70,7 +72,11 @@ export function stripExpiringQuickActions(conditions: string[]): string[] {
   });
 }
 
-/** Remove ALL `action:*` entries — used for full cleanup (e.g. combat end). */
+/** Remove every `action:*` entry that matches the current `QUICK_ACTIONS`
+ *  catalogue. After the 2026-04-27 trim, that's only `action:dodge` and
+ *  `action:ready`. Legacy persisted rows like `action:dash` are NOT in the
+ *  catalogue anymore and are preserved by this filter — see canonical
+ *  doc §2.7 (combatants persisted before the trim stay valid in the schema). */
 export function stripAllQuickActions(conditions: string[]): string[] {
   return conditions.filter((c) => !isQuickAction(c));
 }

@@ -1741,6 +1741,56 @@ export function CombatSessionClient({
 
     ch.on("broadcast", { event: "combat:reaction_toggle" }, handlePlayerReactionToggle);
 
+    // F03: player:sos_resync_requested — player asked for a fresh state snapshot.
+    // Resilient Reconnection §18 — silêncio narrativo: no toast, no badge, no
+    // sound on the Mestre side. Just re-emit the current session:state_sync.
+    //
+    // Rate limit: 10s per sender_token_id. The client UI enforces a 60s cooldown
+    // but a malicious or modified client can bypass it; without server-side
+    // throttling the DM would re-broadcast `session:state_sync` every spam tick
+    // and saturate the CDC pool (cf. postmortem 2026-04-24). 10s gives genuine
+    // recovery a fast path while bounding the worst case.
+    const SOS_THROTTLE_MS = 10_000;
+    const lastSosBySender = new Map<string, number>();
+    const handleSosResync = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const senderTokenId = payload.sender_token_id as string | undefined;
+      if (!senderTokenId) return;
+      const sid = getSessionId();
+      if (!sid) return;
+
+      // Throttle per-sender to prevent state_sync spam.
+      const now = Date.now();
+      const lastAt = lastSosBySender.get(senderTokenId) ?? 0;
+      if (now - lastAt < SOS_THROTTLE_MS) return;
+      lastSosBySender.set(senderTokenId, now);
+
+      // Validate: sender must own a combatant in this encounter (registered
+      // player). Drops requests from spectators / leaked channel topics.
+      const senderOwnsCombatant = useCombatStore
+        .getState()
+        .combatants.some((c) => c.is_player && c.session_token_id === senderTokenId);
+      if (!senderOwnsCombatant) return;
+
+      const requestedAt = typeof payload.requested_at === "number" ? payload.requested_at : now;
+      const store = useCombatStore.getState();
+      trackEvent("dm:sos_resync_processed", {
+        session_id: sid,
+        source_token_id: senderTokenId,
+        ms_since_player_request: now - requestedAt,
+        combatants_count: store.combatants.length,
+      });
+      broadcastEvent(sid, {
+        type: "session:state_sync",
+        combatants: store.combatants,
+        current_turn_index: store.current_turn_index,
+        round_number: store.round_number,
+        ...(store.encounter_id ? { encounter_id: store.encounter_id } : {}),
+      });
+    };
+
+    ch.on("broadcast", { event: "player:sos_resync_requested" }, handleSosResync);
+
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef, handleApplyDamageRef, handleApplyHealingRef, handleSetTempHpRef
   }, [is_active, getSessionId]);

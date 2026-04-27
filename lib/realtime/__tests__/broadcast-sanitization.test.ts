@@ -574,4 +574,15 @@ describe("Broadcast Sanitization — Edge Cases", () => {
     });
     expect(mockSend).not.toHaveBeenCalled();
   });
+
+  // F03: SOS resync is player→DM only — DM re-emits state_sync silently (Resilient Reconnection §18)
+  it("player:sos_resync_requested events are never broadcast to player channel", () => {
+    broadcastEvent("session-1", {
+      type: "player:sos_resync_requested",
+      player_name: "Aragorn",
+      sender_token_id: "tok-123",
+      requested_at: Date.now(),
+    });
+    expect(mockSend).not.toHaveBeenCalled();
+  });
 });

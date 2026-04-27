@@ -11,28 +11,31 @@ import {
   isPlayerForbiddenCondition,
 } from "./quick-actions";
 
-describe("S4.3 — quick actions helper", () => {
+describe("Quick actions helper", () => {
   describe("QUICK_ACTIONS catalogue", () => {
-    it("contains exactly the 6 canonical D&D 5e quick actions", () => {
-      expect([...QUICK_ACTIONS].sort()).toEqual(
-        ["dash", "disengage", "dodge", "help", "hide", "ready"].sort(),
-      );
+    it("contains exactly Dodge and Ready (Dash/Help/Disengage/Hide are narrative-only)", () => {
+      expect([...QUICK_ACTIONS].sort()).toEqual(["dodge", "ready"].sort());
     });
 
     it("only `dodge` auto-expires on next turn (RAW)", () => {
       expect(AUTO_EXPIRE_ON_NEXT_TURN.has("dodge")).toBe(true);
-      for (const k of ["dash", "disengage", "help", "hide", "ready"] as const) {
-        expect(AUTO_EXPIRE_ON_NEXT_TURN.has(k)).toBe(false);
-      }
+      expect(AUTO_EXPIRE_ON_NEXT_TURN.has("ready")).toBe(false);
     });
   });
 
   describe("isQuickAction / getQuickActionKind", () => {
-    it("recognises all 6 `action:<kind>` strings", () => {
+    it("recognises every `action:<kind>` in the trimmed catalogue", () => {
       for (const kind of QUICK_ACTIONS) {
         const str = `${ACTION_PREFIX}${kind}`;
         expect(isQuickAction(str)).toBe(true);
         expect(getQuickActionKind(str)).toBe(kind);
+      }
+    });
+
+    it("rejects dropped `action:*` kinds (Dash/Help/Disengage/Hide)", () => {
+      for (const dropped of ["action:dash", "action:help", "action:disengage", "action:hide"]) {
+        expect(isQuickAction(dropped)).toBe(false);
+        expect(getQuickActionKind(dropped)).toBeNull();
       }
     });
 
@@ -72,21 +75,24 @@ describe("S4.3 — quick actions helper", () => {
       expect(stripExpiringQuickActions(input)).toEqual(["Prone"]);
     });
 
-    it("PRESERVES Dash/Help/Disengage/Hide/Ready across turn advance", () => {
-      const input = [
-        "action:dash",
-        "action:help",
-        "action:disengage",
-        "action:hide",
-        "action:ready",
-      ];
+    it("PRESERVES Ready across turn advance", () => {
+      const input = ["action:ready"];
       expect(stripExpiringQuickActions(input)).toEqual(input);
     });
 
-    it("removes ONLY dodge when dodge + non-expiring coexist", () => {
-      const input = ["action:dodge", "action:dash", "Blessed", "Stunned"];
+    it("PRESERVES legacy `action:*` rows (Dash/Help/Disengage/Hide) — they are unknown kinds now and pass through untouched, matching the unknown-kind branch", () => {
+      // The four dropped kinds no longer match `isQuickAction`, so they are
+      // treated as unknown `action:*` strings and preserved by the filter.
+      // This guarantees combatants persisted before the trim keep their
+      // condition rows intact (no destructive migration).
+      const input = ["action:dash", "action:help", "action:disengage", "action:hide"];
+      expect(stripExpiringQuickActions(input)).toEqual(input);
+    });
+
+    it("removes ONLY dodge when dodge + ready coexist", () => {
+      const input = ["action:dodge", "action:ready", "Blessed", "Stunned"];
       expect(stripExpiringQuickActions(input)).toEqual([
-        "action:dash",
+        "action:ready",
         "Blessed",
         "Stunned",
       ]);
@@ -104,16 +110,26 @@ describe("S4.3 — quick actions helper", () => {
   });
 
   describe("stripAllQuickActions", () => {
-    it("removes every `action:*` entry including non-expiring ones", () => {
+    it("removes only known `action:*` entries — legacy unknown kinds are preserved", () => {
+      // After the trim, `action:dash` is no longer a known kind, so it is
+      // preserved by `isQuickAction === false`. Only `action:dodge` and
+      // `action:ready` are stripped because only those two match the
+      // current catalogue.
       const input = ["action:dodge", "action:dash", "Prone"];
-      expect(stripAllQuickActions(input)).toEqual(["Prone"]);
+      expect(stripAllQuickActions(input)).toEqual(["action:dash", "Prone"]);
     });
   });
 
   describe("self-apply allowlist guards", () => {
-    it("accepts all 6 quick actions via isQuickActionSelfAppliable", () => {
+    it("accepts every quick action in the trimmed catalogue", () => {
       for (const kind of QUICK_ACTIONS) {
         expect(isQuickActionSelfAppliable(`${ACTION_PREFIX}${kind}`)).toBe(true);
+      }
+    });
+
+    it("rejects dropped kinds (Dash/Help/Disengage/Hide) via isQuickActionSelfAppliable", () => {
+      for (const dropped of ["action:dash", "action:help", "action:disengage", "action:hide"]) {
+        expect(isQuickActionSelfAppliable(dropped)).toBe(false);
       }
     });
 
