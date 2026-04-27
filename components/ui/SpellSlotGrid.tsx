@@ -184,6 +184,7 @@ export function SpellSlotGrid({
         const bounceClass = bouncingDot === i ? d.bounceScale : "scale-100";
         const dotSpan = (
           <span
+            data-variant={variant}
             className={`${d.dot} rounded-full border transition-transform duration-200 ${
               isFilled ? filledClassName : d.empty
             } ${bounceClass}`}
@@ -197,6 +198,7 @@ export function SpellSlotGrid({
             role="checkbox"
             aria-checked={isFilled}
             aria-label={label}
+            data-variant={variant}
             onClick={() => handleToggle(i)}
             disabled={readOnly}
             className={

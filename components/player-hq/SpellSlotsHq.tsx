@@ -20,6 +20,10 @@ export function SpellSlotsHq({
   readOnly = false,
 }: SpellSlotsHqProps) {
   const t = useTranslations("player_hq.resources");
+  // PRD decision #37 a11y — per-dot aria-label appends "used"/"available"
+  // so screen-reader output stays unambiguous when V2 flips the visual
+  // mapping. Same i18n keys as `components/player/SpellSlotTracker.tsx`.
+  const tPlayer = useTranslations("player");
   const [editingMax, setEditingMax] = useState<string | null>(null);
   // PRD decision #37 — V2 ON inverts the dot semantic for transient
   // resources: filled = used/spent (instead of filled = available).
@@ -145,6 +149,15 @@ export function SpellSlotsHq({
                   readOnly={readOnly}
                   onToggle={(idx) => handleToggle(level, idx)}
                   ariaLabel={`${t("spell_slots_level")} ${level}`}
+                  dotAriaLabel={(i, isFilled) => {
+                    // When inverted (V2 ON) filled = used; legacy filled = available.
+                    const slotIsUsed = v2 ? isFilled : !isFilled;
+                    return `${t("spell_slots_level")} ${level} slot ${i + 1}, ${
+                      slotIsUsed
+                        ? tPlayer("spell_slots_used")
+                        : tPlayer("spell_slots_available")
+                    }`;
+                  }}
                   inverted={v2}
                 />
               </div>
