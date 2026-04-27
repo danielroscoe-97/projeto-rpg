@@ -115,7 +115,31 @@ export default async function JoinPage({ params }: JoinPageProps) {
       ).then(({ data }) => data).catch(() => null)
     : Promise.resolve(null);
 
-  const [combatantRows, characters] = await Promise.all([combatantsPromise, charactersPromise]);
+  // F08 — campaign_settings.srd_full_access controls whether the joining
+  // player receives the full SRD dataset (auth-gated /api/srd/full/) or only
+  // the public SRD subset. The Mestre flips this in Campaign HQ Settings;
+  // /api/srd/full/* still rejects unauthenticated requests, so this flag
+  // only changes the client's data source on top of that defense.
+  const settingsPromise = sessionCampaignId
+    ? Promise.resolve(
+        supabase
+          .from("campaign_settings")
+          .select("srd_full_access")
+          .eq("campaign_id", sessionCampaignId)
+          .maybeSingle()
+      )
+        .then(({ data }) => data)
+        .catch(() => null)
+    : Promise.resolve(null);
+
+  const [combatantRows, characters, campaignSettings] = await Promise.all([
+    combatantsPromise,
+    charactersPromise,
+    settingsPromise,
+  ]);
+  const srdFullAccess = Boolean(
+    (campaignSettings as { srd_full_access?: boolean } | null)?.srd_full_access
+  );
 
   // Filter hidden combatants and strip sensitive monster stats — players only see HP status label
   let combatants: Array<{
@@ -190,7 +214,7 @@ export default async function JoinPage({ params }: JoinPageProps) {
 
   return (
     <>
-    <SrdInitializer />
+    <SrdInitializer fullData={srdFullAccess} />
     <CommandPalette />
     <FloatingCardContainer />
     <PlayerJoinClient

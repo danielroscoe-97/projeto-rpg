@@ -274,3 +274,20 @@ O termo "Histórico" da versão 2026-04-16 (item #3 da tabela principal) **muda 
 - **Agora:** o conceito vive dentro de **Recaps** (mode) → **Timeline** (surface) + **Biblioteca de Recaps** (surface). Mais rico, mas nome "Histórico" isolado sai de circulação.
 
 A aba antiga "Histórico" da Campaign HQ atual (que mostrava sessões PLANEJADAS, não passadas — bug F-08) será renomeada como parte da Fase A (Story A.5 do implementation-guide).
+
+---
+
+## ADENDO 2026-04-27 — F08 SRD Full
+
+### SRD Full
+
+Modo opt-in onde a campanha libera magias, monstros e itens **completos** (não-SRD-only) pros jogadores que entram via link de combate (`/join/[token]`). O Mestre marca essa preferência em **Campaign HQ → Configurações → Compêndio e regras**, e a flag persiste em `campaign_settings.srd_full_access`.
+
+Como funciona:
+- **Default:** `srd_full_access = false`. O `<SrdInitializer />` carrega só o subset público estático (`/srd/`).
+- **Quando ativo:** `<SrdInitializer fullData={true} />` faz fetch via `/api/srd/full/...` (rota auth-gated). Player precisa estar logado pra receber.
+- O gate `/api/srd/full/*` continua sendo a defesa primária — esta flag só muda a fonte de dados do client em cima daquilo. SRD Content Compliance Rule (`CLAUDE.md`) preservada: nada não-SRD vaza pra rotas públicas.
+
+Anti-patterns:
+- ❌ Expor `srd_full_access` num cookie ou query string (defesa = auth gate, não flag client)
+- ❌ Fallback silencioso pra public SRD quando o auth falha (mostrar mensagem clara ao jogador)

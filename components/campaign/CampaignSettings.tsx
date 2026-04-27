@@ -43,6 +43,9 @@ interface SettingsData {
   game_system: string;
   max_players: number;
   join_expiry: ExpiryOption;
+  /** F08 — when true, players who join via /join/[token] receive the full
+   *  SRD dataset (auth-gated /api/srd/full/) instead of the public subset. */
+  srd_full_access: boolean;
 }
 
 const DEFAULT_SETTINGS: SettingsData = {
@@ -53,6 +56,7 @@ const DEFAULT_SETTINGS: SettingsData = {
   game_system: "5e",
   max_players: 10,
   join_expiry: "30",
+  srd_full_access: false,
 };
 
 const CAMPAIGN_TYPES: CampaignType[] = ["long_campaign", "oneshot", "dungeon_crawl"];
@@ -99,7 +103,7 @@ export function CampaignSettings({
         // Fetch campaign_settings (may not exist for old campaigns)
         const { data: campaignSettings } = await supabase
           .from("campaign_settings")
-          .select("theme, party_level, game_system, max_players, join_code_expires_at")
+          .select("theme, party_level, game_system, max_players, join_code_expires_at, srd_full_access")
           .eq("campaign_id", campaignId)
           .maybeSingle();
 
@@ -136,6 +140,7 @@ export function CampaignSettings({
           game_system: campaignSettings?.game_system ?? "5e",
           max_players: campaignSettings?.max_players ?? 10,
           join_expiry: expiryOption,
+          srd_full_access: Boolean(campaignSettings?.srd_full_access),
         };
         originalRef.current = loaded;
         setSettings(loaded);
@@ -182,6 +187,7 @@ export function CampaignSettings({
           party_level: data.party_level,
           game_system: data.game_system,
           max_players: data.max_players,
+          srd_full_access: data.srd_full_access,
         };
 
         if (expiryChanged) {
@@ -441,6 +447,45 @@ export function CampaignSettings({
             <option value="90">{t("expiry_90d")}</option>
             <option value="never">{t("expiry_never")}</option>
           </select>
+        </div>
+      </section>
+
+      {/* Section: Compendium and rules — F08 SRD Full toggle */}
+      <section className="space-y-4">
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          {t("section_compendium")}
+        </h3>
+
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 space-y-1">
+            <Label
+              htmlFor="srd-full-access"
+              className="text-sm text-foreground cursor-pointer"
+            >
+              {t("srd_full_access_toggle_label")}
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              {t("srd_full_access_help")}
+            </p>
+          </div>
+          <button
+            id="srd-full-access"
+            type="button"
+            role="switch"
+            aria-checked={settings.srd_full_access}
+            onClick={() => handleChange({ srd_full_access: !settings.srd_full_access })}
+            className={`relative shrink-0 inline-flex h-7 w-12 items-center rounded-full border transition-colors min-h-[44px] min-w-[44px] ${
+              settings.srd_full_access
+                ? "bg-amber-500/20 border-amber-500/60"
+                : "bg-white/[0.04] border-border"
+            }`}
+          >
+            <span
+              className={`inline-block h-5 w-5 rounded-full bg-foreground transition-transform ${
+                settings.srd_full_access ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
         </div>
       </section>
 
