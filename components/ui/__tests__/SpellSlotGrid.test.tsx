@@ -161,6 +161,92 @@ describe("SpellSlotGrid", () => {
     });
   });
 
+  describe("variant=transient + inverted (PRD #37)", () => {
+    it("marks the first `used` dots as checked when inverted", () => {
+      render(
+        <SpellSlotGrid
+          used={1}
+          max={4}
+          variant="transient"
+          inverted
+          ariaLabel="Slots"
+        />
+      );
+      const dots = screen.getAllByRole("checkbox");
+      // inverted → filled = used → only dot 0 filled
+      expect(dots[0]).toHaveAttribute("aria-checked", "true");
+      expect(dots[1]).toHaveAttribute("aria-checked", "false");
+      expect(dots[2]).toHaveAttribute("aria-checked", "false");
+      expect(dots[3]).toHaveAttribute("aria-checked", "false");
+    });
+
+    it("marks every dot as filled when used === max (inverted)", () => {
+      render(
+        <SpellSlotGrid
+          used={3}
+          max={3}
+          variant="transient"
+          inverted
+          ariaLabel="Slots"
+        />
+      );
+      const dots = screen.getAllByRole("checkbox");
+      for (const dot of dots) {
+        expect(dot).toHaveAttribute("aria-checked", "true");
+      }
+    });
+
+    it("marks every dot as empty when used === 0 (inverted)", () => {
+      render(
+        <SpellSlotGrid
+          used={0}
+          max={3}
+          variant="transient"
+          inverted
+          ariaLabel="Slots"
+        />
+      );
+      const dots = screen.getAllByRole("checkbox");
+      for (const dot of dots) {
+        expect(dot).toHaveAttribute("aria-checked", "false");
+      }
+    });
+
+    it("clamps over-max used (inverted, defensive)", () => {
+      render(
+        <SpellSlotGrid
+          used={99}
+          max={2}
+          variant="transient"
+          inverted
+          ariaLabel="Slots"
+        />
+      );
+      const dots = screen.getAllByRole("checkbox");
+      expect(dots[0]).toHaveAttribute("aria-checked", "true");
+      expect(dots[1]).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("inverted is a no-op for variant=permanent", () => {
+      render(
+        <SpellSlotGrid
+          used={2}
+          max={4}
+          variant="permanent"
+          inverted
+          ariaLabel="Feats"
+        />
+      );
+      const dots = screen.getAllByRole("checkbox");
+      // permanent semantic: filled = used (acquired) — same with or without
+      // inverted, so dots 0,1 stay filled.
+      expect(dots[0]).toHaveAttribute("aria-checked", "true");
+      expect(dots[1]).toHaveAttribute("aria-checked", "true");
+      expect(dots[2]).toHaveAttribute("aria-checked", "false");
+      expect(dots[3]).toHaveAttribute("aria-checked", "false");
+    });
+  });
+
   describe("density presets", () => {
     it("comfortable density wraps dots in a 44×44 invisible touch target", () => {
       const { container } = render(

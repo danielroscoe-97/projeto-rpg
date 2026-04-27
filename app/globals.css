@@ -86,6 +86,14 @@ html[data-combat-active="true"] main#main-content {
     --warning-foreground: 0 0% 100%;
     --info: 217 72% 64%;
     --info-foreground: 0 0% 100%;
+    /* Concentration (sky #7DD3FC) — PRD decisão #45.
+       Used by spell concentration badges (`text-concentration` /
+       `bg-concentration`) so they stop colliding visually with `--warning`
+       (amber) which is reserved for low-resource alerts. Keep distinct from
+       --info (blue-cyan) — concentration is intentionally lighter / more
+       luminous. Applied via the Tailwind `concentration` color extension. */
+    --concentration: 197 92% 74%;
+    --concentration-foreground: 233 26% 10%;
 
     /* Extended palette */
     --accent-gold: #D4A853;

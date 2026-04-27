@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Moon } from "lucide-react";
 import { SpellSlotGrid } from "@/components/ui/SpellSlotGrid";
+import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
 
 interface SpellSlotTrackerProps {
   spellSlots: Record<string, { max: number; used: number }>;
@@ -22,6 +23,13 @@ export function SpellSlotTracker({
 }: SpellSlotTrackerProps) {
   const t = useTranslations("player");
   const [isExpanded, setIsExpanded] = useState(!collapsible);
+  // PRD decision #37 — V2 ON inverts the dot semantic. Consumers
+  // (PlayerJoinClient.handleToggleSlot) interpret slotIndex via the legacy
+  // formula `slotIndex >= max - used` ⇒ restore. To keep that consumer
+  // contract stable while flipping the *visual*, we mirror the index
+  // before emitting when inverted, so a click on the visually-correct dot
+  // maps to the right action.
+  const v2 = isPlayerHqV2Enabled();
 
   const levels = Object.entries(spellSlots)
     .filter(([, v]) => v.max > 0)
@@ -96,13 +104,18 @@ export function SpellSlotTracker({
                 density="compact"
                 filledClassName="bg-purple-400 border-purple-400"
                 readOnly={readOnly}
-                onToggle={(i) => onToggleSlot(level, i)}
-                ariaLabel={t("spell_slots_level", { level })}
-                dotAriaLabel={(i, isFilled) =>
-                  `${t("spell_slots_level", { level })} slot ${i + 1}, ${
-                    isFilled ? t("spell_slots_available") : t("spell_slots_used")
-                  }`
+                onToggle={(i) =>
+                  onToggleSlot(level, v2 ? max - 1 - i : i)
                 }
+                ariaLabel={t("spell_slots_level", { level })}
+                dotAriaLabel={(i, isFilled) => {
+                  // When inverted (V2 ON), filled = used; legacy filled = available.
+                  const slotIsUsed = v2 ? isFilled : !isFilled;
+                  return `${t("spell_slots_level", { level })} slot ${i + 1}, ${
+                    slotIsUsed ? t("spell_slots_used") : t("spell_slots_available")
+                  }`;
+                }}
+                inverted={v2}
               />
             </div>
           ))}

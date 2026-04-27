@@ -70,7 +70,10 @@ export function SpellCard({ spell, onToggleStatus, onRemove }: SpellCardProps) {
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-medium text-foreground truncate">{spell.spell_name}</span>
             {spell.is_concentration && (
-              <span className="text-[9px] px-1 py-0.5 rounded bg-orange-500/20 text-orange-300 shrink-0">C</span>
+              // PRD decisão #45 — concentration uses --concentration token
+              // (sky #7DD3FC). Replaces ad-hoc orange that collided with
+              // ritual blue + low-resource amber.
+              <span className="text-[9px] px-1 py-0.5 rounded bg-concentration/20 text-concentration shrink-0">C</span>
             )}
             {spell.is_ritual && (
               <span className="text-[9px] px-1 py-0.5 rounded bg-blue-500/20 text-blue-300 shrink-0">R</span>

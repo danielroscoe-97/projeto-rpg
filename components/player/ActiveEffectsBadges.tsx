@@ -66,7 +66,9 @@ export function ActiveEffectsBadges({ characterId }: ActiveEffectsBadgesProps) {
               key={effect.id}
               className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs border ${
                 effect.is_concentration
-                  ? "bg-amber-500/10 border-amber-500/20"
+                  // PRD decisão #45 — concentration uses --concentration
+                  // (sky #7DD3FC) NOT --warning (amber, low-resource).
+                  ? "bg-concentration/10 border-concentration/20"
                   : "bg-white/[0.04] border-white/[0.06]"
               }`}
             >
@@ -74,7 +76,7 @@ export function ActiveEffectsBadges({ characterId }: ActiveEffectsBadgesProps) {
               <span className="text-foreground">{effect.name}</span>
 
               {effect.is_concentration && (
-                <Zap className="w-2.5 h-2.5 text-amber-400" />
+                <Zap className="w-2.5 h-2.5 text-concentration" />
               )}
 
               {effect.duration_minutes != null && (
