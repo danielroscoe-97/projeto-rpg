@@ -5,6 +5,15 @@ import { useTranslations } from "next-intl";
 import { Dot } from "@/components/ui/Dot";
 import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
 
+// PRD decision #37 — V2 inverts the visual semantic (filled = used/spent)
+// while leaving the underlying state model untouched. `aria-checked` on the
+// dot mirrors the visual, so the same per-dot label string would describe
+// opposite booleans across V1/V2. To keep screen-reader output unambiguous,
+// the per-dot label appends an "used"/"available" qualifier derived from
+// the actual slot state — never from the visual flag. This mirrors the
+// pattern in `components/player/SpellSlotTracker.tsx` so the two
+// resource-dot surfaces stay accessible-equivalent.
+
 type DotSize = "sm" | "md" | "lg";
 
 // I-02 fix: all sizes have invisible padding around the dot for a 44×44
@@ -41,6 +50,7 @@ export function ResourceDots({
   label,
 }: ResourceDotsProps) {
   const t = useTranslations("player_hq.resources");
+  const tPlayer = useTranslations("player");
   const [bouncingDot, setBouncingDot] = useState<number | null>(null);
   // M-02 fix: removed unused mountedRef
 
@@ -85,13 +95,21 @@ export function ResourceDots({
     >
       {Array.from({ length: max }, (_, i) => {
         const isFilled = v2 ? i < usedCount : i < remaining;
+        // a11y: state qualifier always derives from the underlying slot
+        // state, not from `isFilled` — that way the screen-reader output
+        // stays correct whether V2 inverts the visual or not.
+        const slotIsUsed = i < usedCount;
+        const stateLabel = slotIsUsed
+          ? tPlayer("spell_slots_used")
+          : tPlayer("spell_slots_available");
+        const dotLabel = `${label ?? t("trackers_title")} ${i + 1}/${max}, ${stateLabel}`;
         return (
           <button
             key={i}
             type="button"
             role="checkbox"
             aria-checked={isFilled}
-            aria-label={`${label ?? t("trackers_title")} ${i + 1}/${max}`}
+            aria-label={dotLabel}
             onClick={() => handleToggle(i)}
             disabled={readOnly}
             className={`${sizeStyle.touch} min-w-[44px] min-h-[44px] flex items-center justify-center ${
@@ -104,7 +122,7 @@ export function ResourceDots({
               filled={isFilled}
               filledClassName={color}
               emptyClassName="bg-white/[0.15] border-white/[0.08]"
-              ariaLabel={`${label ?? t("trackers_title")} ${i + 1}/${max}`}
+              ariaLabel={dotLabel}
               className={`transition-transform duration-200 ${
                 bouncingDot === i ? "scale-125" : "scale-100"
               }`}

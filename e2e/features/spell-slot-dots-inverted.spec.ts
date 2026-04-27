@@ -179,11 +179,14 @@ test.describe("Spell-slot dot inversion (PRD #37) — Auth + Anon parity", () =>
       timeout: 15_000,
     });
 
-    // SpellSlotTracker renders combat-density dots; same data-variant hook.
-    const dots = playerPage
-      .locator('[data-variant="transient"]')
-      .first()
-      .locator('xpath=ancestor::button[@role="checkbox"]');
+    // SpellSlotTracker renders combat-density (compact) dots: the button
+    // itself carries `data-variant="transient"` because the compact preset
+    // skips the inner padded span. The HQ/comfortable preset puts it on
+    // both the button AND the inner span. We resolve to the button via
+    // ancestor-or-self so this spec works regardless of density.
+    const dots = playerPage.locator(
+      'button[role="checkbox"][data-variant="transient"]'
+    );
 
     const hasDots = await dots
       .first()
