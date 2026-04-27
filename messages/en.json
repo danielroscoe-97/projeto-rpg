@@ -1262,6 +1262,19 @@
       "no_character": "No character found",
       "level_prefix": "Lv"
     },
+    "combat_auto": {
+      "enter_combat": "Enter Combat",
+      "enter_combat_aria": "Enter the active combat",
+      "round_label": "Round {round}",
+      "current_turn": "Turn: {name}",
+      "next_turn": "next: {name}",
+      "badge_active": "Combat active",
+      "banner_aria": "Active combat banner",
+      "ribbon_expand": "Expand status",
+      "ribbon_collapse": "Collapse status",
+      "temp_hp_dec_aria": "Decrease temporary HP",
+      "temp_hp_inc_aria": "Increase temporary HP"
+    },
     "resources": {
       "trackers_title": "Class Resources",
       "add_tracker": "Add",

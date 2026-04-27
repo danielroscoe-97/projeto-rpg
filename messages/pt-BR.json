@@ -1260,6 +1260,19 @@
       "no_character": "Personagem não encontrado",
       "level_prefix": "Nv"
     },
+    "combat_auto": {
+      "enter_combat": "Entrar no Combate",
+      "enter_combat_aria": "Entrar no combate em andamento",
+      "round_label": "Round {round}",
+      "current_turn": "Turno de {name}",
+      "next_turn": "próximo: {name}",
+      "badge_active": "Combate ativo",
+      "banner_aria": "Banner de combate ativo",
+      "ribbon_expand": "Expandir status",
+      "ribbon_collapse": "Recolher status",
+      "temp_hp_dec_aria": "Diminuir HP temporário",
+      "temp_hp_inc_aria": "Aumentar HP temporário"
+    },
     "resources": {
       "trackers_title": "Recursos de Classe",
       "add_tracker": "Adicionar",
