@@ -102,7 +102,7 @@ export interface UseCampaignCombatStateOptions {
    * broadcast or polling transition). HeroiTab uses this to bridge into
    * `usePostCombatState.recordCombatEnded`.
    */
-  onCombatEnded?: (snapshot: PostCombatSnapshot) => void;
+  onCombatEnded?: (snapshot: PostCombatSnapshot | undefined) => void;
   /** Disable the hook entirely (handy for tests). */
   enabled?: boolean;
 }

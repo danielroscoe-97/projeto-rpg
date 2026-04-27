@@ -40,7 +40,12 @@ export type RealtimeEventType =
   | "chat:player_message"
   | "chat:dm_postit"
   | "campaign:combat_invite"
-  | "user:combat_invite";
+  | "user:combat_invite"
+  // Wave 3c D5 — Player notifications (Diário inbox + Quest board badges).
+  // Broadcast on the consolidated `campaign:{campaignId}` channel.
+  | "note:received"
+  | "quest:assigned"
+  | "quest:updated";
 
 export interface RealtimeHpUpdate {
   type: "combat:hp_update";
@@ -381,6 +386,48 @@ export interface RealtimeUserInvite extends RealtimeCombatInvitePayload {
 /** Union of both combat-invite event shapes (legacy + new). */
 export type RealtimeAnyCombatInvite = RealtimeCombatInvite | RealtimeUserInvite;
 
+// ── Wave 3c D5 — Player Notifications (Diário inbox + Quest board) ──────
+//
+// All three events ride the consolidated `campaign:{campaignId}` channel.
+// The Mestre emits them server-side after creating/updating a campaign_note
+// or a campaign_quest; the player listens via `usePlayerNotifications` and
+// surfaces a badge on the Diário tab.
+
+export interface RealtimePlayerNoteReceived {
+  type: "note:received";
+  /** ID of the campaign_notes row addressed to a single player character. */
+  noteId: string;
+  /** target_character_id — used by the listener to filter relevant pings. */
+  targetCharacterId: string;
+  campaignId: string;
+  /** Optional title for the toast (sanitized server-side). */
+  title?: string;
+  /** ISO timestamp of when the note was authored. */
+  timestamp: string;
+}
+
+export interface RealtimeQuestAssigned {
+  type: "quest:assigned";
+  questId: string;
+  campaignId: string;
+  /** ID of the player_character receiving the assignment. */
+  targetCharacterId: string;
+  questTitle?: string;
+  timestamp: string;
+}
+
+export interface RealtimeQuestUpdated {
+  type: "quest:updated";
+  questId: string;
+  campaignId: string;
+  /** Optional — broadcast may be campaign-wide or character-targeted. */
+  targetCharacterId?: string;
+  questTitle?: string;
+  /** New status, when the update flips the quest state. */
+  status?: string;
+  timestamp: string;
+}
+
 export type RealtimeEvent =
   | RealtimeHpUpdate
   | RealtimeTurnAdvance
@@ -417,7 +464,10 @@ export type RealtimeEvent =
   | RealtimePlayerSelfConditionToggle
   | RealtimeCombatRecap
   | RealtimeCombatInvite
-  | RealtimeUserInvite;
+  | RealtimeUserInvite
+  | RealtimePlayerNoteReceived
+  | RealtimeQuestAssigned
+  | RealtimeQuestUpdated;
 
 // ── Sanitized types for player-facing broadcast (A.0.6) ──────────
 
@@ -547,4 +597,9 @@ export type SanitizedEvent =
   | RealtimeLoopStop
   | RealtimeChatPlayerMessage
   | RealtimeChatDmPostit
-  | RealtimeCombatRecap;
+  | RealtimeCombatRecap
+  // Wave 3c D5 — campaign-scoped player notifications. They carry no
+  // combatant data; sanitize() passes them through unchanged.
+  | RealtimePlayerNoteReceived
+  | RealtimeQuestAssigned
+  | RealtimeQuestUpdated;

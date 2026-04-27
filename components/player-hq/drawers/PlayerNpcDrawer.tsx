@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { UserCircle, ExternalLink } from "lucide-react";
+import { UserCircle, ExternalLink, BookOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Drawer } from "@/components/ui/Drawer";
 
@@ -159,7 +160,7 @@ export function PlayerNpcDrawer({
             />
           </div>
 
-          {/* Quick access */}
+          {/* Quick access (V1 callback path — kept for backwards compat) */}
           {onNavigateTab && (
             <button
               type="button"
@@ -169,6 +170,25 @@ export function PlayerNpcDrawer({
               <ExternalLink className="w-3.5 h-3.5" />
               {t("view_in_journal")}
             </button>
+          )}
+
+          {/* "Ver no Diário" cross-nav (Wave 3c D4): URL-shareable; the
+              Diário tab consumes ?section=npcs&id={id} to auto-select
+              the NPCs sub-tab. The link uses a real navigation (not the
+              onNavigateTab callback) so the URL is the source of truth
+              and can be copied/shared. */}
+          {noteId && (
+            <Link
+              href={{
+                pathname: `/app/campaigns/${campaignId}/sheet`,
+                query: { tab: "diario", section: "npcs", id: noteId },
+              }}
+              data-testid={`npc-drawer-link-diario-${noteId}`}
+              className="flex items-center gap-2 text-amber-300/90 hover:text-amber-200 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-xs w-full"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              {t("view_in_diario")}
+            </Link>
           )}
         </>
       )}
