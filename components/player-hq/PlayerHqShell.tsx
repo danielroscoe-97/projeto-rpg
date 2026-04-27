@@ -117,23 +117,45 @@ function TabBar({
  *
  * Renders `HD x/y · CD x/y · Insp x · [✨ Slots X/Y →]`.
  *
- * `hit_dice` and `class.resources.primary` are not yet modelled on
- * `player_characters` — those chips render the muted em-dash placeholder
- * until Sprint 3+ lands the schema. Inspiration + spell slot total are live.
+ * Sprint 3 Track A · Story A4: HD + CD chips now read from migration #58
+ * (`player_characters.hit_dice` and `player_characters.class_resources`).
+ * Characters that haven't been backfilled yet (`hit_dice = {max:0, used:0}`
+ * or no `class_resources.primary`) still render the muted em-dash so the
+ * legacy header stays accurate.
  */
 function PlayerHqQuickResources({
   inspiration,
   spellSlots,
+  hitDice,
+  classResources,
   onJumpToSlots,
   t,
 }: {
   inspiration: boolean;
   spellSlots: Record<string, { max: number; used: number }> | null;
+  hitDice: { max: number; used: number } | null | undefined;
+  classResources:
+    | { primary?: { name: string; max: number; used: number }; [key: string]: unknown }
+    | null
+    | undefined;
   onJumpToSlots: () => void;
   t: ReturnType<typeof useTranslations<"player_hq">>;
 }) {
   const inspCount = inspiration ? 1 : 0;
   const inspMuted = inspCount === 0;
+
+  // HD chip — show `remaining/max` when migration #58 data is non-zero.
+  const hdRemaining =
+    hitDice && hitDice.max > 0 ? hitDice.max - (hitDice.used ?? 0) : null;
+  const hdLabel =
+    hitDice && hitDice.max > 0 ? `${hdRemaining}/${hitDice.max}` : null;
+
+  // CD chip — show `remaining/max` for the primary class resource (if any).
+  const cdPrimary = classResources?.primary;
+  const cdRemaining =
+    cdPrimary && cdPrimary.max > 0 ? cdPrimary.max - (cdPrimary.used ?? 0) : null;
+  const cdLabel =
+    cdPrimary && cdPrimary.max > 0 ? `${cdRemaining}/${cdPrimary.max}` : null;
 
   const { slotsUsed, slotsMax } = (() => {
     if (!spellSlots) return { slotsUsed: 0, slotsMax: 0 };
@@ -158,26 +180,30 @@ function PlayerHqQuickResources({
       className="flex items-center flex-wrap gap-x-3 gap-y-1 pl-8 text-[13px] tabular-nums"
       data-testid="hq-header-quick-resources"
     >
-      {/* HD — data not yet modelled on player_characters */}
+      {/* HD — reads migration #58 hit_dice; em-dash if not yet backfilled */}
       <span
-        className="inline-flex items-baseline gap-1 text-muted-foreground"
-        aria-label={t("header.hd_empty_aria")}
+        className={`inline-flex items-baseline gap-1 ${
+          hdLabel ? "text-foreground" : "text-muted-foreground"
+        }`}
+        aria-label={hdLabel ? undefined : t("header.hd_empty_aria")}
       >
-        <span className="text-[11px] uppercase tracking-[0.08em]" aria-hidden="true">
+        <span className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground" aria-hidden="true">
           {t("header.hd_label")}
         </span>
-        <span aria-hidden="true">{placeholder}</span>
+        <span aria-hidden={!hdLabel}>{hdLabel ?? placeholder}</span>
       </span>
       <Sep />
-      {/* CD — data not yet modelled (class.resources.primary pending Sprint 3+) */}
+      {/* CD — reads migration #58 class_resources.primary; em-dash if absent */}
       <span
-        className="inline-flex items-baseline gap-1 text-muted-foreground"
-        aria-label={t("header.cd_empty_aria")}
+        className={`inline-flex items-baseline gap-1 ${
+          cdLabel ? "text-foreground" : "text-muted-foreground"
+        }`}
+        aria-label={cdLabel ? undefined : t("header.cd_empty_aria")}
       >
-        <span className="text-[11px] uppercase tracking-[0.08em]" aria-hidden="true">
+        <span className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground" aria-hidden="true">
           {t("header.cd_label")}
         </span>
-        <span aria-hidden="true">{placeholder}</span>
+        <span aria-hidden={!cdLabel}>{cdLabel ?? placeholder}</span>
       </span>
       <Sep />
       {/* Inspiration — muted when zero per §13.1 */}
@@ -375,6 +401,8 @@ function PlayerHqShellV1({
         <PlayerHqQuickResources
           inspiration={character.inspiration}
           spellSlots={character.spell_slots}
+          hitDice={character.hit_dice}
+          classResources={character.class_resources}
           onJumpToSlots={() => setActiveTab("resources")}
           t={t}
         />
