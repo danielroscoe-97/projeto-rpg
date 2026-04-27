@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { REALTIME_SUBSCRIBE_STATES, type RealtimeChannel } from "@supabase/supabase-js";
+import { transitionTo, getConnectionState } from "./connection-state";
 import type {
   RealtimeEvent,
   SanitizedEvent,
@@ -162,6 +163,14 @@ function createAndSubscribe(sessionId: string): void {
 
   channel = fresh;
   currentSessionId = sessionId;
+  // CR-01: emit connecting transition before subscribe. `attempt` is the
+  // logical attempt number (1-based); `reconnectAttempts` holds the count
+  // of prior failures.
+  transitionTo({
+    kind: "connecting",
+    attempt: reconnectAttempts + 1,
+    since: Date.now(),
+  });
   // P-8: realtime-js can emit TIMED_OUT then CHANNEL_ERROR (or vice-versa)
   // in cascade failures. Without this guard the attempt counter would
   // double-increment per real failure and trip the ceiling in ~7 failures
@@ -176,6 +185,14 @@ function createAndSubscribe(sessionId: string): void {
         // P-3: restore sync status if a prior ceiling-hit marked us offline.
         // Caller surfaces (useCombatResilience, sync indicator) observe this.
         if (getSyncStatus() === "offline") setSyncStatus("online");
+        // CR-01: emit connected transition. currentSeq reflects the latest
+        // broadcast seq at subscribe time — consumers (useEventResume in
+        // CR-03) compare with their last-seen seq to detect a gap.
+        transitionTo({
+          kind: "connected",
+          subscribedAt: Date.now(),
+          currentSeq: _broadcastSeq,
+        });
         resolve();
         return;
       }
@@ -212,6 +229,19 @@ function createAndSubscribe(sessionId: string): void {
             sessionId,
           });
           setSyncStatus("offline");
+          // CR-01 + F5: distinguish ceiling cause. `navigator.onLine === false`
+          // means the OS network stack reports offline (Wi-Fi off, plane mode);
+          // anything else after burning the budget is a broker-side issue
+          // (Supabase outage, DNS, CDN). Tagging the reason lets the dashboard
+          // (Estabilidade Combate) split the metric — different remediation:
+          //   - network_offline → user fixes their network, no action needed
+          //   - broker_down → page DM, escalate, check Supabase status
+          const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
+          transitionTo({
+            kind: "degraded",
+            reason: isOffline ? "network_offline" : "broker_down",
+            since: Date.now(),
+          });
           resolve();
           return;
         }
@@ -226,6 +256,14 @@ function createAndSubscribe(sessionId: string): void {
         const jitter = Math.random() * 500;
         const delay = Math.min(base + jitter, RECONNECT_BACKOFF_CEILING_MS);
         reconnectBackoffMs = Math.min(base * 2, RECONNECT_BACKOFF_CEILING_MS);
+        // CR-01: emit reconnecting transition. Skeleton UI in
+        // PlayerJoinClient (CR-03) reacts to this after a 500ms debounce.
+        transitionTo({
+          kind: "reconnecting",
+          attempt: nextAttempt,
+          since: Date.now(),
+          backoffMs: delay,
+        });
         reconnectTimer = setTimeout(() => {
           reconnectTimer = null;
           if (currentSessionId === sessionId && channel === fresh) {
@@ -265,6 +303,13 @@ export function resetDmChannel(): void {
   channel = null;
   currentSessionId = null;
   channelReady = null;
+  // CR-01: emit the walk-down after the actual reset so listeners observing
+  // the final "idle" state see a consistent module. Walk closed → idle so
+  // consumers can distinguish "we tore down" (closed) from "we're ready for
+  // a new connect" (idle). Redundant same-state transitions are no-ops
+  // in the state machine (via invalid-transition warning + ignore).
+  transitionTo({ kind: "closed" });
+  transitionTo({ kind: "idle" });
 }
 
 /** Sanitize a full combatant for player broadcast.
@@ -620,6 +665,13 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
   const seq = ++_broadcastSeq;
   const payloadWithSeq = { ...safeEvent, _seq: seq };
 
+  // CR-02 (revised 2026-04-26): journal recording is server-side only
+  // (in /api/broadcast). The previous client-side `recordEvent` call was
+  // a no-op in production because the in-memory Map module-level was not
+  // shared with the serverless function that read it. Server now writes
+  // to combat_events table; payload gets `_journal_seq` injected by the
+  // server broadcast path so players can track it for resume.
+
   const doSend = async () => {
     try {
       const sendPromise = ch.send({
@@ -661,14 +713,19 @@ export function broadcastEvent(sessionId: string, event: RealtimeEvent): void {
     waitForChannel().then(doSend);
   }
 
-  // S1.2: Opt-out of server-side re-broadcast for events where a single
-  // ordered sender is critical. `broadcastViaServer` runs in parallel to
-  // the client-direct path, producing 2 senders with partial FIFO — that's
-  // the root cause of the combatant_add_reorder race condition. The payload
-  // is already fully sanitized here (sanitizePayload above), and
-  // SanitizedCombatantAddReorder carries no DM-only fields, so it's safe
-  // to skip the server re-broadcast.
+  // S1.2 + N2: events that require a single ordered sender (combatant_add_reorder)
+  // can't go through the dual-broadcast path — the server-direct send would race
+  // the client-direct send and break FIFO assumptions on the receiver. BUT they
+  // still need journal coverage so reconnecting players can resume past the
+  // event window.
+  //
+  // Solution: post to /api/broadcast with `skipRebroadcast: true`. The server
+  // records the event in `combat_events` (the journal) but does NOT emit it on
+  // the player channel — preserving the single-sender invariant while closing
+  // the journal gap. Without this, a player who dropped during a monster-add
+  // would always cascade into a /state full refetch on reconnect.
   if (shouldSkipServerBroadcast(event)) {
+    broadcastViaServer(sessionId, event, { skipRebroadcast: true }).catch(() => {});
     return;
   }
 
@@ -692,19 +749,74 @@ export function shouldSkipServerBroadcast(event: RealtimeEvent): boolean {
 }
 
 /** Replay queued offline actions for a session.
- *  Call this when connectivity is restored. */
+ *  Call this when connectivity is restored.
+ *
+ *  F4 (2026-04-26): replayed events route through /api/broadcast (server-side
+ *  path), NOT via direct ch.send. Why: the server is now the single point of
+ *  journal recording (combat_events table). A purely client-direct replay
+ *  would broadcast to live players but leave the journal empty for those
+ *  events — a player who reconnects mid-replay would miss them on resume
+ *  and silently drift. broadcastViaServer guarantees both the journal write
+ *  and the rebroadcast under the same code path used by live broadcasts.
+ *
+ *  P-1 fix (2026-04-26 review): broadcastViaServer returns false on any
+ *  network/HTTP failure (rate-limit 429, auth refresh failure, 404, etc).
+ *  The replay callback MUST throw on false so replayQueue records the
+ *  failure (otherwise the action is removed from disk while never having
+ *  been delivered — silent zero-drop violation).
+ *
+ *  Trade-off: each replayed event is one extra HTTP roundtrip vs. the
+ *  prior direct ch.send. Acceptable because (a) replay only runs on
+ *  reconnection, not in the hot path, and (b) the existing dedup guard in
+ *  replayQueue (idempotencyKey) bounds the burst. */
 export async function replayOfflineQueue(sessionId: string): Promise<void> {
   setSyncStatus("syncing");
   const result = await replayQueue(sessionId, async (sid, evt) => {
-    const ch = getDmChannel(sid);
+    // Validate locally before paying the network cost — same check the
+    // server does, but cheaper to fail fast on a malformed queued event.
     const safeEvent = sanitizePayload(evt);
     if (!safeEvent || !validateEvent(safeEvent)) return;
-    await waitForChannel();
-    ch.send({
-      type: "broadcast",
-      event: safeEvent.type,
-      payload: safeEvent,
-    });
+
+    // For events that opt out of server rebroadcast (combatant_add_reorder),
+    // we still need journal coverage AND we still need to deliver the event.
+    // Do BOTH: client-direct send to live players + server-side journal-only.
+    //
+    // P-12 fix (2026-04-26 review): _broadcastSeq is per-tab and resets to 0
+    // on reload. If the DM reloaded with offline-queue pending, replayed
+    // events would emit `_seq=1`, but live players still hold a high
+    // watermark from before the reload — they discard the replay as stale.
+    // To prevent silent drop: bump `_broadcastSeq` past any conceivable
+    // live watermark by setting a one-time floor on first replay run, OR
+    // skip per-tab dedup in the receiver. Cheapest fix: bump to high seq
+    // on each replayed event (Number.MAX_SAFE_INTEGER would break receiver
+    // deduplication). We use a generous floor of 100k beyond the current
+    // counter — beyond any plausible live-session counter.
+    if (shouldSkipServerBroadcast(evt)) {
+      const ch = getDmChannel(sid);
+      await waitForChannel();
+      _broadcastSeq = Math.max(_broadcastSeq, 100_000) + 1;
+      const seq = _broadcastSeq;
+      const sendStatus = await ch.send({
+        type: "broadcast",
+        event: safeEvent.type,
+        payload: { ...safeEvent, _seq: seq },
+      });
+      const journalOk = await broadcastViaServer(sid, evt, { skipRebroadcast: true });
+      if (sendStatus === "error" || sendStatus === "timed out" || !journalOk) {
+        throw new Error(
+          `replay client-direct+journal failed: send=${sendStatus} journal=${journalOk}`,
+        );
+      }
+      return;
+    }
+
+    // Default path: server records in journal AND emits on the channel.
+    const ok = await broadcastViaServer(sid, evt);
+    if (!ok) {
+      // P-1 fix: throw so replayQueue counts this as `failed` and does NOT
+      // delete the action from disk. The next online cycle retries it.
+      throw new Error("replay broadcastViaServer returned false");
+    }
   });
 
   setSyncStatus(result.failed > 0 ? "error" : "online");
@@ -718,6 +830,69 @@ export async function replayOfflineQueue(sessionId: string): Promise<void> {
  *  would starve the next subscribe on the same topic. */
 export function cleanupDmChannel(): void {
   teardownChannel();
+  // CR-01: emit closed after teardown so consumers can tear down their own
+  // resources (resume listeners, skeleton timers) in the correct order.
+  transitionTo({ kind: "closed" });
+}
+
+/** F5 — proactive `network_offline` / recovery transitions.
+ *
+ *  Without this listener, the only way to enter `degraded` is to burn through
+ *  the 15-attempt ceiling (90s+ at default backoff). When the OS network
+ *  goes down, that's wasteful: realtime-js will fail every attempt anyway,
+ *  and meanwhile the user sees no signal. Listening on `offline` short-
+ *  circuits straight to `degraded { reason: "network_offline" }`, which
+ *  lets the sync indicator UI flag the connection immediately and the
+ *  Estabilidade Combate dashboard count the right reason.
+ *
+ *  On `online`, if we're degraded *because* of network_offline, kick off a
+ *  fresh subscribe immediately. Other degrade reasons (ceiling_hit /
+ *  broker_down) require explicit user retry — recovery via `online` would
+ *  hammer the broker if it was actually down.
+ *
+ *  Module-level listeners: registered once, never cleaned up. Browser tab
+ *  unload tears them down implicitly. Idempotent — only acts when there's
+ *  a live session. */
+if (typeof window !== "undefined") {
+  window.addEventListener("offline", () => {
+    if (!currentSessionId) return; // no active channel; nothing to degrade
+    const state = getConnectionState();
+    if (state.kind === "degraded" || state.kind === "closed") return;
+    transitionTo({
+      kind: "degraded",
+      reason: "network_offline",
+      since: Date.now(),
+    });
+  });
+
+  window.addEventListener("online", () => {
+    if (!currentSessionId) return;
+    const state = getConnectionState();
+    if (state.kind !== "degraded" || state.reason !== "network_offline") return;
+    // Reset retry budget so the recovery attempt isn't pre-burned by prior
+    // failures while offline.
+    reconnectAttempts = 0;
+    reconnectBackoffMs = RECONNECT_BACKOFF_INITIAL_MS;
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+    // P-2 fix (2026-04-26 review): if a stale channel reference is still in
+    // module state (Supabase channel state may be 'errored' or 'leaving' but
+    // not yet GC'd), it must be removed FIRST — `createAndSubscribe` does
+    // not call `supabase.removeChannel(old)` and would orphan the previous
+    // subscription, burning a slot of the 200-channel cap (the exact
+    // failure mode of the 2026-04-24 postmortem).
+    if (channel) {
+      const supabase = createClient();
+      supabase.removeChannel(channel);
+      channel = null;
+      channelReady = null;
+    }
+    // Re-enter `connecting` via createAndSubscribe; the FSM accepts
+    // `degraded → connecting`.
+    createAndSubscribe(currentSessionId);
+  });
 }
 
 /** Deferred cleanup — tears down the channel only if no new consumer claims
@@ -735,5 +910,8 @@ export function scheduleDmChannelCleanup(): void {
   pendingCleanupTimer = setTimeout(() => {
     pendingCleanupTimer = null;
     teardownChannel();
+    // CR-01: emit closed so consumers tear down subscriptions on the same
+    // timer boundary as the channel teardown (mirrors cleanupDmChannel).
+    transitionTo({ kind: "closed" });
   }, UNMOUNT_CLEANUP_GRACE_MS);
 }

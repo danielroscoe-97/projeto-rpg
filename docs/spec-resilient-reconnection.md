@@ -1357,3 +1357,75 @@ Nenhum criterio P0/P1 da secao 10 precisa mudar. Adicionar aos testes de validac
 | J1 | John | Overengineering tier > 30min | Simplificado: NUNCA exigir DM approval se token ativo. Eliminado tier intermediario (secao 3.1) |
 | P1 | Paige (2026-04-20) | Story 01-E — identity upgrade nao documentado no spec | Adicionada secao 16 "Identity Upgrade — Cenario Especial de Reconexao" cobrindo trigger/phase 2 split, matriz de mudancas, perspectiva DM, cadeia de fallbacks L1-L5, split-brain multi-tab, edge cases, anti-patterns, testes T16-T21 |
 | S1 | Sally | UX durante reconnect loading | Skeleton com nome + "Reconectando..." + fallback 5s para formulario (secao 3.2) |
+| CR03-AC11 | Estabilidade Combate sprint (2026-04-26) | Silencio narrativo intencional do Mestre durante reconexao do jogador | Documentado abaixo (secao 18) |
+| CR03-AC7 | Estabilidade Combate review (2026-04-26) | Mestre-side useEventResume nao implementado por restricao arquitetural | Documentado abaixo (secao 19) |
+
+---
+
+## 18. Silencio Narrativo do Mestre (CR-03 AC11)
+
+**Regra Imutavel:** durante a reconexao de um jogador (qualquer cadeia L1-L5), o **Mestre NAO recebe qualquer notificacao** de que esse jogador caiu, esta reconectando, ou voltou. A reconexao acontece em silencio total do lado do Mestre.
+
+### Por que essa regra existe
+
+1. **Continuidade narrativa** — se o Mestre fosse alertado a cada blip de Wi-Fi de um jogador (mobile 4G no celular causa 5-10 transitorios em uma sessao de 3h), ele perderia foco do narrative beat para gerenciar conexoes.
+2. **Falibilidade da deteccao** — a maioria das "desconexoes" sao transitorios sub-3s que se resolvem antes do Mestre poder reagir. Notificar cria fadiga de notificacao.
+3. **Convivencia com presence** — o Mestre JA tem visibilidade do estado de cada jogador via lista de jogadores (last_seen_at + 45s threshold). Se quiser saber, olha. Sem notificacao push.
+
+### O que conta como "notificacao" (proibido)
+
+- Toast "Jogador X reconectou" — proibido.
+- Som de notificacao — proibido.
+- Banner persistente — proibido.
+- Linha no log de combate — proibido.
+- Mudanca visual no nome do jogador no momento exato do reconnect — proibido (a UI ja indica "active/inactive" via dot color baseado em last_seen_at, e isso e SUFICIENTE).
+
+### O que e permitido
+
+- Stale-detection passiva (last_seen_at > 45s vira o dot vermelho na lista) — permitida.
+- Aprovacao explicita pra reconnect quando token foi revogado — permitida (e necessaria, ver L5).
+- Aprovacao de late-join (jogador NOVO entrando mid-combat) — permitida (e diferente de reconnect).
+
+### Implementacao verificada
+
+- `lib/realtime/use-event-resume.ts` — fetch de `/events?since_seq=N` e fire-and-forget, nenhum side-effect alcanca o Mestre.
+- `components/player/ReconnectingSkeleton.tsx` — skeleton e local ao componente do JOGADOR, nunca renderiza no lado do Mestre.
+- `components/player/PlayerJoinClient.tsx:269-318` — skeleton timer arma quando `connectionStatus !== "connected"`, hide quando "connected". Sem broadcast de transicao.
+
+---
+
+## 19. Mestre-Side Resume — Restricao Arquitetural (CR-03 AC7)
+
+**Status:** AC7 do CR-03 (story file linha 79) foi escrita assumindo que `useEventResume` poderia ser wired tanto em `PlayerJoinClient.tsx` (jogador) quanto em `CombatSessionClient.tsx` (Mestre) com a mesma API. **Apos a revisao Caminho A (2026-04-26), tres restricoes arquiteturais impedem isso na pratica:**
+
+### 19.1 Endpoint /events e token-gated (jogador)
+
+`/api/combat/[encounterId]/events?token=<plain>` valida o `token` query param contra `session_tokens.token` (mesma autenticacao do `/state`). O Mestre nao tem uma row em `session_tokens` — ele autentica via cookies Supabase auth. Pra o Mestre usar /events, o endpoint precisaria de:
+
+- Path Bearer auth como alternativa (Authorization: Bearer <jwt>)
+- Validacao de session ownership (sessions.owner_id === user.id)
+
+Ambos sao mudancas nao-triviais e exigiriam novos testes de seguranca.
+
+### 19.2 broadcast: { self: false } no canal do Mestre
+
+`getDmChannel` cria o canal com `config: { broadcast: { self: false } }` ([lib/realtime/broadcast.ts:160-162](../lib/realtime/broadcast.ts#L160)). O Mestre **nunca recebe suas proprias broadcasts** — quem broadcasta nao recebe back. Logo o `noteSeqFromBroadcast` (que avanca o cursor) nunca seria chamado no Mestre. Cursor ficaria em 0; toda reconexao chamaria `/events?since_seq=0` retornando todos os 100 eventos do journal.
+
+### 19.3 Mestre ja tem reconciliacao DB-driven
+
+`useCombatResilience.reconnectAndSync()` ([lib/hooks/useCombatResilience.ts:194-218](../lib/hooks/useCombatResilience.ts#L194)) ja faz **defesa em profundidade pra reconnect do Mestre**:
+
+- `replayOfflineQueue(sessionId)` — re-broadcasta acoes acumuladas
+- `broadcastEvent("session:state_sync", ...)` — push do estado atual pra TODOS os jogadores (substitui o que o resume hook faria)
+- `reconcileFullState(...)` — pull do estado autoritativo do DB
+
+Isso ja entrega o resultado equivalente de um resume hook (sincronizar estado pos-reconnect) sem depender do journal endpoint que o Mestre nao acessa.
+
+### 19.4 Decisao
+
+**AC7 e considerado satisfeito via `useCombatResilience.reconnectAndSync`** em vez de via `useEventResume`. Esta decisao e:
+
+- Documentada em [`_bmad-output/estabilidade-combate/01-TECH-SPEC.md`](../_bmad-output/estabilidade-combate/01-TECH-SPEC.md) §3.5
+- Deferida pra Sprint 2: se a observabilidade pos-Beta-5 mostrar dessincronia frequente do Mestre, o trabalho sera (a) extender `/events` com Bearer auth path, (b) considerar broadcast: self enabled num canal dedicado, (c) wirear `useEventResume` no `CombatSessionClient.tsx`.
+
+Ate la, a regra "Mestre nao perde estado em reconnect" continua valida — apenas implementada por mecanismo diferente do jogador.

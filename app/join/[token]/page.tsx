@@ -7,6 +7,7 @@ import { SrdInitializer } from "@/components/srd/SrdInitializer";
 import { CommandPalette } from "@/components/oracle/CommandPalette";
 import { FloatingCardContainer } from "@/components/oracle/FloatingCardContainer";
 import { getHpStatus } from "@/lib/utils/hp-status";
+import { PLAYER_STALE_THRESHOLD_MS } from "@/lib/realtime/timing-constants";
 import type { Plan } from "@/lib/types/subscription";
 
 interface JoinPageProps {
@@ -169,7 +170,8 @@ export default async function JoinPage({ params }: JoinPageProps) {
 
   const dmPlan = (["free","pro","mesa"].includes(session.dm_plan) ? session.dm_plan : "free") as Plan;
 
-  const ACTIVE_THRESHOLD_MS = 45_000; // 45s — more responsive presence detection
+  // CR-06: sourced from lib/realtime/timing-constants.ts (single source of truth)
+  const ACTIVE_THRESHOLD_MS = PLAYER_STALE_THRESHOLD_MS;
   const now = Date.now();
 
   const registeredPlayerNames = (registeredTokens ?? [])
@@ -193,6 +195,12 @@ export default async function JoinPage({ params }: JoinPageProps) {
     <FloatingCardContainer />
     <PlayerJoinClient
       tokenId={tokenRow.id}
+      // CR-03 (Estabilidade Combate): plain `session_tokens.token` value.
+      // Used by the resume endpoint /api/combat/:id/events?token=… for
+      // auth (same pattern as /state). Distinct from `tokenId` which is
+      // the row UUID. Both are needed: tokenId for client-side identity
+      // tracking (combatant association), token for server auth.
+      sessionToken={token}
       sessionId={session.id}
       sessionName={session.name}
       rulesetVersion={session.ruleset_version}

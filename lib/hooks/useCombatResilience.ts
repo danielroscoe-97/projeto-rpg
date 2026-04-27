@@ -7,11 +7,17 @@ import { reconcileFullState } from "@/lib/supabase/combat-sync";
 import { replayOfflineQueue, broadcastEvent } from "@/lib/realtime/broadcast";
 import { setSyncStatus } from "@/lib/realtime/offline-queue";
 import { createClient } from "@/lib/supabase/client";
+import { APP_HEARTBEAT_MS } from "@/lib/realtime/timing-constants";
+import { onConnectionStateChange } from "@/lib/realtime/connection-state";
+import { captureWarning } from "@/lib/errors/capture";
 import { toast } from "sonner";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 3000, 8000]; // exponential-ish backoff
-const DM_HEARTBEAT_INTERVAL = 30_000; // 30s — players detect stale after 2 missed beats (~90s)
+// CR-06: sourced from lib/realtime/timing-constants.ts (single source of
+// truth). See that file for the invariants relating APP, WS, and stale
+// thresholds.
+const DM_HEARTBEAT_INTERVAL = APP_HEARTBEAT_MS;
 const STATE_SYNC_DEDUP_MS = 3_000; // P3: Prevent duplicate state_sync within 3s
 
 /**
@@ -251,6 +257,33 @@ export function useCombatResilience() {
       wasOfflineRef.current = true;
     }
 
+    // --- 4. Connection-state machine observer (CR-01 AC4 POC consumer) ---
+    // The DM-side broadcast pipeline emits transitions via `transitionTo`. We
+    // subscribe so the state machine has at least one production consumer
+    // (otherwise CR-01 is dead code) AND so degraded transitions surface in
+    // Sentry as warnings — feeds the `Estabilidade Combate` dashboard
+    // metrics (resume_success_rate, degraded_duration).
+    //
+    // The listener is fire-and-forget with no UI side-effect. UI sync state
+    // is owned by the offline-queue's `setSyncStatus` (already wired in the
+    // online/offline handlers above). Adding UI here would double-signal.
+    const unsubscribeConnState = onConnectionStateChange((state) => {
+      if (state.kind === "degraded") {
+        captureWarning(
+          `Connection degraded — reason=${state.reason}`,
+          {
+            component: "useCombatResilience",
+            action: "connection_state",
+            category: "realtime",
+            extra: { reason: state.reason, since: state.since },
+          },
+        );
+      }
+      // Other transitions (connecting/connected/reconnecting/idle/closed)
+      // are not surfaced here. Sentry breadcrumbs for them would create
+      // log noise; rely on broadcast.ts captureError calls for failure modes.
+    });
+
     // --- 5. DM heartbeat: update dm_last_seen_at every 30s ---
     dmHeartbeat(); // Immediate on mount
     heartbeatRef.current = setInterval(dmHeartbeat, DM_HEARTBEAT_INTERVAL);
@@ -264,6 +297,7 @@ export function useCombatResilience() {
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("online", handleOnline);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      unsubscribeConnState();
     };
   }, [flushToLocalStorage, syncToDatabase, dmHeartbeat]);
 }

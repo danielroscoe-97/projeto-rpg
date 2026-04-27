@@ -365,16 +365,24 @@ describe("S1.2 — combat:combatant_add_reorder", () => {
     expect(mockSend).not.toHaveBeenCalled();
   });
 
-  it("opts out of server-side re-broadcast (FIFO guarantee)", async () => {
+  it("routes through server path with skipRebroadcast:true (journal-only) for FIFO opt-out events", async () => {
     (broadcastViaServer as jest.Mock).mockClear();
     getDmChannel("session-1");
     broadcastEvent("session-1", addReorderEvent);
     await flush();
 
-    // Client-direct send fires.
+    // Client-direct send fires (single ordered sender on the channel).
     expect(mockSend).toHaveBeenCalledTimes(1);
-    // Server path MUST NOT fire — this is the whole point of the opt-out.
-    expect(broadcastViaServer).not.toHaveBeenCalled();
+    // N2 fix: server path DOES fire, but in journal-only mode. Without this,
+    // combatant_add_reorder events would be absent from combat_events and a
+    // player who reconnects mid-add would always cascade into a /state full
+    // refetch instead of resuming via /events.
+    expect(broadcastViaServer).toHaveBeenCalledTimes(1);
+    expect(broadcastViaServer).toHaveBeenCalledWith(
+      "session-1",
+      addReorderEvent,
+      { skipRebroadcast: true },
+    );
   });
 
   it("legacy combatant_add still uses the server path (regression — flag OFF behaviour)", async () => {

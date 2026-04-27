@@ -3,13 +3,17 @@
 import { createServiceClient } from "./server";
 import { trackServerEvent } from "@/lib/analytics/track-server";
 import { captureError } from "@/lib/errors/capture";
+// CR-05 (Estabilidade Combate): shared schema with PlayerLobby client form —
+// single source of truth for registration validation. Closes IG-1 drift
+// from PR #48 review.
+import {
+  PlayerRegistrationSchema,
+  type PlayerRegistration,
+} from "@/lib/schemas/player-registration";
+import { z } from "zod";
 
-interface PlayerRegistrationData {
-  name: string;
-  initiative: number;
-  hp: number | null;
-  ac: number | null;
-}
+// Kept as alias for callers that imported this type. Prefer PlayerRegistration.
+type PlayerRegistrationData = PlayerRegistration;
 
 export interface ClaimTokenResult {
   tokenId: string;
@@ -108,27 +112,27 @@ export async function claimPlayerToken(
 export async function registerPlayerCombatant(
   tokenId: string,
   sessionId: string,
-  data: PlayerRegistrationData
+  rawData: unknown
 ): Promise<{ combatantId: string }> {
   const supabase = createServiceClient();
 
-  // Server-side validation
-  const name = data.name?.trim();
-  if (!name || name.length > 50) {
-    throw new Error("Invalid name");
+  // CR-05: validate via shared Zod schema. Client (PlayerLobby) uses the
+  // exact same schema with safeParse for inline field errors; this `parse`
+  // is the server's defensive boundary — the client error already caught
+  // most cases, but we don't trust the wire.
+  let data: PlayerRegistration;
+  try {
+    data = PlayerRegistrationSchema.parse(rawData);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      // Surface the first validation issue's message for the caller —
+      // keeps response shape identical to the prior throw flavor so
+      // existing call-sites (PlayerJoinClient error handling) still work.
+      throw new Error(err.issues[0]?.message ?? "Invalid registration data");
+    }
+    throw err;
   }
-  // Beta #4 F05: no hard upper bound on initiative/AC. Floor remains at 1
-  // (the lobby form represents a player's own d20 roll — always ≥ 1).
-  // Negative/high-init edge cases are DM-editable post-registration.
-  if (!Number.isFinite(data.initiative) || data.initiative < 1) {
-    throw new Error("Initiative must be a positive number");
-  }
-  if (data.hp !== null && (!Number.isFinite(data.hp) || data.hp < 1)) {
-    throw new Error("HP must be a positive number");
-  }
-  if (data.ac !== null && (!Number.isFinite(data.ac) || data.ac < 1)) {
-    throw new Error("AC must be a positive number");
-  }
+  const name = data.name; // already trimmed by the schema
 
   // Validate the token belongs to this session and is active
   const { data: token, error: tokenError } = await supabase
