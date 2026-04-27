@@ -115,7 +115,7 @@ test.describe.serial("Estabilidade Combate — zero-drop reconnect (anon)", () =
     // within ~3-5s.
     await p1Context.setOffline(true);
 
-    const skeleton = p1Page.locator('[data-testid="reconnecting-skeleton"]');
+    const skeleton = p1Page.locator('[data-testid="resume-skeleton"]');
     await expect(skeleton, "Skeleton should appear within grace + detection").toBeVisible({
       timeout: RECONNECT_TIMEOUT_MS,
     });

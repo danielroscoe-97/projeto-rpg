@@ -273,15 +273,48 @@ export function PlayerJoinClient({
   // only after a 500ms grace so sub-300ms retries don't flicker (D5 from
   // tech spec). Only display during *active combat* — lobby flows have
   // their own waiting/registered states. Hide immediately on "connected".
+  //
+  // P-4 fix (2026-04-26 review): only show skeleton AFTER the player has
+  // been "connected" at least once. Without this gate, the initial mount
+  // (connectionStatus default = "connecting") trips the 500ms timer
+  // before the channel ever subscribes — masking the lobby/auth flow on
+  // slow networks (mobile cold start). hasEverConnectedRef flips once
+  // and never reverts.
+  //
+  // P-7 fix (2026-04-26 review): the original effect re-armed the timer
+  // on every transition between non-connected states, which on a
+  // flapping connection (connecting↔disconnected at >500ms cadence)
+  // either thrashed the timer indefinitely (skeleton never shown) OR
+  // got stuck visible after a single fire. Track the timer separately
+  // from the visibility state and only re-arm when we move FROM
+  // "connected" TO non-connected (a real disconnect transition), not
+  // on every re-render or mid-flap subtransition.
   const [showResumeSkeleton, setShowResumeSkeleton] = useState(false);
+  const hasEverConnectedRef = useRef(false);
   const skeletonTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevConnectionStatusRef = useRef<ConnectionStatus>("connecting");
   useEffect(() => {
+    const prev = prevConnectionStatusRef.current;
+    prevConnectionStatusRef.current = connectionStatus;
+
     if (connectionStatus === "connected") {
+      hasEverConnectedRef.current = true;
       if (skeletonTimerRef.current) { clearTimeout(skeletonTimerRef.current); skeletonTimerRef.current = null; }
       setShowResumeSkeleton(false);
       return;
     }
-    // connecting | disconnected — arm the 500ms grace before showing the skeleton.
+    // Don't show skeleton until we've connected at least once. First mount
+    // races the SUBSCRIBED handshake; the lobby/auth flow underneath must
+    // remain visible during that window. (Resilient Reconnection Rule:
+    // never blank screen — equally true for initial connect.)
+    if (!hasEverConnectedRef.current) return;
+
+    // Only ARM a new timer on the transition INTO a non-connected state.
+    // Subsequent re-renders within the same disconnect window (e.g.
+    // connecting→disconnected→connecting flap) leave the existing timer
+    // running. This guarantees: (a) no thrash on rapid flap, and (b) once
+    // shown, skeleton stays until "connected" arrives.
+    if (prev !== "connected") return;
     if (skeletonTimerRef.current) clearTimeout(skeletonTimerRef.current);
     skeletonTimerRef.current = setTimeout(() => {
       skeletonTimerRef.current = null;
