@@ -37,6 +37,7 @@ export type RealtimeEventType =
   | "player:poll_vote"
   | "player:hp_action"
   | "player:self_condition_toggle"
+  | "player:sos_resync_requested"
   | "chat:player_message"
   | "chat:dm_postit"
   | "campaign:combat_invite"
@@ -326,6 +327,25 @@ export interface RealtimePlayerSelfConditionToggle {
   sender_token_id?: string;
 }
 
+/**
+ * Player-initiated state resync request ("SOS"). Sent when the player
+ * suspects their local view drifted (no broadcasts received within the
+ * staleness window, or manually triggered via the SOS button).
+ *
+ * The DM handler re-emits the current `session:state_sync` snapshot.
+ * Resilient Reconnection §18 — silêncio narrativo: this event must NOT
+ * surface a toast/badge to the Mestre.
+ */
+export interface RealtimePlayerSosResync {
+  type: "player:sos_resync_requested";
+  /** Name of the requesting player. Used only for telemetry/debug. */
+  player_name: string;
+  /** Token ID of the requesting client (matches the player's session_token row). */
+  sender_token_id: string;
+  /** Client timestamp when the user pressed the button (ms since epoch). */
+  requested_at: number;
+}
+
 export interface RealtimeChatDmPostit {
   type: "chat:dm_postit";
   /** Client-generated unique postit id */
@@ -462,6 +482,7 @@ export type RealtimeEvent =
   | RealtimeChatPlayerMessage
   | RealtimeChatDmPostit
   | RealtimePlayerSelfConditionToggle
+  | RealtimePlayerSosResync
   | RealtimeCombatRecap
   | RealtimeCombatInvite
   | RealtimeUserInvite

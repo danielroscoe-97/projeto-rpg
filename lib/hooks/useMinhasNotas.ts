@@ -158,18 +158,43 @@ export function useMinhasNotas(campaignId: string): UseMinhasNotasResult {
       (userData?.user as { is_anonymous?: boolean })?.is_anonymous === true;
 
     if (isAnon) {
-      const { data: tokenRow } = await supabase
-        .from("session_tokens")
-        .select("id")
-        .or(`anon_user_id.eq.${uid},user_id.eq.${uid}`)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (!tokenRow) return null;
+      // Resolve the active session_tokens row owned by this anon uid. We
+      // intentionally avoid `.or("anon_user_id.eq.${uid},user_id.eq.${uid}")`
+      // because PostgREST's `or` filter takes a raw filter string and we'd
+      // be interpolating a uid into it. The Supabase JS client does NOT
+      // sanitize that string — a uid containing a comma, parenthesis, or
+      // quote (or a future format change) could break the filter or, in a
+      // worst case, alter its meaning. Two scoped `.eq()` queries are
+      // strictly safer: each value is sent as a parameter, never a raw
+      // filter fragment.
+      const [viaAnon, viaAuth] = await Promise.all([
+        supabase
+          .from("session_tokens")
+          .select("id, created_at")
+          .eq("anon_user_id", uid)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(1),
+        supabase
+          .from("session_tokens")
+          .select("id, created_at")
+          .eq("user_id", uid)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(1),
+      ]);
+
+      const candidates: Array<{ id: string; created_at: string }> = [
+        ...((viaAnon.data ?? []) as Array<{ id: string; created_at: string }>),
+        ...((viaAuth.data ?? []) as Array<{ id: string; created_at: string }>),
+      ];
+      if (candidates.length === 0) return null;
+      // Pick the most recently created — matches the original `.or()` +
+      // `.order(created_at desc).limit(1)` semantic.
+      candidates.sort((a, b) => b.created_at.localeCompare(a.created_at));
       return {
         user_id: null,
-        session_token_id: (tokenRow as { id: string }).id,
+        session_token_id: candidates[0].id,
       };
     }
 

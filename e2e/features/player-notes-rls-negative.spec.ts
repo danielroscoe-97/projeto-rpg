@@ -122,4 +122,89 @@ test.describe("Gate Fase D — Minhas Notas RLS isolation (D1)", () => {
       .allTextContents();
     expect(exposedTitles.join("\n")).not.toContain(uniqueTitle);
   });
+
+  /**
+   * Issue #89 P1-4 — XOR + WITH CHECK donation edge case.
+   *
+   * An authenticated user owns a `player_notes` row. They (or a
+   * malicious client) try to UPDATE it to "donate" the row to an anon
+   * session by setting `user_id = NULL` + `session_token_id = <some-id>`.
+   *
+   * Migration 187:
+   *   • USING       — `user_id = auth.uid()`        (passes pre-update)
+   *   • WITH CHECK  — `user_id = auth.uid()`        (FAILS post-update;
+   *                                                  user_id would be NULL)
+   *   • CHECK       — exactly one of (user_id, session_token_id) non-null
+   *
+   * Expected: Postgres rejects with RLS error 42501; the row stays
+   * owned by `user_id = auth.uid()`. NOT a silent ignore.
+   *
+   * This is a server-contract assertion. We exercise it via a probe
+   * UPDATE in the browser so we go through the same RLS-enforced
+   * surface the UI uses; no service-role key required. The test is
+   * skipped when there is no signed-in `MinhasNotas` surface to probe
+   * against.
+   */
+  test("blocks auth user donating note to anon (XOR + WITH CHECK)", async ({
+    page,
+  }) => {
+    const campaignId = await getFirstSharedCampaignId(page, PLAYER_WARRIOR);
+    if (!campaignId) {
+      test.skip(true, "No campaigns seeded for PLAYER_WARRIOR");
+      return;
+    }
+    await gotoMinhasNotas(page, campaignId);
+    if ((await page.getByTestId("minhas-notas-root").count()) === 0) {
+      test.skip(true, "MinhasNotas not built / migration 187 not applied");
+      return;
+    }
+
+    // Create a note we own.
+    await page.getByTestId("minhas-notas-new").click();
+    const card = page.locator('[data-testid^="minhas-notas-card-"]').first();
+    await expect(card).toBeVisible({ timeout: 10_000 });
+    const noteId = (await card.getAttribute("data-testid"))!.replace(
+      "minhas-notas-card-",
+      "",
+    );
+
+    // Probe: ask the in-page Supabase client to perform the donate
+    // UPDATE. We expect a non-null `error` (RLS rejection). The probe
+    // returns a JSON-friendly summary so Playwright can assert on it.
+    const result = await page.evaluate(
+      async ({ id, fakeTokenId }) => {
+        type SupabaseLikeClient = {
+          from: (table: string) => {
+            update: (vals: Record<string, unknown>) => {
+              eq: (
+                col: string,
+                val: string,
+              ) => Promise<{ error: { code?: string } | null }>;
+            };
+          };
+        };
+        const w = window as unknown as { supabase?: SupabaseLikeClient };
+        if (!w.supabase) return { skipped: true } as const;
+        const { error } = await w.supabase
+          .from("player_notes")
+          .update({ user_id: null, session_token_id: fakeTokenId })
+          .eq("id", id);
+        return {
+          skipped: false,
+          hasError: error !== null,
+          code: error?.code ?? null,
+        } as const;
+      },
+      { id: noteId, fakeTokenId: "00000000-0000-0000-0000-000000000001" },
+    );
+
+    if (result.skipped) {
+      test.skip(true, "window.supabase probe not available in this build");
+      return;
+    }
+    // RLS must reject — we don't pin the exact code because Supabase
+    // surfaces 42501 (insufficient_privilege) OR 23514 (check_violation)
+    // depending on which clause fails first; either is correct.
+    expect(result.hasError).toBe(true);
+  });
 });

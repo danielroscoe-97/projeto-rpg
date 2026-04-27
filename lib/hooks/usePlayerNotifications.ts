@@ -75,6 +75,27 @@ function isCategory(s: string): s is PlayerNotificationCategory {
   return (ALL_CATEGORIES as string[]).includes(s);
 }
 
+/**
+ * Bounded LRU dedup set. The realtime layer can re-emit the same broadcast
+ * (re-subscribe → backlog replay, or transient reconnect) and we don't want
+ * the badge to double-count. We cap at 50 entries so a long session can't
+ * grow the Set unbounded; oldest keys age out FIFO. Keys are derived from
+ * the same `${kind}-${refId}-${timestamp}` triplet that the visible
+ * notification id uses, so equal-by-id implies equal-by-key.
+ */
+const SEEN_DEDUP_CAP = 50;
+
+function rememberSeen(seen: Set<string>, key: string): boolean {
+  if (seen.has(key)) return false;
+  if (seen.size >= SEEN_DEDUP_CAP) {
+    // Set preserves insertion order — drop the oldest entry.
+    const oldest = seen.values().next().value;
+    if (oldest !== undefined) seen.delete(oldest);
+  }
+  seen.add(key);
+  return true;
+}
+
 export function usePlayerNotifications(
   campaignId: string,
   characterId: string,
@@ -83,14 +104,19 @@ export function usePlayerNotifications(
   const { enabled = true } = options;
   const [notifications, setNotifications] = useState<PlayerNotification[]>([]);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  // Bounded LRU of event keys we've already counted — see SEEN_DEDUP_CAP.
+  // Survives re-renders without triggering them (mutable ref, not state).
+  const seenRef = useRef<Set<string>>(new Set());
 
   const handleNoteReceived = useCallback(
     (payload: RealtimePlayerNoteReceived) => {
       if (payload.targetCharacterId && payload.targetCharacterId !== characterId)
         return;
+      const id = `note-${payload.noteId}-${payload.timestamp}`;
+      if (!rememberSeen(seenRef.current, id)) return;
       setNotifications((prev) => [
         {
-          id: `note-${payload.noteId}-${payload.timestamp}`,
+          id,
           category: "diario",
           kind: "note:received",
           title: payload.title,
@@ -107,9 +133,11 @@ export function usePlayerNotifications(
     (payload: RealtimeQuestAssigned) => {
       if (payload.targetCharacterId && payload.targetCharacterId !== characterId)
         return;
+      const id = `quest-assigned-${payload.questId}-${payload.timestamp}`;
+      if (!rememberSeen(seenRef.current, id)) return;
       setNotifications((prev) => [
         {
-          id: `quest-assigned-${payload.questId}-${payload.timestamp}`,
+          id,
           category: "diario",
           kind: "quest:assigned",
           title: payload.questTitle,
@@ -126,9 +154,11 @@ export function usePlayerNotifications(
     (payload: RealtimeQuestUpdated) => {
       if (payload.targetCharacterId && payload.targetCharacterId !== characterId)
         return;
+      const id = `quest-updated-${payload.questId}-${payload.timestamp}`;
+      if (!rememberSeen(seenRef.current, id)) return;
       setNotifications((prev) => [
         {
-          id: `quest-updated-${payload.questId}-${payload.timestamp}`,
+          id,
           category: "diario",
           kind: "quest:updated",
           title: payload.questTitle,
@@ -196,6 +226,9 @@ export function usePlayerNotifications(
 
   const clearAll = useCallback(() => {
     setNotifications([]);
+    // Wipe dedup memory too — `clearAll` is a hard reset (logout / explicit
+    // dismiss), so a re-emitted historical event SHOULD re-badge after this.
+    seenRef.current.clear();
   }, []);
 
   const badges = useMemo<Record<PlayerNotificationCategory, number>>(() => {

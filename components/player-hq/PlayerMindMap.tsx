@@ -136,22 +136,51 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId, o
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  /* ---- Wave 3c D4: auto-open drawer from `?drawer=npc:{name}` deep link.
-   *      Triggered by NpcCard "Ver no Mapa →" link. The drawer opens once
-   *      `allNodes` is loaded and a node matching the encoded name exists.
+  /* ---- Wave 3c D4: auto-open drawer from `?drawer=npc:{name}|{id}` deep
+   *      link. Triggered by NpcCard "Ver no Mapa →". The drawer opens once
+   *      `allNodes` is loaded and a node matching the encoded composite
+   *      key exists.
+   *
+   *      Composite-key format (issue #89 P1-3):
+   *        npc:{name}|{id}    — current emitter (NpcCard)
+   *        npc:{name}         — legacy format; older shared URLs
+   *
+   *      Disambiguation order:
+   *        1. Try to match by id (`n.data.npcId === wantedId`). Stable
+   *           even if the NPC is renamed.
+   *        2. Fall back to first name-match — preserves backward compat
+   *           with shared URLs that pre-date the composite-key emitter.
+   *
    *      Idempotent on repeat URL changes; closing the drawer doesn't
    *      remove the param (the user can re-open via back/refresh).      */
   useEffect(() => {
     if (loading) return;
     const drawerParam = searchParams?.get("drawer") ?? "";
     if (!drawerParam.startsWith("npc:")) return;
-    const wantedName = decodeURIComponent(drawerParam.slice("npc:".length));
-    if (!wantedName) return;
-    const match = allNodes.find(
-      (n) =>
-        n.type === "npc" &&
-        ((n.data as { label?: string })?.label ?? "") === wantedName,
-    );
+    const raw = decodeURIComponent(drawerParam.slice("npc:".length));
+    if (!raw) return;
+
+    // Split on the LAST `|` so a name that itself contains `|` (rare, but
+    // possible) doesn't lose its tail to the id segment.
+    const sep = raw.lastIndexOf("|");
+    const wantedName = sep === -1 ? raw : raw.slice(0, sep);
+    const wantedId = sep === -1 ? null : raw.slice(sep + 1);
+
+    let match: typeof allNodes[number] | undefined;
+    if (wantedId) {
+      match = allNodes.find(
+        (n) =>
+          n.type === "npc" &&
+          ((n.data as { npcId?: string })?.npcId ?? "") === wantedId,
+      );
+    }
+    if (!match && wantedName) {
+      match = allNodes.find(
+        (n) =>
+          n.type === "npc" &&
+          ((n.data as { label?: string })?.label ?? "") === wantedName,
+      );
+    }
     if (!match) return;
     setDrawer({
       type: "npc",

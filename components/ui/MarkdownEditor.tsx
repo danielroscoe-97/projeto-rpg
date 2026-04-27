@@ -20,6 +20,12 @@
  *  - Image upload / paste handling
  *  - Slash commands
  *  - Live preview side-by-side
+ *
+ * XSS safety: react-markdown v10+ is sandboxed by default — it does NOT
+ * render raw HTML unless `rehype-raw` is added (we don't). User input is
+ * therefore safe to feed into `<ReactMarkdown>` directly. If we ever add
+ * `rehype-raw`, we MUST also add `rehype-sanitize` (and re-test this
+ * component end-to-end) to keep the surface XSS-safe.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -182,6 +188,9 @@ export function MarkdownEditor({
           data-testid={`${testId}-preview`}
         >
           {value.trim() ? (
+            // XSS safety: react-markdown v10+ does NOT render raw HTML
+            // by default (no `rehype-raw`). If you add it, also add
+            // `rehype-sanitize` — see file-level docblock.
             <ReactMarkdown>{value}</ReactMarkdown>
           ) : (
             <p className="text-muted-foreground/60 italic">

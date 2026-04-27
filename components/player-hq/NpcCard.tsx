@@ -91,14 +91,20 @@ export function NpcCard({ npc, onCycleRelationship, onUpdateNotes, onDelete }: N
             className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[80px]"
           />
           {/* "Ver no Mapa" cross-nav (Wave 3c D4): URL-shareable; the Mapa
-              shell consumes ?drawer=npc:{name} (URL-safe) to auto-open the
-              matching drawer. We key on `npc_name` (not the local
-              player_npc_notes row id) because PlayerNpcDrawer itself looks
-              up notes by name — a name-keyed link survives a reseed/reset. */}
+              shell consumes ?drawer=npc:{name}|{id} (composite key) to
+              auto-open the matching drawer. The `id` segment disambiguates
+              when two NPCs share a name (issue #89 P1-3); the `name`
+              segment is preserved so older shared URLs that lack `|{id}`
+              still resolve via name fallback. PlayerMindMap.tsx parses the
+              segment, prefers id-match when present, and falls back to
+              first name-match for backward compatibility. */}
           <Link
             href={{
               pathname: `/app/campaigns/${npc.campaign_id}/sheet`,
-              query: { tab: "mapa", drawer: `npc:${npc.npc_name}` },
+              query: {
+                tab: "mapa",
+                drawer: `npc:${npc.npc_name}|${npc.id}`,
+              },
             }}
             data-testid={`npc-card-link-mapa-${npc.id}`}
             className="inline-flex items-center gap-1 text-[11px] text-amber-300/90 hover:text-amber-200 transition-colors"
