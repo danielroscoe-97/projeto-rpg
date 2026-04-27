@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import {
   ReactFlow,
   Controls,
@@ -104,6 +105,7 @@ interface PlayerMindMapProps {
 export function PlayerMindMap({ campaignId, campaignName, characterId, userId, onNavigateTab }: PlayerMindMapProps) {
   const t = useTranslations("mindmap");
   const tHq = useTranslations("player_hq");
+  const searchParams = useSearchParams();
   const {
     nodes: allNodes,
     edges: allEdges,
@@ -133,6 +135,30 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId, o
   const toggleFilter = useCallback((key: NodeFilter) => {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
+
+  /* ---- Wave 3c D4: auto-open drawer from `?drawer=npc:{name}` deep link.
+   *      Triggered by NpcCard "Ver no Mapa →" link. The drawer opens once
+   *      `allNodes` is loaded and a node matching the encoded name exists.
+   *      Idempotent on repeat URL changes; closing the drawer doesn't
+   *      remove the param (the user can re-open via back/refresh).      */
+  useEffect(() => {
+    if (loading) return;
+    const drawerParam = searchParams?.get("drawer") ?? "";
+    if (!drawerParam.startsWith("npc:")) return;
+    const wantedName = decodeURIComponent(drawerParam.slice("npc:".length));
+    if (!wantedName) return;
+    const match = allNodes.find(
+      (n) =>
+        n.type === "npc" &&
+        ((n.data as { label?: string })?.label ?? "") === wantedName,
+    );
+    if (!match) return;
+    setDrawer({
+      type: "npc",
+      nodeId: match.id,
+      data: match.data as Record<string, unknown>,
+    });
+  }, [searchParams, loading, allNodes]);
 
   /* ---- Seed first visit: mark all existing nodes as viewed ---- */
   useEffect(() => {

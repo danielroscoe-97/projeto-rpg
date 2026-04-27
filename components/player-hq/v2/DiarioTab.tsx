@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import {
   StickyNote,
   Users,
@@ -17,6 +18,7 @@ import { QuickNotesList } from "../QuickNotesList";
 import { NpcJournal } from "../NpcJournal";
 import { PlayerQuestBoard } from "../PlayerQuestBoard";
 import { DmNotesInbox } from "../DmNotesInbox";
+import { MinhasNotas } from "./diario/MinhasNotas";
 import type { PlayerHqV2TabProps } from "./HeroiTab";
 
 type DiarioSubTab = "quick" | "minhas" | "npcs" | "quests" | "dm_inbox";
@@ -58,7 +60,27 @@ export function DiarioTab({
   userId,
 }: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq.notes");
+  const searchParams = useSearchParams();
   const [activeSubTab, setActiveSubTab] = useState<DiarioSubTab>("quick");
+
+  // Wave 3c D4 cross-nav: when the URL declares a section
+  // (`?tab=diario&section=npcs`) auto-select the matching sub-tab. Used by
+  // the "Ver no Diário" link from PlayerNpcDrawer; keeps the URL the source
+  // of truth so the link is shareable.
+  useEffect(() => {
+    const section = searchParams?.get("section");
+    const map: Record<string, DiarioSubTab> = {
+      quick: "quick",
+      minhas: "minhas",
+      npcs: "npcs",
+      quests: "quests",
+      dm_inbox: "dm_inbox",
+    };
+    if (section && map[section]) {
+      const next = map[section];
+      setActiveSubTab((cur) => (cur === next ? cur : next));
+    }
+  }, [searchParams]);
 
   const {
     quickNotes,
@@ -136,21 +158,9 @@ export function DiarioTab({
         />
       )}
 
-      {/* 2. Minhas Notas — placeholder (D2 in Sprint 5 builds the
-          markdown editor). */}
+      {/* 2. Minhas Notas — Wave 3c D2 (markdown editor + auto-save). */}
       {!loading && activeSubTab === "minhas" && (
-        <div
-          className="rounded-xl border border-dashed border-border bg-card/40 p-6 text-center"
-          data-testid="diario-minhas-placeholder"
-        >
-          <NotebookPen
-            className="w-7 h-7 text-amber-400/30 mx-auto mb-3"
-            aria-hidden
-          />
-          <p className="text-sm text-muted-foreground/80">
-            {t("minhas_coming_soon")}
-          </p>
-        </div>
+        <MinhasNotas campaignId={campaignId} />
       )}
 
       {/* 3. NPCs */}
