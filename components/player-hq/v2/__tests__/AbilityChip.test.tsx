@@ -375,6 +375,78 @@ describe("AbilityChip — long-press menu", () => {
   });
 });
 
+describe("AbilityChip — manual modifier menu (issue #88 spec gap)", () => {
+  it("opens the manual-modifier input view when the menu option is clicked", async () => {
+    render(
+      <AbilityChip
+        ability="wis"
+        label="WIS"
+        score={12}
+        proficient={false}
+        clickable={true}
+        rollContext={ROLL_CONTEXT}
+      />,
+    );
+    const checkBtn = screen.getByTestId("ability-chip-wis-check");
+    await act(async () => {
+      fireEvent.mouseDown(checkBtn, { button: 0 });
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(600);
+    });
+    await act(async () => {
+      fireEvent.mouseUp(checkBtn);
+    });
+    const manualBtn = screen.getByTestId("ability-chip-mode-manual-modifier");
+    await act(async () => {
+      fireEvent.click(manualBtn);
+    });
+    expect(screen.queryByTestId("ability-chip-manual-modifier-form")).not.toBeNull();
+    expect(screen.queryByTestId("ability-chip-manual-modifier-input")).not.toBeNull();
+  });
+
+  it("Apply button rolls a normal-mode check with mod + manual extra summed", async () => {
+    render(
+      <AbilityChip
+        ability="wis"
+        label="WIS"
+        score={12}
+        proficient={false}
+        clickable={true}
+        rollContext={ROLL_CONTEXT}
+      />,
+    );
+    // WIS 12 → mod = +1. Manual modifier +3 (Bless avg) → roll uses +4.
+    const checkBtn = screen.getByTestId("ability-chip-wis-check");
+    await act(async () => {
+      fireEvent.mouseDown(checkBtn, { button: 0 });
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(600);
+    });
+    await act(async () => {
+      fireEvent.mouseUp(checkBtn);
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("ability-chip-mode-manual-modifier"));
+    });
+    const input = screen.getByTestId(
+      "ability-chip-manual-modifier-input",
+    ) as HTMLInputElement;
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "3" } });
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("ability-chip-manual-modifier-apply"));
+    });
+    expect(mockRollCheck).toHaveBeenCalledWith({
+      ability: "wis",
+      abilityMod: 4,
+      mode: "normal",
+    });
+  });
+});
+
 describe("AbilityChip — accessibility", () => {
   it("CHECK button has min-h-[44px] for WCAG SC 2.5.5 (touch target)", () => {
     render(
