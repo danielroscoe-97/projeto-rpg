@@ -158,9 +158,6 @@ export function PlayerMindMap({ campaignId, campaignName, characterId, userId, o
       nodeId: match.id,
       data: match.data as Record<string, unknown>,
     });
-    // Intentionally do NOT include `setDrawer` in deps (setState reference is
-    // stable). Re-run only on URL change OR when nodes finish loading.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, loading, allNodes]);
 
   /* ---- Seed first visit: mark all existing nodes as viewed ---- */

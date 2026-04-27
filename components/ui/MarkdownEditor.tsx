@@ -81,17 +81,23 @@ export function MarkdownEditor({
     };
   }, [value, onAutoSave, autoSaveDebounceMs]);
 
-  // Flush pending auto-save on unmount.
+  // Flush pending auto-save on unmount. We snapshot the textarea ref into
+  // a closure-local variable so the cleanup uses the value captured AT
+  // mount, satisfying react-hooks/exhaustive-deps' ref-stability rule.
   useEffect(() => {
+    const taSnapshot = textareaRef;
+    const lastSavedSnapshot = lastSavedRef;
+    const timerSnapshot = debounceTimer;
     return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
+      if (timerSnapshot.current) {
+        clearTimeout(timerSnapshot.current);
+        const ta = taSnapshot.current;
         if (
           onAutoSave &&
-          textareaRef.current &&
-          textareaRef.current.value !== lastSavedRef.current
+          ta &&
+          ta.value !== lastSavedSnapshot.current
         ) {
-          onAutoSave(textareaRef.current.value);
+          onAutoSave(ta.value);
         }
       }
     };
