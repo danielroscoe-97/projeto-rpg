@@ -58,6 +58,12 @@ export default {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
         },
+        // Concentration (sky #7DD3FC) — PRD decisão #45. Distinct from
+        // --warning (amber low-resource) and --info (blue-cyan generic).
+        concentration: {
+          DEFAULT: "hsl(var(--concentration))",
+          foreground: "hsl(var(--concentration-foreground))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

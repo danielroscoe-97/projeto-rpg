@@ -97,7 +97,11 @@ export function ActiveEffectCard({
           </span>
 
           {effect.is_concentration && (
-            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20 shrink-0">
+            // PRD decisão #45 — concentration uses --concentration token
+            // (sky #7DD3FC), NOT --warning (amber, reserved for low-resource
+            // alerts). The /15 bg + /20 border alpha pairing matches the
+            // legacy density.
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-concentration/15 text-concentration border border-concentration/20 shrink-0">
               <Zap className="w-2.5 h-2.5" />
               {t("concentration")}
             </span>
