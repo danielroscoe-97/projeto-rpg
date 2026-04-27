@@ -33,3 +33,14 @@ jest.mock("next-intl/server", () => ({
   getLocale: () => "pt-BR",
   getMessages: () => ({}),
 }));
+
+// 2026-04-26 (P-14 review): Mock the error capture module so unit tests
+// don't trigger Sentry HTTP fetch on captureWarning/captureError calls.
+// jsdom env doesn't polyfill global fetch, and even with node env the
+// real Sentry transport would attempt outbound network calls during
+// test runs — pollutes tests and slows CI. Mock returns no-op functions
+// that callers can spy on if they need to assert capture behavior.
+jest.mock("@/lib/errors/capture", () => ({
+  captureError: jest.fn(),
+  captureWarning: jest.fn(),
+}));

@@ -33,7 +33,16 @@ export type ConnectionState =
   | { kind: "degraded"; reason: DegradedReason; since: number }
   | { kind: "closed" };
 
-export type DegradedReason = "ceiling_hit" | "network_offline" | "broker_down";
+/**
+ * IG-2 fix (2026-04-26 review): `ceiling_hit` was the original CR-01 AC2
+ * reason but F5 evolved the broadcast.ts logic to always pick a more
+ * specific reason on ceiling-burnt — `navigator.onLine === false` →
+ * `network_offline`, otherwise `broker_down` (the OS thinks it's online
+ * but the broker isn't responding). `ceiling_hit` was never emitted
+ * post-F5; removing it from the enum so a future contributor doesn't
+ * mistakenly pattern-match on a dead value.
+ */
+export type DegradedReason = "network_offline" | "broker_down";
 
 let current: ConnectionState = { kind: "idle" };
 const listeners = new Set<(s: ConnectionState) => void>();

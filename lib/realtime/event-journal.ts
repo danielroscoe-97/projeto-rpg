@@ -29,6 +29,7 @@
  * See: _bmad-output/estabilidade-combate/01-TECH-SPEC.md §3.3 (revised)
  */
 import { createServiceClient } from "@/lib/supabase/server";
+import { captureWarning } from "@/lib/errors/capture";
 import type { SanitizedEvent } from "@/lib/types/realtime";
 
 export interface JournalEntry {
@@ -87,15 +88,29 @@ export async function recordEvent(
       .single();
 
     if (error || !data) {
-      // eslint-disable-next-line no-console -- server-side, intentional log
-      console.warn("[event-journal] recordEvent failed:", error?.message);
+      // P-14 fix (2026-04-26 review): surface to Sentry so the F14
+      // dashboard can graph recordEvent failure rate alongside
+      // too_stale_rate. Silent console.warn meant a Postgres outage
+      // would degrade resume coverage with no visible signal.
+      captureWarning("[event-journal] recordEvent failed", {
+        component: "event-journal",
+        action: "recordEvent",
+        category: "database",
+        sessionId,
+        extra: { errorMessage: error?.message, eventType: event.type },
+      });
       return null;
     }
     // Postgres bigserial returns as number-like; coerce to be safe.
     return typeof data.seq === "number" ? data.seq : Number(data.seq);
   } catch (err) {
-    // eslint-disable-next-line no-console -- server-side, intentional log
-    console.warn("[event-journal] recordEvent threw:", (err as Error).message);
+    captureWarning("[event-journal] recordEvent threw", {
+      component: "event-journal",
+      action: "recordEvent",
+      category: "database",
+      sessionId,
+      extra: { errorMessage: (err as Error).message, eventType: event.type },
+    });
     return null;
   }
 }
@@ -127,8 +142,13 @@ export async function getEventsSince(
     .limit(BUFFER_CAP);
 
   if (error) {
-    // eslint-disable-next-line no-console -- server-side, intentional log
-    console.warn("[event-journal] getEventsSince failed:", error.message);
+    captureWarning("[event-journal] getEventsSince failed", {
+      component: "event-journal",
+      action: "getEventsSince",
+      category: "database",
+      sessionId,
+      extra: { errorMessage: error.message, sinceSeq },
+    });
     return { kind: "empty", currentSeq: 0 };
   }
 

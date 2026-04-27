@@ -27,6 +27,15 @@ import { fetchOrchestrator, type FetchPriority } from "@/lib/realtime/fetch-orch
 // gap (or falls back to fetchFullState if too_stale).
 import { useEventResume } from "@/lib/realtime/use-event-resume";
 import { ReconnectingSkeleton } from "@/components/player/ReconnectingSkeleton";
+// P-13 fix (2026-04-26 review): the F5 module-level listeners in
+// broadcast.ts only fire on DM browsers (gated on `currentSessionId`,
+// which is only set by `getDmChannel` — DM-only). Players create their
+// channel directly via `supabase.channel(...)` and never enter that path.
+// Without per-side listeners, the dashboard `degraded { reason: ... }`
+// metric only counts DM-side incidents, undercounting the real player
+// experience. Wire transitions on the player side too.
+import { transitionTo, getConnectionState } from "@/lib/realtime/connection-state";
+import type { ConnectionState } from "@/lib/realtime/connection-state";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type {
   SanitizedStateSync,
@@ -2632,6 +2641,14 @@ export function PlayerJoinClient({
 
     // Network loss/recovery — covers WiFi switch, airplane mode toggle with tab visible
     const handleOnline = async () => {
+      // P-13 fix: clear the player-side degraded transition on recovery so
+      // the F14 dashboard widget reflects current state. The channel
+      // re-subscribe below will emit `connecting → connected` via the
+      // SUBSCRIBED handler chain.
+      const state = getConnectionState();
+      if (state.kind === "degraded" && state.reason === "network_offline") {
+        transitionTo({ kind: "connecting", attempt: 1, since: Date.now() } as unknown as ConnectionState);
+      }
       // Broadcast player:active so DM knows we're back
       if (channelRef.current && isRegisteredRef.current) {
         channelRef.current.send({
@@ -2684,6 +2701,14 @@ export function PlayerJoinClient({
             reason: "network_offline",
           },
         });
+      }
+      // P-13 fix: also emit the connection-state transition so the F14
+      // dashboard records `degraded { reason: "network_offline" }` for
+      // player-side incidents. Guard against transitioning out of a
+      // terminal state (closed/idle).
+      const state = getConnectionState();
+      if (state.kind !== "degraded" && state.kind !== "closed" && state.kind !== "idle") {
+        transitionTo({ kind: "degraded", reason: "network_offline", since: Date.now() } as unknown as ConnectionState);
       }
     };
 
