@@ -212,11 +212,15 @@ export function CharacterCoreStats({
               }
 
               // ── Legacy V1 cell (preserved for flag-OFF environments) ──
+              // Use the canonical 3-letter ability code (str/dex/con/int/wis/cha)
+              // for the testid so V1 + V2 stay aligned. The internal `key`
+              // still uses `int_score`/`cha_score` to avoid the JS reserved-word
+              // collision noted in the ABILITY_SCORES comment.
               return (
                 <div
                   key={key}
                   className="bg-background/50 border border-border rounded-lg p-2 text-center"
-                  data-testid={`ability-chip-${key}`}
+                  data-testid={`ability-chip-${ability}`}
                 >
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
                     {label}

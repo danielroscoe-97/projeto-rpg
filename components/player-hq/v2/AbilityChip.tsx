@@ -55,6 +55,7 @@ import {
   DEFAULT_ROLL_TOAST_LABELS,
   type RollToastLabels,
 } from "@/components/player-hq/v2/RollResultToast";
+import { Dot } from "@/components/ui/Dot";
 import type { Ability, RollMode } from "@/lib/utils/dice-roller";
 
 /** Threshold in ms for long-press detection. 500ms is the iOS native value. */
@@ -249,7 +250,11 @@ function RollModeMenu({
       role="menu"
       aria-label="Roll mode"
       data-testid="ability-chip-roll-mode-menu"
-      className="absolute z-30 left-1/2 -translate-x-1/2 mt-1 bg-popover border border-border rounded-md shadow-lg py-1 min-w-[140px]"
+      // `top-full` anchors the popover to the BOTTOM edge of the action grid
+      // (its closest positioned ancestor). Without `top-full`, Tailwind's
+      // `absolute` defaults to `top: 0` which placed the menu directly on top
+      // of CHK / SAVE — covering the buttons that just opened it.
+      className="absolute z-30 left-1/2 -translate-x-1/2 top-full mt-1 bg-popover border border-border rounded-md shadow-lg py-1 min-w-[160px]"
     >
       <button
         type="button"
@@ -447,11 +452,25 @@ export function AbilityChip({
           >
             <span className="relative z-[1] flex items-center gap-1">
               {proficient && (
+                // Save proficiency = "permanent" semantic per PRD #37
+                // (○ = do not have, ● = have). Dot 'sm' renders at w-2.5 h-2.5
+                // (~10px); the legacy hand-rolled span was w-1.5 h-1.5 (~6px).
+                // We accept the +4px diameter delta to consolidate on the
+                // primitive — visually still a small accent and the gold
+                // bg keeps it from competing with the SAVE label.
                 <span
-                  className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"
                   data-testid={`ability-chip-${ability}-prof-dot`}
+                  className="shrink-0"
                   aria-hidden="true"
-                />
+                >
+                  <Dot
+                    filled={true}
+                    variant="permanent"
+                    size="sm"
+                    ariaLabel={saveAriaLabel}
+                    filledClassName="bg-amber-400 border-amber-400"
+                  />
+                </span>
               )}
               SAVE
             </span>
