@@ -1181,7 +1181,8 @@
       "rel_unknown": "Unknown",
       "your_notes": "Your Notes",
       "notes_placeholder": "What do you know about this NPC?",
-      "view_in_journal": "View in NPC Journal"
+      "view_in_journal": "View in NPC Journal",
+      "view_in_diario": "View in Diário"
     },
     "quest_drawer": {
       "description": "Description",
@@ -1614,7 +1615,8 @@
       "scratch_pad_label": "Combat Scratch Pad",
       "scratch_pad_placeholder": "Quick note...",
       "scratch_pad_clear": "Clear",
-      "scratch_pad_clear_confirm": "Clear scratch pad?"
+      "scratch_pad_clear_confirm": "Clear scratch pad?",
+      "view_in_mapa": "View in Mapa"
     },
     "minhas_notas": {
       "search_placeholder": "Search your notes...",

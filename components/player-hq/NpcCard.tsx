@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Trash2 } from "lucide-react";
+import { Trash2, MapPin } from "lucide-react";
 import type { NpcNote, NpcRelationship } from "@/lib/types/database";
 
 const RELATIONSHIP_CONFIG: Record<NpcRelationship, { icon: string; color: string }> = {
@@ -80,15 +81,31 @@ export function NpcCard({ npc, onCycleRelationship, onUpdateNotes, onDelete }: N
         </button>
       </div>
 
-      {/* Expanded — editable notes */}
+      {/* Expanded — editable notes + cross-nav (Wave 3c D4) */}
       {expanded && (
-        <div className="px-3 pb-3 border-t border-border/30 pt-2">
+        <div className="px-3 pb-3 border-t border-border/30 pt-2 space-y-2">
           <textarea
             defaultValue={npc.notes ?? ""}
             placeholder={t("npc_notes_placeholder")}
             onChange={(e) => onUpdateNotes(npc.id, e.target.value)}
             className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[80px]"
           />
+          {/* "Ver no Mapa" cross-nav (Wave 3c D4): URL-shareable; the Mapa
+              shell consumes ?drawer=npc:{name} (URL-safe) to auto-open the
+              matching drawer. We key on `npc_name` (not the local
+              player_npc_notes row id) because PlayerNpcDrawer itself looks
+              up notes by name — a name-keyed link survives a reseed/reset. */}
+          <Link
+            href={{
+              pathname: `/app/campaigns/${npc.campaign_id}/sheet`,
+              query: { tab: "mapa", drawer: `npc:${npc.npc_name}` },
+            }}
+            data-testid={`npc-card-link-mapa-${npc.id}`}
+            className="inline-flex items-center gap-1 text-[11px] text-amber-300/90 hover:text-amber-200 transition-colors"
+          >
+            <MapPin className="w-3 h-3" aria-hidden />
+            {t("view_in_mapa")}
+          </Link>
         </div>
       )}
     </div>

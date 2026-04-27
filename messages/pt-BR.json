@@ -1181,7 +1181,8 @@
       "rel_unknown": "Desconhecido",
       "your_notes": "Suas Notas",
       "notes_placeholder": "O que você sabe sobre este NPC?",
-      "view_in_journal": "Ver no Journal de NPCs"
+      "view_in_journal": "Ver no Journal de NPCs",
+      "view_in_diario": "Ver no Diário"
     },
     "quest_drawer": {
       "description": "Descrição",
@@ -1612,7 +1613,8 @@
       "scratch_pad_label": "Rascunho de Combate",
       "scratch_pad_placeholder": "Anote algo rápido...",
       "scratch_pad_clear": "Limpar",
-      "scratch_pad_clear_confirm": "Limpar rascunho?"
+      "scratch_pad_clear_confirm": "Limpar rascunho?",
+      "view_in_mapa": "Ver no Mapa"
     },
     "minhas_notas": {
       "search_placeholder": "Buscar nas suas notas...",

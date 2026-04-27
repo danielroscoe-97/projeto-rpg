@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import {
   StickyNote,
   Users,
@@ -59,7 +60,27 @@ export function DiarioTab({
   userId,
 }: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq.notes");
+  const searchParams = useSearchParams();
   const [activeSubTab, setActiveSubTab] = useState<DiarioSubTab>("quick");
+
+  // Wave 3c D4 cross-nav: when the URL declares a section
+  // (`?tab=diario&section=npcs`) auto-select the matching sub-tab. Used by
+  // the "Ver no Diário" link from PlayerNpcDrawer; keeps the URL the source
+  // of truth so the link is shareable.
+  useEffect(() => {
+    const section = searchParams?.get("section");
+    const map: Record<string, DiarioSubTab> = {
+      quick: "quick",
+      minhas: "minhas",
+      npcs: "npcs",
+      quests: "quests",
+      dm_inbox: "dm_inbox",
+    };
+    if (section && map[section]) {
+      const next = map[section];
+      setActiveSubTab((cur) => (cur === next ? cur : next));
+    }
+  }, [searchParams]);
 
   const {
     quickNotes,
