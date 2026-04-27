@@ -60,11 +60,11 @@ export interface PlayerHqV2TabProps {
  */
 export function HeroiTab({
   characterId,
-  // campaignId/userId arrive from the shell for parity with sibling
-  // wrappers, but Herói currently composes only character-scoped data.
-  // Keeping them in the destructure (prefixed) silences unused-prop
-  // drift if ever a section here grows to need them.
-  campaignId: _campaignId,
+  // campaignId is forwarded to CharacterCoreStats for the AbilityChip
+  // broadcast (Wave 3b · Story C7). userId is unused at this surface but
+  // kept for parity with sibling wrappers — when a future section reads
+  // it the prop is already wired.
+  campaignId,
   userId: _userId,
 }: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq");
@@ -143,7 +143,11 @@ export function HeroiTab({
         onSetConditions={setConditions}
       />
 
-      {/* 2. AC / Init / Speed / Inspiration / Spell Save DC + 6 ability chips */}
+      {/* 2. AC / Init / Speed / Inspiration / Spell Save DC + 6 ability chips.
+          Wave 3b: passes proficiencies + level + campaign/character context
+          so the V2 ability cells render as interactive AbilityChip with
+          CHK + SAVE roll zones. V1 ignores the new props and renders the
+          legacy static cells unchanged. */}
       <CharacterCoreStats
         ac={character.ac}
         initiativeBonus={character.initiative_bonus}
@@ -157,6 +161,11 @@ export function HeroiTab({
         wis={character.wis}
         chaScore={character.cha_score}
         onToggleInspiration={toggleInspiration}
+        proficiencies={character.proficiencies}
+        level={character.level}
+        campaignId={campaignId}
+        characterId={character.id}
+        characterName={character.name}
       />
 
       {/* 3. Saves + Skills (3-col grid per A3) */}
