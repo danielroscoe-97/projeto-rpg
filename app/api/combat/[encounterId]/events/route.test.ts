@@ -22,11 +22,12 @@
 
 import type { NextRequest } from "next/server";
 
-// jsdom env doesn't polyfill Request, so we don't import NextRequest at
-// runtime — the route only reads `req.url` and constructs a `new URL(...)`
-// from it. A plain object with a `url` field is duck-typed correctly.
-// (Switching to node env would require a separate test config — overkill
-// for this surface.)
+// P-21 fix (2026-04-26 review): the file uses `@jest-environment node`
+// (top of file). Node 18+ has Request/Response in global scope, but
+// constructing a real NextRequest still needs a fully-formed URL. The
+// route only reads `req.url`, so a plain `{ url }` object duck-types
+// correctly via `as unknown as NextRequest` — cheaper than instantiating
+// the full Request class.
 
 // ---- Mocks ---------------------------------------------------------------
 

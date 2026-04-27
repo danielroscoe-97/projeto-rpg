@@ -585,7 +585,7 @@ Instrumentar via Sentry + log estruturado:
 
 Fora do Sprint 1:
 
-- ❌ **Redis / Postgres journal persistence** — D1 decisão, fica in-memory
+- ⚠️ **~~Redis / Postgres journal persistence~~** — **REVISADO 2026-04-26 (Caminho A):** D1 original era "fica in-memory". Code review da PR #59 caçou um bug arquitetural critical (Map module-level dividia client/server runtimes; journal sempre vazio em prod). Migrado pra Postgres (`combat_events` + migration 184) com a mesma ring-buffer semantics via trigger `trim_combat_events_per_session`. **Postgres journal agora É goal, não non-goal.** Redis ainda fica como non-goal (custo + ops > benefício pro MVP).
 - ❌ **Bidirectional app-level heartbeat refactor** — só timing reconciliation (CR-06)
 - ❌ **Optimistic UI** — mutações ainda são pessimistic (esperam server ack)
 - ❌ **Zod schemas em todas as mutações** — só player-registration (CR-05)
