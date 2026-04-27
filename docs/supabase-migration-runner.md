@@ -2,20 +2,22 @@
 
 **Audience:** AI agents and humans applying migrations to the Pocket DM Supabase project (`mdcmjpcjkqgyxvhweoqs.supabase.co`).
 
-**Last verified:** 2026-04-27 (Sprint 3 bundle, agent without docker/CLI).
+**Last updated:** 2026-04-27 (Supabase CLI installed; agents now apply directly via `supabase db push --linked`).
 
 ---
 
-## TL;DR — How migrations actually deploy in this project
+## TL;DR — How migrations deploy in this project
 
-We do NOT use `supabase db push`, GitHub Actions, or any auto-deploy. Migrations land in two places:
+**Primary path (use this):** `supabase db push --linked` from the agent's shell. CLI is installed at `C:\Users\dani_\bin\supabase.exe`, logged in via PAT in user keychain, project linked. Any agent running as user `dani_` inherits auth + link state automatically.
+
+**Fallback path (only if CLI broken):** stage a bundle in `.claude/prod-deploy/<bundle-name>/` (sanity + apply + verify SQLs) and ask Dani to paste into Dashboard SQL Editor. This was the only path before 2026-04-27 — kept documented for emergency.
+
+Migrations land in two places that must stay in sync:
 
 1. **`supabase/migrations/NNN_<slug>.sql`** — source of truth in the repo (committed in the PR that introduces the change).
-2. **The live Supabase database** — applied **manually via the Dashboard SQL Editor** by Dani, using a staged "bundle" prepared by the agent in `.claude/prod-deploy/<bundle-name>/`.
+2. **The live Supabase database** — applied via `supabase db push --linked` (or, fallback, Dashboard).
 
-The two are **decoupled by design**: merging a PR with a migration file does NOT apply it to the database. An agent must explicitly stage the bundle and the human must run the SQL in the Dashboard.
-
-This is why a PR can land on master with code that reads new columns, and the production app then crashes with `42703 column does not exist` — because nobody applied the migration. Always check.
+Merging a PR with a migration file does NOT auto-apply it. The agent finishing the sprint MUST run `supabase migration list --linked` and confirm parity. Sprint 3 ended with PR #68 merged + reading `hit_dice` column that didn't exist in DB → would have crashed Player HQ on next deploy. Don't let that happen again.
 
 ---
 
@@ -24,15 +26,48 @@ This is why a PR can land on master with code that reads new columns, and the pr
 | Situation | Path |
 |---|---|
 | Adding a migration file to the repo (DDL or DML) | Commit `supabase/migrations/NNN_*.sql` in your feature PR. Reviewer gates merge. |
-| Applying a migration to the live DB | **Stage a bundle** in `.claude/prod-deploy/<bundle-name>/` per the template below; ask Dani to run via Dashboard. |
-| Quick experiment / read-only inspection | Use a Node script with `supabase-js` + `SUPABASE_SERVICE_ROLE_KEY` from `.env.local`. Pattern below. |
+| Applying a migration to the live DB | **`supabase db push --linked`** (preview with `--dry-run` first) |
+| Read-only inspection or DML-only data fixes | Node script with `supabase-js` + `SUPABASE_SERVICE_ROLE_KEY` from `.env.local`. Pattern below. |
 | pgTap test of an RLS policy | `npm run test:pgtap` (requires Docker — separate path, not for prod). |
+| Emergency / CLI broken | Stage a bundle in `.claude/prod-deploy/<bundle-name>/` per template below; ask Dani to run via Dashboard. |
 
-**Agents do NOT have permission to apply migrations directly.** Even with the service role key, PostgREST only exposes table CRUD — not raw SQL. The Supabase Management API (which DOES allow raw SQL) requires a personal access token (PAT), not a service role key, and that PAT lives only in Dani's keychain.
+**Agents inherit Dani's CLI auth automatically** because the CLI stores its access token + linked project state in user-scoped paths (`%USERPROFILE%\AppData\Roaming\supabase` for the token; `supabase/.temp/` for link config — both gitignored). Any agent running as user `dani_` (= every Claude Code session on this Windows box) can run the CLI without re-authenticating.
 
 ---
 
-## Bundle template — `.claude/prod-deploy/<bundle-name>/`
+## Primary path — `supabase db push --linked`
+
+The 3 commands you usually need (in order):
+
+```bash
+# 1. See what's pending. Reads `supabase/migrations/` locally vs `supabase_migrations.schema_migrations` remote.
+supabase migration list --linked
+
+# 2. Preview what would be applied without applying.
+supabase db push --linked --dry-run
+
+# 3. Actually apply. Asks `[Y/n]` before push.
+supabase db push --linked
+```
+
+**Idempotent:** already-applied migrations skip. Safe to re-run.
+
+**What it can do:** any DDL or DML in `supabase/migrations/`. ALTER TABLE, CREATE FUNCTION, INSERT, UPDATE — all work.
+
+**What it cannot do:** apply a SQL file that's NOT in `supabase/migrations/`. If you need to run a one-off SQL that shouldn't be a migration (e.g., a backfill that derives from runtime data, an investigation query), use a Node script with supabase-js — pattern below.
+
+**If install or auth is broken:**
+- `supabase --version` should print 2.90.0 or later. If "command not found", reinstall: `Invoke-WebRequest -Uri "https://github.com/supabase/cli/releases/latest/download/supabase_windows_amd64.tar.gz" -OutFile "$env:TEMP\sup.tar.gz"; tar -xzf "$env:TEMP\sup.tar.gz" -C "$env:USERPROFILE\bin" supabase.exe`
+- `supabase projects list` should list the project. If "not authenticated", Dani regenerates PAT at https://supabase.com/dashboard/account/tokens → `supabase login --token sbp_...`
+- `supabase migration list --linked` should print history. If "not linked", re-link: `supabase link --project-ref mdcmjpcjkqgyxvhweoqs --password '<db-password>'`
+
+**Never use `supabase db reset --linked`** — destructive, drops all data on remote and re-applies from zero. Only safe on local dev DBs.
+
+---
+
+## Fallback — Bundle template `.claude/prod-deploy/<bundle-name>/`
+
+Use only if CLI is broken or for high-risk migrations where you want Dani to eyeball each query before running. Pattern documented for emergency.
 
 Every bundle has the same 4 files. Copy from an existing bundle (e.g. `sprint-3-bundle/`) and adapt:
 
