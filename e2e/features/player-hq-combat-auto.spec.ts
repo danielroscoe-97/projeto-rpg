@@ -72,8 +72,10 @@ async function broadcastOnCampaign(
       ).catch(() => null);
       // Fallback: read the supabase client from the module the app
       // already imported (it's attached to window in dev for HMR).
+      // Debug-only window probe — `__supabase__` is sometimes attached
+      // to the window object during dev for HMR convenience; we fall
+      // back to the dynamic `createClient()` from the chunk import.
       const supabase =
-        // @ts-ignore — debug-only window probe
         (window as unknown as { __supabase__?: unknown }).__supabase__ ??
         mod?.createClient?.();
       if (!supabase) throw new Error("supabase client not reachable from page");

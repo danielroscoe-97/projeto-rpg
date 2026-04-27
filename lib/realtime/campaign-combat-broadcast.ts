@@ -107,7 +107,7 @@ async function send(campaignId: string, payload: Payload): Promise<void> {
     // still pending after the send timeout, the catch below silences it
     // (best-effort guarantee documented above).
     await new Promise<void>((resolve) => {
-      channel.subscribe((status) => {
+      channel.subscribe((status: string) => {
         if (status === "SUBSCRIBED") resolve();
       });
       // Hard ceiling so a wedged broker doesn't block the Mestre's UI.
