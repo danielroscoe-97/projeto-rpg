@@ -27,6 +27,11 @@ import { KeyboardCheatsheet } from "@/components/combat/KeyboardCheatsheet";
 import { MonsterGroupHeader, getGroupInitiative, getGroupBaseName } from "@/components/combat/MonsterGroupHeader";
 import { setLastHpMode, type HpMode } from "@/components/combat/HpAdjuster";
 import { broadcastEvent, getDmChannel, scheduleDmChannelCleanup, registerHiddenLookup } from "@/lib/realtime/broadcast";
+import {
+  broadcastCombatStarted,
+  broadcastCombatEnded,
+  broadcastCombatTurnAdvanceMirror,
+} from "@/lib/realtime/campaign-combat-broadcast";
 import { toast } from "sonner";
 import type { Combatant } from "@/lib/types/combat";
 import { loadCombatBackup } from "@/lib/stores/combat-persist";
@@ -480,8 +485,26 @@ export function CombatSessionClient({
         total_votes: playerVotes,
       });
     }
+    // Wave 3a C4 — mirror combat:ended on the campaign channel so
+    // HeroiTab + Briefing widgets can flip out of combat-auto. We emit
+    // BEFORE doEndEncounter so listeners observe the event while the
+    // encounter row is still flagged active in DB; players that hit
+    // the polling fallback during this window still see the right
+    // state. Per-player snapshots are computed CLIENT-SIDE in HeroiTab
+    // (the hook reads `useCharacterStatus` after the event lands) so we
+    // don't need to ship a Mestre-derived snapshot here.
+    {
+      const sid = getSessionId();
+      const encounterId = useCombatStore.getState().encounter_id;
+      if (sid && encounterId) {
+        broadcastCombatEnded(campaignId, {
+          combat_id: encounterId,
+          session_id: sid,
+        });
+      }
+    }
     doEndEncounter();
-  }, [doEndEncounter, getSessionId, pollVotes]);
+  }, [doEndEncounter, getSessionId, pollVotes, campaignId]);
 
   // Hydrate audio favorites store (DM is always authenticated)
   useEffect(() => {
@@ -763,6 +786,28 @@ export function CombatSessionClient({
           round_number: 1,
           encounter_id: store.encounter_id!,
         });
+        // Wave 3a C4 — mirror combat:started on the campaign channel so
+        // HeroiTab + Briefing widgets can flip into combat-auto without
+        // discovering and subscribing to this session topic.
+        const firstCb = sorted[0];
+        const secondCb = sorted[1];
+        broadcastCombatStarted(campaignId, {
+          combat_id: store.encounter_id!,
+          session_id: sessionId ?? "",
+          round: 1,
+          current_turn: firstCb
+            ? {
+                combatant_id: firstCb.id,
+                name: firstCb.display_name?.trim() || firstCb.name,
+              }
+            : undefined,
+          next_turn: secondCb
+            ? {
+                combatant_id: secondCb.id,
+                name: secondCb.display_name?.trim() || secondCb.name,
+              }
+            : undefined,
+        });
         // W5 (F19) — auto-invite logged-in campaign members (fire-and-forget).
         // Quick Combat (campaignId=null) no-ops on the server (204).
         if (campaignId && sessionId) {
@@ -835,6 +880,27 @@ export function CombatSessionClient({
         current_turn_index: 0,
         round_number: 1,
         encounter_id: encounter_id,
+      });
+      // Wave 3a C4 — mirror combat:started on the campaign channel.
+      // Same payload shape as the other handleStartCombat branch above.
+      const firstCb2 = sorted[0];
+      const secondCb2 = sorted[1];
+      broadcastCombatStarted(campaignId, {
+        combat_id: encounter_id,
+        session_id,
+        round: 1,
+        current_turn: firstCb2
+          ? {
+              combatant_id: firstCb2.id,
+              name: firstCb2.display_name?.trim() || firstCb2.name,
+            }
+          : undefined,
+        next_turn: secondCb2
+          ? {
+              combatant_id: secondCb2.id,
+              name: secondCb2.display_name?.trim() || secondCb2.name,
+            }
+          : undefined,
       });
       // W5 (F19) — auto-invite logged-in campaign members (fire-and-forget).
       // Quick Combat (campaignId=null) no-ops on the server (204).
@@ -969,6 +1035,54 @@ export function CombatSessionClient({
 
   // Combat resilience: beforeunload flush + offline→online reconciliation
   useCombatResilience();
+
+  // Wave 3a C4 — campaign-channel mirror of turn advances. Lets HeroiTab
+  // (subscribed to `campaign:${id}` via `useCampaignCombatState`) keep
+  // its CombatBanner copy ("Round 3 · Turno de Grolda · próximo: Capa")
+  // live without subscribing to this session topic.
+  //
+  // We intentionally do NOT extend `broadcastEvent`'s session pipeline:
+  // these mirrors are best-effort hints, not authoritative events. If
+  // delivery fails the player still has the polling fallback (DB query
+  // every 10s after 30s realtime silence) to recover state.
+  const turnMirrorRef = useRef<{ round: number; turn: number } | null>(null);
+  useEffect(() => {
+    if (!is_active || !campaignId || !sessionId) return;
+    const prev = turnMirrorRef.current;
+    if (prev?.round === round_number && prev?.turn === current_turn_index) return;
+    turnMirrorRef.current = { round: round_number, turn: current_turn_index };
+
+    const encId = useCombatStore.getState().encounter_id;
+    if (!encId) return;
+
+    const current = combatants[current_turn_index];
+    // Walk forward to the next non-defeated, non-hidden combatant for
+    // the player-facing "next" name. Hidden combatants already get
+    // stripped DM-side; we mirror that here for parity.
+    let next: typeof current | undefined;
+    for (let i = 1; i < combatants.length; i++) {
+      const candidate = combatants[(current_turn_index + i) % combatants.length];
+      if (candidate && !candidate.is_defeated && !candidate.is_hidden) {
+        next = candidate;
+        break;
+      }
+    }
+
+    broadcastCombatTurnAdvanceMirror(campaignId, {
+      combat_id: encId,
+      session_id: sessionId,
+      round_number,
+      current_turn_index,
+      current_combatant_id: current?.id,
+      current_combatant_name: current
+        ? current.display_name?.trim() || current.name
+        : undefined,
+      next_combatant_id: next?.id,
+      next_combatant_name: next
+        ? next.display_name?.trim() || next.name
+        : undefined,
+    });
+  }, [is_active, campaignId, sessionId, round_number, current_turn_index, combatants]);
 
   // Keyboard shortcuts for DM combat view (NFR25)
   useCombatKeyboardShortcuts({
