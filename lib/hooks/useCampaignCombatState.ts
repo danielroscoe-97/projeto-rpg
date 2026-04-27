@@ -195,10 +195,14 @@ export function useCampaignCombatState(
 
     channel.on("broadcast", { event: "combat:ended" }, ({ payload }: { payload: CombatEndedPayload }) => {
       noteEvent();
-      // Bridge to A6 if a snapshot is present — caller decides what to
-      // do with it (HeroiTab → recordCombatEnded). Defensive nullish so
-      // a Mestre that didn't ship a snapshot still triggers reset.
-      if (payload.snapshot && onCombatEndedRef.current) {
+      // Bridge to A6: callback ALWAYS fires on combat:ended. HeroiTab
+      // builds the per-player snapshot client-side (party privacy:
+      // Mestre never ships per-player HP/slots in the broadcast). The
+      // optional `payload.snapshot` is forwarded as-is when present so
+      // future Mestre-side enhancements can opt in. Pre-fix this guard
+      // gated on `payload.snapshot &&` and PostCombatBanner was dead
+      // code in production — see adversarial review of PR #86.
+      if (onCombatEndedRef.current) {
         try {
           onCombatEndedRef.current(payload.snapshot);
         } catch {

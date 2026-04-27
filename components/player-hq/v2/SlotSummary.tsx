@@ -24,6 +24,7 @@
  */
 
 import { SpellSlotGrid } from "@/components/ui/SpellSlotGrid";
+import { isPlayerHqV2Enabled } from "@/lib/flags/player-hq-v2";
 
 export interface SlotSummaryProps {
   spellSlots: Record<string, { max: number; used: number }> | null;
@@ -59,6 +60,14 @@ export function SlotSummary({ spellSlots, className = "" }: SlotSummaryProps) {
 
   if (levels.length === 0) return null;
 
+  // PRD #37 dot inversion (Sub-zero PR #83) is gated by V2 flag at the
+  // call site. SpellSlotsHq (Coluna B) passes `inverted={v2}`; mirroring
+  // here keeps both ribbon and panel visually consistent — without this
+  // the same slot row would render filled-as-available in the ribbon
+  // and filled-as-consumed in the panel below. Surfaced by adversarial
+  // review of PR #86 (P1-1).
+  const inverted = isPlayerHqV2Enabled();
+
   return (
     <div
       className={`flex items-center gap-2 flex-wrap ${className}`}
@@ -79,10 +88,15 @@ export function SlotSummary({ spellSlots, className = "" }: SlotSummaryProps) {
             used={slot.used}
             max={slot.max}
             variant="transient"
+            inverted={inverted}
             density="compact"
             filledClassName="bg-amber-400 border-amber-400"
             readOnly
-            ariaLabel={`Level ${slot.level} slots: ${slot.max - slot.used} of ${slot.max} available`}
+            ariaLabel={
+              inverted
+                ? `Level ${slot.level} slots: ${slot.used} of ${slot.max} consumed`
+                : `Level ${slot.level} slots: ${slot.max - slot.used} of ${slot.max} available`
+            }
           />
         </div>
       ))}
