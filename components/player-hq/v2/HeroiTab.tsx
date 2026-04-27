@@ -5,6 +5,7 @@ import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 import { useCharacterAbilities } from "@/lib/hooks/useCharacterAbilities";
 import { useActiveEffects } from "@/lib/hooks/useActiveEffects";
+import { useCampaignCombatState } from "@/lib/hooks/useCampaignCombatState";
 
 import { CharacterStatusPanel } from "../CharacterStatusPanel";
 import { CharacterCoreStats } from "../CharacterCoreStats";
@@ -15,6 +16,7 @@ import { ResourceTrackerList } from "../ResourceTrackerList";
 import { SpellListSection } from "../SpellListSection";
 import { RestResetPanel } from "../RestResetPanel";
 import { RibbonVivo } from "./RibbonVivo";
+import { CombatBanner } from "./CombatBanner";
 
 /**
  * Canonical prop shape forwarded by `PlayerHqShellV2` to every B2 tab
@@ -60,11 +62,11 @@ export interface PlayerHqV2TabProps {
  */
 export function HeroiTab({
   characterId,
-  // campaignId/userId arrive from the shell for parity with sibling
-  // wrappers, but Herói currently composes only character-scoped data.
-  // Keeping them in the destructure (prefixed) silences unused-prop
-  // drift if ever a section here grows to need them.
-  campaignId: _campaignId,
+  campaignId,
+  // userId arrives from the shell for parity with sibling wrappers, but
+  // Herói currently composes only character-scoped data. Keeping it in
+  // the destructure (prefixed) silences unused-prop drift if ever a
+  // section here grows to need it.
   userId: _userId,
 }: PlayerHqV2TabProps) {
   const t = useTranslations("player_hq");
@@ -92,6 +94,14 @@ export function HeroiTab({
   // mirrors V1 PlayerHqShell.tsx:276 which also held the hook at shell
   // level for the same purpose. A future shell-level lift can dedupe.
   const abilitiesHook = useCharacterAbilities(characterId);
+
+  // Wave 3a C4 — campaign-scoped combat detection. Hook owns the
+  // realtime channel + 10s polling fallback + cleanup; HeroiTab consumes
+  // the boolean + names to flip the layout into combat-auto mode.
+  const combatState = useCampaignCombatState({
+    campaignId,
+    characterId,
+  });
 
   const loading = charLoading || resourceHook.loading;
 
@@ -122,17 +132,33 @@ export function HeroiTab({
   const concentrationConflict =
     activeEffectsHook.getConcentrationConflict();
 
+  // Combat-auto derives the URL for "Entrar no Combate" from the live
+  // session id. Falls back to the campaign view when no session id is
+  // observed yet (race on first broadcast — happens for ~1s).
+  const combatHref = combatState.combatId
+    ? `/app/combat/${combatState.combatId}`
+    : `/app/campaigns/${campaignId}`;
+
   return (
     <div className="space-y-3" data-testid="heroi-tab-content">
-      {/* TODO(post-combat + combat-auto): the next commits in this PR
-          mount <CombatBanner> + <PostCombatBanner> here, and wire the
-          ribbon's `combatActive` flag from `useCampaignCombatState`.
-          Layout below stays valid in both states because the columns are
-          self-balancing via `minmax(0, 1fr)`. */}
+      {/* TODO(post-combat A6): mount <PostCombatBanner> here in the
+          follow-up commit. The wire-up reads usePostCombatState({
+          mode: "auth" }) and shows the modal when visible+snapshot. */}
+
+      {/* C5 — Combat banner. Slides in above the ribbon when combat is
+          active; instant-unmounts on `combat:ended` so layout stabilizes
+          immediately. Owns its own enter animation (CLS budget <0.1). */}
+      <CombatBanner
+        active={combatState.active}
+        round={combatState.round}
+        currentTurnName={combatState.currentTurn?.name ?? null}
+        nextTurnName={combatState.nextTurn?.name ?? null}
+        combatHref={combatHref}
+      />
 
       {/* C1 — Ribbon Vivo. Sticky, 2-line, replaces the V1 HP card +
-          stat-chips. `combatActive` defaults to false here; the C4 hook
-          flips it once landed. */}
+          stat-chips. Pulse gold on HP change activates only when combat
+          is active (so out-of-combat tweaks stay quiet). */}
       <RibbonVivo
         characterId={character.id}
         characterName={character.name}
@@ -146,6 +172,8 @@ export function HeroiTab({
         spellSaveDc={character.spell_save_dc}
         conditions={character.conditions}
         spellSlots={character.spell_slots}
+        combatActive={combatState.active}
+        combatHref={combatState.active ? combatHref : null}
         onHpChange={updateHp}
         onTempHpChange={updateTempHp}
         onToggleCondition={toggleCondition}
@@ -195,17 +223,49 @@ export function HeroiTab({
             onToggleInspiration={toggleInspiration}
           />
 
-          <ProficienciesSection
-            proficiencies={character.proficiencies ?? {}}
-            level={character.level}
-            str={character.str}
-            dex={character.dex}
-            con={character.con}
-            intScore={character.int_score}
-            wis={character.wis}
-            chaScore={character.cha_score}
-            onSave={saveField}
-          />
+          {/* C5 — In combat-auto mode, perícias collapse into an
+              accordion so saves + ability chips stay one glance away
+              without the player scrolling past 18 skill rows. We use the
+              native <details>/<summary> element to avoid pulling shadcn
+              Collapsible just for one toggle. The accordion is closed by
+              default; the player opens it explicitly when they need to
+              roll a skill. Out of combat the section renders inline as
+              before. */}
+          {combatState.active ? (
+            <details
+              className="bg-card border border-border rounded-xl"
+              data-testid="heroi-skills-collapsed"
+            >
+              <summary className="cursor-pointer select-none px-4 py-3 text-xs font-semibold text-amber-400 uppercase tracking-wider hover:bg-white/5">
+                {t("combat_auto.skills_accordion_label")}
+              </summary>
+              <div className="px-4 pb-3">
+                <ProficienciesSection
+                  proficiencies={character.proficiencies ?? {}}
+                  level={character.level}
+                  str={character.str}
+                  dex={character.dex}
+                  con={character.con}
+                  intScore={character.int_score}
+                  wis={character.wis}
+                  chaScore={character.cha_score}
+                  onSave={saveField}
+                />
+              </div>
+            </details>
+          ) : (
+            <ProficienciesSection
+              proficiencies={character.proficiencies ?? {}}
+              level={character.level}
+              str={character.str}
+              dex={character.dex}
+              con={character.con}
+              intScore={character.int_score}
+              wis={character.wis}
+              chaScore={character.cha_score}
+              onSave={saveField}
+            />
+          )}
         </div>
 
         {/* ── Coluna B — Recursos voláteis ──────────────────────────── */}
@@ -258,6 +318,23 @@ export function HeroiTab({
         onDismissAllEffects={activeEffectsHook.dismissAll}
         activeEffectCount={activeEffectsHook.effects.length}
       />
+
+      {/* C5 — Quick-Note FAB. Appears bottom-right only in combat-auto
+          mode. The full inline note composer lives in Wave 3c (D5); for
+          now the FAB deep-links to `/sheet?tab=diario&section=quick-note`
+          so the affordance + URL contract exist. The Diário wrapper will
+          intercept the section param and open the composer once D5
+          ships. */}
+      {combatState.active && (
+        <a
+          href={`/app/campaigns/${campaignId}/sheet?tab=diario&section=quick-note`}
+          data-testid="combat-quick-note-fab"
+          aria-label={t("combat_auto.quick_note_aria")}
+          className="fixed bottom-4 right-4 z-30 inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500 text-background shadow-lg shadow-black/40 hover:bg-amber-400 transition-colors"
+        >
+          <span aria-hidden className="text-xl">📝</span>
+        </a>
+      )}
     </div>
   );
 }

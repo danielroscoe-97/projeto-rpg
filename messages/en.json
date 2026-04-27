@@ -1273,7 +1273,9 @@
       "ribbon_expand": "Expand status",
       "ribbon_collapse": "Collapse status",
       "temp_hp_dec_aria": "Decrease temporary HP",
-      "temp_hp_inc_aria": "Increase temporary HP"
+      "temp_hp_inc_aria": "Increase temporary HP",
+      "skills_accordion_label": "Skills",
+      "quick_note_aria": "Quick note"
     },
     "resources": {
       "trackers_title": "Class Resources",

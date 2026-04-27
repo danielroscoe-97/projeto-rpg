@@ -1271,7 +1271,9 @@
       "ribbon_expand": "Expandir status",
       "ribbon_collapse": "Recolher status",
       "temp_hp_dec_aria": "Diminuir HP temporário",
-      "temp_hp_inc_aria": "Aumentar HP temporário"
+      "temp_hp_inc_aria": "Aumentar HP temporário",
+      "skills_accordion_label": "Perícias",
+      "quick_note_aria": "Anotar rapidamente"
     },
     "resources": {
       "trackers_title": "Recursos de Classe",
