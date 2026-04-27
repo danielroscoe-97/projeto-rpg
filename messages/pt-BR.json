@@ -1216,6 +1216,26 @@
       "add_pin": "Add Pin"
     },
     "map_new_nodes": "novidades no mapa",
+    "ability_chip": {
+      "check_verb": "teste",
+      "save_verb": "salvamento",
+      "with_advantage": "com vantagem",
+      "with_disadvantage": "com desvantagem",
+      "roll_verb": "Jogar",
+      "check_aria_suffix": "teste",
+      "save_aria_suffix": "salvamento",
+      "with_proficiency": "com proficiência",
+      "modifier_label": "modificador",
+      "save_proficient_aria": "Proficiente neste salvamento",
+      "menu_advantage": "Vantagem",
+      "menu_disadvantage": "Desvantagem",
+      "menu_normal": "Normal",
+      "manual_modifier_menu": "Modificador manual",
+      "manual_modifier_label": "Modificador manual",
+      "manual_modifier_apply": "Aplicar",
+      "manual_modifier_cancel": "Cancelar",
+      "manual_modifier_input_aria": "Valor do modificador manual (ex. +3 para Bless)"
+    },
     "recap": {
       "title": "{count} novidades desde sua ultima visita",
       "type_npc": "NPC",

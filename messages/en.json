@@ -1216,6 +1216,26 @@
       "add_pin": "Add Pin"
     },
     "map_new_nodes": "new on the map",
+    "ability_chip": {
+      "check_verb": "check",
+      "save_verb": "save",
+      "with_advantage": "with advantage",
+      "with_disadvantage": "with disadvantage",
+      "roll_verb": "Roll",
+      "check_aria_suffix": "check",
+      "save_aria_suffix": "saving throw",
+      "with_proficiency": "with proficiency",
+      "modifier_label": "modifier",
+      "save_proficient_aria": "Proficient in this saving throw",
+      "menu_advantage": "Advantage",
+      "menu_disadvantage": "Disadvantage",
+      "menu_normal": "Normal",
+      "manual_modifier_menu": "Manual modifier",
+      "manual_modifier_label": "Manual modifier",
+      "manual_modifier_apply": "Apply",
+      "manual_modifier_cancel": "Cancel",
+      "manual_modifier_input_aria": "Manual modifier value (e.g. +3 for Bless)"
+    },
     "recap": {
       "title": "{count} new since your last visit",
       "type_npc": "NPC",

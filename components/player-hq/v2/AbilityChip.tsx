@@ -61,6 +61,60 @@ import type { Ability, RollMode } from "@/lib/utils/dice-roller";
 /** Threshold in ms for long-press detection. 500ms is the iOS native value. */
 const LONG_PRESS_MS = 500;
 
+/**
+ * Localized strings the chip uses for aria-labels + the long-press menu.
+ * Caller threads these in from `useTranslations('player_hq.ability_chip')`
+ * so the entire chip respects the active locale (decision #44 cleanup).
+ */
+export interface ChipLabels {
+  /** "Roll" verb (EN) / "Jogar" (PT-BR). Used in aria-label prefix. */
+  rollVerb: string;
+  /** "check" suffix in aria-label (EN) / "teste" (PT-BR). */
+  checkAriaSuffix: string;
+  /** "saving throw" suffix in aria-label (EN) / "salvamento" (PT-BR). */
+  saveAriaSuffix: string;
+  /** "with proficiency" clause (EN) / "com proficiência" (PT-BR). */
+  withProficiency: string;
+  /** "modifier" word in aria-label (EN) / "modificador" (PT-BR). */
+  modifierLabel: string;
+  /** Long-press menu — "Advantage" option label. */
+  advantage: string;
+  /** Long-press menu — "Disadvantage" option label. */
+  disadvantage: string;
+  /** Long-press menu — "Normal" option label. */
+  normal: string;
+  /** Long-press menu — "Manual modifier" option label. */
+  manualModifierMenu: string;
+  /** Manual modifier input — field label (e.g. "Manual modifier"). */
+  manualModifierLabel: string;
+  /** Manual modifier input — apply button. */
+  manualModifierApply: string;
+  /** Manual modifier input — cancel button. */
+  manualModifierCancel: string;
+  /** Manual modifier input — accessible label for the number field. */
+  manualModifierInputAria: string;
+  /** Aria-label for the proficiency dot. */
+  saveProficientAria: string;
+}
+
+/** Default labels (EN). Used when no `chipLabels` prop is threaded in. */
+export const DEFAULT_CHIP_LABELS: ChipLabels = {
+  rollVerb: "Roll",
+  checkAriaSuffix: "check",
+  saveAriaSuffix: "saving throw",
+  withProficiency: "with proficiency",
+  modifierLabel: "modifier",
+  advantage: "Advantage",
+  disadvantage: "Disadvantage",
+  normal: "Normal",
+  manualModifierMenu: "Manual modifier",
+  manualModifierLabel: "Manual modifier",
+  manualModifierApply: "Apply",
+  manualModifierCancel: "Cancel",
+  manualModifierInputAria: "Manual modifier value (e.g. +3 for Bless)",
+  saveProficientAria: "Proficient in this saving throw",
+};
+
 /** Public props — locked surface; future Wave 3b additions extend this. */
 export interface AbilityChipProps {
   /** Ability key (str/dex/con/int/wis/cha). */
@@ -77,6 +131,8 @@ export interface AbilityChipProps {
   rollContext: UseAbilityRollOptions;
   /** Optional localized labels for the toast. Defaults to EN. */
   toastLabels?: RollToastLabels;
+  /** Optional localized labels for aria + menu. Defaults to EN. */
+  chipLabels?: ChipLabels;
 }
 
 /** Compute the D&D 5e modifier from a score. */
@@ -211,20 +267,32 @@ function useLongPress(args: { onTap: (e: React.MouseEvent | React.TouchEvent) =>
 /**
  * Inline advantage/disadvantage menu shown after a long-press. Renders as
  * an absolutely-positioned popover anchored to the chip. Outside-click and
- * Esc dismiss the menu. Three options + a cancel button.
+ * Esc dismiss the menu. Three roll-mode options + a "Manual modifier"
+ * option that swaps the menu body for a numeric input (Bless +1d4 average,
+ * Bardic Inspiration, etc.).
  */
 function RollModeMenu({
   open,
   onPick,
+  onPickManualModifier,
   onClose,
+  labels,
 }: {
   open: boolean;
   onPick: (mode: RollMode) => void;
+  /** Fired when the user confirms a manual modifier — value is signed integer. */
+  onPickManualModifier: (extra: number) => void;
   onClose: () => void;
+  labels: ChipLabels;
 }) {
   // Outside-click dismiss. We capture on document so any pointer event
   // outside the menu (which we render here) closes it.
   const menuRef = useRef<HTMLDivElement>(null);
+  // Two-step UI: list view → input view. Keeping this in component-local
+  // state keeps the main chip component free of menu-internal concerns.
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [manualValue, setManualValue] = useState<string>("");
+
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -243,7 +311,27 @@ function RollModeMenu({
     };
   }, [open, onClose]);
 
+  // Reset internal state every time the menu re-opens so a previously
+  // opened "manual input" view doesn't leak into the next long-press.
+  useEffect(() => {
+    if (!open) {
+      setShowManualInput(false);
+      setManualValue("");
+    }
+  }, [open]);
+
   if (!open) return null;
+
+  const applyManual = () => {
+    // Empty / invalid input → silently no-op (user can press Cancel or Esc).
+    const trimmed = manualValue.trim();
+    if (trimmed === "" || trimmed === "+" || trimmed === "-") return;
+    const parsed = Number.parseInt(trimmed, 10);
+    if (!Number.isFinite(parsed)) return;
+    onPickManualModifier(parsed);
+    onClose();
+  };
+
   return (
     <div
       ref={menuRef}
@@ -254,44 +342,119 @@ function RollModeMenu({
       // (its closest positioned ancestor). Without `top-full`, Tailwind's
       // `absolute` defaults to `top: 0` which placed the menu directly on top
       // of CHK / SAVE — covering the buttons that just opened it.
-      className="absolute z-30 left-1/2 -translate-x-1/2 top-full mt-1 bg-popover border border-border rounded-md shadow-lg py-1 min-w-[160px]"
+      className="absolute z-30 left-1/2 -translate-x-1/2 top-full mt-1 bg-popover border border-border rounded-md shadow-lg py-1 min-w-[180px]"
     >
-      <button
-        type="button"
-        role="menuitem"
-        data-testid="ability-chip-mode-advantage"
-        onClick={() => {
-          onPick("advantage");
-          onClose();
-        }}
-        className="block w-full text-left px-3 py-2 text-xs text-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
-      >
-        Advantage
-      </button>
-      <button
-        type="button"
-        role="menuitem"
-        data-testid="ability-chip-mode-disadvantage"
-        onClick={() => {
-          onPick("disadvantage");
-          onClose();
-        }}
-        className="block w-full text-left px-3 py-2 text-xs text-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
-      >
-        Disadvantage
-      </button>
-      <button
-        type="button"
-        role="menuitem"
-        data-testid="ability-chip-mode-normal"
-        onClick={() => {
-          onPick("normal");
-          onClose();
-        }}
-        className="block w-full text-left px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
-      >
-        Normal
-      </button>
+      {showManualInput ? (
+        // ── Manual modifier input view ────────────────────────────────
+        // Visible label + numeric input + Apply/Cancel pair. We keep the
+        // input native `<input type="number">` for mobile keyboard support;
+        // mode aside, players ARE entering numbers (typically -5..+10 range).
+        <div
+          className="px-3 py-2 space-y-2"
+          data-testid="ability-chip-manual-modifier-form"
+        >
+          <label
+            className="block text-[10px] uppercase tracking-wider text-muted-foreground"
+            htmlFor="ability-chip-manual-input"
+          >
+            {labels.manualModifierLabel}
+          </label>
+          <input
+            id="ability-chip-manual-input"
+            data-testid="ability-chip-manual-modifier-input"
+            type="number"
+            inputMode="numeric"
+            // Bless +1d4 average is +3; Bardic Inspiration d6 is +4; bigger
+            // bonuses (Bless + Guidance) cap around +10. Native min/max are
+            // hints — we do not hard-clamp because edge cases exist.
+            min={-10}
+            max={20}
+            step={1}
+            autoFocus
+            value={manualValue}
+            onChange={(e) => setManualValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                applyManual();
+              }
+            }}
+            placeholder="+3"
+            aria-label={labels.manualModifierInputAria}
+            className="w-full px-2 py-1.5 text-sm bg-background border border-border rounded focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              data-testid="ability-chip-manual-modifier-apply"
+              onClick={applyManual}
+              className="flex-1 px-2 py-1.5 text-xs font-semibold rounded bg-amber-400/15 text-amber-300 hover:bg-amber-400/25 transition-colors min-h-[36px]"
+            >
+              {labels.manualModifierApply}
+            </button>
+            <button
+              type="button"
+              data-testid="ability-chip-manual-modifier-cancel"
+              onClick={() => {
+                setShowManualInput(false);
+                setManualValue("");
+              }}
+              className="flex-1 px-2 py-1.5 text-xs rounded bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[36px]"
+            >
+              {labels.manualModifierCancel}
+            </button>
+          </div>
+        </div>
+      ) : (
+        // ── Default mode list view ────────────────────────────────────
+        <>
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="ability-chip-mode-advantage"
+            onClick={() => {
+              onPick("advantage");
+              onClose();
+            }}
+            className="block w-full text-left px-3 py-2 text-xs text-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
+          >
+            {labels.advantage}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="ability-chip-mode-disadvantage"
+            onClick={() => {
+              onPick("disadvantage");
+              onClose();
+            }}
+            className="block w-full text-left px-3 py-2 text-xs text-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
+          >
+            {labels.disadvantage}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="ability-chip-mode-normal"
+            onClick={() => {
+              onPick("normal");
+              onClose();
+            }}
+            className="block w-full text-left px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
+          >
+            {labels.normal}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            data-testid="ability-chip-mode-manual-modifier"
+            onClick={() => setShowManualInput(true)}
+            className="block w-full text-left px-3 py-2 text-xs text-foreground hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] border-t border-border/60"
+          >
+            {labels.manualModifierMenu}
+          </button>
+        </>
+      )}
     </div>
   );
 }
@@ -313,6 +476,7 @@ export function AbilityChip({
   clickable,
   rollContext,
   toastLabels = DEFAULT_ROLL_TOAST_LABELS,
+  chipLabels = DEFAULT_CHIP_LABELS,
 }: AbilityChipProps): React.ReactElement {
   const mod = modifierOf(score);
   const modStr = formatModifier(mod);
@@ -325,13 +489,21 @@ export function AbilityChip({
 
   const closeMenu = useCallback(() => setMenuFor(null), []);
 
+  /**
+   * Perform a roll. The `extraModifier` argument lets the caller add a
+   * one-shot bonus on top of the ability modifier (Bless +1d4 average,
+   * Bardic Inspiration, etc.). It is summed into `abilityMod` BEFORE the
+   * hook is called so the toast / broadcast / history all naturally show
+   * the combined modifier — no plumbing change to `useAbilityRoll`.
+   */
   const performRoll = useCallback(
-    (rollType: "check" | "save", mode: RollMode) => {
+    (rollType: "check" | "save", mode: RollMode, extraModifier = 0) => {
       if (mod == null) return; // can't roll an unfilled ability
+      const adjusted = mod + extraModifier;
       const result =
         rollType === "check"
-          ? rollCheck({ ability, abilityMod: mod, mode })
-          : rollSave({ ability, abilityMod: mod, proficient, mode });
+          ? rollCheck({ ability, abilityMod: adjusted, mode })
+          : rollSave({ ability, abilityMod: adjusted, proficient, mode });
       showRollResultToast(result, toastLabels);
     },
     [ability, mod, proficient, rollCheck, rollSave, toastLabels],
@@ -372,10 +544,12 @@ export function AbilityChip({
   );
 
   // Aria labels — keep verbose so screen readers announce intent before activation.
-  const checkAriaLabel = `Roll ${label} check, modifier ${modStr}`;
+  // Uses `chipLabels` so PT-BR readers hear "Jogar STR teste, modificador +2"
+  // instead of the previously-hardcoded EN string.
+  const checkAriaLabel = `${chipLabels.rollVerb} ${label} ${chipLabels.checkAriaSuffix}, ${chipLabels.modifierLabel} ${modStr}`;
   const saveAriaLabel = proficient
-    ? `Roll ${label} saving throw with proficiency, modifier ${modStr}`
-    : `Roll ${label} saving throw, modifier ${modStr}`;
+    ? `${chipLabels.rollVerb} ${label} ${chipLabels.saveAriaSuffix} ${chipLabels.withProficiency}, ${chipLabels.modifierLabel} ${modStr}`
+    : `${chipLabels.rollVerb} ${label} ${chipLabels.saveAriaSuffix}, ${chipLabels.modifierLabel} ${modStr}`;
 
   return (
     <div
@@ -467,7 +641,7 @@ export function AbilityChip({
                     filled={true}
                     variant="permanent"
                     size="sm"
-                    ariaLabel={saveAriaLabel}
+                    ariaLabel={chipLabels.saveProficientAria}
                     filledClassName="bg-amber-400 border-amber-400"
                   />
                 </span>
@@ -486,6 +660,13 @@ export function AbilityChip({
               open={true}
               onClose={closeMenu}
               onPick={(mode) => performRoll(menuFor, mode)}
+              onPickManualModifier={(extra) =>
+                // Manual modifier always rolls in normal mode — adv/disadv
+                // is a separate axis; if a player wanted both they'd long-
+                // press again. Keeps the UX flat without a 4th step.
+                performRoll(menuFor, "normal", extra)
+              }
+              labels={chipLabels}
             />
           )}
         </div>
