@@ -354,7 +354,7 @@ Without this wiring, the cursor stays at 0 in sessionStorage and every reconnect
 **Integration points:**
 
 - `components/player/PlayerJoinClient.tsx` — primary consumer (Anon + Auth player modes)
-- `components/combat/CombatSessionClient.tsx` (DM) — secondary consumer; DM also benefits from resume on its own reconnect
+- `components/combat-session/CombatSessionClient.tsx` (DM) — **NÃO usa o hook**. Restrição arquitetural: o endpoint `/events` valida `?token=` contra `session_tokens` (jogador), e o Mestre não tem row nessa tabela; canal do Mestre é `broadcast: { self: false }` então nunca receberia `_journal_seq` pra avançar cursor. Reconciliação do Mestre fica em `useCombatResilience.reconnectAndSync` (replayOfflineQueue + state_sync broadcast + reconcileFullState do DB) — equivalente funcional sem precisar do journal endpoint. Ver [`docs/spec-resilient-reconnection.md`](../../docs/spec-resilient-reconnection.md) §19.
 
 **Skeleton render:**
 

@@ -1375,19 +1375,32 @@ export function PlayerJoinClient({
   //      is deferred to Sprint 2. The cursor still advances through the
   //      hook's internal setLastSeenSeq, so subsequent caught-up reconnects
   //      cost only one HTTP roundtrip with empty events.
+  // P-9 fix (2026-04-26 review): pass `currentEncounterId` (state, mutates
+  // when DM ends combat and starts a new one in the same session), NOT
+  // `encounterId` (prop, frozen at SSR time). Without this, a player who
+  // stays in the session across encounters keeps querying /events for the
+  // old encounter — works today only because the endpoint resolves
+  // session_id from encounter and the journal is per-session, but breaks
+  // the moment F13 (encounter is_active check) lands in the endpoint.
+  //
+  // P-8 fix (2026-04-26 review): tag both fetchFullState callers with
+  // `legacy_fallback` suffix so the F14 dashboard can distinguish journal-
+  // resume successes (resume returned `kind: events` with applied diff)
+  // from this stop-gap that effectively always falls back to /state. When
+  // the per-event reducer lands in Sprint 2, drop the suffix.
   const resumeApi = useEventResume({
     sessionId,
-    encounterId,
+    encounterId: currentEncounterId,
     token: sessionToken,
     onEvents: () => {
       const eid = encounterIdRef.current;
       if (!eid) return;
-      fetchFullState(eid, { priority: "emergency", caller: "resume_events" });
+      fetchFullState(eid, { priority: "emergency", caller: "resume_events_legacy_fallback" });
     },
     onFullRefetchNeeded: () => {
       const eid = encounterIdRef.current;
       if (!eid) return;
-      fetchFullState(eid, { priority: "emergency", caller: "resume_too_stale" });
+      fetchFullState(eid, { priority: "emergency", caller: "resume_too_stale_legacy_fallback" });
     },
   });
   // Refs so the channel useEffect (which intentionally has stable deps)
