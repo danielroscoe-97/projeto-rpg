@@ -17,6 +17,7 @@ import { QuickNotesList } from "../QuickNotesList";
 import { NpcJournal } from "../NpcJournal";
 import { PlayerQuestBoard } from "../PlayerQuestBoard";
 import { DmNotesInbox } from "../DmNotesInbox";
+import { MinhasNotas } from "./diario/MinhasNotas";
 import type { PlayerHqV2TabProps } from "./HeroiTab";
 
 type DiarioSubTab = "quick" | "minhas" | "npcs" | "quests" | "dm_inbox";
@@ -136,21 +137,9 @@ export function DiarioTab({
         />
       )}
 
-      {/* 2. Minhas Notas — placeholder (D2 in Sprint 5 builds the
-          markdown editor). */}
+      {/* 2. Minhas Notas — Wave 3c D2 (markdown editor + auto-save). */}
       {!loading && activeSubTab === "minhas" && (
-        <div
-          className="rounded-xl border border-dashed border-border bg-card/40 p-6 text-center"
-          data-testid="diario-minhas-placeholder"
-        >
-          <NotebookPen
-            className="w-7 h-7 text-amber-400/30 mx-auto mb-3"
-            aria-hidden
-          />
-          <p className="text-sm text-muted-foreground/80">
-            {t("minhas_coming_soon")}
-          </p>
-        </div>
+        <MinhasNotas campaignId={campaignId} />
       )}
 
       {/* 3. NPCs */}
