@@ -185,6 +185,28 @@ describe("/api/combat/:encounterId/events — journal dispatch", () => {
     expect(body.currentSeq).toBe(5);
   });
 
+  // P-18 fix (2026-04-26 review): the "data has rows but filter > sinceSeq
+  // produces empty list" path is distinct from `kind: "empty"` (which only
+  // fires when the session has zero rows). Caller is "caught up" — server
+  // responds with kind:"events" and an empty array. Hook treats this
+  // correctly (no onEvents call, cursor still advances to currentSeq if
+  // forward). Worth covering so future changes to the dispatch logic
+  // don't accidentally collapse the two cases.
+  it("handles events shape with empty array (caller is caught up)", async () => {
+    journalState.result = {
+      kind: "events",
+      events: [],
+      currentSeq: 42,
+    };
+    const req = buildReq("?since_seq=42&token=tkn");
+    const res = await GET(req, { params: Promise.resolve({ encounterId: "enc-1" }) });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.kind).toBe("events");
+    expect(body.events).toEqual([]);
+    expect(body.currentSeq).toBe(42);
+  });
+
   it("passes through the too_stale result", async () => {
     journalState.result = {
       kind: "too_stale",

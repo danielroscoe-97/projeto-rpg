@@ -100,6 +100,19 @@ export function PlayerLobby({
   // generic message per field.
   const [errors, setErrors] = useState<Record<string, string>>({});
   const tValidation = useTranslations("player.validation");
+  // P-15 fix (2026-04-26 review): `useTranslations` may throw on missing
+  // keys depending on next-intl config. If a future schema introduces a
+  // code without an i18n key (kept in sync via convention but a stale
+  // bundle could still happen), the render-time call would crash the
+  // whole component. Wrap in a safe helper that falls back to the
+  // generic registerError text. Logs to console once for dev visibility.
+  const safeTValidation = useCallback((code: string): string => {
+    try {
+      return tValidation(code);
+    } catch {
+      return t('registerError');
+    }
+  }, [tValidation, t]);
   const [isRejoining, setIsRejoining] = useState(false);
   const [confirmActivePlayer, setConfirmActivePlayer] = useState<string | null>(null);
 
@@ -431,11 +444,7 @@ export function PlayerLobby({
       // so we probe the namespace before surfacing the toast.
       const isValidationCode = /^(name|initiative|hp|ac)_/.test(msg);
       if (isValidationCode) {
-        try {
-          toast.error(tValidation(msg));
-        } catch {
-          toast.error(t('registerError'));
-        }
+        toast.error(safeTValidation(msg));
       } else {
         toast.error(t('registerError'));
       }
@@ -601,7 +610,7 @@ export function PlayerLobby({
             />
             {errors.name && (
               <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-name">
-                {tValidation(errors.name)}
+                {safeTValidation(errors.name)}
               </p>
             )}
           </div>
@@ -627,7 +636,7 @@ export function PlayerLobby({
             />
             {errors.initiative && (
               <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-initiative">
-                {tValidation(errors.initiative)}
+                {safeTValidation(errors.initiative)}
               </p>
             )}
           </div>
@@ -653,7 +662,7 @@ export function PlayerLobby({
             />
             {errors.hp && (
               <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-hp">
-                {tValidation(errors.hp)}
+                {safeTValidation(errors.hp)}
               </p>
             )}
           </div>
@@ -679,7 +688,7 @@ export function PlayerLobby({
             />
             {errors.ac && (
               <p className="text-red-400 text-xs mt-1" data-testid="lobby-error-ac">
-                {tValidation(errors.ac)}
+                {safeTValidation(errors.ac)}
               </p>
             )}
           </div>

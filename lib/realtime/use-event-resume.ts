@@ -127,10 +127,19 @@ export function useEventResume({
   // closes over the latest values without becoming dep-unstable.
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlightAbortRef = useRef<AbortController | null>(null);
-  const unmountedRef = useRef(false);
+  // P-17 fix (2026-04-26 review): instance counter instead of a boolean
+  // unmountedRef. Boolean had a race where the cleanup fn set it to true
+  // and the next setup re-set it to false; an in-flight fetch's response
+  // handler running between cleanup-and-setup could see false (just
+  // reset) and apply onEvents/onFullRefetchNeeded with sessionId from a
+  // previous instance closure. The counter is monotonically incremented
+  // on every cleanup; runResume captures `instance` at call time and
+  // bails if the counter has moved on. Survives rapid re-runs cleanly.
+  const instanceCounterRef = useRef(0);
 
   const runResume = useCallback(async (): Promise<void> => {
     if (!encounterId || !token) return;
+    const myInstance = instanceCounterRef.current;
     const lastSeen = getLastSeenSeq(sessionId);
 
     // Cancel any prior in-flight resume — only the most recent matters.
@@ -152,13 +161,13 @@ export function useEventResume({
         `/api/combat/${encounterId}/events?${qs.toString()}`,
         { signal: abort.signal },
       );
-      if (unmountedRef.current) return;
+      if (instanceCounterRef.current !== myInstance) return;
       if (!res.ok) {
         onFullRefetchRef.current();
         return;
       }
       const data = (await res.json()) as EventsResponse;
-      if (unmountedRef.current) return;
+      if (instanceCounterRef.current !== myInstance) return;
       if (data.kind === "events") {
         if (data.events.length > 0) {
           onEventsRef.current(data.events.map((e) => e.event));
@@ -175,7 +184,7 @@ export function useEventResume({
       }
     } catch (err) {
       if ((err as Error).name === "AbortError") return; // expected on unmount/cancel
-      if (!unmountedRef.current) onFullRefetchRef.current();
+      if (instanceCounterRef.current === myInstance) onFullRefetchRef.current();
     } finally {
       clearTimeout(timeoutId);
       if (inFlightAbortRef.current === abort) inFlightAbortRef.current = null;
@@ -183,7 +192,14 @@ export function useEventResume({
   }, [sessionId, encounterId, token]);
 
   /** Schedule a debounced resume attempt. Internal helper shared by auto-
-   *  trigger (state machine) and manual triggerResume(). */
+   *  trigger (state machine) and manual triggerResume().
+   *
+   *  P-16 fix (2026-04-26 review): scheduleResume held via ref so the
+   *  state-machine subscribe useEffect doesn't unsubscribe/resubscribe on
+   *  every encounterId/token change (closure window where a `connected`
+   *  transition could be missed mid-swap). The ref captures the latest
+   *  scheduleResume function, and the listener calls .current().
+   */
   const scheduleResume = useCallback(() => {
     if (!encounterId || !token) return;
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -193,13 +209,17 @@ export function useEventResume({
     }, RESUME_DEBOUNCE_MS);
   }, [encounterId, token, runResume]);
 
-  const triggerResume = useCallback(() => {
-    scheduleResume();
+  const scheduleResumeRef = useRef(scheduleResume);
+  useEffect(() => {
+    scheduleResumeRef.current = scheduleResume;
   }, [scheduleResume]);
+
+  const triggerResume = useCallback(() => {
+    scheduleResumeRef.current();
+  }, []);
 
   useEffect(() => {
     if (!encounterId || !token) return;
-    unmountedRef.current = false;
 
     const unsubscribe = onConnectionStateChange((state) => {
       if (state.kind !== "connected") {
@@ -210,16 +230,22 @@ export function useEventResume({
         }
         return;
       }
-      scheduleResume();
+      // Use ref so the listener captures the latest scheduleResume without
+      // needing to re-subscribe (which would create a window where a
+      // transition could be missed during the unsubscribe→subscribe gap).
+      scheduleResumeRef.current();
     });
 
     return () => {
-      unmountedRef.current = true;
+      // Bump instance counter so any in-flight runResume sees its captured
+      // counter no longer matches and bails before applying side effects.
+      instanceCounterRef.current += 1;
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
       if (inFlightAbortRef.current) inFlightAbortRef.current.abort();
       unsubscribe();
     };
-  }, [sessionId, encounterId, token, scheduleResume]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- scheduleResume read via ref; including it would defeat the purpose of the ref pattern.
+  }, [sessionId, encounterId, token]);
 
   return { noteSeqFromBroadcast, triggerResume };
 }
