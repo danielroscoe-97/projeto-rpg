@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Heart, Shield, Minus, Plus } from "lucide-react";
 import {
@@ -17,11 +17,19 @@ interface HpDisplayProps {
   hpTemp: number;
   readOnly?: boolean;
   /**
-   * Visual density variant. `ribbon` tightens padding for use inside
-   * the future Ribbon Vivo composite (sprint 3 Ribbon work); `default` keeps
-   * the card-style layout used today in CharacterStatusPanel.
+   * Visual density variant. `ribbon` collapses to a single-row layout used
+   * inside `RibbonVivo` (Wave 3a, Story C1) — full-width HP bar behind the
+   * label, no Temp HP card, no status pill. `default` keeps the card-style
+   * layout used today in CharacterStatusPanel.
    */
   variant?: "default" | "ribbon";
+  /**
+   * When true the HP-bar wrapper gets `.glow-gold-flash` applied for one
+   * animation cycle each time `currentHp` changes. Used by the ribbon to
+   * pulse on damage/heal during combat (decision #5 wireframe §2). Off by
+   * default to preserve the current quiet-by-default behavior.
+   */
+  pulseOnChange?: boolean;
   /**
    * Character identity — threaded through so the inline-edit testids get
    * per-character suffixes (matching CombatantRow's `current-hp-btn-{id}`
@@ -55,6 +63,7 @@ export function HpDisplay({
   hpTemp,
   readOnly = false,
   variant = "default",
+  pulseOnChange = false,
   characterId,
   characterName,
   onHpChange,
@@ -119,8 +128,26 @@ export function HpDisplay({
   );
 
   const isRibbon = variant === "ribbon";
-  const rootSpacing = isRibbon ? "space-y-2" : "space-y-3";
-  const barSpacing = isRibbon ? "space-y-1" : "space-y-1.5";
+  const rootSpacing = isRibbon ? "space-y-1" : "space-y-3";
+  const barSpacing = isRibbon ? "space-y-0.5" : "space-y-1.5";
+
+  // Pulse-on-change: when `pulseOnChange` is true, briefly toggle the
+  // `.glow-gold-flash` class on the HP bar wrapper each time `currentHp`
+  // mutates. Animation lives in `app/globals.css:381-389` and lasts 1.5s,
+  // so we clear the flag at the same boundary so a second hit re-triggers
+  // (re-applying the class without removal first wouldn't restart the keyframe).
+  const [pulseTick, setPulseTick] = useState(0);
+  const lastHpRef = useRef(currentHp);
+  useEffect(() => {
+    if (!pulseOnChange) return;
+    if (lastHpRef.current !== currentHp) {
+      lastHpRef.current = currentHp;
+      setPulseTick((n) => n + 1);
+      const t = setTimeout(() => setPulseTick(0), 1600);
+      return () => clearTimeout(t);
+    }
+  }, [currentHp, pulseOnChange]);
+  const pulseClass = pulseOnChange && pulseTick > 0 ? "glow-gold-flash" : "";
 
   return (
     <div className={rootSpacing} data-testid={`hp-display-${testIdSuffix}`} data-variant={variant}>
@@ -178,7 +205,10 @@ export function HpDisplay({
         </div>
 
         {/* Progress bar */}
-        <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+        <div
+          className={`h-3 bg-white/10 rounded-full overflow-hidden ${pulseClass}`}
+          data-testid={`hp-bar-${testIdSuffix}`}
+        >
           <div
             className={`h-full rounded-full transition-all duration-500 ${barColor}`}
             style={{ width: `${pct}%` }}
@@ -186,8 +216,10 @@ export function HpDisplay({
         </div>
       </div>
 
-      {/* Temp HP — stays as +/- because temp HP is additive, no delta semantics */}
-      {(hpTemp > 0 || !readOnly) && (
+      {/* Temp HP — stays as +/- because temp HP is additive, no delta semantics.
+          Hidden in `ribbon` variant: ribbon shows Temp HP inline as a separate
+          chip composed by RibbonVivo so the row stays single-line on desktop. */}
+      {!isRibbon && (hpTemp > 0 || !readOnly) && (
         <div className="flex items-center gap-2 px-3 py-2 bg-blue-950/20 border border-blue-500/20 rounded-md">
           <Shield className="w-3.5 h-3.5 text-blue-400" aria-hidden="true" />
           <span className="text-xs text-blue-300 font-medium">{t("temp_hp")}</span>
