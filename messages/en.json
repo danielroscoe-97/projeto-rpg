@@ -1147,6 +1147,10 @@
       "quests": "Quests",
       "map": "Map",
       "abilities": "Abilities",
+      "heroi": "Herói",
+      "arsenal": "Arsenal",
+      "diario": "Diário",
+      "mapa": "Mapa",
       "aria_tablist": "Character tabs"
     },
     "header": {
