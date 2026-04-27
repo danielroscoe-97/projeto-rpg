@@ -2584,16 +2584,8 @@
     "custom_condition_limits_hint": "Nome até 32 caracteres. Descrição até 200.",
     "quick_actions_label": "Ação rápida (este turno)",
     "action_dodge": "Esquivar",
-    "action_dash": "Disparada",
-    "action_help": "Ajudar",
-    "action_disengage": "Desengajar",
-    "action_hide": "Esconder",
     "action_ready": "Preparar",
     "action_dodge_desc": "Vantagem em testes de resistência de Destreza; ataques contra você têm desvantagem até seu próximo turno.",
-    "action_dash_desc": "Dobra sua movimentação para este turno.",
-    "action_help_desc": "Concede vantagem ao aliado em seu próximo teste de atributo ou ataque contra uma criatura a até 1,5m de você.",
-    "action_disengage_desc": "Sua movimentação não provoca ataques de oportunidade neste turno.",
-    "action_hide_desc": "Faça um teste de Furtividade para se esconder; requer cobertura ou escuridão.",
     "action_ready_desc": "Prepare uma ação para um gatilho específico; use sua reação quando o gatilho ocorrer."
   },
   "conditions": {

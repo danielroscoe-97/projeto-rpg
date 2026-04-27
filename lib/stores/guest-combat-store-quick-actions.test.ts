@@ -75,7 +75,7 @@ describe("S4.3 — guest combat store auto-cleanup on turn advance", () => {
     expect(after.conditions).not.toContain("action:dodge");
   });
 
-  it("PRESERVES Dash/Help/Disengage/Hide/Ready across the caster's next turn", () => {
+  it("PRESERVES legacy action:* rows (Dash/Help/Disengage/Hide) and Ready across the caster's next turn", () => {
     const { aragorn } = seedTrio();
     const s = useGuestCombatStore.getState();
 

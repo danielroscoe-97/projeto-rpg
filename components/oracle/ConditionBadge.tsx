@@ -11,16 +11,12 @@ import {
   EyeOff, Heart, AlertTriangle, Grip, CircleX, Eye,
   Zap, Mountain, Droplet, ArrowDown, Link, Star, Moon,
   Focus, Sparkles,
-  Shield, Users, ArrowLeft, Timer,
+  Shield, Timer,
 } from "lucide-react";
 
-/** S4.3 — Quick-action icon map (matches ConditionSelector). */
+/** Quick-action icon map (matches ConditionSelector). */
 const QUICK_ACTION_BADGE_ICON: Record<QuickAction, LucideIcon> = {
   dodge: Shield,
-  dash: Zap,
-  help: Users,
-  disengage: ArrowLeft,
-  hide: EyeOff,
   ready: Timer,
 };
 

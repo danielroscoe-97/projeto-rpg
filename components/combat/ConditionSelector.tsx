@@ -6,10 +6,6 @@ import {
   Focus,
   Sparkles,
   Shield,
-  Zap,
-  Users,
-  ArrowLeft,
-  EyeOff as EyeOffIcon,
   Timer,
   type LucideIcon,
 } from "lucide-react";
@@ -31,10 +27,6 @@ import { trackEvent } from "@/lib/analytics/track";
 /** Lucide icon per quick action — kept local to the selector. */
 const QUICK_ACTION_ICON: Record<QuickAction, LucideIcon> = {
   dodge: Shield,
-  dash: Zap,
-  help: Users,
-  disengage: ArrowLeft,
-  hide: EyeOffIcon,
   ready: Timer,
 };
 

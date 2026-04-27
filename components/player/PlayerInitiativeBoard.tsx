@@ -10,7 +10,7 @@ import { TurnNotificationOverlay } from "@/components/player/TurnNotificationOve
 import { getHpBarColor, getHpFraction, getHpThresholdKey, getHpStatus, getHpPercentage, HP_STATUS_STYLES } from "@/lib/utils/hp-status";
 import { HPLegendOverlay } from "@/components/combat/HPLegendOverlay";
 import type { RulesetVersion } from "@/lib/types/database";
-import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus, Users as UsersIcon, ArrowLeft, Timer as TimerIcon, type LucideIcon } from "lucide-react";
+import { Swords, Skull, User, Bug, HeartPulse, Shield, Zap, BookOpen, ChevronDown, ChevronRight, ScrollText, EyeOff, Focus, Timer as TimerIcon, type LucideIcon } from "lucide-react";
 import { PlayerSoundboard } from "@/components/audio/PlayerSoundboard";
 import type { PlayerAudioFile } from "@/lib/types/audio";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -38,10 +38,6 @@ import { trackEvent } from "@/lib/analytics/track";
 /** Lucide icon per quick action — mirrors ConditionSelector. */
 const PLAYER_QUICK_ACTION_ICON: Record<QuickAction, LucideIcon> = {
   dodge: Shield,
-  dash: Zap,
-  help: UsersIcon,
-  disengage: ArrowLeft,
-  hide: EyeOff,
   ready: TimerIcon,
 };
 
