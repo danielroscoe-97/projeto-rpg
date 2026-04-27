@@ -759,6 +759,12 @@ export function shouldSkipServerBroadcast(event: RealtimeEvent): boolean {
  *  and silently drift. broadcastViaServer guarantees both the journal write
  *  and the rebroadcast under the same code path used by live broadcasts.
  *
+ *  P-1 fix (2026-04-26 review): broadcastViaServer returns false on any
+ *  network/HTTP failure (rate-limit 429, auth refresh failure, 404, etc).
+ *  The replay callback MUST throw on false so replayQueue records the
+ *  failure (otherwise the action is removed from disk while never having
+ *  been delivered — silent zero-drop violation).
+ *
  *  Trade-off: each replayed event is one extra HTTP roundtrip vs. the
  *  prior direct ch.send. Acceptable because (a) replay only runs on
  *  reconnection, not in the hot path, and (b) the existing dedup guard in
@@ -774,21 +780,43 @@ export async function replayOfflineQueue(sessionId: string): Promise<void> {
     // For events that opt out of server rebroadcast (combatant_add_reorder),
     // we still need journal coverage AND we still need to deliver the event.
     // Do BOTH: client-direct send to live players + server-side journal-only.
+    //
+    // P-12 fix (2026-04-26 review): _broadcastSeq is per-tab and resets to 0
+    // on reload. If the DM reloaded with offline-queue pending, replayed
+    // events would emit `_seq=1`, but live players still hold a high
+    // watermark from before the reload — they discard the replay as stale.
+    // To prevent silent drop: bump `_broadcastSeq` past any conceivable
+    // live watermark by setting a one-time floor on first replay run, OR
+    // skip per-tab dedup in the receiver. Cheapest fix: bump to high seq
+    // on each replayed event (Number.MAX_SAFE_INTEGER would break receiver
+    // deduplication). We use a generous floor of 100k beyond the current
+    // counter — beyond any plausible live-session counter.
     if (shouldSkipServerBroadcast(evt)) {
       const ch = getDmChannel(sid);
       await waitForChannel();
-      const seq = ++_broadcastSeq;
-      await ch.send({
+      _broadcastSeq = Math.max(_broadcastSeq, 100_000) + 1;
+      const seq = _broadcastSeq;
+      const sendStatus = await ch.send({
         type: "broadcast",
         event: safeEvent.type,
         payload: { ...safeEvent, _seq: seq },
       });
-      await broadcastViaServer(sid, evt, { skipRebroadcast: true });
+      const journalOk = await broadcastViaServer(sid, evt, { skipRebroadcast: true });
+      if (sendStatus === "error" || sendStatus === "timed out" || !journalOk) {
+        throw new Error(
+          `replay client-direct+journal failed: send=${sendStatus} journal=${journalOk}`,
+        );
+      }
       return;
     }
 
     // Default path: server records in journal AND emits on the channel.
-    await broadcastViaServer(sid, evt);
+    const ok = await broadcastViaServer(sid, evt);
+    if (!ok) {
+      // P-1 fix: throw so replayQueue counts this as `failed` and does NOT
+      // delete the action from disk. The next online cycle retries it.
+      throw new Error("replay broadcastViaServer returned false");
+    }
   });
 
   setSyncStatus(result.failed > 0 ? "error" : "online");
@@ -848,6 +876,18 @@ if (typeof window !== "undefined") {
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
       reconnectTimer = null;
+    }
+    // P-2 fix (2026-04-26 review): if a stale channel reference is still in
+    // module state (Supabase channel state may be 'errored' or 'leaving' but
+    // not yet GC'd), it must be removed FIRST — `createAndSubscribe` does
+    // not call `supabase.removeChannel(old)` and would orphan the previous
+    // subscription, burning a slot of the 200-channel cap (the exact
+    // failure mode of the 2026-04-24 postmortem).
+    if (channel) {
+      const supabase = createClient();
+      supabase.removeChannel(channel);
+      channel = null;
+      channelReady = null;
     }
     // Re-enter `connecting` via createAndSubscribe; the FSM accepts
     // `degraded → connecting`.
