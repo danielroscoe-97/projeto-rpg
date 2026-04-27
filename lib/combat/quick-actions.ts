@@ -72,7 +72,11 @@ export function stripExpiringQuickActions(conditions: string[]): string[] {
   });
 }
 
-/** Remove ALL `action:*` entries — used for full cleanup (e.g. combat end). */
+/** Remove every `action:*` entry that matches the current `QUICK_ACTIONS`
+ *  catalogue. After the 2026-04-27 trim, that's only `action:dodge` and
+ *  `action:ready`. Legacy persisted rows like `action:dash` are NOT in the
+ *  catalogue anymore and are preserved by this filter — see canonical
+ *  doc §2.7 (combatants persisted before the trim stay valid in the schema). */
 export function stripAllQuickActions(conditions: string[]): string[] {
   return conditions.filter((c) => !isQuickAction(c));
 }

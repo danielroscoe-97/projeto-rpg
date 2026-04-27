@@ -4,9 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { RotateCw } from "lucide-react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { trackEvent } from "@/lib/analytics/track";
 
 const COOLDOWN_MS = 60_000;
 const LOADING_MS = 700;
+const STALE_TICK_MS = 5_000;
 
 interface SosResyncButtonProps {
   /** Active session realtime channel — must be SUBSCRIBED before the user can click. */
@@ -56,7 +58,10 @@ export function SosResyncButton({
     loadingTimerRef.current = null;
   }, []);
 
-  // Stale gate — repaints when the last DM broadcast aged past the threshold and the tab is visible.
+  // Stale gate — repaints when the last DM broadcast aged past the threshold
+  // and the tab is visible. Reacts to visibilitychange so a player returning
+  // to a backgrounded tab sees the pulse cue immediately instead of waiting
+  // up to STALE_TICK_MS.
   useEffect(() => {
     if (!lastBroadcastAtRef) return;
     const tick = () => {
@@ -67,10 +72,17 @@ export function SosResyncButton({
       setIsStale(visible && last > 0 && ageMs > staleThresholdMs);
     };
     tick();
-    staleTimerRef.current = setInterval(tick, 5_000);
+    staleTimerRef.current = setInterval(tick, STALE_TICK_MS);
+    const onVisibilityChange = () => tick();
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", onVisibilityChange);
+    }
     return () => {
       if (staleTimerRef.current) clearInterval(staleTimerRef.current);
       staleTimerRef.current = null;
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+      }
     };
   }, [lastBroadcastAtRef, staleThresholdMs]);
 
@@ -82,6 +94,16 @@ export function SosResyncButton({
     if (!channel) return;
 
     const requestedAt = Date.now();
+    const lastBroadcastAt = lastBroadcastAtRef?.current ?? 0;
+    const msSinceLastBroadcast = lastBroadcastAt > 0 ? requestedAt - lastBroadcastAt : -1;
+
+    trackEvent("player:sos_resync_clicked", {
+      is_stale: isStale,
+      ms_since_last_broadcast: msSinceLastBroadcast,
+      visibility_state:
+        typeof document !== "undefined" ? document.visibilityState : "unknown",
+    });
+
     setState("loading");
 
     // Best-effort send — channel.send may resolve, fail, or hang. Wrap in a
@@ -122,7 +144,7 @@ export function SosResyncButton({
     // enter cooldown regardless of whether channel.send resolved — a dropped
     // DM should never strand the button mid-spin.
     loadingTimerRef.current = setTimeout(enterCooldown, LOADING_MS);
-  }, [channelRef, clearTimers, playerName, state, tokenId]);
+  }, [channelRef, clearTimers, isStale, lastBroadcastAtRef, playerName, state, tokenId]);
 
   const tooltip =
     state === "loading"

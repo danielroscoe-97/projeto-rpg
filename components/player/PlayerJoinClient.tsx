@@ -385,6 +385,10 @@ export function PlayerJoinClient({
   const lastTurnBroadcastRef = useRef<number>(0);
   // Broadcast sequence tracking — discard out-of-order events for critical state (turn advance)
   const lastSeqRef = useRef<number>(0);
+  // F03: timestamp (ms epoch) of the most recent DM broadcast we've observed.
+  // Drives the SOS button's stale-hint pulse + the click telemetry. Updated in
+  // the broadcast handler entry below before delegating to per-event logic.
+  const lastBroadcastAtRef = useRef<number>(0);
   // HP delta visual feedback state
   const [hpDelta, setHpDelta] = useState<{ combatantId: string; delta: number; type: "damage" | "heal" | "temp"; timestamp: number } | null>(null);
   const hpDeltaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1435,6 +1439,7 @@ export function PlayerJoinClient({
 
       channel
         .on("broadcast", { event: "session:state_sync" }, ({ payload }: { payload: SanitizedStateSync & { _seq?: number; _journal_seq?: number } }) => {
+          lastBroadcastAtRef.current = Date.now();
           // DESYNC-FIX-2: state_sync is the full truth — ALWAYS reset sequence counter.
           // After DM refresh, _broadcastSeq resets to 0. If we only update lastSeqRef when
           // seq > 0, the player keeps the old high-water mark (e.g. 50) and drops all new
@@ -1498,6 +1503,7 @@ export function PlayerJoinClient({
           }
         })
         .on("broadcast", { event: "combat:turn_advance" }, ({ payload }: { payload: RealtimeTurnAdvance & { _seq?: number; _journal_seq?: number } }) => {
+          lastBroadcastAtRef.current = Date.now();
           // Discard out-of-order turn advances using broadcast sequence number
           // CR-03 F1c: advance journal cursor (no-op when payload comes via
           // client-direct path; meaningful when via /api/broadcast).
@@ -1555,6 +1561,7 @@ export function PlayerJoinClient({
           setNextCombatantId(payload.next_combatant_id ?? null);
         })
         .on("broadcast", { event: "combat:hp_update" }, ({ payload }: { payload: { combatant_id: string; current_hp?: number; temp_hp?: number; max_hp?: number; hp_status?: string; hp_percentage?: number; death_saves?: { successes: number; failures: number }; _seq?: number; _journal_seq?: number } }) => {
+          lastBroadcastAtRef.current = Date.now();
           // CR-03 F1c: advance journal cursor.
           noteSeqRef.current(payload._journal_seq);
           // Discard out-of-order HP updates using broadcast sequence number
@@ -3878,6 +3885,7 @@ export function PlayerJoinClient({
             }
           }}
           channelRef={channelRef}
+          lastBroadcastAtRef={lastBroadcastAtRef}
           customAudioFiles={playerAudioFiles}
           customAudioUrls={playerAudioUrls}
           isLoadingAudioUrls={isLoadingAudioUrls}
