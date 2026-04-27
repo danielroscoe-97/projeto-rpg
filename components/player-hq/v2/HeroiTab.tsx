@@ -113,18 +113,24 @@ export function HeroiTab({
   const characterRef = useRef(character);
   characterRef.current = character;
 
-  // The hook clears its `combatState.round` synchronously when the
-  // `combat:ended` payload lands, so we capture the round ref-side
-  // BEFORE the reset by snapshotting on every change.
-  const lastRoundRef = useRef<number | undefined>(undefined);
-
   // Build a `PostCombatSnapshot` from whatever `useCharacterStatus` last
   // observed. Called by `useCampaignCombatState` synchronously inside
   // its `combat:ended` handler. Wrapped in useCallback so the realtime
   // hook's deps stay stable (otherwise it would re-subscribe every
   // render — see the 2026-04-24 CDC postmortem for why that's bad).
+  //
+  // Issue #90 P2-3: the hook now passes `lastKnownRound` as the second
+  // argument — captured synchronously inside the broadcast handlers
+  // (BEFORE setState), so a fast TPK where `combat:started (round=1)`
+  // and `combat:ended` arrive in the same microtask still produces a
+  // snapshot with `round=1` instead of `undefined`. Pre-fix this read
+  // from a ref written during render, which lost the race when React
+  // hadn't committed the round into state yet.
   const handleCombatEnded = useCallback(
-    (_payloadSnapshot: PostCombatSnapshot | undefined) => {
+    (
+      _payloadSnapshot: PostCombatSnapshot | undefined,
+      lastKnownRound: number | undefined,
+    ) => {
       // We don't trust the broadcast snapshot for player-private state
       // (the broadcast goes campaign-wide; per-player snapshots there
       // would leak HP/slots between party members). Build the snapshot
@@ -149,7 +155,7 @@ export function HeroiTab({
 
       const snapshot: PostCombatSnapshot = {
         endedAt: Date.now(),
-        round: lastRoundRef.current,
+        round: lastKnownRound,
         campaignId,
         characterName: c.name,
         characterHeadline: [
@@ -181,13 +187,6 @@ export function HeroiTab({
     characterId,
     onCombatEnded: handleCombatEnded,
   });
-
-  // Capture the round number before `combatState` resets to EMPTY on
-  // `combat:ended` — `handleCombatEnded` reads `lastRoundRef.current`
-  // for the snapshot's `round` field.
-  if (combatState.round != null && combatState.round !== lastRoundRef.current) {
-    lastRoundRef.current = combatState.round;
-  }
 
   const loading = charLoading || resourceHook.loading;
 

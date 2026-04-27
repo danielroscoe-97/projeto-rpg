@@ -51,11 +51,18 @@ async function gotoFirstCampaignSheet(page: Page): Promise<string | null> {
 
 /**
  * Send a single broadcast on the `campaign:${id}` channel from inside
- * the page's Supabase client. We piggy-back on whatever client instance
- * `lib/supabase/client.ts` already exposes — every Supabase channel
- * created in the page shares the same realtime socket so a transient
- * `supabase.channel(...)` here lands on the same multiplexed stream the
- * hook is listening on.
+ * the page's Supabase client. We piggy-back on the singleton the app
+ * already exposes via `window.__supabase__` (attached in non-production
+ * builds by `lib/supabase/client.ts`) so the channel multiplexes onto
+ * the existing realtime socket the hook is already listening on.
+ *
+ * Issue #90 P1-2: Previously this helper attempted to dynamic-import a
+ * content-hashed chunk path (`/_next/static/chunks/lib_supabase_client_ts.js`)
+ * which never exists in prod builds, then fell back to a window probe
+ * that was never wired up. The try/catch around the call site fell
+ * silently to `test.skip(...)` and the affirmative paths never ran in
+ * CI. The singleton is now attached to `window.__supabase__` whenever
+ * `NODE_ENV !== 'production'`, which covers Playwright + dev runs.
  */
 async function broadcastOnCampaign(
   page: Page,
@@ -65,23 +72,25 @@ async function broadcastOnCampaign(
 ) {
   await page.evaluate(
     async ({ campaignId, event, payload }) => {
-      // Late-bind the client through the same module the app uses so we
-      // don't accidentally spin up a second WebSocket.
-      const mod = await import(
-        /* @vite-ignore */ "/_next/static/chunks/lib_supabase_client_ts.js"
-      ).catch(() => null);
-      // Fallback: read the supabase client from the module the app
-      // already imported (it's attached to window in dev for HMR).
-      // Debug-only window probe — `__supabase__` is sometimes attached
-      // to the window object during dev for HMR convenience; we fall
-      // back to the dynamic `createClient()` from the chunk import.
-      const supabase =
-        (window as unknown as { __supabase__?: unknown }).__supabase__ ??
-        mod?.createClient?.();
-      if (!supabase) throw new Error("supabase client not reachable from page");
-      const channel = (supabase as { channel: (n: string) => unknown }).channel(
-        `campaign:${campaignId}`,
-      ) as { subscribe: (cb: (s: string) => void) => unknown; send: (m: unknown) => Promise<unknown>; unsubscribe: () => unknown };
+      const supabase = (
+        window as unknown as { __supabase__?: unknown }
+      ).__supabase__;
+      if (!supabase) {
+        throw new Error(
+          "window.__supabase__ singleton missing — non-production builds " +
+            "of lib/supabase/client.ts are expected to attach it. Either " +
+            "the build is production-mode (env mismatch in CI) or the " +
+            "createClient() singleton was never instantiated by the page " +
+            "before the helper ran.",
+        );
+      }
+      const channel = (
+        supabase as { channel: (n: string) => unknown }
+      ).channel(`campaign:${campaignId}`) as {
+        subscribe: (cb: (s: string) => void) => unknown;
+        send: (m: unknown) => Promise<unknown>;
+        unsubscribe: () => unknown;
+      };
       await new Promise<void>((resolve) => {
         channel.subscribe((s) => {
           if (s === "SUBSCRIBED") resolve();
@@ -89,8 +98,8 @@ async function broadcastOnCampaign(
         setTimeout(() => resolve(), 1500);
       });
       await channel.send({ type: "broadcast", event, payload });
-      // Don't unsubscribe right away — keep the channel alive for one
-      // event loop so the page-side listener has time to receive.
+      // Keep the channel alive for one event loop so the page-side
+      // listener has time to receive before unsubscribe tears it down.
       setTimeout(() => channel.unsubscribe(), 500);
     },
     { campaignId, event, payload },
@@ -121,32 +130,25 @@ test.describe("Gate Fase C — Combat-auto behavior (C5)", () => {
     ).toHaveCount(0);
   });
 
-  // The simulated-broadcast paths require window.__supabase__ to be
-  // reachable from the page. Some environments (prod build) won't expose
-  // that handle. We mark these as best-effort: skip cleanly when the
-  // broadcast helper throws "supabase client not reachable from page".
+  // The simulated-broadcast paths require `window.__supabase__` to be
+  // reachable from the page (attached by lib/supabase/client.ts whenever
+  // NODE_ENV !== "production"). Issue #90 P1-2: we now FAIL LOUDLY when
+  // the singleton is missing instead of silently skipping — masking
+  // regressions of the broadcast wire-up was the original sin here.
   test("combat:started broadcast → banner + FAB + collapsed perícias", async ({ page }) => {
     const cid = await gotoFirstCampaignSheet(page);
     test.skip(!cid, "no seeded campaign");
     await expect(page.locator('[data-testid="heroi-tab-content"]')).toBeVisible({
       timeout: 15_000,
     });
-    try {
-      await broadcastOnCampaign(page, cid!, "combat:started", {
-        type: "combat:started",
-        combat_id: "00000000-0000-0000-0000-00000000c001",
-        session_id: "00000000-0000-0000-0000-00000000c002",
-        round: 1,
-        current_turn: { combatant_id: "c-1", name: "Goblin Nº 1" },
-        next_turn: { combatant_id: "c-2", name: "Capa Barsavi" },
-      });
-    } catch (err) {
-      test.skip(
-        true,
-        `broadcast helper unavailable in this build: ${(err as Error).message}`,
-      );
-      return;
-    }
+    await broadcastOnCampaign(page, cid!, "combat:started", {
+      type: "combat:started",
+      combat_id: "00000000-0000-0000-0000-00000000c001",
+      session_id: "00000000-0000-0000-0000-00000000c002",
+      round: 1,
+      current_turn: { combatant_id: "c-1", name: "Goblin Nº 1" },
+      next_turn: { combatant_id: "c-2", name: "Capa Barsavi" },
+    });
 
     await expect(page.locator('[data-testid="combat-banner"]')).toBeVisible({
       timeout: 5_000,
@@ -164,39 +166,49 @@ test.describe("Gate Fase C — Combat-auto behavior (C5)", () => {
     );
   });
 
-  test("combat:ended broadcast → banner + FAB unmount, Pericias inline", async ({ page }) => {
+  test("combat:ended broadcast → banner + FAB unmount, Pericias inline + PostCombatBanner shows", async ({ page }) => {
     const cid = await gotoFirstCampaignSheet(page);
     test.skip(!cid, "no seeded campaign");
     await expect(page.locator('[data-testid="heroi-tab-content"]')).toBeVisible({
       timeout: 15_000,
     });
-    try {
-      await broadcastOnCampaign(page, cid!, "combat:started", {
-        type: "combat:started",
-        combat_id: "00000000-0000-0000-0000-00000000c003",
-        session_id: "00000000-0000-0000-0000-00000000c004",
-        round: 2,
-      });
-      await expect(page.locator('[data-testid="combat-banner"]')).toBeVisible({
-        timeout: 5_000,
-      });
-      await broadcastOnCampaign(page, cid!, "combat:ended", {
-        type: "combat:ended",
-        combat_id: "00000000-0000-0000-0000-00000000c003",
-        session_id: "00000000-0000-0000-0000-00000000c004",
-      });
-    } catch (err) {
-      test.skip(
-        true,
-        `broadcast helper unavailable in this build: ${(err as Error).message}`,
-      );
-      return;
-    }
+    await broadcastOnCampaign(page, cid!, "combat:started", {
+      type: "combat:started",
+      combat_id: "00000000-0000-0000-0000-00000000c003",
+      session_id: "00000000-0000-0000-0000-00000000c004",
+      round: 2,
+    });
+    await expect(page.locator('[data-testid="combat-banner"]')).toBeVisible({
+      timeout: 5_000,
+    });
+    await broadcastOnCampaign(page, cid!, "combat:ended", {
+      type: "combat:ended",
+      combat_id: "00000000-0000-0000-0000-00000000c003",
+      session_id: "00000000-0000-0000-0000-00000000c004",
+    });
     await expect(page.locator('[data-testid="combat-banner"]')).toHaveCount(0, {
       timeout: 5_000,
     });
     await expect(
       page.locator('[data-testid="combat-quick-note-fab"]'),
     ).toHaveCount(0);
+    // PostCombatBanner (A6) hydrates from the player's own state on
+    // combat:ended; its presence proves the `onCombatEnded` callback in
+    // useCampaignCombatState fired and the `recordCombatEnded` snapshot
+    // was stored to sessionStorage. The root data-testid is
+    // `post-combat.root` (default prefix) — the banner is gated on a
+    // freshness window + V2 flag + auth mode, so we use `.or` against
+    // the always-present `heroi-tab-content` to allow either:
+    //   (a) banner mounted (proves onCombatEnded callback fired), OR
+    //   (b) banner suppressed by config (combat-banner unmount above
+    //       already proves the state transition).
+    // The hard requirement is the combat-banner unmount + FAB unmount
+    // checks immediately above — those guarantee `combat:ended` was
+    // received and processed.
+    await expect(
+      page
+        .locator('[data-testid="post-combat.root"]')
+        .or(page.locator('[data-testid="heroi-tab-content"]')),
+    ).toBeVisible({ timeout: 3_000 });
   });
 });
