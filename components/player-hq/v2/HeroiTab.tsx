@@ -1,11 +1,14 @@
 "use client";
 
+import { useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { useResourceTrackers } from "@/lib/hooks/useResourceTrackers";
 import { useCharacterAbilities } from "@/lib/hooks/useCharacterAbilities";
 import { useActiveEffects } from "@/lib/hooks/useActiveEffects";
 import { useCampaignCombatState } from "@/lib/hooks/useCampaignCombatState";
+import { usePostCombatState, type PostCombatSnapshot } from "@/lib/hooks/usePostCombatState";
+import { getHpStatus } from "@/lib/utils/hp-status";
 
 import { CharacterStatusPanel } from "../CharacterStatusPanel";
 import { CharacterCoreStats } from "../CharacterCoreStats";
@@ -17,6 +20,7 @@ import { SpellListSection } from "../SpellListSection";
 import { RestResetPanel } from "../RestResetPanel";
 import { RibbonVivo } from "./RibbonVivo";
 import { CombatBanner } from "./CombatBanner";
+import { PostCombatBanner } from "./PostCombatBanner";
 
 /**
  * Canonical prop shape forwarded by `PlayerHqShellV2` to every B2 tab
@@ -95,13 +99,95 @@ export function HeroiTab({
   // level for the same purpose. A future shell-level lift can dedupe.
   const abilitiesHook = useCharacterAbilities(characterId);
 
+  // Wave 3a A6 — post-combat surface. Reads any sessionStorage snapshot
+  // left behind by `combat:ended`, becomes `visible` only when V2 flag
+  // is ON + mode === "auth" + snapshot is fresh (5min default window).
+  const postCombat = usePostCombatState({ mode: "auth" });
+  const { recordCombatEnded } = postCombat;
+
+  // Stable refs so the `onCombatEnded` closure below sees the latest
+  // character + combat state without forcing the realtime hook to
+  // re-subscribe every render. Critical: the `useCampaignCombatState`
+  // effect tears down + recreates the channel whenever its deps change,
+  // which would burn 1+ entry from the 200-channel cap on each render.
+  const characterRef = useRef(character);
+  characterRef.current = character;
+
+  // The hook clears its `combatState.round` synchronously when the
+  // `combat:ended` payload lands, so we capture the round ref-side
+  // BEFORE the reset by snapshotting on every change.
+  const lastRoundRef = useRef<number | undefined>(undefined);
+
+  // Build a `PostCombatSnapshot` from whatever `useCharacterStatus` last
+  // observed. Called by `useCampaignCombatState` synchronously inside
+  // its `combat:ended` handler. Wrapped in useCallback so the realtime
+  // hook's deps stay stable (otherwise it would re-subscribe every
+  // render — see the 2026-04-24 CDC postmortem for why that's bad).
+  const handleCombatEnded = useCallback(
+    (_payloadSnapshot: PostCombatSnapshot | undefined) => {
+      // We don't trust the broadcast snapshot for player-private state
+      // (the broadcast goes campaign-wide; per-player snapshots there
+      // would leak HP/slots between party members). Build the snapshot
+      // CLIENT-SIDE from the player's own observed state instead.
+      const c = characterRef.current;
+      if (!c) return;
+
+      const slots = c.spell_slots
+        ? Object.entries(c.spell_slots)
+            .filter(([, v]) => v.max > 0)
+            .map(([level, v]) => ({
+              level: Number(level),
+              current: Math.max(0, v.max - v.used),
+              max: v.max,
+            }))
+            .sort((a, b) => a.level - b.level)
+        : [];
+
+      const conditions = (c.conditions ?? [])
+        .filter((cond) => !cond.startsWith("exhaustion:"))
+        .map((name) => ({ name }));
+
+      const snapshot: PostCombatSnapshot = {
+        endedAt: Date.now(),
+        round: lastRoundRef.current,
+        campaignId,
+        characterName: c.name,
+        characterHeadline: [
+          c.race,
+          c.class,
+          c.level ? `Nv${c.level}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined,
+        hp: {
+          current: c.current_hp,
+          max: c.max_hp,
+        },
+        hpTier: getHpStatus(c.current_hp, c.max_hp),
+        spellSlots: slots.length > 0 ? slots : undefined,
+        conditions: conditions.length > 0 ? conditions : undefined,
+        inspiration: typeof c.inspiration === "boolean" ? (c.inspiration ? 1 : 0) : undefined,
+      };
+      recordCombatEnded(snapshot);
+    },
+    [campaignId, recordCombatEnded],
+  );
+
   // Wave 3a C4 — campaign-scoped combat detection. Hook owns the
   // realtime channel + 10s polling fallback + cleanup; HeroiTab consumes
   // the boolean + names to flip the layout into combat-auto mode.
   const combatState = useCampaignCombatState({
     campaignId,
     characterId,
+    onCombatEnded: handleCombatEnded,
   });
+
+  // Capture the round number before `combatState` resets to EMPTY on
+  // `combat:ended` — `handleCombatEnded` reads `lastRoundRef.current`
+  // for the snapshot's `round` field.
+  if (combatState.round != null && combatState.round !== lastRoundRef.current) {
+    lastRoundRef.current = combatState.round;
+  }
 
   const loading = charLoading || resourceHook.loading;
 
@@ -141,9 +227,20 @@ export function HeroiTab({
 
   return (
     <div className="space-y-3" data-testid="heroi-tab-content">
-      {/* TODO(post-combat A6): mount <PostCombatBanner> here in the
-          follow-up commit. The wire-up reads usePostCombatState({
-          mode: "auth" }) and shows the modal when visible+snapshot. */}
+      {/* A6 — Post-Combat modal. Mounted dormant; visible only when the
+          hook has a fresh snapshot (sessionStorage TTL 5min default,
+          shrinkable via NEXT_PUBLIC_DEBUG_POST_COMBAT_REDIRECT_MS in
+          E2E). The snapshot itself is built by `handleCombatEnded`
+          above from the player's own `useCharacterStatus` data — never
+          from the campaign-channel broadcast (which would leak per-
+          player HP/slots between party members). */}
+      {postCombat.visible && postCombat.snapshot && (
+        <PostCombatBanner
+          snapshot={postCombat.snapshot}
+          mode="auth"
+          onDismiss={postCombat.dismiss}
+        />
+      )}
 
       {/* C5 — Combat banner. Slides in above the ribbon when combat is
           active; instant-unmounts on `combat:ended` so layout stabilizes
