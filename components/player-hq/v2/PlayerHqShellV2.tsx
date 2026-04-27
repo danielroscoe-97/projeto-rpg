@@ -17,6 +17,7 @@ import { CharacterEditSheet } from "../CharacterEditSheet";
 import { CharacterPdfExport } from "../CharacterPdfExport";
 import { useCharacterStatus } from "@/lib/hooks/useCharacterStatus";
 import { PlayerHqTourProvider } from "@/components/tour/PlayerHqTourProvider";
+import { usePlayerNotifications } from "@/lib/hooks/usePlayerNotifications";
 import { HeroiTab } from "./HeroiTab";
 import { ArsenalTab } from "./ArsenalTab";
 import { DiarioTab } from "./DiarioTab";
@@ -55,10 +56,13 @@ function TabBarV2({
   activeTab,
   onTabChange,
   t,
+  badges,
 }: {
   activeTab: TabV2;
   onTabChange: (tab: TabV2) => void;
   t: ReturnType<typeof useTranslations<"player_hq">>;
+  /** Per-tab unread counts (Wave 3c D5). Undefined = no badge. */
+  badges?: Partial<Record<TabV2, number>>;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showFade, setShowFade] = useState(false);
@@ -95,6 +99,7 @@ function TabBarV2({
       >
         {TABS_V2.map(({ key, icon: Icon, labelKey }) => {
           const isActive = activeTab === key;
+          const badgeCount = badges?.[key] ?? 0;
           return (
             <button
               key={key}
@@ -106,7 +111,7 @@ function TabBarV2({
               data-tour-id={`hq-tab-${key}`}
               data-testid={`player-hq-v2-tab-${key}`}
               onClick={() => onTabChange(key)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 isActive
                   ? "border-amber-400 text-amber-400"
                   : "border-transparent text-muted-foreground hover:text-foreground"
@@ -117,6 +122,15 @@ function TabBarV2({
                 aria-hidden
               />
               {t(labelKey)}
+              {badgeCount > 0 && (
+                <span
+                  className="ml-0.5 inline-flex items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full bg-amber-400 text-[10px] font-semibold text-black"
+                  data-testid={`player-hq-v2-tab-${key}-badge`}
+                  aria-label={`${badgeCount} new`}
+                >
+                  {badgeCount > 9 ? "9+" : badgeCount}
+                </span>
+              )}
             </button>
           );
         })}
@@ -173,6 +187,22 @@ export function PlayerHqShellV2({
     loading: charLoading,
     saveField,
   } = useCharacterStatus(characterId);
+
+  // Wave 3c D5 — listen for `note:received` / `quest:assigned` /
+  // `quest:updated` and badge the Diário tab. Visiting the tab clears its
+  // category counter (tab-level dismiss); per-row markAsRead is exposed via
+  // the hook for downstream consumers (DmNotesInbox).
+  const { badges, markAsRead } = usePlayerNotifications(
+    campaignId,
+    characterId,
+  );
+
+  // Auto-clear the Diário badge when the player visits the tab.
+  useEffect(() => {
+    if (activeTab === "diario" && badges.diario > 0) {
+      markAsRead("diario");
+    }
+  }, [activeTab, badges.diario, markAsRead]);
 
   if (charLoading) {
     return (
@@ -273,7 +303,12 @@ export function PlayerHqShellV2({
         </div>
       </div>
 
-      <TabBarV2 activeTab={activeTab} onTabChange={setActiveTab} t={t} />
+      <TabBarV2
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        t={t}
+        badges={{ diario: badges.diario }}
+      />
 
       <div
         key={activeTab}
