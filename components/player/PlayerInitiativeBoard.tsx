@@ -24,6 +24,7 @@ import { SpellSlotTracker } from "@/components/player/SpellSlotTracker";
 import { ActiveEffectsBadges } from "@/components/player/ActiveEffectsBadges";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { CombatActionLog } from "@/components/combat/CombatActionLog";
+import { SosResyncButton } from "@/components/player/SosResyncButton";
 import { BENEFICIAL_CONDITIONS } from "@/components/combat/ConditionSelector";
 import {
   QUICK_ACTIONS,
@@ -1646,6 +1647,23 @@ export function PlayerInitiativeBoard({
           <BookOpen className="w-5 h-5 text-gold" />
         </button>
       </div>
+
+      {/* F03: SOS resync FAB mirrors the compendium FAB on the right.
+          Renders only when realtime is wired up — no realtime, no resync. */}
+      {channelRef && effectiveTokenId && registeredName && (
+        <div
+          className={`fixed right-4 z-30 lg:hidden transition-opacity duration-200 ${
+            isPlayerTurn && !overlayDismissed && notificationsEnabled ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+          style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
+        >
+          <SosResyncButton
+            channelRef={channelRef}
+            tokenId={effectiveTokenId}
+            playerName={registeredName}
+          />
+        </div>
+      )}
 
       {/* Compendium browser dialog */}
       <PlayerCompendiumBrowser

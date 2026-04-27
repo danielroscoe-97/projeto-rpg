@@ -2739,6 +2739,10 @@
       "ac_not_positive": "AC must be > 0"
     },
     "waiting_dm": "Waiting for the DM to start combat...",
+    "sos_button_label": "Sync from DM",
+    "sos_button_aria": "Request resync from the DM",
+    "sos_loading_label": "Syncing…",
+    "sos_cooldown_label": "Wait {seconds}s",
     "round": "Round",
     "spell_oracle_open": "Open spell oracle",
     "spell_oracle_button": "Spells",

@@ -2737,6 +2737,10 @@
       "ac_not_positive": "AC precisa ser > 0"
     },
     "waiting_dm": "Aguardando o DM iniciar o combate...",
+    "sos_button_label": "Atualizar do Mestre",
+    "sos_button_aria": "Pedir ressincronização ao Mestre",
+    "sos_loading_label": "Sincronizando…",
+    "sos_cooldown_label": "Aguarde {seconds}s",
     "round": "Rodada",
     "spell_oracle_open": "Abrir oráculo de magias",
     "spell_oracle_button": "Magias",

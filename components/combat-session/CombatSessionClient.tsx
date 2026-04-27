@@ -1741,6 +1741,34 @@ export function CombatSessionClient({
 
     ch.on("broadcast", { event: "combat:reaction_toggle" }, handlePlayerReactionToggle);
 
+    // F03: player:sos_resync_requested — player asked for a fresh state snapshot.
+    // Resilient Reconnection §18 — silêncio narrativo: no toast, no badge, no
+    // sound on the Mestre side. Just re-emit the current session:state_sync.
+    const handleSosResync = ({ payload }: { payload: Record<string, unknown> }) => {
+      if (!active) return;
+      const senderTokenId = payload.sender_token_id as string | undefined;
+      if (!senderTokenId) return;
+      const sid = getSessionId();
+      if (!sid) return;
+      const requestedAt = typeof payload.requested_at === "number" ? payload.requested_at : Date.now();
+      const store = useCombatStore.getState();
+      trackEvent("dm:sos_resync_processed", {
+        session_id: sid,
+        source_token_id: senderTokenId,
+        ms_since_player_request: Date.now() - requestedAt,
+        combatants_count: store.combatants.length,
+      });
+      broadcastEvent(sid, {
+        type: "session:state_sync",
+        combatants: store.combatants,
+        current_turn_index: store.current_turn_index,
+        round_number: store.round_number,
+        ...(store.encounter_id ? { encounter_id: store.encounter_id } : {}),
+      });
+    };
+
+    ch.on("broadcast", { event: "player:sos_resync_requested" }, handleSosResync);
+
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-stable: handleAdvanceTurnRef, handleApplyDamageRef, handleApplyHealingRef, handleSetTempHpRef
   }, [is_active, getSessionId]);
