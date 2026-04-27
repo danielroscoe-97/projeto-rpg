@@ -14,6 +14,7 @@ import { SpellSlotsHq } from "../SpellSlotsHq";
 import { ResourceTrackerList } from "../ResourceTrackerList";
 import { SpellListSection } from "../SpellListSection";
 import { RestResetPanel } from "../RestResetPanel";
+import { RibbonVivo } from "./RibbonVivo";
 
 /**
  * Canonical prop shape forwarded by `PlayerHqShellV2` to every B2 tab
@@ -30,33 +31,32 @@ export interface PlayerHqV2TabProps {
 }
 
 /**
- * HeroiTab — Sprint 3 Track B · Story B2a.
+ * HeroiTab — Wave 3a Stories C1 + C3.
  *
- * Composes the 8 existing Player HQ sections that make up the "ficha viva"
- * per [09-implementation-plan.md §B2](../../../_bmad-output/party-mode-2026-04-22/09-implementation-plan.md)
- * + [03-wireframe-heroi.md](../../../_bmad-output/party-mode-2026-04-22/03-wireframe-heroi.md):
+ * Composition (per
+ * [03-wireframe-heroi.md](../../../_bmad-output/party-mode-2026-04-22/03-wireframe-heroi.md)):
  *
- *   1. CharacterStatusPanel    — HP + conditions
- *   2. CharacterCoreStats      — AC / Init / Speed / Inspiration / DC + 6 ability chips
- *   3. ProficienciesSection    — saves + skills (3-col grid per A3)
- *   4. ActiveEffectsPanel      — buffs / debuffs with concentration tracking
- *   5. SpellSlotsHq            — slots I-IX with dot toggles
- *   6. ResourceTrackerList     — class resources (Channel Divinity, Bardic etc.)
- *   7. SpellListSection        — known/prepared spells
- *   8. RestResetPanel          — short/long rest reset orchestrator
+ *   Sticky    : RibbonVivo       — HP + chips + slots + conditions
+ *   Coluna A  : CharacterCoreStats + ProficienciesSection
+ *   Coluna B  : ActiveEffectsPanel + ResourceTrackerList + SpellSlotsHq
+ *               + SpellListSection
+ *   Footer    : RestResetPanel
  *
- * Internal layout: single-column for now. The 2-column desktop layout
- * (decision #29) lands in Wave 3 / Story C3 — keeping single-col here
- * means C3 only has to swap the wrapper, not refactor data plumbing.
+ * Layout:
+ *   - Below `xl` (1280px): single-column stack — A then B (mobile-first).
+ *   - At `xl+`: CSS Grid `xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]` so
+ *     each column flexes to half the viewport with `gap-6 xl:gap-10`.
  *
- * Hooks called locally so the wrapper is self-contained — PlayerHqShellV2
- * does not need to plumb hook results through props (mirrors V1's pattern
- * where data fetching lives at the shell level but each section accepts
- * primitive values).
+ * `<CharacterStatusPanel>` from V1 still mounts in coluna A but with
+ * `showHp=false` because the ribbon is the canonical HP surface. The
+ * conditions chip grid stays here so toggle parity with V1 is preserved
+ * (the ribbon's condition strip is the same component, but the in-coluna
+ * copy stays the keyboard-nav anchor).
  *
- * NOTE: PostCombatBanner is intentionally NOT mounted here. Its host move
- * into HeroiTab is deferred until the `feat/estabilidade-combate` sprint
- * completes — combat-stability owns the `combat:ended` broadcast wiring.
+ * NOTE: Combat-auto reorg (C5), `useCampaignCombatState` (C4),
+ * `<CombatBanner>` (C5), and `<PostCombatBanner>` mount (A6) land in the
+ * follow-up commits in this same PR. The TODO marker at the top of the
+ * return body is the host point for those mounts.
  */
 export function HeroiTab({
   characterId,
@@ -124,95 +124,130 @@ export function HeroiTab({
 
   return (
     <div className="space-y-3" data-testid="heroi-tab-content">
-      {/* TODO(post-combat): mount PostCombatBanner here once combat-
-          stability sprint completes wiring of the combat:ended broadcast
-          into Player HQ. See `lib/hooks/usePostCombatState.ts` for the
-          existing hook surface. */}
+      {/* TODO(post-combat + combat-auto): the next commits in this PR
+          mount <CombatBanner> + <PostCombatBanner> here, and wire the
+          ribbon's `combatActive` flag from `useCampaignCombatState`.
+          Layout below stays valid in both states because the columns are
+          self-balancing via `minmax(0, 1fr)`. */}
 
-      {/* 1. HP + Conditions */}
-      <CharacterStatusPanel
+      {/* C1 — Ribbon Vivo. Sticky, 2-line, replaces the V1 HP card +
+          stat-chips. `combatActive` defaults to false here; the C4 hook
+          flips it once landed. */}
+      <RibbonVivo
+        characterId={character.id}
+        characterName={character.name}
         currentHp={character.current_hp}
         maxHp={character.max_hp}
         hpTemp={character.hp_temp}
-        conditions={character.conditions}
-        characterId={character.id}
-        characterName={character.name}
-        onHpChange={updateHp}
-        onTempHpChange={updateTempHp}
-        onToggleCondition={toggleCondition}
-        onSetConditions={setConditions}
-      />
-
-      {/* 2. AC / Init / Speed / Inspiration / Spell Save DC + 6 ability chips */}
-      <CharacterCoreStats
         ac={character.ac}
         initiativeBonus={character.initiative_bonus}
         speed={character.speed}
         inspiration={character.inspiration}
         spellSaveDc={character.spell_save_dc}
-        str={character.str}
-        dex={character.dex}
-        con={character.con}
-        intScore={character.int_score}
-        wis={character.wis}
-        chaScore={character.cha_score}
+        conditions={character.conditions}
+        spellSlots={character.spell_slots}
+        onHpChange={updateHp}
+        onTempHpChange={updateTempHp}
+        onToggleCondition={toggleCondition}
+        onSetConditions={setConditions}
         onToggleInspiration={toggleInspiration}
       />
 
-      {/* 3. Saves + Skills (3-col grid per A3) */}
-      <ProficienciesSection
-        proficiencies={character.proficiencies ?? {}}
-        level={character.level}
-        str={character.str}
-        dex={character.dex}
-        con={character.con}
-        intScore={character.int_score}
-        wis={character.wis}
-        chaScore={character.cha_score}
-        onSave={saveField}
-      />
+      {/* C3 — 2-col layout. `xl:` breakpoint = ≥1280px per spec §1.
+          `minmax(0, 1fr)` lets each column flex to half the viewport
+          while clipping content that would overflow (long monster
+          names, etc). Single column stack <1280px. */}
+      <div
+        className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 xl:gap-10"
+        data-testid="heroi-2col-grid"
+      >
+        {/* ── Coluna A — Identidade & Proficiências ─────────────────── */}
+        <div className="space-y-3" data-testid="heroi-col-a">
+          {/* CharacterStatusPanel still mounts so condition toggles + the
+              exhaustion drop-down keep their canonical home — but `showHp`
+              is off because the ribbon owns the HP surface now. */}
+          <CharacterStatusPanel
+            currentHp={character.current_hp}
+            maxHp={character.max_hp}
+            hpTemp={character.hp_temp}
+            conditions={character.conditions}
+            characterId={character.id}
+            characterName={character.name}
+            showHp={false}
+            onHpChange={updateHp}
+            onTempHpChange={updateTempHp}
+            onToggleCondition={toggleCondition}
+            onSetConditions={setConditions}
+          />
 
-      {/* 4. Active Effects (buffs/debuffs + concentration) */}
-      <ActiveEffectsPanel
-        effects={activeEffectsHook.effects}
-        loading={activeEffectsHook.loading}
-        onAdd={activeEffectsHook.addEffect}
-        onUpdate={activeEffectsHook.updateEffect}
-        onDismiss={activeEffectsHook.dismissEffect}
-        onDecrementQuantity={activeEffectsHook.decrementQuantity}
-        onIncrementQuantity={activeEffectsHook.incrementQuantity}
-        concentrationConflictName={concentrationConflict?.name}
-        onDismissConcentration={
-          concentrationConflict
-            ? () => activeEffectsHook.dismissEffect(concentrationConflict.id)
-            : undefined
-        }
-      />
+          <CharacterCoreStats
+            ac={character.ac}
+            initiativeBonus={character.initiative_bonus}
+            speed={character.speed}
+            inspiration={character.inspiration}
+            spellSaveDc={character.spell_save_dc}
+            str={character.str}
+            dex={character.dex}
+            con={character.con}
+            intScore={character.int_score}
+            wis={character.wis}
+            chaScore={character.cha_score}
+            onToggleInspiration={toggleInspiration}
+          />
 
-      {/* 5. Spell Slots */}
-      <SpellSlotsHq
-        spellSlots={character.spell_slots}
-        onUpdateSpellSlots={updateSpellSlots}
-      />
+          <ProficienciesSection
+            proficiencies={character.proficiencies ?? {}}
+            level={character.level}
+            str={character.str}
+            dex={character.dex}
+            con={character.con}
+            intScore={character.int_score}
+            wis={character.wis}
+            chaScore={character.cha_score}
+            onSave={saveField}
+          />
+        </div>
 
-      {/* 6. Class Resources */}
-      <ResourceTrackerList
-        trackers={resourceHook.trackers}
-        loading={resourceHook.loading}
-        onToggleDot={resourceHook.toggleDot}
-        onResetTracker={resourceHook.resetTracker}
-        onAddTracker={resourceHook.addTracker}
-        onUpdateTracker={resourceHook.updateTracker}
-        onDeleteTracker={resourceHook.deleteTracker}
-      />
+        {/* ── Coluna B — Recursos voláteis ──────────────────────────── */}
+        <div className="space-y-3" data-testid="heroi-col-b">
+          <ActiveEffectsPanel
+            effects={activeEffectsHook.effects}
+            loading={activeEffectsHook.loading}
+            onAdd={activeEffectsHook.addEffect}
+            onUpdate={activeEffectsHook.updateEffect}
+            onDismiss={activeEffectsHook.dismissEffect}
+            onDecrementQuantity={activeEffectsHook.decrementQuantity}
+            onIncrementQuantity={activeEffectsHook.incrementQuantity}
+            concentrationConflictName={concentrationConflict?.name}
+            onDismissConcentration={
+              concentrationConflict
+                ? () => activeEffectsHook.dismissEffect(concentrationConflict.id)
+                : undefined
+            }
+          />
 
-      {/* 7. Spell List (search + filter + favorites) */}
-      <SpellListSection characterId={characterId} />
+          <ResourceTrackerList
+            trackers={resourceHook.trackers}
+            loading={resourceHook.loading}
+            onToggleDot={resourceHook.toggleDot}
+            onResetTracker={resourceHook.resetTracker}
+            onAddTracker={resourceHook.addTracker}
+            onUpdateTracker={resourceHook.updateTracker}
+            onDeleteTracker={resourceHook.deleteTracker}
+          />
 
-      {/* 8. Rest / Reset orchestrator. Renders LAST so the rest button is
-          adjacent to the resources it affects when scrolling on mobile.
-          On V1 this lived at the TOP of the resources tab; placing it
-          last here matches the wireframe's intent of "end-of-day" action. */}
+          <SpellSlotsHq
+            spellSlots={character.spell_slots}
+            onUpdateSpellSlots={updateSpellSlots}
+          />
+
+          <SpellListSection characterId={characterId} />
+        </div>
+      </div>
+
+      {/* Footer — RestResetPanel spans full width since it acts on data
+          owned by both columns. Renders last so the "end of day" action
+          is the natural scroll-to-bottom destination. */}
       <RestResetPanel
         resetByType={resourceHook.resetByType}
         countByResetType={resourceHook.countByResetType}
